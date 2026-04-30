@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Public documentation
+    url: https://culsma.dev/
+    about: Read the public docs before opening an issue.
+  - name: Public reference
+    url: https://culsma.dev/reference/
+    about: Check the current language/reference baseline before opening an issue.

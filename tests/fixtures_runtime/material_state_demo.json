@@ -1,0 +1,38 @@
+{
+  "containers": {
+    "StockA": {
+      "volume_uL": 200.0,
+      "mass_mg": 200.0,
+      "components": {
+        "DNA": 100.0
+      },
+      "metadata": {}
+    },
+    "MixTube": {
+      "volume_uL": 0.0,
+      "mass_mg": 0.0,
+      "components": {},
+      "metadata": {}
+    },
+    "Water": {
+      "volume_uL": 1000.0,
+      "mass_mg": 1000.0,
+      "components": {},
+      "metadata": {}
+    },
+    "Diluted": {
+      "volume_uL": 0.0,
+      "mass_mg": 0.0,
+      "components": {},
+      "metadata": {}
+    },
+    "Pellet": {
+      "volume_uL": 20.0,
+      "mass_mg": 15.0,
+      "components": {
+        "DNA": 8.0
+      },
+      "metadata": {}
+    }
+  }
+}

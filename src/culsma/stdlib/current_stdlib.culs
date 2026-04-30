@@ -1,0 +1,98 @@
+protocol Incubate(sample, temp, duration) {
+  with env(thermal = temp, duration = duration) {
+    hold(sample = sample);
+  }
+  return sample;
+}
+
+protocol Lyse(sample, buffer, duration, temp) {
+  with env(thermal = temp, duration = duration) {
+    sample << [buffer];
+    let lyse_group = sep(
+      sample = sample,
+      program = disrupt_program(duration = duration)
+    );
+    sample << [lyse_group[0]];
+  }
+  return sample;
+}
+
+protocol ExtractDNAPrecipitation(sample, precip_buffer, wash_inputs, dissolve_buffer, output, cleanup_temp, cleanup_duration) {
+  sample << [precip_buffer];
+  let precip_group = sep(
+    sample = sample,
+    program = centrifuge_program(drive = 12000g)
+  );
+  let pellet_tube = precip_group[1];
+  repeat wash_input in wash_inputs {
+    pellet_tube << [wash_input];
+    let wash_group = sep(
+      sample = pellet_tube,
+      program = centrifuge_program(drive = 12000g, keep_source = "pellet")
+    );
+    let pellet_tube = wash_group[1];
+  }
+  with env(thermal = cleanup_temp, duration = cleanup_duration) {
+    pellet_tube << [dissolve_buffer];
+  }
+  let dissolve_group = sep(
+    sample = pellet_tube,
+    program = centrifuge_program(drive = 3000g)
+  );
+  output << [dissolve_group[0]];
+  return output;
+}
+
+protocol ExtractDNAColumn(sample, bind_buffer, wash_inputs, elution_buffer, column, waste, output, cleanup_temp, cleanup_duration) {
+  sample << [bind_buffer];
+  column << [sample];
+  let bind_group = sep(
+    sample = column,
+    program = filtration_program(membrane = "silica", drive = pressure)
+  );
+  waste << [bind_group[0]];
+  let column_stage = bind_group[1];
+  repeat wash_input in wash_inputs {
+    column_stage << [wash_input];
+    let wash_group = sep(
+      sample = column_stage,
+      program = filtration_program(membrane = "silica", drive = pressure)
+    );
+    waste << [wash_group[0]];
+    let column_stage = wash_group[1];
+  }
+  with env(thermal = cleanup_temp, duration = cleanup_duration) {
+    column_stage << [elution_buffer];
+  }
+  let elute_group = sep(
+    sample = column_stage,
+    program = filtration_program(membrane = "silica", drive = pressure)
+  );
+  output << [elute_group[0]];
+  return output;
+}
+
+protocol PCR(sample, primers, cycles, annealing_temp) {
+  repeat cycle in schedule(start = 1, end = cycles, step = 1) {
+    with env(thermal = thermal_program(from = 95C, duration = 30s)) {
+      hold(sample = sample);
+    }
+    with env(thermal = thermal_program(from = annealing_temp, duration = 30s)) {
+      hold(sample = sample);
+    }
+    with env(thermal = thermal_program(from = 72C, duration = 30s)) {
+      hold(sample = sample);
+    }
+  }
+  return sample;
+}
+
+protocol Electrophoresis(sample, gel_type, stain, field, duration, readout_schema) {
+  let run_group = sep(
+    sample = sample,
+    program = field_program(field = field, duration = duration)
+  );
+  run_group[0] << [stain];
+  let obs = img(sample = run_group[0], quantity = customized, schema_ref = readout_schema, save_raw = true);
+  return obs;
+}

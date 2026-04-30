@@ -1,0 +1,59 @@
+// Example 1: Enzyme digestion + QC workflow
+// Source: grammar_v0.1.ebnf Section 11, Example 1
+
+protocol EnzymeDigestionAndQC {
+
+    // Variable definitions
+    let buffer_vol = 200uL;
+    let enzyme_vol = 5uL;
+    let incubation_temp = 37C;
+    let incubation_time = 10min;
+
+    // Step 1: Transfer buffer to PCR tube
+    Transfer(
+        source = "BufferA",
+        dest = "PCR_Tube_1",
+        volume_or_mass = buffer_vol,
+        tool = "Pipette"
+    );
+
+    // Step 2: Add enzyme
+    Transfer(
+        source = "TaqEnzyme",
+        dest = "PCR_Tube_1",
+        volume_or_mass = enzyme_vol,
+        tool = "Pipette"
+    );
+
+    // Step 3: Mix
+    Mix(
+        components = ["BufferA", "TaqEnzyme"],
+        container = "PCR_Tube_1",
+        method = "Pipette"
+    );
+
+    // Step 4: Incubate
+    Incubate(
+        sample = "PCR_Tube_1",
+        temp = incubation_temp,
+        duration = incubation_time
+    );
+
+    // Step 5: Centrifuge
+    Centrifuge(
+        sample = "PCR_Tube_1",
+        speed = 12000rpm,
+        duration = 10min,
+        temp = 4C,
+        target_fraction = "Supernatant",
+        recovery_ratio = 0.55
+    );
+
+    // Step 6: UV measurement
+    Measure(
+        sample = "Supernatant",
+        method = "UV",
+        device = "NanoDrop",
+        wavelength = 260nm
+    );
+}

@@ -1,0 +1,36 @@
+// Example 2: Protocol reference (modular composition)
+// Source: grammar_v0.1.ebnf Section 11, Example 2
+
+protocol DNAExtraction {
+    Lyse(
+        sample = "CellPellet",
+        buffer = "RIPA",
+        duration = 15min,
+        temp = 4C
+    );
+    Centrifuge(
+        sample = "Lysate",
+        speed = 12000rpm,
+        duration = 10min,
+        recovery_ratio = 0.55
+    );
+    ExtractDNA(
+        sample = "Supernatant",
+        method = "Column"
+    );
+}
+
+protocol FullExperiment {
+    include DNAExtraction;
+    PCR(
+        sample = "DNA",
+        primers = "GAPDH_F_R",
+        cycles = 35,
+        annealing_temp = 60C
+    );
+    Electrophoresis(
+        sample = "PCR_Product",
+        gel_type = "1pct_Agarose",
+        staining_method = "SYBR_Safe"
+    );
+}

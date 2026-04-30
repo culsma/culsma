@@ -1,0 +1,55 @@
+name: Bug report
+description: Report a narrowly scoped, reproducible defect in the current public baseline.
+title: "[bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this template only for reproducible defects in the current public baseline.
+
+        Do not use it for general support, roadmap requests, feature requests, or custom integration help.
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: Release tag, commit hash, or installation source used for reproduction.
+      placeholder: v1.0.0
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command or input
+      description: Exact command, protocol file, or invocation used.
+      placeholder: |
+        culsma run --input examples/minimal/public_minimal.culs
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Provide the smallest reproducible example possible.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python version, installation method, and any other relevant context.

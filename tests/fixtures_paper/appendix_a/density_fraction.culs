@@ -1,0 +1,5 @@
+protocol AppendixADensityFraction {
+    let source_tube = tube(label = "Gradient source", capacity = 100uL);
+    let fp = density_gradient_program(axis = density, order = top_to_bottom, bins = 8);
+    let fractions = frac(sample = source_tube, program = fp);
+}

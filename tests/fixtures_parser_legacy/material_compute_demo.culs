@@ -1,0 +1,7 @@
+protocol MaterialComputeDemo {
+  Transfer(source = "StockA", dest = "MixTube", volume_or_mass = 50uL, tool = "Pipette");
+  Mix(components = ["MixTube"], container = "MixTube", method = "Pipette");
+  Dilute(sample = "MixTube", diluent = "Water", container = "Diluted", dilution_factor = 5, final_volume = 100uL);
+  Discard(source = "Diluted", volume_or_mass = 10uL);
+  Resuspend(sample = "Pellet", diluent = "Water", volume_or_mass = 100uL, method = "Pipette");
+}

@@ -1,0 +1,9 @@
+protocol PublicMinimal {
+    let source = tube(
+        label = "Source",
+        capacity = 100uL,
+        load = [buffer(code = "BUF01", type = "water"):10uL]
+    );
+    let target = tube(label = "Target", capacity = 100uL);
+    target << [source:5uL];
+}

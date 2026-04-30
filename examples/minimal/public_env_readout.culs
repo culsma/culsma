@@ -1,0 +1,11 @@
+protocol PublicEnvReadout {
+    let reactor = tube(
+        label = "Reactor",
+        capacity = 100uL,
+        load = [buffer(code = "BUF02", type = "reaction_buffer"):20uL]
+    );
+    with env(thermal = 37C, duration = 10min) {
+        hold(sample = reactor);
+    }
+    let obs = phy(sample = reactor, quantity = temperature);
+}

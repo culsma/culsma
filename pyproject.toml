@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "culsma"
+version = "1.0.0"
+description = "Public execution-kernel release boundary for the current Culsma reference implementation"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "lark>=1.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.0.0",
+]
+
+[project.scripts]
+culsma = "culsma.cli:main"
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["culsma", "culsma.*"]
+
+[tool.setuptools.package-data]
+"culsma" = ["stdlib/*.culs"]
+"culsma.pipeline" = ["operation_catalog.json"]
+"culsma.parser" = ["culsma.lark"]

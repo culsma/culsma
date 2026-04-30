@@ -1,0 +1,13 @@
+protocol CurrentFrontendReadout {
+    let reactor_tube = tube(label = "Reactor_Temp", capacity = 2000uL, load = [buffer(code = "BUF02", type = "reaction_buffer"):1200uL]);
+    let pcr_well = well(label = "PCR_A1", capacity = 50uL, carrier_id = "PCRPlate1", carrier_position = "A1");
+
+    let thermal_prog = thermal_program(from = 95C, duration = 30s);
+    with env(thermal = thermal_prog) {
+        hold(sample = pcr_well);
+    }
+
+    let img_obs = img(sample = reactor_tube, quantity = fluorescence, save_raw = true);
+    let ecp_obs = ecp(sample = reactor_tube, quantity = ph, save_raw = true);
+    let phy_obs = phy(sample = reactor_tube, quantity = temperature, save_raw = true);
+}

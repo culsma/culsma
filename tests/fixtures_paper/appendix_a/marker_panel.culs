@@ -1,0 +1,3 @@
+protocol AppendixAMarkerPanel {
+    let panel = markers([CD3, CD19]);
+}
