@@ -90,12 +90,11 @@ python -m pytest -q
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 - Support policy: [SUPPORT.md](SUPPORT.md)
 
-## Scope Notes
+## Release Boundary
 
-- This repository is the public code boundary for the current paper-aligned
-  implementation snapshot.
-- Example selection is intentionally narrow; only minimal current-surface
-  examples are kept in this public boundary.
+- This repository is the public code boundary for Culsma v1.0.0.
+- The `examples/` directory contains small runnable CLI examples used for
+  public smoke validation.
 - This repository is licensed under Apache-2.0. See `LICENSE`.
 
 ## Support and Maintenance Policy

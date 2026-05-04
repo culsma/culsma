@@ -37,9 +37,14 @@ culsma run --input examples/minimal/public_minimal.culs --artifacts-dir tmp/run
 
 ### Verified
 
-- full test suite passed
-- CLI smoke test passed on the minimal example
-- wheel build succeeded locally
+Release candidate verification:
+
+- `python -m pytest -q`
+  - result: full test suite passed
+- `python -m culsma.cli run --input examples/minimal/public_minimal.culs`
+  - result: CLI smoke test passed and emitted the primary run result JSON
+- `python -m pip wheel . -w /tmp/culsma-dist --no-deps --no-build-isolation`
+  - result: `culsma-1.0.0-py3-none-any.whl` built successfully
 
 ### Notes
 
