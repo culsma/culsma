@@ -40,9 +40,9 @@ class ProtocolOutputRecorder:
             bindings: dict[str, Any] = {}
             for name, expr in protocol.return_bindings.items():
                 value = resolver.eval_protocol_output_expr(expr, session.state)
-                bindings[name] = None if value is UNRESOLVED else resolver.value_to_serialized(value)
+                bindings[name] = None if value is UNRESOLVED else resolver.deep_serialize(value)
             payload["bindings"] = bindings
         elif protocol.return_value is not None:
             value = resolver.eval_protocol_output_expr(protocol.return_value, session.state)
-            payload["value"] = None if value is UNRESOLVED else resolver.value_to_serialized(value)
+            payload["value"] = None if value is UNRESOLVED else resolver.deep_serialize(value)
         outputs[protocol.protocol_name] = payload

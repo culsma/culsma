@@ -27,7 +27,10 @@ def build_user_result(
         "diagnostic_count": len(diagnostics),
         **status_counts,
     }
-    base = {"schema": "lab_report_v1", "execution": execution}
+    base = {
+        "schema": "lab_report_v1",
+        "execution": execution,
+    }
 
     final_material_state = getattr(state, "artifacts", {}).get("material_state")
     if not isinstance(final_material_state, dict):

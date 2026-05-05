@@ -6,4 +6,5 @@ protocol PublicMinimal {
     );
     let target = tube(label = "Target", capacity = 100uL);
     target << [source:5uL];
+    return target;
 }

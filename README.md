@@ -46,22 +46,39 @@ tests/                regression and runtime tests
 ## Quick Run
 
 ```bash
-culsma run --input examples/minimal/public_minimal.culs
+culsma examples/minimal/public_minimal.culs
 ```
 
-This prints the primary run result JSON to stdout.
+This runs the protocol and prints a compact terminal result, including the
+returned tube/container state.
 
-If you want to save the primary result explicitly:
+The explicit run form is equivalent:
 
 ```bash
-culsma run --input examples/minimal/public_minimal.culs --output tmp/result.json
+culsma run examples/minimal/public_minimal.culs
+```
+
+If you want the machine-readable run output on stdout:
+
+```bash
+culsma run examples/minimal/public_minimal.culs --json
+```
+
+The run output separates the protocol return from the generated lab report:
+`returns` is the program output, while `report` is the execution/reporting
+summary.
+
+If you want to save the machine-readable run output explicitly:
+
+```bash
+culsma run examples/minimal/public_minimal.culs --output tmp/result.json
 ```
 
 If you want intermediate and debug artifacts as well:
 
 ```bash
 culsma run \
-  --input examples/minimal/public_minimal.culs \
+  examples/minimal/public_minimal.culs \
   --artifacts-dir tmp/run
 ```
 
@@ -69,7 +86,7 @@ If you are running from a source checkout without the console entrypoint on
 `PATH`, use:
 
 ```bash
-python -m culsma.cli run --input examples/minimal/public_minimal.culs
+python -m culsma examples/minimal/public_minimal.culs
 ```
 
 You can also replay a saved run artifact:
