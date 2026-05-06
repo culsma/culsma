@@ -1,0 +1,34 @@
+{
+  "title": "Culsma: Public Reference Implementation",
+  "upload_type": "software",
+  "description": "Public reference implementation of the Culsma language and execution stack, including parser, semantic validation, type and unit checking, plan lowering, runtime execution, driver interfaces, standard-library source, runnable examples, tests, and a command-line interface.",
+  "creators": [
+    {
+      "name": "Chen, Yang",
+      "orcid": "0000-0002-9323-5751",
+      "affiliation": "Brodinlab, Department of Women's and Children's Health (KBH), Karolinska Institutet"
+    }
+  ],
+  "license": "Apache-2.0",
+  "version": "1.0.1",
+  "keywords": [
+    "laboratory protocols",
+    "formal language",
+    "execution semantics",
+    "workflow automation",
+    "reproducibility",
+    "Culsma"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/culsma/culsma",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://culsma.dev/",
+      "relation": "isDocumentedBy",
+      "scheme": "url"
+    }
+  ]
+}

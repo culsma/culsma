@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you cite or rely on the Culsma reference implementation, please cite this software release."
+title: "Culsma: Public Reference Implementation"
+version: "1.0.1"
+date-released: "2026-05-06"
+license: "Apache-2.0"
+url: "https://culsma.dev/"
+repository-code: "https://github.com/culsma/culsma"
+abstract: "Public reference implementation of the Culsma language and execution stack, including parser, semantic validation, type and unit checking, plan lowering, runtime execution, driver interfaces, standard-library source, runnable examples, tests, and a command-line interface."
+authors:
+  - family-names: "Chen"
+    given-names: "Yang"
+    orcid: "https://orcid.org/0000-0002-9323-5751"
+    affiliation: "Brodinlab, Department of Women's and Children's Health (KBH), Karolinska Institutet"
+keywords:
+  - laboratory protocols
+  - formal language
+  - execution semantics
+  - workflow automation
+  - reproducibility
+  - Culsma
