@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/assets/culsma-wordmark.png" alt="Culsma" width="720">
+  <img src="https://raw.githubusercontent.com/culsma/culsma/main/docs/assets/culsma-wordmark.png" alt="Culsma" width="720">
 </p>
 
 Culsma is the public reference implementation of the current Culsma language and execution stack.
@@ -20,13 +20,19 @@ integrations, and internal design-workspace documents.
 
 ## Install
 
-For the current public release, install directly from the `v1.0.0` tag:
+For the current public release, install from PyPI:
 
 ```bash
-python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@v1.0.0"
+python -m pip install culsma
 ```
 
-Release notes for the first formal release are in [CHANGELOG.md](CHANGELOG.md).
+You can also install directly from the `v1.0.1` tag:
+
+```bash
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@v1.0.1"
+```
+
+Release notes are in [CHANGELOG.md](CHANGELOG.md).
 
 The public language reference is maintained in the companion
 `culsma-reference` repository/worktree.
@@ -112,7 +118,7 @@ python -m pytest -q
 
 ## Release Boundary
 
-- This repository is the public code boundary for Culsma v1.0.0.
+- This repository is the public code boundary for Culsma v1.0.x.
 - The `examples/` directory contains small runnable CLI examples used for
   public smoke validation.
 - This repository is licensed under Apache-2.0. See `LICENSE`.

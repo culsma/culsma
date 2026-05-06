@@ -1,5 +1,50 @@
 # Changelog
 
+## Culsma v1.0.1
+
+### Scope
+
+This release prepares the first PyPI distribution for the public Culsma
+execution-kernel baseline.
+
+It includes:
+
+- explicit Python package license metadata for Apache-2.0
+- bundled third-party notice files in package metadata
+- PyPI-friendly project URLs and README install instructions
+- the public roadmap and paper/citation placeholder links
+
+### Install
+
+PyPI install:
+
+```bash
+python -m pip install culsma
+```
+
+Source tag install:
+
+```bash
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@v1.0.1"
+```
+
+### Notes
+
+- Requires Python 3.11+
+- Runtime dependency: `lark>=1.1.0`
+- This is a packaging and public metadata release; no source-language semantic
+  change is intended.
+
+### Verified
+
+- `python -m pytest -q`
+  - result: `522 passed`
+- `python -m build --sdist --wheel --outdir /tmp/culsma-v1.0.1-dist --no-isolation`
+  - result: `culsma-1.0.1.tar.gz` and `culsma-1.0.1-py3-none-any.whl` built
+    successfully
+- `python -m twine check /tmp/culsma-v1.0.1-dist/*`
+  - result: passed
+
 ## Culsma v1.0.0
 
 ### Scope
