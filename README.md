@@ -103,6 +103,9 @@ python -m pytest -q
 
 ## More
 
+- Documentation: [culsma.dev](https://culsma.dev/)
+- Paper and citation: [culsma.dev/paper-and-citation](https://culsma.dev/paper-and-citation)
+  (arXiv preprint forthcoming)
 - GitHub Releases: [github.com/culsma/culsma/releases](https://github.com/culsma/culsma/releases)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 - Support policy: [SUPPORT.md](SUPPORT.md)
