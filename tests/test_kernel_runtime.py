@@ -578,12 +578,13 @@ protocol T {
     assert result.user_result is not None
     final_products = result.user_result["materials"]["final_products"]
     diluted = next(item for item in final_products if item["name"] == "Working")
-    assert diluted["volume_uL"] == 100.0
-    assert diluted["mass_mg"] == 100.0
-    assert diluted["component_count"] == 2
-    assert diluted["primary_component"] == "DNA001"
-    assert diluted["primary_component_amount"] == 20.0
-    assert diluted["primary_concentration"] == 0.2
+    assert diluted == {
+        "name": "Working",
+        "volume_uL": 100.0,
+        "volume_mL": 0.1,
+        "mass_mg": 100.0,
+        "primary_component": "DNA001",
+    }
 
 
 def test_runtime_user_result_normalizes_working_container_roles_from_source_bindings():
@@ -605,9 +606,13 @@ protocol T {
     assert result.user_result is not None
     final_products = result.user_result["materials"]["final_products"]
     diluted = next(item for item in final_products if item["name"] == "Working")
-    assert diluted["volume_uL"] == 100.0
-    assert diluted["primary_component"] == "DNA001"
-    assert diluted["primary_concentration"] == 0.2
+    assert diluted == {
+        "name": "Working",
+        "volume_uL": 100.0,
+        "volume_mL": 0.1,
+        "mass_mg": 100.0,
+        "primary_component": "DNA001",
+    }
 
 
 def test_runtime_continuous_schedule_flag_break_skips_remainder_of_outer_window():
@@ -722,6 +727,91 @@ protocol T {
     assert result.ok
     ops = [step.op for protocol in plan.plans for step in protocol.steps]
     assert "ExtractDNA" not in ops
+
+
+def test_runtime_sep_partition_keeps_dna_cleanup_product_from_wash_reagents():
+    plan = _build_plan_from_source(
+        """
+protocol T() returns (plasmid_dna) {
+  let aqueous = tube(label = "Aqueous", capacity = 2500uL, load = [
+    content(kind = "biosample", code = "DNA_EXT", type = "dna_lysate"):100uL,
+    buffer(code = "AQ", type = "buffer"):400uL
+  ]);
+  let phenol_chloroform = tube(label = "Phenol Chloroform", capacity = 1000uL, load = [
+    reagent(code = "PCI", type = "custom_phenol_chloroform"):450uL
+  ]);
+  let ethanol_abs = tube(label = "Absolute Ethanol", capacity = 1000uL, load = [
+    reagent(code = "ETOH_ABS", type = "custom_absolute_ethanol"):900uL
+  ]);
+  let ethanol_70 = tube(label = "70 Percent Ethanol", capacity = 1500uL, load = [
+    buffer(code = "ETOH70", type = "ethanol_wash_buffer"):1000uL
+  ]);
+  let te = tube(label = "TE", capacity = 200uL, load = [
+    buffer(code = "TE", type = "te_buffer"):50uL
+  ]);
+  let aqueous_phase = tube(label = "Aqueous Phase", capacity = 2500uL);
+  let dna_pellet = tube(label = "DNA Pellet", capacity = 2500uL);
+  let washed_pellet = tube(label = "Washed DNA Pellet", capacity = 2500uL);
+  let plasmid_dna = tube(label = "Plasmid DNA", capacity = 200uL);
+
+  aqueous << [phenol_chloroform:450uL];
+  let extraction_group = sep(
+    sample = aqueous,
+    program = phase_partition_program(solvent = "phenol_chloroform")
+  );
+  aqueous_phase << [extraction_group[0]];
+
+  aqueous_phase << [ethanol_abs:900uL];
+  let precip_group = sep(
+    sample = aqueous_phase,
+    program = precipitation_program(reagent = "ethanol")
+  );
+  dna_pellet << [precip_group[0]];
+
+  dna_pellet << [ethanol_70:1000uL];
+  let wash_group = sep(
+    sample = dna_pellet,
+    program = centrifuge_program(drive = 12000g)
+  );
+  washed_pellet << [wash_group[1]];
+
+  washed_pellet << [te:50uL];
+  plasmid_dna << [washed_pellet:50uL];
+  return plasmid_dna;
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    returned = result.state.artifacts["protocol_outputs"]["T"]["value"]
+    assert returned == {
+        "kind": "container_ref",
+        "id": "Plasmid DNA",
+        "volume_uL": 50,
+        "mass_mg": 50,
+        "container_kind": "tube",
+        "label": "Plasmid DNA",
+    }
+    components = result.state.artifacts["material_state"]["containers"]["Plasmid DNA"]["components"]
+    assert {key: round(float(value), 6) for key, value in sorted(components.items())} == {
+        "AQ": 0.006579,
+        "DNA_EXT": 5.156308,
+        "ETOH70": 0.559441,
+        "ETOH_ABS": 0.015105,
+        "PCI": 0.000151,
+        "TE": 2.797203,
+    }
+    final_products = result.user_result["materials"]["final_products"]
+    plasmid = next(item for item in final_products if item["name"] == "Plasmid DNA")
+    assert plasmid == {
+        "name": "Plasmid DNA",
+        "volume_uL": 50.0,
+        "volume_mL": 0.05,
+        "mass_mg": 50.0,
+        "primary_component": "DNA_EXT",
+    }
 
 
 def test_runtime_let_bound_electrophoresis_stdlib_yields_observation_binding():
@@ -1072,7 +1162,7 @@ def test_runtime_records_img_data_binding_as_canonical_readout_handle():
     plan = _build_plan_from_source(
         """
 protocol T {
-  let tube = tube(label = "Tube", capacity = 100uL, load = [content(kind = "biosample", code = "S1", type = "dna"):10uL]);
+  let tube = tube(label = "Tube", capacity = 100uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):10uL]);
   let img_obs = img(sample = tube, quantity = fluorescence);
 }
 """
@@ -1182,8 +1272,8 @@ def test_runtime_records_grouped_img_observation_binding_and_result_envelope():
     plan = _build_plan_from_source(
         """
 protocol T {
-  let t1 = tube(label = "T1", capacity = 500uL, load = [content(kind = "biosample", code = "S1", type = "dna"):10uL]);
-  let t2 = tube(label = "T2", capacity = 500uL, load = [content(kind = "biosample", code = "S2", type = "dna"):10uL]);
+  let t1 = tube(label = "T1", capacity = 500uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):10uL]);
+  let t2 = tube(label = "T2", capacity = 500uL, load = [content(kind = "biosample", code = "S2", type = "dna_sample"):10uL]);
   let wells = group([t1, t2]);
   let img_group = img(sample = wells, quantity = fluorescence, save_raw = true);
 }
@@ -1219,8 +1309,8 @@ def test_runtime_records_grouped_img_data_group_binding_as_canonical_handle():
     plan = _build_plan_from_source(
         """
 protocol T {
-  let t1 = tube(label = "T1", capacity = 500uL, load = [content(kind = "biosample", code = "S1", type = "dna"):10uL]);
-  let t2 = tube(label = "T2", capacity = 500uL, load = [content(kind = "biosample", code = "S2", type = "dna"):10uL]);
+  let t1 = tube(label = "T1", capacity = 500uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):10uL]);
+  let t2 = tube(label = "T2", capacity = 500uL, load = [content(kind = "biosample", code = "S2", type = "dna_sample"):10uL]);
   let wells = group([t1, t2]);
   let img_group = img(sample = wells, quantity = fluorescence);
 }
@@ -1399,7 +1489,7 @@ def test_runtime_executes_constructor_binding_before_mutation_without_seed_state
     plan = _build_plan_from_source(
         """
 protocol T {
-  let src = tube(label = "SRC", capacity = 500uL, load = [content(kind = "biosample", code = "S1", type = "dna"):100uL]);
+  let src = tube(label = "SRC", capacity = 500uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):100uL]);
   let dst = tube(label = "DST", capacity = 500uL);
   dst << [src:25uL];
 }
@@ -1418,7 +1508,7 @@ def test_runtime_allows_self_transfer_mutation_without_material_change():
     plan = _build_plan_from_source(
         """
 protocol T {
-  let tube_a = tube(label = "TubeA", capacity = 500uL, load = [content(kind = "biosample", code = "S1", type = "dna"):100uL]);
+  let tube_a = tube(label = "TubeA", capacity = 500uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):100uL]);
   tube_a << [tube_a:25uL];
 }
 """
@@ -1436,7 +1526,7 @@ def test_runtime_executes_constructor_load_before_core_sep():
     plan = _build_plan_from_source(
         """
 protocol T {
-  let sample_tube = tube(label = "SampleTube", capacity = 500uL, load = [content(kind = "biosample", code = "S1", type = "dna"):100uL]);
+  let sample_tube = tube(label = "SampleTube", capacity = 500uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):100uL]);
   let sep_group = sep(sample = sample_tube, program = centrifuge_program(drive = 12000g));
 }
 """
@@ -1789,7 +1879,7 @@ def test_runtime_captures_single_protocol_return_value():
     plan = _build_plan_from_source(
         """
 protocol T() returns (prepared_out) {
-  let stock = tube(label = "Stock", capacity = 100uL, load = [content(kind = "biosample", code = "DNA001", type = "dna"):100uL]);
+  let stock = tube(label = "Stock", capacity = 100uL, load = [content(kind = "biosample", code = "DNA001", type = "dna_sample"):100uL]);
   let prepared = tube(label = "Prepared", capacity = 100uL);
   prepared << [stock:40uL];
   return prepared;
@@ -1800,21 +1890,27 @@ protocol T() returns (prepared_out) {
 
     assert result.ok
     outputs = result.state.artifacts["protocol_outputs"]["T"]
-    assert outputs["returns"] == ["prepared_out"]
-    prepared_out = outputs["value"]
-    assert prepared_out["kind"] == "container_ref"
-    assert prepared_out["id"] == "Prepared"
-    assert prepared_out["container_kind"] == "tube"
-    assert prepared_out["label"] == "Prepared"
-    assert prepared_out["volume_uL"] == 40.0
-    assert prepared_out["components"]["DNA001"] == 40.0
+    assert outputs == {
+        "protocol_id": "p0",
+        "protocol_name": "T",
+        "returns": ["prepared_out"],
+        "value": {
+            "kind": "container_ref",
+            "id": "Prepared",
+            "volume_uL": 40,
+            "mass_mg": 40,
+            "container_kind": "tube",
+            "label": "Prepared",
+        },
+    }
+    assert result.state.artifacts["material_state"]["containers"]["Prepared"]["components"]["DNA001"] == 40.0
 
 
 def test_runtime_captures_named_protocol_output_container_ref():
     plan = _build_plan_from_source(
         """
 protocol T() returns (prepared_out, seq_out) {
-  let stock = tube(label = "Stock", capacity = 100uL, load = [content(kind = "biosample", code = "DNA001", type = "dna"):100uL]);
+  let stock = tube(label = "Stock", capacity = 100uL, load = [content(kind = "biosample", code = "DNA001", type = "dna_sample"):100uL]);
   let prepared = tube(label = "Prepared", capacity = 100uL);
   let reads = data_group_ref(kind = sequence_read);
   prepared << [stock:25uL];
@@ -1827,20 +1923,36 @@ protocol T() returns (prepared_out, seq_out) {
 
     assert result.ok
     outputs = result.state.artifacts["protocol_outputs"]["T"]
-    assert outputs["returns"] == ["prepared_out", "seq_out"]
-    prepared_out = outputs["bindings"]["prepared_out"]
-    assert prepared_out["kind"] == "container_ref"
-    assert prepared_out["id"] == "Prepared"
-    assert prepared_out["volume_uL"] == 25.0
-    assert prepared_out["components"]["DNA001"] == 25.0
-    assert outputs["bindings"]["seq_out"]["kind"] == "data_group_ref"
+    assert outputs == {
+        "protocol_id": "p0",
+        "protocol_name": "T",
+        "returns": ["prepared_out", "seq_out"],
+        "bindings": {
+            "prepared_out": {
+                "kind": "container_ref",
+                "id": "Prepared",
+                "volume_uL": 25,
+                "mass_mg": 25,
+                "container_kind": "tube",
+                "label": "Prepared",
+            },
+            "seq_out": {
+                "kind": "data_group_ref",
+                "data_kind": "sequence_read",
+                "schema_ref": None,
+                "items": [],
+                "result": {},
+            },
+        },
+    }
+    assert result.state.artifacts["material_state"]["containers"]["Prepared"]["components"]["DNA001"] == 25.0
 
 
 def test_runtime_captures_indexed_container_return_as_container_ref():
     plan = _build_plan_from_source(
         """
 protocol T() returns (supernatant_out) {
-  let sample_tube = tube(label = "SampleTube", capacity = 100uL, load = [content(kind = "biosample", code = "S1", type = "dna"):100uL]);
+  let sample_tube = tube(label = "SampleTube", capacity = 100uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):100uL]);
   let sep_group = sep(sample = sample_tube, program = centrifuge_program(drive = 12000g));
   return sep_group[0];
 }
@@ -1851,11 +1963,18 @@ protocol T() returns (supernatant_out) {
 
     assert result.ok
     outputs = result.state.artifacts["protocol_outputs"]["T"]
-    slot0 = outputs["value"]
-    assert slot0["kind"] == "container_ref"
-    assert slot0["id"].endswith("::0")
-    assert slot0["volume_uL"] == 50.0
-    assert slot0["components"]["S1"] == 50.0
+    assert outputs == {
+        "protocol_id": "p0",
+        "protocol_name": "T",
+        "returns": ["supernatant_out"],
+        "value": {
+            "kind": "container_ref",
+            "id": "p0.s1::0",
+            "volume_uL": 50,
+            "mass_mg": 50,
+        },
+    }
+    assert result.state.artifacts["material_state"]["containers"]["p0.s1::0"]["components"]["S1"] == 99.0
 
 
 def test_runtime_sequencing_style_read_accumulation_closes_minimal_loop():

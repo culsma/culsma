@@ -500,7 +500,7 @@ protocol T {
 
 
 def test_validate_standalone_content_constructor_is_forbidden():
-    src = 'protocol T { let stock = content(kind = "biosample", code = "S1", type = "dna"); }'
+    src = 'protocol T { let stock = content(kind = "biosample", code = "S1", type = "dna_sample"); }'
     ir = _compile_source(src)
     result = validate(ir)
     assert "SEM_STANDALONE_CONTENT_INIT_FORBIDDEN" in _codes(result)

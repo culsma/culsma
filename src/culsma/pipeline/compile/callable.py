@@ -3,22 +3,18 @@
 from __future__ import annotations
 
 from culsma.parser.ast_nodes import Arg, CallExpr, Expression, GroupExpr, StepCall, StringLiteral
+from culsma.pipeline.content_vocab import (
+    CONTENT_SPEC_SUGAR_TO_CANONICAL,
+    ContainerKind,
+    ContentKind,
+    ContentSpecSugar,
+    ContentType,
+    parse_content_spec_sugar,
+)
 from culsma.pipeline.ir_nodes import IRLet
 
 from .context import BlockContext, CompileSession
 from .targets import _expand_group_like_target_expr, _is_group_like_ast
-
-_SUGAR_TO_CANONICAL = {
-    "container": "AllocContainer",
-    "tube": "AllocContainer",
-    "well": "AllocContainer",
-    "chamber": "AllocContainer",
-    "surface": "AllocContainer",
-    "content": "DefineContent",
-    "blood": "DefineContent",
-    "reagent": "DefineContent",
-    "buffer": "DefineContent",
-}
 
 _READOUT_FAMILY = {"img", "ecp", "phy"}
 
@@ -71,9 +67,10 @@ def _find_named_arg(args: list[Arg], name: str) -> Arg | None:
 
 
 def _lower_callable(name: str, args: list[Arg], span) -> tuple[str, list[Arg]]:
-    canonical_name = _SUGAR_TO_CANONICAL.get(name, name)
+    canonical_name = CONTENT_SPEC_SUGAR_TO_CANONICAL.get(name, name)
     args = list(args)
     existing = {arg.name for arg in args}
+    sugar = parse_content_spec_sugar(name)
 
     def _inject(name: str, value: Expression) -> None:
         if name in existing:
@@ -81,22 +78,22 @@ def _lower_callable(name: str, args: list[Arg], span) -> tuple[str, list[Arg]]:
         args.insert(0, Arg(name=name, value=value, span=span))
         existing.add(name)
 
-    if name == "tube":
-        _inject("kind", StringLiteral(value="tube", span=span))
-    elif name == "well":
-        _inject("kind", StringLiteral(value="well", span=span))
+    if sugar == ContentSpecSugar.TUBE:
+        _inject("kind", StringLiteral(value=ContainerKind.TUBE.value, span=span))
+    elif sugar == ContentSpecSugar.WELL:
+        _inject("kind", StringLiteral(value=ContainerKind.WELL.value, span=span))
         _inject("carrier_kind", StringLiteral(value="plate", span=span))
-    elif name == "chamber":
-        _inject("kind", StringLiteral(value="chamber", span=span))
-    elif name == "surface":
-        _inject("kind", StringLiteral(value="surface", span=span))
-    elif name == "blood":
-        _inject("kind", StringLiteral(value="biosample", span=span))
-        _inject("type", StringLiteral(value="whole_blood", span=span))
-    elif name == "reagent":
-        _inject("kind", StringLiteral(value="reagent", span=span))
-    elif name == "buffer":
-        _inject("kind", StringLiteral(value="buffer", span=span))
+    elif sugar == ContentSpecSugar.CHAMBER:
+        _inject("kind", StringLiteral(value=ContainerKind.CHAMBER.value, span=span))
+    elif sugar == ContentSpecSugar.SURFACE:
+        _inject("kind", StringLiteral(value=ContainerKind.SURFACE.value, span=span))
+    elif sugar == ContentSpecSugar.BLOOD:
+        _inject("kind", StringLiteral(value=ContentKind.BIOSAMPLE.value, span=span))
+        _inject("type", StringLiteral(value=ContentType.WHOLE_BLOOD.value, span=span))
+    elif sugar == ContentSpecSugar.REAGENT:
+        _inject("kind", StringLiteral(value=ContentKind.REAGENT.value, span=span))
+    elif sugar == ContentSpecSugar.BUFFER:
+        _inject("kind", StringLiteral(value=ContentKind.BUFFER.value, span=span))
 
     return canonical_name, args
 

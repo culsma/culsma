@@ -176,7 +176,7 @@ def test_typecheck_constructor_capacity_requires_volume_dimension():
 
 
 def test_typecheck_constructor_load_quantity_requires_volume_or_mass():
-    src = 'protocol T { let tube_a = tube(label = "A", load = [content(kind = "biosample", code = "S1", type = "dna"):5s]); }'
+    src = 'protocol T { let tube_a = tube(label = "A", load = [content(kind = "biosample", code = "S1", type = "dna_sample"):5s]); }'
     ir = _compile_source(src)
     result = typecheck(ir)
     assert "TYPE_LOAD_QUANTITY_DIMENSION_MISMATCH" in _codes(result)

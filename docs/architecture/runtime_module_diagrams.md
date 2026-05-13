@@ -5,17 +5,20 @@ Last updated: 2026-04-25
 Related plan/runtime documents:
 
 1. [plan_module_diagrams.md](https://github.com/culsma/culsma/blob/main/docs/architecture/plan_module_diagrams.md)
+2. [material_compute_module_diagrams.md](./material_compute_module_diagrams.md)
 
 ## Scope
 
 This document records the current runtime structure with one functional
-flowchart plus four structural diagrams:
+flowchart plus material-compute detail diagrams and four structural diagrams:
 
 1. Functional flowchart: what runtime execution actually does.
 2. Runtime sequence.
 3. Runtime step detail sequence.
 4. Runtime step detail flowchart.
-5. Class/module diagram.
+5. Material compute `sep` detail flowchart.
+6. Proposed `sep` partition strategy diagram.
+7. Class/module diagram.
 
 Runtime consumes `PlanProgram` and returns `RunResult(state, events,
 diagnostics, user_result)`. It owns deterministic scheduling, dependency and
@@ -191,6 +194,99 @@ flowchart TB
 | `execute step-family behavior` | Perform local/control/repeat logic or driver check/execute logic. | concrete runtime handlers |
 | `apply material, observation, protocol-output, and cache effects` | Push cross-cutting execution side effects into dedicated services. | material compute, observation recorder, protocol-output recorder, ref cache updater |
 | `record terminal status, diagnostics, history, and events` | Close the step with one consistent terminal outcome. | runtime session / final recorder logic |
+
+## Material Compute `sep` Detail Flowchart
+
+This flowchart expands the `runtime/material_compute.py::apply_step` boundary
+for `sep` operations. It documents the current responsibility split and the
+program-specific material partition behavior.
+
+```mermaid
+flowchart TB
+    Start(["apply_step(step, material_state)"])
+    Op{"step.op == sep?"}
+    Other["Dispatch to other material op handler:<br/>AllocContainer, DefineContent, LoadContent,<br/>Mutation, frac, or no-op"]
+    Resolve["Resolve sep args:<br/>sample, bind name, program call"]
+    Program["Read program kind:<br/>centrifuge, filtration, phase partition,<br/>precipitation, magnetic, disrupt, field"]
+    Slots["Determine output slot contract:<br/>group[0] / group[1] semantic names"]
+    Identity["Apply identity policy:<br/>centrifuge keep_source may reuse source container"]
+    Partition["Compute material partition:<br/>bulk volume/mass, component fate"]
+    Bind["Bind indexed group:<br/>bind[0] and bind[1] to output container ids"]
+    Delta["Return MaterialUpdateResult:<br/>updated material_state, diagnostics, delta"]
+
+    Start --> Op
+    Op -->|no| Other
+    Op -->|yes| Resolve
+    Resolve --> Program
+    Program --> Slots
+    Slots --> Identity
+    Identity --> Partition
+    Partition --> Bind
+    Bind --> Delta
+```
+
+Current implementation note:
+
+1. `Program` reads `program_kind`.
+2. `Identity` handles `centrifuge_program(..., keep_source=...)` source-container
+   reuse.
+3. `Partition` uses a strategy selected by `program_kind`.
+4. Component fate uses program-specific ratios; bulk `volume_uL` and `mass_mg`
+   continue to use conservative accounting and are not derived from those
+   component fate ratios.
+
+## Implemented `sep` Partition Strategy
+
+The current runtime architecture already prefers dispatcher/handler ownership
+over large conditional blocks. `sep` material partitioning follows the same
+pattern. A compact strategy registry keeps `material_compute.apply_step`
+responsible for orchestration while
+letting each separation program own its own partition contract.
+
+```mermaid
+flowchart TB
+    Apply["apply_step"]
+    Sep["_apply_sep orchestration"]
+    Registry["SepPartitionStrategy registry"]
+    Default["SepPartitionStrategy<br/>unknown fallback"]
+    Centrifuge["CentrifugePartitionStrategy<br/>supernatant / pellet"]
+    Phase["PhasePartitionStrategy<br/>target_phase / other_phase"]
+    Precip["PrecipitationPartitionStrategy<br/>precipitate / supernatant"]
+    Filter["FiltrationPartitionStrategy<br/>filtrate / retentate"]
+    Magnetic["MagneticPartitionStrategy<br/>bound / flowthrough"]
+    Disrupt["DisruptPartitionStrategy<br/>lysate / debris_or_residue"]
+    Field["FieldPartitionStrategy<br/>target_band / non_target"]
+    Result["SepPartitionResult:<br/>slot containers, component deltas,<br/>diagnostics, binding metadata"]
+
+    Apply --> Sep
+    Sep --> Registry
+    Registry -->|unknown or unsupported| Default
+    Registry -->|centrifuge_program| Centrifuge
+    Registry -->|phase_partition_program| Phase
+    Registry -->|precipitation_program| Precip
+    Registry -->|filtration_program| Filter
+    Registry -->|magnetic_program| Magnetic
+    Registry -->|disrupt_program| Disrupt
+    Registry -->|field_program| Field
+    Default --> Result
+    Centrifuge --> Result
+    Phase --> Result
+    Precip --> Result
+    Filter --> Result
+    Magnetic --> Result
+    Disrupt --> Result
+    Field --> Result
+    Result --> Sep
+```
+
+Design judgment:
+
+1. Program-specific component fate is not implemented as a growing conditional
+   ladder because each program has a different slot contract,
+   residual/carryover rules, and diagnostics.
+2. A strategy registry preserves the runtime boundary: the runtime executes
+   explicit program semantics; it does not infer biological intent from labels
+   or hard-coded component names.
 
 ## Class And Module Diagram
 

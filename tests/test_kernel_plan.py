@@ -677,7 +677,7 @@ def test_plan_materializes_let_bound_container_constructor():
 def test_plan_materializes_constructor_load_into_init_sequence():
     src = """
 protocol T {
-  let tube_a = tube(label = "Tube_A", capacity = 500uL, load = [content(kind = "biosample", code = "S1", type = "dna"):100uL]);
+  let tube_a = tube(label = "Tube_A", capacity = 500uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):100uL]);
 }
 """
     plan = lower_ir_to_plan(compile_to_ir(parse(src)))

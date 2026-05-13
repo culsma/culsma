@@ -35,6 +35,9 @@ class RuntimeValueResolver:
     def deep_serialize(self, value: Any) -> Any:
         return _runtime_deep_serialize(value)
 
+    def protocol_output_serialize(self, value: Any) -> Any:
+        return _runtime_protocol_output_serialize(value)
+
     def resolve_step_args(self, step: PlanStep, state: RuntimeState) -> PlanStep:
         return _resolve_step_runtime_args(step, state)
 
@@ -636,6 +639,29 @@ def _runtime_deep_serialize(value: Any) -> Any:
         return [_runtime_deep_serialize(item) for item in value]
     if isinstance(value, dict):
         return {key: _runtime_deep_serialize(item) for key, item in value.items()}
+    return _runtime_value_to_serialized(value)
+
+
+def _runtime_protocol_output_serialize(value: Any) -> Any:
+    if isinstance(value, list):
+        return [_runtime_protocol_output_serialize(item) for item in value]
+    if isinstance(value, dict):
+        if value.get("kind") == "container_ref":
+            public_keys = {
+                "kind",
+                "id",
+                "volume_uL",
+                "mass_mg",
+                "container_kind",
+                "label",
+                "barcode",
+            }
+            return {
+                key: _runtime_protocol_output_serialize(item)
+                for key, item in value.items()
+                if key in public_keys
+            }
+        return {key: _runtime_protocol_output_serialize(item) for key, item in value.items()}
     return _runtime_value_to_serialized(value)
 
 

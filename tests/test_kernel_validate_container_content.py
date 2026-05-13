@@ -148,14 +148,28 @@ def test_content_type_standard_string_form_is_still_allowed():
     assert "SEM_INVALID_CONTENT_TYPE_VALUE" not in _codes(result)
 
 
-def test_content_type_unknown_value_requires_custom_prefix():
-    """Unknown content_type values must use the custom_ prefix."""
+def test_content_type_unknown_value_is_rejected():
+    """Unknown content_type values are not part of the supported vocabulary."""
     ir = _ir_step(
         "DefineContent",
         [
             IRArg(name="kind", value=IRString("reagent")),
             IRArg(name="type", value=IRIdentifier("my_lab_mix")),
             IRArg(name="name", value=IRString("R1")),
+        ],
+    )
+    result = validate(ir, content_type_policy="required")
+    assert "SEM_INVALID_CONTENT_TYPE_VALUE" in _codes(result)
+
+
+def test_content_type_bare_dna_is_not_current_reference_token():
+    """Reference uses dna_sample/sample_dna etc.; bare dna is not canonical."""
+    ir = _ir_step(
+        "DefineContent",
+        [
+            IRArg(name="kind", value=IRString("biosample")),
+            IRArg(name="type", value=IRIdentifier("dna")),
+            IRArg(name="name", value=IRString("DNA")),
         ],
     )
     result = validate(ir, content_type_policy="required")

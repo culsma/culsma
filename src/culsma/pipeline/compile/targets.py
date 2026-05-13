@@ -30,6 +30,7 @@ from culsma.parser.ast_nodes import (
     WithEnvStmt,
 )
 from culsma.pipeline.ir_nodes import IRArg, IRCall, IRLet, IRString
+from culsma.pipeline.content_vocab import ContainerKind
 
 from .context import BlockContext, CompileSession, _CompilerState
 
@@ -537,7 +538,7 @@ def _ensure_synthesized_well(
     state.synthesized_wells[key] = synth_name
 
     ir_args = [
-        IRArg(name="kind", value=IRString(value="well", span=span), span=span),
+        IRArg(name="kind", value=IRString(value=ContainerKind.WELL.value, span=span), span=span),
         IRArg(name="carrier_kind", value=IRString(value="plate", span=span), span=span),
         IRArg(name="carrier_id", value=IRString(value=str(descriptor["carrier_id"]), span=span), span=span),
         IRArg(name="carrier_position", value=IRString(value=position, span=span), span=span),

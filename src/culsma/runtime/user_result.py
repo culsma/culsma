@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from culsma.pipeline.content_vocab import ContentKind, ContentType
 from culsma.pipeline.program_registry import program_tool_label
 
 
@@ -568,25 +569,18 @@ def _derived_container_state(raw_container: Any, *, content_registry: dict[str, 
     if not isinstance(raw_container, dict):
         return {
             "mass_mg": None,
-            "component_count": 0,
             "primary_component": None,
-            "primary_component_amount": None,
-            "primary_concentration": None,
         }
     components = raw_container.get("components")
     if not isinstance(components, dict):
         components = {}
-    primary_component, primary_amount = _select_primary_component(
+    primary_component, _ = _select_primary_component(
         components,
         content_registry=content_registry,
     )
-    concentration = _selected_component_concentration(raw_container, primary_amount=primary_amount)
     return {
         "mass_mg": round(float(raw_container.get("mass_mg", 0.0)), 3),
-        "component_count": len(components),
         "primary_component": primary_component,
-        "primary_component_amount": round(primary_amount, 6) if primary_amount is not None else None,
-        "primary_concentration": round(concentration, 6) if concentration is not None else None,
     }
 
 
@@ -605,21 +599,12 @@ def _select_primary_component(
         meta = meta if isinstance(meta, dict) else {}
         kind = str(meta.get("content_kind", "")).lower()
         content_type = str(meta.get("content_type", "")).lower()
-        is_background = kind == "buffer" or content_type == "diluent"
+        is_background = kind == ContentKind.BUFFER.value or content_type == ContentType.DILUENT.value
         candidates.append((str(name), amount_f, is_background))
 
     preferred = [(name, amount) for name, amount, is_background in candidates if not is_background]
     selected = preferred if preferred else [(name, amount) for name, amount, _ in candidates]
     return max(selected, key=lambda item: item[1])
-
-
-def _selected_component_concentration(container: Any, *, primary_amount: float | None) -> float | None:
-    if not isinstance(container, dict):
-        return None
-    volume = float(container.get("volume_uL", 0.0))
-    if volume <= 0 or primary_amount is None:
-        return None
-    return float(primary_amount) / volume
 
 
 def _container_usage_summary(*, plan: Any, final_material_state: dict[str, Any] | None) -> dict[str, Any]:

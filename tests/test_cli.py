@@ -54,11 +54,16 @@ def test_cli_human_summary_includes_returned_container_state(monkeypatch, capsys
     main()
 
     captured = capsys.readouterr()
-    assert "return:" in captured.out
-    assert "Target (tube)" in captured.out
-    assert "volume: 5 uL" in captured.out
-    assert "mass: 5 mg" in captured.out
-    assert "BUF01: 5" in captured.out
+    assert captured.out == (
+        "PublicMinimal ok\n"
+        "\n"
+        "return:\n"
+        "  Target (tube)\n"
+        "    volume: 5 uL\n"
+        "    mass: 5 mg\n"
+        "\n"
+        "execution: 5/5 steps completed, 0 diagnostics\n"
+    )
 
 
 def test_cli_human_summary_includes_scalar_return(tmp_path, monkeypatch, capsys):

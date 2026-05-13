@@ -2,113 +2,19 @@
 
 from __future__ import annotations
 
-import re
 from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.pipeline.content_vocab import (
+    CONTAINER_KIND_WHITELIST,
+    CONTENT_KIND_WHITELIST,
+    CONTENT_TYPE_PATTERN,
+    ContainerKind,
+    is_allowed_content_type,
+)
 from culsma.pipeline.ir_nodes import IRArg, IRCall, IRList, IRPair, IRStep
 
 from .resolution import ExprResolver
-
-_CONTENT_KIND_WHITELIST = {"biosample", "reagent", "buffer", "control", "fraction", "waste", "other"}
-_CONTAINER_KIND_WHITELIST = {"tube", "well", "chamber", "surface"}
-_CONTENT_TYPE_PATTERN = re.compile(r"^[a-z][a-z0-9_]*$")
-_CONTENT_TYPE_CUSTOM_PREFIX = "custom_"
-_STANDARD_CONTENT_TYPES_BY_KIND: dict[str, set[str]] = {
-    "biosample": {
-        "whole_blood",
-        "plasma",
-        "serum",
-        "cell_pellet",
-        "cell_lysate",
-        "cell_suspension",
-        "dna_sample",
-        "sample_dna",
-        "dna",
-        "dna_solution",
-        "dna_lysate",
-        "dna_stock",
-        "purified_dna",
-        "template_dna",
-        "amplicon",
-        "extract",
-        "reaction_mix",
-        "tissue_piece",
-        "mixed_cells",
-        "adherent_cells",
-        "plasmid_vector",
-        "dna_insert",
-        "solution",
-        "cell_or_tissue_sample",
-        "molecular_extract",
-    },
-    "buffer": {
-        "buffer",
-        "water",
-        "diluent",
-        "lysis_buffer",
-        "wash_buffer",
-        "te_buffer",
-        "binding_buffer",
-        "elution_buffer",
-        "resuspension_buffer",
-        "ethanol_wash_buffer",
-        "column_wash_buffer",
-        "column_wash_buffer_1",
-        "column_wash_buffer_2",
-        "phosphate_buffer",
-        "reaction_buffer",
-        "culture_media",
-        "culture_medium",
-        "reaction_media",
-        "media",
-        "drug_stock",
-        "nucleic_acid_extraction_buffer",
-        "molecular_extraction_buffer",
-        "sequencing_read_buffer",
-        "test_buffer",
-    },
-    "reagent": {
-        "taq_polymerase",
-        "precipitation_reagent",
-        "feed",
-        "nutrient_feed",
-        "qpcr_master_mix",
-        "dna_stain",
-        "anticoagulant",
-        "enzyme",
-        "magnetic_bead",
-        "agarose_powder",
-        "vehicle_control",
-        "positive_control_compound",
-        "compound_x_low",
-        "compound_x_mid",
-        "compound_x_high",
-        "compound_x_max",
-        "drug_x",
-        "compound_x_stock",
-        "standard_mix",
-        "plate_stain",
-        "fluor_quant_mix",
-        "fluor_antibody",
-        "fragmentation_reagent",
-        "adapter_mix",
-        "ligation_reagent",
-        "cleanup_reagent",
-        "amplification_reagent",
-        "ionization_reagent",
-        "powder",
-    },
-    "fraction": {
-        "pellet",
-        "supernatant",
-        "retentate",
-        "filtrate",
-        "target_phase",
-        "precipitate",
-        "washed_dna_pellet",
-    },
-}
 
 
 class ConstructorValidator:
@@ -124,7 +30,7 @@ class ConstructorValidator:
         if step.name == "AllocContainer":
             kind_arg = _find_arg(step, "kind")
             kind_value = ExprResolver.to_string(kind_arg.value, literal_bindings) if kind_arg is not None else None
-            if kind_value is not None and kind_value not in _CONTAINER_KIND_WHITELIST:
+            if kind_value is not None and kind_value not in CONTAINER_KIND_WHITELIST:
                 diagnostics.append(
                     Diagnostic(
                         code="SEM_INVALID_CONTAINER_KIND",
@@ -159,7 +65,7 @@ class ConstructorValidator:
             )
             return diagnostics
 
-        if kind_value is not None and kind_value not in _CONTENT_KIND_WHITELIST:
+        if kind_value is not None and kind_value not in CONTENT_KIND_WHITELIST:
             diagnostics.append(
                 Diagnostic(
                     code="SEM_INVALID_CONTENT_KIND",
@@ -171,7 +77,7 @@ class ConstructorValidator:
 
         type_arg = _find_arg(step, "type")
         type_value = ExprResolver.to_text_token(type_arg.value, literal_bindings) if type_arg is not None else None
-        if type_arg is None or type_value is None or not _CONTENT_TYPE_PATTERN.match(type_value):
+        if type_arg is None or type_value is None or not CONTENT_TYPE_PATTERN.match(type_value):
             diagnostics.append(
                 Diagnostic(
                     code="SEM_INVALID_CONTENT_TYPE_FORMAT",
@@ -182,14 +88,14 @@ class ConstructorValidator:
             )
             return diagnostics
 
-        if type_arg is not None and type_value is not None and kind_value in _CONTENT_KIND_WHITELIST:
+        if type_arg is not None and type_value is not None and kind_value in CONTENT_KIND_WHITELIST:
             if not _is_allowed_content_type_value(kind_value, type_value):
                 diagnostics.append(
                     Diagnostic(
                         code="SEM_INVALID_CONTENT_TYPE_VALUE",
                         message=(
                             f"Unsupported content_type '{type_value}' for kind '{kind_value}'; "
-                            "use a standard token or a custom_ prefixed token"
+                            "use a standard token for that content kind or a custom_ prefixed token"
                         ),
                         span=type_arg.span or step.span,
                         node_id=step.id,
@@ -210,7 +116,7 @@ class ConstructorValidator:
         diagnostics: list[Diagnostic] = []
         kind_arg = _find_arg_by_name(call.args, "kind")
         kind_value = ExprResolver.to_string(kind_arg.value, literal_bindings) if kind_arg is not None else None
-        if kind_arg is not None and kind_value is not None and kind_value not in _CONTAINER_KIND_WHITELIST:
+        if kind_arg is not None and kind_value is not None and kind_value not in CONTAINER_KIND_WHITELIST:
             diagnostics.append(
                 Diagnostic(
                     code="SEM_INVALID_CONTAINER_KIND",
@@ -273,7 +179,7 @@ class ConstructorValidator:
         span,
         node_id: str | None,
     ) -> list[Diagnostic]:
-        if kind_value != "surface" or capacity_arg is None:
+        if kind_value != ContainerKind.SURFACE.value or capacity_arg is None:
             return []
         return [
             Diagnostic(
@@ -322,7 +228,4 @@ def _find_arg_by_name(args: list[IRArg], name: str) -> IRArg | None:
 
 
 def _is_allowed_content_type_value(kind_value: str, type_value: str) -> bool:
-    if type_value.startswith(_CONTENT_TYPE_CUSTOM_PREFIX):
-        return len(type_value) > len(_CONTENT_TYPE_CUSTOM_PREFIX)
-    allowed = _STANDARD_CONTENT_TYPES_BY_KIND.get(kind_value, set())
-    return type_value in allowed
+    return is_allowed_content_type(kind_value, type_value)
