@@ -1,6 +1,6 @@
 # Project Agent Rules (Culsma)
 
-Last Updated: 2026-04-05
+Last Updated: 2026-05-13
 
 This file defines project-local hard rules for all future agent work in this repository.
 
@@ -49,7 +49,7 @@ If implementation reality conflicts with target language semantics, the agent MU
 2. Ask to proceed with either:
    - semantic-correct refactor, or
    - temporary bridge mode (explicitly labeled).
-3. Default to semantic-correct refactor when user says “一次性做完”.
+3. Default to semantic-correct refactor when the request asks for end-to-end completion.
 
 ## 6. Quality Gate Before “Done”
 
