@@ -15,6 +15,9 @@ concurrency:
   group: publish-pypi-${{ github.ref }}
   cancel-in-progress: false
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Tests (Python ${{ matrix.python-version }})
@@ -35,7 +38,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-          cache: pip
 
       - name: Install package with test dependencies
         run: python -m pip install -r requirements.txt
@@ -56,19 +58,18 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: pip
 
       - name: Validate release version
         run: |
           python - <<'PY'
           import os
-          import sys
           import tomllib
 
           with open("pyproject.toml", "rb") as fh:
               version = tomllib.load(fh)["project"]["version"]
 
           event_name = os.environ["GITHUB_EVENT_NAME"]
+          github_ref = os.environ["GITHUB_REF"]
           ref_name = os.environ.get("GITHUB_REF_NAME", "")
           requested = os.environ.get("REQUESTED_VERSION", "")
 
@@ -78,10 +79,15 @@ jobs:
                   raise SystemExit(
                       f"release ref {ref_name!r} does not match pyproject version {expected_ref!r}"
                   )
-          elif requested != version:
-              raise SystemExit(
-                  f"workflow_dispatch version {requested!r} does not match pyproject version {version!r}"
-              )
+          else:
+              if github_ref != "refs/heads/main":
+                  raise SystemExit(
+                      f"manual publish must run from refs/heads/main, got {github_ref!r}"
+                  )
+              if requested != version:
+                  raise SystemExit(
+                      f"workflow_dispatch version {requested!r} does not match pyproject version {version!r}"
+                  )
 
           print(f"Publishing culsma {version}")
           PY
