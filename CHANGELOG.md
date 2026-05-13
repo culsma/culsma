@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### Maintenance
+
+- Add README badges for PyPI, Python versions, release checks, software DOI,
+  reference DOI, and license.
+- Update the public paper/citation status from an arXiv placeholder to the
+  current bioRxiv screening state.
+- Clarify that repository examples are available from the source checkout when
+  installing the package from PyPI.
+- Remove a stale package-data declaration for a nonexistent pipeline operation
+  catalog.
+- Expose `culsma.__version__` for lightweight runtime version checks.
+
 ## Culsma v1.0.1
 
 ### Scope

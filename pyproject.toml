@@ -42,5 +42,4 @@ include = ["culsma", "culsma.*"]
 
 [tool.setuptools.package-data]
 "culsma" = ["stdlib/*.culs"]
-"culsma.pipeline" = ["operation_catalog.json"]
 "culsma.parser" = ["culsma.lark"]

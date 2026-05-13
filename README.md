@@ -2,6 +2,15 @@
   <img src="https://raw.githubusercontent.com/culsma/culsma/main/docs/assets/culsma-wordmark.png" alt="Culsma" width="720">
 </p>
 
+<p align="center">
+  <a href="https://pypi.org/project/culsma/"><img alt="PyPI" src="https://img.shields.io/pypi/v/culsma.svg"></a>
+  <a href="https://pypi.org/project/culsma/"><img alt="Python versions" src="https://img.shields.io/pypi/pyversions/culsma.svg"></a>
+  <a href="https://github.com/culsma/culsma/actions/workflows/release-check.yml"><img alt="Release check" src="https://github.com/culsma/culsma/actions/workflows/release-check.yml/badge.svg"></a>
+  <a href="https://doi.org/10.5281/zenodo.20059616"><img alt="Software DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.20059616.svg"></a>
+  <a href="https://doi.org/10.5281/zenodo.20059696"><img alt="Reference DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.20059696.svg"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/License-Apache--2.0-blue.svg"></a>
+</p>
+
 Culsma is the public reference implementation of the current Culsma language and execution stack.
 The public release is distributed as a Python-based CLI.
 
@@ -25,6 +34,10 @@ For the current public release, install from PyPI:
 ```bash
 python -m pip install culsma
 ```
+
+The runnable examples live in the source repository. If you install from PyPI,
+use the GitHub source checkout or copy an example file locally before running
+the example commands below.
 
 You can also install directly from the `v1.0.1` tag:
 
@@ -111,7 +124,7 @@ python -m pytest -q
 
 - Documentation: [culsma.dev](https://culsma.dev/)
 - Paper and citation: [culsma.dev/paper-and-citation](https://culsma.dev/paper-and-citation)
-  (arXiv preprint forthcoming)
+  (bioRxiv preprint under screening)
 - Software DOI: [10.5281/zenodo.20059616](https://doi.org/10.5281/zenodo.20059616)
   (latest/versioned software archive)
 - Culsma v1.0.1 DOI: [10.5281/zenodo.20059617](https://doi.org/10.5281/zenodo.20059617)

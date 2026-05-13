@@ -84,6 +84,9 @@ Planned direction:
 - Improve quickstart and authoring documentation.
 - Smooth common source-authoring patterns where the language surface is already
   semantically clear.
+- Keep schema-related authoring feedback aligned with the current executable
+  semantics, without introducing stronger schema guarantees before validation,
+  tests, and reference text are ready.
 - Keep machine-readable output compatible with the `v1.0.x` boundary unless a
   clear bug fix is required.
 
@@ -102,6 +105,9 @@ Planned direction:
 - Document public artifact schemas more completely.
 - Improve run-bundle export and reproducibility workflows.
 - Clarify provenance, replay, and event-log expectations.
+- Strengthen schema and structured-data conformance where it affects execution
+  evidence, including `schema_ref` resolution, `data_schema` validation, and
+  `data_ref`/`data_group_ref` artifact expectations.
 - Strengthen conformance evidence for runtime state, protocol returns, reports,
   and artifacts.
 - Keep `returns` and derived `report` outputs explicitly separated.
@@ -123,6 +129,9 @@ Planned direction:
 - Define backend receipt and failure-reporting expectations.
 - Clarify driver capability and projection contracts as public extension points.
 - Explore run-sheet or execution-sheet outputs for human execution.
+- Prepare standard-library portal design cards for naming, parameter contracts,
+  return contracts, maturity labels, and conformance hooks before expanding
+  public workflow coverage.
 - Keep backend-specific behavior separate from source-language semantics.
 
 Success criteria:
