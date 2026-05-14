@@ -6,6 +6,7 @@
   <a href="https://pypi.org/project/culsma/"><img alt="PyPI" src="https://img.shields.io/pypi/v/culsma.svg"></a>
   <a href="https://pypi.org/project/culsma/"><img alt="Python versions" src="https://img.shields.io/pypi/pyversions/culsma.svg"></a>
   <a href="https://github.com/culsma/culsma/actions/workflows/release-check.yml"><img alt="Release check" src="https://github.com/culsma/culsma/actions/workflows/release-check.yml/badge.svg"></a>
+  <a href="https://doi.org/10.64898/2026.05.07.723509"><img alt="bioRxiv" src="https://img.shields.io/badge/bioRxiv-10.64898%2F2026.05.07.723509-B31B1B.svg"></a>
   <a href="https://doi.org/10.5281/zenodo.20059616"><img alt="Software DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.20059616.svg"></a>
   <a href="https://doi.org/10.5281/zenodo.20059696"><img alt="Reference DOI" src="https://zenodo.org/badge/DOI/10.5281/zenodo.20059696.svg"></a>
   <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/License-Apache--2.0-blue.svg"></a>
@@ -123,8 +124,8 @@ python -m pytest -q
 ## More
 
 - Documentation: [culsma.dev](https://culsma.dev/)
-- Paper and citation: [culsma.dev/paper-and-citation](https://culsma.dev/paper-and-citation)
-  (bioRxiv preprint under screening)
+- Paper and citation: [Culsma: A Formal Language for Laboratory Protocols](https://doi.org/10.64898/2026.05.07.723509)
+  (bioRxiv preprint)
 - Software DOI: [10.5281/zenodo.20059616](https://doi.org/10.5281/zenodo.20059616)
   (latest/versioned software archive)
 - Culsma v1.0.1 DOI: [10.5281/zenodo.20059617](https://doi.org/10.5281/zenodo.20059617)

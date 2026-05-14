@@ -6,8 +6,7 @@
 
 - Add README badges for PyPI, Python versions, release checks, software DOI,
   reference DOI, and license.
-- Update the public paper/citation status from an arXiv placeholder to the
-  current bioRxiv screening state.
+- Update the public paper/citation links to the released bioRxiv preprint.
 - Clarify that repository examples are available from the source checkout when
   installing the package from PyPI.
 - Remove a stale package-data declaration for a nonexistent pipeline operation

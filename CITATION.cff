@@ -19,3 +19,37 @@ keywords:
   - workflow automation
   - reproducibility
   - Culsma
+preferred-citation:
+  type: article
+  title: "Culsma: A Formal Language for Laboratory Protocols"
+  doi: "10.64898/2026.05.07.723509"
+  url: "https://doi.org/10.64898/2026.05.07.723509"
+  journal: "bioRxiv"
+  year: 2026
+  authors:
+    - family-names: "Chen"
+      given-names: "Yang"
+      orcid: "https://orcid.org/0000-0002-9323-5751"
+      affiliation: "Brodinlab, Department of Women's and Children's Health (KBH), Karolinska Institutet"
+    - family-names: "Sun"
+      given-names: "Meng"
+      orcid: "https://orcid.org/0000-0002-9301-0421"
+      affiliation: "Brodinlab, Department of Women's and Children's Health (KBH), Karolinska Institutet"
+    - family-names: "Tadepally"
+      given-names: "Lakshmikanth"
+      orcid: "https://orcid.org/0000-0001-7256-5770"
+      affiliation: "Brodinlab, Department of Women's and Children's Health (KBH), Karolinska Institutet; Department of Immunology and Inflammation, Imperial College London"
+    - family-names: "Wang"
+      given-names: "Jun"
+      affiliation: "Brodinlab, Department of Women's and Children's Health (KBH), Karolinska Institutet"
+    - family-names: "Barcenilla"
+      given-names: "Hugo"
+      orcid: "https://orcid.org/0000-0002-7255-362X"
+      affiliation: "Brodinlab, Department of Women's and Children's Health (KBH), Karolinska Institutet"
+    - family-names: "Gonzalez"
+      given-names: "Laura"
+      affiliation: "Brodinlab, Department of Women's and Children's Health (KBH), Karolinska Institutet"
+    - family-names: "Brodin"
+      given-names: "Petter"
+      orcid: "https://orcid.org/0000-0002-8103-0046"
+      affiliation: "Brodinlab, Department of Women's and Children's Health (KBH), Karolinska Institutet; Department of Immunology and Inflammation, Imperial College London"

@@ -21,6 +21,7 @@ dependencies = [
 [project.urls]
 Homepage = "https://culsma.dev/"
 Documentation = "https://culsma.dev/"
+Paper = "https://doi.org/10.64898/2026.05.07.723509"
 Source = "https://github.com/culsma/culsma"
 Issues = "https://github.com/culsma/culsma/issues"
 Changelog = "https://github.com/culsma/culsma/blob/main/CHANGELOG.md"
