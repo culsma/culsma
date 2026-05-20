@@ -738,10 +738,10 @@ protocol T() returns (plasmid_dna) {
     buffer(code = "AQ", type = "buffer"):400uL
   ]);
   let phenol_chloroform = tube(label = "Phenol Chloroform", capacity = 1000uL, load = [
-    reagent(code = "PCI", type = "custom_phenol_chloroform"):450uL
+    reagent(code = "PCI", type = "cleanup_reagent"):450uL
   ]);
   let ethanol_abs = tube(label = "Absolute Ethanol", capacity = 1000uL, load = [
-    reagent(code = "ETOH_ABS", type = "custom_absolute_ethanol"):900uL
+    reagent(code = "ETOH_ABS", type = "precipitation_reagent"):900uL
   ]);
   let ethanol_70 = tube(label = "70 Percent Ethanol", capacity = 1500uL, load = [
     buffer(code = "ETOH70", type = "ethanol_wash_buffer"):1000uL
@@ -796,11 +796,11 @@ protocol T() returns (plasmid_dna) {
     }
     components = result.state.artifacts["material_state"]["containers"]["Plasmid DNA"]["components"]
     assert {key: round(float(value), 6) for key, value in sorted(components.items())} == {
-        "AQ": 0.006579,
-        "DNA_EXT": 5.156308,
+        "AQ": 0.002215,
+        "DNA_EXT": 5.208923,
         "ETOH70": 0.559441,
-        "ETOH_ABS": 0.015105,
-        "PCI": 0.000151,
+        "ETOH_ABS": 0.005035,
+        "PCI": 0.000025,
         "TE": 2.797203,
     }
     final_products = result.user_result["materials"]["final_products"]
@@ -812,6 +812,38 @@ protocol T() returns (plasmid_dna) {
         "mass_mg": 50.0,
         "primary_component": "DNA_EXT",
     }
+
+
+def test_runtime_sep_partition_fallback_warning_reaches_run_diagnostics():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let sample = tube(label = "Sample", capacity = 1000uL, load = [
+    content(kind = "chemical", code = "CUSTOM", type = "custom_local_mix"):100uL
+  ]);
+  let parts = sep(
+    sample = sample,
+    program = phase_partition_program(solvent = "unknown")
+  );
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    assert len(result.diagnostics) == 1
+    diagnostic = result.diagnostics[0]
+    assert diagnostic.code == "MAT_CONTENT_PARTITION_FALLBACK"
+    assert diagnostic.severity == "warning"
+    assert diagnostic.node_id == "p0.s1"
+    assert "Component 'CUSTOM' used conservative 0.50/0.50 partition" in diagnostic.message
+    assert "custom_content_classification" in diagnostic.message
+    assert diagnostic.span is not None
+    material_state = result.state.artifacts["material_state"]
+    slots = material_state["indexed_bindings"]["parts"]
+    assert material_state["containers"][slots["0"]]["components"] == {"CUSTOM": 50.0}
+    assert material_state["containers"][slots["1"]]["components"] == {"CUSTOM": 50.0}
 
 
 def test_runtime_let_bound_electrophoresis_stdlib_yields_observation_binding():

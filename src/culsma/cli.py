@@ -226,7 +226,7 @@ def execute_pipeline(
     if isinstance(state.artifacts["material_state"], dict):
         state.artifacts["material_state"]["_inventory_check"] = bool(inventory_check)
 
-    can_run = len(sem.diagnostics) == 0 and len(typ.diagnostics) == 0
+    can_run = sem.ok and typ.ok
     if can_run:
         run_result = run(plan=plan, driver=StubDriver(fail_ops=fail_ops or set()), state=state)
     else:
@@ -256,8 +256,8 @@ def execute_pipeline(
 
     summary = {
         "inputs": [str(p) for p in input_paths],
-        "semantic_error_count": len(sem.diagnostics),
-        "type_error_count": len(typ.diagnostics),
+        "semantic_error_count": sum(1 for d in sem.diagnostics if d.severity == "error"),
+        "type_error_count": sum(1 for d in typ.diagnostics if d.severity == "error"),
         "plan_diagnostic_count": len(plan.diagnostics),
         "runtime_diagnostic_count": len(run_result.diagnostics),
         "runtime_ok": run_result.ok,

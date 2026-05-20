@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 from culsma.pipeline.analysis import build_compile_analysis
+from culsma.frontend.resolver import resolve_program
+from culsma.parser import parse
+from culsma.pipeline.compile import compile_ast
 from culsma.pipeline.ir_nodes import IRArg, IRIdentifier, IRProgram, IRProtocol, IRQuantity, IRStep, IRString
 from culsma.pipeline.validate import validate as _validate
 
@@ -123,7 +126,7 @@ def test_content_type_standard_bare_token_is_allowed():
     ir = _ir_step(
         "DefineContent",
         [
-            IRArg(name="kind", value=IRString("biosample")),
+            IRArg(name="kind", value=IRString("bio_fluid")),
             IRArg(name="type", value=IRIdentifier("whole_blood")),
             IRArg(name="name", value=IRString("S1")),
         ],
@@ -134,12 +137,12 @@ def test_content_type_standard_bare_token_is_allowed():
 
 
 def test_content_type_standard_string_form_is_still_allowed():
-    """Compatibility string form of a standard content_type token still passes."""
+    """String form of a canonical content_type token still passes."""
     ir = _ir_step(
         "DefineContent",
         [
-            IRArg(name="kind", value=IRString("buffer")),
-            IRArg(name="type", value=IRString("lysis_buffer")),
+            IRArg(name="kind", value=IRString("formulation")),
+            IRArg(name="type", value=IRString("buffer")),
             IRArg(name="name", value=IRString("B1")),
         ],
     )
@@ -148,8 +151,8 @@ def test_content_type_standard_string_form_is_still_allowed():
     assert "SEM_INVALID_CONTENT_TYPE_VALUE" not in _codes(result)
 
 
-def test_content_type_unknown_value_is_rejected():
-    """Unknown content_type values are not part of the supported vocabulary."""
+def test_content_type_unknown_value_is_compat_warning_by_default():
+    """v1.0.2 compatibility accepts unknown legacy values with a warning."""
     ir = _ir_step(
         "DefineContent",
         [
@@ -159,11 +162,25 @@ def test_content_type_unknown_value_is_rejected():
         ],
     )
     result = validate(ir, content_type_policy="required")
-    assert "SEM_INVALID_CONTENT_TYPE_VALUE" in _codes(result)
+    assert result.ok
+    assert "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED" in _codes(result)
 
 
-def test_content_type_bare_dna_is_not_current_reference_token():
-    """Reference uses dna_sample/sample_dna etc.; bare dna is not canonical."""
+def test_content_type_unknown_value_is_rejected_in_strict_mode():
+    ir = _ir_step(
+        "DefineContent",
+        [
+            IRArg(name="kind", value=IRString("reagent")),
+            IRArg(name="type", value=IRIdentifier("my_lab_mix")),
+            IRArg(name="name", value=IRString("R1")),
+        ],
+    )
+    result = validate(ir, content_type_policy="required", content_whitelist_mode="strict")
+    assert "SEM_INVALID_CONTENT_KIND" in _codes(result)
+
+
+def test_content_type_legacy_biosample_dna_warns_and_normalizes():
+    """Legacy biosample/dna is accepted as compatibility input."""
     ir = _ir_step(
         "DefineContent",
         [
@@ -173,11 +190,12 @@ def test_content_type_bare_dna_is_not_current_reference_token():
         ],
     )
     result = validate(ir, content_type_policy="required")
-    assert "SEM_INVALID_CONTENT_TYPE_VALUE" in _codes(result)
+    assert result.ok
+    assert "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED" in _codes(result)
 
 
-def test_content_type_custom_prefix_is_allowed():
-    """Non-standard content_type values may use the custom_ prefix."""
+def test_content_type_custom_prefix_is_compat_warning():
+    """custom_* is compatibility input, not current canonical public vocabulary."""
     ir = _ir_step(
         "DefineContent",
         [
@@ -189,6 +207,21 @@ def test_content_type_custom_prefix_is_allowed():
     result = validate(ir, content_type_policy="required")
     assert "SEM_INVALID_CONTENT_TYPE_FORMAT" not in _codes(result)
     assert "SEM_INVALID_CONTENT_TYPE_VALUE" not in _codes(result)
+    assert "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED" in _codes(result)
+
+
+def test_inline_content_taxonomy_compat_warning_is_not_duplicated():
+    src = '''
+protocol T {
+  let x = tube(label = "X", load = [content(kind = "biosample", type = "dna_stock", code = "DNA1"):10uL]);
+}
+'''
+    frontend = resolve_program(parse(src))
+    compiled = compile_ast(frontend.prepared_program)
+    result = validate(compiled.ir, analysis=compiled.analysis)
+    warnings = [d for d in result.diagnostics if d.code == "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED"]
+    assert result.ok
+    assert len(warnings) == 1
 
 
 def test_constructor_shape_errors_are_semantic():

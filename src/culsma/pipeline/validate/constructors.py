@@ -9,8 +9,10 @@ from culsma.pipeline.content_vocab import (
     CONTAINER_KIND_WHITELIST,
     CONTENT_KIND_WHITELIST,
     CONTENT_TYPE_PATTERN,
+    KNOWN_CONTENT_KINDS,
     ContainerKind,
     is_allowed_content_type,
+    normalize_content_classification,
 )
 from culsma.pipeline.ir_nodes import IRArg, IRCall, IRList, IRPair, IRStep
 
@@ -65,7 +67,10 @@ class ConstructorValidator:
             )
             return diagnostics
 
-        if kind_value is not None and kind_value not in CONTENT_KIND_WHITELIST:
+        compat_mode = content_whitelist_mode == "compat"
+        if kind_value is not None and kind_value not in CONTENT_KIND_WHITELIST and not (
+            compat_mode and kind_value in KNOWN_CONTENT_KINDS
+        ):
             diagnostics.append(
                 Diagnostic(
                     code="SEM_INVALID_CONTENT_KIND",
@@ -90,17 +95,25 @@ class ConstructorValidator:
 
         if type_arg is not None and type_value is not None and kind_value in CONTENT_KIND_WHITELIST:
             if not _is_allowed_content_type_value(kind_value, type_value):
-                diagnostics.append(
-                    Diagnostic(
-                        code="SEM_INVALID_CONTENT_TYPE_VALUE",
-                        message=(
-                            f"Unsupported content_type '{type_value}' for kind '{kind_value}'; "
-                            "use a standard token for that content kind or a custom_ prefixed token"
-                        ),
+                diagnostics.extend(
+                    _content_type_value_diagnostics(
+                        kind_value=kind_value,
+                        type_value=type_value,
                         span=type_arg.span or step.span,
                         node_id=step.id,
+                        compat_mode=compat_mode,
                     )
                 )
+        elif type_arg is not None and type_value is not None and kind_value in KNOWN_CONTENT_KINDS:
+            diagnostics.extend(
+                _content_type_value_diagnostics(
+                    kind_value=kind_value,
+                    type_value=type_value,
+                    span=type_arg.span or step.span,
+                    node_id=step.id,
+                    compat_mode=compat_mode,
+                )
+            )
         return diagnostics
 
     @staticmethod
@@ -229,3 +242,38 @@ def _find_arg_by_name(args: list[IRArg], name: str) -> IRArg | None:
 
 def _is_allowed_content_type_value(kind_value: str, type_value: str) -> bool:
     return is_allowed_content_type(kind_value, type_value)
+
+
+def _content_type_value_diagnostics(
+    *,
+    kind_value: str,
+    type_value: str,
+    span,
+    node_id: str | None,
+    compat_mode: bool,
+) -> list[Diagnostic]:
+    normalized = normalize_content_classification(kind_value, type_value)
+    if compat_mode and normalized.kind in CONTENT_KIND_WHITELIST and _is_allowed_content_type_value(normalized.kind, normalized.type):
+        return [
+            Diagnostic(
+                code="SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+                message=(
+                    f"Content taxonomy value '{kind_value}/{type_value}' is deprecated; "
+                    f"normalize to '{normalized.kind}/{normalized.type}'"
+                ),
+                span=span,
+                severity="warning",
+                node_id=node_id,
+            )
+        ]
+    return [
+        Diagnostic(
+            code="SEM_INVALID_CONTENT_TYPE_VALUE",
+            message=(
+                f"Unsupported content_type '{type_value}' for kind '{kind_value}'; "
+                "use a canonical token for that content kind or its canonical other_* fallback"
+            ),
+            span=span,
+            node_id=node_id,
+        )
+    ]

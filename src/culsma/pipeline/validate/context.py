@@ -21,7 +21,7 @@ class _GroupBinding:
 class ValidationOptions:
     initial_defined_names: set[str] = field(default_factory=set)
     enforce_binding: bool = False
-    content_whitelist_mode: str = "strict"
+    content_whitelist_mode: str = "compat"
     content_type_policy: str = "required"
 
 
@@ -62,4 +62,4 @@ class ValidationResult:
 
     @property
     def ok(self) -> bool:
-        return not self.diagnostics
+        return not any(d.severity == "error" for d in self.diagnostics)

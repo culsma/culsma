@@ -599,7 +599,13 @@ def _select_primary_component(
         meta = meta if isinstance(meta, dict) else {}
         kind = str(meta.get("content_kind", "")).lower()
         content_type = str(meta.get("content_type", "")).lower()
-        is_background = kind == ContentKind.BUFFER.value or content_type == ContentType.DILUENT.value
+        attrs = meta.get("content_attrs")
+        attrs = attrs if isinstance(attrs, dict) else {}
+        role = str(attrs.get("role", "") or "").lower()
+        is_background = (
+            (kind == ContentKind.FORMULATION.value and content_type == ContentType.BUFFER.value)
+            or (kind == ContentKind.CHEMICAL.value and content_type == ContentType.SOLVENT.value and role == "carrier")
+        )
         candidates.append((str(name), amount_f, is_background))
 
     preferred = [(name, amount) for name, amount, is_background in candidates if not is_background]

@@ -17,7 +17,7 @@ class TypecheckResult:
 
     @property
     def ok(self) -> bool:
-        return not self.diagnostics
+        return not any(d.severity == "error" for d in self.diagnostics)
 
 
 @dataclass

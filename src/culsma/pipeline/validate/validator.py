@@ -20,7 +20,7 @@ def validate(
     operation_specs: Mapping[str, OperationSpec] = BUILTIN_OPERATION_SPECS,
     initial_defined_names: set[str] | None = None,
     enforce_binding: bool = False,
-    content_whitelist_mode: str = "strict",
+    content_whitelist_mode: str = "compat",
     content_type_policy: str = "required",
 ) -> ValidationResult:
     """Validate IR against builtin operation signature rules."""
@@ -49,4 +49,24 @@ def validate(
         )
         validate_statement_list_with_context(protocol.statements, ctx)
 
-    return ValidationResult(ir=ir, diagnostics=diagnostics)
+    return ValidationResult(ir=ir, diagnostics=_dedupe_diagnostics(diagnostics))
+
+
+def _dedupe_diagnostics(diagnostics: list[Diagnostic]) -> list[Diagnostic]:
+    seen: set[tuple[object, ...]] = set()
+    unique: list[Diagnostic] = []
+    for diagnostic in diagnostics:
+        span = diagnostic.span
+        span_key = None if span is None else (span.line, span.col, span.start, span.end)
+        key = (
+            diagnostic.code,
+            diagnostic.message,
+            diagnostic.severity,
+            diagnostic.node_id,
+            span_key,
+        )
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(diagnostic)
+    return unique

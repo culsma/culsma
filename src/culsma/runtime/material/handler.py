@@ -6,7 +6,8 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import Any
 
-from culsma.pipeline.content_vocab import ContainerKind
+from culsma.common.diagnostics import Diagnostic
+from culsma.pipeline.content_vocab import ContainerKind, normalize_content_classification
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.material.partition import partition_sep_material
 from culsma.runtime.material.support import (
@@ -152,6 +153,9 @@ def _apply_define_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpda
     ctype = _arg_string(step.args.get("type"))
     code = _arg_string(step.args.get("code"))
     name = _arg_string(step.args.get("name"))
+    normalized = normalize_content_classification(kind, ctype) if kind is not None and ctype is not None else None
+    stored_kind = normalized.kind if normalized is not None else kind
+    stored_type = normalized.type if normalized is not None else ctype
     content_id = code or name or step.step_id
     registry = state.setdefault("content_registry", {})
     if not isinstance(registry, dict):
@@ -159,11 +163,16 @@ def _apply_define_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpda
         registry = state["content_registry"]
     existing = registry.get(content_id)
     candidate = {
-        "content_kind": kind,
-        "content_type": ctype,
+        "content_kind": stored_kind,
+        "content_type": stored_type,
         "content_code": code,
         "content_name": name,
     }
+    if normalized is not None and normalized.changed:
+        candidate["content_original_kind"] = normalized.original_kind
+        candidate["content_original_type"] = normalized.original_type
+    if normalized is not None and normalized.attrs:
+        candidate["content_attrs"] = dict(normalized.attrs)
     if isinstance(existing, dict):
         for key in ("content_kind", "content_type", "content_code"):
             old_v = existing.get(key)
@@ -175,6 +184,10 @@ def _apply_define_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpda
                     "MAT_CONTENT_METADATA_CONFLICT",
                     f"Conflicting immutable metadata for content '{content_id}'",
                 )
+        if isinstance(existing.get("content_attrs"), dict) and isinstance(candidate.get("content_attrs"), dict):
+            merged_attrs = dict(existing["content_attrs"])
+            merged_attrs.update(candidate["content_attrs"])
+            candidate["content_attrs"] = merged_attrs
         existing.update({k: v for k, v in candidate.items() if v is not None})
     else:
         registry[content_id] = candidate
@@ -621,6 +634,7 @@ def _apply_sep(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
         slot1=slot1,
         program_kind=program_kind,
     )
+    diagnostics = _partition_fallback_diagnostics(step, partition)
 
     binding_events = _bind_indexed_group(
         working,
@@ -631,7 +645,7 @@ def _apply_sep(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
 
     return MaterialUpdateResult(
         material_state=working,
-        diagnostics=[],
+        diagnostics=diagnostics,
         delta={
             "op": "sep",
             "program_kind": program_kind,
@@ -642,6 +656,33 @@ def _apply_sep(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
             "binding_events": binding_events,
         },
     )
+
+
+def _partition_fallback_diagnostics(step: PlanStep, partition: dict[str, Any]) -> list[Diagnostic]:
+    fallback_components = partition.get("fallback_components")
+    if not isinstance(fallback_components, list):
+        return []
+    diagnostics: list[Diagnostic] = []
+    for entry in fallback_components:
+        if not isinstance(entry, dict):
+            continue
+        component = str(entry.get("component", "") or "<unknown>")
+        partition_class = str(entry.get("partition_class", "") or "unknown")
+        reason = str(entry.get("reason", "") or "fallback")
+        diagnostics.append(
+            Diagnostic(
+                code="MAT_CONTENT_PARTITION_FALLBACK",
+                message=(
+                    f"Component '{component}' used conservative 0.50/0.50 partition "
+                    f"for class '{partition_class}' ({reason}); provide explicit "
+                    "component_partition_ratios if this behavior is intended"
+                ),
+                span=step.span,
+                severity="warning",
+                node_id=step.step_id,
+            )
+        )
+    return diagnostics
 
 
 def _apply_frac(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:

@@ -315,6 +315,7 @@ class DriverBackedStepHandler(BaseRuntimeStepHandler):
                 material_state = session.state.artifacts["material_state"]
             if isinstance(material_state, dict):
                 material_result = apply_material_step(step=runtime_step, material_state=material_state)
+                session.extend_diagnostics(material_result.diagnostics)
                 if material_result.ok:
                     session.state.artifacts["material_state"] = material_result.material_state
                     material_delta = material_result.delta or None
@@ -326,7 +327,6 @@ class DriverBackedStepHandler(BaseRuntimeStepHandler):
                             span=step.span,
                         )
                 else:
-                    session.extend_diagnostics(material_result.diagnostics)
                     session.record_failed(
                         step,
                         reason="material_compute_error",

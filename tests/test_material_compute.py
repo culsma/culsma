@@ -510,8 +510,8 @@ def test_sep_centrifuge_partitions_liquid_to_supernatant_and_cells_to_pellet():
         material_state=_partition_state(
             components={"MEDIUM": 100.0, "CELLS": 100.0},
             registry={
-                "MEDIUM": ("buffer", "culture_media"),
-                "CELLS": ("biosample", "cell_suspension"),
+                "MEDIUM": ("formulation", "medium"),
+                "CELLS": ("bio_cellular", "cell_population"),
             },
         ),
     )
@@ -535,9 +535,10 @@ def test_sep_phase_partition_sends_target_phase_material_away_from_extraction_re
         material_state=_partition_state(
             components={"DNA": 100.0, "PCI": 100.0},
             registry={
-                "DNA": ("biosample", "dna_lysate"),
-                "PCI": ("reagent", "cleanup_reagent"),
+                "DNA": ("bio_molecule_or_virus", "dna"),
+                "PCI": ("chemical", "organic_compound"),
             },
+            metadata={"component_partition_classes": {"PCI": "liquid_reagent"}},
         ),
     )
 
@@ -545,13 +546,31 @@ def test_sep_phase_partition_sends_target_phase_material_away_from_extraction_re
     slots = result.material_state["indexed_bindings"]["sep_group"]
     assert result.delta["partition"]["slot_contract"] == {"0": "target_phase", "1": "other_phase"}
     assert _rounded_components(result.material_state["containers"][slots["0"]]) == {
-        "DNA": 98.0,
-        "PCI": 2.0,
+        "DNA": 99.0,
+        "PCI": 1.0,
     }
     assert _rounded_components(result.material_state["containers"][slots["1"]]) == {
-        "DNA": 2.0,
-        "PCI": 98.0,
+        "DNA": 1.0,
+        "PCI": 99.0,
     }
+
+
+def test_sep_phase_partition_uses_equal_split_for_unsupported_supported_classes():
+    result = apply_step(
+        step=_sep_step(program_name="phase_partition_program"),
+        material_state=_partition_state(
+            components={"REAGENT": 100.0},
+            registry={"REAGENT": ("chemical", "organic_compound")},
+        ),
+    )
+
+    assert result.ok
+    slots = result.material_state["indexed_bindings"]["sep_group"]
+    assert _rounded_components(result.material_state["containers"][slots["0"]]) == {"REAGENT": 50.0}
+    assert _rounded_components(result.material_state["containers"][slots["1"]]) == {"REAGENT": 50.0}
+    assert result.delta["partition"]["ratios_by_class"] == {"soluble_compound": {"0": 0.5, "1": 0.5}}
+    assert [d.code for d in result.diagnostics] == ["MAT_CONTENT_PARTITION_FALLBACK"]
+    assert result.diagnostics[0].severity == "warning"
 
 
 def test_sep_precipitation_sends_target_to_precipitate_and_liquid_to_supernatant():
@@ -560,8 +579,8 @@ def test_sep_precipitation_sends_target_to_precipitate_and_liquid_to_supernatant
         material_state=_partition_state(
             components={"DNA": 100.0, "ETOH": 100.0},
             registry={
-                "DNA": ("biosample", "dna_lysate"),
-                "ETOH": ("reagent", "precipitation_reagent"),
+                "DNA": ("bio_molecule_or_virus", "dna"),
+                "ETOH": ("chemical", "organic_compound"),
             },
         ),
     )
@@ -571,11 +590,11 @@ def test_sep_precipitation_sends_target_to_precipitate_and_liquid_to_supernatant
     assert result.delta["partition"]["slot_contract"] == {"0": "precipitate", "1": "supernatant"}
     assert _rounded_components(result.material_state["containers"][slots["0"]]) == {
         "DNA": 95.0,
-        "ETOH": 3.0,
+        "ETOH": 1.0,
     }
     assert _rounded_components(result.material_state["containers"][slots["1"]]) == {
         "DNA": 5.0,
-        "ETOH": 97.0,
+        "ETOH": 99.0,
     }
     slot0_classes = result.material_state["containers"][slots["0"]]["metadata"]["component_partition_classes"]
     assert slot0_classes["DNA"] == "retained_fraction"
@@ -587,8 +606,8 @@ def test_sep_filtration_sends_liquid_to_filtrate_and_target_to_retentate():
         material_state=_partition_state(
             components={"DNA": 100.0, "WASH": 100.0},
             registry={
-                "DNA": ("biosample", "dna_lysate"),
-                "WASH": ("buffer", "column_wash_buffer"),
+                "DNA": ("bio_molecule_or_virus", "dna"),
+                "WASH": ("formulation", "buffer"),
             },
         ),
     )
@@ -597,12 +616,12 @@ def test_sep_filtration_sends_liquid_to_filtrate_and_target_to_retentate():
     slots = result.material_state["indexed_bindings"]["sep_group"]
     assert result.delta["partition"]["slot_contract"] == {"0": "filtrate", "1": "retentate"}
     assert _rounded_components(result.material_state["containers"][slots["0"]]) == {
-        "DNA": 2.0,
-        "WASH": 98.0,
+        "DNA": 1.0,
+        "WASH": 99.0,
     }
     assert _rounded_components(result.material_state["containers"][slots["1"]]) == {
-        "DNA": 98.0,
-        "WASH": 2.0,
+        "DNA": 99.0,
+        "WASH": 1.0,
     }
     slot1_classes = result.material_state["containers"][slots["1"]]["metadata"]["component_partition_classes"]
     assert slot1_classes["DNA"] == "retained_fraction"
@@ -614,9 +633,9 @@ def test_sep_magnetic_sends_target_and_beads_to_bound_fraction():
         material_state=_partition_state(
             components={"DNA": 100.0, "BEADS": 100.0, "WASH": 100.0},
             registry={
-                "DNA": ("biosample", "dna_lysate"),
-                "BEADS": ("reagent", "magnetic_bead"),
-                "WASH": ("buffer", "wash_buffer"),
+                "DNA": ("bio_molecule_or_virus", "dna"),
+                "BEADS": ("particulate", "beads"),
+                "WASH": ("formulation", "buffer"),
             },
         ),
     )
@@ -625,14 +644,14 @@ def test_sep_magnetic_sends_target_and_beads_to_bound_fraction():
     slots = result.material_state["indexed_bindings"]["sep_group"]
     assert result.delta["partition"]["slot_contract"] == {"0": "bound", "1": "flowthrough"}
     assert _rounded_components(result.material_state["containers"][slots["0"]]) == {
-        "BEADS": 98.0,
-        "DNA": 98.0,
-        "WASH": 2.0,
+        "BEADS": 99.0,
+        "DNA": 99.0,
+        "WASH": 1.0,
     }
     assert _rounded_components(result.material_state["containers"][slots["1"]]) == {
-        "BEADS": 2.0,
-        "DNA": 2.0,
-        "WASH": 98.0,
+        "BEADS": 1.0,
+        "DNA": 1.0,
+        "WASH": 99.0,
     }
     slot0_classes = result.material_state["containers"][slots["0"]]["metadata"]["component_partition_classes"]
     assert slot0_classes["DNA"] == "retained_fraction"
@@ -645,8 +664,8 @@ def test_sep_disrupt_sends_released_material_to_lysate_and_cells_to_residue():
         material_state=_partition_state(
             components={"DNA": 100.0, "CELLS": 100.0},
             registry={
-                "DNA": ("biosample", "dna_lysate"),
-                "CELLS": ("biosample", "cell_suspension"),
+                "DNA": ("bio_molecule_or_virus", "dna"),
+                "CELLS": ("bio_cellular", "cell_population"),
             },
         ),
     )
@@ -670,8 +689,8 @@ def test_sep_field_sends_target_to_band_fraction_and_stain_to_non_target_fractio
         material_state=_partition_state(
             components={"DNA": 100.0, "STAIN": 100.0},
             registry={
-                "DNA": ("biosample", "dna_lysate"),
-                "STAIN": ("reagent", "dna_stain"),
+                "DNA": ("bio_molecule_or_virus", "dna"),
+                "STAIN": ("chemical", "dye"),
             },
         ),
     )
@@ -707,6 +726,8 @@ def test_sep_custom_components_use_conservative_equal_split_by_default():
     assert _rounded_components(result.material_state["containers"][slots["1"]]) == {"CUSTOM": 50.0}
     assert result.delta["partition"]["ratios_by_class"] == {"custom": {"0": 0.5, "1": 0.5}}
     assert result.delta["partition"]["ratios_by_component"] == {"CUSTOM": {"0": 0.5, "1": 0.5}}
+    assert [d.code for d in result.diagnostics] == ["MAT_CONTENT_PARTITION_FALLBACK"]
+    assert result.diagnostics[0].severity == "warning"
 
 
 def test_sep_custom_component_uses_configured_partition_ratio():
@@ -724,6 +745,7 @@ def test_sep_custom_component_uses_configured_partition_ratio():
     assert _rounded_components(result.material_state["containers"][slots["0"]]) == {"CUSTOM": 20.0}
     assert _rounded_components(result.material_state["containers"][slots["1"]]) == {"CUSTOM": 80.0}
     assert result.delta["partition"]["ratios_by_component"] == {"CUSTOM": {"0": 0.2, "1": 0.8}}
+    assert result.diagnostics == []
 
 
 def test_frac_creates_ordered_indexed_bindings():

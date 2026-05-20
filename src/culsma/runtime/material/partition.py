@@ -8,8 +8,8 @@ from typing import Any
 from culsma.pipeline.content_vocab import (
     ContentKind,
     ContentType,
-    is_custom_content_type,
     is_standard_content_type,
+    normalize_content_classification,
     parse_content_kind,
     parse_content_type,
 )
@@ -95,126 +95,86 @@ _PELLET_PARTITION_CLASSES = {
     PartitionClass.RETAINED_FRACTION,
 }
 _TARGET_PARTITION_CLASSES = {PartitionClass.MOLECULAR_TARGET}
+_EQUAL_SPLIT = (0.5, 0.5)
+_NEAR_COMPLETE_TO_SLOT0 = (0.99, 0.01)
+_NEAR_COMPLETE_TO_SLOT1 = (0.01, 0.99)
+_TARGETED_RECOVERY_TO_SLOT0 = (0.95, 0.05)
+_TARGETED_RECOVERY_TO_SLOT1 = (0.05, 0.95)
 
 _CONTENT_CLASS_BY_KIND_TYPE: dict[tuple[ContentKind, ContentType], PartitionClass] = {
+    (ContentKind.BIO_FLUID, ContentType.WHOLE_BLOOD): PartitionClass.COMPOSITE_SAMPLE,
     **{
-        (ContentKind.BIOSAMPLE, content_type): PartitionClass.LIQUID_MATRIX
-        for content_type in (ContentType.PLASMA, ContentType.SERUM, ContentType.SOLUTION)
-    },
-    **{
-        (ContentKind.BIOSAMPLE, content_type): PartitionClass.PELLETABLE_CELLS
-        for content_type in (ContentType.CELL_SUSPENSION, ContentType.MIXED_CELLS, ContentType.ADHERENT_CELLS)
-    },
-    (ContentKind.BIOSAMPLE, ContentType.CELL_PELLET): PartitionClass.PELLETABLE_MATERIAL,
-    **{
-        (ContentKind.BIOSAMPLE, content_type): PartitionClass.SOLUBLE_BIOSAMPLE_MATRIX
-        for content_type in (ContentType.CELL_LYSATE, ContentType.EXTRACT, ContentType.MOLECULAR_EXTRACT)
-    },
-    **{
-        (ContentKind.BIOSAMPLE, content_type): PartitionClass.MOLECULAR_TARGET
+        (ContentKind.BIO_FLUID, content_type): PartitionClass.LIQUID_MATRIX
         for content_type in (
-            ContentType.DNA_SAMPLE,
-            ContentType.SAMPLE_DNA,
-            ContentType.DNA_SOLUTION,
-            ContentType.DNA_LYSATE,
-            ContentType.DNA_STOCK,
-            ContentType.PURIFIED_DNA,
-            ContentType.TEMPLATE_DNA,
-            ContentType.AMPLICON,
-            ContentType.PLASMID_VECTOR,
-            ContentType.DNA_INSERT,
+            ContentType.PLASMA,
+            ContentType.SERUM,
+            ContentType.URINE,
+            ContentType.SALIVA,
+            ContentType.LYMPH,
+            ContentType.CEREBROSPINAL_FLUID,
+            ContentType.TEARS,
+            ContentType.SEMEN,
+            ContentType.ASCITES,
+            ContentType.SYNOVIAL_FLUID,
+            ContentType.BRONCHOALVEOLAR_LAVAGE_FLUID,
         )
     },
-    (ContentKind.BIOSAMPLE, ContentType.REACTION_MIX): PartitionClass.LIQUID_REACTION_MATRIX,
-    (ContentKind.BIOSAMPLE, ContentType.TISSUE_PIECE): PartitionClass.SOLID_SAMPLE,
-    (ContentKind.BIOSAMPLE, ContentType.WHOLE_BLOOD): PartitionClass.COMPOSITE_SAMPLE,
-    (ContentKind.BIOSAMPLE, ContentType.CELL_OR_TISSUE_SAMPLE): PartitionClass.COMPOSITE_SAMPLE,
+    (ContentKind.BIO_FLUID, ContentType.BUFFY_COAT): PartitionClass.COMPOSITE_SAMPLE,
     **{
-        (ContentKind.BUFFER, content_type): PartitionClass.LIQUID_MATRIX
+        (ContentKind.BIO_CELLULAR, content_type): PartitionClass.PELLETABLE_CELLS
+        for content_type in (
+            ContentType.CELL_LINE,
+            ContentType.PRIMARY_CELLS,
+            ContentType.CELL_POPULATION,
+            ContentType.MICROBIAL_CELLS,
+        )
+    },
+    **{
+        (ContentKind.BIO_SUBCELLULAR, content_type): PartitionClass.PELLETABLE_MATERIAL
+        for content_type in (
+            ContentType.ORGANELLE,
+            ContentType.MEMBRANE,
+            ContentType.VESICLE,
+            ContentType.CYTOSKELETAL_STRUCTURE,
+        )
+    },
+    **{
+        (ContentKind.BIO_MOLECULE_OR_VIRUS, content_type): PartitionClass.MOLECULAR_TARGET
+        for content_type in (
+            ContentType.DNA,
+            ContentType.RNA,
+            ContentType.PROTEIN,
+            ContentType.VIRUS,
+        )
+    },
+    **{
+        (ContentKind.BIO_ENTITY, content_type): PartitionClass.SOLID_SAMPLE
+        for content_type in (ContentType.ORGANISM, ContentType.ORGAN, ContentType.TISSUE)
+    },
+    **{
+        (ContentKind.CHEMICAL, content_type): PartitionClass.LIQUID_MATRIX
+        for content_type in (ContentType.SOLVENT,)
+    },
+    **{
+        (ContentKind.CHEMICAL, content_type): PartitionClass.SOLUBLE_COMPOUND
+        for content_type in (ContentType.ORGANIC_COMPOUND, ContentType.INORGANIC_COMPOUND, ContentType.DETERGENT)
+    },
+    (ContentKind.CHEMICAL, ContentType.DYE): PartitionClass.STAIN_REAGENT,
+    **{
+        (ContentKind.PARTICULATE, content_type): PartitionClass.CAPTURE_PARTICLE
+        for content_type in (ContentType.BEADS, ContentType.RESIN)
+    },
+    (ContentKind.PARTICULATE, ContentType.PARTICLE): PartitionClass.SOLID_PARTICLE,
+    **{
+        (ContentKind.FORMULATION, content_type): PartitionClass.LIQUID_MATRIX
         for content_type in (
             ContentType.BUFFER,
-            ContentType.WATER,
-            ContentType.DILUENT,
-            ContentType.TE_BUFFER,
-            ContentType.ELUTION_BUFFER,
-            ContentType.RESUSPENSION_BUFFER,
-            ContentType.PHOSPHATE_BUFFER,
-            ContentType.REACTION_BUFFER,
-            ContentType.CULTURE_MEDIA,
-            ContentType.CULTURE_MEDIUM,
-            ContentType.REACTION_MEDIA,
-            ContentType.MEDIA,
-            ContentType.DRUG_STOCK,
-            ContentType.SEQUENCING_READ_BUFFER,
-            ContentType.TEST_BUFFER,
+            ContentType.MEDIUM,
+            ContentType.GRADIENT_MEDIUM,
         )
     },
-    **{
-        (ContentKind.BUFFER, content_type): PartitionClass.PROCESS_LIQUID_MATRIX
-        for content_type in (
-            ContentType.LYSIS_BUFFER,
-            ContentType.BINDING_BUFFER,
-            ContentType.NUCLEIC_ACID_EXTRACTION_BUFFER,
-            ContentType.MOLECULAR_EXTRACTION_BUFFER,
-        )
-    },
-    **{
-        (ContentKind.BUFFER, content_type): PartitionClass.WASH_LIQUID
-        for content_type in (
-            ContentType.WASH_BUFFER,
-            ContentType.ETHANOL_WASH_BUFFER,
-            ContentType.COLUMN_WASH_BUFFER,
-            ContentType.COLUMN_WASH_BUFFER_1,
-            ContentType.COLUMN_WASH_BUFFER_2,
-        )
-    },
-    (ContentKind.REAGENT, ContentType.PRECIPITATION_REAGENT): PartitionClass.PRECIPITATION_LIQUID,
-    (ContentKind.REAGENT, ContentType.MAGNETIC_BEAD): PartitionClass.CAPTURE_PARTICLE,
-    (ContentKind.REAGENT, ContentType.AGAROSE_POWDER): PartitionClass.SOLID_PARTICLE,
-    (ContentKind.REAGENT, ContentType.POWDER): PartitionClass.SOLID_PARTICLE,
-    **{
-        (ContentKind.REAGENT, content_type): PartitionClass.SOLUBLE_REAGENT
-        for content_type in (ContentType.TAQ_POLYMERASE, ContentType.ENZYME, ContentType.FLUOR_ANTIBODY)
-    },
-    **{
-        (ContentKind.REAGENT, content_type): PartitionClass.SOLUBLE_COMPOUND
-        for content_type in (
-            ContentType.FEED,
-            ContentType.NUTRIENT_FEED,
-            ContentType.VEHICLE_CONTROL,
-            ContentType.POSITIVE_CONTROL_COMPOUND,
-            ContentType.COMPOUND_X_LOW,
-            ContentType.COMPOUND_X_MID,
-            ContentType.COMPOUND_X_HIGH,
-            ContentType.COMPOUND_X_MAX,
-            ContentType.DRUG_X,
-            ContentType.COMPOUND_X_STOCK,
-        )
-    },
-    **{
-        (ContentKind.REAGENT, content_type): PartitionClass.LIQUID_REAGENT
-        for content_type in (
-            ContentType.QPCR_MASTER_MIX,
-            ContentType.STANDARD_MIX,
-            ContentType.FLUOR_QUANT_MIX,
-            ContentType.FRAGMENTATION_REAGENT,
-            ContentType.ADAPTER_MIX,
-            ContentType.LIGATION_REAGENT,
-            ContentType.CLEANUP_REAGENT,
-            ContentType.AMPLIFICATION_REAGENT,
-            ContentType.IONIZATION_REAGENT,
-            ContentType.ANTICOAGULANT,
-        )
-    },
-    (ContentKind.REAGENT, ContentType.DNA_STAIN): PartitionClass.STAIN_REAGENT,
-    (ContentKind.REAGENT, ContentType.PLATE_STAIN): PartitionClass.STAIN_REAGENT,
-    (ContentKind.FRACTION, ContentType.SUPERNATANT): PartitionClass.LIQUID_FRACTION,
-    (ContentKind.FRACTION, ContentType.FILTRATE): PartitionClass.LIQUID_FRACTION,
-    (ContentKind.FRACTION, ContentType.TARGET_PHASE): PartitionClass.LIQUID_FRACTION,
-    (ContentKind.FRACTION, ContentType.PELLET): PartitionClass.RETAINED_FRACTION,
-    (ContentKind.FRACTION, ContentType.PRECIPITATE): PartitionClass.RETAINED_FRACTION,
-    (ContentKind.FRACTION, ContentType.WASHED_DNA_PELLET): PartitionClass.RETAINED_FRACTION,
-    (ContentKind.FRACTION, ContentType.RETENTATE): PartitionClass.RETAINED_FRACTION,
+    (ContentKind.FORMULATION, ContentType.SUPPLEMENT): PartitionClass.SOLUBLE_REAGENT,
+    (ContentKind.FORMULATION, ContentType.MASTER_MIX): PartitionClass.LIQUID_REACTION_MATRIX,
 }
 
 
@@ -246,11 +206,24 @@ def partition_sep_material(
     class_counts: dict[str, int] = {}
     ratios_by_class: dict[str, tuple[float, float]] = {}
     ratios_by_component: dict[str, tuple[float, float]] = {}
+    fallback_components: list[dict[str, str]] = []
 
     for name, amount in list(source_components.items()):
         amount_f = float(amount)
         partition_class = class_resolver.classify(state, source, str(name))
-        ratio0, ratio1 = _component_partition_ratios(source, str(name)) or strategy.ratios(partition_class)
+        explicit_ratios = _component_partition_ratios(source, str(name))
+        if explicit_ratios is None:
+            ratio0, ratio1 = strategy.ratios(partition_class)
+            if (ratio0, ratio1) == _EQUAL_SPLIT:
+                fallback_components.append(
+                    {
+                        "component": str(name),
+                        "partition_class": partition_class.value,
+                        "reason": _partition_fallback_reason(partition_class),
+                    }
+                )
+        else:
+            ratio0, ratio1 = explicit_ratios
         class_key = partition_class.value
         class_counts[class_key] = class_counts.get(class_key, 0) + 1
         ratios_by_class[class_key] = (ratio0, ratio1)
@@ -286,7 +259,18 @@ def partition_sep_material(
         "classes": class_counts,
         "ratios_by_class": {name: {"0": ratios[0], "1": ratios[1]} for name, ratios in ratios_by_class.items()},
         "ratios_by_component": {name: {"0": ratios[0], "1": ratios[1]} for name, ratios in ratios_by_component.items()},
+        "fallback_components": fallback_components,
     }
+
+
+def _partition_fallback_reason(partition_class: PartitionClass) -> str:
+    if partition_class == PartitionClass.CUSTOM:
+        return "custom_content_classification"
+    if partition_class == PartitionClass.UNKNOWN:
+        return "unknown_content_classification"
+    if partition_class == PartitionClass.COMPOSITE_SAMPLE:
+        return "composite_content_classification"
+    return "unsupported_program_partition_class"
 
 
 class ContentClassResolver:
@@ -303,19 +287,48 @@ class ContentClassResolver:
         meta = meta if isinstance(meta, dict) else {}
         kind_value = str(meta.get("content_kind", "") or "").lower()
         type_value = str(meta.get("content_type", "") or "").lower()
-        if is_custom_content_type(type_value):
-            kind = parse_content_kind(kind_value)
-            if kind == ContentKind.BUFFER:
-                return PartitionClass.PROCESS_LIQUID_MATRIX
-            if kind == ContentKind.REAGENT:
-                return PartitionClass.LIQUID_REAGENT
-            return PartitionClass.CUSTOM
+        attrs = meta.get("content_attrs")
+        attrs = attrs if isinstance(attrs, dict) else {}
         if not is_standard_content_type(kind_value, type_value):
-            return PartitionClass.UNKNOWN
+            normalized = normalize_content_classification(kind_value, type_value)
+            if not normalized.changed or not is_standard_content_type(normalized.kind, normalized.type):
+                return PartitionClass.UNKNOWN
+            kind_value = normalized.kind
+            type_value = normalized.type
+            merged_attrs = dict(normalized.attrs)
+            merged_attrs.update(attrs)
+            attrs = merged_attrs
+        if str(attrs.get("original_type", "")).startswith("custom_"):
+            return PartitionClass.CUSTOM
         kind = parse_content_kind(kind_value)
         content_type = parse_content_type(type_value)
         if kind is None or content_type is None:
             return PartitionClass.UNKNOWN
+        if kind == ContentKind.BIO_MOLECULE_OR_VIRUS and content_type in {
+            ContentType.DNA,
+            ContentType.RNA,
+            ContentType.PROTEIN,
+            ContentType.VIRUS,
+        }:
+            return PartitionClass.MOLECULAR_TARGET
+        role = str(attrs.get("role", "") or "").lower()
+        state_value = str(attrs.get("state", "") or "").lower()
+        if state_value in {"lysate", "extract"}:
+            return PartitionClass.SOLUBLE_BIOSAMPLE_MATRIX
+        if state_value in {"pellet", "washed_pellet"}:
+            return PartitionClass.PELLETABLE_MATERIAL
+        if state_value in {"suspension", "mixed"}:
+            return PartitionClass.PELLETABLE_CELLS
+        if role in {"wash"}:
+            return PartitionClass.WASH_LIQUID
+        if role in {"lysis", "binding", "elution", "storage", "reaction_environment", "density_gradient_separation"}:
+            return PartitionClass.PROCESS_LIQUID_MATRIX
+        if role in {"precipitation"}:
+            return PartitionClass.PRECIPITATION_LIQUID
+        if role in {"detection", "stain"}:
+            return PartitionClass.STAIN_REAGENT
+        if role in {"cleanup", "fragmentation", "ligation", "amplification", "ionization", "anticoagulant"}:
+            return PartitionClass.LIQUID_REAGENT
         mapped = _CONTENT_CLASS_BY_KIND_TYPE.get((kind, content_type))
         if mapped is not None:
             return mapped
@@ -328,11 +341,11 @@ class SepPartitionStrategy:
 
     def ratios(self, partition_class: PartitionClass) -> tuple[float, float]:
         if partition_class in {PartitionClass.CUSTOM, PartitionClass.UNKNOWN, PartitionClass.COMPOSITE_SAMPLE}:
-            return (0.5, 0.5)
+            return _EQUAL_SPLIT
         return self._known_ratios(partition_class)
 
     def _known_ratios(self, partition_class: PartitionClass) -> tuple[float, float]:
-        return (0.5, 0.5)
+        return _EQUAL_SPLIT
 
     def output_class(self, partition_class: PartitionClass, *, slot: str) -> PartitionClass:
         return partition_class
@@ -344,8 +357,8 @@ class CentrifugePartitionStrategy(SepPartitionStrategy):
 
     def _known_ratios(self, partition_class: PartitionClass) -> tuple[float, float]:
         if partition_class in _PELLET_PARTITION_CLASSES:
-            return (0.01, 0.99)
-        return (0.99, 0.01)
+            return _NEAR_COMPLETE_TO_SLOT1
+        return _NEAR_COMPLETE_TO_SLOT0
 
 
 class PhasePartitionStrategy(SepPartitionStrategy):
@@ -360,15 +373,15 @@ class PhasePartitionStrategy(SepPartitionStrategy):
             PartitionClass.LIQUID_REACTION_MATRIX,
             PartitionClass.LIQUID_FRACTION,
         }:
-            return (0.98, 0.02)
+            return _NEAR_COMPLETE_TO_SLOT0
         if partition_class in {
             PartitionClass.LIQUID_REAGENT,
             PartitionClass.PRECIPITATION_LIQUID,
             PartitionClass.STAIN_REAGENT,
             PartitionClass.WASH_LIQUID,
         }:
-            return (0.02, 0.98)
-        return (0.1, 0.9)
+            return _NEAR_COMPLETE_TO_SLOT1
+        return _EQUAL_SPLIT
 
 
 class PrecipitationPartitionStrategy(SepPartitionStrategy):
@@ -377,10 +390,10 @@ class PrecipitationPartitionStrategy(SepPartitionStrategy):
 
     def _known_ratios(self, partition_class: PartitionClass) -> tuple[float, float]:
         if partition_class in _TARGET_PARTITION_CLASSES or partition_class in _PELLET_PARTITION_CLASSES:
-            return (0.95, 0.05)
+            return _TARGETED_RECOVERY_TO_SLOT0
         if partition_class in _LIQUID_PARTITION_CLASSES:
-            return (0.03, 0.97)
-        return (0.5, 0.5)
+            return _NEAR_COMPLETE_TO_SLOT1
+        return _EQUAL_SPLIT
 
     def output_class(self, partition_class: PartitionClass, *, slot: str) -> PartitionClass:
         if slot == "0" and (
@@ -397,8 +410,8 @@ class FiltrationPartitionStrategy(SepPartitionStrategy):
 
     def _known_ratios(self, partition_class: PartitionClass) -> tuple[float, float]:
         if partition_class in _TARGET_PARTITION_CLASSES or partition_class in _PELLET_PARTITION_CLASSES:
-            return (0.02, 0.98)
-        return (0.98, 0.02)
+            return _NEAR_COMPLETE_TO_SLOT1
+        return _NEAR_COMPLETE_TO_SLOT0
 
     def output_class(self, partition_class: PartitionClass, *, slot: str) -> PartitionClass:
         if slot == "1" and (
@@ -419,8 +432,8 @@ class MagneticPartitionStrategy(SepPartitionStrategy):
             or partition_class == PartitionClass.CAPTURE_PARTICLE
             or partition_class == PartitionClass.RETAINED_FRACTION
         ):
-            return (0.98, 0.02)
-        return (0.02, 0.98)
+            return _NEAR_COMPLETE_TO_SLOT0
+        return _NEAR_COMPLETE_TO_SLOT1
 
     def output_class(self, partition_class: PartitionClass, *, slot: str) -> PartitionClass:
         if slot == "0" and (
@@ -438,8 +451,8 @@ class DisruptPartitionStrategy(SepPartitionStrategy):
 
     def _known_ratios(self, partition_class: PartitionClass) -> tuple[float, float]:
         if partition_class in _PELLET_PARTITION_CLASSES:
-            return (0.05, 0.95)
-        return (0.95, 0.05)
+            return _TARGETED_RECOVERY_TO_SLOT1
+        return _TARGETED_RECOVERY_TO_SLOT0
 
 
 class FieldPartitionStrategy(SepPartitionStrategy):
@@ -448,8 +461,8 @@ class FieldPartitionStrategy(SepPartitionStrategy):
 
     def _known_ratios(self, partition_class: PartitionClass) -> tuple[float, float]:
         if partition_class in _TARGET_PARTITION_CLASSES:
-            return (0.95, 0.05)
-        return (0.05, 0.95)
+            return _TARGETED_RECOVERY_TO_SLOT0
+        return _TARGETED_RECOVERY_TO_SLOT1
 
 
 _DEFAULT_SEP_PARTITION_STRATEGY = SepPartitionStrategy()
