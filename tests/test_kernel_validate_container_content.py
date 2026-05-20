@@ -194,6 +194,21 @@ def test_content_type_legacy_biosample_dna_warns_and_normalizes():
     assert "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED" in _codes(result)
 
 
+def test_content_type_compat_warning_suggests_canonical_content_form_with_attrs():
+    ir = _ir_step(
+        "DefineContent",
+        [
+            IRArg(name="kind", value=IRString("biosample")),
+            IRArg(name="type", value=IRIdentifier("dna_stock")),
+            IRArg(name="name", value=IRString("DNA")),
+        ],
+    )
+    result = validate(ir, content_type_policy="required")
+    warning = next(d for d in result.diagnostics if d.code == "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED")
+    assert 'content(kind="bio_molecule_or_virus", type="dna", attrs={state: "stock"})' in warning.message
+    assert "Use that canonical content form to avoid this warning." in warning.message
+
+
 def test_content_type_custom_prefix_is_compat_warning():
     """custom_* is compatibility input, not current canonical public vocabulary."""
     ir = _ir_step(
@@ -222,6 +237,24 @@ protocol T {
     warnings = [d for d in result.diagnostics if d.code == "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED"]
     assert result.ok
     assert len(warnings) == 1
+
+
+def test_content_family_sugar_warns_through_taxonomy_compat_path():
+    src = '''
+protocol T {
+  let x = tube(label = "X", load = [
+    blood(code = "B1"):10uL,
+    buffer(code = "BUF", type = "wash_buffer"):10uL,
+    reagent(code = "R1", type = "cleanup_reagent"):10uL
+  ]);
+}
+'''
+    frontend = resolve_program(parse(src))
+    compiled = compile_ast(frontend.prepared_program)
+    result = validate(compiled.ir, analysis=compiled.analysis)
+    warnings = [d for d in result.diagnostics if d.code == "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED"]
+    assert result.ok
+    assert len(warnings) == 3
 
 
 def test_constructor_shape_errors_are_semantic():

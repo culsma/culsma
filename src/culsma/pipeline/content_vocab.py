@@ -194,7 +194,7 @@ FALLBACK_CONTENT_TYPE_BY_KIND = {
     ContentKind.FORMULATION.value: ContentType.OTHER_FORMULATION.value,
 }
 
-LEGACY_CONTENT_KINDS = frozenset({"biosample", "reagent", "buffer", "control", "fraction", "waste", "other"})
+LEGACY_CONTENT_KINDS = frozenset({"blood", "biosample", "reagent", "buffer", "control", "fraction", "waste", "other"})
 KNOWN_CONTENT_KINDS = CONTENT_KIND_WHITELIST | LEGACY_CONTENT_KINDS
 
 

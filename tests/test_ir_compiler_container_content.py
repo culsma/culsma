@@ -51,6 +51,6 @@ def test_container_content_sugar_lowers_to_canonical_ir():
     assert "well" in lowered_kinds
     assert "chamber" in lowered_kinds
     assert "surface" in lowered_kinds
-    assert "bio_fluid" in lowered_kinds
+    assert "blood" in lowered_kinds
     assert "reagent" in lowered_kinds
-    assert "formulation" in lowered_kinds
+    assert "buffer" in lowered_kinds

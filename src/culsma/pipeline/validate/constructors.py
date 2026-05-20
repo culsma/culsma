@@ -254,12 +254,14 @@ def _content_type_value_diagnostics(
 ) -> list[Diagnostic]:
     normalized = normalize_content_classification(kind_value, type_value)
     if compat_mode and normalized.kind in CONTENT_KIND_WHITELIST and _is_allowed_content_type_value(normalized.kind, normalized.type):
+        suggested = _format_content_suggestion(normalized.kind, normalized.type, normalized.attrs)
         return [
             Diagnostic(
                 code="SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
                 message=(
                     f"Content taxonomy value '{kind_value}/{type_value}' is deprecated; "
-                    f"normalize to '{normalized.kind}/{normalized.type}'"
+                    f"compatibility mode normalizes it to {suggested}. "
+                    "Use that canonical content form to avoid this warning."
                 ),
                 span=span,
                 severity="warning",
@@ -277,3 +279,11 @@ def _content_type_value_diagnostics(
             node_id=node_id,
         )
     ]
+
+
+def _format_content_suggestion(kind_value: str, type_value: str, attrs: dict[str, str]) -> str:
+    parts = [f'kind="{kind_value}"', f'type="{type_value}"']
+    if attrs:
+        attrs_text = ", ".join(f'{key}: "{value}"' for key, value in sorted(attrs.items()))
+        parts.append(f"attrs={{{attrs_text}}}")
+    return f"content({', '.join(parts)})"

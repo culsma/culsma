@@ -6,7 +6,6 @@ from culsma.parser.ast_nodes import Arg, CallExpr, Expression, GroupExpr, StepCa
 from culsma.pipeline.content_vocab import (
     CONTENT_SPEC_SUGAR_TO_CANONICAL,
     ContainerKind,
-    ContentKind,
     ContentSpecSugar,
     ContentType,
     parse_content_spec_sugar,
@@ -88,12 +87,12 @@ def _lower_callable(name: str, args: list[Arg], span) -> tuple[str, list[Arg]]:
     elif sugar == ContentSpecSugar.SURFACE:
         _inject("kind", StringLiteral(value=ContainerKind.SURFACE.value, span=span))
     elif sugar == ContentSpecSugar.BLOOD:
-        _inject("kind", StringLiteral(value=ContentKind.BIO_FLUID.value, span=span))
+        _inject("kind", StringLiteral(value="blood", span=span))
         _inject("type", StringLiteral(value=ContentType.WHOLE_BLOOD.value, span=span))
     elif sugar == ContentSpecSugar.REAGENT:
         _inject("kind", StringLiteral(value="reagent", span=span))
     elif sugar == ContentSpecSugar.BUFFER:
-        _inject("kind", StringLiteral(value=ContentKind.FORMULATION.value, span=span))
+        _inject("kind", StringLiteral(value="buffer", span=span))
         _inject("type", StringLiteral(value=ContentType.BUFFER.value, span=span))
 
     return canonical_name, args
