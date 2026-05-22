@@ -183,6 +183,18 @@ class CulsmaTransformer(Transformer):
     def list_literal(self, meta, items):
         return self._dispatch("list_literal", meta, items)
 
+    def record_key_identifier(self, meta, items):
+        return self._dispatch("record_key_identifier", meta, items)
+
+    def record_key_string(self, meta, items):
+        return self._dispatch("record_key_string", meta, items)
+
+    def record_item(self, meta, items):
+        return self._dispatch("record_item", meta, items)
+
+    def record_literal(self, meta, items):
+        return self._dispatch("record_literal", meta, items)
+
     def group_expr(self, meta, items):
         return self._dispatch("group_expr", meta, items)
 

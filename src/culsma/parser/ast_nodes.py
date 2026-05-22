@@ -248,6 +248,13 @@ class ListLiteral:
 
 
 @dataclass
+class RecordLiteral:
+    """{key: <expr>, ...}"""
+    entries: dict[str, Expression] = field(default_factory=dict)
+    span: Span | None = None
+
+
+@dataclass
 class GroupExpr:
     """group([<ref>, <ref>, ...])"""
     elements: list[Expression] = field(default_factory=list)
@@ -340,6 +347,7 @@ Expression = (
     | BooleanLiteral
     | Identifier
     | ListLiteral
+    | RecordLiteral
     | GroupExpr
     | PlateSelectorExpr
     | CallExpr

@@ -31,6 +31,7 @@ from culsma.parser.ast_nodes import (
     ProtocolDecl,
     ProtocolRefStatement,
     Quantity,
+    RecordLiteral,
     ReturnBinding,
     ReturnStatement,
     RepeatStatement,
@@ -476,6 +477,11 @@ def _rename_expr(expr: Expression, rename_map: dict[str, str]) -> Expression:
         return UnaryOp(op=expr.op, operand=_rename_expr(expr.operand, rename_map), span=expr.span)
     if isinstance(expr, ListLiteral):
         return ListLiteral(elements=[_rename_expr(item, rename_map) for item in expr.elements], span=expr.span)
+    if isinstance(expr, RecordLiteral):
+        return RecordLiteral(
+            entries={key: _rename_expr(value, rename_map) for key, value in expr.entries.items()},
+            span=expr.span,
+        )
     if isinstance(expr, GroupExpr):
         return GroupExpr(elements=[_rename_expr(item, rename_map) for item in expr.elements], span=expr.span)
     if isinstance(expr, CallExpr):
@@ -524,6 +530,8 @@ def _contains_component_call(expr: Expression, lookup: dict[str, ProtocolDecl]) 
         return _contains_component_call(expr.operand, lookup)
     if isinstance(expr, ListLiteral):
         return any(_contains_component_call(item, lookup) for item in expr.elements)
+    if isinstance(expr, RecordLiteral):
+        return any(_contains_component_call(value, lookup) for value in expr.entries.values())
     if isinstance(expr, GroupExpr):
         return any(_contains_component_call(item, lookup) for item in expr.elements)
     if isinstance(expr, PlateSelectorExpr):

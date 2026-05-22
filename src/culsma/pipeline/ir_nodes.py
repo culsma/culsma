@@ -40,6 +40,12 @@ class IRList:
 
 
 @dataclass(frozen=True)
+class IRRecord:
+    entries: dict[str, IRExpr] = field(default_factory=dict)
+    span: Span | None = None
+
+
+@dataclass(frozen=True)
 class IRGroup:
     elements: list[IRExpr] = field(default_factory=list)
     span: Span | None = None
@@ -109,7 +115,7 @@ class IRArg:
     span: Span | None = None
 
 
-IRExpr = IRQuantity | IRString | IRBoolean | IRIdentifier | IRList | IRGroup | IRCall | IRPlateSelector | IRIndex | IRMember | IRPair | IRUnary | IRBinary
+IRExpr = IRQuantity | IRString | IRBoolean | IRIdentifier | IRList | IRRecord | IRGroup | IRCall | IRPlateSelector | IRIndex | IRMember | IRPair | IRUnary | IRBinary
 
 
 @dataclass(frozen=True)

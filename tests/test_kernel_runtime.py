@@ -53,6 +53,25 @@ def _runtime_state_with_source(plan, *, source: str = "A", volume_uL: float = 10
     return state
 
 
+def test_content_attrs_record_literal_reaches_material_registry():
+    plan = _build_plan_from_source(
+        '''
+protocol T {
+  let source = tube(
+    label = "Source",
+    capacity = 100uL,
+    load = [content(kind = formulation, type = buffer, code = "PBS1", attrs = { role: wash }):10uL]
+  );
+}
+'''
+    )
+    result = run(plan=plan, driver=StubDriver())
+    registry = result.state.artifacts["material_state"]["content_registry"]
+
+    assert result.ok
+    assert registry["PBS1"]["content_attrs"] == {"role": "wash"}
+
+
 def test_runtime_happy_path_completes_all_steps():
     plan = _build_plan_from_source(
         """

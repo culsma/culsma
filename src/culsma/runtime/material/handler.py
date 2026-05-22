@@ -153,6 +153,7 @@ def _apply_define_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpda
     ctype = _arg_string(step.args.get("type"))
     code = _arg_string(step.args.get("code"))
     name = _arg_string(step.args.get("name"))
+    explicit_attrs = _arg_string_map(step.args.get("attrs"))
     normalized = normalize_content_classification(kind, ctype) if kind is not None and ctype is not None else None
     stored_kind = normalized.kind if normalized is not None else kind
     stored_type = normalized.type if normalized is not None else ctype
@@ -171,8 +172,13 @@ def _apply_define_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpda
     if normalized is not None and normalized.changed:
         candidate["content_original_kind"] = normalized.original_kind
         candidate["content_original_type"] = normalized.original_type
+    merged_candidate_attrs: dict[str, str] = {}
     if normalized is not None and normalized.attrs:
-        candidate["content_attrs"] = dict(normalized.attrs)
+        merged_candidate_attrs.update(normalized.attrs)
+    if explicit_attrs:
+        merged_candidate_attrs.update(explicit_attrs)
+    if merged_candidate_attrs:
+        candidate["content_attrs"] = merged_candidate_attrs
     if isinstance(existing, dict):
         for key in ("content_kind", "content_type", "content_code"):
             old_v = existing.get(key)
@@ -207,6 +213,19 @@ def _apply_define_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpda
         diagnostics=[],
         delta={"op": "DefineContent", "content_id": content_id},
     )
+
+
+def _arg_string_map(value: Any) -> dict[str, str]:
+    if not isinstance(value, dict):
+        return {}
+    attrs: dict[str, str] = {}
+    for key, raw in value.items():
+        if not isinstance(key, str):
+            continue
+        text = _arg_string(raw)
+        if text is not None:
+            attrs[key] = text
+    return attrs
 
 
 def _apply_load_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:

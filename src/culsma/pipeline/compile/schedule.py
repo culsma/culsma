@@ -21,6 +21,7 @@ from culsma.parser.ast_nodes import (
     MutationStmt,
     PairExpr,
     Quantity,
+    RecordLiteral,
     RepeatStatement,
     Statement,
     StepCall,
@@ -443,6 +444,11 @@ def _substitute_expr(expr: Expression, binding: str, value: Expression) -> Expre
         return UnaryOp(op=expr.op, operand=_substitute_expr(expr.operand, binding, value), span=expr.span)
     if isinstance(expr, ListLiteral):
         return ListLiteral(elements=[_substitute_expr(item, binding, value) for item in expr.elements], span=expr.span)
+    if isinstance(expr, RecordLiteral):
+        return RecordLiteral(
+            entries={key: _substitute_expr(record_value, binding, value) for key, record_value in expr.entries.items()},
+            span=expr.span,
+        )
     if isinstance(expr, CallExpr):
         return CallExpr(
             name=expr.name,

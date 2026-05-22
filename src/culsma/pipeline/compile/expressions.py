@@ -18,6 +18,7 @@ from culsma.parser.ast_nodes import (
     ParamDecl,
     PlateSelectorExpr,
     Quantity,
+    RecordLiteral,
     StringLiteral,
     UnaryOp,
 )
@@ -36,6 +37,7 @@ from culsma.pipeline.ir_nodes import (
     IRParam,
     IRPair,
     IRQuantity,
+    IRRecord,
     IRSelectorRegion,
     IRString,
     IRUnary,
@@ -61,6 +63,8 @@ class ExprCompiler:
             return IRIdentifier(name=expr.name, span=expr.span)
         if isinstance(expr, ListLiteral):
             return IRList(elements=[self.compile(e) for e in expr.elements], span=expr.span)
+        if isinstance(expr, RecordLiteral):
+            return IRRecord(entries={key: self.compile(value) for key, value in expr.entries.items()}, span=expr.span)
         if isinstance(expr, GroupExpr):
             return IRGroup(elements=[self.compile(e) for e in expr.elements], span=expr.span)
         if isinstance(expr, CallExpr):

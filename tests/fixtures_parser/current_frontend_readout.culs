@@ -1,5 +1,5 @@
 protocol CurrentFrontendReadout {
-    let reactor_tube = tube(label = "Reactor_Temp", capacity = 2000uL, load = [buffer(code = "BUF02", type = "reaction_buffer"):1200uL]);
+    let reactor_tube = tube(label = "Reactor_Temp", capacity = 2000uL, load = [content(kind = formulation, code = "BUF02", type = buffer, attrs = { role: reaction_buffer }):1200uL]);
     let pcr_well = well(label = "PCR_A1", capacity = 50uL, carrier_id = "PCRPlate1", carrier_position = "A1");
 
     let thermal_prog = thermal_program(from = 95C, duration = 30s);

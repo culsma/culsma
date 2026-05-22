@@ -1,7 +1,7 @@
 protocol CurrentFrontendCore {
-    let sample_tube = tube(label = "Incubate_Sample", capacity = 1000uL, load = [content(kind = "biosample", code = "INC01", type = "reaction_mix"):200uL]);
-    let feed_stock = tube(label = "Incubate_Feed", capacity = 2000uL, load = [reagent(code = "FD01", type = "feed"):1000uL]);
-    let gradient_tube = tube(label = "Gradient_Input", capacity = 2000uL, load = [content(kind = "biosample", code = "PBMC_Mix", type = "cell_suspension"):1200uL]);
+    let sample_tube = tube(label = "Incubate_Sample", capacity = 1000uL, load = [content(kind = bio_cellular, code = "INC01", type = cell_population, attrs = { state: suspension }):200uL]);
+    let feed_stock = tube(label = "Incubate_Feed", capacity = 2000uL, load = [content(kind = formulation, code = "FD01", type = medium, attrs = { role: feed }):1000uL]);
+    let gradient_tube = tube(label = "Gradient_Input", capacity = 2000uL, load = [content(kind = bio_cellular, code = "PBMC_Mix", type = cell_population, attrs = { state: suspension }):1200uL]);
     let stop_now = false;
     let skip_now = false;
 

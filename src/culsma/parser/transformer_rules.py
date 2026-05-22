@@ -33,6 +33,7 @@ from culsma.parser.ast_nodes import (
     ProtocolDecl,
     ProtocolRefStatement,
     Quantity,
+    RecordLiteral,
     RepeatStatement,
     ReturnBinding,
     ReturnStatement,
@@ -505,6 +506,30 @@ class ListLiteralHandler(ExpressionRuleHandler):
         return ListLiteral(elements=list(items), span=state.span)
 
 
+class RecordKeyIdentifierHandler(ExpressionRuleHandler):
+    def construct_ast(self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState) -> str:
+        del meta, ctx, state
+        return str(items[0])
+
+
+class RecordKeyStringHandler(ExpressionRuleHandler):
+    def construct_ast(self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState) -> str:
+        del meta, state
+        return ctx.decode_string_token(items[0])
+
+
+class RecordItemHandler(ExpressionRuleHandler):
+    def construct_ast(self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState) -> tuple[str, Any]:
+        del meta, ctx, state
+        return str(items[0]), items[1]
+
+
+class RecordLiteralHandler(ExpressionRuleHandler):
+    def construct_ast(self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState) -> RecordLiteral:
+        del meta, ctx
+        return RecordLiteral(entries=dict(items), span=state.span)
+
+
 class GroupExprHandler(ExpressionRuleHandler):
     def construct_ast(self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState) -> GroupExpr:
         del meta, ctx
@@ -663,6 +688,10 @@ def create_parse_rule_dispatcher() -> ParseRuleDispatcher:
             "boolean_literal": BooleanLiteralHandler(),
             "identifier_ref": IdentifierRefHandler(),
             "list_literal": ListLiteralHandler(),
+            "record_key_identifier": RecordKeyIdentifierHandler(),
+            "record_key_string": RecordKeyStringHandler(),
+            "record_item": RecordItemHandler(),
+            "record_literal": RecordLiteralHandler(),
             "group_expr": GroupExprHandler(),
             "selector_region": SelectorRegionHandler(),
             "plate_selector_expr": PlateSelectorExprHandler(),

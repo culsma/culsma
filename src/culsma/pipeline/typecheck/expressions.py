@@ -18,6 +18,7 @@ from culsma.pipeline.ir_nodes import (
     IRMutation,
     IRPair,
     IRQuantity,
+    IRRecord,
     IRStep,
     IRString,
     IRUnary,
@@ -479,7 +480,7 @@ class TypecheckExpressionServices:
                         )
                     )
             elif arg.name == "attrs":
-                if not isinstance(arg.value, IRIdentifier):
+                if not isinstance(arg.value, IRRecord):
                     diagnostics.append(
                         Diagnostic(
                             code="TYPE_CONTENT_ATTRS_NOT_RECORD",
@@ -523,6 +524,17 @@ class TypecheckExpressionServices:
                 diagnostics.extend(
                     self.typecheck_program_calls_in_expr(
                         item,
+                        node_id=node_id,
+                        expr_bindings=expr_bindings,
+                        seen_names=seen,
+                    )
+                )
+            return diagnostics
+        if isinstance(resolved, IRRecord):
+            for value in resolved.entries.values():
+                diagnostics.extend(
+                    self.typecheck_program_calls_in_expr(
+                        value,
                         node_id=node_id,
                         expr_bindings=expr_bindings,
                         seen_names=seen,

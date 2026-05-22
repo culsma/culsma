@@ -14,6 +14,7 @@ from culsma.pipeline.ir_nodes import (
     IRMember,
     IRPair,
     IRPlateSelector,
+    IRRecord,
     IRUnary,
 )
 
@@ -166,6 +167,21 @@ def validate_expr_contracts(
             diagnostics.extend(
                 validate_expr_contracts(
                     item,
+                    literal_bindings=literal_bindings,
+                    expr_bindings=expr_bindings,
+                    group_bindings=group_bindings,
+                    node_id=node_id,
+                    content_whitelist_mode=content_whitelist_mode,
+                    content_type_policy=content_type_policy,
+                )
+            )
+        return diagnostics
+
+    if isinstance(expr, IRRecord):
+        for value in expr.entries.values():
+            diagnostics.extend(
+                validate_expr_contracts(
+                    value,
                     literal_bindings=literal_bindings,
                     expr_bindings=expr_bindings,
                     group_bindings=group_bindings,

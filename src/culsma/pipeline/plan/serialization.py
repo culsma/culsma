@@ -11,6 +11,7 @@ from culsma.pipeline.ir_nodes import (
     IRCall,
     IRConditional,
     IRIdentifier,
+    IRRecord,
     IRRepeat,
     IRString,
     IRWithConstraint,
@@ -91,6 +92,8 @@ class PlanExpressionSerializer:
         """Serialize IR expression dataclass into JSON-friendly structure."""
         if isinstance(value, IRIdentifier) and env is not None and value.name in env:
             return env[value.name]
+        if isinstance(value, IRRecord):
+            return {key: self.serialize_expr(record_value, None) for key, record_value in value.entries.items()}
         if is_dataclass(value):
             payload = {field.name: getattr(value, field.name) for field in fields(value)}
             if value.__class__.__name__ != "Span":
