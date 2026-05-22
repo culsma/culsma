@@ -1,9 +1,6 @@
-name: Publish PyPI
+name: Manual PyPI Publish
 
 on:
-  release:
-    types:
-      - published
   workflow_dispatch:
     inputs:
       version:

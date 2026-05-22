@@ -130,6 +130,7 @@ python -m pytest -q
 - Reference DOI: [10.5281/zenodo.20059696](https://doi.org/10.5281/zenodo.20059696)
 - Latest GitHub release: [github.com/culsma/culsma/releases/latest](https://github.com/culsma/culsma/releases/latest)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
+- Release process: [RELEASE.md](RELEASE.md)
 - Support policy: [SUPPORT.md](SUPPORT.md)
 
 ## Release Boundary
