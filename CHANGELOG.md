@@ -55,8 +55,6 @@ python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@v1.0.2"
   - result: `544 passed`
 - `python -m culsma.cli run examples/flow_cytometry_protocol.culs`
   - result: `46/46 steps completed, 0 diagnostics`
-- `python -m culsma.cli run examples/env_readout_protocol.culs`
-  - result: `5/5 steps completed, 0 diagnostics`
 - `npm --prefix ../culsma-docs run build`
   - result: passed
 - `python -m pip wheel . -w /private/tmp/culsma-v1.0.2-dist --no-deps --no-build-isolation`

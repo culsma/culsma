@@ -126,23 +126,17 @@ python -m pytest -q
 - Documentation: [culsma.dev](https://culsma.dev/)
 - Paper and citation: [Culsma: A Formal Language for Laboratory Protocols](https://doi.org/10.64898/2026.05.07.723509)
   (bioRxiv preprint)
-- Software concept DOI: [10.5281/zenodo.20059616](https://doi.org/10.5281/zenodo.20059616)
-- Latest fixed software archive DOI: [10.5281/zenodo.20059617](https://doi.org/10.5281/zenodo.20059617)
-  for Culsma v1.0.1
-- Reference concept DOI: [10.5281/zenodo.20059696](https://doi.org/10.5281/zenodo.20059696)
-- Latest fixed reference archive DOI: [10.5281/zenodo.20059697](https://doi.org/10.5281/zenodo.20059697)
-  for Culsma Reference v1.0.1
-- Fixed v1.0.2 archive DOI entries will be added after the corresponding
-  Zenodo deposits are minted.
-- GitHub Releases: [github.com/culsma/culsma/releases](https://github.com/culsma/culsma/releases)
+- Software DOI: [10.5281/zenodo.20059616](https://doi.org/10.5281/zenodo.20059616)
+- Reference DOI: [10.5281/zenodo.20059696](https://doi.org/10.5281/zenodo.20059696)
+- Latest GitHub release: [github.com/culsma/culsma/releases/latest](https://github.com/culsma/culsma/releases/latest)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 - Support policy: [SUPPORT.md](SUPPORT.md)
 
 ## Release Boundary
 
 - This repository is the public code boundary for Culsma v1.0.x.
-- The `examples/` directory contains small runnable CLI examples used for
-  public smoke validation.
+- The `examples/` directory contains the runnable CLI example used for public
+  smoke validation.
 - This repository is licensed under Apache-2.0. See `LICENSE`.
 
 ## Support and Maintenance Policy
