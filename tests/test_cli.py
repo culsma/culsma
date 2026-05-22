@@ -8,24 +8,24 @@ from culsma.cli import main
 
 
 ROOT = Path(__file__).resolve().parents[1]
-MINIMAL_INPUT = ROOT / "examples" / "minimal" / "public_minimal.culs"
+EXAMPLE_INPUT = ROOT / "examples" / "flow_cytometry_protocol.culs"
 
 
 def test_cli_run_prints_human_summary_to_stdout_by_default(monkeypatch, capsys):
-    monkeypatch.setattr(sys, "argv", ["culsma", "run", "--input", str(MINIMAL_INPUT)])
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", "--input", str(EXAMPLE_INPUT)])
 
     main()
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("PublicMinimal ok")
+    assert captured.out.startswith("FlowCytometryProtocol ok")
     assert "return:" in captured.out
-    assert "Target (tube)" in captured.out
-    assert "volume: 5 uL" in captured.out
+    assert "AcquisitionSample (tube)" in captured.out
+    assert "volume: 1000 uL" in captured.out
     assert captured.err == ""
 
 
 def test_cli_run_prints_machine_output_json_when_requested(monkeypatch, capsys):
-    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(MINIMAL_INPUT), "--json"])
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(EXAMPLE_INPUT), "--json"])
 
     main()
 
@@ -33,36 +33,36 @@ def test_cli_run_prints_machine_output_json_when_requested(monkeypatch, capsys):
     payload = json.loads(captured.out)
     assert payload["schema"] == "culsma_run_output_v1"
     assert payload["report"]["schema"] == "lab_report_v1"
-    assert payload["returns"]["PublicMinimal"]["value"]["id"] == "Target"
+    assert payload["returns"]["FlowCytometryProtocol"]["value"]["id"] == "AcquisitionSample"
     assert captured.err == ""
 
 
 def test_cli_accepts_top_level_input_path_shorthand(monkeypatch, capsys):
-    monkeypatch.setattr(sys, "argv", ["culsma", str(MINIMAL_INPUT)])
+    monkeypatch.setattr(sys, "argv", ["culsma", str(EXAMPLE_INPUT)])
 
     main()
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("PublicMinimal ok")
-    assert "Target (tube)" in captured.out
+    assert captured.out.startswith("FlowCytometryProtocol ok")
+    assert "AcquisitionSample (tube)" in captured.out
     assert captured.err == ""
 
 
 def test_cli_human_summary_includes_returned_container_state(monkeypatch, capsys):
-    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(MINIMAL_INPUT)])
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(EXAMPLE_INPUT)])
 
     main()
 
     captured = capsys.readouterr()
     assert captured.out == (
-        "PublicMinimal ok\n"
+        "FlowCytometryProtocol ok\n"
         "\n"
         "return:\n"
-        "  Target (tube)\n"
-        "    volume: 5 uL\n"
-        "    mass: 5 mg\n"
+        "  AcquisitionSample (tube)\n"
+        "    volume: 1000 uL\n"
+        "    mass: 1000 mg\n"
         "\n"
-        "execution: 5/5 steps completed, 0 diagnostics\n"
+        "execution: 46/46 steps completed, 0 diagnostics\n"
     )
 
 
@@ -142,7 +142,7 @@ def test_cli_machine_output_preserves_return_value_types(tmp_path, monkeypatch, 
 
 
 def test_cli_run_writes_primary_result_when_output_is_requested(tmp_path, monkeypatch, capsys):
-    monkeypatch.setattr(sys, "argv", ["culsma", "run", "--input", str(MINIMAL_INPUT), "--json"])
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", "--input", str(EXAMPLE_INPUT), "--json"])
 
     main()
 
@@ -151,7 +151,7 @@ def test_cli_run_writes_primary_result_when_output_is_requested(tmp_path, monkey
     monkeypatch.setattr(
         sys,
         "argv",
-        ["culsma", "run", "--input", str(MINIMAL_INPUT), "--output", str(output_path)],
+        ["culsma", "run", "--input", str(EXAMPLE_INPUT), "--output", str(output_path)],
     )
 
     main()
@@ -170,7 +170,7 @@ def test_cli_run_writes_debug_artifacts_only_when_requested(tmp_path, monkeypatc
     monkeypatch.setattr(
         sys,
         "argv",
-        ["culsma", "run", "--input", str(MINIMAL_INPUT), "--json", "--artifacts-dir", str(artifacts_dir)],
+        ["culsma", "run", "--input", str(EXAMPLE_INPUT), "--json", "--artifacts-dir", str(artifacts_dir)],
     )
 
     main()
@@ -179,7 +179,7 @@ def test_cli_run_writes_debug_artifacts_only_when_requested(tmp_path, monkeypatc
     payload = json.loads(captured.out)
     assert payload["schema"] == "culsma_run_output_v1"
     assert payload["report"]["schema"] == "lab_report_v1"
-    assert payload["returns"]["PublicMinimal"]["value"]["id"] == "Target"
+    assert payload["returns"]["FlowCytometryProtocol"]["value"]["id"] == "AcquisitionSample"
     assert captured.err == ""
     expected = {
         "summary.json",
@@ -200,7 +200,7 @@ def test_cli_replay_reconstructs_state_from_explicit_run_artifact(tmp_path, monk
     monkeypatch.setattr(
         sys,
         "argv",
-        ["culsma", "run", "--input", str(MINIMAL_INPUT), "--artifacts-dir", str(artifacts_dir)],
+        ["culsma", "run", "--input", str(EXAMPLE_INPUT), "--artifacts-dir", str(artifacts_dir)],
     )
     main()
     capsys.readouterr()

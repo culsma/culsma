@@ -1,0 +1,93 @@
+protocol FlowCytometryProtocol {
+    // A compact, generic flow-cytometry immunophenotyping protocol.
+    // The example demonstrates material setup, washing, staining, fixation,
+    // single-cell stream construction, and a structured readout declaration.
+
+    // Prepare the cell input and process reagents.
+    let cell_suspension = tube(
+        label = "PreparedCellSuspension",
+        capacity = 2000uL,
+        load = [content(kind = bio_cellular, type = cell_population, code = "CELLS1", attrs = { state: suspension }):500uL]
+    );
+    let lysis_buffer = tube(
+        label = "RedCellLysisBuffer",
+        capacity = 3000uL,
+        load = [content(kind = formulation, type = buffer, code = "RCLB", attrs = { role: lysis }):2500uL]
+    );
+    let staining_buffer = tube(
+        label = "StainingBuffer",
+        capacity = 5000uL,
+        load = [content(kind = formulation, type = buffer, code = "STAINBUF", attrs = { role: wash }):4500uL]
+    );
+    let acquisition_buffer = tube(
+        label = "AcquisitionBuffer",
+        capacity = 2000uL,
+        load = [content(kind = formulation, type = buffer, code = "ACQBUF", attrs = { role: resuspension }):1500uL]
+    );
+    let viability_dye = tube(
+        label = "ViabilityDye",
+        capacity = 200uL,
+        load = [content(kind = chemical, type = dye, code = "LIVEDEAD", attrs = { role: stain }):100uL]
+    );
+    let antibody_cocktail = tube(
+        label = "FluorAntibodyCocktail",
+        capacity = 500uL,
+        load = [content(kind = bio_molecule_or_virus, type = protein, code = "AB_CD45_CD3_CD19", attrs = { role: antibody }):300uL]
+    );
+    let fixation_buffer = tube(
+        label = "FixationBuffer",
+        capacity = 1000uL,
+        load = [content(kind = formulation, type = buffer, code = "FIX", attrs = { role: fixation }):800uL]
+    );
+    let waste = tube(label = "FlowWaste", capacity = 10000uL);
+    let working_cells = tube(label = "WorkingCellSuspension", capacity = 5000uL);
+    let acquisition_sample = tube(label = "AcquisitionSample", capacity = 3000uL);
+
+    // Combine cells with lysis buffer and incubate at room temperature.
+    working_cells << [cell_suspension:200uL, lysis_buffer:1800uL] with constraint(high_precision, low_carryover);
+    with env(thermal = 25C, duration = 10min) {
+        hold(sample = working_cells);
+    }
+
+    // Retain the cell-containing fraction and route process liquid to waste.
+    let lysis_split = sep(sample = working_cells, program = filtration_program(membrane = "cell_retention", drive = "centrifuge"));
+    waste << [lysis_split[0]];
+    working_cells << [lysis_split[1]];
+
+    // Wash retained cells twice before staining.
+    repeat wash_cycle in schedule(start = 1, end = 2, step = 1) {
+        working_cells << [staining_buffer:1000uL];
+        let wash_split = sep(sample = working_cells, program = filtration_program(membrane = "cell_retention", drive = "centrifuge"));
+        waste << [wash_split[0]];
+        working_cells << [wash_split[1]];
+    }
+
+    // Add viability dye and antibody cocktail under dark-protected conditions.
+    working_cells << [viability_dye:5uL, antibody_cocktail:50uL] with constraint(high_precision, low_carryover, dark_protected);
+    with constraint(dark_protected) {
+        with env(thermal = 4C, duration = 30min) {
+            hold(sample = working_cells);
+        }
+    }
+
+    // Fix stained cells, then prepare the acquisition sample.
+    working_cells << [fixation_buffer:300uL];
+    with constraint(dark_protected) {
+        with env(thermal = 25C, duration = 10min) {
+            hold(sample = working_cells);
+        }
+    }
+
+    acquisition_sample << [working_cells:300uL, acquisition_buffer:700uL];
+
+    // Declare the marker panel, single-cell event stream, and readout schema.
+    let immunophenotyping_panel = markers([CD45, CD3, CD19, LiveDead]);
+    let cell_events = stream(sample = acquisition_sample, unit = single_cell, panel = immunophenotyping_panel);
+    let flow_event_schema = data_schema(
+        label = "FlowCytometryEventReadout",
+        fields = [event_id, sample_id, fsc_a, ssc_a, cd45_signal, cd3_signal, cd19_signal, viability_signal, population_label]
+    );
+    let flow_events = img(sample = cell_events, quantity = customized, schema_ref = flow_event_schema, save_raw = true);
+
+    return acquisition_sample;
+}

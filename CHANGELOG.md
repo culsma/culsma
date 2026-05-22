@@ -1,17 +1,77 @@
 # Changelog
 
+## Culsma v1.0.2
+
+### Scope
+
+This release aligns content taxonomy semantics, source authoring examples, and
+material partition diagnostics for the current public Culsma execution kernel.
+
+It includes:
+
+- canonical content taxonomy normalization for `kind` and `type`
+- compatibility warnings for legacy content sugar and deprecated taxonomy values
+- source-level `attrs = { ... }` record literal support for content metadata
+- runtime preservation of canonical and original content classification fields
+- updated material partition classes and conservative fallback diagnostics
+- frontend conformance tests covering current source syntax end to end
+- a representative flow-cytometry protocol example using current source syntax
+- public documentation updates for content taxonomy, attrs, examples,
+  diagnostics, artifacts, replay, and navigation
+
+### Compatibility
+
+- Legacy content forms such as `blood(...)`, `reagent(...)`, `buffer(...)`, and
+  old taxonomy tokens are still accepted in compatibility mode.
+- Compatibility normalization emits warnings instead of failing the run.
+- Current examples use `content(kind = ..., type = ..., attrs = { ... })`.
+- The repository example path changed to
+  `examples/flow_cytometry_protocol.culs`.
+
+### Install
+
+PyPI install:
+
+```bash
+python -m pip install culsma
+```
+
+Source tag install:
+
+```bash
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@v1.0.2"
+```
+
+### Notes
+
+- Requires Python 3.11+
+- Runtime dependency: `lark>=1.1.0`
+- This is a patch release. It does not intentionally remove legacy source
+  compatibility, but it does update the recommended public authoring surface.
+
+### Verified
+
+- `python -m pytest -q`
+  - result: `544 passed`
+- `python -m culsma.cli run examples/flow_cytometry_protocol.culs`
+  - result: `46/46 steps completed, 0 diagnostics`
+- `python -m culsma.cli run examples/env_readout_protocol.culs`
+  - result: `5/5 steps completed, 0 diagnostics`
+- `npm --prefix ../culsma-docs run build`
+  - result: passed
+- `python -m pip wheel . -w /private/tmp/culsma-v1.0.2-dist --no-deps --no-build-isolation`
+  - result: `culsma-1.0.2-py3-none-any.whl` built
+
+Not run locally:
+
+- `twine check`
+  - reason: `twine` is not installed in the current virtual environment
+
 ## Unreleased
 
 ### Maintenance
 
-- Add README badges for PyPI, Python versions, release checks, software DOI,
-  reference DOI, and license.
-- Update the public paper/citation links to the released bioRxiv preprint.
-- Clarify that repository examples are available from the source checkout when
-  installing the package from PyPI.
-- Remove a stale package-data declaration for a nonexistent pipeline operation
-  catalog.
-- Expose `culsma.__version__` for lightweight runtime version checks.
+- No unreleased changes.
 
 ## Culsma v1.0.1
 
@@ -90,7 +150,7 @@ python -m pip install culsma-1.0.0-py3-none-any.whl
 ### Run
 
 ```bash
-culsma run --input examples/minimal/public_minimal.culs --artifacts-dir tmp/run
+culsma run --input examples/flow_cytometry_protocol.culs --artifacts-dir tmp/run
 ```
 
 ### Verified
@@ -99,7 +159,7 @@ Release candidate verification:
 
 - `python -m pytest -q`
   - result: full test suite passed
-- `python -m culsma.cli run --input examples/minimal/public_minimal.culs`
+- `python -m culsma.cli run --input examples/flow_cytometry_protocol.culs`
   - result: CLI smoke test passed and emitted the primary run result JSON
 - `python -m pip wheel . -w /tmp/culsma-dist --no-deps --no-build-isolation`
   - result: `culsma-1.0.0-py3-none-any.whl` built successfully

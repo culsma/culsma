@@ -1,8 +1,8 @@
-protocol PublicEnvReadout {
+protocol EnvReadoutProtocol {
     let reactor = tube(
         label = "Reactor",
         capacity = 100uL,
-        load = [buffer(code = "BUF02", type = "reaction_buffer"):20uL]
+        load = [content(kind = formulation, type = buffer, code = "BUF02", attrs = { role: reaction_buffer }):20uL]
     );
     with env(thermal = 37C, duration = 10min) {
         hold(sample = reactor);

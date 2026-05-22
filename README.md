@@ -22,7 +22,7 @@ This repository intentionally contains only the executable core:
 - `src/culsma/runtime/`
 - `src/culsma/driver/`
 - `src/culsma/stdlib/`
-- minimal public `examples/`
+- `examples/`
 - `tests/`
 
 It intentionally leaves out manuscript sources, MCP tooling, editor
@@ -40,10 +40,10 @@ The runnable examples live in the source repository. If you install from PyPI,
 use the GitHub source checkout or copy an example file locally before running
 the example commands below.
 
-You can also install directly from the `v1.0.1` tag:
+You can also install directly from the `v1.0.2` tag:
 
 ```bash
-python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@v1.0.1"
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@v1.0.2"
 ```
 
 Release notes are in [CHANGELOG.md](CHANGELOG.md).
@@ -59,29 +59,29 @@ src/culsma/pipeline/  compile, validate, typecheck, and plan lowering
 src/culsma/runtime/   execution state, events, and material compute
 src/culsma/driver/    backend boundary and concrete drivers
 src/culsma/stdlib/    bundled standard-library source
-examples/             minimal current-surface examples
+examples/             current protocol examples
 tests/                regression and runtime tests
 ```
 
 ## Quick Run
 
 ```bash
-culsma examples/minimal/public_minimal.culs
+culsma examples/flow_cytometry_protocol.culs
 ```
 
-This runs the protocol and prints a compact terminal result, including the
-returned tube/container state.
+This runs a representative protocol and prints a compact terminal result,
+including the returned tube/container state.
 
 The explicit run form is equivalent:
 
 ```bash
-culsma run examples/minimal/public_minimal.culs
+culsma run examples/flow_cytometry_protocol.culs
 ```
 
 If you want the machine-readable run output on stdout:
 
 ```bash
-culsma run examples/minimal/public_minimal.culs --json
+culsma run examples/flow_cytometry_protocol.culs --json
 ```
 
 The run output separates the protocol return from the generated lab report:
@@ -91,14 +91,14 @@ summary.
 If you want to save the machine-readable run output explicitly:
 
 ```bash
-culsma run examples/minimal/public_minimal.culs --output tmp/result.json
+culsma run examples/flow_cytometry_protocol.culs --output tmp/result.json
 ```
 
 If you want intermediate and debug artifacts as well:
 
 ```bash
 culsma run \
-  examples/minimal/public_minimal.culs \
+  examples/flow_cytometry_protocol.culs \
   --artifacts-dir tmp/run
 ```
 
@@ -106,7 +106,7 @@ If you are running from a source checkout without the console entrypoint on
 `PATH`, use:
 
 ```bash
-python -m culsma examples/minimal/public_minimal.culs
+python -m culsma examples/flow_cytometry_protocol.culs
 ```
 
 You can also replay a saved run artifact:
@@ -126,12 +126,14 @@ python -m pytest -q
 - Documentation: [culsma.dev](https://culsma.dev/)
 - Paper and citation: [Culsma: A Formal Language for Laboratory Protocols](https://doi.org/10.64898/2026.05.07.723509)
   (bioRxiv preprint)
-- Software DOI: [10.5281/zenodo.20059616](https://doi.org/10.5281/zenodo.20059616)
-  (latest/versioned software archive)
-- Culsma v1.0.1 DOI: [10.5281/zenodo.20059617](https://doi.org/10.5281/zenodo.20059617)
-- Reference DOI: [10.5281/zenodo.20059696](https://doi.org/10.5281/zenodo.20059696)
-  (latest/versioned language reference archive)
-- Culsma Reference v1.0.1 DOI: [10.5281/zenodo.20059697](https://doi.org/10.5281/zenodo.20059697)
+- Software concept DOI: [10.5281/zenodo.20059616](https://doi.org/10.5281/zenodo.20059616)
+- Latest fixed software archive DOI: [10.5281/zenodo.20059617](https://doi.org/10.5281/zenodo.20059617)
+  for Culsma v1.0.1
+- Reference concept DOI: [10.5281/zenodo.20059696](https://doi.org/10.5281/zenodo.20059696)
+- Latest fixed reference archive DOI: [10.5281/zenodo.20059697](https://doi.org/10.5281/zenodo.20059697)
+  for Culsma Reference v1.0.1
+- Fixed v1.0.2 archive DOI entries will be added after the corresponding
+  Zenodo deposits are minted.
 - GitHub Releases: [github.com/culsma/culsma/releases](https://github.com/culsma/culsma/releases)
 - Changelog: [CHANGELOG.md](CHANGELOG.md)
 - Support policy: [SUPPORT.md](SUPPORT.md)
