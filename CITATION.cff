@@ -1,8 +1,8 @@
 cff-version: 1.2.0
 message: "If you cite or rely on the Culsma reference implementation, please cite this software release."
 title: "Culsma: Public Reference Implementation"
-version: "1.0.1"
-date-released: "2026-05-06"
+version: "1.0.2"
+date-released: "2026-05-22"
 license: "Apache-2.0"
 url: "https://culsma.dev/"
 repository-code: "https://github.com/culsma/culsma"
