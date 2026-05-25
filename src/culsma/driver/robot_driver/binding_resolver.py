@@ -23,20 +23,30 @@ _ACTION_BY_PROGRAM_KIND = {
     "phase_partition_program": "material.separate.phase_partition",
     "density_gradient_program": "device.fractionation.run",
     "chromatography_program": "device.chromatography.run",
-    "temperature_program": "sensor.temperature.read",
-    "pressure_program": "sensor.pressure.read",
-    "optical_fluor_program": "device.reader.fluor.read",
-    "optical_uv_program": "device.reader.uv.read",
+}
+
+_ACTION_BY_READOUT_QUANTITY = {
+    ("img", "uv_absorbance"): "device.reader.uv.read",
+    ("img", "fluorescence"): "device.reader.fluor.read",
+    ("img", "colorimetric"): "device.reader.colorimetric.read",
+    ("ecp", "ph"): "sensor.ph.read",
+    ("ecp", "conductivity"): "sensor.conductivity.read",
+    ("ecp", "dissolved_oxygen"): "sensor.dissolved_oxygen.read",
+    ("ecp", "orp"): "sensor.orp.read",
+    ("phy", "temperature"): "sensor.temperature.read",
+    ("phy", "pressure"): "sensor.pressure.read",
+    ("phy", "flow_rate"): "sensor.flow_rate.read",
+    ("phy", "mass"): "sensor.mass.read",
+    ("phy", "volume"): "sensor.volume.read",
+    ("phy", "humidity"): "sensor.humidity.read",
+    ("phy", "current"): "sensor.current.read",
 }
 
 
 class RobotBindingResolver:
     def bind(self, record: MappingRecord, context: DriverContext | None = None) -> dict[str, Any]:
         return {
-            "action": _ACTION_BY_PROGRAM_KIND.get(
-                record.program_kind or "",
-                _ACTION_BY_OP.get(record.semantic_op, f"generic.{record.semantic_op.lower()}"),
-            ),
+            "action": _action_for_record(record),
             "requirement_flags": list(record.requirements),
             "env_summary": (
                 {key: value_to_text(value) for key, value in sorted(record.env.items())}
@@ -46,3 +56,14 @@ class RobotBindingResolver:
             "driver_kind": context.driver_kind if context is not None else "robot",
             "program_kind": record.program_kind,
         }
+
+
+def _action_for_record(record: MappingRecord) -> str:
+    program_action = _ACTION_BY_PROGRAM_KIND.get(record.program_kind or "")
+    if program_action is not None:
+        return program_action
+    quantity = value_to_text(record.semantic_args.get("quantity"))
+    quantity_action = _ACTION_BY_READOUT_QUANTITY.get((record.semantic_op, quantity))
+    if quantity_action is not None:
+        return quantity_action
+    return _ACTION_BY_OP.get(record.semantic_op, f"generic.{record.semantic_op.lower()}")

@@ -33,6 +33,11 @@ BUILTIN_METHOD_STEPS = {"append"}
 CONSTRAINT_CUSTOMIZED = "customized"
 COLD_CHAIN_MAX_C = 8.0
 AGIT_MODES = {"vortex", "invert", "shake", "stir"}
+READOUT_QUANTITY_SETS = {
+    "img": frozenset({"uv_absorbance", "fluorescence", "colorimetric", "customized"}),
+    "ecp": frozenset({"ph", "conductivity", "dissolved_oxygen", "orp", "customized"}),
+    "phy": frozenset({"temperature", "pressure", "flow_rate", "mass", "volume", "humidity", "current", "customized"}),
+}
 
 
 @dataclass(frozen=True)
@@ -578,6 +583,19 @@ def validate_readout_schema_contract(
     if quantity_arg is None:
         return []
     quantity_value = ExprResolver.to_text_token(quantity_arg.value, literal_bindings)
+    allowed_quantities = READOUT_QUANTITY_SETS[call_name]
+    if quantity_value not in allowed_quantities:
+        return [
+            Diagnostic(
+                code="SEM_INVALID_READOUT_QUANTITY",
+                message=(
+                    f"Readout '{call_name}' quantity must be one of: "
+                    + ", ".join(sorted(allowed_quantities))
+                ),
+                span=quantity_arg.span or span,
+                node_id=node_id,
+            )
+        ]
     if quantity_value != "customized":
         return []
     if _find_arg_by_name(args, "schema_ref") is not None:

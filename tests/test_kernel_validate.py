@@ -113,6 +113,109 @@ def test_validate_duplicate_arg():
     assert all(d.span is not None for d in result.diagnostics)
 
 
+@pytest.mark.parametrize(
+    ("op", "quantity"),
+    [
+        ("img", "banana_signal"),
+        ("ecp", "banana_ecp"),
+        ("phy", "banana_phy"),
+    ],
+)
+def test_validate_readout_quantity_must_be_in_current_reference_set(op: str, quantity: str):
+    src = f"protocol T {{ {op}(sample = tube_a, quantity = {quantity}); }}"
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert "SEM_INVALID_READOUT_QUANTITY" in _codes(result)
+
+
+def test_validate_let_bound_readout_quantity_must_be_in_current_reference_set():
+    src = "protocol T { let obs = img(sample = tube_a, quantity = banana_signal); }"
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert "SEM_INVALID_READOUT_QUANTITY" in _codes(result)
+
+
+@pytest.mark.parametrize(
+    "program_name",
+    [
+        "pipette_program",
+        "vortex_program",
+        "invert_program",
+        "shake_program",
+        "plate_shake_program",
+        "stir_program",
+        "spatula_program",
+        "scalpel_program",
+        "optical_uv_program",
+        "optical_fluor_program",
+        "optical_colorimetric_program",
+        "gel_readout_program",
+        "microscopy_program",
+        "ph_program",
+        "conductivity_program",
+        "dissolved_oxygen_program",
+        "orp_program",
+        "ion_selective_program",
+        "temperature_measure_program",
+        "pressure_program",
+        "flow_rate_program",
+        "mass_measure_program",
+        "volume_measure_program",
+        "humidity_program",
+    ],
+)
+def test_validate_removed_public_program_constructors_are_rejected(program_name: str):
+    src = f"protocol T {{ let p = {program_name}(); }}"
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert "SEM_PROGRAM_KIND_INVALID" in _codes(result)
+
+
+@pytest.mark.parametrize(
+    "program_name",
+    [
+        "centrifuge_program",
+        "magnetic_program",
+        "disrupt_program",
+        "field_program",
+        "filtration_program",
+        "phase_partition_program",
+        "precipitation_program",
+        "density_gradient_program",
+        "chromatography_program",
+        "thermal_program",
+    ],
+)
+def test_validate_current_program_constructors_can_be_let_bound_as_descriptors(program_name: str):
+    args_by_program = {
+        "centrifuge_program": "drive = 12000g",
+        "field_program": "field = 100V",
+        "filtration_program": 'membrane = "silica", drive = pressure',
+        "phase_partition_program": 'solvent = "phenol_chloroform"',
+        "precipitation_program": "reagent = cleanup_capture",
+        "density_gradient_program": "axis = density, order = top_to_bottom, bins = 8",
+        "chromatography_program": "axis = retention_time, order = early_to_late, bins = 24",
+        "thermal_program": "from = 95C, duration = 30s",
+    }
+    args = args_by_program.get(program_name, "")
+    src = f"protocol T {{ let p = {program_name}({args}); }}"
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+
+
+def test_validate_owner_program_arg_accepts_let_bound_program_descriptor_alias():
+    src = """
+protocol T {
+  let p = centrifuge_program(drive = 12000g);
+  let g = sep(sample = lysate, program = p);
+}
+"""
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+
+
 def test_builtin_operation_specs_exclude_legacy_portal_steps():
     for name in ("Measure", "Lyse", "ExtractDNA", "PCR", "Electrophoresis"):
         assert name not in BUILTIN_OPERATION_SPECS
@@ -380,6 +483,18 @@ protocol T {
     ir = _compile_source(src)
     result = validate(ir)
     assert "SEM_ENV_ARG_CONFLICT" in _codes(result)
+
+
+def test_validate_with_env_thermal_program_accepts_let_bound_descriptor_alias():
+    src = """
+protocol T {
+  let tp = thermal_program(from = 95C, duration = 30s);
+  with env(thermal = tp) { hold(sample = tube); }
+}
+"""
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
 
 
 def test_validate_let_bound_customized_img_requires_schema_ref():

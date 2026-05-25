@@ -63,24 +63,20 @@ def test_human_driver_preserves_stub_payload_for_observation_results():
     assert result.payload["instruction"]["category"] == "observation"
 
 
-def test_human_driver_prefers_program_kind_specific_tool_binding():
+def test_human_driver_prefers_readout_quantity_specific_tool_binding():
     step = PlanStep(
         step_id="step.obs.2",
         op="phy",
         args={
             "sample": {"kind": "IRIdentifier", "name": "probe"},
-            "program": {
-                "kind": "IRCall",
-                "name": "temperature_program",
-                "args": [{"name": "mode", "value": {"kind": "IRString", "value": "single"}}],
-            },
+            "quantity": {"kind": "IRIdentifier", "name": "temperature"},
         },
     )
 
     result = HumanDriver().execute(step)
 
     assert result.ok
-    assert result.payload["binding"]["program_kind"] == "temperature_program"
+    assert result.payload["binding"]["program_kind"] is None
     assert result.payload["binding"]["tool_label"] == "temperature probe workflow"
 
 

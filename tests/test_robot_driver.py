@@ -45,22 +45,18 @@ def test_robot_driver_preserves_stub_payload_for_observation_results():
     assert result.payload["command"]["category"] == "command"
 
 
-def test_robot_driver_prefers_program_kind_specific_action_binding():
+def test_robot_driver_prefers_readout_quantity_specific_action_binding():
     step = PlanStep(
         step_id="step.robot.obs.2",
         op="phy",
         args={
             "sample": {"kind": "IRIdentifier", "name": "probe"},
-            "program": {
-                "kind": "IRCall",
-                "name": "temperature_program",
-                "args": [{"name": "mode", "value": {"kind": "IRString", "value": "single"}}],
-            },
+            "quantity": {"kind": "IRIdentifier", "name": "temperature"},
         },
     )
 
     result = RobotDriver().execute(step)
 
     assert result.ok
-    assert result.payload["binding"]["program_kind"] == "temperature_program"
+    assert result.payload["binding"]["program_kind"] is None
     assert result.payload["binding"]["action"] == "sensor.temperature.read"

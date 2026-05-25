@@ -205,7 +205,7 @@ def _render_program_aware_separation_summary(record: HumanMappingRecord, sample:
 
 
 def _render_observation_summary(record: HumanMappingRecord, sample: str, quantity: str) -> str:
-    if record.program_kind == "temperature_program" or quantity == "temperature":
+    if quantity == "temperature":
         return f"Measure the temperature of {sample}."
     if record.semantic_op == "img" and quantity != "null":
         return f"Capture a {quantity} image of {sample}."

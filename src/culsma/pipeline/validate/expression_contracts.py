@@ -23,7 +23,7 @@ from .context import _GroupBinding
 from .groups import GroupIndexValidator
 from .programs import ProgramContractValidator, is_legacy_program_kind, is_program_kind
 
-PROGRAM_OWNER_FAMILY = {"sep", "frac", "img", "ecp", "phy"}
+PROGRAM_OWNER_FAMILY = {"sep", "frac"}
 
 
 def validate_expr_contracts(

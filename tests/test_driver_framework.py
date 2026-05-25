@@ -115,15 +115,15 @@ def test_projection_driver_is_not_a_stub_driver_subclass():
 def test_mapping_record_extracts_program_descriptor_for_plugin_consumers():
     step = PlanStep(
         step_id="demo.2",
-        op="phy",
+        op="sep",
         args={
-            "sample": {"kind": "IRIdentifier", "name": "probe"},
+            "sample": {"kind": "IRIdentifier", "name": "tube"},
             "program": {
                 "kind": "IRCall",
-                "name": "temperature_program",
+                "name": "centrifuge_program",
                 "args": [
-                    {"name": "mode", "value": {"kind": "IRString", "value": "single"}},
-                    {"name": "interval", "value": {"kind": "IRQuantity", "value": 5, "unit": "s"}},
+                    {"name": "drive", "value": {"kind": "IRQuantity", "value": 12000, "unit": "g"}},
+                    {"name": "keep_source", "value": {"kind": "IRString", "value": "pellet"}},
                 ],
             },
         },
@@ -131,9 +131,9 @@ def test_mapping_record_extracts_program_descriptor_for_plugin_consumers():
 
     record = DemoDriver().build_mapping_record(step)
 
-    assert record.program_kind == "temperature_program"
-    assert record.program_args["mode"]["value"] == "single"
-    assert record.program_args["interval"]["unit"] == "s"
+    assert record.program_kind == "centrifuge_program"
+    assert record.program_args["drive"]["unit"] == "g"
+    assert record.program_args["keep_source"]["value"] == "pellet"
 
 
 class ProgramSpecificTranslator:
@@ -157,8 +157,8 @@ class ProgramAwareDriver(ProjectionDriver):
     translator_registry: TranslatorRegistry = field(
         default_factory=lambda: TranslatorRegistry(
             translators={
-                "phy": DemoTranslator(),
-                ("phy", "temperature_program"): ProgramSpecificTranslator(),
+                "sep": DemoTranslator(),
+                ("sep", "centrifuge_program"): ProgramSpecificTranslator(),
             },
             default_translator=DemoTranslator(),
         )
@@ -171,12 +171,12 @@ class ProgramAwareDriver(ProjectionDriver):
 def test_registry_prefers_semantic_op_plus_program_kind_when_available():
     step = PlanStep(
         step_id="demo.3",
-        op="phy",
+        op="sep",
         args={
-            "sample": {"kind": "IRIdentifier", "name": "probe"},
+            "sample": {"kind": "IRIdentifier", "name": "tube"},
             "program": {
                 "kind": "IRCall",
-                "name": "temperature_program",
+                "name": "centrifuge_program",
                 "args": [],
             },
         },
@@ -186,4 +186,4 @@ def test_registry_prefers_semantic_op_plus_program_kind_when_available():
 
     assert result.ok
     assert result.payload["demo_projection"]["label"] == "Program-specific projection"
-    assert result.payload["demo_payload"]["program_kind"] == "temperature_program"
+    assert result.payload["demo_payload"]["program_kind"] == "centrifuge_program"
