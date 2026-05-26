@@ -149,3 +149,10 @@ The repository is published as-is. Maintainer review is limited to narrowly
 scoped, reproducible defects in the current public baseline. General support,
 custom integration help, roadmap requests, and broad feature requests are out
 of scope for the public issue tracker.
+
+<p align="center">
+  <a href="https://brodinlab.com/">
+    <img src="docs/assets/Brodin_Logo_Black500.png#gh-light-mode-only" alt="Brodin Lab affiliation mark" width="150">
+    <img src="docs/assets/Brodin_Logo_OffWhite.png#gh-dark-mode-only" alt="Brodin Lab affiliation mark" width="150">
+  </a>
+</p>

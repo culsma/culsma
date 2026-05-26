@@ -25,7 +25,7 @@ docs/
 | Directory | What goes here | What does not go here |
 | --- | --- | --- |
 | `architecture/` | current implementation structure, module boundaries, pipeline maps, and design diagrams | temporary refactor notes, reading plans, release checklists |
-| `assets/` | repository logo and wordmark assets used by public docs | generated scratch images or temporary diagrams |
+| `assets/` | repository logo, wordmark, and affiliation marks used by public docs | generated scratch images or temporary diagrams |
 
 ## Current Architecture Notes
 
