@@ -6,7 +6,7 @@ from typing import Mapping
 
 from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.analysis import CompileAnalysis, ProtocolAnalysis
-from culsma.pipeline.ir_nodes import IRProgram
+from culsma.pipeline.ir_nodes import IRBoolean, IRList, IRParam, IRProgram, IRQuantity, IRString
 from culsma.pipeline.operation_specs import BUILTIN_OPERATION_SPECS, OperationSpec
 
 from .context import ValidationResult, _GroupBinding
@@ -28,10 +28,14 @@ def validate(
     operations = operation_specs
 
     for protocol in ir.protocols:
-        literal_bindings = {}
-        expr_bindings = {}
+        literal_bindings = literal_param_bindings(protocol.params)
+        expr_bindings = {
+            param.name: param.default
+            for param in protocol.params
+            if param.default is not None
+        }
         group_bindings: dict[str, _GroupBinding] = {}
-        defined_names: set[str] = set(initial_defined_names or set())
+        defined_names: set[str] = set(initial_defined_names or set()) | {param.name for param in protocol.params}
         protocol_analysis = analysis.protocols.get(protocol.id, ProtocolAnalysis())
         ctx = StatementValidationContext(
             literal_bindings=literal_bindings,
@@ -50,6 +54,29 @@ def validate(
         validate_statement_list_with_context(protocol.statements, ctx)
 
     return ValidationResult(ir=ir, diagnostics=_dedupe_diagnostics(diagnostics))
+
+
+def literal_param_bindings(params: list[IRParam]) -> dict[str, object]:
+    bindings: dict[str, object] = {}
+    for param in params:
+        literal = literal_param_value(param.default)
+        if literal is not None:
+            bindings[param.name] = literal
+    return bindings
+
+
+def literal_param_value(value: object) -> object | None:
+    if isinstance(value, IRString):
+        return value.value
+    if isinstance(value, IRBoolean):
+        return value.value
+    if isinstance(value, IRQuantity) and value.unit is None:
+        return float(value.value)
+    if isinstance(value, IRList):
+        items = [literal_param_value(item) for item in value.elements]
+        if all(isinstance(item, str) for item in items):
+            return items
+    return None
 
 
 def _dedupe_diagnostics(diagnostics: list[Diagnostic]) -> list[Diagnostic]:

@@ -23,6 +23,7 @@ class PlanLoweringContext:
     reference_resolver: Any = None
     step_id_prefix: str = ""
     call_path: list[str] = field(default_factory=list)
+    env_time_boundary: Any = None
 
     def derive(
         self,
@@ -34,6 +35,7 @@ class PlanLoweringContext:
         gate_base: dict[str, Any] | None = None,
         step_id_prefix: str | None = None,
         call_path: list[str] | None = None,
+        env_time_boundary: Any = None,
     ) -> PlanLoweringContext:
         return PlanLoweringContext(
             protocols_by_name=self.protocols_by_name,
@@ -48,6 +50,7 @@ class PlanLoweringContext:
             reference_resolver=self.reference_resolver,
             step_id_prefix=self.step_id_prefix if step_id_prefix is None else step_id_prefix,
             call_path=list(self.call_path if call_path is None else call_path),
+            env_time_boundary=self.env_time_boundary if env_time_boundary is None else env_time_boundary,
         )
 
     def emit_diagnostic(self, diagnostic: Diagnostic) -> None:

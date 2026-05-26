@@ -19,6 +19,8 @@ from .expressions import ExprCompiler
 from .callable import CallableLowering
 from .targets import TargetResolver
 from .schedule import ScheduleEvaluator
+from .static_control import StaticControlClassifier
+from .repeat_control import RepeatControlLowerer
 from .statements import StatementCompiler
 
 
@@ -39,6 +41,8 @@ class IRCompiler:
         self.callable_lowering = CallableLowering(session=self.session)
         self.target_resolver = TargetResolver(session=self.session)
         self.schedule_evaluator = ScheduleEvaluator()
+        self.static_control_classifier = StaticControlClassifier()
+        self.repeat_control_lowerer = RepeatControlLowerer()
         self.expr_compiler = ExprCompiler(callable_lowering=self.callable_lowering)
         self.statement_compiler = StatementCompiler(
             session=self.session,
@@ -46,6 +50,8 @@ class IRCompiler:
             callable_lowering=self.callable_lowering,
             target_resolver=self.target_resolver,
             schedule_evaluator=self.schedule_evaluator,
+            static_control_classifier=self.static_control_classifier,
+            repeat_control_lowerer=self.repeat_control_lowerer,
         )
 
     def compile_program(self, ast: Program) -> CompileResult:
@@ -64,9 +70,11 @@ class IRCompiler:
         _validate_protocol_return_contract(proto)
         return_stmt = _protocol_tail_return(proto)
         proto_id = f"p{proto_index}"
+        param_names = {param.name for param in proto.params}
         ctx = BlockContext(
             scope_id=proto_id,
-            local_names={param.name for param in proto.params},
+            local_names=set(param_names),
+            param_names=param_names,
         )
         statements = self.statement_compiler.compile_list(proto.statements, ctx=ctx)
         return IRProtocol(

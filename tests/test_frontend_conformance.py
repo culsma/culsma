@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from culsma.driver.stub import StubDriver
-from culsma.frontend.resolver import resolve_program
+from culsma.frontend.resolver import resolve_files, resolve_program
 from culsma.parser.parser import parse, parse_file
 from culsma.pipeline.analysis import build_compile_analysis
 from culsma.pipeline.compile import compile_ast
@@ -83,6 +83,45 @@ protocol T {
     assert registry["PBS1"]["content_kind"] == "formulation"
     assert registry["PBS1"]["content_type"] == "buffer"
     assert registry["PBS1"]["content_attrs"] == {"role": "wash", "state": "ready"}
+
+
+def test_frontend_file_entry_param_drives_static_schedule_endpoint(tmp_path: Path):
+    source = tmp_path / "cdna.culs"
+    source.write_text(
+        """
+protocol PcrSelectedCycles(selected_amplification_cycles = 7) {
+  let cdna = tube(
+    label = "CDNA",
+    capacity = 200uL,
+    load = [content(kind = bio_molecule_or_virus, type = dna, code = "CDNA"):100uL]
+  );
+
+  repeat selected_cycle in schedule(start = 1, end = selected_amplification_cycles, step = 1) {
+    with env(thermal = 98C, duration = 20s) {
+      hold(sample = cdna);
+    }
+  }
+
+  return cdna;
+}
+""",
+        encoding="utf-8",
+    )
+
+    frontend = resolve_files([source], include_bundled_stdlib=False)
+    compiled = compile_ast(frontend.prepared_program)
+    sem = validate(compiled.ir, analysis=compiled.analysis)
+    assert sem.ok, [d.to_dict() for d in sem.diagnostics]
+    typ = typecheck(sem.ir)
+    assert typ.ok, [d.to_dict() for d in typ.diagnostics]
+
+    plan = lower_ir_to_plan(
+        typ.ir,
+        entry_args_by_protocol={"PcrSelectedCycles": {"selected_amplification_cycles": 4}},
+    )
+
+    assert not plan.diagnostics
+    assert [step.op for step in plan.plans[0].steps].count("env_hold") == 4
 
 
 def test_legacy_content_sugar_is_compatibility_surface_not_current_frontend():

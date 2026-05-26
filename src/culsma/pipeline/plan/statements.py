@@ -30,6 +30,7 @@ from .context import PlanLoweringContext
 from .gates import append_constraints, append_runtime_condition, merge_gate
 from .references import DEFAULT_PLAN_REFERENCE_RESOLVER, PlanReferenceResolver
 from .serialization import DEFAULT_PLAN_EXPRESSION_SERIALIZER, PlanExpressionSerializer
+from .static_eval import PlanStaticEvaluator
 
 
 _CORE_RUNTIME_CALLS = {"sep", "frac", "img", "ecp", "phy"}
@@ -47,9 +48,15 @@ class LetPlanState(PlanStatementLoweringState):
     call: IRCall | None = None
 
 
+@dataclass
+class ConditionalPlanState(PlanStatementLoweringState):
+    static_condition: bool | None = None
+
+
 class BasePlanStatementHandler:
     serializer: PlanExpressionSerializer = DEFAULT_PLAN_EXPRESSION_SERIALIZER
     reference_resolver: PlanReferenceResolver = DEFAULT_PLAN_REFERENCE_RESOLVER
+    static_evaluator: PlanStaticEvaluator = PlanStaticEvaluator()
 
     def handle(self, stmt: IRStatement, ctx: PlanLoweringContext) -> list[PlanStep]:
         state = self.prepare(stmt, ctx)
@@ -168,7 +175,7 @@ class LetPlanHandler(BasePlanStatementHandler):
         state = cast(LetPlanState, state)
         if state.call is None:
             return []
-        return self._lower_let_call_to_steps(stmt=stmt, call=state.call, ctx=ctx)
+        return self.lower_let_call_to_steps(stmt=stmt, call=state.call, ctx=ctx)
 
     def apply_post_lowering_effects(
         self,
@@ -182,7 +189,7 @@ class LetPlanHandler(BasePlanStatementHandler):
         if state.call is not None and state.call.name in _LOCAL_RUNTIME_CALLS:
             ctx.local_env[stmt.name] = {"kind": "IRIdentifier", "name": stmt.name}
 
-    def _lower_let_call_to_steps(
+    def lower_let_call_to_steps(
         self,
         *,
         stmt: IRLet,
@@ -350,9 +357,10 @@ class WithEnvPlanHandler(BasePlanStatementHandler):
         _state: PlanStatementLoweringState,
     ) -> list[PlanStep]:
         stmt = cast(IRWithEnv, stmt)
+        env_payload = self.serializer.serialize_arg_list(stmt.env_args, ctx.local_env)
         gate = merge_gate(
             ctx.gate_base,
-            env=self.serializer.serialize_arg_list(stmt.env_args, ctx.local_env),
+            env=env_payload,
             env_targets=self.serializer.serialize_expr(stmt.targets, ctx.local_env),
         )
         if stmt.explicit_hold and not stmt.statements:
@@ -373,6 +381,7 @@ class WithEnvPlanHandler(BasePlanStatementHandler):
             gate_base=gate,
             step_id_prefix=ctx.step_id_prefix,
             call_path=ctx.call_path,
+            env_time_boundary=self.static_evaluator.env_time_boundary_from_payload(env_payload),
         )
         return ctx.statement_lowerer.lower_list(stmt.statements, child_ctx)
 
@@ -385,7 +394,6 @@ class WithEnvPlanHandler(BasePlanStatementHandler):
     ) -> None:
         stmt = cast(IRWithEnv, stmt)
         self.serializer.invalidate_local_env_names(ctx.local_env, stmt.statements)
-
 
 class WithConstraintPlanHandler(BasePlanStatementHandler):
     def lower_current_or_children(
@@ -428,6 +436,24 @@ class RepeatPlanHandler(BasePlanStatementHandler):
         _state: PlanStatementLoweringState,
     ) -> list[PlanStep]:
         stmt = cast(IRRepeat, stmt)
+        iterable = self.serializer.serialize_expr(stmt.iterable, ctx.local_env)
+        if self.static_evaluator.is_schedule_payload(iterable):
+            try:
+                schedule_mode = self.static_evaluator.schedule_mode(iterable)
+            except ValueError as exc:
+                ctx.emit_diagnostic(
+                    Diagnostic(
+                        code="PLAN_STATIC_REPEAT_SCHEDULE_INVALID",
+                        message=f"Static repeat schedule for '{stmt.id}' is invalid after parameter binding: {exc}",
+                        span=stmt.span,
+                        node_id=f"{ctx.step_id_prefix}{stmt.id}",
+                    )
+            )
+                return []
+            if schedule_mode == "continuous":
+                return self.lower_static_continuous_schedule(stmt=stmt, ctx=ctx, iterable=iterable)
+            return self.lower_static_schedule_repeat(stmt=stmt, ctx=ctx, iterable=iterable)
+
         body_steps: list[PlanStep] = []
         if ctx.statement_lowerer is not None:
             child_ctx = ctx.derive(
@@ -443,7 +469,7 @@ class RepeatPlanHandler(BasePlanStatementHandler):
                 op="repeat_bind",
                 args={
                     "binding": stmt.binding,
-                    "iterable": self.serializer.serialize_expr(stmt.iterable, ctx.local_env),
+                    "iterable": iterable,
                     "body_steps": self.serializer.linearize_steps(body_steps),
                 },
                 deps=[],
@@ -462,18 +488,108 @@ class RepeatPlanHandler(BasePlanStatementHandler):
         stmt = cast(IRRepeat, stmt)
         self.serializer.invalidate_local_env_names(ctx.local_env, stmt.statements)
 
+    def lower_static_schedule_repeat(
+        self,
+        *,
+        stmt: IRRepeat,
+        ctx: PlanLoweringContext,
+        iterable: Any,
+    ) -> list[PlanStep]:
+        try:
+            points = self.static_evaluator.eval_discrete_schedule_points(
+                iterable,
+                env_time_boundary=ctx.env_time_boundary,
+            )
+        except ValueError as exc:
+            ctx.emit_diagnostic(
+                Diagnostic(
+                    code="PLAN_STATIC_REPEAT_SCHEDULE_INVALID",
+                    message=f"Static repeat schedule for '{stmt.id}' is invalid after parameter binding: {exc}",
+                    span=stmt.span,
+                    node_id=f"{ctx.step_id_prefix}{stmt.id}",
+                )
+            )
+            return []
+        if ctx.statement_lowerer is None:
+            return []
+
+        expanded: list[PlanStep] = []
+        iteration_env = dict(ctx.local_env)
+        previous_binding_present = stmt.binding in iteration_env
+        previous_binding = iteration_env.get(stmt.binding)
+        try:
+            for iteration_index, point in enumerate(points):
+                iteration_env[stmt.binding] = point
+                child_ctx = ctx.derive(
+                    local_env=iteration_env,
+                    gate_base=merge_gate(ctx.gate_base),
+                    step_id_prefix=f"{ctx.step_id_prefix}{stmt.id}.i{iteration_index}.",
+                    call_path=ctx.call_path,
+                )
+                expanded.extend(ctx.statement_lowerer.lower_list(stmt.statements, child_ctx))
+        finally:
+            if previous_binding_present:
+                iteration_env[stmt.binding] = previous_binding
+            else:
+                iteration_env.pop(stmt.binding, None)
+        return expanded
+
+    def lower_static_continuous_schedule(
+        self,
+        *,
+        stmt: IRRepeat,
+        ctx: PlanLoweringContext,
+        iterable: Any,
+    ) -> list[PlanStep]:
+        try:
+            boundary = self.static_evaluator.eval_continuous_schedule_boundary(
+                iterable,
+                env_time_boundary=ctx.env_time_boundary,
+            )
+        except ValueError as exc:
+            ctx.emit_diagnostic(
+                Diagnostic(
+                    code="PLAN_STATIC_REPEAT_SCHEDULE_INVALID",
+                    message=f"Static repeat schedule for '{stmt.id}' is invalid after parameter binding: {exc}",
+                    span=stmt.span,
+                    node_id=f"{ctx.step_id_prefix}{stmt.id}",
+                )
+            )
+            return []
+        if ctx.statement_lowerer is None:
+            return []
+        child_ctx = ctx.derive(
+            local_env=dict(ctx.local_env),
+            gate_base=merge_gate(ctx.gate_base),
+            step_id_prefix=ctx.step_id_prefix,
+            call_path=ctx.call_path,
+            env_time_boundary=boundary,
+        )
+        return ctx.statement_lowerer.lower_list(stmt.statements, child_ctx)
+
 
 class ConditionalPlanHandler(BasePlanStatementHandler):
+    def prepare(self, stmt: IRStatement, ctx: PlanLoweringContext) -> PlanStatementLoweringState:
+        stmt = cast(IRConditional, stmt)
+        state = ConditionalPlanState()
+        condition_payload = self.serializer.serialize_expr(stmt.condition, ctx.local_env)
+        state.static_condition = self.static_evaluator.eval_bool(condition_payload)
+        return state
+
     def lower_current_or_children(
         self,
         stmt: IRStatement,
         ctx: PlanLoweringContext,
-        _state: PlanStatementLoweringState,
+        state: PlanStatementLoweringState,
     ) -> list[PlanStep]:
         stmt = cast(IRConditional, stmt)
+        state = cast(ConditionalPlanState, state)
         if ctx.statement_lowerer is None:
             return []
         condition_payload = self.serializer.serialize_expr(stmt.condition, ctx.local_env)
+        if state.static_condition is not None:
+            selected = stmt.then_statements if state.static_condition else stmt.else_statements
+            return ctx.statement_lowerer.lower_list(selected, ctx)
         then_ctx = ctx.derive(
             local_env=dict(ctx.local_env),
             gate_base=append_runtime_condition(ctx.gate_base, condition_payload, negate=False),
@@ -495,11 +611,16 @@ class ConditionalPlanHandler(BasePlanStatementHandler):
         self,
         stmt: IRStatement,
         ctx: PlanLoweringContext,
-        _state: PlanStatementLoweringState,
+        state: PlanStatementLoweringState,
         _output: list[PlanStep],
     ) -> None:
         stmt = cast(IRConditional, stmt)
-        self.serializer.invalidate_local_env_names(ctx.local_env, [*stmt.then_statements, *stmt.else_statements])
+        state = cast(ConditionalPlanState, state)
+        if state.static_condition is None:
+            statements = [*stmt.then_statements, *stmt.else_statements]
+        else:
+            statements = stmt.then_statements if state.static_condition else stmt.else_statements
+        self.serializer.invalidate_local_env_names(ctx.local_env, statements)
 
 
 class MutationPlanHandler(BasePlanStatementHandler):

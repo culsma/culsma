@@ -90,6 +90,46 @@ class ScheduleEvaluator:
     def substitute_statement(self, stmt: Statement, binding: str, value: Expression) -> Statement:
         return _substitute_statement(stmt, binding, value)
 
+    def resolve_bound_expr(self, expr: Expression, *, ctx: BlockContext) -> Expression:
+        seen: set[str] = set()
+        current = expr
+        while isinstance(current, Identifier) and current.name in ctx.let_bindings:
+            if current.name in seen:
+                break
+            seen.add(current.name)
+            current = ctx.let_bindings[current.name]
+        return current
+
+    def extract_env_time_boundary(self, stmt: WithEnvStmt, *, ctx: BlockContext) -> Quantity | None:
+        duration_arg = next((arg for arg in stmt.env_args if arg.name == "duration"), None)
+        if duration_arg is not None:
+            resolved = self.resolve_bound_expr(duration_arg.value, ctx=ctx)
+            return resolved if isinstance(resolved, Quantity) and self.is_time_point(resolved) else None
+
+        thermal_arg = next((arg for arg in stmt.env_args if arg.name == "thermal"), None)
+        if thermal_arg is None:
+            return None
+        thermal_value = self.resolve_bound_expr(thermal_arg.value, ctx=ctx)
+        if not isinstance(thermal_value, CallExpr) or thermal_value.name != "thermal_program":
+            return None
+        duration = next((arg for arg in thermal_value.args if arg.name == "duration"), None)
+        if duration is None:
+            return None
+        resolved = self.resolve_bound_expr(duration.value, ctx=ctx)
+        return resolved if isinstance(resolved, Quantity) and self.is_time_point(resolved) else None
+
+    def supports_runtime_boolean_surface(self, expr: Expression) -> bool:
+        if isinstance(expr, (BooleanLiteral, Identifier, MemberExpr, MethodCallExpr)):
+            return True
+        if not isinstance(expr, BinaryOp):
+            return False
+        if expr.op in {"and", "or"}:
+            return self.supports_runtime_boolean_surface(expr.left) and self.supports_runtime_boolean_surface(expr.right)
+        return expr.op in {"==", "!=", "<", ">", "<=", ">="}
+
+    def is_time_point(self, point: Quantity) -> bool:
+        return point.unit in _TIME_UNIT_SCALE
+
 
 def _static_control_action(statements: list[IRStatement]) -> str | None:
     for stmt in statements:
@@ -368,25 +408,6 @@ def _resolve_let_bound_expr(expr: Expression, let_bindings: dict[str, Expression
     return current
 
 
-def _extract_env_time_boundary(stmt: WithEnvStmt, let_bindings: dict[str, Expression]) -> Quantity | None:
-    duration_arg = next((arg for arg in stmt.env_args if arg.name == "duration"), None)
-    if duration_arg is not None:
-        resolved = _resolve_let_bound_expr(duration_arg.value, let_bindings)
-        return resolved if isinstance(resolved, Quantity) and _is_time_point(resolved) else None
-
-    thermal_arg = next((arg for arg in stmt.env_args if arg.name == "thermal"), None)
-    if thermal_arg is None:
-        return None
-    thermal_value = _resolve_let_bound_expr(thermal_arg.value, let_bindings)
-    if not isinstance(thermal_value, CallExpr) or thermal_value.name != "thermal_program":
-        return None
-    duration = next((arg for arg in thermal_value.args if arg.name == "duration"), None)
-    if duration is None:
-        return None
-    resolved = _resolve_let_bound_expr(duration.value, let_bindings)
-    return resolved if isinstance(resolved, Quantity) and _is_time_point(resolved) else None
-
-
 def _substitute_statement(stmt, binding: str, value: Expression):
     if isinstance(stmt, LetStatement):
         return LetStatement(name=stmt.name, value=_substitute_expr(stmt.value, binding, value), span=stmt.span)
@@ -497,16 +518,6 @@ def _eval_repeat_count(expr: Expression, const_env: dict[str, float | bool]) -> 
     if not float(value).is_integer():
         raise ValueError("repeat count must be an integer")
     return int(value)
-
-
-def _supports_runtime_boolean_surface(expr: Expression) -> bool:
-    if isinstance(expr, (BooleanLiteral, Identifier, MemberExpr, MethodCallExpr)):
-        return True
-    if not isinstance(expr, BinaryOp):
-        return False
-    if expr.op in {"and", "or"}:
-        return _supports_runtime_boolean_surface(expr.left) and _supports_runtime_boolean_surface(expr.right)
-    return expr.op in {"==", "!=", "<", ">", "<=", ">="}
 
 
 def _statement_requires_runtime_control(stmt: object, const_env: dict[str, float | bool]) -> bool:

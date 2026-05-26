@@ -37,6 +37,24 @@ def test_typecheck_passes_valid_duration_temp_volume_or_mass():
     assert result.ok
 
 
+def test_typecheck_protocol_param_defaults_participate_in_env_units():
+    duration_ir = _compile_source(
+        'protocol T(duration = 10uL) { '
+        'let tube_a = tube(label = "A", capacity = 100uL); '
+        'with env(thermal = 37C, duration = duration) { hold(sample = tube_a); } '
+        '}'
+    )
+    thermal_ir = _compile_source(
+        'protocol T(temp = 10min) { '
+        'let tube_a = tube(label = "A", capacity = 100uL); '
+        'with env(thermal = temp, duration = 10min) { hold(sample = tube_a); } '
+        '}'
+    )
+
+    assert "TYPE_ENV_DURATION_DIMENSION_MISMATCH" in _codes(typecheck(duration_ir))
+    assert "TYPE_ENV_THERMAL_DIMENSION_MISMATCH" in _codes(typecheck(thermal_ir))
+
+
 def test_typecheck_detects_duration_dimension_mismatch():
     src = 'protocol T { Incubate(sample = "A", temp = 37C, duration = 200uL); }'
     ir = _compile_source(src)

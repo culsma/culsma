@@ -510,6 +510,131 @@ def test_plan_statement_pcr_lowers_to_env_hold_segments():
     assert ops == ["env_hold", "env_hold", "env_hold", "env_hold", "env_hold", "env_hold"]
 
 
+def test_plan_entry_param_default_drives_repeat_count():
+    src = 'protocol T(cycles = 3) { repeat cycles { Step(v = 1); } }'
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)))
+    assert not plan.diagnostics
+    assert [step.op for step in plan.plans[0].steps] == ["Step", "Step", "Step"]
+
+
+def test_plan_entry_arg_drives_schedule_endpoint():
+    src = """
+protocol T(cycles = 3) {
+  repeat cycle in schedule(start = 1, end = cycles, step = 1) {
+    Step(v = cycle);
+  }
+}
+"""
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)), entry_args_by_protocol={"T": {"cycles": 4}})
+    assert not plan.diagnostics
+    assert [step.args["v"]["value"] for step in plan.plans[0].steps] == [1.0, 2.0, 3.0, 4.0]
+
+
+def test_plan_reference_arg_drives_schedule_endpoint():
+    src = """
+protocol Base(cycles = 2) {
+  repeat cycle in schedule(start = 1, end = cycles, step = 1) {
+    Step(v = cycle);
+  }
+}
+protocol Root {
+  lib.Base(cycles = 4);
+}
+"""
+    ast = parse(src)
+    ast.protocols[0].module = "lib"
+    ast.protocols[1].module = "lib"
+    plan = lower_ir_to_plan(compile_to_ir(ast))
+    assert not plan.diagnostics
+    assert [step.args["v"]["value"] for step in plan.plans[0].steps] == [1.0, 2.0, 3.0, 4.0]
+
+
+def test_plan_entry_arg_drives_static_if_selection():
+    src = """
+protocol T(use_short = false) {
+  if use_short {
+    Step(v = 1);
+  } else {
+    Step(v = 2);
+  }
+}
+"""
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)), entry_args_by_protocol={"T": {"use_short": True}})
+    assert not plan.diagnostics
+    assert len(plan.plans[0].steps) == 1
+    assert plan.plans[0].steps[0].args["v"]["value"] == 1.0
+    assert "runtime_conditions" not in plan.plans[0].steps[0].gate
+
+
+def test_plan_env_param_boundary_drives_nested_time_schedule():
+    src = """
+protocol T(duration = 120min) {
+  let tube_a = tube(label = "A", capacity = 100uL);
+  with env(thermal = 37C, duration = duration) {
+    repeat t in schedule(start = 30min, step = 30min) {
+      tube_a << [feed:1uL];
+    }
+  }
+}
+"""
+    plan = lower_ir_to_plan(
+        compile_to_ir(parse(src)),
+        entry_args_by_protocol={"T": {"duration": {"kind": "IRQuantity", "value": 90.0, "unit": "min", "span": None}}},
+    )
+    assert not plan.diagnostics
+    assert [step.op for step in plan.plans[0].steps].count("Mutation") == 3
+
+
+def test_plan_continuous_schedule_param_boundary_drives_nested_time_schedule():
+    src = """
+protocol T(duration = 2h) {
+  repeat perf in schedule(start = 0h, duration = duration, mode = continuous) {
+    repeat t in schedule(start = 30min, step = 30min) {
+      Step(v = t);
+    }
+  }
+}
+"""
+    plan = lower_ir_to_plan(
+        compile_to_ir(parse(src)),
+        entry_args_by_protocol={"T": {"duration": {"kind": "IRQuantity", "value": 90.0, "unit": "min", "span": None}}},
+    )
+    assert not plan.diagnostics
+    assert [step.args["v"]["value"] for step in plan.plans[0].steps] == [30.0, 60.0, 90.0]
+
+
+def test_plan_continuous_schedule_param_boundary_respects_enclosing_env_boundary():
+    src = """
+protocol T(window = 90min) {
+  let tube_a = tube(label = "A", capacity = 100uL);
+  let feed = tube(label = "Feed", capacity = 100uL);
+  with env(thermal = 37C, duration = 60min) {
+    repeat perf in schedule(start = 0min, duration = window, mode = continuous) {
+      tube_a << [feed:1uL];
+    }
+  }
+}
+"""
+    plan = lower_ir_to_plan(
+        compile_to_ir(parse(src)),
+        entry_args_by_protocol={"T": {"window": {"kind": "IRQuantity", "value": 90.0, "unit": "min", "span": None}}},
+    )
+
+    assert [diag.code for diag in plan.diagnostics] == ["PLAN_STATIC_REPEAT_SCHEDULE_INVALID"]
+    assert "exceeds enclosing boundary" in plan.diagnostics[0].message
+
+
+def test_plan_static_repeat_parameter_requires_integer_count():
+    src = 'protocol T(cycles = 2.5) { repeat cycles { Step(v = 1); } }'
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)))
+    assert [diag.code for diag in plan.diagnostics] == ["PLAN_STATIC_REPEAT_SCHEDULE_INVALID"]
+    assert plan.plans[0].steps == []
+
+    negative = lower_ir_to_plan(compile_to_ir(parse('protocol T(cycles = -1) { repeat cycles { Step(v = 1); } }')))
+    assert [diag.code for diag in negative.diagnostics] == ["PLAN_STATIC_REPEAT_SCHEDULE_INVALID"]
+    assert ">= 0" in negative.diagnostics[0].message
+
+
 def test_plan_statement_lyse_lowers_to_env_gate_and_no_legacy_lyse_step():
     src = 'protocol T { let lysed = Lyse(sample = sample_tube, buffer = lysis_input, duration = 10min, temp = 4C); let sep_group = sep(sample = lysed, program = sep_program(mode = "centrifuge", speed = 12000g, duration = 5min)); }'
     plan = lower_ir_to_plan(compile_to_ir(parse(src)))

@@ -15,12 +15,11 @@ from culsma.parser.ast_nodes import (
     Identifier,
     IfStatement,
     IncludeStatement,
-    IndexExpr,
     LetStatement,
-    MemberExpr,
     MethodCallExpr,
     MutationStmt,
     ProtocolRefStatement,
+    Quantity,
     RepeatStatement,
     ReturnStatement,
     Statement,
@@ -35,7 +34,6 @@ from culsma.pipeline.ir_nodes import (
     IRInclude,
     IRLet,
     IRMutation,
-    IRRepeat,
     IRStatement,
     IRStep,
     IRWithConstraint,
@@ -55,12 +53,9 @@ from .targets import (
     _is_explicit_hold_only_block,
     TargetResolver,
 )
-from .schedule import (
-    ScheduleEvaluator,
-    _extract_env_time_boundary,
-    _resolve_let_bound_expr,
-    _supports_runtime_boolean_surface,
-)
+from .schedule import ScheduleEvaluator
+from .static_control import StaticControlClassifier
+from .repeat_control import RepeatControlLowerer
 
 _FORBIDDEN_SOURCE_STEP_CALLS = {"LoadContent", "AnnotateContent"}
 _FORBIDDEN_LEGACY_SOURCE_CALLS = {
@@ -90,6 +85,8 @@ class StatementLoweringContext:
     callable_lowering: CallableLowering
     target_resolver: TargetResolver
     schedule_evaluator: ScheduleEvaluator
+    static_control_classifier: StaticControlClassifier
+    repeat_control_lowerer: RepeatControlLowerer
 
     @property
     def ctx(self) -> BlockContext:
@@ -187,12 +184,16 @@ class StatementCompiler:
         callable_lowering: CallableLowering,
         target_resolver: TargetResolver,
         schedule_evaluator: ScheduleEvaluator,
+        static_control_classifier: StaticControlClassifier,
+        repeat_control_lowerer: RepeatControlLowerer,
     ) -> None:
         self.session = session
         self.expr_compiler = expr_compiler
         self.callable_lowering = callable_lowering
         self.target_resolver = target_resolver
         self.schedule_evaluator = schedule_evaluator
+        self.static_control_classifier = static_control_classifier
+        self.repeat_control_lowerer = repeat_control_lowerer
 
     def compile_list(self, statements: list[Statement], *, ctx: BlockContext) -> list[IRStatement]:
         compiled_statements: list[IRStatement] = []
@@ -224,6 +225,8 @@ class StatementCompiler:
             callable_lowering=self.callable_lowering,
             target_resolver=self.target_resolver,
             schedule_evaluator=self.schedule_evaluator,
+            static_control_classifier=self.static_control_classifier,
+            repeat_control_lowerer=self.repeat_control_lowerer,
         )
         handler = _STATEMENT_HANDLERS_BY_TYPE.get(type(stmt))
         if handler is not None:
@@ -502,6 +505,7 @@ class WithEnvState(StatementLoweringState):
     target_prefix: list[IRLet] = field(default_factory=list)
     flattened_targets: list[Expression] = field(default_factory=list)
     nested_env_time_boundary: Quantity | None = None
+    nested_env_time_boundary_deferred: bool = False
 
 
 class WithEnvHandler(BaseStatementCompileHandler):
@@ -543,7 +547,11 @@ class WithEnvHandler(BaseStatementCompileHandler):
                         ctx=ctx,
                     )
                 )
-        state.nested_env_time_boundary = _extract_env_time_boundary(stmt, ctx.let_bindings)
+        state.nested_env_time_boundary = lowering_ctx.schedule_evaluator.extract_env_time_boundary(stmt, ctx=ctx)
+        state.nested_env_time_boundary_deferred = lowering_ctx.static_control_classifier.can_defer_env_time_boundary(
+            stmt,
+            ctx=ctx,
+        )
 
     def validate_source_shape(
         self,
@@ -591,13 +599,13 @@ class WithEnvHandler(BaseStatementCompileHandler):
                         let_bindings=dict(ctx.let_bindings),
                         local_names=set(ctx.local_names),
                         env_time_boundary=state.nested_env_time_boundary,
+                        env_time_boundary_deferred=state.nested_env_time_boundary_deferred,
                     ),
                 ),
                 explicit_hold=state.explicit_hold,
                 span=stmt.span,
             )
         ]
-
 
 class WithConstraintHandler(BaseStatementCompileHandler):
     def lower_current_or_children(
@@ -785,9 +793,7 @@ class RepeatHandler(BaseStatementCompileHandler):
     ) -> list[IRStatement]:
         del state
         stmt = cast(RepeatStatement, stmt)
-        if stmt.binding is not None:
-            return self._lower_binding_repeat(stmt, lowering_ctx)
-        return self._lower_count_repeat(stmt, lowering_ctx)
+        return lowering_ctx.repeat_control_lowerer.lower_repeat(stmt, lowering_ctx)
 
     def apply_state_after_lowering(
         self,
@@ -799,186 +805,6 @@ class RepeatHandler(BaseStatementCompileHandler):
         del state, output
         stmt = cast(RepeatStatement, stmt)
         lowering_ctx.schedule_evaluator.invalidate_runtime_mutated_names(stmt.statements, ctx=lowering_ctx.ctx)
-
-    def _lower_binding_repeat(
-        self,
-        stmt: RepeatStatement,
-        lowering_ctx: StatementLoweringContext,
-    ) -> list[IRStatement]:
-        iterable_values = lowering_ctx.schedule_evaluator.resolve_repeat_iterable_values(
-            stmt.iterable,
-            ctx=lowering_ctx.ctx,
-        )
-        if iterable_values is not None:
-            return self._lower_iterable_values(stmt, lowering_ctx, iterable_values)
-
-        resolved_iterable = _resolve_let_bound_expr(stmt.iterable, lowering_ctx.ctx.let_bindings)
-        runtime_iterable_surface = isinstance(
-            resolved_iterable,
-            (Identifier, CallExpr, MemberExpr, IndexExpr),
-        )
-        if runtime_iterable_surface and not (
-            isinstance(resolved_iterable, CallExpr) and resolved_iterable.name == "schedule"
-        ):
-            compiled_body = lowering_ctx.statement_compiler.compile_list(
-                stmt.statements,
-                ctx=lowering_ctx.ctx.derive(
-                    scope_id=f"{lowering_ctx.stmt_id}.b",
-                    const_env=lowering_ctx.ctx.const_env,
-                    let_bindings=dict(lowering_ctx.ctx.let_bindings),
-                    local_names=set(lowering_ctx.ctx.local_names) | {stmt.binding},
-                ),
-            )
-            return [
-                IRRepeat(
-                    id=lowering_ctx.stmt_id,
-                    binding=stmt.binding,
-                    iterable=lowering_ctx.expr_compiler.compile(stmt.iterable),
-                    statements=compiled_body,
-                    span=stmt.span,
-                )
-            ]
-
-        schedule_mode = lowering_ctx.schedule_evaluator.resolve_schedule_mode(stmt.iterable, ctx=lowering_ctx.ctx)
-        if schedule_mode == "continuous":
-            return self._lower_continuous_schedule(stmt, lowering_ctx)
-        points = lowering_ctx.schedule_evaluator.eval_schedule_points(stmt.iterable, ctx=lowering_ctx.ctx)
-        return self._lower_iterable_values(stmt, lowering_ctx, points)
-
-    def _lower_iterable_values(
-        self,
-        stmt: RepeatStatement,
-        lowering_ctx: StatementLoweringContext,
-        iterable_values: list[Expression],
-    ) -> list[IRStatement]:
-        expanded: list[IRStatement] = []
-        loop_const_env = dict(lowering_ctx.ctx.const_env)
-        loop_let_bindings = dict(lowering_ctx.ctx.let_bindings)
-        loop_local_names = set(lowering_ctx.ctx.local_names)
-        for iteration_index, point in enumerate(iterable_values):
-            substituted_statements = [
-                lowering_ctx.schedule_evaluator.substitute_statement(nested_stmt, stmt.binding, point)
-                for nested_stmt in stmt.statements
-            ]
-            nested_const_env = dict(loop_const_env)
-            nested_let_bindings = dict(loop_let_bindings)
-            nested_local_names = set(loop_local_names)
-            nested_let_bindings[stmt.binding] = point
-            runtime_control = any(
-                lowering_ctx.schedule_evaluator.statement_requires_runtime_control(
-                    nested_stmt,
-                    ctx=lowering_ctx.ctx.derive(const_env=nested_const_env),
-                )
-                for nested_stmt in substituted_statements
-            )
-            nested_stmt_index = 0
-            stop_all_iterations = False
-            for nested_stmt in substituted_statements:
-                nested_ctx = lowering_ctx.ctx.derive(
-                    scope_id=f"{lowering_ctx.stmt_id}.i{iteration_index}" if runtime_control else lowering_ctx.ctx.scope_id,
-                    const_env=nested_const_env,
-                    let_bindings=nested_let_bindings,
-                    local_names=nested_local_names | {stmt.binding},
-                )
-                compiled_nested = lowering_ctx.statement_compiler.compile(
-                    nested_stmt,
-                    ctx=nested_ctx,
-                    stmt_index=nested_stmt_index if runtime_control else lowering_ctx.stmt_index + len(expanded),
-                )
-                expanded.extend(compiled_nested)
-                nested_stmt_index += len(compiled_nested)
-                if not runtime_control:
-                    control_action = lowering_ctx.schedule_evaluator.static_control_action(compiled_nested)
-                    if control_action == "continue":
-                        break
-                    if control_action == "break":
-                        stop_all_iterations = True
-                        break
-            nested_let_bindings.pop(stmt.binding, None)
-            nested_const_env.pop(stmt.binding, None)
-            loop_const_env = nested_const_env
-            loop_let_bindings = nested_let_bindings
-            loop_local_names = nested_local_names
-            if stop_all_iterations:
-                break
-        return expanded
-
-    def _lower_continuous_schedule(
-        self,
-        stmt: RepeatStatement,
-        lowering_ctx: StatementLoweringContext,
-    ) -> list[IRStatement]:
-        window_boundary = lowering_ctx.schedule_evaluator.eval_continuous_schedule_boundary(
-            stmt.iterable,
-            ctx=lowering_ctx.ctx,
-        )
-        substituted_statements = list(stmt.statements)
-        nested_const_env = dict(lowering_ctx.ctx.const_env)
-        nested_let_bindings = dict(lowering_ctx.ctx.let_bindings)
-        nested_local_names = set(lowering_ctx.ctx.local_names)
-        runtime_control = any(
-            lowering_ctx.schedule_evaluator.statement_requires_runtime_control(
-                nested_stmt,
-                ctx=lowering_ctx.ctx.derive(const_env=nested_const_env),
-            )
-            for nested_stmt in substituted_statements
-        )
-        expanded: list[IRStatement] = []
-        nested_stmt_index = 0
-        for nested_stmt in substituted_statements:
-            compiled_nested = lowering_ctx.statement_compiler.compile(
-                nested_stmt,
-                ctx=lowering_ctx.ctx.derive(
-                    scope_id=f"{lowering_ctx.stmt_id}.i0",
-                    const_env=nested_const_env,
-                    let_bindings=nested_let_bindings,
-                    local_names=nested_local_names,
-                    env_time_boundary=window_boundary,
-                ),
-                stmt_index=nested_stmt_index,
-            )
-            expanded.extend(compiled_nested)
-            nested_stmt_index += len(compiled_nested)
-            if not runtime_control:
-                control_action = lowering_ctx.schedule_evaluator.static_control_action(compiled_nested)
-                if control_action in {"continue", "break"}:
-                    break
-        return expanded
-
-    def _lower_count_repeat(
-        self,
-        stmt: RepeatStatement,
-        lowering_ctx: StatementLoweringContext,
-    ) -> list[IRStatement]:
-        iterations = lowering_ctx.schedule_evaluator.eval_repeat_count(stmt.times, ctx=lowering_ctx.ctx)
-        expanded: list[IRStatement] = []
-        runtime_control = any(
-            lowering_ctx.schedule_evaluator.statement_requires_runtime_control(nested_stmt, ctx=lowering_ctx.ctx)
-            for nested_stmt in stmt.statements
-        )
-        for iteration_index in range(iterations):
-            nested_stmt_index = 0
-            stop_all_iterations = False
-            for nested_stmt in stmt.statements:
-                compiled_nested = lowering_ctx.statement_compiler.compile(
-                    nested_stmt,
-                    ctx=lowering_ctx.ctx.derive(
-                        scope_id=f"{lowering_ctx.stmt_id}.i{iteration_index}" if runtime_control else lowering_ctx.ctx.scope_id,
-                    ),
-                    stmt_index=nested_stmt_index if runtime_control else lowering_ctx.stmt_index + len(expanded),
-                )
-                expanded.extend(compiled_nested)
-                nested_stmt_index += len(compiled_nested)
-                if not runtime_control:
-                    control_action = lowering_ctx.schedule_evaluator.static_control_action(compiled_nested)
-                    if control_action == "continue":
-                        break
-                    if control_action == "break":
-                        stop_all_iterations = True
-                        break
-            if stop_all_iterations:
-                break
-        return expanded
 
 
 @dataclass
@@ -1012,7 +838,7 @@ class IfHandler(BaseStatementCompileHandler):
         state = cast(IfState, state)
         if state.condition is not None:
             return
-        if not _supports_runtime_boolean_surface(stmt.condition):
+        if not lowering_ctx.schedule_evaluator.supports_runtime_boolean_surface(stmt.condition):
             raise ValueError("if condition must be a compile-time boolean expression or supported runtime predicate")
         state.runtime_conditional = True
 

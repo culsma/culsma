@@ -46,7 +46,11 @@ def typecheck(
         ctx = TypecheckContext(
             operation_specs=operation_specs,
             diagnostics=diagnostics,
-            expr_bindings={},
+            expr_bindings={
+                param.name: param.default
+                for param in protocol.params
+                if param.default is not None
+            },
             statement_typechecker=statement_typechecker,
         )
         statement_typechecker.typecheck_list(protocol.statements, ctx)

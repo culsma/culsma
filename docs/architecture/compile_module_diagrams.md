@@ -1,6 +1,6 @@
 # Compile Module Diagrams
 
-Last updated: 2026-04-21
+Last updated: 2026-05-26
 
 Related IR document:
 
@@ -8,17 +8,23 @@ Related IR document:
 
 ## Scope
 
-This document has four diagrams only:
+This document has six diagrams only:
 
 1. Functional flowchart: what compile actually does.
 2. Runtime sequence: the main runtime call chain.
-3. Statement lowering lifecycle template: the common statement-handler lowering sequence.
-4. Class/module diagram: which files/classes own each part.
+3. Formal-parameter static-control flowchart: how compile decides to defer.
+4. Formal-parameter static-control sequence: module API calls for that decision.
+5. Statement lowering lifecycle template: the common statement-handler lowering sequence.
+6. Class/module diagram: which files/classes own each part.
 
 Compile consumes the prepared AST from frontend resolution and returns
 `CompileResult(ir, analysis)`. It owns AST-to-Canonical-IR lowering plus
 compile-produced sidecar analysis. It does not do semantic validation,
 typecheck, plan lowering, runtime execution, or material-state mutation.
+Compile may classify formal-parameter-dependent static control as plan-static
+when the control surface cannot be resolved before protocol argument binding;
+the actual parameter-bound static evaluation remains owned by plan lowering.
+`compile/static_control.py` owns that compile-stage classification boundary.
 
 ## Functional Flowchart
 
@@ -27,7 +33,7 @@ flowchart TB
     Start([Start compile])
     Session["Create compile session:<br/>protocol lookup, protocol ids,<br/>analysis builder, shared compiler state"]
     ProtocolLoop{"More protocols?"}
-    ProtocolSetup["Prepare protocol context:<br/>protocol id, params as local names,<br/>return contract checks"]
+    ProtocolSetup["Prepare protocol context:<br/>protocol id, params as local/formal names,<br/>return contract checks"]
     StatementLoop{"More source statements?"}
     Dispatch["Select statement lowering handler<br/>by AST statement type"]
     HandlerFound{"Handler exists?"}
@@ -67,47 +73,191 @@ flowchart TB
 
 ```mermaid
 sequenceDiagram
-    participant Caller as "frontend / CLI / tests"
-    participant API as "compiler.py::compile_ast"
-    participant C as "compiler.py::IRCompiler"
-    participant Session as "context.py::CompileSession"
-    participant SC as "statements.py::StatementCompiler"
-    participant M as "statement handler type map"
-    participant H as "selected statement lowering handler"
-    participant Expr as "expressions.py::ExprCompiler"
-    participant Analysis as "analysis.py::CompileAnalysisBuilder"
+    participant Caller as "Frontend / CLI / Tests"
+    participant API as "CompileAPI"
+    participant C as "IRCompiler"
+    participant Session as "CompileSession"
+    participant SC as "StatementCompiler"
+    participant H as "BaseStatementCompileHandler"
+    participant Expr as "ExprCompiler"
+    participant Analysis as "CompileAnalysisBuilder"
 
     Caller->>API: compile_ast(prepared_ast)
     API->>C: IRCompiler(ast).compile_program(ast)
-    C->>Session: CompileSession.from_program(ast)
+    C->>Session: from_program(ast)
 
-    loop each protocol
-        C->>C: validate return contract / create BlockContext
+    loop ProtocolDecl
+        C->>C: compile_protocol(proto, proto_index)
         C->>SC: compile_list(proto.statements, ctx)
 
-        loop each source statement
-            SC->>M: look up handler by exact AST statement type
-            M-->>SC: selected handler or none
-            alt handler exists
+        loop Statement
+            SC->>SC: lookup handler by statement type
+            alt BaseStatementCompileHandler
                 SC->>H: handle(stmt, lowering_ctx)
-                H->>Expr: compile expressions / args when needed
+                H->>H: prepare(stmt, lowering_ctx)
+                H->>H: resolve_source_form(stmt, lowering_ctx, state)
+                H->>H: validate_source_shape(stmt, lowering_ctx, state)
+                H->>H: apply_state_before_lowering(stmt, lowering_ctx, state)
+                H->>H: lower_prefix_ir(stmt, lowering_ctx, state)
+                H->>H: lower_current_or_children(stmt, lowering_ctx, state)
+                H->>H: apply_state_after_lowering(stmt, lowering_ctx, state, output)
+                H->>Expr: compile(...) / compile_arg(...)
                 Expr-->>H: IRExpr / IRArg
                 H-->>SC: list[IRStatement]
                 SC->>Analysis: record_statement_effects(...)
-            else no handler
-                SC->>SC: raise unsupported statement error
+            else None
+                SC->>SC: raise TypeError
             end
         end
 
-        SC-->>C: protocol IR statements
-        C->>Expr: compile return value and return bindings
-        C-->>C: emit IRProtocol
+        SC-->>C: list[IRStatement]
+        C->>Expr: compile(return_value / return_bindings)
+        C-->>C: IRProtocol
     end
 
     C->>Analysis: build(protocol_ids)
     Analysis-->>C: CompileAnalysis
     C-->>API: CompileResult(ir, analysis)
     API-->>Caller: CompileResult(ir, analysis)
+```
+
+## Formal Parameter Static-Control Detail
+
+This section is an internal compile detail. It explains how the selected
+statement handler, running inside the common `BaseStatementCompileHandler`
+lifecycle above, decides whether a control surface is resolved during compile
+or preserved for parameter-bound static evaluation during plan lowering.
+`SelectedStatementHandler` means the concrete handler currently executing that
+base lifecycle; it is not a separate module in the compile architecture.
+`RepeatControlLowerer` is the repeat-specific compile service called from
+`RepeatHandler.lower_current_or_children` to keep the handler lifecycle adapter
+separate from repeat control lowering algorithms.
+
+```mermaid
+flowchart TB
+    Start([Selected statement handler reaches control surface])
+    Surface{"Control surface kind?"}
+    Env["Env time boundary:<br/>duration or thermal_program duration"]
+    RepeatCount["Repeat count expression"]
+    RepeatSchedule["Repeat schedule expression"]
+    IfCondition["If condition expression"]
+    TryCompile["Try compile-time evaluation with current let/const context"]
+    Resolved{"Resolved at compile time?"}
+    LowerNow["Lower or expand during compile"]
+    IfSupported{"Supported runtime/formal predicate surface?"}
+    CheckFormal["Check whether unresolved env/repeat expression contains formal parameters"]
+    Deferable{"Can defer to plan static evaluation?"}
+    PreserveRepeat["Preserve IRRepeat with schedule/count payload"]
+    PreserveEnv["Compile child block with env_time_boundary_deferred"]
+    PreserveIf["Emit IRConditional for plan/runtime selection"]
+    Error["Raise compile-time shape/value error"]
+    Plan["Plan lowering binds protocol args<br/>and completes static evaluation"]
+
+    Start --> Surface
+    Surface --> Env
+    Surface --> RepeatCount
+    Surface --> RepeatSchedule
+    Surface --> IfCondition
+    Env --> TryCompile
+    RepeatCount --> TryCompile
+    RepeatSchedule --> TryCompile
+    IfCondition --> TryCompile
+    TryCompile --> Resolved
+    Resolved -->|yes| LowerNow
+    Resolved -->|no if condition| IfSupported
+    IfSupported -->|yes| PreserveIf
+    IfSupported -->|no| Error
+    Resolved -->|no env/repeat| CheckFormal
+    CheckFormal --> Deferable
+    Deferable -->|env boundary| PreserveEnv
+    Deferable -->|repeat count/schedule| PreserveRepeat
+    Deferable -->|no| Error
+    PreserveEnv --> Plan
+    PreserveRepeat --> Plan
+    PreserveIf --> Plan
+```
+
+```mermaid
+sequenceDiagram
+    participant H as "SelectedStatementHandler"
+    participant RCL as "RepeatControlLowerer"
+    participant Sched as "ScheduleEvaluator"
+    participant Static as "StaticControlClassifier"
+    participant Ctx as "BlockContext"
+    participant SC as "StatementCompiler"
+    participant Expr as "ExprCompiler"
+
+    H->>H: lower_current_or_children(stmt, lowering_ctx, state)
+    alt WithEnvStmt boundary
+        H->>Sched: extract_env_time_boundary(stmt, ctx)
+        Sched->>Sched: resolve_bound_expr(expr, ctx)
+        Sched->>Sched: is_time_point(quantity)
+        alt compile-time boundary
+            Sched-->>H: Quantity boundary
+            H->>Ctx: derive(env_time_boundary=boundary)
+        else formal-param boundary
+            Sched-->>H: None
+            H->>Static: can_defer_env_time_boundary(stmt, ctx)
+            Static->>Static: resolve_bound_expr(expr, ctx)
+            Static->>Static: contains_unresolved_param_reference(expr, ctx)
+            Static-->>H: true
+            H->>Ctx: derive(env_time_boundary_deferred=True)
+        end
+        H->>Expr: compile_arg(env_arg) / compile(target)
+        H->>SC: compile_list(child_statements, child_ctx)
+    else RepeatStatement count
+        H->>RCL: lower_repeat(stmt, lowering_ctx)
+        RCL->>RCL: lower_count_repeat(stmt, lowering_ctx)
+        RCL->>Sched: eval_repeat_count(times, ctx)
+        alt compile-time count
+            Sched-->>RCL: int iterations
+            RCL->>SC: compile(nested_stmt, nested_ctx, stmt_index)
+        else formal-param count
+            RCL->>Static: can_defer_repeat_count(times, ctx)
+            Static->>Static: contains_unresolved_param_reference(times, ctx)
+            Static-->>RCL: true
+            RCL->>RCL: count_repeat_schedule_expr(stmt)
+            RCL->>RCL: lower_deferred_static_repeat(stmt, lowering_ctx, iterable)
+            RCL->>SC: compile_list(body, child_ctx)
+        end
+    else RepeatStatement schedule
+        H->>RCL: lower_repeat(stmt, lowering_ctx)
+        RCL->>Sched: resolve_repeat_iterable_values(iterable, ctx)
+        RCL->>Sched: resolve_bound_expr(iterable, ctx)
+        RCL->>Sched: resolve_schedule_mode(iterable, ctx)
+        alt discrete schedule resolved
+            RCL->>Sched: eval_schedule_points(iterable, ctx)
+            Sched-->>RCL: list[Quantity]
+            RCL->>RCL: lower_iterable_values(stmt, lowering_ctx, points)
+        else continuous schedule resolved
+            RCL->>Sched: eval_continuous_schedule_boundary(iterable, ctx)
+            Sched-->>RCL: Quantity boundary
+            RCL->>Ctx: derive(env_time_boundary=boundary)
+            RCL->>SC: compile(nested_stmt, nested_ctx, stmt_index)
+        else schedule depends on formal params
+            RCL->>Static: can_defer_discrete_schedule(iterable, ctx)
+            RCL->>Static: can_defer_continuous_schedule(iterable, ctx)
+            Static->>Static: schedule_args(iterable, ctx)
+            Static->>Static: schedule_mode(args)
+            Static->>Static: contains_unresolved_param_reference(arg_value, ctx)
+            Static-->>RCL: true
+            RCL->>RCL: lower_deferred_static_repeat(stmt, lowering_ctx, iterable)
+            RCL->>SC: compile_list(body, child_ctx)
+        end
+    else IfStatement condition
+        H->>Sched: try_eval_bool_expr(condition, ctx)
+        alt compile-time bool
+            Sched-->>H: true or false
+            H->>SC: compile(selected_stmt, ctx, stmt_index)
+        else runtime or formal-param predicate
+            H->>Sched: supports_runtime_boolean_surface(condition)
+            H->>SC: compile_list(then_statements, child_ctx)
+            H->>SC: compile_list(else_statements, child_ctx)
+        end
+    end
+    alt RepeatStatement or IfStatement post effect
+        H->>Sched: invalidate_runtime_mutated_names(statements, ctx)
+    end
 ```
 
 ## Statement Lowering Lifecycle Template
@@ -192,7 +342,9 @@ classDiagram
         +ir_const_env
         +ir_expr_bindings
         +local_names
+        +param_names
         +env_time_boundary
+        +env_time_boundary_deferred
         +derive(...)
     }
 
@@ -212,6 +364,8 @@ classDiagram
         +callable_lowering
         +target_resolver
         +schedule_evaluator
+        +static_control_classifier
+        +repeat_control_lowerer
     }
 
     class StatementLoweringState {
@@ -267,10 +421,37 @@ classDiagram
         +try_eval_bool_expr(expr, ctx)
         +resolve_repeat_iterable_values(expr, ctx)
         +resolve_schedule_mode(expr, ctx)
+        +eval_continuous_schedule_boundary(expr, ctx)
         +eval_schedule_points(expr, ctx)
         +eval_repeat_count(expr, ctx)
         +statement_requires_runtime_control(stmt, ctx)
+        +static_control_action(statements)
         +invalidate_runtime_mutated_names(statements, ctx)
+        +resolve_bound_expr(expr, ctx)
+        +extract_env_time_boundary(stmt, ctx)
+        +supports_runtime_boolean_surface(expr)
+        +is_time_point(point)
+    }
+
+    class StaticControlClassifier {
+        +can_defer_repeat_count(expr, ctx)
+        +can_defer_discrete_schedule(expr, ctx)
+        +can_defer_continuous_schedule(expr, ctx)
+        +can_defer_env_time_boundary(stmt, ctx)
+        +schedule_args(expr, ctx)
+        +schedule_mode(args)
+        +resolve_bound_expr(expr, ctx)
+        +contains_unresolved_param_reference(expr, ctx)
+    }
+
+    class RepeatControlLowerer {
+        +lower_repeat(stmt, lowering_ctx)
+        +lower_binding_repeat(stmt, lowering_ctx)
+        +lower_count_repeat(stmt, lowering_ctx)
+        +lower_iterable_values(stmt, lowering_ctx, iterable_values)
+        +lower_continuous_schedule(stmt, lowering_ctx)
+        +lower_deferred_static_repeat(stmt, lowering_ctx, iterable)
+        +count_repeat_schedule_expr(stmt)
     }
 
     class CompileAnalysisBuilder {
@@ -289,6 +470,11 @@ classDiagram
     IRCompiler --> CompileSession
     IRCompiler --> StatementCompiler
     IRCompiler --> ExprCompiler
+    IRCompiler --> CallableLowering
+    IRCompiler --> TargetResolver
+    IRCompiler --> ScheduleEvaluator
+    IRCompiler --> StaticControlClassifier
+    IRCompiler --> RepeatControlLowerer
     IRCompiler --> IRProtocol
     CompileResult --> IRProgram
     CompileResult --> CompileAnalysis
@@ -308,6 +494,8 @@ classDiagram
     StatementLoweringContext --> CallableLowering
     StatementLoweringContext --> TargetResolver
     StatementLoweringContext --> ScheduleEvaluator
+    StatementLoweringContext --> StaticControlClassifier
+    StatementLoweringContext --> RepeatControlLowerer
 
     BaseStatementCompileHandler --> StatementLoweringState
     BaseStatementCompileHandler --> IRStatement
@@ -333,11 +521,16 @@ classDiagram
     AssignHandler --> ExprCompiler
     WithEnvHandler --> TargetResolver
     WithEnvHandler --> ScheduleEvaluator
+    WithEnvHandler --> StaticControlClassifier
     WithEnvHandler --> ExprCompiler
     MutationHandler --> TargetResolver
     MutationHandler --> ExprCompiler
     StepCallHandler --> CallableLowering
     StepCallHandler --> ExprCompiler
-    RepeatHandler --> ScheduleEvaluator
+    RepeatHandler --> RepeatControlLowerer
+    RepeatControlLowerer --> ScheduleEvaluator
+    RepeatControlLowerer --> StaticControlClassifier
+    RepeatControlLowerer --> StatementCompiler
+    RepeatControlLowerer --> ExprCompiler
     IfHandler --> ScheduleEvaluator
 ```

@@ -38,6 +38,12 @@ def validate(ir, **kwargs):
     return _validate(ir, **kwargs)
 
 
+def test_validate_protocol_param_is_bound_name_under_inventory_check():
+    ir = _compile_source("protocol T(sample) { img(sample = sample, quantity = fluorescence); }")
+    result = validate(ir, enforce_binding=True)
+    assert "SEM_UNBOUND_NAME_REFERENCE" not in _codes(result)
+
+
 def test_validate_legacy_enzyme_digestion_fixture_is_rejected_by_current_source_gate():
     ast = parse_file(LEGACY_FIXTURES / "enzyme_digestion.culs")
     with pytest.raises(ValueError, match="legacy-only"):

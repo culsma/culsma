@@ -131,7 +131,9 @@ class BlockContext:
     ir_const_env: dict[str, Any] = field(default_factory=dict)
     ir_expr_bindings: dict[str, Any] = field(default_factory=dict)
     local_names: set[str] = field(default_factory=set)
+    param_names: set[str] = field(default_factory=set)
     env_time_boundary: Quantity | None = None
+    env_time_boundary_deferred: bool = False
 
     def derive(
         self,
@@ -142,7 +144,9 @@ class BlockContext:
         ir_const_env: dict[str, Any] | None = None,
         ir_expr_bindings: dict[str, Any] | None = None,
         local_names: set[str] | None = None,
+        param_names: set[str] | None = None,
         env_time_boundary: Quantity | None | object = _CTX_UNSET,
+        env_time_boundary_deferred: bool | None = None,
     ) -> "BlockContext":
         return BlockContext(
             scope_id=self.scope_id if scope_id is None else scope_id,
@@ -151,7 +155,11 @@ class BlockContext:
             ir_const_env=self.ir_const_env if ir_const_env is None else ir_const_env,
             ir_expr_bindings=self.ir_expr_bindings if ir_expr_bindings is None else ir_expr_bindings,
             local_names=self.local_names if local_names is None else local_names,
+            param_names=self.param_names if param_names is None else param_names,
             env_time_boundary=(
                 self.env_time_boundary if env_time_boundary is _CTX_UNSET else env_time_boundary
+            ),
+            env_time_boundary_deferred=(
+                self.env_time_boundary_deferred if env_time_boundary_deferred is None else env_time_boundary_deferred
             ),
         )

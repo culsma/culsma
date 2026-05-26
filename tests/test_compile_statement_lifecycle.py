@@ -20,6 +20,8 @@ from culsma.pipeline.compile.callable import CallableLowering
 from culsma.pipeline.compile.context import BlockContext, CompileSession
 from culsma.pipeline.compile.expressions import ExprCompiler
 from culsma.pipeline.compile.schedule import ScheduleEvaluator
+from culsma.pipeline.compile.static_control import StaticControlClassifier
+from culsma.pipeline.compile.repeat_control import RepeatControlLowerer
 from culsma.pipeline.compile.statements import (
     BaseStatementCompileHandler,
     StatementCompiler,
@@ -45,6 +47,8 @@ def _compiler(ast: Program | None = None) -> StatementCompiler:
         callable_lowering=callable_lowering,
         target_resolver=TargetResolver(session=session),
         schedule_evaluator=ScheduleEvaluator(),
+        static_control_classifier=StaticControlClassifier(),
+        repeat_control_lowerer=RepeatControlLowerer(),
     )
 
 
@@ -59,6 +63,8 @@ def _lowering_ctx(compiler: StatementCompiler, *, block_context: BlockContext | 
         callable_lowering=compiler.callable_lowering,
         target_resolver=compiler.target_resolver,
         schedule_evaluator=compiler.schedule_evaluator,
+        static_control_classifier=compiler.static_control_classifier,
+        repeat_control_lowerer=compiler.repeat_control_lowerer,
     )
 
 
