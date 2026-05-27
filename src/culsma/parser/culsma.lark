@@ -192,7 +192,7 @@ WELL_POS.3: /[A-Z]+[1-9][0-9]*/
 // matches (e.g. "200Cool" tokenizes as QUANTITY(200) + IDENTIFIER(Cool),
 // not QUANTITY(200C) + garbage).
 // Longer unit strings are listed first so regex alternation picks them.
-QUANTITY: /\d+(?:\.\d+)?(?:ng_per_uL|ug_per_mL|sec|rpm|rcf|pct|min|mL|ml|uL|ul|mM|uM|nM|nm|mW|mg|ug|kg|um|hr|Hz|xg|ms|L|g|s|h|C|K|M|W|V|X|%)(?![A-Za-z0-9_])|\d+(?:\.\d+)?/
+QUANTITY: /\d+(?:\.\d+)?(?:ng_per_uL|ug_per_mL|day|sec|rpm|rcf|pct|min|mL|ml|uL|ul|mM|uM|nM|nm|mW|mV|mg|ug|kg|um|hr|Hz|xg|ms|L|g|s|h|C|K|M|W|V|X|%)(?![A-Za-z0-9_])|\d+(?:\.\d+)?/
 
 // Strings: double-quoted, with backslash escapes
 STRING: /\"(?:\\.|[^\"\\])*\"/

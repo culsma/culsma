@@ -328,6 +328,13 @@ def test_validate_with_env_scalar_thermal_requires_duration():
     assert "SEM_ENV_DURATION_REQUIRED" in _codes(result)
 
 
+def test_validate_with_env_accepts_day_scale_duration():
+    src = "protocol T { with env(thermal = 25C, duration = 3day) { hold(sample = tube); } }"
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+
+
 def test_validate_with_env_requires_at_least_one_dimension():
     src = "protocol T { with env() { hold(sample = tube); } }"
     ir = _compile_source(src)

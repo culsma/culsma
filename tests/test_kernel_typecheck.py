@@ -105,6 +105,93 @@ def test_typecheck_with_env_duration_requires_time_dimension():
     assert "TYPE_ENV_DURATION_DIMENSION_MISMATCH" in _codes(result)
 
 
+def test_typecheck_with_env_duration_accepts_day_units():
+    src = "protocol T { with env(thermal = 37C, duration = 2day) { hold(sample = tube); } }"
+    ir = _compile_source(src)
+    result = typecheck(ir)
+    assert result.ok
+
+
+def test_typecheck_thermal_program_duration_accepts_day_unit():
+    src = "protocol T { let tp = thermal_program(from = 25C, duration = 1day); }"
+    ir = _compile_source(src)
+    result = typecheck(ir)
+    assert result.ok
+
+
+def test_typecheck_time_unit_legacy_aliases_warn():
+    src = """
+protocol T {
+  with env(thermal = 37C, duration = 1hr) { hold(sample = tube); }
+  let tp = thermal_program(from = 95C, duration = 30sec);
+}
+"""
+    ir = _compile_source(src)
+    result = typecheck(ir)
+    warnings = [d for d in result.diagnostics if d.code == "TYPE_UNIT_LEGACY_ALIAS"]
+    assert result.ok
+    assert [d.severity for d in warnings] == ["warning", "warning"]
+    assert "use canonical unit 'h'" in warnings[0].message
+    assert "use canonical unit 's'" in warnings[1].message
+
+
+def test_typecheck_let_bound_program_legacy_alias_warns_once():
+    src = "protocol T { let p = magnetic_program(duration = 30sec); }"
+    ir = _compile_source(src)
+    result = typecheck(ir)
+    warnings = [d for d in result.diagnostics if d.code == "TYPE_UNIT_LEGACY_ALIAS"]
+    assert result.ok
+    assert len(warnings) == 1
+    assert "use canonical unit 's'" in warnings[0].message
+
+
+def test_typecheck_canonical_time_units_do_not_warn():
+    src = """
+protocol T {
+  with env(thermal = 37C, duration = 1h) { hold(sample = tube); }
+  let tp = thermal_program(from = 95C, duration = 30s);
+}
+"""
+    ir = _compile_source(src)
+    result = typecheck(ir)
+    assert result.ok
+    assert "TYPE_UNIT_LEGACY_ALIAS" not in _codes(result)
+
+
+def test_typecheck_volume_and_percent_legacy_aliases_warn():
+    src = """
+protocol T {
+  let tube = tube(label = "T", capacity = 1ml);
+  tube << [feed:1ul];
+  with env(thermal = 37C, co2 = 5pct, duration = 1h) { hold(sample = tube); }
+}
+"""
+    ir = _compile_source(src)
+    result = typecheck(ir)
+    warnings = [d for d in result.diagnostics if d.code == "TYPE_UNIT_LEGACY_ALIAS"]
+    assert result.ok
+    assert [d.severity for d in warnings] == ["warning", "warning", "warning"]
+    assert [message for message in (d.message for d in warnings)] == [
+        "Unit 'ml' is a legacy alias for constructor capacity for 'tube'; use canonical unit 'mL' to avoid this warning.",
+        "Unit 'ul' is a legacy alias for mutation quantified source; use canonical unit 'uL' to avoid this warning.",
+        "Unit 'pct' is a legacy alias for with env arg 'co2'; use canonical unit '%' to avoid this warning.",
+    ]
+
+
+def test_typecheck_canonical_volume_and_percent_units_do_not_warn():
+    src = """
+protocol T {
+  let tube = tube(label = "T", capacity = 1mL);
+  tube << [feed:1uL];
+  with env(thermal = 37C, co2 = 5%, duration = 1h) { hold(sample = tube); }
+}
+"""
+    ir = _compile_source(src)
+    result = typecheck(ir)
+    assert result.ok
+    assert "TYPE_UNIT_LEGACY_ALIAS" not in _codes(result)
+
+
 def test_typecheck_with_env_accepts_negative_temperature_quantity():
     src = "protocol T { with env(thermal = -20C, duration = 10min) { hold(sample = tube); } }"
     ir = _compile_source(src)

@@ -77,7 +77,9 @@ def test_quantity_and_point_helpers_are_public_static_eval_api():
     assert evaluator.is_time_point(minute)
     assert evaluator.is_unitless_int_point(unitless)
     assert evaluator.time_quantity_to_seconds(minute) == 120
+    assert evaluator.time_quantity_to_seconds(q(2, "day")) == 172800
     assert evaluator.seconds_to_unit(120, "min") == 2
+    assert evaluator.seconds_to_unit(172800, "day") == 2
     assert evaluator.quantity_payload(minute) == q(2.0, "min")
 
     evaluator.validate_schedule_point_list([minute, evaluator.plan_quantity(q(3, "min"))])
@@ -102,6 +104,14 @@ def test_schedule_point_expansion_methods_are_public_static_eval_api():
         evaluator.plan_quantity(q(1, "min")),
     )
     assert [point["value"] for point in time_points] == [0, 1, 2]
+
+    day_points = evaluator.expand_time_schedule_points(
+        evaluator.plan_quantity(q(0, "day")),
+        evaluator.plan_quantity(q(2, "day")),
+        evaluator.plan_quantity(q(1, "day")),
+    )
+    assert [point["value"] for point in day_points] == [0, 1, 2]
+    assert [point["unit"] for point in day_points] == ["day", "day", "day"]
 
     count_points = evaluator.expand_count_schedule_points(
         evaluator.plan_quantity(q(1)),

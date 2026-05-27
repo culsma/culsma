@@ -35,8 +35,10 @@ _UNIT_TO_DIMENSION: dict[str, str] = {
     "min": "time",
     "hr": "time",
     "h": "time",
+    "day": "time",
     "C": "temperature",
     "K": "temperature",
+    "pct": "percent",
     "uL": "volume",
     "ul": "volume",
     "mL": "volume",
@@ -49,6 +51,14 @@ _UNIT_TO_DIMENSION: dict[str, str] = {
     "V": "electric_potential",
     "mV": "electric_potential",
     "rpm": "rotation_rate",
+}
+
+_LEGACY_UNIT_ALIASES: dict[str, str] = {
+    "sec": "s",
+    "hr": "h",
+    "pct": "%",
+    "ul": "uL",
+    "ml": "mL",
 }
 
 _ASSIGNABLE_TYPES = {"bool", "int", "text", "quantity"}
@@ -270,6 +280,20 @@ class TypecheckExpressionServices:
                     code=mismatch_code,
                     message=f"{label} expects {expected}, got unit '{unit}' ({got_dim})",
                     span=resolved.span or span,
+                    node_id=node_id,
+                )
+            ]
+        if unit in _LEGACY_UNIT_ALIASES:
+            canonical = _LEGACY_UNIT_ALIASES[unit]
+            return [
+                Diagnostic(
+                    code="TYPE_UNIT_LEGACY_ALIAS",
+                    message=(
+                        f"Unit '{unit}' is a legacy alias for {label}; "
+                        f"use canonical unit '{canonical}' to avoid this warning."
+                    ),
+                    span=resolved.span or span,
+                    severity="warning",
                     node_id=node_id,
                 )
             ]

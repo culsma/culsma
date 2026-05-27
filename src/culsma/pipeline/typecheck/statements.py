@@ -17,6 +17,7 @@ from culsma.pipeline.ir_nodes import (
     IRWithConstraint,
     IRWithEnv,
 )
+from culsma.pipeline.program_registry import is_known_program_kind
 
 from .context import TypecheckContext
 from .expressions import DEFAULT_TYPECHECK_EXPRESSION_SERVICES, TypecheckExpressionServices
@@ -143,6 +144,16 @@ class LetTypecheckHandler(BaseTypecheckStatementHandler):
     ) -> None:
         stmt = cast(IRLet, stmt)
         if stmt.value is None:
+            return
+        if isinstance(stmt.value, IRCall) and is_known_program_kind(stmt.value.name):
+            ctx.extend(
+                self.services.typecheck_let_call(
+                    stmt.name,
+                    stmt.value,
+                    stmt.id,
+                    expr_bindings=ctx.expr_bindings,
+                )
+            )
             return
         ctx.extend(
             self.services.typecheck_program_calls_in_expr(

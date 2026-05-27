@@ -53,9 +53,9 @@ def _quantity_to_uL(value: Any) -> float | None:
     if not isinstance(raw_value, (int, float)):
         return None
     amount = float(raw_value)
-    if unit == "uL":
+    if unit in {"uL", "ul"}:
         return amount
-    if unit == "mL":
+    if unit in {"mL", "ml"}:
         return amount * 1000.0
     return None
 

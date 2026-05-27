@@ -413,6 +413,16 @@ class TestQuantityParsing:
         assert q.value == 30.0
         assert q.unit == "sec"
 
+    def test_quantity_days(self):
+        ast = parse('protocol T { let x = 3day; }')
+        statements = ast.protocols[0].statements
+        assert statements[0].value.value == 3.0
+        assert statements[0].value.unit == "day"
+
+    def test_quantity_year_is_not_active_duration_unit(self):
+        with pytest.raises(UnexpectedInput):
+            parse('protocol T { with env(thermal = -80C, duration = 2year) { hold(sample = tube); } }')
+
     def test_quantity_concentration(self):
         ast = parse('protocol T { let x = 50nM; }')
         q = ast.protocols[0].statements[0].value
@@ -971,13 +981,14 @@ class TestCallAndIndexExpressions:
         assert isinstance(pair_item.right, Quantity)
         assert pair_item.right.value == 100.0
 
-    def test_quantity_units_cover_percent_volt_and_ms(self):
-        ast = parse('protocol T { let a = 5%; let b = 100V; let c = 200ms; }')
-        a_stmt, b_stmt, c_stmt = ast.protocols[0].statements
+    def test_quantity_units_cover_percent_volt_millivolt_and_ms(self):
+        ast = parse('protocol T { let a = 5%; let b = 100V; let c = 200ms; let d = 50mV; }')
+        a_stmt, b_stmt, c_stmt, d_stmt = ast.protocols[0].statements
         assert isinstance(a_stmt.value, Quantity)
         assert a_stmt.value.unit == "%"
         assert b_stmt.value.unit == "V"
         assert c_stmt.value.unit == "ms"
+        assert d_stmt.value.unit == "mV"
 
 
 # ============================================================

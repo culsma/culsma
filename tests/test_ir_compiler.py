@@ -416,6 +416,27 @@ protocol T {
     assert units == ["min", "min", "min", "min"]
 
 
+def test_compile_repeat_schedule_expands_day_time_points():
+    src = """
+protocol T {
+  let tube = tube(label = "Tube", capacity = 100uL);
+  with env(thermal = 25C, duration = 3day) {
+    repeat t in schedule(start = 1day, step = 1day) {
+      Step(v = t, sample = tube);
+    }
+  }
+}
+"""
+    ir = compile_to_ir(parse(src))
+    with_env = ir.protocols[0].statements[1]
+    assert with_env.__class__.__name__ == "IRWithEnv"
+    assert len(with_env.statements) == 3
+    values = [stmt.args[0].value.value for stmt in with_env.statements]
+    units = [stmt.args[0].value.unit for stmt in with_env.statements]
+    assert values == [1.0, 2.0, 3.0]
+    assert units == ["day", "day", "day"]
+
+
 def test_compile_explicit_hold_with_env_lowers_to_empty_irwithenv_body():
     src = "protocol T { with env(thermal = 37C, duration = 10min) { hold(sample = tube); } }"
     ir = compile_to_ir(parse(src))
