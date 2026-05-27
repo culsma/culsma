@@ -152,7 +152,10 @@ of scope for the public issue tracker.
 
 <p align="center">
   <a href="https://brodinlab.com/">
-    <img src="docs/assets/Brodin_Logo_Black500.png#gh-light-mode-only" alt="Brodin Lab affiliation mark" width="150">
-    <img src="docs/assets/Brodin_Logo_OffWhite.png#gh-dark-mode-only" alt="Brodin Lab affiliation mark" width="150">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="docs/assets/Brodin_Logo_OffWhite.png">
+      <source media="(prefers-color-scheme: light)" srcset="docs/assets/Brodin_Logo_Black500.png">
+      <img src="docs/assets/Brodin_Logo_Black500.png" alt="Brodin Lab affiliation mark" width="150">
+    </picture>
   </a>
 </p>
