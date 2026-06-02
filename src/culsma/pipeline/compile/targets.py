@@ -106,6 +106,23 @@ class TargetResolver:
             let_bindings=ctx.let_bindings,
         )
 
+    def normalize_group_like_expr(
+        self,
+        expr: Expression,
+        *,
+        stmt_id: str,
+        ctx: BlockContext,
+    ) -> tuple[list[IRLet], Expression | None]:
+        if not _is_group_like_ast(expr, ctx.let_bindings):
+            return [], None
+        prefix, members = _expand_group_like_target_expr(
+            expr,
+            stmt_id=stmt_id,
+            let_bindings=ctx.let_bindings,
+            state=self.session.state,
+        )
+        return prefix, GroupExpr(elements=members, span=expr.span)
+
 
 def _assignment_target_root_name(expr: Expression) -> str | None:
     current = expr

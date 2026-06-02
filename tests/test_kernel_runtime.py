@@ -2120,6 +2120,53 @@ protocol T() returns (fractions_out) {
     assert [member["volume_uL"] for member in group["members"]] == [40, 40, 40]
 
 
+def test_runtime_captures_plate_selector_group_return_as_container_group_ref():
+    plan = _build_plan_from_source(
+        """
+protocol T() returns (wells_out) {
+  let plate96 = plate(label = "QPCR96", format = "96well", carrier_id = "PlateA");
+  let mix = tube(label = "Mix", capacity = 100uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):50uL]);
+  plate96[A1:A2] << [mix:10uL];
+  let wells = plate96[A1:A2];
+  return wells_out = wells;
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    group = result.state.artifacts["protocol_outputs"]["T"]["bindings"]["wells_out"]
+    assert group["kind"] == "container_group_ref"
+    assert group["member_count"] == 2
+    assert [member["id"] for member in group["members"]] == ["QPCR96_A1", "QPCR96_A2"]
+    assert [member["container_kind"] for member in group["members"]] == ["well", "well"]
+    assert [member["volume_uL"] for member in group["members"]] == [10, 10]
+
+
+def test_runtime_captures_direct_plate_selector_return_as_container_group_ref():
+    plan = _build_plan_from_source(
+        """
+protocol T() returns (wells_out) {
+  let plate96 = plate(label = "QPCR96", format = "96well", carrier_id = "PlateA");
+  let mix = tube(label = "Mix", capacity = 100uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):50uL]);
+  plate96[A1:A2] << [mix:10uL];
+  return wells_out = plate96[A1:A2];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    group = result.state.artifacts["protocol_outputs"]["T"]["bindings"]["wells_out"]
+    assert group["kind"] == "container_group_ref"
+    assert group["member_count"] == 2
+    assert [member["id"] for member in group["members"]] == ["QPCR96_A1", "QPCR96_A2"]
+    assert [member["container_kind"] for member in group["members"]] == ["well", "well"]
+    assert [member["volume_uL"] for member in group["members"]] == [10, 10]
+
+
 def test_runtime_sequencing_style_read_accumulation_closes_minimal_loop():
     plan = _build_plan_from_source(
         """

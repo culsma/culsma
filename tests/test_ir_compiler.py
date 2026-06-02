@@ -659,6 +659,66 @@ protocol T {
     ]
 
 
+def test_compile_plate_selector_let_synthesizes_wells_and_group_value():
+    src = """
+protocol T {
+  let plate96 = plate(label = "Assay", format = "96well", carrier_id = "PlateA");
+  let wells = plate96[A1:B2];
+}
+"""
+    ir = compile_to_ir(parse(src))
+    protocol = ir.protocols[0]
+    assert [stmt.__class__.__name__ for stmt in protocol.statements] == [
+        "IRLet",
+        "IRLet",
+        "IRLet",
+        "IRLet",
+        "IRLet",
+        "IRLet",
+    ]
+    synth_lets = protocol.statements[1:5]
+    synth_names = [
+        "__lw_plate_plate96_A1",
+        "__lw_plate_plate96_A2",
+        "__lw_plate_plate96_B1",
+        "__lw_plate_plate96_B2",
+    ]
+    assert [stmt.name for stmt in synth_lets] == synth_names
+    wells_let = protocol.statements[5]
+    assert wells_let.name == "wells"
+    assert wells_let.value.__class__.__name__ == "IRGroup"
+    assert [element.name for element in wells_let.value.elements] == synth_names
+
+
+def test_compile_plate_selector_return_synthesizes_wells_and_group_binding():
+    src = """
+protocol T returns (wells) {
+  let plate96 = plate(label = "Assay", format = "96well", carrier_id = "PlateA");
+  return wells = plate96[A1:B2];
+}
+"""
+    ir = compile_to_ir(parse(src))
+    protocol = ir.protocols[0]
+    assert [stmt.__class__.__name__ for stmt in protocol.statements] == [
+        "IRLet",
+        "IRLet",
+        "IRLet",
+        "IRLet",
+        "IRLet",
+    ]
+    synth_names = [
+        "__lw_plate_plate96_A1",
+        "__lw_plate_plate96_A2",
+        "__lw_plate_plate96_B1",
+        "__lw_plate_plate96_B2",
+    ]
+    assert [stmt.name for stmt in protocol.statements[1:5]] == synth_names
+    return_binding = protocol.return_bindings[0]
+    assert return_binding.name == "wells"
+    assert return_binding.value.__class__.__name__ == "IRGroup"
+    assert [element.name for element in return_binding.value.elements] == synth_names
+
+
 def test_compile_group_constructor_rejects_nested_group_binding():
     src = """
 protocol T {

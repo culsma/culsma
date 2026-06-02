@@ -173,6 +173,34 @@ protocol GroupReturn returns (wells) {
     assert captured.err == ""
 
 
+def test_cli_machine_output_projects_plate_selector_group_return(tmp_path, monkeypatch, capsys):
+    source = tmp_path / "plate_selector_return.culs"
+    source.write_text(
+        """
+protocol SelectorReturn returns (wells) {
+  let plate96 = plate(label = "QPCR96", format = "96well", carrier_id = "PlateA");
+  let mix = tube(label = "Mix", capacity = 100uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):50uL]);
+  plate96[A1:A2] << [mix:10uL];
+  return wells = plate96[A1:A2];
+}
+""",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(source), "--json"])
+
+    main()
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    group = payload["returns"]["SelectorReturn"]["bindings"]["wells"]
+    assert group["kind"] == "container_group_ref"
+    assert group["member_count"] == 2
+    assert [member["id"] for member in group["members"]] == ["QPCR96_A1", "QPCR96_A2"]
+    assert [member["container_kind"] for member in group["members"]] == ["well", "well"]
+    assert [member["volume_uL"] for member in group["members"]] == [10, 10]
+    assert captured.err == ""
+
+
 def test_cli_human_summary_summarizes_container_group_return(tmp_path, monkeypatch, capsys):
     source = tmp_path / "group_return.culs"
     source.write_text(

@@ -295,7 +295,7 @@ class ProtocolRefHandler(BaseStatementCompileHandler):
 
 @dataclass
 class LetState(StatementLoweringState):
-    readout_prefix: list[IRLet] = field(default_factory=list)
+    prefix_lets: list[IRLet] = field(default_factory=list)
     normalized_value: Expression | None = None
 
 
@@ -331,7 +331,17 @@ class LetHandler(BaseStatementCompileHandler):
                 stmt_id=lowering_ctx.stmt_id,
                 ctx=lowering_ctx.ctx,
             )
-            state.readout_prefix = readout_prefix
+            state.prefix_lets = readout_prefix
+            state.normalized_value = normalized_value
+            return
+
+        group_prefix, normalized_value = lowering_ctx.target_resolver.normalize_group_like_expr(
+            stmt.value,
+            stmt_id=lowering_ctx.stmt_id,
+            ctx=lowering_ctx.ctx,
+        )
+        if normalized_value is not None:
+            state.prefix_lets = group_prefix
             state.normalized_value = normalized_value
 
     def apply_state_before_lowering(
@@ -369,7 +379,7 @@ class LetHandler(BaseStatementCompileHandler):
     ) -> list[IRStatement]:
         del stmt, lowering_ctx
         state = cast(LetState, state)
-        return list(state.readout_prefix)
+        return list(state.prefix_lets)
 
     def lower_current_or_children(
         self,
