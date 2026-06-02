@@ -6,6 +6,9 @@ Status: current
 
 The public CLI default run path prints a human-readable terminal result. Machine-readable run output remains available through an explicit `--json` flag or `--output` file.
 
+Protocol return projection rules are tracked separately in
+`docs/protocol_return_projection_decision.md`.
+
 ## Invariants
 
 - Protocol return semantics stay explicit: the formal returned value is the value named by `return`.

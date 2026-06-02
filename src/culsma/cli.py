@@ -89,7 +89,38 @@ def _format_container_state(value: dict[str, Any], *, indent: str = "  ") -> lis
     return lines
 
 
+def _format_container_group_state(value: dict[str, Any], *, indent: str = "  ", preview_limit: int = 3) -> list[str]:
+    members = value.get("members")
+    members = members if isinstance(members, list) else []
+    member_count = value.get("member_count")
+    if not isinstance(member_count, int):
+        member_count = len(members)
+    member_kind = _container_group_member_kind(members)
+    summary = f"{member_count} {member_kind}" if member_kind is not None else f"{member_count} containers"
+    lines = [f"{indent}container group: {summary}"]
+    for member in members[:preview_limit]:
+        if isinstance(member, dict):
+            lines.extend(_format_container_state(member, indent=indent))
+    if member_count > preview_limit:
+        lines.append(f"{indent}...")
+    return lines
+
+
+def _container_group_member_kind(members: list[Any]) -> str | None:
+    kinds = {
+        item.get("container_kind")
+        for item in members
+        if isinstance(item, dict) and isinstance(item.get("container_kind"), str)
+    }
+    if len(kinds) != 1:
+        return None
+    kind = next(iter(kinds))
+    return kind if kind.endswith("s") else f"{kind}s"
+
+
 def _format_return_value(value: Any, *, indent: str = "  ") -> list[str]:
+    if isinstance(value, dict) and value.get("kind") == "container_group_ref":
+        return _format_container_group_state(value, indent=indent)
     if isinstance(value, dict) and value.get("kind") == "container_ref":
         return _format_container_state(value, indent=indent)
     if isinstance(value, dict) and value.get("kind") == "IRQuantity":

@@ -141,6 +141,69 @@ def test_cli_machine_output_preserves_return_value_types(tmp_path, monkeypatch, 
     assert payload["report"]["schema"] == "lab_report_v1"
 
 
+def test_cli_machine_output_projects_named_container_group_return(tmp_path, monkeypatch, capsys):
+    source = tmp_path / "group_return.culs"
+    source.write_text(
+        """
+protocol GroupReturn returns (wells) {
+  let a1 = well(label = "A1", capacity = 50uL);
+  let a2 = well(label = "A2", capacity = 50uL);
+  let mix = tube(label = "Mix", capacity = 100uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):50uL]);
+  a1 << [mix:20uL];
+  a2 << [mix:20uL];
+  let wells_group = group([a1, a2]);
+  return wells = wells_group;
+}
+""",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(source), "--json"])
+
+    main()
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    group = payload["returns"]["GroupReturn"]["bindings"]["wells"]
+    assert group["kind"] == "container_group_ref"
+    assert group["member_count"] == 2
+    assert [member["id"] for member in group["members"]] == ["A1", "A2"]
+    assert [member["container_kind"] for member in group["members"]] == ["well", "well"]
+    assert [member["volume_uL"] for member in group["members"]] == [20, 20]
+    assert payload["report"]["schema"] == "lab_report_v1"
+    assert captured.err == ""
+
+
+def test_cli_human_summary_summarizes_container_group_return(tmp_path, monkeypatch, capsys):
+    source = tmp_path / "group_return.culs"
+    source.write_text(
+        """
+protocol GroupReturn returns (wells) {
+  let a1 = well(label = "A1", capacity = 50uL);
+  let a2 = well(label = "A2", capacity = 50uL);
+  let mix = tube(label = "Mix", capacity = 100uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):50uL]);
+  a1 << [mix:20uL];
+  a2 << [mix:20uL];
+  let wells_group = group([a1, a2]);
+  return wells = wells_group;
+}
+""",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(source)])
+
+    main()
+
+    captured = capsys.readouterr()
+    assert captured.out.startswith("GroupReturn ok")
+    assert "return:" in captured.out
+    assert "wells:\n    container group: 2 wells" in captured.out
+    assert "A1 (well)" in captured.out
+    assert "volume: 20 uL" in captured.out
+    assert "A2 (well)" in captured.out
+    assert "None" not in captured.out
+    assert captured.err == ""
+
+
 def test_cli_run_writes_primary_result_when_output_is_requested(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(sys, "argv", ["culsma", "run", "--input", str(EXAMPLE_INPUT), "--json"])
 

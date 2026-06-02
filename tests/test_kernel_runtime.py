@@ -2028,6 +2028,98 @@ protocol T() returns (supernatant_out) {
     assert result.state.artifacts["material_state"]["containers"]["p0.s1::0"]["components"]["S1"] == 99.0
 
 
+def test_runtime_captures_direct_container_group_return():
+    plan = _build_plan_from_source(
+        """
+protocol T() returns (wells_out) {
+  let a1 = well(label = "A1", capacity = 50uL);
+  let a2 = well(label = "A2", capacity = 50uL);
+  let mix = tube(label = "Mix", capacity = 100uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):50uL]);
+  a1 << [mix:20uL];
+  a2 << [mix:20uL];
+  return wells_out = group([a1, a2]);
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    group = result.state.artifacts["protocol_outputs"]["T"]["bindings"]["wells_out"]
+    assert group["kind"] == "container_group_ref"
+    assert group["member_count"] == 2
+    assert [member["id"] for member in group["members"]] == ["A1", "A2"]
+    assert [member["container_kind"] for member in group["members"]] == ["well", "well"]
+    assert [member["volume_uL"] for member in group["members"]] == [20, 20]
+
+
+def test_runtime_captures_let_bound_container_group_return():
+    plan = _build_plan_from_source(
+        """
+protocol T() returns (wells_out) {
+  let a1 = well(label = "A1", capacity = 50uL);
+  let a2 = well(label = "A2", capacity = 50uL);
+  let mix = tube(label = "Mix", capacity = 100uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):50uL]);
+  a1 << [mix:10uL];
+  a2 << [mix:15uL];
+  let wells = group([a1, a2]);
+  return wells_out = wells;
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    group = result.state.artifacts["protocol_outputs"]["T"]["bindings"]["wells_out"]
+    assert group["kind"] == "container_group_ref"
+    assert group["member_count"] == 2
+    assert [member["id"] for member in group["members"]] == ["A1", "A2"]
+    assert [member["volume_uL"] for member in group["members"]] == [10, 15]
+
+
+def test_runtime_captures_sep_group_return_as_container_group_ref():
+    plan = _build_plan_from_source(
+        """
+protocol T() returns (fractions_out) {
+  let sample_tube = tube(label = "SampleTube", capacity = 100uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):100uL]);
+  let sep_group = sep(sample = sample_tube, program = centrifuge_program(drive = 12000g));
+  return fractions_out = sep_group;
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    group = result.state.artifacts["protocol_outputs"]["T"]["bindings"]["fractions_out"]
+    assert group["kind"] == "container_group_ref"
+    assert group["member_count"] == 2
+    assert [member["id"] for member in group["members"]] == ["p0.s1::0", "p0.s1::1"]
+    assert [member["volume_uL"] for member in group["members"]] == [50, 50]
+
+
+def test_runtime_captures_frac_group_return_as_container_group_ref():
+    plan = _build_plan_from_source(
+        """
+protocol T() returns (fractions_out) {
+  let sample_tube = tube(label = "SampleTube", capacity = 120uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):120uL]);
+  let fractions = frac(sample = sample_tube, program = density_gradient_program(axis = density, order = top_to_bottom, bins = 3));
+  return fractions_out = fractions;
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    group = result.state.artifacts["protocol_outputs"]["T"]["bindings"]["fractions_out"]
+    assert group["kind"] == "container_group_ref"
+    assert group["member_count"] == 3
+    assert [member["id"] for member in group["members"]] == ["p0.s1::0", "p0.s1::1", "p0.s1::2"]
+    assert [member["volume_uL"] for member in group["members"]] == [40, 40, 40]
+
+
 def test_runtime_sequencing_style_read_accumulation_closes_minimal_loop():
     plan = _build_plan_from_source(
         """

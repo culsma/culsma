@@ -57,7 +57,7 @@ class RuntimeValueResolver:
         value = _eval_runtime_expr(expr, state)
         if value is not UNRESOLVED:
             return value
-        material_value = _resolve_runtime_material_value(state.artifacts.get("material_state"), expr)
+        material_value = _resolve_runtime_material_output_value(state.artifacts.get("material_state"), expr)
         if material_value is not None:
             return material_value
         return UNRESOLVED
@@ -646,6 +646,12 @@ def _runtime_protocol_output_serialize(value: Any) -> Any:
     if isinstance(value, list):
         return [_runtime_protocol_output_serialize(item) for item in value]
     if isinstance(value, dict):
+        if value.get("kind") == "container_group_ref":
+            return {
+                "kind": "container_group_ref",
+                "member_count": value.get("member_count", 0),
+                "members": _runtime_protocol_output_serialize(value.get("members", [])),
+            }
         if value.get("kind") == "container_ref":
             public_keys = {
                 "kind",
@@ -694,6 +700,13 @@ def _resolve_runtime_arg_value(value: Any, state: RuntimeState) -> Any:
     return value
 
 
+def _resolve_runtime_material_output_value(material_state: Any, expr: Any) -> dict[str, Any] | None:
+    group_value = _container_group_ref_payload(material_state, expr)
+    if group_value is not None:
+        return group_value
+    return _resolve_runtime_material_value(material_state, expr)
+
+
 def _resolve_runtime_material_value(material_state: Any, expr: Any) -> dict[str, Any] | None:
     container_id = _resolve_runtime_ref(material_state, expr)
     if not isinstance(container_id, str):
@@ -736,6 +749,23 @@ def _container_ref_payload(material_state: Any, container_id: str) -> dict[str, 
     if isinstance(barcode, str):
         payload["barcode"] = barcode
     return payload
+
+
+def _container_group_ref_payload(material_state: Any, expr: Any) -> dict[str, Any] | None:
+    container_ids = _resolve_runtime_ref_group_ids(material_state, expr)
+    if container_ids is None:
+        return None
+    members: list[dict[str, Any]] = []
+    for container_id in container_ids:
+        payload = _container_ref_payload(material_state, container_id)
+        if payload is None:
+            return None
+        members.append(payload)
+    return {
+        "kind": "container_group_ref",
+        "member_count": len(members),
+        "members": members,
+    }
 
 
 def _merge_result_payloads(*parts: dict[str, Any]) -> dict[str, Any]:
@@ -822,6 +852,51 @@ def _resolve_runtime_ref_group(material_state: Any, value: Any) -> list[dict[str
             return None
         resolved.append({"sample_ref": item, "resolved_sample": resolved_item})
     return resolved
+
+
+def _resolve_runtime_ref_group_ids(material_state: Any, value: Any) -> list[str] | None:
+    if not isinstance(material_state, dict) or not isinstance(value, dict):
+        return None
+    containers = material_state.get("containers")
+    if not isinstance(containers, dict):
+        return None
+
+    if value.get("kind") == "IRGroup":
+        elements = value.get("elements")
+        if not isinstance(elements, list):
+            return None
+        resolved: list[str] = []
+        for item in elements:
+            container_id = _resolve_runtime_ref(material_state, item)
+            if not isinstance(container_id, str):
+                return None
+            resolved.append(container_id)
+        return resolved
+
+    if value.get("kind") != "IRIdentifier":
+        return None
+    group_name = value.get("name")
+    if not isinstance(group_name, str):
+        return None
+    indexed_bindings = material_state.get("indexed_bindings")
+    if not isinstance(indexed_bindings, dict):
+        return None
+    group = indexed_bindings.get(group_name)
+    if not isinstance(group, dict):
+        return None
+    resolved: list[str] = []
+    for slot in sorted(group, key=_runtime_index_slot_sort_key):
+        container_id = group.get(slot)
+        if not isinstance(container_id, str) or container_id not in containers:
+            return None
+        resolved.append(container_id)
+    return resolved
+
+
+def _runtime_index_slot_sort_key(slot: Any) -> tuple[int, int | str]:
+    if isinstance(slot, str) and slot.isdigit():
+        return (0, int(slot))
+    return (1, str(slot))
 
 
 def _runtime_static_index_key(value: Any) -> str | None:
