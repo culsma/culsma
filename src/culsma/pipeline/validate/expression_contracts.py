@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.pipeline.container_views import container_view_path_error, container_view_root
 from culsma.pipeline.ir_nodes import (
     IRBinary,
     IRCall,
@@ -218,8 +219,19 @@ def validate_expr_contracts(
         return diagnostics
 
     if isinstance(expr, IRMember):
-        return validate_expr_contracts(
-            expr.base,
+        error = container_view_path_error(expr)
+        if error is not None:
+            diagnostics.append(
+                Diagnostic(
+                    code="SEM_CONTAINER_TARGET_VIEW_INVALID",
+                    message=error,
+                    span=expr.span,
+                    node_id=node_id,
+                )
+            )
+        root = container_view_root(expr)
+        return diagnostics + validate_expr_contracts(
+            root if root is not None else expr.base,
             literal_bindings=literal_bindings,
             expr_bindings=expr_bindings,
             group_bindings=group_bindings,

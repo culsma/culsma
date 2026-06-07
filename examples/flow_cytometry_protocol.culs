@@ -46,7 +46,7 @@ protocol FlowCytometryProtocol {
     // Combine cells with lysis buffer and incubate at room temperature.
     working_cells << [cell_suspension:200uL, lysis_buffer:1800uL] with constraint(high_precision, low_carryover);
     with env(thermal = 25C, duration = 10min) {
-        hold(sample = working_cells);
+        hold(working_cells);
     }
 
     // Retain the cell-containing fraction and route process liquid to waste.
@@ -66,7 +66,7 @@ protocol FlowCytometryProtocol {
     working_cells << [viability_dye:5uL, antibody_cocktail:50uL] with constraint(high_precision, low_carryover, dark_protected);
     with constraint(dark_protected) {
         with env(thermal = 4C, duration = 30min) {
-            hold(sample = working_cells);
+            hold(working_cells);
         }
     }
 
@@ -74,7 +74,7 @@ protocol FlowCytometryProtocol {
     working_cells << [fixation_buffer:300uL];
     with constraint(dark_protected) {
         with env(thermal = 25C, duration = 10min) {
-            hold(sample = working_cells);
+            hold(working_cells);
         }
     }
 

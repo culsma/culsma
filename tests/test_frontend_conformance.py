@@ -98,7 +98,7 @@ protocol PcrSelectedCycles(selected_amplification_cycles = 7) {
 
   repeat selected_cycle in schedule(start = 1, end = selected_amplification_cycles, step = 1) {
     with env(thermal = 98C, duration = 20s) {
-      hold(sample = cdna);
+      hold(cdna);
     }
   }
 

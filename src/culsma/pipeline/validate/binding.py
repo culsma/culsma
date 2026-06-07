@@ -212,6 +212,12 @@ def _surface_reads_from_container_expr(
         if value is not None:
             refs[value] = resolved.base.span or resolved.span
         return refs
+    if isinstance(resolved, IRMember):
+        return _surface_reads_from_container_expr(
+            resolved.base,
+            literal_bindings=literal_bindings,
+            expr_bindings=expr_bindings,
+        )
     value = ExprResolver.to_name_ref(resolved, literal_bindings)
     if value is not None:
         refs[value] = resolved.span

@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.pipeline.container_views import classify_container_target_view, is_container_target_view
 from culsma.pipeline.ir_nodes import (
     IRAssign,
     IRBinary,
@@ -62,6 +63,8 @@ _LEGACY_UNIT_ALIASES: dict[str, str] = {
 }
 
 _ASSIGNABLE_TYPES = {"bool", "int", "text", "quantity"}
+_MATERIAL_SAMPLE_CALLS = {"sep", "frac", "img", "ecp", "phy", "stream"}
+_MATERIAL_SAMPLE_STEPS = _MATERIAL_SAMPLE_CALLS | {"agit"}
 
 
 class TypecheckExpressionServices:
@@ -115,7 +118,26 @@ class TypecheckExpressionServices:
 
     def typecheck_mutation(self, stmt: IRMutation, *, expr_bindings: dict[str, Any]) -> list[Diagnostic]:
         diagnostics: list[Diagnostic] = []
+        diagnostics.extend(
+            self.typecheck_container_target_view_forbidden(
+                stmt.target,
+                label="mutation target",
+                span=stmt.target.span if stmt.target is not None else stmt.span,
+                node_id=stmt.id,
+                expr_bindings=expr_bindings,
+            )
+        )
         for source in stmt.sources:
+            source_expr = source.left if isinstance(source, IRPair) else source
+            diagnostics.extend(
+                self.typecheck_container_target_view_forbidden(
+                    source_expr,
+                    label="mutation source",
+                    span=source_expr.span or source.span or stmt.span,
+                    node_id=stmt.id,
+                    expr_bindings=expr_bindings,
+                )
+            )
             if not isinstance(source, IRPair):
                 continue
             amount = self.resolve_bound_expr(source.right, expr_bindings)
@@ -144,13 +166,19 @@ class TypecheckExpressionServices:
     ) -> list[Diagnostic]:
         if call.name == "thermal_program":
             return self.typecheck_thermal_program_call(call, node_id=node_id)
+        diagnostics = self.typecheck_call_container_target_view_positions(
+            call,
+            node_id=node_id,
+            expr_bindings=expr_bindings,
+        )
         if is_known_program_kind(call.name):
-            return self.typecheck_program_call(call, node_id=node_id, expr_bindings=expr_bindings)
+            diagnostics.extend(self.typecheck_program_call(call, node_id=node_id, expr_bindings=expr_bindings))
+            return diagnostics
         if call.name == "DefineContent":
-            return self.typecheck_define_content_args(call.args, call.span, node_id)
+            diagnostics.extend(self.typecheck_define_content_args(call.args, call.span, node_id))
+            return diagnostics
         if call.name != "AllocContainer":
-            return []
-        diagnostics: list[Diagnostic] = []
+            return diagnostics
         for arg in call.args:
             if arg.name == "capacity":
                 diagnostics.extend(
@@ -169,6 +197,68 @@ class TypecheckExpressionServices:
             elif arg.name == "load":
                 diagnostics.extend(self.typecheck_constructor_load(arg.value, node_id=node_id, expr_bindings=expr_bindings))
         return diagnostics
+
+    def typecheck_call_container_target_view_positions(
+        self,
+        call: IRCall,
+        *,
+        node_id: str,
+        expr_bindings: dict[str, Any],
+    ) -> list[Diagnostic]:
+        if call.name not in _MATERIAL_SAMPLE_CALLS:
+            return []
+        sample_arg = next((arg for arg in call.args if arg.name == "sample"), None)
+        if sample_arg is None:
+            return []
+        return self.typecheck_container_target_view_forbidden(
+            sample_arg.value,
+            label=f"{call.name}(...) sample",
+            span=sample_arg.span or call.span,
+            node_id=node_id,
+            expr_bindings=expr_bindings,
+        )
+
+    def typecheck_step_container_target_view_positions(
+        self,
+        step: IRStep,
+        *,
+        expr_bindings: dict[str, Any],
+    ) -> list[Diagnostic]:
+        if step.name not in _MATERIAL_SAMPLE_STEPS:
+            return []
+        sample_arg = next((arg for arg in step.args if arg.name == "sample"), None)
+        if sample_arg is None:
+            return []
+        return self.typecheck_container_target_view_forbidden(
+            sample_arg.value,
+            label=f"{step.name}(...) sample",
+            span=sample_arg.span or step.span,
+            node_id=step.id,
+            expr_bindings=expr_bindings,
+        )
+
+    def typecheck_container_target_view_forbidden(
+        self,
+        expr: Any,
+        *,
+        label: str,
+        span,
+        node_id: str | None,
+        expr_bindings: dict[str, Any],
+    ) -> list[Diagnostic]:
+        if expr is None:
+            return []
+        resolved = self.resolve_bound_expr(expr, expr_bindings)
+        if not is_container_target_view(resolved):
+            return []
+        return [
+            Diagnostic(
+                code="TYPE_CONTAINER_TARGET_VIEW_POSITION_INVALID",
+                message=f"{label} expects a material container, not a container target view",
+                span=getattr(resolved, "span", None) or span,
+                node_id=node_id,
+            )
+        ]
 
     def typecheck_thermal_program_call(self, call: IRCall, *, node_id: str) -> list[Diagnostic]:
         diagnostics: list[Diagnostic] = []
@@ -418,6 +508,9 @@ class TypecheckExpressionServices:
         if isinstance(resolved, (IRGroup, IRIndex)):
             return "group_ref"
         if isinstance(resolved, IRMember):
+            view = classify_container_target_view(resolved)
+            if view is not None:
+                return "container_contents_view" if view.kind == "contents" else "container_structure_facet"
             base_type = self.classify_local_expr_type(resolved.base, expr_bindings=expr_bindings)
             if base_type in {"data_ref", "data_group_ref", "data_schema_ref", "unit_stream_ref", "marker_panel_ref"}:
                 return "unknown"

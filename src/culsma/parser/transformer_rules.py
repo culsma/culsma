@@ -349,8 +349,23 @@ class MethodCallStatementHandler(StatementRuleHandler):
 class StepCallHandler(StatementRuleHandler):
     def construct_ast(self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState) -> StepCall:
         del meta, ctx
-        args = items[1] if len(items) > 1 else []
-        return StepCall(name=str(items[0]), args=args, span=state.span)
+        name = str(items[0])
+        raw_args = items[1] if len(items) > 1 else []
+        args: list[Arg] = []
+        for index, raw_arg in enumerate(raw_args):
+            if isinstance(raw_arg, Arg):
+                args.append(raw_arg)
+                continue
+            if name != "hold":
+                raise ValueError("step calls only accept named args; hold(...) is the only positional step form")
+            args.append(
+                Arg(
+                    name="target" if index == 0 else f"arg{index}",
+                    value=raw_arg,
+                    span=getattr(raw_arg, "span", state.span),
+                )
+            )
+        return StepCall(name=name, args=args, span=state.span)
 
 
 class EmptyArgBlockHandler(StatementRuleHandler):
@@ -657,6 +672,7 @@ def create_parse_rule_dispatcher() -> ParseRuleDispatcher:
             "call_statement": CallStatementHandler(),
             "method_call_statement": MethodCallStatementHandler(),
             "step_call": StepCallHandler(),
+            "step_arg_list": list_handler,
             "env_arg_block": EmptyArgBlockHandler(),
             "constraint_item_block": EmptyArgBlockHandler(),
             "constraint_item_list": list_handler,

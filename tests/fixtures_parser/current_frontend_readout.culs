@@ -4,7 +4,7 @@ protocol CurrentFrontendReadout {
 
     let thermal_prog = thermal_program(from = 95C, duration = 30s);
     with env(thermal = thermal_prog) {
-        hold(sample = pcr_well);
+        hold(pcr_well);
     }
 
     let img_obs = img(sample = reactor_tube, quantity = fluorescence, save_raw = true);

@@ -60,7 +60,7 @@ class EnvContractValidator:
             diagnostics.append(
                 Diagnostic(
                     code="SEM_ENV_BODY_REQUIRED",
-                    message="with env(...): at least one statement is required; use explicit hold(sample = ...) for pure env hold",
+                    message="with env(...): at least one statement is required; use explicit hold(...) for pure env hold",
                     span=stmt.span,
                     node_id=stmt.id,
                 )

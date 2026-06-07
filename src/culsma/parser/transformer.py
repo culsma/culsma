@@ -141,6 +141,9 @@ class CulsmaTransformer(Transformer):
     def arg_list(self, meta, items):
         return self._dispatch("arg_list", meta, items)
 
+    def step_arg_list(self, meta, items):
+        return self._dispatch("step_arg_list", meta, items)
+
     def arg(self, meta, items):
         return self._dispatch("arg", meta, items)
 

@@ -1,0 +1,14 @@
+import ThermalControl;
+
+protocol LayeredThermalExtensionDemo {
+  let pcr_reaction = tube(label = "PCRReaction", capacity = 200uL);
+
+  let amplified = AntiCondensationThermalHold(
+    target = pcr_reaction,
+    sample_temperature = 98C,
+    duration = 20s,
+    top_temperature = 105C
+  );
+
+  return amplified;
+}

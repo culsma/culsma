@@ -31,6 +31,7 @@ from culsma.parser.ast_nodes import (
 )
 from culsma.pipeline.ir_nodes import IRArg, IRCall, IRLet, IRString
 from culsma.pipeline.content_vocab import ContainerKind
+from culsma.pipeline.container_views import classify_container_target_view, is_container_target_view_namespace_path
 
 from .context import BlockContext, CompileSession, _CompilerState
 
@@ -402,6 +403,36 @@ def _is_env_target_expr(expr: Expression, let_bindings: dict[str, Expression]) -
     return isinstance(resolved, (Identifier, IndexExpr, MemberExpr, GroupExpr, PlateSelectorExpr))
 
 
+def _is_explicit_hold_target_expr(expr: Expression, let_bindings: dict[str, Expression]) -> bool:
+    resolved = _resolve_hold_target_bound_expr(expr, let_bindings)
+    if isinstance(resolved, GroupExpr):
+        return all(_is_explicit_hold_target_expr(element, let_bindings) for element in resolved.elements)
+    if isinstance(resolved, MemberExpr):
+        view = classify_container_target_view(resolved)
+        if view is None and not is_container_target_view_namespace_path(resolved):
+            return False
+        root = view.root if view is not None else resolved
+        while isinstance(root, MemberExpr):
+            root = root.base
+        base = _resolve_group_like_bound_expr(root, let_bindings)
+        return isinstance(base, (Identifier, IndexExpr, PlateSelectorExpr))
+    return isinstance(resolved, (Identifier, IndexExpr, PlateSelectorExpr))
+
+
+def _resolve_hold_target_bound_expr(expr: Expression, let_bindings: dict[str, Expression]) -> Expression:
+    seen: set[str] = set()
+    current = expr
+    while (
+        isinstance(current, Identifier)
+        and current.name in let_bindings
+        and current.name not in seen
+        and isinstance(let_bindings[current.name], (GroupExpr, PlateSelectorExpr, MemberExpr, IndexExpr))
+    ):
+        seen.add(current.name)
+        current = let_bindings[current.name]
+    return current
+
+
 def _resolve_group_like_bound_expr(expr: Expression, let_bindings: dict[str, Expression]) -> Expression:
     seen: set[str] = set()
     current = expr
@@ -585,8 +616,21 @@ def _expr_identity_key(expr: Expression) -> str:
     return repr(expr)
 
 
+def split_leading_hold_statements(statements: list[Statement]) -> tuple[list[StepCall], list[Statement]]:
+    holds: list[StepCall] = []
+    idx = 0
+    for stmt in statements:
+        if isinstance(stmt, StepCall) and stmt.name == "hold":
+            holds.append(stmt)
+            idx += 1
+            continue
+        break
+    return holds, statements[idx:]
+
+
 def _is_explicit_hold_only_block(statements: list[Statement]) -> bool:
-    return len(statements) == 1 and isinstance(statements[0], StepCall) and statements[0].name == "hold"
+    holds, rest = split_leading_hold_statements(statements)
+    return bool(holds) and not rest
 
 
 def _contains_invalid_hold_statement(statements: list[Statement]) -> bool:
@@ -613,10 +657,10 @@ def _contains_invalid_hold_statement(statements: list[Statement]) -> bool:
 
 def _extract_explicit_hold_target(stmt: StepCall, *, let_bindings: dict[str, Expression]) -> Expression:
     if stmt.name != "hold":
-        raise ValueError("internal error: explicit hold sample requested for non-hold statement")
-    if len(stmt.args) != 1 or stmt.args[0].name != "sample":
-        raise ValueError("hold(...) requires exactly one named arg 'sample'")
+        raise ValueError("internal error: explicit hold target requested for non-hold statement")
+    if len(stmt.args) != 1 or stmt.args[0].name not in {"target", "sample"}:
+        raise ValueError("hold(...) requires exactly one target expression")
     target = stmt.args[0].value
-    if not _is_env_target_expr(target, let_bindings):
-        raise ValueError("hold(sample = ...) requires a container/well or group-like reference")
-    return target
+    if not _is_explicit_hold_target_expr(target, let_bindings):
+        raise ValueError("hold(...) requires a container/well, container target view, or group-like reference")
+    return _resolve_hold_target_bound_expr(target, let_bindings)

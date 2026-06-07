@@ -287,6 +287,39 @@ def test_typecheck_constructor_load_quantity_requires_volume_or_mass():
     assert "TYPE_LOAD_QUANTITY_DIMENSION_MISMATCH" in _codes(result)
 
 
+def test_typecheck_rejects_structure_facet_as_mutation_target():
+    src = "protocol T { tube.structure.top << [feed:1uL]; }"
+    ir = _compile_source(src)
+    result = typecheck(ir)
+    assert "TYPE_CONTAINER_TARGET_VIEW_POSITION_INVALID" in _codes(result)
+
+
+def test_typecheck_rejects_structure_facet_as_readout_sample():
+    src = "protocol T { let obs = img(sample = tube.structure.sidewall, quantity = fluorescence); }"
+    ir = _compile_source(src)
+    result = typecheck(ir)
+    assert "TYPE_CONTAINER_TARGET_VIEW_POSITION_INVALID" in _codes(result)
+
+
+def test_typecheck_rejects_contents_view_as_material_container_alias():
+    src = "protocol T { let obs = img(sample = tube.contents, quantity = fluorescence); }"
+    ir = _compile_source(src)
+    result = typecheck(ir)
+    assert "TYPE_CONTAINER_TARGET_VIEW_POSITION_INVALID" in _codes(result)
+
+
+def test_typecheck_rejects_let_bound_target_view_as_material_container_alias():
+    src = """
+protocol T {
+  let wall = tube.structure.sidewall;
+  let obs = img(sample = wall, quantity = fluorescence);
+}
+"""
+    ir = _compile_source(src)
+    result = typecheck(ir)
+    assert "TYPE_CONTAINER_TARGET_VIEW_POSITION_INVALID" in _codes(result)
+
+
 def test_typecheck_local_assignment_rejects_container_target():
     src = 'protocol T { let reactor = tube(label = "R", capacity = 500uL); reactor = tube(label = "B", capacity = 500uL); }'
     ir = _compile_source(src)

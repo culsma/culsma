@@ -12,6 +12,24 @@ def merge_gate(base: dict[str, Any] | None, **extra: Any) -> dict[str, Any] | No
     return merged or None
 
 
+def append_env_layer(
+    base: dict[str, Any] | None,
+    *,
+    env: dict[str, Any],
+    env_targets: list[Any],
+) -> dict[str, Any] | None:
+    merged = dict(base or {})
+    existing_layers = merged.get("env_layers")
+    layers = list(existing_layers) if isinstance(existing_layers, list) else []
+    layer = {"env": env, "env_targets": env_targets}
+    layers.append(layer)
+    merged["env_layers"] = layers
+    # Compatibility fields expose the current innermost environment layer.
+    merged["env"] = env
+    merged["env_targets"] = env_targets
+    return merged or None
+
+
 def append_runtime_condition(base: dict[str, Any] | None, expr: Any, *, negate: bool) -> dict[str, Any] | None:
     merged = dict(base or {})
     existing = merged.get("runtime_conditions")

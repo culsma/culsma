@@ -77,7 +77,9 @@ call_statement.2: ref_expr "." IDENTIFIER "(" call_statement_arg_list? ")" -> ca
 call_statement_arg_list: call_statement_arg ("," call_statement_arg)*
 ?call_statement_arg: arg | expression
 
-step_call: IDENTIFIER "(" arg_list? ")"
+step_call: IDENTIFIER "(" step_arg_list? ")"
+step_arg_list: step_arg ("," step_arg)*
+?step_arg: arg | expression
 with_env_stmt: "with" "env" "(" env_arg_block ")" "{" statement* "}"
 with_constraint_stmt: "with" "constraint" "(" constraint_item_block ")" "{" statement* "}"
 env_arg_block: arg_list?

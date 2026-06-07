@@ -27,7 +27,7 @@ from culsma.pipeline.ir_nodes import (
 from culsma.pipeline.plan_nodes import PlanStep
 
 from .context import PlanLoweringContext
-from .gates import append_constraints, append_runtime_condition, merge_gate
+from .gates import append_constraints, append_env_layer, append_runtime_condition, merge_gate
 from .references import DEFAULT_PLAN_REFERENCE_RESOLVER, PlanReferenceResolver
 from .serialization import DEFAULT_PLAN_EXPRESSION_SERIALIZER, PlanExpressionSerializer
 from .static_eval import PlanStaticEvaluator
@@ -358,10 +358,11 @@ class WithEnvPlanHandler(BasePlanStatementHandler):
     ) -> list[PlanStep]:
         stmt = cast(IRWithEnv, stmt)
         env_payload = self.serializer.serialize_arg_list(stmt.env_args, ctx.local_env)
-        gate = merge_gate(
+        env_targets = self.serializer.serialize_expr(stmt.targets, ctx.local_env)
+        gate = append_env_layer(
             ctx.gate_base,
             env=env_payload,
-            env_targets=self.serializer.serialize_expr(stmt.targets, ctx.local_env),
+            env_targets=env_targets,
         )
         if stmt.explicit_hold and not stmt.statements:
             return [

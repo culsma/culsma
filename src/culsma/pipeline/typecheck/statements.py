@@ -324,6 +324,7 @@ class StepTypecheckHandler(BaseTypecheckStatementHandler):
         _state: TypecheckStatementState,
     ) -> None:
         stmt = cast(IRStep, stmt)
+        ctx.extend(self.services.typecheck_step_container_target_view_positions(stmt, expr_bindings=ctx.expr_bindings))
         ctx.extend(self.services.typecheck_content_descriptors(stmt))
 
 

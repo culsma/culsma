@@ -262,6 +262,71 @@ def test_validate_with_env_hold_target_requires_binding():
     assert "SEM_UNBOUND_NAME_REFERENCE" in _codes(result)
 
 
+def test_validate_with_env_structure_hold_target_checks_root_binding():
+    missing = validate(
+        _compile_source("protocol T { with env(thermal = 105C, duration = 5min) { hold(pcr_tube.structure.top); } }"),
+        enforce_binding=True,
+    )
+    assert "SEM_UNBOUND_NAME_REFERENCE" in _codes(missing)
+
+    bound_src = """
+protocol T {
+  let pcr_tube = tube(label = "PCR", capacity = 200uL);
+  with env(thermal = 105C, duration = 5min) {
+    hold(pcr_tube.structure.top);
+  }
+}
+"""
+    bound = validate(_compile_source(bound_src), enforce_binding=True)
+    assert "SEM_UNBOUND_NAME_REFERENCE" not in _codes(bound)
+
+
+def test_validate_container_structure_target_view_paths():
+    invalid_namespace = validate(_compile_source("protocol T { let target = pcr_tube.structure; }"))
+    assert "SEM_CONTAINER_TARGET_VIEW_INVALID" in _codes(invalid_namespace)
+
+    invalid_facet = validate(_compile_source("protocol T { let target = pcr_tube.structure.upper; }"))
+    assert "SEM_CONTAINER_TARGET_VIEW_INVALID" in _codes(invalid_facet)
+
+    invalid_deep = validate(_compile_source("protocol T { let target = pcr_tube.structure.top.inner; }"))
+    assert "SEM_CONTAINER_TARGET_VIEW_INVALID" in _codes(invalid_deep)
+
+    valid = validate(_compile_source("protocol T { let target = pcr_tube.structure.sidewall; }"))
+    assert "SEM_CONTAINER_TARGET_VIEW_INVALID" not in _codes(valid)
+
+
+def test_validate_with_env_hold_reports_container_structure_target_view_path_errors():
+    invalid_namespace = validate(
+        _compile_source("protocol T { with env(thermal = 105C, duration = 5min) { hold(pcr_tube.structure); } }")
+    )
+    assert "SEM_CONTAINER_TARGET_VIEW_INVALID" in _codes(invalid_namespace)
+
+    invalid_facet = validate(
+        _compile_source("protocol T { with env(thermal = 105C, duration = 5min) { hold(pcr_tube.structure.upper); } }")
+    )
+    assert "SEM_CONTAINER_TARGET_VIEW_INVALID" in _codes(invalid_facet)
+
+    invalid_deep = validate(
+        _compile_source(
+            "protocol T { with env(thermal = 105C, duration = 5min) { hold(pcr_tube.structure.top.inner); } }"
+        )
+    )
+    assert "SEM_CONTAINER_TARGET_VIEW_INVALID" in _codes(invalid_deep)
+
+
+def test_validate_with_env_hold_reports_let_bound_container_structure_target_view_path_errors():
+    src = """
+protocol T {
+  let top_target = pcr_tube.structure.upper;
+  with env(thermal = 105C, duration = 5min) {
+    hold(top_target);
+  }
+}
+"""
+    result = validate(_compile_source(src))
+    assert "SEM_CONTAINER_TARGET_VIEW_INVALID" in _codes(result)
+
+
 def test_validate_include_exports_constructor_defined_names_for_binding():
     src = (
         'protocol A { let shared_tube = tube(label = "Shared", capacity = 100uL); } '

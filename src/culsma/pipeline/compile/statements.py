@@ -52,6 +52,7 @@ from .targets import (
     _extract_explicit_hold_target,
     _is_explicit_hold_only_block,
     TargetResolver,
+    split_leading_hold_statements,
 )
 from .schedule import ScheduleEvaluator
 from .static_control import StaticControlClassifier
@@ -539,11 +540,19 @@ class WithEnvHandler(BaseStatementCompileHandler):
             state.flattened_targets = []
         else:
             state.explicit_hold = _is_explicit_hold_only_block(stmt.statements)
-        if stmt.statements and state.explicit_hold:
-            hold_target = _extract_explicit_hold_target(stmt.statements[0], let_bindings=ctx.let_bindings)
-            state.nested_statements = []
+        if stmt.statements:
+            hold_statements, remaining_statements = split_leading_hold_statements(stmt.statements)
+        else:
+            hold_statements, remaining_statements = [], []
+        if hold_statements:
+            state.explicit_hold = True
+            hold_targets = [
+                _extract_explicit_hold_target(hold_stmt, let_bindings=ctx.let_bindings)
+                for hold_stmt in hold_statements
+            ]
+            state.nested_statements = remaining_statements
             state.target_prefix, state.flattened_targets = lowering_ctx.target_resolver.expand_env_targets(
-                [hold_target],
+                hold_targets,
                 stmt_id=lowering_ctx.stmt_id,
                 ctx=ctx,
             )
@@ -569,13 +578,19 @@ class WithEnvHandler(BaseStatementCompileHandler):
         lowering_ctx: StatementLoweringContext,
         state: StatementLoweringState,
     ) -> None:
-        del lowering_ctx
         stmt = cast(WithEnvStmt, stmt)
         state = cast(WithEnvState, state)
-        if stmt.statements and not state.explicit_hold and _contains_invalid_hold_statement(stmt.statements):
-            raise ValueError("hold(sample = ...) must be the only statement inside with env(...)")
+        if stmt.statements and _contains_invalid_hold_statement(state.nested_statements):
+            raise ValueError("hold(...) target declarations must appear before executable statements inside with env(...)")
         if stmt.statements and not state.explicit_hold and not state.flattened_targets:
-            raise ValueError("with env(...): could not infer env target from body; use hold(sample = ...) for pure env hold")
+            raise ValueError("with env(...): could not infer env target from body; use hold(...) for pure env hold")
+        outer_boundary = lowering_ctx.ctx.env_time_boundary
+        if (
+            state.nested_env_time_boundary is not None
+            and outer_boundary is not None
+            and lowering_ctx.schedule_evaluator.boundary_exceeds(state.nested_env_time_boundary, outer_boundary)
+        ):
+            raise ValueError("with env(...): time boundary exceeds enclosing env duration")
 
     def lower_prefix_ir(
         self,
@@ -733,7 +748,7 @@ class StepCallHandler(BaseStatementCompileHandler):
         if stmt.name in _FORBIDDEN_LEGACY_SOURCE_CALLS:
             raise ValueError(f"{stmt.name}(...) is legacy-only and cannot be called directly from current source")
         if stmt.name == "hold":
-            raise ValueError("hold(sample = ...) is only valid as the sole statement inside with env(...)")
+            raise ValueError("hold(...) is only valid as a target declaration at the start of with env(...)")
 
     def lower_prefix_ir(
         self,

@@ -420,6 +420,35 @@ protocol T {
     assert [step.op for step in steps] == ["env_hold"]
 
 
+def test_plan_nested_env_preserves_outer_and_inner_env_layers():
+    src = """
+protocol T {
+  with env(thermal = 105C, duration = 60s) {
+    hold(pcr_tube.structure.top);
+    with env(thermal = thermal_program(from = 95C, duration = 30s)) {
+      hold(pcr_tube);
+      pcr_tube << [feed:1uL];
+    }
+  }
+}
+"""
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)))
+    steps = plan.plans[0].steps
+    assert [step.op for step in steps] == ["Mutation"]
+    gate = steps[0].gate
+    assert gate["env"]["thermal"]["kind"] == "IRCall"
+    assert gate["env_targets"][0]["name"] == "pcr_tube"
+    assert len(gate["env_layers"]) == 2
+    outer, inner = gate["env_layers"]
+    assert outer["env"]["thermal"]["value"] == 105.0
+    assert outer["env_targets"][0]["kind"] == "IRMember"
+    assert outer["env_targets"][0]["member"] == "top"
+    assert outer["env_targets"][0]["base"]["member"] == "structure"
+    assert outer["env_targets"][0]["base"]["base"]["name"] == "pcr_tube"
+    assert inner["env"]["thermal"]["kind"] == "IRCall"
+    assert inner["env_targets"][0]["name"] == "pcr_tube"
+
+
 def test_plan_lowers_with_env_into_step_gate():
     src = """
 protocol T {

@@ -43,7 +43,7 @@ def test_formal_params_flow_from_frontend_file_to_runtime_payloads(tmp_path: Pat
 protocol T(capacity = 100uL, temp = 37C, duration = 10min) {
   let tube_a = tube(label = "A", capacity = capacity);
   with env(thermal = temp, duration = duration) {
-    hold(sample = tube_a);
+    hold(tube_a);
   }
   return tube_a;
 }
@@ -155,7 +155,7 @@ protocol T(v = 3, volume = 1uL, temp = 37C, schema = "schema-A", use_static = tr
     Step(value = v);
   }
   with env(thermal = temp, duration = 10min) {
-    hold(sample = tube_a);
+    hold(tube_a);
   }
   tube_a << [feed:volume];
   if use_static {

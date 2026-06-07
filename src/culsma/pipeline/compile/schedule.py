@@ -119,6 +119,11 @@ class ScheduleEvaluator:
         resolved = self.resolve_bound_expr(duration.value, ctx=ctx)
         return resolved if isinstance(resolved, Quantity) and self.is_time_point(resolved) else None
 
+    def boundary_exceeds(self, inner: Quantity, outer: Quantity) -> bool:
+        inner_seconds = _time_quantity_to_seconds(inner)
+        outer_seconds = _time_quantity_to_seconds(outer)
+        return inner_seconds is not None and outer_seconds is not None and inner_seconds > outer_seconds + 1e-9
+
     def supports_runtime_boolean_surface(self, expr: Expression) -> bool:
         if isinstance(expr, (BooleanLiteral, Identifier, MemberExpr, MethodCallExpr)):
             return True

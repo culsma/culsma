@@ -12,7 +12,7 @@ Covers:
 from pathlib import Path
 
 import pytest
-from lark.exceptions import UnexpectedInput
+from lark.exceptions import UnexpectedInput, VisitError
 
 from culsma.common.source import Span
 from culsma.parser.parser import parse, parse_file, parse_files
@@ -887,6 +887,29 @@ class TestWithEnvStatement:
         assert isinstance(stmt.statements[0], StepCall)
         assert stmt.statements[0].args[0].name == "sample"
 
+    def test_with_env_positional_hold_target_parses(self):
+        ast = parse(
+            'protocol T { with env(thermal = thermal_program(from = 60C, duration = 30s)) { hold(pcr_well); } }'
+        )
+        stmt = ast.protocols[0].statements[0]
+        assert isinstance(stmt, WithEnvStmt)
+        assert isinstance(stmt.statements[0], StepCall)
+        assert stmt.statements[0].name == "hold"
+        assert stmt.statements[0].args[0].name == "target"
+        assert isinstance(stmt.statements[0].args[0].value, Identifier)
+        assert stmt.statements[0].args[0].value.name == "pcr_well"
+
+    def test_with_env_hold_structure_target_parses_as_member(self):
+        ast = parse('protocol T { with env(thermal = 105C, duration = 5min) { hold(pcr_tube.structure.top); } }')
+        stmt = ast.protocols[0].statements[0]
+        target = stmt.statements[0].args[0].value
+        assert target.__class__.__name__ == "MemberExpr"
+        assert target.member == "top"
+        assert isinstance(target.base, MemberExpr)
+        assert target.base.member == "structure"
+        assert isinstance(target.base.base, Identifier)
+        assert target.base.base.name == "pcr_tube"
+
     def test_with_env_supports_multiple_targets_and_index_target(self):
         ast = parse('protocol T { with env(thermal = 4C, duration = 2min) { hold(sample = group([tube_a, frac_group[3]])); } }')
         stmt = ast.protocols[0].statements[0]
@@ -1013,6 +1036,11 @@ class TestEdgeCases:
         assert isinstance(step, StepCall)
         assert step.name == "Noop"
         assert step.args == []
+
+    def test_step_call_rejects_positional_args_except_hold(self):
+        with pytest.raises(VisitError) as exc_info:
+            parse('protocol T { Step(tube); }')
+        assert "hold(...) is the only positional step form" in str(exc_info.value.orig_exc)
 
     def test_multiple_protocols(self):
         src = """

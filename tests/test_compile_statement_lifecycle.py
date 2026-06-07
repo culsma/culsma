@@ -238,7 +238,7 @@ def test_assign_handler_validates_local_target_before_lowering():
 def test_step_call_handler_rejects_hold_before_lowering_ir():
     compiler = _compiler()
 
-    with pytest.raises(ValueError, match="only valid as the sole statement inside with env"):
+    with pytest.raises(ValueError, match="target declaration at the start of with env"):
         compiler.compile(
             StepCall(
                 name="hold",

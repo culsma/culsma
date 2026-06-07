@@ -445,21 +445,161 @@ def test_compile_explicit_hold_with_env_lowers_to_empty_irwithenv_body():
     assert with_env.statements == []
 
 
+def test_compile_positional_hold_with_env_lowers_to_empty_irwithenv_body():
+    src = "protocol T { with env(thermal = 37C, duration = 10min) { hold(tube); } }"
+    ir = compile_to_ir(parse(src))
+    with_env = ir.protocols[0].statements[0]
+    assert with_env.__class__.__name__ == "IRWithEnv"
+    assert with_env.statements == []
+    assert with_env.targets[0].__class__.__name__ == "IRIdentifier"
+    assert with_env.targets[0].name == "tube"
+
+
+def test_compile_hold_structure_target_preserves_member_target():
+    src = "protocol T { with env(thermal = 105C, duration = 5min) { hold(pcr_tube.structure.top); } }"
+    ir = compile_to_ir(parse(src))
+    target = ir.protocols[0].statements[0].targets[0]
+    assert target.__class__.__name__ == "IRMember"
+    assert target.member == "top"
+    assert target.base.__class__.__name__ == "IRMember"
+    assert target.base.member == "structure"
+    assert target.base.base.name == "pcr_tube"
+
+
+def test_compile_hold_structure_bottom_and_sidewall_targets():
+    src = """
+protocol T {
+  with env(thermal = 25C, duration = 5min) {
+    hold(group([tube_a.structure.bottom, tube_b.structure.sidewall]));
+  }
+}
+"""
+    ir = compile_to_ir(parse(src))
+    targets = ir.protocols[0].statements[0].targets
+    assert [target.member for target in targets] == ["bottom", "sidewall"]
+    assert [target.base.member for target in targets] == ["structure", "structure"]
+
+
+def test_compile_hold_accepts_let_bound_structure_facet_target():
+    src = """
+protocol T {
+  let top_target = pcr_tube.structure.top;
+  with env(thermal = 105C, duration = 5min) {
+    hold(top_target);
+  }
+}
+"""
+    ir = compile_to_ir(parse(src))
+    target = ir.protocols[0].statements[1].targets[0]
+    assert target.__class__.__name__ == "IRMember"
+    assert target.member == "top"
+    assert target.base.member == "structure"
+
+
+def test_compile_hold_preserves_let_bound_invalid_structure_facet_target_for_validation():
+    src = """
+protocol T {
+  let top_target = pcr_tube.structure.upper;
+  with env(thermal = 105C, duration = 5min) {
+    hold(top_target);
+  }
+}
+"""
+    ir = compile_to_ir(parse(src))
+    target = ir.protocols[0].statements[1].targets[0]
+    assert target.__class__.__name__ == "IRMember"
+    assert target.member == "upper"
+    assert target.base.member == "structure"
+
+
+def test_compile_hold_contents_target_preserves_member_target():
+    src = "protocol T { with env(thermal = 37C, duration = 5min) { hold(pcr_tube.contents); } }"
+    ir = compile_to_ir(parse(src))
+    target = ir.protocols[0].statements[0].targets[0]
+    assert target.__class__.__name__ == "IRMember"
+    assert target.member == "contents"
+    assert target.base.name == "pcr_tube"
+
+
+def test_compile_preserves_incomplete_hold_structure_target_for_validation():
+    src = "protocol T { with env(thermal = 105C, duration = 5min) { hold(pcr_tube.structure); } }"
+    ir = compile_to_ir(parse(src))
+    target = ir.protocols[0].statements[0].targets[0]
+    assert target.__class__.__name__ == "IRMember"
+    assert target.member == "structure"
+
+
+def test_compile_preserves_unknown_hold_structure_facet_target_for_validation():
+    src = "protocol T { with env(thermal = 105C, duration = 5min) { hold(pcr_tube.structure.upper); } }"
+    ir = compile_to_ir(parse(src))
+    target = ir.protocols[0].statements[0].targets[0]
+    assert target.__class__.__name__ == "IRMember"
+    assert target.member == "upper"
+    assert target.base.member == "structure"
+
+
+def test_compile_preserves_deep_hold_structure_facet_target_for_validation():
+    src = "protocol T { with env(thermal = 105C, duration = 5min) { hold(pcr_tube.structure.top.inner); } }"
+    ir = compile_to_ir(parse(src))
+    target = ir.protocols[0].statements[0].targets[0]
+    assert target.__class__.__name__ == "IRMember"
+    assert target.member == "inner"
+    assert target.base.member == "top"
+
+
+def test_compile_rejects_unknown_hold_member_target():
+    src = "protocol T { with env(thermal = 105C, duration = 5min) { hold(pcr_tube.lid); } }"
+    with pytest.raises(ValueError, match="container target view"):
+        compile_to_ir(parse(src))
+
+
 def test_compile_rejects_top_level_hold():
-    with pytest.raises(ValueError, match="hold\\(sample = \\.\\.\\.\\) is only valid as the sole statement inside with env"):
+    with pytest.raises(ValueError, match="hold\\(\\.\\.\\.\\) is only valid as a target declaration at the start of with env"):
         compile_to_ir(parse("protocol T { hold(); }"))
 
 
-def test_compile_rejects_mixed_hold_with_env_block():
+def test_compile_allows_leading_hold_with_env_body():
     src = """
 protocol T {
   with env(thermal = 37C, duration = 10min) {
-    hold(sample = tube);
+    hold(tube);
     Step();
   }
 }
 """
-    with pytest.raises(ValueError, match="hold\\(sample = \\.\\.\\.\\) must be the only statement inside with env"):
+    ir = compile_to_ir(parse(src))
+    with_env = ir.protocols[0].statements[0]
+    assert with_env.__class__.__name__ == "IRWithEnv"
+    assert with_env.explicit_hold is True
+    assert len(with_env.statements) == 1
+    assert with_env.statements[0].name == "Step"
+
+
+def test_compile_rejects_non_leading_hold_with_env_block():
+    src = """
+protocol T {
+  with env(thermal = 37C, duration = 10min) {
+    Step();
+    hold(tube);
+  }
+}
+"""
+    with pytest.raises(ValueError, match="hold\\(\\.\\.\\.\\) target declarations must appear before executable statements"):
+        compile_to_ir(parse(src))
+
+
+def test_compile_rejects_nested_env_time_boundary_longer_than_outer():
+    src = """
+protocol T {
+  with env(thermal = 105C, duration = 20s) {
+    hold(pcr_tube.structure.top);
+    with env(thermal = thermal_program(from = 95C, duration = 30s)) {
+      hold(pcr_tube);
+    }
+  }
+}
+"""
+    with pytest.raises(ValueError, match="time boundary exceeds enclosing env duration"):
         compile_to_ir(parse(src))
 
 
