@@ -24,7 +24,7 @@ body:
       label: Command or input
       description: Exact command, protocol file, or invocation used.
       placeholder: |
-        culsma run --input examples/minimal/public_minimal.culs
+        culsma run --input /tmp/minimal-repro.culs
     validations:
       required: true
   - type: textarea

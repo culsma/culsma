@@ -62,7 +62,7 @@ Focus:
 - Keep the current public source surface stable.
 - Preserve the boundary between protocol return values, runtime state, and
   derived reports.
-- Keep examples, docs, reference text, and tests synchronized.
+- Keep docs, reference text, generated smoke sources, and tests synchronized.
 - Fix public-release defects without changing language semantics.
 - Maintain a reliable smoke path: install, run the minimal protocol, inspect
   artifacts, and replay a saved run.
@@ -80,7 +80,8 @@ Planned direction:
 
 - Add or refine validation-focused CLI workflows.
 - Improve terminal diagnostics and source-location reporting.
-- Expand starter examples beyond the minimal transfer protocol.
+- Expand starter examples in public documentation beyond the minimal transfer
+  protocol.
 - Improve quickstart and authoring documentation.
 - Smooth common source-authoring patterns where the language surface is already
   semantically clear.
@@ -94,7 +95,7 @@ Success criteria:
 
 - A new user can write a small protocol, run it, and understand validation or
   runtime failures without reading internal artifacts first.
-- Existing `v1.0.x` examples continue to run unchanged.
+- Existing CLI, artifact, and replay smoke paths continue to run unchanged.
 
 ### Later: `v1.2.0` Reproducible Execution
 
@@ -182,7 +183,7 @@ These themes may span multiple releases.
 - Standard-library coverage: more protocol families and stronger public examples.
 - Execution evidence: better provenance, replay, and conformance bundles.
 - Backend integration: clearer driver APIs and backend-specific projections.
-- Reference alignment: keep the public reference, docs, examples, and tests in
+- Reference alignment: keep the public reference, docs, smoke paths, and tests in
   lockstep with implementation behavior.
 
 ## Roadmap Boundaries

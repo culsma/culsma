@@ -1,5 +1,75 @@
 # Changelog
 
+## Culsma v1.0.3
+
+### Scope
+
+This release extends the current public execution kernel with container target
+views, source-local partition selectors, formal-parameter handling fixes, and
+return projection fixes.
+
+It includes:
+
+- container structure target views for thermal holds, including
+  `container.structure.top`, `container.structure.bottom`, and
+  `container.structure.sidewall`
+- source-local partition selectors in mutation sources, using
+  `source.partition(program)[0]` and `source.partition(program)[1]`
+- sep-family program ownership for partition selectors without replacing
+  named/indexed `sep(...)` groups
+- static-control support for formal protocol parameters
+- canonical duration units and compatibility aliases for day-scale durations
+- program registry alignment with the reference readout surface
+- return projection fixes for container groups and selector-derived well groups
+- a tag-driven release workflow for normal `v*` releases
+- removal of bundled example files from the public code package; CLI smoke
+  checks now generate protocol source during validation
+
+### Compatibility
+
+- Existing `hold(...)` uses remain valid. The recommended current spelling is
+  `hold(target)` without the legacy `sample = ...` parameter name.
+- Container structure facets are target views for environment/thermal exposure;
+  they are not material contents and cannot be used as mutation targets or
+  readout samples.
+- `source.partition(program)[i]` is valid only inside mutation source items and
+  currently supports static indices `0` and `1`.
+- `sep(...)` remains the construct for materializing named or indexed separated
+  groups. Source-local partition selectors consume a separation result from a
+  source expression without creating a group binding.
+
+### Install
+
+PyPI install:
+
+```bash
+python -m pip install culsma
+```
+
+Source tag install:
+
+```bash
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@v1.0.3"
+```
+
+### Notes
+
+- Requires Python 3.11+
+- Runtime dependency: `lark>=1.1.0`
+- This is a patch release. It keeps legacy accepted syntax while updating the
+  recommended public authoring surface.
+
+### Verified
+
+- `python -m pytest -q`
+  - result: `668 passed`
+- `python -m culsma.cli run /private/tmp/cli_smoke.culs`
+  - result: `3/3 steps completed, 0 diagnostics`
+- `python -m pip wheel . -w /private/tmp/culsma-v1.0.3-dist --no-deps --no-build-isolation`
+  - result: `culsma-1.0.3-py3-none-any.whl` built
+- `python -m twine check /private/tmp/culsma-v1.0.3-dist/*`
+  - result: passed
+
 ## Culsma v1.0.2
 
 ### Scope
@@ -64,12 +134,6 @@ Not run locally:
 
 - `twine check`
   - reason: `twine` is not installed in the current virtual environment
-
-## Unreleased
-
-### Maintenance
-
-- No unreleased changes.
 
 ## Culsma v1.0.1
 

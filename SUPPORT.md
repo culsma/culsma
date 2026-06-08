@@ -10,7 +10,7 @@ current public baseline, such as:
 
 - parser or frontend regressions on current public source forms
 - validation or typecheck regressions against current public contracts
-- plan, runtime, replay, or artifact regressions in released public examples
+- plan, runtime, replay, or artifact regressions in released public smoke paths
 - packaging or release breakage in the published CLI surface
 
 Review is discretionary and no response-time commitment is provided.

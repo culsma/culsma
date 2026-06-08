@@ -22,7 +22,6 @@ This repository intentionally contains only the executable core:
 - `src/culsma/runtime/`
 - `src/culsma/driver/`
 - `src/culsma/stdlib/`
-- `examples/`
 - `tests/`
 
 It intentionally leaves out manuscript sources, MCP tooling, editor
@@ -36,14 +35,10 @@ For the current public release, install from PyPI:
 python -m pip install culsma
 ```
 
-The runnable examples live in the source repository. If you install from PyPI,
-use the GitHub source checkout or copy an example file locally before running
-the example commands below.
-
-You can also install directly from the `v1.0.2` tag:
+You can also install directly from the `v1.0.3` tag:
 
 ```bash
-python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@v1.0.2"
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@v1.0.3"
 ```
 
 Release notes are in [CHANGELOG.md](CHANGELOG.md).
@@ -59,29 +54,41 @@ src/culsma/pipeline/  compile, validate, typecheck, and plan lowering
 src/culsma/runtime/   execution state, events, and material compute
 src/culsma/driver/    backend boundary and concrete drivers
 src/culsma/stdlib/    bundled standard-library source
-examples/             current protocol examples
 tests/                regression and runtime tests
 ```
 
 ## Quick Run
 
+Create a small protocol file:
+
 ```bash
-culsma examples/flow_cytometry_protocol.culs
+cat > /tmp/culsma-smoke.culs <<'CULSMA'
+protocol CliSmoke {
+  let sample = tube(label = "AcquisitionSample", capacity = 2000uL, load = [content(kind = "biosample", code = "S1", type = "cell_sample"):1000uL]);
+  return sample;
+}
+CULSMA
 ```
 
-This runs a representative protocol and prints a compact terminal result,
-including the returned tube/container state.
+Then run it:
+
+```bash
+culsma /tmp/culsma-smoke.culs
+```
+
+This prints a compact terminal result, including the returned tube/container
+state.
 
 The explicit run form is equivalent:
 
 ```bash
-culsma run examples/flow_cytometry_protocol.culs
+culsma run /tmp/culsma-smoke.culs
 ```
 
 If you want the machine-readable run output on stdout:
 
 ```bash
-culsma run examples/flow_cytometry_protocol.culs --json
+culsma run /tmp/culsma-smoke.culs --json
 ```
 
 The run output separates the protocol return from the generated lab report:
@@ -91,14 +98,14 @@ summary.
 If you want to save the machine-readable run output explicitly:
 
 ```bash
-culsma run examples/flow_cytometry_protocol.culs --output tmp/result.json
+culsma run /tmp/culsma-smoke.culs --output tmp/result.json
 ```
 
 If you want intermediate and debug artifacts as well:
 
 ```bash
 culsma run \
-  examples/flow_cytometry_protocol.culs \
+  /tmp/culsma-smoke.culs \
   --artifacts-dir tmp/run
 ```
 
@@ -106,7 +113,7 @@ If you are running from a source checkout without the console entrypoint on
 `PATH`, use:
 
 ```bash
-python -m culsma examples/flow_cytometry_protocol.culs
+python -m culsma /tmp/culsma-smoke.culs
 ```
 
 You can also replay a saved run artifact:
@@ -136,8 +143,8 @@ python -m pytest -q
 ## Release Boundary
 
 - This repository is the public code boundary for Culsma v1.0.x.
-- The `examples/` directory contains the runnable CLI example used for public
-  smoke validation.
+- Public smoke validation uses generated protocol source rather than bundled
+  example files.
 - This repository is licensed under Apache-2.0. See `LICENSE`.
 
 ## Support and Maintenance Policy

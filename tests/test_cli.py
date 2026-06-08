@@ -7,25 +7,37 @@ from pathlib import Path
 from culsma.cli import main
 
 
-ROOT = Path(__file__).resolve().parents[1]
-EXAMPLE_INPUT = ROOT / "examples" / "flow_cytometry_protocol.culs"
+SMOKE_SOURCE = """\
+protocol CliSmoke {
+  let sample = tube(label = "AcquisitionSample", capacity = 2000uL, load = [content(kind = "biosample", code = "S1", type = "cell_sample"):1000uL]);
+  return sample;
+}
+"""
 
 
-def test_cli_run_prints_human_summary_to_stdout_by_default(monkeypatch, capsys):
-    monkeypatch.setattr(sys, "argv", ["culsma", "run", "--input", str(EXAMPLE_INPUT)])
+def _write_smoke_source(tmp_path: Path) -> Path:
+    source = tmp_path / "cli_smoke.culs"
+    source.write_text(SMOKE_SOURCE, encoding="utf-8")
+    return source
+
+
+def test_cli_run_prints_human_summary_to_stdout_by_default(tmp_path, monkeypatch, capsys):
+    source = _write_smoke_source(tmp_path)
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", "--input", str(source)])
 
     main()
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("FlowCytometryProtocol ok")
+    assert captured.out.startswith("CliSmoke ok")
     assert "return:" in captured.out
     assert "AcquisitionSample (tube)" in captured.out
     assert "volume: 1000 uL" in captured.out
     assert captured.err == ""
 
 
-def test_cli_run_prints_machine_output_json_when_requested(monkeypatch, capsys):
-    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(EXAMPLE_INPUT), "--json"])
+def test_cli_run_prints_machine_output_json_when_requested(tmp_path, monkeypatch, capsys):
+    source = _write_smoke_source(tmp_path)
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(source), "--json"])
 
     main()
 
@@ -33,36 +45,38 @@ def test_cli_run_prints_machine_output_json_when_requested(monkeypatch, capsys):
     payload = json.loads(captured.out)
     assert payload["schema"] == "culsma_run_output_v1"
     assert payload["report"]["schema"] == "lab_report_v1"
-    assert payload["returns"]["FlowCytometryProtocol"]["value"]["id"] == "AcquisitionSample"
+    assert payload["returns"]["CliSmoke"]["value"]["id"] == "AcquisitionSample"
     assert captured.err == ""
 
 
-def test_cli_accepts_top_level_input_path_shorthand(monkeypatch, capsys):
-    monkeypatch.setattr(sys, "argv", ["culsma", str(EXAMPLE_INPUT)])
+def test_cli_accepts_top_level_input_path_shorthand(tmp_path, monkeypatch, capsys):
+    source = _write_smoke_source(tmp_path)
+    monkeypatch.setattr(sys, "argv", ["culsma", str(source)])
 
     main()
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("FlowCytometryProtocol ok")
+    assert captured.out.startswith("CliSmoke ok")
     assert "AcquisitionSample (tube)" in captured.out
     assert captured.err == ""
 
 
-def test_cli_human_summary_includes_returned_container_state(monkeypatch, capsys):
-    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(EXAMPLE_INPUT)])
+def test_cli_human_summary_includes_returned_container_state(tmp_path, monkeypatch, capsys):
+    source = _write_smoke_source(tmp_path)
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(source)])
 
     main()
 
     captured = capsys.readouterr()
     assert captured.out == (
-        "FlowCytometryProtocol ok\n"
+        "CliSmoke ok\n"
         "\n"
         "return:\n"
         "  AcquisitionSample (tube)\n"
         "    volume: 1000 uL\n"
         "    mass: 1000 mg\n"
         "\n"
-        "execution: 46/46 steps completed, 0 diagnostics\n"
+        "execution: 3/3 steps completed, 0 diagnostics\n"
     )
 
 
@@ -233,7 +247,8 @@ protocol GroupReturn returns (wells) {
 
 
 def test_cli_run_writes_primary_result_when_output_is_requested(tmp_path, monkeypatch, capsys):
-    monkeypatch.setattr(sys, "argv", ["culsma", "run", "--input", str(EXAMPLE_INPUT), "--json"])
+    source = _write_smoke_source(tmp_path)
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", "--input", str(source), "--json"])
 
     main()
 
@@ -242,7 +257,7 @@ def test_cli_run_writes_primary_result_when_output_is_requested(tmp_path, monkey
     monkeypatch.setattr(
         sys,
         "argv",
-        ["culsma", "run", "--input", str(EXAMPLE_INPUT), "--output", str(output_path)],
+        ["culsma", "run", "--input", str(source), "--output", str(output_path)],
     )
 
     main()
@@ -257,11 +272,12 @@ def test_cli_run_writes_primary_result_when_output_is_requested(tmp_path, monkey
 
 
 def test_cli_run_writes_debug_artifacts_only_when_requested(tmp_path, monkeypatch, capsys):
+    source = _write_smoke_source(tmp_path)
     artifacts_dir = tmp_path / "artifacts"
     monkeypatch.setattr(
         sys,
         "argv",
-        ["culsma", "run", "--input", str(EXAMPLE_INPUT), "--json", "--artifacts-dir", str(artifacts_dir)],
+        ["culsma", "run", "--input", str(source), "--json", "--artifacts-dir", str(artifacts_dir)],
     )
 
     main()
@@ -270,7 +286,7 @@ def test_cli_run_writes_debug_artifacts_only_when_requested(tmp_path, monkeypatc
     payload = json.loads(captured.out)
     assert payload["schema"] == "culsma_run_output_v1"
     assert payload["report"]["schema"] == "lab_report_v1"
-    assert payload["returns"]["FlowCytometryProtocol"]["value"]["id"] == "AcquisitionSample"
+    assert payload["returns"]["CliSmoke"]["value"]["id"] == "AcquisitionSample"
     assert captured.err == ""
     expected = {
         "summary.json",
@@ -287,11 +303,12 @@ def test_cli_run_writes_debug_artifacts_only_when_requested(tmp_path, monkeypatc
 
 
 def test_cli_replay_reconstructs_state_from_explicit_run_artifact(tmp_path, monkeypatch, capsys):
+    source = _write_smoke_source(tmp_path)
     artifacts_dir = tmp_path / "artifacts"
     monkeypatch.setattr(
         sys,
         "argv",
-        ["culsma", "run", "--input", str(EXAMPLE_INPUT), "--artifacts-dir", str(artifacts_dir)],
+        ["culsma", "run", "--input", str(source), "--artifacts-dir", str(artifacts_dir)],
     )
     main()
     capsys.readouterr()

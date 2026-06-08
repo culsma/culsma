@@ -1,12 +1,12 @@
 cff-version: 1.2.0
 message: "If you cite or rely on the Culsma reference implementation, please cite this software release."
 title: "Culsma: Public Reference Implementation"
-version: "1.0.2"
-date-released: "2026-05-22"
+version: "1.0.3"
+date-released: "2026-06-08"
 license: "Apache-2.0"
 url: "https://culsma.dev/"
 repository-code: "https://github.com/culsma/culsma"
-abstract: "Public reference implementation of the Culsma language and execution stack, including parser, semantic validation, type and unit checking, plan lowering, runtime execution, driver interfaces, standard-library source, runnable examples, tests, and a command-line interface."
+abstract: "Public reference implementation of the Culsma language and execution stack, including parser, semantic validation, type and unit checking, plan lowering, runtime execution, driver interfaces, standard-library source, tests, and a command-line interface."
 authors:
   - family-names: "Chen"
     given-names: "Yang"
