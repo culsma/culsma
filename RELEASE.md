@@ -33,13 +33,12 @@ On a `v*` tag push, `.github/workflows/release.yml`:
 3. builds the source distribution and wheel;
 4. runs `twine check`;
 5. installs the built wheel and runs the CLI smoke check;
-6. creates or updates a draft GitHub Release with the distribution artifacts;
-7. publishes the distributions to PyPI through the `pypi` environment;
-8. publishes the GitHub Release after PyPI succeeds.
+6. publishes the distributions to PyPI through the `pypi` environment.
 
-Publishing the GitHub Release last keeps Zenodo archival aligned with a release
-whose package artifacts have already passed tests, metadata checks, and PyPI
-publishing.
+GitHub Releases are intentionally maintained manually. After PyPI succeeds,
+write the GitHub Release notes from the accepted changelog/release body and
+publish the GitHub Release by hand. This keeps human-facing release notes from
+being replaced by generated compare-link notes.
 
 ## Manual PyPI Fallback
 
@@ -52,8 +51,8 @@ has already been validated. The manual input version must match
 
 ## Zenodo
 
-Zenodo should archive the published GitHub Release. Before pushing the tag,
-confirm that:
+Zenodo should archive the manually published GitHub Release. Before pushing the
+tag, confirm that:
 
 - the version in `pyproject.toml`, `CHANGELOG.md`, `CITATION.cff`, and the tag
   agree where applicable;
