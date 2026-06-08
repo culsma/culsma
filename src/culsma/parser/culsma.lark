@@ -91,9 +91,11 @@ constraint_item_list: constraint_item ("," constraint_item)*
 mutation_stmt: batch_target_expr MUTATE_OP mutation_source_list
 mutation_source_list: "[" mutation_source_item ("," mutation_source_item)* "]"
 ?mutation_source_item: mutation_pair_expr
+    | source_partition_expr
     | ref_expr
     | mutation_series_expr
 mutation_series_expr: "series" "(" ref_expr "," list_literal ")" -> mutation_series_expr
+source_partition_expr: ref_expr "." "partition" "(" expression ")" "[" expression "]" -> source_partition_expr
 
 break_statement: "break" -> break_stmt
 continue_statement: "continue" -> continue_stmt
@@ -149,6 +151,7 @@ arg: IDENTIFIER "=" expression
     | markers_expr
     | call_expr
     | group_expr
+    | source_partition_expr
     | method_call_expr
     | ref_expr
     | list_literal
@@ -177,7 +180,9 @@ record_item: record_key ":" expression
     | STRING -> record_key_string
 
 pair_expr: call_expr ":" expression -> pair_expr
-mutation_pair_expr: ref_expr ":" expression -> pair_expr
+?mutation_source_ref_expr: ref_expr
+    | source_partition_expr
+mutation_pair_expr: mutation_source_ref_expr ":" expression -> pair_expr
 
 
 // ------------------------------------------------------------

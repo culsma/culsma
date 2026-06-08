@@ -13,6 +13,7 @@ from culsma.parser.ast_nodes import (
     MethodCallExpr,
     PairExpr,
     RecordLiteral,
+    SourcePartitionExpr,
     StringLiteral,
     UnaryOp,
     WithEnvStmt,
@@ -117,6 +118,12 @@ class StaticControlClassifier:
                 resolved.base,
                 ctx=ctx,
             ) or any(self.contains_unresolved_param_reference(arg, ctx=ctx) for arg in resolved.args)
+        if isinstance(resolved, SourcePartitionExpr):
+            return (
+                self.contains_unresolved_param_reference(resolved.source, ctx=ctx)
+                or self.contains_unresolved_param_reference(resolved.program, ctx=ctx)
+                or self.contains_unresolved_param_reference(resolved.index, ctx=ctx)
+            )
         if isinstance(resolved, PairExpr):
             return self.contains_unresolved_param_reference(
                 resolved.left,

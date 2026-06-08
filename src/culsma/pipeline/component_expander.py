@@ -36,6 +36,7 @@ from culsma.parser.ast_nodes import (
     ReturnStatement,
     RepeatStatement,
     SelectorRegion,
+    SourcePartitionExpr,
     StepCall,
     StringLiteral,
     UnaryOp,
@@ -507,6 +508,13 @@ def _rename_expr(expr: Expression, rename_map: dict[str, str]) -> Expression:
             args=[_rename_expr(arg, rename_map) for arg in expr.args],
             span=expr.span,
         )
+    if isinstance(expr, SourcePartitionExpr):
+        return SourcePartitionExpr(
+            source=_rename_expr(expr.source, rename_map),
+            program=_rename_expr(expr.program, rename_map),
+            index=_rename_expr(expr.index, rename_map),
+            span=expr.span,
+        )
     if isinstance(expr, PairExpr):
         return PairExpr(left=_rename_expr(expr.left, rename_map), right=_rename_expr(expr.right, rename_map), span=expr.span)
     if isinstance(expr, (Quantity, StringLiteral, BooleanLiteral)):
@@ -542,6 +550,12 @@ def _contains_component_call(expr: Expression, lookup: dict[str, ProtocolDecl]) 
         return _contains_component_call(expr.base, lookup)
     if isinstance(expr, MethodCallExpr):
         return _contains_component_call(expr.base, lookup) or any(_contains_component_call(arg, lookup) for arg in expr.args)
+    if isinstance(expr, SourcePartitionExpr):
+        return (
+            _contains_component_call(expr.source, lookup)
+            or _contains_component_call(expr.program, lookup)
+            or _contains_component_call(expr.index, lookup)
+        )
     if isinstance(expr, PairExpr):
         return _contains_component_call(expr.left, lookup) or _contains_component_call(expr.right, lookup)
     return False

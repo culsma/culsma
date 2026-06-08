@@ -16,6 +16,7 @@ from culsma.pipeline.ir_nodes import (
     IRInclude,
     IRLet,
     IRMutation,
+    IRPair,
     IRRepeat,
     IRStatement,
     IRStep,
@@ -70,6 +71,7 @@ class HandlerState:
 class ChildExpression:
     expr: Any
     node_id: str | None
+    allow_source_partition: bool = False
 
 
 @dataclass(frozen=True)
@@ -102,7 +104,15 @@ class BaseStatementHandler:
             return
 
         for child in self.iter_child_expressions(stmt, ctx, state):
-            self.validate_expr(child.expr, ctx, node_id=child.node_id)
+            if child.allow_source_partition:
+                self.validate_expr(
+                    child.expr,
+                    ctx,
+                    node_id=child.node_id,
+                    allow_source_partition=True,
+                )
+            else:
+                self.validate_expr(child.expr, ctx, node_id=child.node_id)
         if state.stop:
             return
 
@@ -205,6 +215,7 @@ class BaseStatementHandler:
         ctx: StatementValidationContext,
         *,
         node_id: str | None,
+        allow_source_partition: bool = False,
     ) -> None:
         ctx.diagnostics.extend(
             validate_expr_contracts(
@@ -215,6 +226,7 @@ class BaseStatementHandler:
                 node_id=node_id,
                 content_whitelist_mode=ctx.content_whitelist_mode,
                 content_type_policy=ctx.content_type_policy,
+                allow_source_partition=allow_source_partition,
             )
         )
 
@@ -711,7 +723,11 @@ class MutationHandler(BaseStatementHandler):
         if stmt.target is not None:
             yield ChildExpression(stmt.target, stmt.id)
         for source in stmt.sources:
-            yield ChildExpression(source, stmt.id)
+            if isinstance(source, IRPair):
+                yield ChildExpression(source.left, stmt.id, allow_source_partition=True)
+                yield ChildExpression(source.right, stmt.id)
+            else:
+                yield ChildExpression(source, stmt.id, allow_source_partition=True)
 
 
 @dataclass

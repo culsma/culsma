@@ -19,6 +19,7 @@ from culsma.parser.ast_nodes import (
     PlateSelectorExpr,
     Quantity,
     RecordLiteral,
+    SourcePartitionExpr,
     StringLiteral,
     UnaryOp,
 )
@@ -39,6 +40,7 @@ from culsma.pipeline.ir_nodes import (
     IRQuantity,
     IRRecord,
     IRSelectorRegion,
+    IRSourcePartitionRef,
     IRString,
     IRUnary,
 )
@@ -107,6 +109,13 @@ class ExprCompiler:
             return IRCall(
                 name=expr.method,
                 args=self.compile_method_call_expr_args(expr),
+                span=expr.span,
+            )
+        if isinstance(expr, SourcePartitionExpr):
+            return IRSourcePartitionRef(
+                source=self.compile(expr.source),
+                program=self.compile(expr.program),
+                index=self.compile(expr.index),
                 span=expr.span,
             )
         if isinstance(expr, PairExpr):

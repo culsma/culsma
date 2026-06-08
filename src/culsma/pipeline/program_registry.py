@@ -73,7 +73,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
     "centrifuge_program": _spec(
         "centrifuge_program",
         family="sep",
-        owners=("sep",),
+        owners=("sep", "partition"),
         fields=(
             _field("drive", required=True, value_kind="quantity", dimension="centrifuge_speed"),
             _field("keep_source", value_kind="text_enum", enum_values=KEEP_SOURCE_VALUES),
@@ -83,7 +83,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
     "magnetic_program": _spec(
         "magnetic_program",
         family="sep",
-        owners=("sep",),
+        owners=("sep", "partition"),
         fields=(
             _field("duration", value_kind="quantity", dimension="time"),
             _field("device", value_kind="text"),
@@ -93,14 +93,14 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
     "disrupt_program": _spec(
         "disrupt_program",
         family="sep",
-        owners=("sep",),
+        owners=("sep", "partition"),
         fields=(_field("duration", value_kind="quantity", dimension="time"),),
         result_contract_key="sep_container_group",
     ),
     "field_program": _spec(
         "field_program",
         family="sep",
-        owners=("sep",),
+        owners=("sep", "partition"),
         fields=(
             _field("field", required=True, value_kind="quantity", dimension="electric_potential"),
             _field("duration", value_kind="quantity", dimension="time"),
@@ -110,7 +110,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
     "filtration_program": _spec(
         "filtration_program",
         family="sep",
-        owners=("sep",),
+        owners=("sep", "partition"),
         fields=(
             _field("membrane", required=True, value_kind="text"),
             _field("drive", required=True, value_kind="text"),
@@ -120,14 +120,14 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
     "phase_partition_program": _spec(
         "phase_partition_program",
         family="sep",
-        owners=("sep",),
+        owners=("sep", "partition"),
         fields=(_field("solvent", required=True, value_kind="text"),),
         result_contract_key="sep_container_group",
     ),
     "precipitation_program": _spec(
         "precipitation_program",
         family="sep",
-        owners=("sep",),
+        owners=("sep", "partition"),
         fields=(
             _field("reagent", required=True, value_kind="text"),
             _field("duration", value_kind="quantity", dimension="time"),

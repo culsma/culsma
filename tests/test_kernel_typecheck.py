@@ -266,6 +266,17 @@ def test_typecheck_mutation_quantified_source_requires_volume_or_mass():
     assert "TYPE_MUTATION_QUANTITY_DIMENSION_MISMATCH" in _codes(result)
 
 
+def test_typecheck_source_partition_program_fields_are_checked():
+    src = """
+protocol T {
+  dst << [src.partition(centrifuge_program(drive = 30uL))[0]:10uL];
+}
+"""
+    ir = _compile_source(src)
+    result = typecheck(ir)
+    assert "TYPE_PROGRAM_FIELD_DIMENSION_MISMATCH" in _codes(result)
+
+
 def test_typecheck_mutation_accepts_let_bound_quantity():
     src = "protocol T { let vol = 5uL; tube << [feed:vol]; }"
     ir = _compile_source(src)

@@ -865,6 +865,67 @@ protocol T {
     assert material_state["containers"][slots["1"]]["components"] == {"CUSTOM": 50.0}
 
 
+def test_runtime_source_partition_magnetic_removes_flowthrough_without_sep_group():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let bead_tube = tube(label = "BeadTube", capacity = 500uL, load = [
+    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    buffer(code = "WASH", type = "buffer"):180uL
+  ]);
+  let waste = tube(label = "Waste", capacity = 500uL);
+  let mag_sep = magnetic_program(duration = 5min);
+
+  with env(field = magnetic_rack) {
+    waste << [bead_tube.partition(mag_sep)[1]];
+  }
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    material_state = result.state.artifacts["material_state"]
+    assert "indexed_bindings" not in material_state or "mag_sep" not in material_state["indexed_bindings"]
+    bead_components = material_state["containers"]["BeadTube"]["components"]
+    waste_components = material_state["containers"]["Waste"]["components"]
+    assert round(float(bead_components["BEADS"]), 6) == 19.8
+    assert round(float(bead_components["WASH"]), 6) == 1.8
+    assert round(float(waste_components["BEADS"]), 6) == 0.2
+    assert round(float(waste_components["WASH"]), 6) == 178.2
+
+
+def test_runtime_source_partition_preserves_partition_fallback_warning():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let src = tube(label = "Src", capacity = 500uL, load = [
+    content(kind = "chemical", code = "CUSTOM", type = "custom_local_mix"):100uL
+  ]);
+  let dst = tube(label = "Dst", capacity = 500uL);
+  let mag_sep = magnetic_program(duration = 5min);
+
+  dst << [src.partition(mag_sep)[1]:50uL];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    assert len(result.diagnostics) == 1
+    diagnostic = result.diagnostics[0]
+    assert diagnostic.code == "MAT_CONTENT_PARTITION_FALLBACK"
+    assert diagnostic.severity == "warning"
+    assert "Component 'CUSTOM' used conservative 0.50/0.50 partition" in diagnostic.message
+    assert "custom_content_classification" in diagnostic.message
+    material_state = result.state.artifacts["material_state"]
+    assert "indexed_bindings" not in material_state or "mag_sep" not in material_state["indexed_bindings"]
+    assert material_state["containers"]["Dst"]["components"] == {"CUSTOM": 50.0}
+    assert material_state["containers"]["Src"]["components"] == {"CUSTOM": 50.0}
+
+
 def test_runtime_let_bound_electrophoresis_stdlib_yields_observation_binding():
     plan = _build_plan_from_source(
         """

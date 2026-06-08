@@ -23,6 +23,7 @@ from culsma.parser.ast_nodes import (
     Quantity,
     RecordLiteral,
     RepeatStatement,
+    SourcePartitionExpr,
     Statement,
     StepCall,
     StringLiteral,
@@ -488,6 +489,13 @@ def _substitute_expr(expr: Expression, binding: str, value: Expression) -> Expre
         return MemberExpr(base=_substitute_expr(expr.base, binding, value), member=expr.member, span=expr.span)
     if isinstance(expr, PairExpr):
         return PairExpr(left=_substitute_expr(expr.left, binding, value), right=_substitute_expr(expr.right, binding, value), span=expr.span)
+    if isinstance(expr, SourcePartitionExpr):
+        return SourcePartitionExpr(
+            source=_substitute_expr(expr.source, binding, value),
+            program=_substitute_expr(expr.program, binding, value),
+            index=_substitute_expr(expr.index, binding, value),
+            span=expr.span,
+        )
     return expr
 
 

@@ -225,6 +225,9 @@ class CulsmaTransformer(Transformer):
     def method_call_expr(self, meta, items):
         return self._dispatch("method_call_expr", meta, items)
 
+    def source_partition_expr(self, meta, items):
+        return self._dispatch("source_partition_expr", meta, items)
+
     def pair_expr(self, meta, items):
         return self._dispatch("pair_expr", meta, items)
 

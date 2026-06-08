@@ -311,6 +311,15 @@ class MethodCallExpr:
 
 
 @dataclass
+class SourcePartitionExpr:
+    """<source>.partition(<program>)[<index>]"""
+    source: Expression
+    program: Expression
+    index: Expression
+    span: Span | None = None
+
+
+@dataclass
 class PairExpr:
     """<left> : <right>"""
     left: Expression
@@ -354,5 +363,6 @@ Expression = (
     | IndexExpr
     | MemberExpr
     | MethodCallExpr
+    | SourcePartitionExpr
     | PairExpr
 )

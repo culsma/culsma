@@ -902,6 +902,57 @@ def test_validate_mutation_disallows_mixed_source_styles():
     assert "SEM_MUTATION_QUANTITY_STYLE_CONFLICT" in _codes(result)
 
 
+def test_validate_source_partition_accepts_sep_family_program_in_mutation_source():
+    src = """
+protocol T {
+  let spin = centrifuge_program(drive = 12000g);
+  dst << [src.partition(spin)[0]:120uL];
+}
+"""
+    ir = _compile_source(src)
+    result = validate(ir)
+    codes = _codes(result)
+    assert "SEM_SOURCE_PARTITION_CONTEXT_INVALID" not in codes
+    assert "SEM_PROGRAM_OWNER_MISMATCH" not in codes
+    assert "SEM_INDEX_OUT_OF_RANGE" not in codes
+
+
+def test_validate_source_partition_rejects_frac_program():
+    src = """
+protocol T {
+  let gradient = density_gradient_program(axis = density, order = top_to_bottom, bins = 8);
+  dst << [src.partition(gradient)[0]:120uL];
+}
+"""
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert "SEM_PROGRAM_OWNER_MISMATCH" in _codes(result)
+
+
+def test_validate_source_partition_rejects_out_of_range_index():
+    src = """
+protocol T {
+  let spin = centrifuge_program(drive = 12000g);
+  dst << [src.partition(spin)[2]:120uL];
+}
+"""
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert "SEM_INDEX_OUT_OF_RANGE" in _codes(result)
+
+
+def test_validate_source_partition_rejects_non_source_context():
+    src = """
+protocol T {
+  let spin = centrifuge_program(drive = 12000g);
+  let portion = src.partition(spin)[0];
+}
+"""
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert "SEM_SOURCE_PARTITION_CONTEXT_INVALID" in _codes(result)
+
+
 def test_validate_legacy_generic_program_form_is_rejected():
     src = 'protocol T { let g = sep(sample = lysate, program = sep_program(mode = "centrifuge", speed = 12000g, duration = 10min)); }'
     ir = _compile_source(src)

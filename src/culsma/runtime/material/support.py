@@ -784,6 +784,12 @@ def _ref_display(value: Any) -> str:
         base = _ref_display(value.get("base"))
         slot = _static_index_key(value.get("index"))
         return f"{base}[{slot if slot is not None else '?'}]"
+    if kind == "IRSourcePartitionRef":
+        source = _ref_display(value.get("source"))
+        program = value.get("program")
+        program_name = program.get("name") if isinstance(program, dict) else None
+        index = _static_index_key(value.get("index"))
+        return f"{source}.partition({program_name or '?'})[{index if index is not None else '?'}]"
     if kind == "IRString":
         inner = value.get("value")
         return inner if isinstance(inner, str) else "<string>"

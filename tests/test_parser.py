@@ -47,6 +47,7 @@ from culsma.parser.ast_nodes import (
     ReturnStatement,
     RepeatStatement,
     SourceIncludeDecl,
+    SourcePartitionExpr,
     StepCall,
     StringLiteral,
     UnaryOp,
@@ -277,6 +278,27 @@ class TestASTStructure:
         assert len(let_stmt.value.args) == 1
         assert isinstance(let_stmt.value.args[0], Identifier)
         assert let_stmt.value.args[0].name == "ion"
+
+    def test_source_partition_expr_parses_in_mutation_source(self):
+        ast = parse(
+            """
+protocol T {
+  let spin = centrifuge_program(drive = 12000g);
+  dst << [src.partition(spin)[0]:120uL];
+}
+"""
+        )
+        mutation = ast.protocols[0].statements[1]
+        assert isinstance(mutation, MutationStmt)
+        source = mutation.sources[0]
+        assert isinstance(source, PairExpr)
+        assert isinstance(source.left, SourcePartitionExpr)
+        assert isinstance(source.left.source, Identifier)
+        assert source.left.source.name == "src"
+        assert isinstance(source.left.program, Identifier)
+        assert source.left.program.name == "spin"
+        assert isinstance(source.left.index, Quantity)
+        assert source.left.index.value == 0
 
     def test_method_call_statement_parses(self):
         ast = parse('protocol T { seq_data.items.append(read); }')

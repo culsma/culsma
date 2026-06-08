@@ -337,7 +337,8 @@ def _apply_mutation(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResu
 
     working = deepcopy(state)
     applied_sources: list[dict[str, Any]] = []
-    for source_expr in source_exprs:
+    diagnostics: list[Diagnostic] = []
+    for source_ordinal, source_expr in enumerate(source_exprs):
         if _is_serialized_pair(source_expr):
             left = source_expr.get("left")
             right = source_expr.get("right")
@@ -351,6 +352,28 @@ def _apply_mutation(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResu
             qty = _arg_quantity(right)
             if qty is None:
                 return _diag_result(step, state, "MAT_UNSUPPORTED_UNIT", "Mutation quantified source must carry volume or mass unit")
+            if _is_source_partition_ref(left):
+                transfer = _apply_source_partition_transfer(
+                    step=step,
+                    state=working,
+                    target_id=target_id,
+                    partition_ref=left,
+                    qty=qty,
+                    source_ordinal=source_ordinal,
+                )
+                if not transfer.ok:
+                    return transfer
+                working = transfer.material_state
+                diagnostics.extend(transfer.diagnostics)
+                applied_sources.append(
+                    {
+                        "mode": "quantified_source_partition",
+                        "target": target_id,
+                        "qty": qty,
+                        "transfer_delta": transfer.delta,
+                    }
+                )
+                continue
             source_id = _resolve_source_ref(working, left, qty=qty)
             if source_id is None:
                 return _diag_result(
@@ -366,6 +389,7 @@ def _apply_mutation(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResu
             if not transfer.ok:
                 return transfer
             working = transfer.material_state
+            diagnostics.extend(transfer.diagnostics)
             applied_sources.append(
                 {
                     "mode": "quantified",
@@ -393,6 +417,27 @@ def _apply_mutation(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResu
                     "unit_id": source_expr.get("id"),
                     "target": target_id,
                     "collection_delta": collect.delta,
+                }
+            )
+            continue
+
+        if _is_source_partition_ref(source_expr):
+            transfer = _apply_source_partition_transfer(
+                step=step,
+                state=working,
+                target_id=target_id,
+                partition_ref=source_expr,
+                qty=None,
+                source_ordinal=source_ordinal,
+            )
+            if not transfer.ok:
+                return transfer
+            working = transfer.material_state
+            applied_sources.append(
+                {
+                    "mode": "full_source_partition",
+                    "target": target_id,
+                    "transfer_delta": transfer.delta,
                 }
             )
             continue
@@ -430,13 +475,139 @@ def _apply_mutation(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResu
 
     return MaterialUpdateResult(
         material_state=working,
-        diagnostics=[],
+        diagnostics=diagnostics,
         delta={
             "op": "Mutation",
             "target": target_id,
             "sources": applied_sources,
         },
     )
+
+
+def _is_source_partition_ref(value: Any) -> bool:
+    return isinstance(value, dict) and value.get("kind") == "IRSourcePartitionRef"
+
+
+def _apply_source_partition_transfer(
+    *,
+    step: PlanStep,
+    state: dict[str, Any],
+    target_id: str,
+    partition_ref: dict[str, Any],
+    qty: dict[str, Any] | None,
+    source_ordinal: int,
+) -> MaterialUpdateResult:
+    program = _arg_call(partition_ref.get("program"))
+    if program is None:
+        return _diag_result(step, state, "MAT_BINDING_NOT_FOUND", "source partition requires a concrete program")
+    slot_key = _source_partition_slot_key(partition_ref.get("index"))
+    if slot_key not in {"0", "1"}:
+        return _diag_result(step, state, "MAT_BINDING_NOT_FOUND", "source partition index must be 0 or 1")
+
+    source_id = _resolve_source_ref(state, partition_ref.get("source"), qty=qty)
+    if source_id is None:
+        return _diag_result(
+            step,
+            state,
+            "MAT_BINDING_NOT_FOUND",
+            f"Unknown source partition source '{_ref_display(partition_ref.get('source'))}'",
+        )
+    source = _container(state, source_id)
+    target = _container(state, target_id)
+    if source is None or target is None:
+        return _diag_result(step, state, "MAT_BINDING_NOT_FOUND", "Source partition references unknown container")
+
+    program_kind = str(program.get("name")) if isinstance(program.get("name"), str) else "sep_program"
+    slot0_id = f"{step.step_id}::partition::{source_ordinal}::0"
+    slot1_id = f"{step.step_id}::partition::{source_ordinal}::1"
+    slot0 = _ensure_container(state, slot0_id)
+    slot1 = _ensure_container(state, slot1_id)
+
+    partition = partition_sep_material(
+        state=state,
+        source=source,
+        slot0=slot0,
+        slot1=slot1,
+        program_kind=program_kind,
+    )
+    _normalize_source_partition_slot_bulk(slot0)
+    _normalize_source_partition_slot_bulk(slot1)
+    diagnostics = _partition_fallback_diagnostics(step, partition)
+    selected_id = slot0_id if slot_key == "0" else slot1_id
+    selected = _container(state, selected_id)
+    if selected is None:
+        return _diag_result(step, state, "MAT_BINDING_NOT_FOUND", "Source partition selected unknown slot")
+
+    if qty is None:
+        moved_uL = float(selected.get("volume_uL", 0.0))
+        moved_mg = float(selected.get("mass_mg", 0.0))
+        cap_diag = _check_capacity_guard(step=step, state=state, container_id=target_id, added_uL=moved_uL)
+        if cap_diag is not None:
+            return cap_diag
+        _move_explicit(selected, target, moved_uL, moved_mg, component_ratio=1.0)
+        transfer_delta = {
+            "op": "material_move",
+            "mode": "source_partition_full",
+            "source": source_id,
+            "selected_slot": slot_key,
+            "dest": target_id,
+            "moved_uL": moved_uL,
+            "moved_mg": moved_mg,
+        }
+    else:
+        transfer = _apply_transfer_by_qty(step=step, state=state, src_id=selected_id, dst_id=target_id, qty=qty)
+        if not transfer.ok:
+            return transfer
+        state = transfer.material_state
+        transfer_delta = transfer.delta
+
+    source_after = _container(state, source_id)
+    if source_after is None:
+        return _diag_result(step, state, "MAT_BINDING_NOT_FOUND", "Source partition lost source container")
+    for residual_id in (slot0_id, slot1_id):
+        residual = _container(state, residual_id)
+        if residual is None:
+            continue
+        residual_uL = float(residual.get("volume_uL", 0.0))
+        residual_mg = float(residual.get("mass_mg", 0.0))
+        if residual_uL or residual_mg:
+            _move_explicit(residual, source_after, residual_uL, residual_mg, component_ratio=1.0)
+    containers = state.setdefault("containers", {})
+    if isinstance(containers, dict):
+        containers.pop(slot0_id, None)
+        containers.pop(slot1_id, None)
+
+    return MaterialUpdateResult(
+        material_state=state,
+        diagnostics=diagnostics,
+        delta={
+            "op": "source_partition_transfer",
+            "program_kind": program_kind,
+            "source": source_id,
+            "target": target_id,
+            "selected_slot": slot_key,
+            "partition": partition,
+            "transfer": transfer_delta,
+        },
+    )
+
+
+def _source_partition_slot_key(value: Any) -> str | None:
+    if isinstance(value, dict) and value.get("kind") == "IRQuantity":
+        raw = value.get("value")
+        unit = value.get("unit")
+        if unit is None and isinstance(raw, (int, float)) and float(raw).is_integer():
+            return str(int(raw))
+    return None
+
+
+def _normalize_source_partition_slot_bulk(slot: dict[str, Any]) -> None:
+    components = slot.get("components")
+    if not isinstance(components, dict) or not components:
+        return
+    amount = sum(float(value) for value in components.values())
+    slot["volume_uL"] = amount
+    slot["mass_mg"] = amount
 
 
 def _apply_transfer_by_qty(

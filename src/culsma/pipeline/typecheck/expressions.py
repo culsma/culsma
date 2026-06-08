@@ -20,6 +20,7 @@ from culsma.pipeline.ir_nodes import (
     IRPair,
     IRQuantity,
     IRRecord,
+    IRSourcePartitionRef,
     IRStep,
     IRString,
     IRUnary,
@@ -129,6 +130,13 @@ class TypecheckExpressionServices:
         )
         for source in stmt.sources:
             source_expr = source.left if isinstance(source, IRPair) else source
+            diagnostics.extend(
+                self.typecheck_program_calls_in_expr(
+                    source_expr,
+                    node_id=stmt.id,
+                    expr_bindings=expr_bindings,
+                )
+            )
             diagnostics.extend(
                 self.typecheck_container_target_view_forbidden(
                     source_expr,
@@ -249,6 +257,14 @@ class TypecheckExpressionServices:
         if expr is None:
             return []
         resolved = self.resolve_bound_expr(expr, expr_bindings)
+        if isinstance(resolved, IRSourcePartitionRef):
+            return self.typecheck_container_target_view_forbidden(
+                resolved.source,
+                label=f"{label} source partition source",
+                span=resolved.source.span or span,
+                node_id=node_id,
+                expr_bindings=expr_bindings,
+            )
         if not is_container_target_view(resolved):
             return []
         return [
@@ -507,6 +523,8 @@ class TypecheckExpressionServices:
             return "quantity" if resolved.unit is not None else "int"
         if isinstance(resolved, (IRGroup, IRIndex)):
             return "group_ref"
+        if isinstance(resolved, IRSourcePartitionRef):
+            return "source_portion_ref"
         if isinstance(resolved, IRMember):
             view = classify_container_target_view(resolved)
             if view is not None:
@@ -681,6 +699,32 @@ class TypecheckExpressionServices:
             diagnostics.extend(
                 self.typecheck_program_calls_in_expr(
                     resolved.right,
+                    node_id=node_id,
+                    expr_bindings=expr_bindings,
+                    seen_names=seen,
+                )
+            )
+            return diagnostics
+        if isinstance(resolved, IRSourcePartitionRef):
+            diagnostics.extend(
+                self.typecheck_program_calls_in_expr(
+                    resolved.source,
+                    node_id=node_id,
+                    expr_bindings=expr_bindings,
+                    seen_names=seen,
+                )
+            )
+            diagnostics.extend(
+                self.typecheck_program_calls_in_expr(
+                    resolved.program,
+                    node_id=node_id,
+                    expr_bindings=expr_bindings,
+                    seen_names=seen,
+                )
+            )
+            diagnostics.extend(
+                self.typecheck_program_calls_in_expr(
+                    resolved.index,
                     node_id=node_id,
                     expr_bindings=expr_bindings,
                     seen_names=seen,

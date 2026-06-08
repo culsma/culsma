@@ -87,6 +87,14 @@ class IRMember:
 
 
 @dataclass(frozen=True)
+class IRSourcePartitionRef:
+    source: IRExpr
+    program: IRExpr
+    index: IRExpr
+    span: Span | None = None
+
+
+@dataclass(frozen=True)
 class IRPair:
     left: IRExpr
     right: IRExpr
@@ -115,7 +123,7 @@ class IRArg:
     span: Span | None = None
 
 
-IRExpr = IRQuantity | IRString | IRBoolean | IRIdentifier | IRList | IRRecord | IRGroup | IRCall | IRPlateSelector | IRIndex | IRMember | IRPair | IRUnary | IRBinary
+IRExpr = IRQuantity | IRString | IRBoolean | IRIdentifier | IRList | IRRecord | IRGroup | IRCall | IRPlateSelector | IRIndex | IRMember | IRSourcePartitionRef | IRPair | IRUnary | IRBinary
 
 
 @dataclass(frozen=True)

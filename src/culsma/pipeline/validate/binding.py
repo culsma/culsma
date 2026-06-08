@@ -16,6 +16,7 @@ from culsma.pipeline.ir_nodes import (
     IRMutation,
     IRPair,
     IRPlateSelector,
+    IRSourcePartitionRef,
     IRStep,
     IRString,
     IRWithEnv,
@@ -218,6 +219,18 @@ def _surface_reads_from_container_expr(
             literal_bindings=literal_bindings,
             expr_bindings=expr_bindings,
         )
+    if isinstance(resolved, IRSourcePartitionRef):
+        refs.update(
+            _surface_reads_from_container_expr(
+                resolved.source,
+                literal_bindings=literal_bindings,
+                expr_bindings=expr_bindings,
+            )
+        )
+        program_expr = ExprResolver.resolve_bound_expr(resolved.program, expr_bindings)
+        if isinstance(program_expr, IRIdentifier):
+            refs[program_expr.name] = program_expr.span or resolved.program.span
+        return refs
     value = ExprResolver.to_name_ref(resolved, literal_bindings)
     if value is not None:
         refs[value] = resolved.span

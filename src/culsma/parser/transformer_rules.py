@@ -39,6 +39,7 @@ from culsma.parser.ast_nodes import (
     ReturnStatement,
     SelectorRegion,
     SourceIncludeDecl,
+    SourcePartitionExpr,
     StepCall,
     StringLiteral,
     UnaryOp,
@@ -612,6 +613,14 @@ class MethodCallExprHandler(ExpressionRuleHandler):
         return MethodCallExpr(base=items[0], method=str(items[1]), args=args, span=state.span)
 
 
+class SourcePartitionExprHandler(ExpressionRuleHandler):
+    def construct_ast(
+        self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState
+    ) -> SourcePartitionExpr:
+        del meta, ctx
+        return SourcePartitionExpr(source=items[0], program=items[1], index=items[2], span=state.span)
+
+
 class PairExprHandler(ExpressionRuleHandler):
     def construct_ast(self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState) -> PairExpr:
         del meta, ctx
@@ -717,6 +726,7 @@ def create_parse_rule_dispatcher() -> ParseRuleDispatcher:
             "index_expr": IndexExprHandler(),
             "member_expr": MemberExprHandler(),
             "method_call_expr": MethodCallExprHandler(),
+            "source_partition_expr": SourcePartitionExprHandler(),
             "pair_expr": PairExprHandler(),
             "mutation_series_expr": MutationSeriesExprHandler(),
         }
