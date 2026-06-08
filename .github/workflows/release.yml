@@ -210,10 +210,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ needs.validate.outputs.tag }}
-          REPOSITORY: ${{ github.repository }}
-        run: |
-          release_id="$(gh api "repos/$REPOSITORY/releases/tags/$TAG" --jq .id)"
-          gh api \
-              --method PATCH \
-              "repos/$REPOSITORY/releases/$release_id" \
-              -f draft=false
+        run: gh release edit "$TAG" --draft=false --latest
