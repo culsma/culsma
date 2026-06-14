@@ -13,7 +13,7 @@ from culsma.pipeline.content_vocab import (
     parse_content_kind,
     parse_content_type,
 )
-from culsma.runtime.material.support import _set_container_material
+from culsma.runtime.material.ledger import set_container_material
 
 
 class PartitionClass(StrEnum):
@@ -186,18 +186,27 @@ def partition_sep_material(
     slot1: dict[str, Any],
     program_kind: str,
 ) -> dict[str, Any]:
+    strategy = SepPartitionStrategyRegistry().strategy_for(program_kind)
     source_components = source.setdefault("components", {})
     if not isinstance(source_components, dict) or not source_components:
         ratio0, ratio1 = 0.5, 0.5
         source_volume = float(source.get("volume_uL", 0.0))
         source_mass = float(source.get("mass_mg", 0.0))
-        _set_container_material(slot0, volume_uL=source_volume * ratio0, mass_mg=source_mass * ratio0, components={})
-        _set_container_material(slot1, volume_uL=source_volume * ratio1, mass_mg=source_mass * ratio1, components={})
+        set_container_material(slot0, volume_uL=source_volume * ratio0, mass_mg=source_mass * ratio0, components={})
+        set_container_material(slot1, volume_uL=source_volume * ratio1, mass_mg=source_mass * ratio1, components={})
         if source is not slot0 and source is not slot1:
-            _set_container_material(source, volume_uL=0.0, mass_mg=0.0, components={})
-        return {"mode": "generic_empty", "default_ratio": ratio0}
+            set_container_material(source, volume_uL=0.0, mass_mg=0.0, components={})
+        out: dict[str, Any] = {
+            "mode": "generic_empty",
+            "default_ratio": ratio0,
+            "strategy": strategy.program_kind,
+            "slot_contract": dict(strategy.slot_contract),
+        }
+        preservation_contract = strategy.preservation_contract()
+        if preservation_contract is not None:
+            out["preservation_contract"] = preservation_contract
+        return out
 
-    strategy = SepPartitionStrategyRegistry().strategy_for(program_kind)
     class_resolver = ContentClassResolver()
     slot0_components: dict[str, float] = {}
     slot1_components: dict[str, float] = {}
@@ -235,14 +244,14 @@ def partition_sep_material(
 
     source_volume = float(source.get("volume_uL", 0.0))
     source_mass = float(source.get("mass_mg", 0.0))
-    _set_container_material(
+    set_container_material(
         slot0,
         volume_uL=source_volume * 0.5,
         mass_mg=source_mass * 0.5,
         components=slot0_components,
         component_classes=slot0_classes,
     )
-    _set_container_material(
+    set_container_material(
         slot1,
         volume_uL=source_volume * 0.5,
         mass_mg=source_mass * 0.5,
@@ -250,9 +259,9 @@ def partition_sep_material(
         component_classes=slot1_classes,
     )
     if source is not slot0 and source is not slot1:
-        _set_container_material(source, volume_uL=0.0, mass_mg=0.0, components={})
+        set_container_material(source, volume_uL=0.0, mass_mg=0.0, components={})
 
-    return {
+    out = {
         "mode": "program_partition",
         "strategy": strategy.program_kind,
         "slot_contract": dict(strategy.slot_contract),
@@ -261,6 +270,19 @@ def partition_sep_material(
         "ratios_by_component": {name: {"0": ratios[0], "1": ratios[1]} for name, ratios in ratios_by_component.items()},
         "fallback_components": fallback_components,
     }
+    preservation_contract = strategy.preservation_contract()
+    if preservation_contract is not None:
+        out["preservation_contract"] = preservation_contract
+    return out
+
+
+def normalize_source_partition_slot_bulk(slot: dict[str, Any]) -> None:
+    components = slot.get("components")
+    if not isinstance(components, dict) or not components:
+        return
+    amount = sum(float(value) for value in components.values())
+    slot["volume_uL"] = amount
+    slot["mass_mg"] = amount
 
 
 def _partition_fallback_reason(partition_class: PartitionClass) -> str:
@@ -350,6 +372,9 @@ class SepPartitionStrategy:
     def output_class(self, partition_class: PartitionClass, *, slot: str) -> PartitionClass:
         return partition_class
 
+    def preservation_contract(self) -> dict[str, Any] | None:
+        return None
+
 
 class CentrifugePartitionStrategy(SepPartitionStrategy):
     program_kind = "centrifuge_program"
@@ -425,6 +450,14 @@ class FiltrationPartitionStrategy(SepPartitionStrategy):
 class MagneticPartitionStrategy(SepPartitionStrategy):
     program_kind = "magnetic_program"
     slot_contract = {"0": "bound", "1": "flowthrough"}
+
+    def preservation_contract(self) -> dict[str, Any] | None:
+        return {
+            "kind": "field_retention",
+            "field": "magnetic_rack",
+            "retained_slot": "0",
+            "default_incoming_slot": "1",
+        }
 
     def _known_ratios(self, partition_class: PartitionClass) -> tuple[float, float]:
         if (

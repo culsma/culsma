@@ -1,0 +1,19 @@
+"""Material update result values."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import Any
+
+from culsma.common.diagnostics import Diagnostic
+
+
+@dataclass(frozen=True)
+class MaterialUpdateResult:
+    material_state: dict[str, Any]
+    diagnostics: list[Diagnostic] = field(default_factory=list)
+    delta: dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def ok(self) -> bool:
+        return not any(d.severity == "error" for d in self.diagnostics)

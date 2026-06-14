@@ -953,6 +953,57 @@ protocol T {
     assert "SEM_SOURCE_PARTITION_CONTEXT_INVALID" in _codes(result)
 
 
+def test_validate_standalone_sep_accepts_sep_program():
+    src = """
+protocol T {
+  let sample = tube(label = "Sample", capacity = 100uL);
+  sep(sample = sample, program = centrifuge_program(drive = 12000g));
+}
+"""
+    ir = _compile_source(src)
+    result = validate(ir)
+    codes = _codes(result)
+    assert "SEM_UNKNOWN_STEP" not in codes
+    assert "SEM_PROGRAM_OWNER_MISMATCH" not in codes
+
+
+def test_validate_standalone_frac_accepts_frac_program():
+    src = """
+protocol T {
+  let sample = tube(label = "Sample", capacity = 100uL);
+  frac(sample = sample, program = density_gradient_program(axis = density, order = top_to_bottom, bins = 3));
+}
+"""
+    ir = _compile_source(src)
+    result = validate(ir)
+    codes = _codes(result)
+    assert "SEM_UNKNOWN_STEP" not in codes
+    assert "SEM_PROGRAM_OWNER_MISMATCH" not in codes
+
+
+def test_validate_container_contents_index_accepts_mutation_source_context():
+    src = """
+protocol T {
+  waste << [tube.contents[1]:120uL];
+}
+"""
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert "SEM_CONTAINER_CONTENTS_INDEX_CONTEXT_INVALID" not in _codes(result)
+    assert "SEM_INVALID_GROUP_INDEX_BASE" not in _codes(result)
+
+
+def test_validate_container_contents_index_rejects_non_source_context():
+    src = """
+protocol T {
+  let portion = tube.contents[1];
+}
+"""
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert "SEM_CONTAINER_CONTENTS_INDEX_CONTEXT_INVALID" in _codes(result)
+
+
 def test_validate_legacy_generic_program_form_is_rejected():
     src = 'protocol T { let g = sep(sample = lysate, program = sep_program(mode = "centrifuge", speed = 12000g, duration = 10min)); }'
     ir = _compile_source(src)

@@ -11,17 +11,17 @@ from culsma.runtime.material.handler import (
     MaterialOpHandler,
     MutationHandler,
     NoopMaterialOpHandler,
+    OrganizationResetHandler,
     SeparationHandler,
 )
-from culsma.runtime.material.support import (
-    MaterialUpdateResult,
-    _CONSERVATION_OPS,
-    _diag_result,
-    _initialize_bindings,
-    _inventory_check_enabled,
-    _state_totals,
-    _totals_conserved,
+from culsma.runtime.material.conservation import (
+    CONSERVATION_OPS,
+    state_totals,
+    totals_conserved,
 )
+from culsma.runtime.material.diagnostics import diagnostic_result
+from culsma.runtime.material.refs import initialize_bindings, inventory_check_enabled
+from culsma.runtime.material.result import MaterialUpdateResult
 
 
 class MaterialOpDispatcher:
@@ -30,6 +30,7 @@ class MaterialOpDispatcher:
             ContainerContentHandler(),
             MutationHandler(),
             SeparationHandler(),
+            OrganizationResetHandler(),
             NoopMaterialOpHandler(),
         )
 
@@ -48,15 +49,15 @@ class MaterialCompute:
         """Apply deterministic material update for one runtime step."""
         state = deepcopy(material_state)
         state.setdefault("containers", {})
-        _initialize_bindings(state)
-        before_totals = _state_totals(state)
+        initialize_bindings(state)
+        before_totals = state_totals(state)
 
         result = self.dispatcher.handler_for(step.op).apply(step, state)
 
-        if result.ok and step.op in _CONSERVATION_OPS and _inventory_check_enabled(state):
-            after_totals = _state_totals(result.material_state)
-            if not _totals_conserved(before_totals, after_totals):
-                return _diag_result(
+        if result.ok and step.op in CONSERVATION_OPS and inventory_check_enabled(state):
+            after_totals = state_totals(result.material_state)
+            if not totals_conserved(before_totals, after_totals):
+                return diagnostic_result(
                     step=step,
                     state=result.material_state,
                     code="MAT_CONSERVATION_VIOLATION",

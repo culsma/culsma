@@ -48,6 +48,10 @@ def _mutation_step(
     )
 
 
+def _unit_ref(unit_id: str) -> dict[str, object]:
+    return {"kind": "unit_ref", "id": unit_id, "unit_kind": "single_cell", "stream_ref": "events"}
+
+
 def _sep_step(
     *,
     keep_source: str | None = None,
@@ -349,6 +353,41 @@ def test_mutation_quantified_source_moves_requested_volume():
     assert result.ok
     assert result.material_state["containers"]["A"]["volume_uL"] == 75.0
     assert result.material_state["containers"]["B"]["volume_uL"] == 25.0
+
+
+def test_unit_collect_stales_existing_contents_state_via_classifier():
+    step = _mutation_step(_ir_identifier("Tube"), [_unit_ref("cell_0")])
+    state = {
+        "containers": {
+            "Tube": {
+                "volume_uL": 0.0,
+                "mass_mg": 0.0,
+                "components": {},
+                "metadata": {},
+            }
+        },
+        "contents_states": {
+            "Tube": {
+                "kind": "partitioned",
+                "producer_op": "sep",
+                "program_kind": "test_program",
+                "source": "Tube",
+                "slot_contract": {"0": "retained", "1": "flowthrough"},
+                "parts": {"0": {"components": {}}, "1": {"components": {}}},
+                "valid": True,
+                "step_id": "p0.s0",
+            }
+        },
+    }
+
+    result = apply_step(step=step, material_state=state)
+
+    assert result.ok
+    tube = result.material_state["containers"]["Tube"]
+    assert tube["metadata"]["unit_count"] == 1
+    contents_state = result.material_state["contents_states"]["Tube"]
+    assert contents_state["valid"] is False
+    assert contents_state["invalid_reason"] == "missing_material_snapshot"
 
 
 def test_mutation_quantified_self_transfer_is_noop():

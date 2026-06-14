@@ -31,6 +31,7 @@ from .context import _GroupBinding
 from .environment import EnvContractValidator
 from .expression_contracts import validate_expr_contracts
 from .groups import GroupIndexValidator
+from .programs import ProgramContractValidator
 from .statement_contracts import (
     BUILTIN_METHOD_STEPS,
     dedupe_requirement_names,
@@ -887,6 +888,20 @@ class StepHandler(BaseStatementHandler):
         if state.builtin_method:
             return
         self.append_diagnostics(ctx, validate_agit_contract(stmt, literal_bindings=ctx.literal_bindings))
+        if stmt.name in {"sep", "frac"}:
+            program_arg = next((arg for arg in stmt.args if arg.name == "program"), None)
+            if program_arg is not None:
+                self.append_diagnostics(
+                    ctx,
+                    ProgramContractValidator.validate_attached_program(
+                        owner=stmt.name,
+                        program_expr=program_arg.value,
+                        node_id=stmt.id,
+                        span=program_arg.span or stmt.span,
+                        expr_bindings=ctx.expr_bindings,
+                        literal_bindings=ctx.literal_bindings,
+                    ),
+                )
 
     def apply_state_after_children(
         self,

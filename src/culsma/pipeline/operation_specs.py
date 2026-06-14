@@ -43,6 +43,14 @@ BUILTIN_OPERATION_SPECS: Mapping[str, OperationSpec] = MappingProxyType(
                 "rate": {"rotation_rate"},
             },
         ),
+        "sep": _spec(
+            required={"sample", "program"},
+            allowed={"sample", "program"},
+        ),
+        "frac": _spec(
+            required={"sample", "program"},
+            allowed={"sample", "program"},
+        ),
         "img": _spec(
             required={"sample", "quantity"},
             allowed={"sample", "quantity", "schema_ref", "save_raw"},

@@ -896,6 +896,332 @@ protocol T {
     assert round(float(waste_components["WASH"]), 6) == 178.2
 
 
+def test_runtime_standalone_sep_contents_index_transfers_flowthrough():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let bead_tube = tube(label = "BeadTube", capacity = 500uL, load = [
+    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    buffer(code = "WASH", type = "buffer"):180uL
+  ]);
+  let waste = tube(label = "Waste", capacity = 500uL);
+
+  with env(field = magnetic_rack) {
+    sep(sample = bead_tube, program = magnetic_program(duration = 5min));
+    waste << [bead_tube.contents[1]];
+  }
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    material_state = result.state.artifacts["material_state"]
+    contents_state = material_state["contents_states"]["BeadTube"]
+    assert contents_state["kind"] == "partitioned"
+    assert contents_state["slot_contract"] == {"0": "bound", "1": "flowthrough"}
+    bead_components = material_state["containers"]["BeadTube"]["components"]
+    waste_components = material_state["containers"]["Waste"]["components"]
+    assert round(float(bead_components["BEADS"]), 6) == 19.8
+    assert round(float(bead_components["WASH"]), 6) == 1.8
+    assert round(float(waste_components["BEADS"]), 6) == 0.2
+    assert round(float(waste_components["WASH"]), 6) == 178.2
+
+
+def test_runtime_standalone_frac_contents_index_transfers_fraction():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let sample_tube = tube(label = "SampleTube", capacity = 200uL, load = [
+    content(kind = "biosample", code = "S1", type = "dna_sample"):120uL
+  ]);
+  let fraction_tube = tube(label = "FractionTube", capacity = 100uL);
+
+  frac(sample = sample_tube, program = density_gradient_program(axis = density, order = top_to_bottom, bins = 3));
+  fraction_tube << [sample_tube.contents[1]];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    material_state = result.state.artifacts["material_state"]
+    contents_state = material_state["contents_states"]["SampleTube"]
+    assert contents_state["kind"] == "fractionated"
+    assert contents_state["slot_contract"] == {"0": "fraction_0", "1": "fraction_1", "2": "fraction_2"}
+    sample_components = material_state["containers"]["SampleTube"]["components"]
+    fraction_components = material_state["containers"]["FractionTube"]["components"]
+    assert round(float(sample_components["S1"]), 6) == 80.0
+    assert round(float(fraction_components["S1"]), 6) == 40.0
+
+
+def test_runtime_contents_index_requires_prior_contents_state():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let tube_a = tube(label = "TubeA", capacity = 100uL, load = [
+    buffer(code = "BUF", type = "buffer"):50uL
+  ]);
+  let waste = tube(label = "Waste", capacity = 100uL);
+  waste << [tube_a.contents[0]:10uL];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert not result.ok
+    assert any(d.code == "MAT_CONTENTS_STATE_NOT_INDEXED" for d in result.diagnostics)
+
+
+def test_runtime_contents_index_rejects_stale_state_after_material_mutation():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let sample_tube = tube(label = "SampleTube", capacity = 300uL, load = [
+    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    buffer(code = "WASH", type = "buffer"):100uL
+  ]);
+  let donor_tube = tube(label = "DonorTube", capacity = 100uL, load = [
+    buffer(code = "BUF", type = "buffer"):10uL
+  ]);
+  let waste = tube(label = "Waste", capacity = 300uL);
+
+  sep(sample = sample_tube, program = magnetic_program(duration = 5min));
+  sample_tube << [donor_tube];
+  waste << [sample_tube.contents[1]];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert not result.ok
+    assert any(d.code == "MAT_CONTENTS_STATE_NOT_INDEXED" for d in result.diagnostics)
+
+
+def test_runtime_magnetic_env_preserves_contents_state_after_compatible_addition():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let bead_tube = tube(label = "BeadTube", capacity = 700uL, load = [
+    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    buffer(code = "BIND", type = "buffer"):180uL
+  ]);
+  let ethanol = tube(label = "Ethanol", capacity = 300uL, load = [
+    buffer(code = "ETOH", type = "buffer"):200uL
+  ]);
+  let waste = tube(label = "Waste", capacity = 700uL);
+
+  with env(field = magnetic_rack) {
+    sep(sample = bead_tube, program = magnetic_program(duration = 5min));
+    bead_tube << [ethanol:200uL];
+    waste << [bead_tube.contents[1]];
+  }
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    material_state = result.state.artifacts["material_state"]
+    contents_state = material_state["contents_states"]["BeadTube"]
+    assert contents_state["valid"] is True
+    assert contents_state["preservation_contract"] == {
+        "kind": "field_retention",
+        "field": "magnetic_rack",
+        "retained_slot": "0",
+        "default_incoming_slot": "1",
+    }
+    bead_components = material_state["containers"]["BeadTube"]["components"]
+    waste_components = material_state["containers"]["Waste"]["components"]
+    assert round(float(bead_components["BEADS"]), 6) == 19.8
+    assert round(float(bead_components["BIND"]), 6) == 1.8
+    assert round(float(waste_components["BEADS"]), 6) == 0.2
+    assert round(float(waste_components["BIND"]), 6) == 178.2
+    assert round(float(waste_components["ETOH"]), 6) == 200.0
+
+
+def test_runtime_source_partition_target_addition_uses_contents_state_classifier():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let bead_tube = tube(label = "BeadTube", capacity = 700uL, load = [
+    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    buffer(code = "BIND", type = "buffer"):180uL
+  ]);
+  let donor = tube(label = "Donor", capacity = 200uL, load = [
+    buffer(code = "DON", type = "buffer"):100uL
+  ]);
+  let waste = tube(label = "Waste", capacity = 700uL);
+  let mag_sep = magnetic_program(duration = 5min);
+
+  with env(field = magnetic_rack) {
+    sep(sample = bead_tube, program = magnetic_program(duration = 5min));
+    bead_tube << [donor.partition(mag_sep)[1]:50uL];
+    waste << [bead_tube.contents[1]];
+  }
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    material_state = result.state.artifacts["material_state"]
+    contents_state = material_state["contents_states"]["BeadTube"]
+    assert contents_state["valid"] is True
+    waste_components = material_state["containers"]["Waste"]["components"]
+    assert round(float(waste_components["BEADS"]), 6) == 0.2
+    assert round(float(waste_components["BIND"]), 6) == 178.2
+    assert round(float(waste_components["DON"]), 6) == 50.0
+
+
+def test_runtime_magnetic_env_hold_target_does_not_narrow_block_context():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let bead_tube = tube(label = "BeadTube", capacity = 700uL, load = [
+    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    buffer(code = "BIND", type = "buffer"):180uL
+  ]);
+  let shielded = tube(label = "Shielded", capacity = 100uL);
+  let ethanol = tube(label = "Ethanol", capacity = 300uL, load = [
+    buffer(code = "ETOH", type = "buffer"):200uL
+  ]);
+  let waste = tube(label = "Waste", capacity = 700uL);
+
+  sep(sample = bead_tube, program = magnetic_program(duration = 5min));
+  with env(field = magnetic_rack) {
+    hold(sample = shielded);
+    bead_tube << [ethanol:200uL];
+  }
+  waste << [bead_tube.contents[1]];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    material_state = result.state.artifacts["material_state"]
+    contents_state = material_state["contents_states"]["BeadTube"]
+    assert contents_state["valid"] is True
+    waste_components = material_state["containers"]["Waste"]["components"]
+    assert round(float(waste_components["BEADS"]), 6) == 0.2
+    assert round(float(waste_components["BIND"]), 6) == 178.2
+    assert round(float(waste_components["ETOH"]), 6) == 200.0
+
+
+def test_runtime_whole_container_removal_stales_contents_state_even_in_magnetic_env():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let bead_tube = tube(label = "BeadTube", capacity = 700uL, load = [
+    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    buffer(code = "BIND", type = "buffer"):180uL
+  ]);
+  let waste = tube(label = "Waste", capacity = 700uL);
+  let waste2 = tube(label = "Waste2", capacity = 700uL);
+
+  with env(field = magnetic_rack) {
+    sep(sample = bead_tube, program = magnetic_program(duration = 5min));
+    waste << [bead_tube:100uL];
+    waste2 << [bead_tube.contents[1]];
+  }
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert not result.ok
+    assert any(d.code == "MAT_CONTENTS_STATE_NOT_INDEXED" for d in result.diagnostics)
+    contents_state = result.state.artifacts["material_state"]["contents_states"]["BeadTube"]
+    assert contents_state["valid"] is False
+    assert contents_state["invalid_reason"] == "whole_container_transfer"
+
+
+def test_runtime_agit_marks_contents_state_mixed_and_stale():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let bead_tube = tube(label = "BeadTube", capacity = 500uL, load = [
+    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    buffer(code = "BIND", type = "buffer"):180uL
+  ]);
+  let waste = tube(label = "Waste", capacity = 500uL);
+
+  sep(sample = bead_tube, program = magnetic_program(duration = 5min));
+  agit(sample = bead_tube, mode = shake, duration = 30s, rate = 800rpm);
+  waste << [bead_tube.contents[1]];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert not result.ok
+    assert any(d.code == "MAT_CONTENTS_STATE_NOT_INDEXED" for d in result.diagnostics)
+    contents_state = result.state.artifacts["material_state"]["contents_states"]["BeadTube"]
+    assert contents_state["valid"] is False
+    assert contents_state["kind"] == "mixed"
+    assert contents_state["invalid_reason"] == "explicit_mixing"
+
+
+def test_runtime_contents_self_transfer_invalidates_contents_state_without_material_move():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let bead_tube = tube(label = "BeadTube", capacity = 500uL, load = [
+    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    buffer(code = "WASH", type = "buffer"):180uL
+  ]);
+
+  sep(sample = bead_tube, program = magnetic_program(duration = 5min));
+  bead_tube << [bead_tube.contents[1]];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    material_state = result.state.artifacts["material_state"]
+    bead_tube = material_state["containers"]["BeadTube"]
+    assert round(float(bead_tube["volume_uL"]), 6) == 200.0
+    assert {k: round(float(v), 6) for k, v in bead_tube["components"].items()} == {"BEADS": 20.0, "WASH": 180.0}
+    contents_state = material_state["contents_states"]["BeadTube"]
+    assert contents_state["valid"] is False
+    assert contents_state["invalid_reason"] == "contents_self_transfer"
+
+
+def test_runtime_contents_self_transfer_makes_later_contents_read_stale():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let bead_tube = tube(label = "BeadTube", capacity = 500uL, load = [
+    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    buffer(code = "WASH", type = "buffer"):180uL
+  ]);
+  let waste = tube(label = "Waste", capacity = 500uL);
+
+  sep(sample = bead_tube, program = magnetic_program(duration = 5min));
+  bead_tube << [bead_tube.contents[1]];
+  waste << [bead_tube.contents[1]];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert not result.ok
+    assert any(d.code == "MAT_CONTENTS_STATE_NOT_INDEXED" for d in result.diagnostics)
+
+
 def test_runtime_source_partition_preserves_partition_fallback_warning():
     plan = _build_plan_from_source(
         """
