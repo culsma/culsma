@@ -1,5 +1,65 @@
 # Changelog
 
+## Internal 1.0.4rc1
+
+### Scope
+
+This internal GitHub prerelease prepares the first installable candidate for
+the 1.0.4 material contents-state line. It is intended for internal testing and
+does not publish to PyPI.
+
+It includes:
+
+- durable container contents-state records for standalone `sep(...)` and
+  `frac(...)`
+- indexed contents-state reads in mutation sources using
+  `container.contents[i]`
+- stale/mixed contents-state handling for ordinary mutation and agitation
+- source-local `source.partition(program)[i]` compatibility preservation
+- a narrowed magnetic `field_retention` preservation hook for compatible
+  operations under matching field context
+- material runtime module split into smaller services for arguments,
+  conservation, contents state, ledger, mutation, refs, results, separation,
+  and units
+- material architecture documentation for the contents-state manager boundary
+- release workflow cleanup so normal public GitHub Releases remain manual
+  after PyPI publication
+
+### Compatibility
+
+- This is an internal prerelease, not the public PyPI release.
+- Existing named `sep(...)` / `frac(...)` group behavior remains compatible.
+- Existing `source.partition(program)[i]` remains a transfer-local selector and
+  is not redefined as a prior-state reader.
+- `container.contents[i]` is valid only where a current indexed contents state
+  exists and remains valid.
+
+### Install
+
+After the GitHub prerelease assets are published:
+
+```bash
+python -m pip install https://github.com/culsma/culsma/releases/download/internal-1.0.4rc1/culsma-1.0.4rc1-py3-none-any.whl
+```
+
+Source tag install:
+
+```bash
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@internal-1.0.4rc1"
+```
+
+### Verified
+
+- `python -m pytest -q`
+  - result: `689 passed`
+- `python -m build --outdir /private/tmp/culsma-internal-1.0.4rc1-dist`
+  - result: `culsma-1.0.4rc1.tar.gz` and
+    `culsma-1.0.4rc1-py3-none-any.whl` built
+- `python -m twine check /private/tmp/culsma-internal-1.0.4rc1-dist/*`
+  - result: passed
+- local wheel install check
+  - result: installed package reports `culsma.__version__ == "1.0.4rc1"`
+
 ## Culsma v1.0.3
 
 ### Scope
