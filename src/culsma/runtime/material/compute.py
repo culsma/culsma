@@ -6,14 +6,6 @@ from copy import deepcopy
 from typing import Any
 
 from culsma.pipeline.plan_nodes import PlanStep
-from culsma.runtime.material.handler import (
-    ContainerContentHandler,
-    MaterialOpHandler,
-    MutationHandler,
-    NoopMaterialOpHandler,
-    OrganizationResetHandler,
-    SeparationHandler,
-)
 from culsma.runtime.material.conservation import (
     CONSERVATION_OPS,
     state_totals,
@@ -22,28 +14,12 @@ from culsma.runtime.material.conservation import (
 from culsma.runtime.material.diagnostics import diagnostic_result
 from culsma.runtime.material.refs import initialize_bindings, inventory_check_enabled
 from culsma.runtime.material.result import MaterialUpdateResult
-
-
-class MaterialOpDispatcher:
-    def __init__(self, handlers: tuple[MaterialOpHandler, ...] | None = None) -> None:
-        self.handlers = handlers or (
-            ContainerContentHandler(),
-            MutationHandler(),
-            SeparationHandler(),
-            OrganizationResetHandler(),
-            NoopMaterialOpHandler(),
-        )
-
-    def handler_for(self, op: str) -> MaterialOpHandler:
-        for handler in self.handlers:
-            if handler.handles(op):
-                return handler
-        return NoopMaterialOpHandler()
+from culsma.runtime.material.state import MaterialStateManager
 
 
 class MaterialCompute:
-    def __init__(self, dispatcher: MaterialOpDispatcher | None = None) -> None:
-        self.dispatcher = dispatcher or MaterialOpDispatcher()
+    def __init__(self, state_manager: MaterialStateManager | None = None) -> None:
+        self.state_manager = state_manager or MaterialStateManager()
 
     def apply_step(self, step: PlanStep, material_state: dict[str, Any]) -> MaterialUpdateResult:
         """Apply deterministic material update for one runtime step."""
@@ -52,7 +28,11 @@ class MaterialCompute:
         initialize_bindings(state)
         before_totals = state_totals(state)
 
-        result = self.dispatcher.handler_for(step.op).apply(step, state)
+        change_plan = self.state_manager.plan_material_state_change(step=step, state=state)
+        if change_plan is not None:
+            result = self.state_manager.apply_change(change_plan, state)
+        else:
+            result = MaterialUpdateResult(material_state=state, diagnostics=[], delta={})
 
         if result.ok and step.op in CONSERVATION_OPS and inventory_check_enabled(state):
             after_totals = state_totals(result.material_state)

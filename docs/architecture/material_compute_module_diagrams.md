@@ -1,6 +1,6 @@
 # Material Compute Module Diagrams
 
-Last updated: 2026-06-14
+Last updated: 2026-06-16
 
 Related runtime document:
 
@@ -27,331 +27,352 @@ Current responsibilities include:
 6. classifying content for separation partitioning;
 7. checking conservation invariants.
 
-## Current Responsibility Flowchart
+## Material Operation Responsibility Flowchart
+
+This top-level flowchart shows the target lifecycle for one material runtime
+step. It shows how the runtime decides what material state, if any, changes for
+that step.
+
+Read the three flowcharts as nested views:
+
+1. Material operation responsibility is the top-level apply-step lifecycle.
+2. Material state change expands how a step changes material records,
+   quantities, components, or indexed parts.
+3. Sep partition detail expands the separation/fractionation partition planning
+   used by material state changes.
 
 ```mermaid
 flowchart TB
     Start(["Start material update for one runtime step"])
-    Copy["Copy material state<br/>and initialize bookkeeping"]
-    Dispatch["Choose operation family<br/>from the step operation name"]
-    ThinHandler["Call a thin operation handler"]
-    OperationCode["Run operation-specific code<br/>for container/content, mutation, separation, or organization reset"]
-    SharedHelpers["Use shared helper functions<br/>for arguments, references, ledger mutation, diagnostics, and conservation"]
-    StateManagement["Update material state management records<br/>when an operation creates, reads, preserves, mixes, or invalidates contents organization"]
-    Partition["Use separation strategy code<br/>for program-specific slot contracts and component fate"]
-    Result["Return material state,<br/>diagnostics, and material delta"]
-
-    Start --> Copy
-    Copy --> Dispatch
-    Dispatch --> ThinHandler
-    ThinHandler --> OperationCode
-    OperationCode --> SharedHelpers
-    OperationCode --> StateManagement
-    OperationCode --> Partition
-    SharedHelpers --> Result
-    StateManagement --> Result
-    Partition --> Result
-```
-
-Current issue:
-
-- The old single-file module has been split, but the split is still
-  transitional.
-- Operation handlers are thin dispatch adapters rather than owners of a shared
-  material-operation lifecycle.
-- Shared helper functions still carry argument reading, reference resolution,
-  ledger mutation, diagnostics, and conservation.
-- Material state management now includes indexed contents organization, but it
-  is still implemented as function-level behavior rather than a
-  `MaterialContentsStateManager` domain service.
-- Separation partitioning is one producer of indexed contents state, not the
-  owner of material state management.
-
-## Target Responsibility Flowchart
-
-```mermaid
-flowchart TB
-    Start(["Start material update for one runtime step"])
-    Copy["Copy material state<br/>and initialize bookkeeping"]
-    TotalsBefore["Record material totals before mutation<br/>when conservation checking can apply"]
-    Dispatch["Choose operation family<br/>from the step operation name"]
-    Prepare["Prepare operation context<br/>with shared material services"]
-    Args["Read operation arguments"]
-    Refs["Resolve material references<br/>such as containers, content, groups, and source views"]
-    Guard["Run preflight material checks<br/>before mutating state"]
-    Transform["Run operation transform<br/>for the current step only"]
-    Ledger["Operation transform updates material ledger<br/>for quantity and composition"]
-    StateService["Operation transform calls MaterialContentsStateManager<br/>to read or update persistent contents organization"]
-    Delta["Build material delta and diagnostics"]
-    Conservation["Check conservation invariants<br/>when required and enabled"]
+    Frame["Prepare a working copy<br/>of the current material state"]
+    ReadStep["Read what the step is trying to do<br/>to containers or material"]
+    ChangesMaterial{"Does this step change<br/>material state?"}
+    PickChange["Decide what kind of<br/>material state change is needed"]
+    ApplyChange["Apply the material state change<br/><br/>container records, volume, mass,<br/>components, or indexed parts<br/>(expanded in Flowchart 2)"]
+    Finalize["Build diagnostics and delta"]
+    Conservation["Check material totals<br/>when conservation should hold"]
     Return["Return material state,<br/>diagnostics, and material delta"]
 
-    Start --> Copy
-    Copy --> TotalsBefore
-    TotalsBefore --> Dispatch
-    Dispatch --> Prepare
-    Prepare --> Args
-    Args --> Refs
-    Refs --> Guard
-    Guard --> Transform
-    Transform --> Ledger
-    Transform --> StateService
-    StateService --> Transform
-    Ledger --> Delta
-    Transform --> Delta
-    Delta --> Conservation
+    Start --> Frame
+    Frame --> ReadStep
+    ReadStep --> ChangesMaterial
+    ChangesMaterial -->|yes| PickChange
+    PickChange --> ApplyChange
+    ChangesMaterial -->|no| Finalize
+    ApplyChange --> Finalize
+    Finalize --> Conservation
     Conservation --> Return
 ```
 
 Design goal:
 
 - `MaterialCompute` owns apply-step orchestration and conservation gating.
-- `MaterialOpDispatcher` maps `step.op` to a `MaterialOpHandler`.
-- `MaterialOpHandler` owns the shared material-operation lifecycle.
-- Each concrete operation handler overrides only the lifecycle phases it needs.
+- `MaterialStateManager` is the single target owner for material-state changes
+  after the step has been interpreted.
+- `MaterialStateManager` decides whether the step changes container records,
+  volume, mass, components, indexed parts, or no material state.
 - Reusable behavior is represented by public material services, not
   cross-module imports of underscore-prefixed helper functions.
-- `MaterialContentsStateManager` is a horizontal service used by operation
-  transforms. It is called by the current step's transform and updates
-  persistent state records; it does not schedule or own steps and does not own
-  material ledger mutation.
-- `MaterialContentsStateManager` owns the lifecycle of container-contents
-  organization state, including homogeneous, partitioned, fractionated, mixed,
-  stale, indexed selections, and narrow preservation impacts. It is not the
-  owner of the broader material-state vector.
+- `MaterialIndexedPartsStateManager` is an internal collaborator for partitioned or
+  indexed container contents. It is not a top-level material-operation branch.
 - Separation strategy remains a separate inheritance family because each
   separation program owns a different slot contract and component-fate policy.
-- Separation is an operation transform that can write organization state through
-  material state management. It depends on the state manager as a service; it is
-  not a child or owner of the state manager.
+  It is a strategy collaborator used while applying separation or
+  fractionation, not a top-level material-operation branch.
 
-## Contents State Management Flowchart
+## Material State Change Flowchart
 
-This flowchart shows the state-management slice added for indexed container
-contents. Separation is only one operation that can write this state.
+This flowchart expands the material-state change box from the top-level
+material operation flowchart. It shows the target manager deciding and applying
+the material change needed by the current step.
 
 ```mermaid
 flowchart TB
-    Step(["Runtime executes one material step"])
-    Transform["Current step's operation transform"]
-    Manager["MaterialContentsStateManager<br/>persistent contents organization records"]
-    Kind{"What kind of state effect does it have?"}
-    Create["Create indexed contents organization<br/>from separation or fractionation"]
-    Read["Resolve indexed contents organization<br/>from container.contents access"]
-    Preserve["Preserve indexed organization<br/>when operation context proves it remains valid"]
-    Mix["Clear indexed organization<br/>when operation intentionally mixes or resuspends contents"]
-    Invalidate["Mark indexed organization stale<br/>when mutation makes the previous organization unprovable"]
-    State["Record updated material state<br/>for later operations and diagnostics"]
-    Result["Return state selection or impact<br/>to the operation transform"]
+    Step(["Apply the material state change"])
+    Action{"What kind of material<br/>state changes?"}
 
-    Step --> Transform
-    Transform --> Manager
-    Manager --> Kind
-    Kind -->|sep or frac| Create
-    Kind -->|container.contents index| Read
-    Kind -->|compatible context| Preserve
-    Kind -->|agit or equivalent| Mix
-    Kind -->|ordinary mutation| Invalidate
-    Create --> State
-    Read --> State
-    Preserve --> State
-    Mix --> State
-    Invalidate --> State
-    State --> Manager
-    Manager --> Transform
-    State --> Result
+    ContainerRecord["Container or content record:<br/>create a container,<br/>define content,<br/>load material,<br/>or add annotations"]
+    ContainerApply["Write container, content,<br/>or annotation records"]
+
+    QuantityComposition["Quantity or composition:<br/>move or update volume, mass,<br/>components, and metadata"]
+    QuantityApply["Use ledger primitives<br/>to update material quantities<br/>and component records"]
+
+    SepFrac["Separation or fractionation:<br/>create tracked output parts"]
+    Partition["Decide output parts,<br/>component fate, part quantities,<br/>and any preservation condition<br/>(expanded in Flowchart 3)"]
+    Materialize["Use ledger primitives<br/>to materialize the output parts"]
+    RecordPartition["Record active indexed parts"]
+
+    Select["Indexed part access:<br/>choose one recorded part"]
+    Validate["Validate the selected part<br/>and any preservation condition"]
+    SelectionImpact["Move, preserve, clear,<br/>or report a diagnostic"]
+
+    Reset["Mixing, resuspension, or reset:<br/>discard tracked parts"]
+    ResetImpact["Mark parts mixed<br/>or clear indexed state"]
+
+    Return["Return updated material state,<br/>diagnostics, and delta"]
+
+    Step --> Action
+
+    Action -->|container/content record| ContainerRecord
+    ContainerRecord --> ContainerApply
+    ContainerApply --> Return
+
+    Action -->|volume, mass, or components| QuantityComposition
+    QuantityComposition --> QuantityApply
+    QuantityApply --> Return
+
+    Action -->|separate or fractionate| SepFrac
+    SepFrac --> Partition
+    Partition --> Materialize
+    Materialize --> RecordPartition
+    RecordPartition --> Return
+
+    Action -->|indexed part access| Select
+    Select --> Validate
+    Validate --> SelectionImpact
+    SelectionImpact --> Return
+
+    Action -->|mix, resuspend, or reset parts| Reset
+    Reset --> ResetImpact
+    ResetImpact --> Return
+
 ```
 
 Design judgment:
 
-1. `sep` and `frac` can create indexed contents state.
-2. `container.contents[i]` resolves an indexed contents-state selection.
-3. `Mutation` can either consume, preserve, or invalidate indexed contents
-   state.
-4. `agit` and equivalent organization-reset operations intentionally clear
-   indexed organization.
-5. The operation transform calls `MaterialContentsStateManager` for the current
-   step. The manager updates persistent state records, but it does not drive the
-   runtime step sequence and does not perform material transfer.
-6. Separation depends on state management to record organization state; it does
-   not own state management.
+1. This flowchart is entered only after the top-level flow has decided that the
+   step changes material state.
+2. Container records, quantities, components, and indexed parts are all material
+   state, so the target flow routes them through the same state-change manager.
+3. `sep` and `frac` create tracked output parts and attach any preservation
+   condition required by later indexed part access.
+4. `container.contents[i]` consumes an indexed part. It must validate any
+   preservation condition declared by that state before moving or preserving
+   material.
+5. Mixing, resuspension, and equivalent reset operations intentionally discard
+   tracked parts instead of validating them.
+6. Preservation checks are scoped to the source, target, group members, wells,
+   or shared environment affected by the current operation. They should not scan
+   unrelated material state.
 
 ## Sep Partition Detail Flowchart
 
+This flowchart expands the partition-planning step from Flowchart 2. It is
+inside the separation/fractionation state change, but it does not record state
+or mutate the ledger directly. It returns a partition plan used to materialize
+and track output parts.
+
 ```mermaid
 flowchart TB
-    Start(["A separation operation reaches its transform"])
-    Program["Read the separation program kind"]
-    Slots["Determine semantic output slots"]
-    Identity["Apply source identity policy<br/>such as source reuse when allowed"]
-    Strategy["Select the separation strategy"]
-    Components["Classify source components<br/>and compute component fate"]
-    Bulk["Apply conservative bulk volume<br/>and mass accounting"]
-    Preservation["Attach preservation contract<br/>when the strategy creates one"]
-    Projection["Bind indexed group<br/>or ask MaterialContentsStateManager<br/>to record indexed contents state"]
-    Delta["Return partition summary,<br/>diagnostics, and material delta"]
+    Start(["A separation or fractionation<br/>change needs a partition plan"])
+    Program["Identify the separation program"]
+    Strategy["Choose the matching partition rule set"]
+    Slots["Define meaningful output parts<br/>and source identity policy"]
+    Classify["Classify source contents<br/>by component behavior"]
+    Fate["Compute component fate<br/>for each output slot"]
+    Quantities["Compute part volume and mass<br/>from source quantity policy"]
+    Preservation["Attach a preservation condition<br/>when required"]
+    Plan["Return partition plan:<br/>output parts, component fate,<br/>identity policy, and preservation condition"]
 
     Start --> Program
-    Program --> Slots
-    Slots --> Identity
-    Identity --> Strategy
-    Strategy --> Components
-    Components --> Bulk
-    Bulk --> Preservation
-    Preservation --> Projection
-    Projection --> Delta
+    Program --> Strategy
+    Strategy --> Slots
+    Slots --> Classify
+    Classify --> Fate
+    Fate --> Quantities
+    Quantities --> Preservation
+    Preservation --> Plan
 ```
 
 Design judgment:
 
 1. Program-specific component fate should stay in strategy classes, not in a
    growing conditional ladder.
-2. Bulk volume and mass accounting remain separate from component fate ratios.
+2. Bulk volume and mass accounting remain separate from component fate ratios,
+   but both are returned in the same partition plan.
 3. Indexed group returns and indexed contents state are projections of the
-   material transform, not separate material truth.
+   contents-state transition that consumes this plan, not separate material
+   truth.
 
 ## Material Operation Sequence
 
-```mermaid
-sequenceDiagram
-    participant Compute as "MaterialCompute"
-    participant Dispatcher as "MaterialOpDispatcher"
-    participant Handler as "MaterialOpHandler"
-    participant ContainerHandler as "ContainerContentHandler"
-    participant MutationHandler as "MutationHandler"
-    participant SeparationHandler as "SeparationHandler"
-    participant OrganizationHandler as "OrganizationResetHandler"
-    participant Args as "MaterialArgReader"
-    participant Refs as "MaterialRefResolver"
-    participant ContainerTransform as "ContainerContentTransform"
-    participant MutationTransform as "MutationTransform"
-    participant SeparationTransform as "SeparationTransform"
-    participant OrganizationTransform as "OrganizationTransform"
-    participant Ledger as "MaterialLedger"
-    participant ContentsState as "MaterialContentsStateManager"
-    participant Diagnostics as "MaterialDiagnostics"
-    participant Conservation as "MaterialConservation"
+Read the three sequence diagrams as nested views:
 
-    Compute->>Compute: copy material_state and initialize bookkeeping
-    opt conservation can apply
-        Compute->>Conservation: state_totals(before)
-    end
-    Compute->>Dispatcher: handler_for(step.op)
-    Dispatcher-->>Compute: MaterialOpHandler
-    Compute->>Handler: handle(step, state)
-    Handler->>Args: read operation args
-    Handler->>Refs: resolve material refs
-    Handler->>Diagnostics: build preflight diagnostics when needed
-
-    alt container/content operation
-        Handler->>ContainerHandler: apply_transform(ctx)
-        ContainerHandler->>ContainerTransform: apply(ctx)
-        ContainerTransform->>Ledger: initialize or load material
-        ContainerTransform->>ContentsState: invalidate or reset contents organization when needed
-        ContainerTransform-->>Handler: MaterialUpdateResult
-    else mutation operation
-        Handler->>MutationHandler: apply_transform(ctx)
-        MutationHandler->>MutationTransform: apply_mutation(ctx)
-        MutationTransform->>ContentsState: resolve contents selection or state impact
-        MutationTransform->>Ledger: move quantity and composition
-        MutationTransform->>ContentsState: record preserve or invalidate impact
-        MutationTransform-->>Handler: MaterialUpdateResult
-    else separation or fractionation operation
-        Handler->>SeparationHandler: apply_transform(ctx)
-        SeparationHandler->>SeparationTransform: apply_sep_or_frac(ctx)
-        SeparationTransform->>Ledger: split or route quantity and composition
-        SeparationTransform->>ContentsState: record partitioned or fractionated organization
-        SeparationTransform-->>Handler: MaterialUpdateResult
-    else organization reset operation
-        Handler->>OrganizationHandler: apply_transform(ctx)
-        OrganizationHandler->>OrganizationTransform: apply_agit(ctx)
-        OrganizationTransform->>ContentsState: clear indexed organization
-        OrganizationTransform-->>Handler: MaterialUpdateResult
-    end
-
-    Handler-->>Compute: MaterialUpdateResult
-    opt result ok and conservation check enabled for op
-        Compute->>Conservation: state_totals(after)
-        Conservation-->>Compute: totals_conserved(before, after)
-    end
-    Compute-->>Compute: return MaterialUpdateResult
-```
-
-This sequence shows the target control direction: runtime executes one step,
-the operation transform calls material services, and
-`MaterialContentsStateManager` updates persistent state records.
-`MaterialContentsStateManager` does not schedule steps, own runtime steps, or
-perform material ledger transfer.
-
-## Contents State Management Sequence
+1. Material operation sequence is the top-level target runtime dispatch path.
+2. Material state change sequence expands
+   `MaterialStateManager.apply_change(...)`.
+3. Sep partition detail sequence expands the
+   `material.partition.partition_sep_material(...)` call made while applying a
+   separation or fractionation state change.
 
 ```mermaid
 sequenceDiagram
-    participant SeparationTransform as "SeparationTransform"
-    participant MutationTransform as "MutationTransform"
-    participant OrganizationTransform as "OrganizationTransform"
-    participant Ledger as "MaterialLedger"
-    participant ContentsState as "MaterialContentsStateManager"
-    participant Diagnostics as "MaterialDiagnostics"
+    participant Executor as "runtime.executor.RuntimeExecutor"
+    participant StepDispatcher as "runtime.steps.RuntimeStepDispatcher"
+    participant DriverHandler as "runtime.steps.DriverBackedStepHandler"
+    participant Driver as "driver.base.Driver"
+    participant MaterialFacade as "runtime.material_compute.apply_step"
+    participant Compute as "material.compute.MaterialCompute"
+    participant StateManager as "material.state.MaterialStateManager"
 
-    alt sep or frac creates organization
-        SeparationTransform->>ContentsState: record_partitioned(...)
-        ContentsState-->>SeparationTransform: contents state summary
-    else container.contents[i] reads organization
-        MutationTransform->>ContentsState: resolve_indexed_part(...)
-        ContentsState-->>MutationTransform: selected part snapshot and source impact
-        MutationTransform->>Ledger: move selected quantity and composition
-        MutationTransform->>ContentsState: record target impact after ledger mutation
-    else mutation may preserve or invalidate organization
-        MutationTransform->>ContentsState: apply_target_addition_impact(...)
-        ContentsState-->>MutationTransform: preserve or stale impact
-    else agit clears organization
-        OrganizationTransform->>ContentsState: mark_mixed(...)
-        ContentsState-->>OrganizationTransform: mixed-state impact
+    Executor->>StepDispatcher: dispatch(step, session)
+    StepDispatcher->>DriverHandler: handle(step, session)
+    DriverHandler->>DriverHandler: execute_current_step(step, session, state)
+    DriverHandler->>Driver: check(runtime_step)
+    DriverHandler->>Driver: execute(runtime_step)
+
+    alt result.ok and isinstance(material_state, dict)
+        DriverHandler->>MaterialFacade: apply_step(step=runtime_step, material_state=material_state)
+        MaterialFacade->>Compute: apply_step(step, material_state)
     end
 
-    ContentsState->>Diagnostics: build state diagnostics when state is missing, stale, or out of range
+    Compute->>Compute: create_step_frame(step, material_state)
+    Compute->>StateManager: plan_material_state_change(step, state)
+    StateManager-->>Compute: MaterialStateChangePlan?
+
+    opt change_plan is not None
+        Compute->>StateManager: apply_change(change_plan, state)
+        StateManager-->>Compute: MaterialUpdateResult
+    end
+
+    Compute->>Compute: finalize_result(result, step, before_totals)
+    Compute-->>MaterialFacade: MaterialUpdateResult
+    MaterialFacade-->>DriverHandler: MaterialUpdateResult
 ```
 
-This sequence is the state-management slice. Separation appears as one caller
-of the state manager, not as the owner of the state manager. For
-`container.contents[i]`, the manager resolves the selected state record and
-state impact; `MutationTransform` and `MaterialLedger` still perform the
-material transfer.
+This sequence shows the target control boundary: material runtime steps enter a
+single material-state manager, which decides and applies the material state
+change before `MaterialCompute` builds diagnostics, conservation checks, and the
+result delta.
+
+## Material State Change Sequence
+
+```mermaid
+sequenceDiagram
+    participant StateManager as "material.state.MaterialStateManager"
+    participant ContainerContent as "material.container_content"
+    participant Ledger as "material.ledger"
+    participant Mutation as "material.mutation"
+    participant PartsManager as "material.contents_state.MaterialIndexedPartsStateManager"
+
+    StateManager->>StateManager: apply_change(change_plan, state)
+
+    alt change_plan.kind == "container_record"
+        alt step.op == "AllocContainer"
+            StateManager->>ContainerContent: apply_alloc_container(step, state)
+        else step.op == "DefineContent"
+            StateManager->>ContainerContent: apply_define_content(step, state)
+        else step.op == "LoadContent"
+            StateManager->>ContainerContent: apply_load_content(step, state)
+        else step.op == "AnnotateContent"
+            StateManager->>ContainerContent: apply_annotate_content(step, state)
+        end
+    else change_plan.kind == "quantity_or_composition"
+        StateManager->>Mutation: apply_mutation(step, state)
+        Mutation->>Mutation: apply_transfer_by_qty(step, state, qty)
+        Mutation->>Ledger: move_explicit(src, dst, volume_uL, mass_mg, component_ratio)
+    else change_plan.kind == "partition_or_index"
+        StateManager->>StateManager: contents_plan = change_plan.payload["contents_plan"]
+        StateManager->>PartsManager: apply_partition_or_index_change(contents_plan, state)
+    end
+
+    StateManager-->>StateManager: MaterialUpdateResult
+```
+
+This sequence expands the material-state change from the top sequence. The
+manager can update container records, quantities, components, partitioned or
+indexed contents.
+
+## Partition And Indexed Contents Sequence
+
+```mermaid
+sequenceDiagram
+    participant PartsManager as "material.contents_state.MaterialIndexedPartsStateManager"
+    participant PartsState as "material.contents_state"
+    participant Partition as "material.partition"
+    participant Ledger as "material.ledger"
+
+    PartsManager->>PartsManager: apply_partition_or_index_change(transition_plan, state)
+
+    alt step.op == "sep"
+        PartsManager->>PartsManager: apply_sep(step, state)
+        PartsManager->>PartsManager: record_sep_transition(step=step, state=working, source_id=source_id, program_kind=program_kind, keep_source=keep_source)
+        PartsManager->>Partition: partition_sep_material(state=state, source=source, slot0=slot0, slot1=slot1, program_kind=program_kind)
+        PartsManager->>PartsState: record_partitioned_contents_state(state=state, source_id=source_id, source=source, parts={"0": slot0, "1": slot1}, kind="partitioned", producer_op="sep", program_kind=program_kind, slot_contract=partition.get("slot_contract"), preservation_contract=partition.get("preservation_contract"), step_id=step.step_id)
+        PartsManager->>PartsState: remove_transient_containers(state, [slot0_id, slot1_id], preserve=source_id)
+    else step.op == "frac"
+        PartsManager->>PartsManager: apply_frac(step, state)
+        PartsManager->>PartsManager: record_frac_transition(step=step, state=working, source_id=source_id, bins=bins, program_kind=program_kind)
+        PartsManager->>Ledger: move_explicit(source, slot, moved_volume, moved_mass, component_ratio=component_ratio)
+        PartsManager->>PartsState: record_partitioned_contents_state(state=state, source_id=source_id, source=source, parts=concrete_parts, kind="fractionated", producer_op="frac", program_kind=program_kind, slot_contract={slot: f"fraction_{slot}" for slot in slot_bindings}, preservation_contract=None, step_id=step.step_id)
+        PartsManager->>PartsState: remove_transient_containers(state, list(slot_bindings.values()), preserve=source_id)
+    else step.op == "Mutation" and is_contents_index_ref(source_ref)
+        PartsManager->>PartsManager: apply_mutation_transition(step, state)
+        PartsManager->>PartsManager: resolve_indexed_part(step=step, state=state, contents_ref=contents_ref)
+        alt isinstance(selection, MaterialUpdateResult)
+            PartsManager-->>PartsManager: MaterialUpdateResult
+        else isinstance(selection, ContentsPartSelection)
+            PartsManager->>Ledger: container(state, selection.source_id)
+            PartsManager->>Ledger: container(state, target_id)
+            PartsManager->>Ledger: check_capacity_guard(step=step, state=state, container_id=target_id, added_uL=moved_uL)
+            PartsManager->>PartsManager: move_contents_part_material(part, source, target, moved_uL, moved_mg, ratio)
+            PartsManager->>PartsState: moved_snapshot_from_explicit(part_before, moved_uL=moved_uL, moved_mg=moved_mg, ratio=ratio)
+            PartsManager->>PartsManager: record_target_addition_impact(step=step, state=state, target_id=target_id, moved_snapshot=moved_snapshot)
+        end
+    else step.op == "Mutation" and has_active_contents_state(source_id, target_id)
+        PartsManager->>PartsManager: apply_mutation_transition(step, state)
+        PartsManager->>PartsManager: record_target_addition_impact(step=step, state=state, target_id=target_id, moved_snapshot=moved_snapshot)
+        PartsManager->>PartsState: invalidate_contents_state(state, source_id, reason=reason)
+    else step.op == "agit"
+        PartsManager->>PartsState: mark_contents_state_mixed(state, container_id, step_id=step.step_id)
+    end
+```
+
+This sequence is the target partition and indexed-part path. `sep`, `frac`,
+indexed-part access, and tracked-part reset enter
+`MaterialIndexedPartsStateManager` only after `MaterialStateManager` has selected
+that kind of material-state change.
 
 ## Sep Partition Detail Sequence
 
 ```mermaid
 sequenceDiagram
-    participant SeparationTransform as "SeparationTransform"
-    participant Registry as "SepPartitionStrategyRegistry"
-    participant Strategy as "SepPartitionStrategy"
-    participant Classes as "ContentClassResolver"
-    participant Ledger as "MaterialLedger"
-    participant ContentsState as "MaterialContentsStateManager"
+    participant PartsManager as "material.contents_state.MaterialIndexedPartsStateManager"
+    participant Partition as "material.partition"
+    participant Registry as "material.partition.SepPartitionStrategyRegistry"
+    participant Strategy as "material.partition.SepPartitionStrategy"
+    participant Classes as "material.partition.ContentClassResolver"
+    participant Ledger as "material.ledger"
 
-    SeparationTransform->>Registry: strategy_for(program_kind)
-    Registry-->>SeparationTransform: SepPartitionStrategy
+    PartsManager->>Partition: partition_sep_material(state=state, source=source, slot0=slot0, slot1=slot1, program_kind=program_kind)
+    Partition->>Registry: strategy_for(program_kind)
+    Registry-->>Partition: SepPartitionStrategy
 
-    loop each component
-        Strategy->>Classes: classify(state, container, component_id)
-        Classes-->>Strategy: PartitionClass
-        Strategy->>Strategy: ratios(partition_class)
-        Strategy->>Strategy: output_class(partition_class, slot)
+    loop for name, amount in list(source_components.items())
+        Partition->>Classes: classify(state, source, str(name))
+        Classes-->>Partition: PartitionClass
+        Partition->>Partition: _component_partition_ratios(source, str(name))
+        alt explicit_ratios is None
+            Partition->>Strategy: ratios(partition_class)
+        end
+        Partition->>Strategy: output_class(partition_class, slot="0")
+        Partition->>Strategy: output_class(partition_class, slot="1")
     end
 
-    Strategy-->>SeparationTransform: slot contract, component fate, preservation contract
-    SeparationTransform->>Ledger: set slot material and metadata
-    SeparationTransform->>Ledger: clear or preserve source material according to identity policy
-    SeparationTransform->>ContentsState: record partitioned or fractionated organization when no group is bound
+    Partition->>Ledger: set_container_material(slot0, volume_uL=source_volume * 0.5, mass_mg=source_mass * 0.5, components=slot0_components, component_classes=slot0_classes)
+    Partition->>Ledger: set_container_material(slot1, volume_uL=source_volume * 0.5, mass_mg=source_mass * 0.5, components=slot1_components, component_classes=slot1_classes)
+    Partition->>Ledger: set_container_material(source, volume_uL=0.0, mass_mg=0.0, components={})
+    Partition->>Strategy: preservation_contract()
+    Partition-->>PartsManager: dict
 ```
 
-`separation.py` should remain the operation-transform module for `sep` and
-`frac`. Program-specific partition logic should remain separate in
-`partition.py`; it is already its own strategy submodule.
-`MaterialContentsStateManager` should live as its own material state-management
-module, because separation, mutation, and organization reset all use it. Its
-scope is contents organization state, not the full material-state vector.
+`sep` and `frac` are material-state changes whose partitioned or indexed-part
+details are handled by `MaterialIndexedPartsStateManager`.
+Program-specific partition logic should remain separate in `partition.py`; it
+is already its own strategy submodule and should be used by the manager.
+`MaterialIndexedPartsStateManager` remains an internal collaborator because
+separation, fractionation, indexed-part access, and tracked-part reset all use
+the same partition/index records.
 
 ## Target Module Boundaries
 
@@ -360,12 +381,12 @@ as helper functions embedded in operation modules:
 
 | Module | Owns | Must not own |
 | --- | --- | --- |
-| `compute.py` | `MaterialCompute`, `MaterialOpDispatcher`, apply-step orchestration | operation-specific material behavior |
-| `handler.py` | `MaterialOpHandler` lifecycle and concrete handler selection | low-level ledger mutation |
-| `mutation.py` | mutation transform and mutation source dispatch | persistent contents-state storage rules |
-| `separation.py` | `sep` and `frac` operation transforms | program-specific partition strategy internals |
+| `compute.py` | `MaterialCompute`, apply-step frame setup, conservation gating, result return | operation-specific material behavior |
+| `state.py` | `MaterialStateManager`, `MaterialStateChangePlan`, material-state change planning, state-change dispatch | ledger primitives, partition strategy internals, runtime driver dispatch |
+| `container_content.py` | container/content record updates | material-state change planning |
+| `mutation.py` | mutation transform and mutation source dispatch | top-level material-state change planning |
 | `partition.py` | `SepPartitionStrategyRegistry`, `SepPartitionStrategy`, content partition classification | runtime operation lifecycle |
-| `contents_state.py` | `MaterialContentsStateManager`, container-contents organization lifecycle, indexed contents-state records, selection, narrow preservation impact, invalidation, and mixed-state impact | physical material transfer, full `MaterialUpdateResult` construction, quantity accounting, component-fate strategy, association state, accessibility state, readout projection |
+| `contents_state.py` | `MaterialIndexedPartsStateManager`, indexed part records, selection, sep/frac partition/index application, narrow preservation impact, invalidation, and mixed-state impact | top-level material-state change planning, full runtime step dispatch, broad protocol semantics |
 | `ledger.py` | volume, mass, component, and metadata mutation primitives | source-expression interpretation |
 | `diagnostics.py` | material diagnostic result construction | material state mutation |
 | `refs.py` | material reference resolution and binding | transfer policy |
@@ -387,80 +408,43 @@ classDiagram
         +apply_step(step, material_state) MaterialUpdateResult
     }
 
-    class MaterialOpDispatcher {
-        +handler_for(op) MaterialOpHandler
+    class MaterialStateManager {
+        +plan_material_state_change(step, state) MaterialStateChangePlan?
+        +apply_change(change_plan, state) MaterialUpdateResult
     }
 
-    class MaterialOpHandler {
-        +set~str~ ops
-        +handle(step, state) MaterialUpdateResult
-        #prepare(step, state) MaterialOpContext
-        #read_args(ctx) None
-        #resolve_refs(ctx) None
-        #preflight(ctx) MaterialUpdateResult?
-        #apply_transform(ctx) MaterialUpdateResult
-        #apply_state_impact(ctx, result) MaterialUpdateResult
-        #build_result(ctx, result) MaterialUpdateResult
-    }
-
-    class MaterialOpContext {
+    class MaterialStateChangePlan {
+        +str kind
         +PlanStep step
-        +dict state
-        +MaterialArgReader args
-        +MaterialRefResolver refs
-        +MaterialLedger ledger
-        +MaterialDiagnostics diagnostics
-        +MaterialContentsStateManager contents_state
+        +dict payload
     }
 
-    class ContainerContentHandler {
-        +set~str~ ops
-        #apply_transform(ctx) MaterialUpdateResult
-    }
-
-    class MutationHandler {
-        +set~str~ ops
-        #apply_transform(ctx) MaterialUpdateResult
-    }
-
-    class SeparationHandler {
-        +set~str~ ops
-        #apply_transform(ctx) MaterialUpdateResult
-    }
-
-    class OrganizationResetHandler {
-        +set~str~ ops
-        #apply_transform(ctx) MaterialUpdateResult
-    }
-
-    class NoopMaterialOpHandler {
-        #apply_transform(ctx) MaterialUpdateResult
-    }
-
-    class ContainerContentTransform {
-        +apply(ctx) MaterialUpdateResult
+    class ContainerContent {
+        +apply_alloc_container(step, state) MaterialUpdateResult
+        +apply_define_content(step, state) MaterialUpdateResult
+        +apply_load_content(step, state) MaterialUpdateResult
+        +apply_annotate_content(step, state) MaterialUpdateResult
     }
 
     class MutationTransform {
-        +apply_mutation(ctx) MaterialUpdateResult
+        +apply_mutation(step, state) MaterialUpdateResult
     }
 
     class MutationSourceDispatcher {
         +apply(ctx) MaterialUpdateResult
     }
 
-    class SeparationTransform {
-        +apply_sep(ctx) MaterialUpdateResult
-        +apply_frac(ctx) MaterialUpdateResult
-    }
-
-    class OrganizationTransform {
-        +apply_agit(ctx) MaterialUpdateResult
-    }
-
-    class MaterialContentsStateManager {
+    class MaterialIndexedPartsStateManager {
+        +apply_partition_or_index_change(plan, state) MaterialUpdateResult
+        +apply_sep(step, state) MaterialUpdateResult
+        +apply_frac(step, state) MaterialUpdateResult
+        +apply_agit(step, state) MaterialUpdateResult
+        +apply_mutation_transition(step, state) MaterialUpdateResult
+        +apply_contents_index_mutation(step, state) MaterialUpdateResult
+        +record_sep_transition(...) ContentsPartitionTransition | MaterialUpdateResult
+        +record_frac_transition(...) ContentsPartitionTransition | MaterialUpdateResult
         +record_partitioned(...) ContentsStateSummary
-        +resolve_indexed_part(...) ContentsPartSelection
+        +resolve_indexed_part(...) ContentsPartSelection | MaterialUpdateResult
         +record_source_selection_impact(...) ContentsStateImpact
         +record_target_addition_impact(...) ContentsStateImpact
         +invalidate(container, reason) None
@@ -472,6 +456,19 @@ classDiagram
         +str kind
         +str program_kind
         +list slots
+    }
+
+    class ContentsPartitionTransition {
+        +dict contents_state
+        +dict partition
+        +dict slot_ids
+        +float split_ratio
+    }
+
+    class ContentsStateTransitionPlan {
+        +str transition
+        +PlanStep step
+        +dict payload
     }
 
     class ContentsPartSelection {
@@ -546,39 +543,22 @@ classDiagram
     class FieldPartitionStrategy
 
     MaterialCompute --> MaterialUpdateResult
-    MaterialCompute --> MaterialOpDispatcher
+    MaterialCompute --> MaterialStateManager
     MaterialCompute --> MaterialConservation
-    MaterialOpDispatcher --> MaterialOpHandler
-    MaterialOpHandler --> MaterialOpContext
-    MaterialOpHandler <|-- ContainerContentHandler
-    MaterialOpHandler <|-- MutationHandler
-    MaterialOpHandler <|-- SeparationHandler
-    MaterialOpHandler <|-- OrganizationResetHandler
-    MaterialOpHandler <|-- NoopMaterialOpHandler
-
-    MaterialOpContext --> MaterialArgReader
-    MaterialOpContext --> MaterialRefResolver
-    MaterialOpContext --> MaterialLedger
-    MaterialOpContext --> MaterialDiagnostics
-    MaterialOpContext --> MaterialContentsStateManager
-
-    ContainerContentHandler --> ContainerContentTransform
-    MutationHandler --> MutationTransform
-    SeparationHandler --> SeparationTransform
-    OrganizationResetHandler --> OrganizationTransform
-
-    ContainerContentTransform --> MaterialLedger
-    ContainerContentTransform --> MaterialContentsStateManager
+    MaterialStateManager --> MaterialStateChangePlan
+    MaterialStateManager --> ContainerContent
+    MaterialStateManager --> MutationTransform
+    MaterialStateManager --> MaterialIndexedPartsStateManager
+    ContainerContent --> MaterialLedger
     MutationTransform --> MutationSourceDispatcher
     MutationTransform --> MaterialLedger
-    MutationTransform --> MaterialContentsStateManager
-    SeparationTransform --> MaterialLedger
-    SeparationTransform --> MaterialContentsStateManager
-    SeparationTransform --> SepPartitionStrategyRegistry
-    OrganizationTransform --> MaterialContentsStateManager
-    MaterialContentsStateManager --> ContentsStateSummary
-    MaterialContentsStateManager --> ContentsPartSelection
-    MaterialContentsStateManager --> ContentsStateImpact
+    MaterialIndexedPartsStateManager --> MaterialLedger
+    MaterialIndexedPartsStateManager --> SepPartitionStrategyRegistry
+    MaterialIndexedPartsStateManager --> ContentsStateTransitionPlan
+    MaterialIndexedPartsStateManager --> ContentsPartitionTransition
+    MaterialIndexedPartsStateManager --> ContentsStateSummary
+    MaterialIndexedPartsStateManager --> ContentsPartSelection
+    MaterialIndexedPartsStateManager --> ContentsStateImpact
 
     SepPartitionStrategyRegistry --> SepPartitionStrategy
     SepPartitionStrategy --> ContentClassResolver
@@ -595,20 +575,21 @@ classDiagram
 
 The material compute refactor is in a transitional state:
 
-1. `MaterialOpHandler` and `MaterialOpDispatcher` route material updates by
-   `step.op`.
-2. Current handlers are thin adapters and should grow into a common
-   `MaterialOpHandler.handle` lifecycle.
-3. Container/content, mutation, separation, and organization reset behavior
-   should be expressed as operation transforms.
-4. Material contents state is a horizontal state-management service used by
-   separation, mutation, and organization reset transforms.
-5. `SepPartitionStrategy` and its subclasses remain the second inheritance
+1. `MaterialCompute` asks `MaterialStateManager` to plan material-state changes.
+2. `MaterialCompute` calls `MaterialStateManager.apply_change(...)` only when
+   the plan says the step changes material state.
+3. `MaterialStateManager` dispatches concrete state changes to
+   `container_content.py`, `mutation.py`, or `MaterialIndexedPartsStateManager`.
+4. `MaterialIndexedPartsStateManager` is an internal collaborator for separation,
+   fractionation, indexed part access, and tracked-part reset.
+5. `MaterialOpDispatcher`, `MaterialOpHandler`, and the ordinary material
+   update branch have been removed from this target path.
+6. `SepPartitionStrategy` and its subclasses remain the second inheritance
    family, owned by partition strategy behavior.
-6. Argument reading, reference resolution, ledger mutation, diagnostics, and
+7. Argument reading, reference resolution, ledger mutation, diagnostics, and
    conservation now live behind public service modules instead of cross-module
    imports from `support.py`.
-7. `runtime/material_compute.py` remains as a compatibility facade.
+8. `runtime/material_compute.py` remains as a compatibility facade.
 
 Conformance rule: every stage should keep the existing material tests passing,
 especially the separation program tests and DNA cleanup regression.

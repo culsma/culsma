@@ -10,16 +10,10 @@ from typing import Any
 from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.material.contents_state import (
-    ContentsPartSelection,
     apply_target_addition_impact,
     invalidate_contents_state,
-    is_container_contents_index,
     moved_snapshot_from_delta,
     moved_snapshot_from_explicit,
-    record_self_transfer_disturbance,
-    record_source_selection_impact,
-    record_target_addition_impact,
-    resolve_indexed_part,
 )
 from culsma.runtime.material.args import arg_call, arg_quantity
 from culsma.runtime.material.diagnostics import diagnostic_result
@@ -27,7 +21,6 @@ from culsma.runtime.material.ledger import (
     check_capacity_guard,
     collect_unit_into_container,
     container,
-    container_component_classes,
     density_mg_per_uL,
     ensure_container,
     move_explicit,
@@ -107,38 +100,6 @@ class QuantifiedSourcePartitionHandler(MutationSourceHandler):
             diagnostics=transfer.diagnostics,
             delta={
                 "mode": "quantified_source_partition",
-                "target": ctx.target_id,
-                "qty": qty,
-                "transfer_delta": transfer.delta,
-            },
-        )
-
-
-class QuantifiedContentsStateHandler(MutationSourceHandler):
-    def handles(self, ctx: MutationSourceContext) -> bool:
-        if not is_serialized_pair(ctx.source_expr):
-            return False
-        return is_container_contents_index(ctx.source_expr.get("left"))
-
-    def apply(self, ctx: MutationSourceContext) -> MaterialUpdateResult:
-        pair = ctx.source_expr
-        qty = _quantified_source_qty(ctx)
-        if qty is None:
-            return diagnostic_result(ctx.step, ctx.state, "MAT_UNSUPPORTED_UNIT", "Mutation quantified source must carry volume or mass unit")
-        transfer = apply_contents_state_transfer(
-            step=ctx.step,
-            state=ctx.state,
-            target_id=ctx.target_id,
-            contents_ref=pair.get("left"),
-            qty=qty,
-        )
-        if not transfer.ok:
-            return transfer
-        return MaterialUpdateResult(
-            material_state=transfer.material_state,
-            diagnostics=transfer.diagnostics,
-            delta={
-                "mode": "quantified_contents_state",
                 "target": ctx.target_id,
                 "qty": qty,
                 "transfer_delta": transfer.delta,
@@ -257,31 +218,6 @@ class SourcePartitionHandler(MutationSourceHandler):
         )
 
 
-class ContentsStateSourceHandler(MutationSourceHandler):
-    def handles(self, ctx: MutationSourceContext) -> bool:
-        return is_container_contents_index(ctx.source_expr)
-
-    def apply(self, ctx: MutationSourceContext) -> MaterialUpdateResult:
-        transfer = apply_contents_state_transfer(
-            step=ctx.step,
-            state=ctx.state,
-            target_id=ctx.target_id,
-            contents_ref=ctx.source_expr,
-            qty=None,
-        )
-        if not transfer.ok:
-            return transfer
-        return MaterialUpdateResult(
-            material_state=transfer.material_state,
-            diagnostics=transfer.diagnostics,
-            delta={
-                "mode": "full_contents_state",
-                "target": ctx.target_id,
-                "transfer_delta": transfer.delta,
-            },
-        )
-
-
 class FullContainerSourceHandler(MutationSourceHandler):
     def handles(self, ctx: MutationSourceContext) -> bool:
         return True
@@ -342,11 +278,9 @@ class MutationSourceDispatcher:
         self.handlers = handlers or (
             QuantifiedUnitSourceHandler(),
             QuantifiedSourcePartitionHandler(),
-            QuantifiedContentsStateHandler(),
             QuantifiedContainerSourceHandler(),
             UnitCollectSourceHandler(),
             SourcePartitionHandler(),
-            ContentsStateSourceHandler(),
             FullContainerSourceHandler(),
         )
 
@@ -399,89 +333,6 @@ def apply_mutation(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResul
             "op": "Mutation",
             "target": target_id,
             "sources": applied_sources,
-        },
-    )
-
-
-def apply_contents_state_transfer(
-    *,
-    step: PlanStep,
-    state: dict[str, Any],
-    target_id: str,
-    contents_ref: dict[str, Any],
-    qty: dict[str, Any] | None,
-) -> MaterialUpdateResult:
-    selection = resolve_indexed_part(step=step, state=state, contents_ref=contents_ref)
-    if isinstance(selection, MaterialUpdateResult):
-        return selection
-
-    source = container(state, selection.source_id)
-    target = container(state, target_id)
-    if source is None or target is None:
-        return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "container.contents transfer references unknown container")
-
-    if selection.source_id == target_id:
-        record_self_transfer_disturbance(state=state, selection=selection)
-        return MaterialUpdateResult(
-            material_state=state,
-            diagnostics=[],
-            delta={
-                "op": "contents_state_transfer",
-                "mode": "contents_state_self_disturbance",
-                "source": selection.source_id,
-                "selected_slot": selection.slot,
-                "dest": target_id,
-                "moved_uL": 0.0,
-                "moved_mg": 0.0,
-            },
-        )
-
-    amount = _contents_transfer_amount(step=step, state=state, selection=selection, qty=qty)
-    if isinstance(amount, MaterialUpdateResult):
-        return amount
-    moved_uL, moved_mg, ratio, mode = amount
-
-    cap_diag = check_capacity_guard(step=step, state=state, container_id=target_id, added_uL=moved_uL)
-    if cap_diag is not None:
-        return cap_diag
-
-    part_before = deepcopy(selection.part)
-    _move_contents_part_material(
-        part=selection.part,
-        source=source,
-        target=target,
-        moved_uL=moved_uL,
-        moved_mg=moved_mg,
-        ratio=ratio,
-    )
-    moved_snapshot = moved_snapshot_from_explicit(
-        part_before,
-        moved_uL=moved_uL,
-        moved_mg=moved_mg,
-        ratio=ratio,
-    )
-    target_impact = record_target_addition_impact(
-        step=step,
-        state=state,
-        target_id=target_id,
-        moved_snapshot=moved_snapshot,
-    )
-
-    return MaterialUpdateResult(
-        material_state=state,
-        diagnostics=[],
-        delta={
-            "op": "contents_state_transfer",
-            "mode": mode,
-            "source": selection.source_id,
-            "selected_slot": selection.slot,
-            "dest": target_id,
-            "moved_uL": moved_uL,
-            "moved_mg": moved_mg,
-            "contents_state_impact": {
-                "source": record_source_selection_impact(state=state, selection=selection),
-                "target": target_impact,
-            },
         },
     )
 
@@ -823,93 +674,3 @@ def _apply_transfer_mass(
             "density_mg_per_uL": density,
         },
     )
-
-
-def _contents_transfer_amount(
-    *,
-    step: PlanStep,
-    state: dict[str, Any],
-    selection: ContentsPartSelection,
-    qty: dict[str, Any] | None,
-) -> tuple[float, float, float, str] | MaterialUpdateResult:
-    part = selection.part
-    if qty is None:
-        return (
-            float(part.get("volume_uL", 0.0)),
-            float(part.get("mass_mg", 0.0)),
-            1.0,
-            "contents_state_full",
-        )
-
-    unit = str(qty["unit"])
-    value = float(qty["value"])
-    if value < 0:
-        return diagnostic_result(step, state, "MAT_UNSUPPORTED_UNIT", "Negative transfer amount is not allowed")
-    part_volume = float(part.get("volume_uL", 0.0))
-    part_mass = float(part.get("mass_mg", 0.0))
-    if unit in VOLUME_TO_UL:
-        moved_uL = value * VOLUME_TO_UL[unit]
-        if part_volume < moved_uL:
-            return diagnostic_result(step, state, "MAT_INSUFFICIENT_VOLUME", f"Insufficient contents-state volume in '{selection.source_id}'")
-        ratio = 0.0 if part_volume == 0 else moved_uL / part_volume
-        moved_mg = part_mass * ratio
-        return moved_uL, moved_mg, ratio, "contents_state_volume"
-    if unit in MASS_TO_MG:
-        moved_mg = value * MASS_TO_MG[unit]
-        if part_mass < moved_mg:
-            return diagnostic_result(step, state, "MAT_INSUFFICIENT_MASS", f"Insufficient contents-state mass in '{selection.source_id}'")
-        ratio = 0.0 if part_mass == 0 else moved_mg / part_mass
-        moved_uL = part_volume * ratio
-        return moved_uL, moved_mg, ratio, "contents_state_mass"
-    return diagnostic_result(step, state, "MAT_UNSUPPORTED_UNIT", f"Unsupported transfer unit '{unit}'")
-
-
-def _move_contents_part_material(
-    *,
-    part: dict[str, Any],
-    source: dict[str, Any],
-    target: dict[str, Any],
-    moved_uL: float,
-    moved_mg: float,
-    ratio: float,
-) -> None:
-    part["volume_uL"] = _clamp_near_zero(float(part.get("volume_uL", 0.0)) - moved_uL)
-    part["mass_mg"] = _clamp_near_zero(float(part.get("mass_mg", 0.0)) - moved_mg)
-    source["volume_uL"] = _clamp_near_zero(float(source.get("volume_uL", 0.0)) - moved_uL)
-    source["mass_mg"] = _clamp_near_zero(float(source.get("mass_mg", 0.0)) - moved_mg)
-    target["volume_uL"] = float(target.get("volume_uL", 0.0)) + moved_uL
-    target["mass_mg"] = float(target.get("mass_mg", 0.0)) + moved_mg
-
-    part_components = part.setdefault("components", {})
-    source_components = source.setdefault("components", {})
-    target_components = target.setdefault("components", {})
-    if not isinstance(part_components, dict):
-        part["components"] = {}
-        return
-    if not isinstance(source_components, dict):
-        source["components"] = {}
-        source_components = source["components"]
-    if not isinstance(target_components, dict):
-        target["components"] = {}
-        target_components = target["components"]
-
-    part_classes = container_component_classes(part)
-    target_classes = container_component_classes(target, create=True)
-    source_classes = container_component_classes(source)
-    for name, amount in list(part_components.items()):
-        moved = float(amount) * ratio
-        part_components[name] = _clamp_near_zero(float(amount) - moved)
-        source_components[name] = _clamp_near_zero(float(source_components.get(name, 0.0)) - moved)
-        target_components[name] = float(target_components.get(name, 0.0)) + moved
-        if moved > 1e-12:
-            part_class = part_classes.get(name) if isinstance(part_classes, dict) else None
-            if isinstance(part_class, str) and isinstance(target_classes, dict):
-                target_classes[name] = part_class
-        if part_components.get(name) == 0.0 and isinstance(part_classes, dict):
-            part_classes.pop(name, None)
-        if source_components.get(name) == 0.0 and isinstance(source_classes, dict):
-            source_classes.pop(name, None)
-
-
-def _clamp_near_zero(value: float) -> float:
-    return 0.0 if abs(value) <= 1e-12 else value

@@ -3,14 +3,32 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
+from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.plan_nodes import PlanStep
+from culsma.runtime.material.args import arg_call, arg_quantity, arg_string, call_arg_int, call_arg_string
 from culsma.runtime.material.diagnostics import diagnostic_result
-from culsma.runtime.material.ledger import move_explicit
-from culsma.runtime.material.refs import ref_display, resolve_structured_ref
+from culsma.runtime.material.ledger import (
+    check_capacity_guard,
+    container,
+    container_component_classes,
+    ensure_container,
+    move_explicit,
+)
+from culsma.runtime.material.partition import normalize_source_partition_slot_bulk, partition_sep_material
+from culsma.runtime.material.refs import (
+    bind_indexed_group,
+    inventory_check_enabled,
+    is_serialized_pair,
+    ref_display,
+    resolve_or_create_container_ref,
+    resolve_structured_ref,
+    resolve_target_ref,
+)
 from culsma.runtime.material.result import MaterialUpdateResult
+from culsma.runtime.material.units import MASS_TO_MG, VOLUME_TO_UL
 
 
 @dataclass(frozen=True)
@@ -34,6 +52,21 @@ class ContentsStateSummary:
     kind: str
     program_kind: str
     slots: list[str]
+
+
+@dataclass(frozen=True)
+class ContentsPartitionTransition:
+    contents_state: dict[str, Any]
+    partition: dict[str, Any]
+    slot_ids: dict[str, str]
+    split_ratio: float | None = None
+
+
+@dataclass(frozen=True)
+class ContentsStateTransitionPlan:
+    transition: str
+    step: PlanStep
+    payload: dict[str, Any] = field(default_factory=dict)
 
 
 def is_container_contents_index(value: Any) -> bool:
@@ -148,7 +181,510 @@ def mark_contents_state_mixed(state: dict[str, Any], container_id: str, *, step_
     return {"action": "mixed", "reason": "explicit_mixing", "previous_kind": previous_kind}
 
 
-class MaterialContentsStateManager:
+class MaterialIndexedPartsStateManager:
+    def apply_partition_or_index_change(
+        self,
+        transition_plan: ContentsStateTransitionPlan,
+        state: dict[str, Any],
+    ) -> MaterialUpdateResult:
+        step = transition_plan.step
+        if transition_plan.transition == "sep":
+            return self.apply_sep(step, state)
+        if transition_plan.transition == "frac":
+            return self.apply_frac(step, state)
+        if transition_plan.transition == "agit":
+            return self.apply_agit(step, state)
+        if transition_plan.transition == "select":
+            return self.apply_mutation_transition(step, state)
+        if transition_plan.transition == "add":
+            return self.apply_mutation_transition(step, state)
+        return diagnostic_result(
+            step,
+            state,
+            "MAT_UNSUPPORTED_CONTENTS_STATE_TRANSITION",
+            f"Unsupported contents-state transition '{transition_plan.transition}'",
+        )
+
+    def apply_sep(self, step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
+        sample_arg = step.args.get("sample")
+        bind_name = arg_string(step.args.get("bind"))
+        program = arg_call(step.args.get("program"))
+        if program is None:
+            return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "sep requires sample/program")
+
+        source_id = resolve_structured_ref(state, sample_arg, create_if_identifier=not inventory_check_enabled(state))
+        if source_id is None:
+            if inventory_check_enabled(state):
+                return diagnostic_result(
+                    step,
+                    state,
+                    "MAT_BINDING_NOT_FOUND",
+                    f"Unknown sep sample '{ref_display(sample_arg)}'",
+                )
+            sample_name = arg_string(sample_arg)
+            if sample_name is None:
+                return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "sep requires sample/program")
+            source_id = resolve_or_create_container_ref(state, sample_name)
+        source = container(state, source_id)
+        if source is None:
+            return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", f"Unknown sep sample '{ref_display(sample_arg)}'")
+
+        working = deepcopy(state)
+        program_kind = str(program.get("name")) if isinstance(program.get("name"), str) else "sep_program"
+        keep_source = call_arg_string(program, "keep_source")
+
+        if bind_name is None:
+            transition = self.record_sep_transition(
+                step=step,
+                state=working,
+                source_id=source_id,
+                program_kind=program_kind,
+                keep_source=keep_source,
+            )
+            if isinstance(transition, MaterialUpdateResult):
+                return transition
+            diagnostics = _partition_fallback_diagnostics(step, transition.partition)
+            return MaterialUpdateResult(
+                material_state=working,
+                diagnostics=diagnostics,
+                delta={
+                    "op": "sep",
+                    "mode": "contents_state",
+                    "program_kind": program_kind,
+                    "source": source_id,
+                    "keep_source": keep_source,
+                    "contents_state": transition.contents_state,
+                    "partition": transition.partition,
+                },
+            )
+
+        source = container(working, source_id)
+        if source is None:
+            return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", f"Unknown sep sample '{ref_display(sample_arg)}'")
+        slot0_id = f"{step.step_id}::0"
+        slot1_id = f"{step.step_id}::1"
+        if program_kind == "centrifuge_program" and keep_source == "supernatant":
+            slot0_id = source_id
+        elif program_kind == "centrifuge_program" and keep_source == "pellet":
+            slot1_id = source_id
+        if slot0_id == source_id and slot1_id == source_id:
+            return diagnostic_result(
+                step,
+                state,
+                "MAT_STATE_INVARIANT_VIOLATION",
+                "sep cannot alias both slots to the source container",
+            )
+        slot0 = ensure_container(working, slot0_id)
+        slot1 = ensure_container(working, slot1_id)
+        partition = partition_sep_material(
+            state=working,
+            source=source,
+            slot0=slot0,
+            slot1=slot1,
+            program_kind=program_kind,
+        )
+        diagnostics = _partition_fallback_diagnostics(step, partition)
+        binding_events = bind_indexed_group(
+            working,
+            bind_name,
+            {"0": slot0_id, "1": slot1_id},
+            step.step_id,
+        )
+        return MaterialUpdateResult(
+            material_state=working,
+            diagnostics=diagnostics,
+            delta={
+                "op": "sep",
+                "program_kind": program_kind,
+                "bind": bind_name,
+                "slots": {"0": slot0_id, "1": slot1_id},
+                "keep_source": keep_source,
+                "partition": partition,
+                "binding_events": binding_events,
+            },
+        )
+
+    def apply_frac(self, step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
+        sample_arg = step.args.get("sample")
+        bind_name = arg_string(step.args.get("bind"))
+        program = arg_call(step.args.get("program"))
+        if program is None:
+            return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "frac requires sample/program")
+
+        bins = call_arg_int(program, "bins")
+        if bins is None or bins <= 0:
+            return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "frac requires positive bins")
+
+        source_id = resolve_structured_ref(state, sample_arg, create_if_identifier=not inventory_check_enabled(state))
+        if source_id is None:
+            if inventory_check_enabled(state):
+                return diagnostic_result(
+                    step,
+                    state,
+                    "MAT_BINDING_NOT_FOUND",
+                    f"Unknown frac sample '{ref_display(sample_arg)}'",
+                )
+            sample_name = arg_string(sample_arg)
+            if sample_name is None:
+                return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "frac requires sample/program")
+            source_id = resolve_or_create_container_ref(state, sample_name)
+        source = container(state, source_id)
+        if source is None:
+            return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", f"Unknown frac sample '{ref_display(sample_arg)}'")
+
+        working = deepcopy(state)
+        source = container(working, source_id)
+        if source is None:
+            return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", f"Unknown frac sample '{ref_display(sample_arg)}'")
+
+        program_kind = str(program.get("name")) if isinstance(program.get("name"), str) else "frac_program"
+        if bind_name is None:
+            transition = self.record_frac_transition(
+                step=step,
+                state=working,
+                source_id=source_id,
+                bins=bins,
+                program_kind=program_kind,
+            )
+            if isinstance(transition, MaterialUpdateResult):
+                return transition
+            return MaterialUpdateResult(
+                material_state=working,
+                diagnostics=[],
+                delta={
+                    "op": "frac",
+                    "mode": "contents_state",
+                    "source": source_id,
+                    "bins": bins,
+                    "split_ratio": transition.split_ratio,
+                    "contents_state": transition.contents_state,
+                },
+            )
+
+        source_volume = float(source.get("volume_uL", 0.0))
+        source_mass = float(source.get("mass_mg", 0.0))
+        split_ratio = 1.0 / bins
+        slot_bindings: dict[str, str] = {}
+        for i in range(bins - 1):
+            slot_id = f"{step.step_id}::{i}"
+            slot = ensure_container(working, slot_id)
+            moved_volume = source_volume * split_ratio
+            moved_mass = source_mass * split_ratio
+            current_volume = float(source.get("volume_uL", 0.0))
+            current_mass = float(source.get("mass_mg", 0.0))
+            component_ratio = (
+                moved_volume / current_volume
+                if current_volume > 0
+                else (moved_mass / current_mass if current_mass > 0 else 0.0)
+            )
+            move_explicit(source, slot, moved_volume, moved_mass, component_ratio=component_ratio)
+            slot_bindings[str(i)] = slot_id
+
+        last_slot_id = f"{step.step_id}::{bins - 1}"
+        last_slot = ensure_container(working, last_slot_id)
+        residual_volume = float(source.get("volume_uL", 0.0))
+        residual_mass = float(source.get("mass_mg", 0.0))
+        move_explicit(source, last_slot, residual_volume, residual_mass, component_ratio=1.0)
+        slot_bindings[str(bins - 1)] = last_slot_id
+
+        binding_events = bind_indexed_group(working, bind_name, slot_bindings, step.step_id)
+        return MaterialUpdateResult(
+            material_state=working,
+            diagnostics=[],
+            delta={
+                "op": "frac",
+                "bind": bind_name,
+                "bins": bins,
+                "slots": dict(slot_bindings),
+                "split_ratio": split_ratio,
+                "binding_events": binding_events,
+            },
+        )
+
+    def apply_agit(self, step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
+        sample_arg = step.args.get("sample")
+        sample_id = resolve_structured_ref(state, sample_arg, create_if_identifier=False)
+        if sample_id is None:
+            return diagnostic_result(
+                step,
+                state,
+                "MAT_BINDING_NOT_FOUND",
+                f"Unknown agit sample '{ref_display(sample_arg)}'",
+            )
+        impact = mark_contents_state_mixed(state, sample_id, step_id=step.step_id)
+        return MaterialUpdateResult(
+            material_state=state,
+            diagnostics=[],
+            delta={"op": "agit", "sample": sample_id, "contents_state_impact": impact},
+        )
+
+    def apply_mutation_transition(self, step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
+        target_expr = step.args.get("target")
+        source_exprs = step.args.get("sources")
+        if not isinstance(source_exprs, list):
+            return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "Mutation requires source list")
+        target_id = resolve_target_ref(state, target_expr)
+        if target_id is None:
+            return diagnostic_result(
+                step,
+                state,
+                "MAT_BINDING_NOT_FOUND",
+                f"Unknown mutation target '{ref_display(target_expr)}'",
+            )
+
+        from culsma.runtime.material.mutation import MutationSourceContext, MutationSourceDispatcher
+
+        working = deepcopy(state)
+        applied_sources: list[dict[str, Any]] = []
+        diagnostics: list[Diagnostic] = []
+        dispatcher = MutationSourceDispatcher()
+        for source_ordinal, source_expr in enumerate(source_exprs):
+            contents_ref = _contents_ref_from_mutation_source(source_expr)
+            if contents_ref is None:
+                result = dispatcher.apply(
+                    MutationSourceContext(
+                        step=step,
+                        state=working,
+                        target_id=target_id,
+                        source_expr=source_expr,
+                        source_ordinal=source_ordinal,
+                    )
+                )
+            else:
+                result = self.apply_contents_state_transfer(
+                    step=step,
+                    state=working,
+                    target_id=target_id,
+                    contents_ref=contents_ref,
+                    qty=_contents_qty_from_mutation_source(source_expr),
+                )
+            if not result.ok:
+                return result
+            working = result.material_state
+            diagnostics.extend(result.diagnostics)
+            applied_sources.append(result.delta)
+
+        return MaterialUpdateResult(
+            material_state=working,
+            diagnostics=diagnostics,
+            delta={
+                "op": "Mutation",
+                "target": target_id,
+                "sources": applied_sources,
+            },
+        )
+
+    def apply_contents_index_mutation(self, step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
+        return self.apply_mutation_transition(step, state)
+
+    def apply_contents_state_transfer(
+        self,
+        *,
+        step: PlanStep,
+        state: dict[str, Any],
+        target_id: str,
+        contents_ref: dict[str, Any],
+        qty: dict[str, Any] | None,
+    ) -> MaterialUpdateResult:
+        selection = self.resolve_indexed_part(step=step, state=state, contents_ref=contents_ref)
+        if isinstance(selection, MaterialUpdateResult):
+            return selection
+
+        source = container(state, selection.source_id)
+        target = container(state, target_id)
+        if source is None or target is None:
+            return diagnostic_result(
+                step,
+                state,
+                "MAT_BINDING_NOT_FOUND",
+                "container.contents transfer references unknown container",
+            )
+
+        if selection.source_id == target_id:
+            self.record_self_transfer_disturbance(state=state, selection=selection)
+            return MaterialUpdateResult(
+                material_state=state,
+                diagnostics=[],
+                delta={
+                    "op": "contents_state_transfer",
+                    "mode": "contents_state_self_disturbance",
+                    "source": selection.source_id,
+                    "selected_slot": selection.slot,
+                    "dest": target_id,
+                    "moved_uL": 0.0,
+                    "moved_mg": 0.0,
+                },
+            )
+
+        amount = _contents_transfer_amount(step=step, state=state, selection=selection, qty=qty)
+        if isinstance(amount, MaterialUpdateResult):
+            return amount
+        moved_uL, moved_mg, ratio, mode = amount
+
+        cap_diag = check_capacity_guard(step=step, state=state, container_id=target_id, added_uL=moved_uL)
+        if cap_diag is not None:
+            return cap_diag
+
+        part_before = deepcopy(selection.part)
+        _move_contents_part_material(
+            part=selection.part,
+            source=source,
+            target=target,
+            moved_uL=moved_uL,
+            moved_mg=moved_mg,
+            ratio=ratio,
+        )
+        moved_snapshot = moved_snapshot_from_explicit(
+            part_before,
+            moved_uL=moved_uL,
+            moved_mg=moved_mg,
+            ratio=ratio,
+        )
+        target_impact = self.record_target_addition_impact(
+            step=step,
+            state=state,
+            target_id=target_id,
+            moved_snapshot=moved_snapshot,
+        )
+
+        return MaterialUpdateResult(
+            material_state=state,
+            diagnostics=[],
+            delta={
+                "op": "contents_state_transfer",
+                "mode": mode,
+                "source": selection.source_id,
+                "selected_slot": selection.slot,
+                "dest": target_id,
+                "moved_uL": moved_uL,
+                "moved_mg": moved_mg,
+                "contents_state_impact": {
+                    "source": self.record_source_selection_impact(state=state, selection=selection),
+                    "target": target_impact,
+                },
+            },
+        )
+
+    def record_sep_transition(
+        self,
+        *,
+        step: PlanStep,
+        state: dict[str, Any],
+        source_id: str,
+        program_kind: str,
+        keep_source: str | None,
+    ) -> ContentsPartitionTransition | MaterialUpdateResult:
+        source = container(state, source_id)
+        if source is None:
+            return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", f"Unknown sep sample '{source_id}'")
+
+        slot0_id = f"{step.step_id}::0"
+        slot1_id = f"{step.step_id}::1"
+        if program_kind == "centrifuge_program" and keep_source == "supernatant":
+            slot0_id = source_id
+        elif program_kind == "centrifuge_program" and keep_source == "pellet":
+            slot1_id = source_id
+
+        if slot0_id == source_id and slot1_id == source_id:
+            return diagnostic_result(
+                step,
+                state,
+                "MAT_STATE_INVARIANT_VIOLATION",
+                "sep cannot alias both slots to the source container",
+            )
+
+        slot0 = ensure_container(state, slot0_id)
+        slot1 = ensure_container(state, slot1_id)
+        partition = partition_sep_material(
+            state=state,
+            source=source,
+            slot0=slot0,
+            slot1=slot1,
+            program_kind=program_kind,
+        )
+        normalize_source_partition_slot_bulk(slot0)
+        normalize_source_partition_slot_bulk(slot1)
+        contents_state = record_partitioned_contents_state(
+            state=state,
+            source_id=source_id,
+            source=source,
+            parts={"0": slot0, "1": slot1},
+            kind="partitioned",
+            producer_op="sep",
+            program_kind=program_kind,
+            slot_contract=partition.get("slot_contract"),
+            preservation_contract=partition.get("preservation_contract"),
+            step_id=step.step_id,
+        )
+        remove_transient_containers(state, [slot0_id, slot1_id], preserve=source_id)
+        return ContentsPartitionTransition(
+            contents_state=contents_state,
+            partition=partition,
+            slot_ids={"0": slot0_id, "1": slot1_id},
+        )
+
+    def record_frac_transition(
+        self,
+        *,
+        step: PlanStep,
+        state: dict[str, Any],
+        source_id: str,
+        bins: int,
+        program_kind: str,
+    ) -> ContentsPartitionTransition | MaterialUpdateResult:
+        source = container(state, source_id)
+        if source is None:
+            return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", f"Unknown frac sample '{source_id}'")
+
+        source_volume = float(source.get("volume_uL", 0.0))
+        source_mass = float(source.get("mass_mg", 0.0))
+        split_ratio = 1.0 / bins
+        slot_bindings: dict[str, str] = {}
+
+        for i in range(bins - 1):
+            slot_id = f"{step.step_id}::{i}"
+            slot = ensure_container(state, slot_id)
+            moved_volume = source_volume * split_ratio
+            moved_mass = source_mass * split_ratio
+            current_volume = float(source.get("volume_uL", 0.0))
+            current_mass = float(source.get("mass_mg", 0.0))
+            component_ratio = (
+                moved_volume / current_volume
+                if current_volume > 0
+                else (moved_mass / current_mass if current_mass > 0 else 0.0)
+            )
+            move_explicit(source, slot, moved_volume, moved_mass, component_ratio=component_ratio)
+            slot_bindings[str(i)] = slot_id
+
+        last_slot_id = f"{step.step_id}::{bins - 1}"
+        last_slot = ensure_container(state, last_slot_id)
+        residual_volume = float(source.get("volume_uL", 0.0))
+        residual_mass = float(source.get("mass_mg", 0.0))
+        move_explicit(source, last_slot, residual_volume, residual_mass, component_ratio=1.0)
+        slot_bindings[str(bins - 1)] = last_slot_id
+
+        parts = {slot: container(state, slot_id) for slot, slot_id in slot_bindings.items()}
+        concrete_parts = {slot: part for slot, part in parts.items() if isinstance(part, dict)}
+        contents_state = record_partitioned_contents_state(
+            state=state,
+            source_id=source_id,
+            source=source,
+            parts=concrete_parts,
+            kind="fractionated",
+            producer_op="frac",
+            program_kind=program_kind,
+            slot_contract={slot: f"fraction_{slot}" for slot in slot_bindings},
+            preservation_contract=None,
+            step_id=step.step_id,
+        )
+        remove_transient_containers(state, list(slot_bindings.values()), preserve=source_id)
+        return ContentsPartitionTransition(
+            contents_state=contents_state,
+            partition={},
+            slot_ids=dict(slot_bindings),
+            split_ratio=split_ratio,
+        )
+
     def resolve_indexed_part(
         self,
         *,
@@ -185,6 +721,15 @@ class MaterialContentsStateManager:
                 state,
                 "MAT_CONTENTS_STATE_INDEX_OUT_OF_RANGE",
                 f"Container '{source_id}' contents state has no slot {slot_key}",
+            )
+        contract = record.get("preservation_contract")
+        if isinstance(contract, dict) and not _preservation_contract_satisfied(step=step, contract=contract):
+            invalidate_contents_state(state, source_id, reason="preservation_contract_not_satisfied")
+            return diagnostic_result(
+                step,
+                state,
+                "MAT_CONTENTS_STATE_PRESERVATION_NOT_SATISFIED",
+                f"Container '{source_id}' contents state requires its preservation condition before reading slot {slot_key}",
             )
         return ContentsPartSelection(
             source_id=source_id,
@@ -255,7 +800,7 @@ def resolve_indexed_part(
     state: dict[str, Any],
     contents_ref: dict[str, Any],
 ) -> ContentsPartSelection | MaterialUpdateResult:
-    return MaterialContentsStateManager().resolve_indexed_part(
+    return MaterialIndexedPartsStateManager().resolve_indexed_part(
         step=step,
         state=state,
         contents_ref=contents_ref,
@@ -263,11 +808,11 @@ def resolve_indexed_part(
 
 
 def record_source_selection_impact(*, state: dict[str, Any], selection: ContentsPartSelection) -> dict[str, Any]:
-    return MaterialContentsStateManager().record_source_selection_impact(state=state, selection=selection)
+    return MaterialIndexedPartsStateManager().record_source_selection_impact(state=state, selection=selection)
 
 
 def record_self_transfer_disturbance(*, state: dict[str, Any], selection: ContentsPartSelection) -> dict[str, Any]:
-    return MaterialContentsStateManager().record_self_transfer_disturbance(state=state, selection=selection)
+    return MaterialIndexedPartsStateManager().record_self_transfer_disturbance(state=state, selection=selection)
 
 
 def record_target_addition_impact(
@@ -277,7 +822,7 @@ def record_target_addition_impact(
     target_id: str,
     moved_snapshot: dict[str, Any] | None,
 ) -> dict[str, Any]:
-    return MaterialContentsStateManager().record_target_addition_impact(
+    return MaterialIndexedPartsStateManager().record_target_addition_impact(
         step=step,
         state=state,
         target_id=target_id,
@@ -336,6 +881,48 @@ def remove_transient_containers(state: dict[str, Any], container_ids: list[str],
     for container_id in container_ids:
         if container_id != preserve:
             containers.pop(container_id, None)
+
+
+def _contents_ref_from_mutation_source(source_expr: Any) -> dict[str, Any] | None:
+    candidate = source_expr.get("left") if is_serialized_pair(source_expr) else source_expr
+    return candidate if is_container_contents_index(candidate) else None
+
+
+def _contents_qty_from_mutation_source(source_expr: Any) -> dict[str, Any] | None:
+    if not is_serialized_pair(source_expr):
+        return None
+    return arg_quantity(source_expr.get("right"))
+
+
+def _mutation_touches_active_contents_state(
+    *,
+    step: PlanStep,
+    state: dict[str, Any],
+    source_exprs: list[Any],
+) -> bool:
+    contents_states = state.get("contents_states")
+    if not isinstance(contents_states, dict):
+        return False
+    target_id = resolve_target_ref(state, step.args.get("target"))
+    if target_id is not None and _has_active_contents_state(contents_states, target_id):
+        return True
+    for source_expr in source_exprs:
+        source_id = _mutation_source_container_id(state, source_expr)
+        if source_id is not None and _has_active_contents_state(contents_states, source_id):
+            return True
+    return False
+
+
+def _has_active_contents_state(contents_states: dict[str, Any], container_id: str) -> bool:
+    record = contents_states.get(container_id)
+    return isinstance(record, dict) and record.get("valid") is not False
+
+
+def _mutation_source_container_id(state: dict[str, Any], source_expr: Any) -> str | None:
+    candidate = source_expr.get("left") if is_serialized_pair(source_expr) else source_expr
+    if isinstance(candidate, dict) and candidate.get("kind") == "IRSourcePartitionRef":
+        return resolve_structured_ref(state, candidate.get("source"), create_if_identifier=False)
+    return resolve_structured_ref(state, candidate, create_if_identifier=False)
 
 
 def _contents_index_source_expr(value: dict[str, Any]) -> Any:
@@ -434,6 +1021,133 @@ def _env_payload_has_value(env: Any, key: str, expected: str) -> bool:
     if isinstance(value, dict):
         return value.get("name") == expected or value.get("value") == expected
     return value == expected
+
+
+def _contents_transfer_amount(
+    *,
+    step: PlanStep,
+    state: dict[str, Any],
+    selection: ContentsPartSelection,
+    qty: dict[str, Any] | None,
+) -> tuple[float, float, float, str] | MaterialUpdateResult:
+    part = selection.part
+    if qty is None:
+        return (
+            float(part.get("volume_uL", 0.0)),
+            float(part.get("mass_mg", 0.0)),
+            1.0,
+            "contents_state_full",
+        )
+
+    unit = str(qty["unit"])
+    value = float(qty["value"])
+    if value < 0:
+        return diagnostic_result(step, state, "MAT_UNSUPPORTED_UNIT", "Negative transfer amount is not allowed")
+    part_volume = float(part.get("volume_uL", 0.0))
+    part_mass = float(part.get("mass_mg", 0.0))
+    if unit in VOLUME_TO_UL:
+        moved_uL = value * VOLUME_TO_UL[unit]
+        if part_volume < moved_uL:
+            return diagnostic_result(
+                step,
+                state,
+                "MAT_INSUFFICIENT_VOLUME",
+                f"Insufficient contents-state volume in '{selection.source_id}'",
+            )
+        ratio = 0.0 if part_volume == 0 else moved_uL / part_volume
+        moved_mg = part_mass * ratio
+        return moved_uL, moved_mg, ratio, "contents_state_volume"
+    if unit in MASS_TO_MG:
+        moved_mg = value * MASS_TO_MG[unit]
+        if part_mass < moved_mg:
+            return diagnostic_result(
+                step,
+                state,
+                "MAT_INSUFFICIENT_MASS",
+                f"Insufficient contents-state mass in '{selection.source_id}'",
+            )
+        ratio = 0.0 if part_mass == 0 else moved_mg / part_mass
+        moved_uL = part_volume * ratio
+        return moved_uL, moved_mg, ratio, "contents_state_mass"
+    return diagnostic_result(step, state, "MAT_UNSUPPORTED_UNIT", f"Unsupported transfer unit '{unit}'")
+
+
+def _move_contents_part_material(
+    *,
+    part: dict[str, Any],
+    source: dict[str, Any],
+    target: dict[str, Any],
+    moved_uL: float,
+    moved_mg: float,
+    ratio: float,
+) -> None:
+    part["volume_uL"] = _clamp_near_zero(float(part.get("volume_uL", 0.0)) - moved_uL)
+    part["mass_mg"] = _clamp_near_zero(float(part.get("mass_mg", 0.0)) - moved_mg)
+    source["volume_uL"] = _clamp_near_zero(float(source.get("volume_uL", 0.0)) - moved_uL)
+    source["mass_mg"] = _clamp_near_zero(float(source.get("mass_mg", 0.0)) - moved_mg)
+    target["volume_uL"] = float(target.get("volume_uL", 0.0)) + moved_uL
+    target["mass_mg"] = float(target.get("mass_mg", 0.0)) + moved_mg
+
+    part_components = part.setdefault("components", {})
+    source_components = source.setdefault("components", {})
+    target_components = target.setdefault("components", {})
+    if not isinstance(part_components, dict):
+        part["components"] = {}
+        return
+    if not isinstance(source_components, dict):
+        source["components"] = {}
+        source_components = source["components"]
+    if not isinstance(target_components, dict):
+        target["components"] = {}
+        target_components = target["components"]
+
+    part_classes = container_component_classes(part)
+    target_classes = container_component_classes(target, create=True)
+    source_classes = container_component_classes(source)
+    for name, amount in list(part_components.items()):
+        moved = float(amount) * ratio
+        part_components[name] = _clamp_near_zero(float(amount) - moved)
+        source_components[name] = _clamp_near_zero(float(source_components.get(name, 0.0)) - moved)
+        target_components[name] = float(target_components.get(name, 0.0)) + moved
+        if moved > 1e-12:
+            part_class = part_classes.get(name) if isinstance(part_classes, dict) else None
+            if isinstance(part_class, str) and isinstance(target_classes, dict):
+                target_classes[name] = part_class
+        if part_components.get(name) == 0.0 and isinstance(part_classes, dict):
+            part_classes.pop(name, None)
+        if source_components.get(name) == 0.0 and isinstance(source_classes, dict):
+            source_classes.pop(name, None)
+
+
+def _clamp_near_zero(value: float) -> float:
+    return 0.0 if abs(value) <= 1e-12 else value
+
+
+def _partition_fallback_diagnostics(step: PlanStep, partition: dict[str, Any]) -> list[Diagnostic]:
+    fallback_components = partition.get("fallback_components")
+    if not isinstance(fallback_components, list):
+        return []
+    diagnostics: list[Diagnostic] = []
+    for entry in fallback_components:
+        if not isinstance(entry, dict):
+            continue
+        component = str(entry.get("component", "") or "<unknown>")
+        partition_class = str(entry.get("partition_class", "") or "unknown")
+        reason = str(entry.get("reason", "") or "fallback")
+        diagnostics.append(
+            Diagnostic(
+                code="MAT_CONTENT_PARTITION_FALLBACK",
+                message=(
+                    f"Component '{component}' used conservative 0.50/0.50 partition "
+                    f"for class '{partition_class}' ({reason}); provide explicit "
+                    "component_partition_ratios if this behavior is intended"
+                ),
+                span=step.span,
+                severity="warning",
+                node_id=step.step_id,
+            )
+        )
+    return diagnostics
 
 
 def _best_effort_component_ratio(source: dict[str, Any], *, moved_uL: float, moved_mg: float) -> float:

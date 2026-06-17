@@ -929,6 +929,30 @@ protocol T {
     assert round(float(waste_components["WASH"]), 6) == 178.2
 
 
+def test_runtime_magnetic_contents_index_requires_preservation_context():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let bead_tube = tube(label = "BeadTube", capacity = 500uL, load = [
+    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    buffer(code = "WASH", type = "buffer"):180uL
+  ]);
+  let waste = tube(label = "Waste", capacity = 500uL);
+
+  with env(field = magnetic_rack) {
+    sep(sample = bead_tube, program = magnetic_program(duration = 5min));
+  }
+  waste << [bead_tube.contents[1]];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert not result.ok
+    assert any(d.code == "MAT_CONTENTS_STATE_PRESERVATION_NOT_SATISFIED" for d in result.diagnostics)
+
+
 def test_runtime_standalone_frac_contents_index_transfers_fraction():
     plan = _build_plan_from_source(
         """
@@ -1098,8 +1122,8 @@ protocol T {
   with env(field = magnetic_rack) {
     hold(sample = shielded);
     bead_tube << [ethanol:200uL];
+    waste << [bead_tube.contents[1]];
   }
-  waste << [bead_tube.contents[1]];
 }
 """
     )
@@ -1181,8 +1205,10 @@ protocol T {
     buffer(code = "WASH", type = "buffer"):180uL
   ]);
 
-  sep(sample = bead_tube, program = magnetic_program(duration = 5min));
-  bead_tube << [bead_tube.contents[1]];
+  with env(field = magnetic_rack) {
+    sep(sample = bead_tube, program = magnetic_program(duration = 5min));
+    bead_tube << [bead_tube.contents[1]];
+  }
 }
 """
     )
@@ -1209,8 +1235,10 @@ protocol T {
   ]);
   let waste = tube(label = "Waste", capacity = 500uL);
 
-  sep(sample = bead_tube, program = magnetic_program(duration = 5min));
-  bead_tube << [bead_tube.contents[1]];
+  with env(field = magnetic_rack) {
+    sep(sample = bead_tube, program = magnetic_program(duration = 5min));
+    bead_tube << [bead_tube.contents[1]];
+  }
   waste << [bead_tube.contents[1]];
 }
 """
