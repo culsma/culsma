@@ -4,7 +4,7 @@ Last updated: 2026-04-23
 
 Related IR document:
 
-1. [ir_structure_diagrams.md](https://github.com/culsma/culsma/blob/main/docs/architecture/ir_structure_diagrams.md)
+1. [ir_structure_diagrams.md](./ir_structure_diagrams.md)
 
 ## Scope
 

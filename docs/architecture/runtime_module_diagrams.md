@@ -4,7 +4,7 @@ Last updated: 2026-04-25
 
 Related plan/runtime documents:
 
-1. [plan_module_diagrams.md](https://github.com/culsma/culsma/blob/main/docs/architecture/plan_module_diagrams.md)
+1. [plan_module_diagrams.md](./pipeline/plan_module_diagrams.md)
 2. [material_compute_module_diagrams.md](./material_compute_module_diagrams.md)
 
 ## Scope

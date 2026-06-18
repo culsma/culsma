@@ -1,6 +1,6 @@
 # Culsma Docs Layout
 
-Last updated: 2026-04-30
+Last updated: 2026-06-18
 
 ## Purpose
 
@@ -16,7 +16,9 @@ companion `culsma-reference` repository/worktree.
 ```text
 docs/
   README.md
+  global_architecture_diagrams.md
   architecture/
+    pipeline/
   assets/
 ```
 
@@ -24,18 +26,26 @@ docs/
 
 | Directory | What goes here | What does not go here |
 | --- | --- | --- |
-| `architecture/` | current implementation structure, module boundaries, pipeline maps, and design diagrams | temporary refactor notes, reading plans, release checklists |
+| `docs/` root | repository-level docs layout and global architecture maps | module-internal architecture diagrams |
+| `architecture/` | current module implementation structure, module boundaries, and design diagrams | temporary refactor notes, reading plans, release checklists |
+| `architecture/pipeline/` | pipeline-wide, IR, compile, validation, typecheck, and plan-lowering diagrams | parser, runtime, material-compute, or driver diagrams |
 | `assets/` | repository logo, wordmark, and affiliation marks used by public docs | generated scratch images or temporary diagrams |
 
-## Current Architecture Notes
+## Global Architecture
 
+- [global_architecture_diagrams.md](global_architecture_diagrams.md)
+
+## Current Module Architecture Notes
+
+- [pipeline_module_diagrams.md](architecture/pipeline/pipeline_module_diagrams.md)
 - [parser_module_diagrams.md](architecture/parser_module_diagrams.md)
-- [ir_structure_diagrams.md](architecture/ir_structure_diagrams.md)
-- [compile_module_diagrams.md](architecture/compile_module_diagrams.md)
-- [validate_module_diagrams.md](architecture/validate_module_diagrams.md)
-- [typecheck_module_diagrams.md](architecture/typecheck_module_diagrams.md)
-- [plan_module_diagrams.md](architecture/plan_module_diagrams.md)
+- [ir_structure_diagrams.md](architecture/pipeline/ir_structure_diagrams.md)
+- [compile_module_diagrams.md](architecture/pipeline/compile_module_diagrams.md)
+- [validate_module_diagrams.md](architecture/pipeline/validate_module_diagrams.md)
+- [typecheck_module_diagrams.md](architecture/pipeline/typecheck_module_diagrams.md)
+- [plan_module_diagrams.md](architecture/pipeline/plan_module_diagrams.md)
 - [runtime_module_diagrams.md](architecture/runtime_module_diagrams.md)
+- [material_compute_module_diagrams.md](architecture/material_compute_module_diagrams.md)
 - [driver_module_diagrams.md](architecture/driver_module_diagrams.md)
 
 Release notes belong in the repository changelog and GitHub Releases, not in
