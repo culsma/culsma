@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from culsma.parser.ast_nodes import Expression, Program, ProtocolDecl
 from culsma.pipeline.analysis import CompileAnalysis
 from culsma.pipeline.ir_nodes import IRArg, IRLet, IRProgram, IRProtocol
+from culsma.pipeline.scope import ScopeAnalyzer
 
 from .context import (
     BlockContext,
@@ -60,9 +61,13 @@ class IRCompiler:
             for i, proto in enumerate(ast.protocols)
         ]
         ir = IRProgram(protocols=protocols, span=ast.span)
+        scope = ScopeAnalyzer().analyze(ir)
         return CompileResult(
             ir=ir,
-            analysis=self.session.analysis_builder.build(protocol_ids=[protocol.id for protocol in protocols]),
+            analysis=self.session.analysis_builder.build(
+                protocol_ids=[protocol.id for protocol in protocols],
+                scope=scope,
+            ),
         )
 
     def compile_protocol(self, proto: ProtocolDecl, *, proto_index: int) -> IRProtocol:
@@ -71,6 +76,11 @@ class IRCompiler:
         return_stmt = _protocol_tail_return(proto)
         proto_id = f"p{proto_index}"
         param_names = {param.name for param in proto.params}
+        ScopeAnalyzer().validate_unique_source_local_names(
+            proto.statements,
+            reserved_names=param_names,
+            protocol_name=proto.name,
+        )
         ctx = BlockContext(
             scope_id=proto_id,
             local_names=set(param_names),

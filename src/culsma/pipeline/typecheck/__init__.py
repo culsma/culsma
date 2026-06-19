@@ -5,8 +5,10 @@ from __future__ import annotations
 from typing import Mapping
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.pipeline.analysis import CompileAnalysis
 from culsma.pipeline.ir_nodes import IRProgram
 from culsma.pipeline.operation_specs import BUILTIN_OPERATION_SPECS, OperationSpec
+from culsma.pipeline.scope import ScopeAnalyzer, ScopeQueryService
 
 from .context import TypecheckContext, TypecheckResult
 from .expressions import (
@@ -36,11 +38,14 @@ from .statements import StatementTypechecker
 def typecheck(
     ir: IRProgram,
     *,
+    analysis: CompileAnalysis | None = None,
     operation_specs: Mapping[str, OperationSpec] = BUILTIN_OPERATION_SPECS,
 ) -> TypecheckResult:
     """Check quantity dimensions against per-operation argument expectations."""
     diagnostics: list[Diagnostic] = []
     statement_typechecker = StatementTypechecker()
+    scope_model = analysis.scope if analysis is not None else ScopeAnalyzer().analyze(ir)
+    scope_query = ScopeQueryService.from_model(scope_model)
 
     for protocol in ir.protocols:
         ctx = TypecheckContext(
@@ -51,6 +56,7 @@ def typecheck(
                 for param in protocol.params
                 if param.default is not None
             },
+            scope_query=scope_query,
             statement_typechecker=statement_typechecker,
         )
         statement_typechecker.typecheck_list(protocol.statements, ctx)

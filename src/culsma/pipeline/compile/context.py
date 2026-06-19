@@ -49,6 +49,10 @@ def _build_protocol_id_by_name(ast: Program) -> dict[str, str]:
 
 
 def _validate_protocol_return_contract(proto: ProtocolDecl) -> None:
+    param_names = [param.name for param in proto.params]
+    if len(param_names) != len(set(param_names)):
+        raise ValueError(f"Protocol '{proto.name}' declares duplicate parameter names")
+
     if len(proto.returns) != len(set(proto.returns)):
         raise ValueError(f"Protocol '{proto.name}' declares duplicate return names")
 
@@ -131,6 +135,7 @@ class BlockContext:
     ir_const_env: dict[str, Any] = field(default_factory=dict)
     ir_expr_bindings: dict[str, Any] = field(default_factory=dict)
     local_names: set[str] = field(default_factory=set)
+    mutable_local_names: set[str] = field(default_factory=set)
     param_names: set[str] = field(default_factory=set)
     env_time_boundary: Quantity | None = None
     env_time_boundary_deferred: bool = False
@@ -144,6 +149,7 @@ class BlockContext:
         ir_const_env: dict[str, Any] | None = None,
         ir_expr_bindings: dict[str, Any] | None = None,
         local_names: set[str] | None = None,
+        mutable_local_names: set[str] | None = None,
         param_names: set[str] | None = None,
         env_time_boundary: Quantity | None | object = _CTX_UNSET,
         env_time_boundary_deferred: bool | None = None,
@@ -155,6 +161,9 @@ class BlockContext:
             ir_const_env=self.ir_const_env if ir_const_env is None else ir_const_env,
             ir_expr_bindings=self.ir_expr_bindings if ir_expr_bindings is None else ir_expr_bindings,
             local_names=self.local_names if local_names is None else local_names,
+            mutable_local_names=(
+                self.mutable_local_names if mutable_local_names is None else mutable_local_names
+            ),
             param_names=self.param_names if param_names is None else param_names,
             env_time_boundary=(
                 self.env_time_boundary if env_time_boundary is _CTX_UNSET else env_time_boundary

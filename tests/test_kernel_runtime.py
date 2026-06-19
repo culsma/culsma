@@ -35,12 +35,13 @@ def validate(ir, **kwargs):
 
 
 def _build_plan_from_source(source: str):
-    ir = compile_to_ir(parse(source))
-    sem = validate(ir)
+    compile_result = _compile_ast(resolve_program(parse(source)).prepared_program)
+    ir = compile_result.ir
+    sem = _validate(ir, analysis=compile_result.analysis)
     assert sem.ok, [d.to_dict() for d in sem.diagnostics]
-    typ = typecheck(sem.ir)
+    typ = typecheck(sem.ir, analysis=compile_result.analysis)
     assert typ.ok, [d.to_dict() for d in typ.diagnostics]
-    return lower_ir_to_plan(typ.ir)
+    return lower_ir_to_plan(typ.ir, analysis=compile_result.analysis)
 
 
 def _runtime_state_with_source(plan, *, source: str = "A", volume_uL: float = 10.0):
@@ -467,6 +468,234 @@ protocol T {
     )
     assert result.user_result["materials"]["has_material_state"] is True
     assert result.user_result["process_summary"]["mutation_steps"] == 2
+
+
+def test_runtime_mutable_local_preserves_initial_value_when_runtime_branch_is_skipped():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let readout = data_ref(kind = qc);
+  readout.result.ok = true;
+  let controls_pass = true;
+  let decision = data_ref(kind = qc_decision);
+
+  if readout.result.ok == false {
+    controls_pass = false;
+  }
+  if controls_pass == true {
+    decision.result.accepted = true;
+  }
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    local_bindings = result.state.artifacts["local_bindings"]
+    assert local_bindings["controls_pass"] is True
+    assert local_bindings["decision"]["result"]["accepted"] is True
+
+
+def test_runtime_mutable_local_branch_assignment_overrides_initial_value():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let readout = data_ref(kind = qc);
+  readout.result.ok = false;
+  let controls_pass = true;
+  let decision = data_ref(kind = qc_decision);
+
+  if readout.result.ok == false {
+    controls_pass = false;
+  }
+  if controls_pass == true {
+    decision.result.accepted = true;
+  }
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    local_bindings = result.state.artifacts["local_bindings"]
+    assert local_bindings["controls_pass"] is False
+    assert "accepted" not in local_bindings["decision"]["result"]
+
+
+def test_runtime_issue_61_readout_driven_boolean_accumulator_controls_final_condition():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let wt_readout = data_ref(kind = qc);
+  wt_readout.result.control_qc_pass = true;
+  let nt_readout = data_ref(kind = qc);
+  nt_readout.result.control_qc_pass = true;
+  let candidate_readout = data_ref(kind = qc);
+  candidate_readout.result.qc_pass = true;
+  let candidate = data_ref(kind = candidate);
+  let validated_output = data_group_ref(kind = validated_output);
+  let controls_pass = true;
+
+  if wt_readout.result.control_qc_pass == false {
+    controls_pass = false;
+  }
+
+  if nt_readout.result.control_qc_pass == false {
+    controls_pass = false;
+  }
+
+  if controls_pass == true and candidate_readout.result.qc_pass == true {
+    validated_output.items.append(candidate);
+  }
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    local_bindings = result.state.artifacts["local_bindings"]
+    assert local_bindings["controls_pass"] is True
+    assert [item["data_kind"] for item in local_bindings["validated_output"]["items"]] == ["candidate"]
+
+
+def test_runtime_nested_runtime_branches_materialize_multiple_assigned_locals():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let first_readout = data_ref(kind = qc);
+  first_readout.result.ok = true;
+  let second_readout = data_ref(kind = qc);
+  second_readout.result.ok = true;
+  let decision = data_ref(kind = qc_decision);
+  let controls_pass = true;
+  let manual_review = false;
+  let score = 0;
+
+  if first_readout.result.ok == true {
+    if second_readout.result.ok == true {
+      controls_pass = false;
+      manual_review = true;
+      score = score + 2;
+    }
+  }
+
+  if controls_pass == false and manual_review == true and score == 2 {
+    decision.result.needs_review = true;
+  }
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    local_bindings = result.state.artifacts["local_bindings"]
+    assert local_bindings["controls_pass"] is False
+    assert local_bindings["manual_review"] is True
+    assert local_bindings["score"] == 2
+    assert local_bindings["decision"]["result"]["needs_review"] is True
+
+
+def test_runtime_dynamic_repeat_accumulator_uses_previous_iteration_value():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let cells = tube(label = "Cells", capacity = 500uL);
+  let events = stream(sample = cells, unit = single_cell);
+  let count = 0;
+
+  repeat cell in events {
+    count = count + 1;
+  }
+
+  let summary = data_ref(kind = count_summary);
+  if count == 2 {
+    summary.result.complete = true;
+  }
+}
+"""
+    )
+    state = init_state(plan)
+    state.artifacts["stream_units"] = {"events": ["cell_0", "cell_1"]}
+
+    result = run(plan=plan, driver=StubDriver(), state=state)
+
+    assert result.ok
+    local_bindings = result.state.artifacts["local_bindings"]
+    assert local_bindings["count"] == 2
+    assert local_bindings["summary"]["result"]["complete"] is True
+
+
+def test_runtime_dynamic_repeat_inner_condition_reads_mutable_local_at_runtime():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let cells = tube(label = "Cells", capacity = 500uL);
+  let events = stream(sample = cells, unit = single_cell);
+  let count = 0;
+  let reads = data_group_ref(kind = sequence_read);
+
+  repeat cell in events {
+    count = count + 1;
+    if count == 2 {
+      let read = data_ref(kind = sequence_read, subject_ref = cell);
+      reads.items.append(read);
+    }
+  }
+}
+"""
+    )
+    state = init_state(plan)
+    state.artifacts["stream_units"] = {"events": ["cell_0", "cell_1"]}
+
+    result = run(plan=plan, driver=StubDriver(), state=state)
+
+    assert result.ok
+    local_bindings = result.state.artifacts["local_bindings"]
+    assert local_bindings["count"] == 2
+    assert [item["subject_ref"]["id"] for item in local_bindings["reads"]["items"]] == ["cell_1"]
+
+
+def test_runtime_repeat_nested_condition_preserves_multiple_mutable_locals():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let cells = tube(label = "Cells", capacity = 500uL);
+  let events = stream(sample = cells, unit = single_cell);
+  let count = 0;
+  let total = 0;
+  let flagged = false;
+  let summary = data_ref(kind = repeat_summary);
+
+  repeat cell in events {
+    count = count + 1;
+    total = total + 1;
+    if count == 2 {
+      total = total + 10;
+      flagged = true;
+    }
+  }
+
+  if flagged == true and count == 2 and total == 12 {
+    summary.result.complete = true;
+  }
+}
+"""
+    )
+    state = init_state(plan)
+    state.artifacts["stream_units"] = {"events": ["cell_0", "cell_1"]}
+
+    result = run(plan=plan, driver=StubDriver(), state=state)
+
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    local_bindings = result.state.artifacts["local_bindings"]
+    assert local_bindings["count"] == 2
+    assert local_bindings["total"] == 12
+    assert local_bindings["flagged"] is True
+    assert local_bindings["summary"]["result"]["complete"] is True
 
 
 def test_runtime_user_result_includes_container_and_instrument_usage_summary():

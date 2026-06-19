@@ -8,6 +8,7 @@ from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.analysis import CompileAnalysis, ProtocolAnalysis
 from culsma.pipeline.ir_nodes import IRBoolean, IRList, IRParam, IRProgram, IRQuantity, IRString
 from culsma.pipeline.operation_specs import BUILTIN_OPERATION_SPECS, OperationSpec
+from culsma.pipeline.scope import ScopeQueryService
 
 from .context import ValidationResult, _GroupBinding
 from .statements import StatementValidationContext, validate_statement_list_with_context
@@ -26,6 +27,7 @@ def validate(
     """Validate IR against builtin operation signature rules."""
     diagnostics: list[Diagnostic] = []
     operations = operation_specs
+    scope_query = ScopeQueryService.from_model(analysis.scope)
 
     for protocol in ir.protocols:
         literal_bindings = literal_param_bindings(protocol.params)
@@ -50,6 +52,7 @@ def validate(
             enforce_binding=enforce_binding,
             content_whitelist_mode=content_whitelist_mode,
             content_type_policy=content_type_policy,
+            scope_query=scope_query,
         )
         validate_statement_list_with_context(protocol.statements, ctx)
 

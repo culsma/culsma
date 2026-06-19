@@ -248,9 +248,9 @@ def execute_pipeline(
         enforce_binding=inventory_check,
     )
 
-    typ = typecheck(sem.ir)
+    typ = typecheck(sem.ir, analysis=compile_result.analysis)
 
-    plan = lower_ir_to_plan(typ.ir)
+    plan = lower_ir_to_plan(typ.ir, analysis=compile_result.analysis)
 
     state = init_state(plan)
     state.artifacts["material_state"] = deepcopy(initial_material_state)

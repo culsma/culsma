@@ -5,8 +5,10 @@ from __future__ import annotations
 from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.pipeline.analysis import CompileAnalysis
 from culsma.pipeline.ir_nodes import IRProgram
 from culsma.pipeline.plan_nodes import PlanProgram, ProtocolPlan
+from culsma.pipeline.scope import ScopeAnalyzer, ScopeQueryService
 
 from .context import PlanLoweringContext
 from .references import DEFAULT_PLAN_REFERENCE_RESOLVER, PlanReferenceResolver
@@ -17,12 +19,15 @@ from .statements import BasePlanStatementHandler, PlanStatementLowerer, PlanStat
 def lower_ir_to_plan(
     ir: IRProgram,
     *,
+    analysis: CompileAnalysis | None = None,
     entry_args_by_protocol: dict[str, dict[str, Any]] | None = None,
 ) -> PlanProgram:
     """Lower validated IR into protocol-scoped execution plans."""
     plans: list[ProtocolPlan] = []
     diagnostics: list[Diagnostic] = []
     protocols_by_name = {p.name: p for p in ir.protocols}
+    scope_model = analysis.scope if analysis is not None else ScopeAnalyzer().analyze(ir)
+    scope_query = ScopeQueryService.from_model(scope_model)
     serializer = DEFAULT_PLAN_EXPRESSION_SERIALIZER
     reference_resolver = DEFAULT_PLAN_REFERENCE_RESOLVER
     statement_lowerer = PlanStatementLowerer(
@@ -58,6 +63,7 @@ def lower_ir_to_plan(
             protocol_name=protocol.name,
             caller_stack=[protocol.name],
             gate_base={"protocol_name": protocol.name},
+            scope_query=scope_query,
             statement_lowerer=statement_lowerer,
             serializer=serializer,
             reference_resolver=reference_resolver,

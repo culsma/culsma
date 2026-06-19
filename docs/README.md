@@ -44,6 +44,7 @@ docs/
 - [validate_module_diagrams.md](architecture/pipeline/validate_module_diagrams.md)
 - [typecheck_module_diagrams.md](architecture/pipeline/typecheck_module_diagrams.md)
 - [plan_module_diagrams.md](architecture/pipeline/plan_module_diagrams.md)
+- [scope_module_diagrams.md](architecture/pipeline/scope_module_diagrams.md)
 - [runtime_module_diagrams.md](architecture/runtime_module_diagrams.md)
 - [material_compute_module_diagrams.md](architecture/material_compute_module_diagrams.md)
 - [driver_module_diagrams.md](architecture/driver_module_diagrams.md)

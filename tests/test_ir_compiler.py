@@ -42,6 +42,93 @@ def test_compile_current_frontend_core_fixture_smoke():
     assert ir.protocols[0].name == "CurrentFrontendCore"
 
 
+def test_compile_rejects_nested_let_redeclaring_outer_name():
+    src = """
+protocol T {
+  let total = 0;
+  if total == 0 {
+    let total = 100;
+  }
+}
+"""
+
+    with pytest.raises(ValueError, match="local name 'total' is already declared"):
+        compile_to_ir(parse(src))
+
+
+def test_compile_rejects_duplicate_let_names_across_branches():
+    src = """
+protocol T(use_first = true) {
+  if use_first {
+    let result = 1;
+  } else {
+    let result = 2;
+  }
+}
+"""
+
+    with pytest.raises(ValueError, match="local name 'result' is already declared"):
+        compile_to_ir(parse(src))
+
+
+def test_compile_rejects_repeat_binding_reusing_existing_name():
+    src = """
+protocol T {
+  let cell = 0;
+  let cells = tube(label = "Cells", capacity = 500uL);
+  let events = stream(sample = cells, unit = single_cell);
+  repeat cell in events {
+    Step(v = cell);
+  }
+}
+"""
+
+    with pytest.raises(ValueError, match="local name 'cell' is already declared"):
+        compile_to_ir(parse(src))
+
+
+def test_compile_rejects_with_env_block_let_redeclaring_outer_name():
+    src = """
+protocol T {
+  let tube1 = tube(label = "Tube1", capacity = 100uL);
+  let total = 0;
+
+  with env(thermal = 37C, duration = 10min) {
+    hold(sample = tube1);
+    let total = 100;
+  }
+}
+"""
+
+    with pytest.raises(ValueError, match="local name 'total' is already declared"):
+        compile_to_ir(parse(src))
+
+
+def test_compile_rejects_duplicate_protocol_parameter_names():
+    with pytest.raises(ValueError, match="duplicate parameter names"):
+        compile_to_ir(parse("protocol T(input, input) { Step(v = input); }"))
+
+
+def test_compile_allows_same_local_names_in_different_protocols():
+    ir = compile_to_ir(
+        parse(
+            """
+protocol A(input) {
+  let local = input;
+  StepA(v = local);
+}
+
+protocol B(input) {
+  let local = input;
+  StepB(v = local);
+}
+"""
+        )
+    )
+
+    assert {protocol.name for protocol in ir.protocols} == {"A", "B"}
+
+
 def test_compile_legacy_dna_extraction_fixture_is_rejected_by_current_source_gate():
     ast = parse_file(LEGACY_PARSER_FIXTURES / "dna_extraction.culs")
     with pytest.raises(ValueError, match="staining_method"):

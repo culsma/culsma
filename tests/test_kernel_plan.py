@@ -189,7 +189,7 @@ protocol Root { core.Base(input = 1, input = 2); }
     assert "PLAN_CALL_ARG_DUPLICATE" in codes
 
 
-def test_protocol_param_redeclared_by_let_emits_diagnostic():
+def test_protocol_param_redeclared_by_let_is_rejected_at_compile():
     src = """
 protocol Base(input) {
   let input = 2;
@@ -200,9 +200,8 @@ protocol Root { core.Base(input = 1); }
     ast = parse(src)
     ast.protocols[0].module = "core"
     ast.protocols[1].module = "core"
-    plan = lower_ir_to_plan(compile_to_ir(ast))
-    codes = [d.code for d in plan.diagnostics]
-    assert "PLAN_CALL_PARAM_REDECLARED" in codes
+    with pytest.raises(ValueError, match="local name 'input' is already declared"):
+        compile_to_ir(ast)
 
 
 def test_protocol_call_no_longer_inherits_caller_let_values():

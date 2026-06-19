@@ -8,6 +8,7 @@ from typing import Any, Mapping
 from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.ir_nodes import IRProgram
 from culsma.pipeline.operation_specs import OperationSpec
+from culsma.pipeline.scope import ScopeQueryService
 
 
 @dataclass(frozen=True)
@@ -25,6 +26,7 @@ class TypecheckContext:
     operation_specs: Mapping[str, OperationSpec]
     diagnostics: list[Diagnostic]
     expr_bindings: dict[str, Any] = field(default_factory=dict)
+    scope_query: ScopeQueryService | None = None
     statement_typechecker: Any = None
 
     def derive_with_bindings(self, bindings: dict[str, Any]) -> TypecheckContext:
@@ -32,6 +34,7 @@ class TypecheckContext:
             operation_specs=self.operation_specs,
             diagnostics=self.diagnostics,
             expr_bindings=bindings,
+            scope_query=self.scope_query,
             statement_typechecker=self.statement_typechecker,
         )
 

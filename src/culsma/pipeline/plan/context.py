@@ -7,6 +7,7 @@ from typing import Any, Mapping
 
 from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.ir_nodes import IRProtocol
+from culsma.pipeline.scope import ScopeQueryService
 
 
 @dataclass
@@ -18,6 +19,7 @@ class PlanLoweringContext:
     protocol_name: str
     caller_stack: list[str]
     gate_base: dict[str, Any] | None
+    scope_query: ScopeQueryService | None = None
     statement_lowerer: Any = None
     serializer: Any = None
     reference_resolver: Any = None
@@ -33,6 +35,7 @@ class PlanLoweringContext:
         protocol_name: str | None = None,
         caller_stack: list[str] | None = None,
         gate_base: dict[str, Any] | None = None,
+        scope_query: ScopeQueryService | None = None,
         step_id_prefix: str | None = None,
         call_path: list[str] | None = None,
         env_time_boundary: Any = None,
@@ -45,6 +48,7 @@ class PlanLoweringContext:
             protocol_name=self.protocol_name if protocol_name is None else protocol_name,
             caller_stack=list(self.caller_stack if caller_stack is None else caller_stack),
             gate_base=self.gate_base if gate_base is None else gate_base,
+            scope_query=self.scope_query if scope_query is None else scope_query,
             statement_lowerer=self.statement_lowerer,
             serializer=self.serializer,
             reference_resolver=self.reference_resolver,

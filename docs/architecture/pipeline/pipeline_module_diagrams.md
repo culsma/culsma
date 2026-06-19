@@ -10,6 +10,7 @@ Related documents:
 4. [validate_module_diagrams.md](./validate_module_diagrams.md)
 5. [typecheck_module_diagrams.md](./typecheck_module_diagrams.md)
 6. [plan_module_diagrams.md](./plan_module_diagrams.md)
+7. [scope_module_diagrams.md](./scope_module_diagrams.md)
 
 ## Scope
 
@@ -43,7 +44,7 @@ owned by a single stage handler.
 
 ```mermaid
 flowchart TB
-    Scope["pipeline.scope<br/>(planned)"]
+    Scope["pipeline.scope"]
     Compile["pipeline.compile"]
     Validate["pipeline.validate"]
     Typecheck["pipeline.typecheck"]
@@ -57,24 +58,6 @@ flowchart TB
 
 ## Scope Service Target
 
-Local variable and frame semantics belong inside the pipeline layer as a shared
-semantic service, not inside one compile, validate, typecheck, or plan handler.
+Detailed design:
 
-Expected location:
-
-```text
-src/culsma/pipeline/scope.py
-```
-
-or, if it grows:
-
-```text
-src/culsma/pipeline/scope/
-  analysis.py
-  model.py
-  queries.py
-```
-
-It should own protocol-local frames, formal parameter visibility, mutable local
-slots, assignment target legality, repeat binding visibility, and the scope
-facts needed by plan lowering. Runtime should still own runtime local values.
+1. [scope_module_diagrams.md](./scope_module_diagrams.md)

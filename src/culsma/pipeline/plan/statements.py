@@ -726,6 +726,7 @@ class PlanStatementLowerer:
         try:
             steps: list[PlanStep] = []
             for stmt in statements:
+                steps.extend(self.materialize_runtime_locals_before_statement(stmt, ctx))
                 steps.extend(self.lower_statement(stmt, ctx))
             return steps
         finally:
@@ -738,3 +739,51 @@ class PlanStatementLowerer:
         if handler is None:
             return []
         return handler.handle(stmt, ctx)
+
+    def materialize_runtime_locals_before_statement(
+        self,
+        stmt: IRStatement,
+        ctx: PlanLoweringContext,
+    ) -> list[PlanStep]:
+        if ctx.scope_query is None:
+            return []
+        stmt_id = getattr(stmt, "id", "statement")
+        steps: list[PlanStep] = []
+        for effect in ctx.scope_query.assignment_effects(stmt_id):
+            if self.assignment_can_initialize_without_previous_value(stmt, effect.name, effect.reads_before_write):
+                continue
+            value = ctx.local_env.get(effect.name)
+            if not self.needs_runtime_local_materialization(effect.name, value):
+                continue
+            steps.append(
+                PlanStep(
+                    step_id=f"{ctx.step_id_prefix}{stmt_id}::init::{effect.name}",
+                    op="assign_local",
+                    args={"target": effect.name, "value": value},
+                    deps=[],
+                    gate=merge_gate(ctx.gate_base),
+                    span=getattr(stmt, "span", None),
+                )
+            )
+            ctx.local_env[effect.name] = {"kind": "IRIdentifier", "name": effect.name}
+        return steps
+
+    def assignment_can_initialize_without_previous_value(
+        self,
+        stmt: IRStatement,
+        name: str,
+        reads_before_write: bool,
+    ) -> bool:
+        return (
+            isinstance(stmt, IRAssign)
+            and isinstance(stmt.target, IRIdentifier)
+            and stmt.target.name == name
+            and not reads_before_write
+        )
+
+    def needs_runtime_local_materialization(self, name: str, value: Any) -> bool:
+        if value is None:
+            return False
+        if isinstance(value, dict) and value.get("kind") == "IRIdentifier" and value.get("name") == name:
+            return False
+        return True

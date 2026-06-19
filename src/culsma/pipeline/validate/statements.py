@@ -24,6 +24,7 @@ from culsma.pipeline.ir_nodes import (
     IRWithEnv,
 )
 from culsma.pipeline.operation_specs import OperationSpec
+from culsma.pipeline.scope import ScopeModel, ScopeQueryService
 
 from .binding import BindingValidator
 from .constructors import ConstructorValidator
@@ -61,6 +62,9 @@ class StatementValidationContext:
     enforce_binding: bool
     content_whitelist_mode: str
     content_type_policy: str
+    scope_query: ScopeQueryService = field(
+        default_factory=lambda: ScopeQueryService.from_model(ScopeModel())
+    )
 
 
 @dataclass
@@ -251,6 +255,7 @@ class BaseStatementHandler:
             enforce_binding=ctx.enforce_binding,
             content_whitelist_mode=ctx.content_whitelist_mode,
             content_type_policy=ctx.content_type_policy,
+            scope_query=ctx.scope_query,
         )
 
     def recurse(

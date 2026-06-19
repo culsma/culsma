@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Any, Mapping
 
+from culsma.pipeline.scope import ScopeAnalyzer, ScopeModel
 from culsma.pipeline.ir_nodes import (
     IRAssign,
     IRConditional,
@@ -41,6 +42,7 @@ class ProtocolAnalysis:
 @dataclass(frozen=True)
 class CompileAnalysis:
     protocols: Mapping[str, ProtocolAnalysis] = field(default_factory=lambda: MappingProxyType({}))
+    scope: ScopeModel = field(default_factory=ScopeModel)
 
 
 @dataclass
@@ -66,14 +68,17 @@ class CompileAnalysisBuilder:
             if collect_runtime_exports:
                 self._record_runtime_binding_effect(protocol_id, stmt, expr_bindings=expr_bindings, env=env)
 
-    def build(self, *, protocol_ids: list[str]) -> CompileAnalysis:
+    def build(self, *, protocol_ids: list[str], scope: ScopeModel | None = None) -> CompileAnalysis:
         protocol_analysis: dict[str, ProtocolAnalysis] = {}
         for protocol_id in protocol_ids:
             protocol_analysis[protocol_id] = ProtocolAnalysis(
                 runtime_exports=frozenset(self._runtime_exports.get(protocol_id, set())),
                 include_targets=MappingProxyType(dict(self._include_targets.get(protocol_id, {}))),
             )
-        return CompileAnalysis(protocols=MappingProxyType(protocol_analysis))
+        return CompileAnalysis(
+            protocols=MappingProxyType(protocol_analysis),
+            scope=scope if scope is not None else ScopeModel(),
+        )
 
     def _record_runtime_binding_effect(
         self,
@@ -111,7 +116,10 @@ def build_compile_analysis(ir: IRProgram) -> CompileAnalysis:
             runtime_exports=frozenset(_compute_runtime_exports(protocol.statements)),
             include_targets=MappingProxyType(include_targets),
         )
-    return CompileAnalysis(protocols=MappingProxyType(protocol_analysis))
+    return CompileAnalysis(
+        protocols=MappingProxyType(protocol_analysis),
+        scope=ScopeAnalyzer().analyze(ir),
+    )
 
 
 def _collect_include_targets(

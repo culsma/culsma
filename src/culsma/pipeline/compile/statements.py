@@ -39,6 +39,7 @@ from culsma.pipeline.ir_nodes import (
     IRWithConstraint,
     IRWithEnv,
 )
+from culsma.pipeline.scope import ScopeAnalyzer
 
 from .context import BlockContext, CompileSession, _require_span
 from .expressions import ExprCompiler
@@ -197,6 +198,11 @@ class StatementCompiler:
         self.repeat_control_lowerer = repeat_control_lowerer
 
     def compile_list(self, statements: list[Statement], *, ctx: BlockContext) -> list[IRStatement]:
+        ctx = ctx.derive(
+            mutable_local_names=(
+                set(ctx.mutable_local_names) | set(ScopeAnalyzer().assigned_source_local_names(statements))
+            )
+        )
         compiled_statements: list[IRStatement] = []
         next_index = 0
         protocol_id = ctx.scope_id.split(".", maxsplit=1)[0]
@@ -355,6 +361,10 @@ class LetHandler(BaseStatementCompileHandler):
         state = cast(LetState, state)
         ctx = lowering_ctx.ctx
         ctx.local_names.add(stmt.name)
+        if stmt.name in ctx.mutable_local_names:
+            ctx.const_env.pop(stmt.name, None)
+            ctx.let_bindings.pop(stmt.name, None)
+            return
         if state.normalized_value is not None:
             ctx.let_bindings[stmt.name] = state.normalized_value
             return
@@ -446,6 +456,10 @@ class AssignHandler(BaseStatementCompileHandler):
         ctx = lowering_ctx.ctx
         target_root = state.target_root
         if target_root is not None and isinstance(stmt.target, Identifier):
+            if target_root in ctx.mutable_local_names:
+                ctx.const_env.pop(target_root, None)
+                ctx.let_bindings.pop(target_root, None)
+                return
             numeric_value = lowering_ctx.schedule_evaluator.try_eval_numeric_expr(stmt.value, ctx=ctx)
             bool_value = lowering_ctx.schedule_evaluator.try_eval_bool_expr(stmt.value, ctx=ctx)
             if numeric_value is not None:
