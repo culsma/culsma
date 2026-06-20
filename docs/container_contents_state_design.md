@@ -235,7 +235,7 @@ the design-level ownership map.
 | `frac` | split or route | component fate by fraction strategy | fractionated | may preserve lane/band association | ordered accessible fractions | may create stable-boundary contract | none |
 | `source.partition(program)[i]` | transfer-local split | transfer-local component fate | no durable contents state | follows program strategy | selected source portion accessible | no durable contract | none |
 | `with env` | no direct change | no direct change | no direct change | no direct change | no direct change | provides or removes context | none |
-| `hold` | no direct change | no direct change | preserve unless nested mutation changes it | may maintain context-dependent state | no direct change | may keep contract satisfied during duration | none |
+| `hold` marker | no direct change | no direct change | no direct change | no direct change | no direct change | declares env target; preservation comes from surrounding context | none |
 | `stream` | no direct change | no direct change | no direct change | no direct change | project streamable units | no direct change | stream projection |
 | `img` / `ecp` / `phy` | no direct change | no direct change | no direct change | no direct change | no direct change | no direct change | observation projection |
 
@@ -598,9 +598,10 @@ Partition-preserving mutation is intentionally narrow. It should require both:
 2. an active context or operation contract that satisfies it.
 
 The active context is the lexical execution context carried by the current
-`with env(...)` layer. `hold(...)` declarations may record targets for pure
-holds or driver-facing target reporting, but they do not narrow the environment
-scope for the remaining executable statements in the block.
+`with env(...)` layer. Direct `hold(...)` declarations may appear anywhere in
+the immediate body to record targets for pure holds or driver-facing target
+reporting, but they are markers rather than executable steps and do not narrow
+the environment scope for the executable statements in the block.
 
 ## Magnetic Wash Example
 

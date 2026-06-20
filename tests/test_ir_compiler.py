@@ -641,7 +641,7 @@ def test_compile_rejects_unknown_hold_member_target():
 
 
 def test_compile_rejects_top_level_hold():
-    with pytest.raises(ValueError, match="hold\\(\\.\\.\\.\\) is only valid as a target declaration at the start of with env"):
+    with pytest.raises(ValueError, match="hold\\(\\.\\.\\.\\) is only valid as a direct target declaration inside with env"):
         compile_to_ir(parse("protocol T { hold(); }"))
 
 
@@ -662,7 +662,7 @@ protocol T {
     assert with_env.statements[0].name == "Step"
 
 
-def test_compile_rejects_non_leading_hold_with_env_block():
+def test_compile_allows_non_leading_direct_hold_with_env_body():
     src = """
 protocol T {
   with env(thermal = 37C, duration = 10min) {
@@ -671,7 +671,27 @@ protocol T {
   }
 }
 """
-    with pytest.raises(ValueError, match="hold\\(\\.\\.\\.\\) target declarations must appear before executable statements"):
+    ir = compile_to_ir(parse(src))
+    with_env = ir.protocols[0].statements[0]
+    assert with_env.__class__.__name__ == "IRWithEnv"
+    assert with_env.explicit_hold is True
+    assert len(with_env.statements) == 1
+    assert with_env.statements[0].name == "Step"
+    assert len(with_env.targets) == 1
+    assert with_env.targets[0].name == "tube"
+
+
+def test_compile_rejects_nested_hold_marker_in_env_body():
+    src = """
+protocol T {
+  with env(thermal = 37C, duration = 10min) {
+    if true {
+      hold(tube);
+    }
+  }
+}
+"""
+    with pytest.raises(ValueError, match="hold\\(\\.\\.\\.\\) target declarations must be direct statements inside with env"):
         compile_to_ir(parse(src))
 
 

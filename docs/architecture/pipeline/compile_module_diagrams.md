@@ -186,9 +186,13 @@ sequenceDiagram
     participant Ctx as "BlockContext"
     participant SC as "StatementCompiler"
     participant Expr as "ExprCompiler"
+    participant TH as "targets.split_env_hold_markers"
+    participant Target as "TargetResolver"
 
     H->>H: lower_current_or_children(stmt, lowering_ctx, state)
     alt WithEnvStmt boundary
+        H->>TH: split_env_hold_markers(stmt.statements, let_bindings)
+        TH-->>H: hold targets, executable statements, nested-hold flag
         H->>Sched: extract_env_time_boundary(stmt, ctx)
         Sched->>Sched: resolve_bound_expr(expr, ctx)
         Sched->>Sched: is_time_point(quantity)
@@ -203,8 +207,9 @@ sequenceDiagram
             Static-->>H: true
             H->>Ctx: derive(env_time_boundary_deferred=True)
         end
+        H->>Target: expand_env_targets(explicit or inferred targets, stmt_id, ctx)
         H->>Expr: compile_arg(env_arg) / compile(target)
-        H->>SC: compile_list(child_statements, child_ctx)
+        H->>SC: compile_list(executable_statements, child_ctx)
     else RepeatStatement count
         H->>RCL: lower_repeat(stmt, lowering_ctx)
         RCL->>RCL: lower_count_repeat(stmt, lowering_ctx)
@@ -301,8 +306,8 @@ flowchart TB
 | Phase | Semantic boundary | Typical owners |
 | --- | --- | --- |
 | `prepare` | Require source span, use statement id, create handler state. | every statement handler |
-| `resolve_source_form` | Resolve or classify frontend syntax before lowering. | protocol-ref name resolution, readout normalization, with-env hold detection, repeat/if mode selection |
-| `validate_source_shape` | Reject source forms that are illegal before IR exists. | forbidden legacy/internal calls, assignment target rules, hold placement, runtime-if predicate support |
+| `resolve_source_form` | Resolve or classify frontend syntax before lowering. | protocol-ref name resolution, readout normalization, direct with-env hold marker collection, repeat/if mode selection |
+| `validate_source_shape` | Reject source forms that are illegal before IR exists. | forbidden legacy/internal calls, assignment target rules, nested or standalone hold placement, runtime-if predicate support |
 | `apply_state_before_lowering` | Update compile-time context visible to current/nested lowering. | let/assign `local_names`, `const_env`, `let_bindings` |
 | `lower_prefix_ir` | Emit synthesized IR that must appear before the main lowered statement. | grouped readout prefix lets, env target prefix lets, mutation target prefix lets |
 | `lower_current_or_children` | Emit direct IR or compile nested statement blocks. | include, let, assign, step, mutation, with-env, with-constraint, repeat, if, control |
@@ -410,10 +415,23 @@ classDiagram
     }
 
     class TargetResolver {
+        +assignment_target_root_name(expr)
         +expand_env_targets(targets, stmt_id, ctx)
         +infer_env_targets_from_source_statements(statements, stmt_id, ctx)
         +expand_mutation_targets(target, stmt_id, ctx)
         +expand_mutation_sources(sources, target, flattened_targets, ctx)
+    }
+
+    class EnvHoldMarkerSplit {
+        +hold_targets
+        +executable_statements
+        +has_invalid_nested_hold
+        +has_hold_targets
+        +is_hold_only
+    }
+
+    class TargetModule {
+        +split_env_hold_markers(statements, let_bindings)
     }
 
     class ScheduleEvaluator {
@@ -520,6 +538,8 @@ classDiagram
     AssignHandler --> ScheduleEvaluator
     AssignHandler --> ExprCompiler
     WithEnvHandler --> TargetResolver
+    WithEnvHandler --> TargetModule
+    TargetModule --> EnvHoldMarkerSplit
     WithEnvHandler --> ScheduleEvaluator
     WithEnvHandler --> StaticControlClassifier
     WithEnvHandler --> ExprCompiler

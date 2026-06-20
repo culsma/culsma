@@ -35,10 +35,10 @@ For the current public release, install from PyPI:
 python -m pip install culsma
 ```
 
-You can also install directly from the `v1.0.3` tag:
+You can also install directly from the `v1.0.4` tag:
 
 ```bash
-python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@v1.0.3"
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@v1.0.4"
 ```
 
 Release notes are in [CHANGELOG.md](CHANGELOG.md).

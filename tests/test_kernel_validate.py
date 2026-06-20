@@ -386,11 +386,25 @@ protocol T {
     assert "SEM_UNBOUND_NAME_REFERENCE" in _codes(result)
 
 
-def test_validate_with_env_scalar_thermal_requires_duration():
+def test_validate_with_env_pure_scalar_thermal_hold_requires_duration():
     src = "protocol T { with env(thermal = 37C) { hold(sample = tube); } }"
     ir = _compile_source(src)
     result = validate(ir)
     assert "SEM_ENV_DURATION_REQUIRED" in _codes(result)
+
+
+def test_validate_with_env_active_scalar_thermal_scope_allows_missing_duration():
+    src = "protocol T { with env(thermal = 0C) { tube << [feed:1uL]; } }"
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+
+
+def test_validate_with_env_hold_targets_plus_active_body_allows_missing_duration():
+    src = "protocol T { with env(thermal = 0C) { tube << [feed:1uL]; hold(sample = tube); } }"
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
 
 
 def test_validate_with_env_accepts_day_scale_duration():

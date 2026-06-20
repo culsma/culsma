@@ -140,11 +140,14 @@ class EnvContractValidator:
                     node_id=stmt.id,
                 )
             )
-        if scalar_thermal and duration_arg is None:
+        if scalar_thermal and duration_arg is None and _requires_scalar_thermal_duration(stmt):
             diagnostics.append(
                 Diagnostic(
                     code="SEM_ENV_DURATION_REQUIRED",
-                    message="with env(...): scalar thermal requires explicit duration",
+                    message=(
+                        "with env(...): scalar thermal requires explicit duration "
+                        "for pure environment hold"
+                    ),
                     span=thermal_arg.span or stmt.span,
                     node_id=stmt.id,
                 )
@@ -157,3 +160,7 @@ def _find_arg_by_name(args: list[IRArg], name: str) -> IRArg | None:
         if arg.name == name:
             return arg
     return None
+
+
+def _requires_scalar_thermal_duration(stmt: IRWithEnv) -> bool:
+    return bool(getattr(stmt, "explicit_hold", False)) and not stmt.statements

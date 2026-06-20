@@ -135,7 +135,7 @@ sequenceDiagram
         Static->>Static: is_time_quantity_payload(duration)
         Static-->>EnvH: IRQuantity boundary or None
         EnvH->>Ctx: derive(env_time_boundary)
-        EnvH->>Lower: lower_list(child_statements, child_ctx)
+        EnvH->>Lower: lower_list(executable child statements, child_ctx)
         EnvH->>Ser: invalidate_local_env_names(...)
     else IRWithConstraint
         H->>Ser: serialize_arg_list(options, local_env)

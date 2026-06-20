@@ -397,6 +397,36 @@ protocol T {
     assert [step.op for step in steps] == ["Mutation"]
 
 
+def test_plan_allows_duration_free_scalar_thermal_env_for_active_body():
+    src = """
+protocol T {
+  with env(thermal = 0C) {
+    tube << [feed:1uL];
+  }
+}
+"""
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)))
+    steps = plan.plans[0].steps
+    assert [step.op for step in steps] == ["Mutation"]
+    assert steps[0].gate["env"]["thermal"]["value"] == 0.0
+    assert "duration" not in steps[0].gate["env"]
+
+
+def test_plan_collects_non_leading_hold_marker_as_env_target():
+    src = """
+protocol T {
+  with env(thermal = 0C) {
+    tube << [feed:1uL];
+    hold(tube);
+  }
+}
+"""
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)))
+    steps = plan.plans[0].steps
+    assert [step.op for step in steps] == ["Mutation"]
+    assert steps[0].gate["env_targets"][0]["name"] == "tube"
+
+
 def test_plan_lowers_incubate_to_env_hold_path():
     src = "protocol T { Incubate(sample = tube_a, temp = 37C, duration = 10min); }"
     plan = lower_ir_to_plan(compile_to_ir(parse(src)))

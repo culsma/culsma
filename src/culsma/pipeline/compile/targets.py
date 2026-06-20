@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 from culsma.parser.ast_nodes import (
     AssignStatement,
     Arg,
@@ -45,9 +47,27 @@ _PLATE_FORMAT_DIMENSIONS = {
 }
 
 
+@dataclass(frozen=True)
+class EnvHoldMarkerSplit:
+    hold_targets: list[Expression]
+    executable_statements: list[Statement]
+    has_invalid_nested_hold: bool
+
+    @property
+    def has_hold_targets(self) -> bool:
+        return bool(self.hold_targets)
+
+    @property
+    def is_hold_only(self) -> bool:
+        return bool(self.hold_targets) and not self.executable_statements
+
+
 class TargetResolver:
     def __init__(self, *, session: CompileSession) -> None:
         self.session = session
+
+    def assignment_target_root_name(self, expr: Expression) -> str | None:
+        return _assignment_target_root_name(expr)
 
     def expand_env_targets(
         self,
@@ -616,21 +636,23 @@ def _expr_identity_key(expr: Expression) -> str:
     return repr(expr)
 
 
-def split_leading_hold_statements(statements: list[Statement]) -> tuple[list[StepCall], list[Statement]]:
-    holds: list[StepCall] = []
-    idx = 0
+def split_env_hold_markers(
+    statements: list[Statement],
+    *,
+    let_bindings: dict[str, Expression],
+) -> EnvHoldMarkerSplit:
+    hold_targets: list[Expression] = []
+    executable_statements: list[Statement] = []
     for stmt in statements:
         if isinstance(stmt, StepCall) and stmt.name == "hold":
-            holds.append(stmt)
-            idx += 1
+            hold_targets.append(_extract_explicit_hold_target(stmt, let_bindings=let_bindings))
             continue
-        break
-    return holds, statements[idx:]
-
-
-def _is_explicit_hold_only_block(statements: list[Statement]) -> bool:
-    holds, rest = split_leading_hold_statements(statements)
-    return bool(holds) and not rest
+        executable_statements.append(stmt)
+    return EnvHoldMarkerSplit(
+        hold_targets=hold_targets,
+        executable_statements=executable_statements,
+        has_invalid_nested_hold=_contains_invalid_hold_statement(executable_statements),
+    )
 
 
 def _contains_invalid_hold_statement(statements: list[Statement]) -> bool:

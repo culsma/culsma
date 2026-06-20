@@ -300,7 +300,9 @@ invariants:
 12. `BreakStmt` and `ContinueStmt` do not survive as distinct IR nodes; they lower to `IRControl(action=...)`.
 13. Standalone method-call statements lower to `IRStep`.
 14. Method-call expressions do not survive as a dedicated IR expression node.
-15. `with env` IR carries explicit `targets` and `explicit_hold`.
+15. `with env` IR carries explicit `targets` and `explicit_hold`; direct
+    source `hold(...)` markers have already been collected into `targets` and
+    are not executable `IRWithEnv.statements`.
 16. Nested statement bodies are represented through explicit statement-list fields only.
 
 Compile-side analysis is separate from these IR invariants. It may record

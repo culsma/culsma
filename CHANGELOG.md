@@ -1,12 +1,12 @@
 # Changelog
 
-## Internal 1.0.4rc1
+## Culsma v1.0.4
 
 ### Scope
 
-This internal GitHub prerelease prepares the first installable candidate for
-the 1.0.4 material contents-state line. It is intended for internal testing and
-does not publish to PyPI.
+This release extends the public execution kernel with durable container
+contents-state tracking, indexed contents-state reads, field-retention
+preservation, and updated `with env(...)` / `hold(...)` authoring semantics.
 
 It includes:
 
@@ -22,43 +22,53 @@ It includes:
   conservation, contents state, ledger, mutation, refs, results, separation,
   and units
 - material architecture documentation for the contents-state manager boundary
+- direct `hold(...)` target markers may appear anywhere in the immediate
+  `with env(...)` body
+- active scalar thermal environment blocks may omit `duration` when they contain
+  executable work
+- pure scalar thermal holds still require explicit `duration`
 - release workflow cleanup so normal public GitHub Releases remain manual
   after PyPI publication
 
 ### Compatibility
 
-- This is an internal prerelease, not the public PyPI release.
 - Existing named `sep(...)` / `frac(...)` group behavior remains compatible.
 - Existing `source.partition(program)[i]` remains a transfer-local selector and
   is not redefined as a prior-state reader.
 - `container.contents[i]` is valid only where a current indexed contents state
   exists and remains valid.
+- Existing direct `hold(...)` uses remain valid. `hold(...)` remains invalid
+  outside a direct `with env(...)` body or inside nested `if`, `repeat`, or
+  `with constraint` blocks.
+- `with env(thermal = ..., duration = ...) { action; hold(target); }` is valid;
+  the duration is the author-provided environment window for the executable
+  body and declared target.
 
 ### Install
 
-After the GitHub prerelease assets are published:
+PyPI install:
 
 ```bash
-python -m pip install https://github.com/culsma/culsma/releases/download/internal-1.0.4rc1/culsma-1.0.4rc1-py3-none-any.whl
+python -m pip install culsma
 ```
 
 Source tag install:
 
 ```bash
-python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@internal-1.0.4rc1"
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@v1.0.4"
 ```
 
 ### Verified
 
 - `python -m pytest -q`
-  - result: `689 passed`
-- `python -m build --outdir /private/tmp/culsma-internal-1.0.4rc1-dist`
-  - result: `culsma-1.0.4rc1.tar.gz` and
-    `culsma-1.0.4rc1-py3-none-any.whl` built
-- `python -m twine check /private/tmp/culsma-internal-1.0.4rc1-dist/*`
+  - result: `723 passed`
+- `python -m build --outdir /private/tmp/culsma-1.0.4-dist`
+  - result: `culsma-1.0.4.tar.gz` and
+    `culsma-1.0.4-py3-none-any.whl` built
+- `python -m twine check /private/tmp/culsma-1.0.4-dist/*`
   - result: passed
 - local wheel install check
-  - result: installed package reports `culsma.__version__ == "1.0.4rc1"`
+  - result: installed package reports `culsma.__version__ == "1.0.4"`
 
 ## Culsma v1.0.3
 

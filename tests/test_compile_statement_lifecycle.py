@@ -9,12 +9,14 @@ from culsma.parser.ast_nodes import (
     Identifier,
     IncludeStatement,
     LetStatement,
+    MemberExpr,
     Program,
     ProtocolDecl,
     Quantity,
     RepeatStatement,
     Statement,
     StepCall,
+    WithConstraintStmt,
 )
 from culsma.pipeline.compile.callable import CallableLowering
 from culsma.pipeline.compile.context import BlockContext, CompileSession
@@ -28,7 +30,7 @@ from culsma.pipeline.compile.statements import (
     StatementLoweringContext,
     StatementLoweringState,
 )
-from culsma.pipeline.compile.targets import TargetResolver
+from culsma.pipeline.compile.targets import TargetResolver, split_env_hold_markers
 from culsma.pipeline.ir_nodes import IRAssign, IRInclude, IRLet
 
 
@@ -66,6 +68,48 @@ def _lowering_ctx(compiler: StatementCompiler, *, block_context: BlockContext | 
         static_control_classifier=compiler.static_control_classifier,
         repeat_control_lowerer=compiler.repeat_control_lowerer,
     )
+
+
+def _hold_stmt(name: str = "tube") -> StepCall:
+    return StepCall(
+        name="hold",
+        args=[Arg(name="sample", value=Identifier(name, span=SPAN), span=SPAN)],
+        span=SPAN,
+    )
+
+
+def test_split_env_hold_markers_collects_direct_holds_and_preserves_body_order():
+    step_a = StepCall(name="StepA", args=[], span=SPAN)
+    step_b = StepCall(name="StepB", args=[], span=SPAN)
+
+    result = split_env_hold_markers(
+        [step_a, _hold_stmt("tube_a"), step_b, _hold_stmt("tube_b")],
+        let_bindings={},
+    )
+
+    assert [target.name for target in result.hold_targets] == ["tube_a", "tube_b"]
+    assert result.executable_statements == [step_a, step_b]
+    assert result.has_hold_targets
+    assert not result.is_hold_only
+    assert not result.has_invalid_nested_hold
+
+
+def test_split_env_hold_markers_flags_nested_holds_without_collecting_them():
+    nested = WithConstraintStmt(requirements=["low_carryover"], statements=[_hold_stmt()], span=SPAN)
+
+    result = split_env_hold_markers([nested], let_bindings={})
+
+    assert result.hold_targets == []
+    assert result.executable_statements == [nested]
+    assert result.has_invalid_nested_hold
+
+
+def test_target_resolver_assignment_target_root_name_handles_member_paths():
+    resolver = _compiler().target_resolver
+    target = MemberExpr(base=MemberExpr(base=Identifier("x", span=SPAN), member="result", span=SPAN), member="flag")
+
+    assert resolver.assignment_target_root_name(target) == "x"
+    assert resolver.assignment_target_root_name(Quantity(1.0, None, span=SPAN)) is None
 
 
 class RecordingCompileHandler(BaseStatementCompileHandler):
@@ -238,7 +282,7 @@ def test_assign_handler_validates_local_target_before_lowering():
 def test_step_call_handler_rejects_hold_before_lowering_ir():
     compiler = _compiler()
 
-    with pytest.raises(ValueError, match="target declaration at the start of with env"):
+    with pytest.raises(ValueError, match="direct target declaration inside with env"):
         compiler.compile(
             StepCall(
                 name="hold",
