@@ -56,9 +56,11 @@ tag, confirm that:
 
 - the version in `pyproject.toml`, `CHANGELOG.md`, `CITATION.cff`, and the tag
   agree where applicable;
+- `.zenodo.json` does not hard-code a stale release version;
 - release notes describe the public package changes;
 - no private reference content is included in the software release archive.
 
 If release metadata must be corrected after publication, edit metadata in
-Zenodo/GitHub rather than replacing already-published release files. If archive
+Zenodo/GitHub rather than replacing already-published release files. Confirm
+the Zenodo record displays the release tag version after publication. If archive
 content changes, publish a new version.
