@@ -338,28 +338,6 @@ def _argv_for_parser(argv: list[str]) -> list[str]:
     return argv
 
 
-def _looks_like_source_path(value: str) -> bool:
-    path = Path(value)
-    return (
-        path.exists()
-        or path.suffix == ".culs"
-        or "/" in value
-        or value.startswith(".")
-        or value.startswith("~")
-    )
-
-
-def _split_run_positionals(values: list[str], *, has_option_inputs: bool = False) -> tuple[list[str], str | None]:
-    if len(values) == 1 and has_option_inputs and not _looks_like_source_path(values[0]):
-        return [], values[0]
-    if len(values) <= 1:
-        return values, None
-    last = values[-1]
-    if _looks_like_source_path(last):
-        return values, None
-    return values[:-1], last
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(description="Culsma execution kernel CLI")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -368,7 +346,7 @@ def main() -> None:
     run_cmd.add_argument(
         "paths",
         nargs="*",
-        help="Path to .culs protocol file(s), optionally followed by a protocol entry name.",
+        help="Path to .culs protocol file (repeatable for multi-file merge)",
     )
     run_cmd.add_argument(
         "--input",
@@ -413,17 +391,19 @@ def main() -> None:
         default=[],
         help="Optional directory containing importable library .culs modules (repeatable).",
     )
+    run_cmd.add_argument(
+        "--entry-protocol",
+        default=None,
+        help="Protocol name to use as the run entrypoint when a source defines multiple top-level protocols.",
+    )
+
     replay_cmd = sub.add_parser("replay", help="Replay state from a run artifact JSON")
     replay_cmd.add_argument("--run-json", required=True, help="Path to an explicit run.json artifact")
     replay_cmd.add_argument("--out", required=True, help="Output JSON path for reconstructed state")
 
     args = parser.parse_args(_argv_for_parser(sys.argv[1:]))
     if args.command == "run":
-        positional_inputs, entry_protocol = _split_run_positionals(
-            list(args.paths),
-            has_option_inputs=bool(args.input),
-        )
-        input_values = [*args.input, *positional_inputs]
+        input_values = [*args.input, *args.paths]
         if not input_values:
             parser.error("run requires at least one input path")
         bundle = execute_pipeline(
@@ -431,7 +411,7 @@ def main() -> None:
             fail_ops=set(args.fail_op),
             material_state_path=Path(args.material_state_json) if args.material_state_json else None,
             inventory_check=bool(args.inventory_check),
-            entry_protocol=entry_protocol,
+            entry_protocol=args.entry_protocol,
             library_roots=[Path(p) for p in args.library_root],
         )
         if args.output:
