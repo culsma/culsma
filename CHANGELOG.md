@@ -1,5 +1,30 @@
 # Changelog
 
+## Culsma v1.0.5rc1
+
+### Scope
+
+This prerelease separates entry-source script execution from protocol
+definitions while preserving a temporary 1.0.5 compatibility adapter for
+single entry-source protocol files.
+
+It includes:
+
+- entry-source top-level script statements compiled as a first-class script
+  entry
+- imported and included dependency files load definitions without executing
+  their top-level scripts
+- protocol definitions no longer become default run entries by name
+- explicit protocol entry selection remains supported
+- isolated 1.0.5 fallback for legacy single entry-source protocol files
+- parser, IR, plan, scope, validation, typecheck, runtime, and architecture
+  diagram updates for the entry boundary
+
+### Verified
+
+- `python -m pytest -q`
+  - result: `739 passed`
+
 ## Culsma v1.0.4
 
 ### Scope
