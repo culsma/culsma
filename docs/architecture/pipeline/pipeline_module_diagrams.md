@@ -21,20 +21,52 @@ The pipeline layer covers Canonical IR, compile, validation, typecheck, plan
 lowering, and shared pipeline semantic services. Parser source syntax, runtime
 execution, material compute, and concrete drivers are documented separately.
 
+## Entrypoint And Module Boundary
+
+```mermaid
+flowchart TB
+    Sources["Resolved source set"]
+    EntrySource["Entry source<br/>CLI input file"]
+    DependencySource["Dependency sources<br/>import / include / stdlib"]
+    DefinitionsOnly["Definitions only<br/>protocols visible to entry"]
+    Explicit{"Explicit entry<br/>requested?"}
+    ExplicitEntry["Explicit protocol entry"]
+    HasScript{"Default run:<br/>entry source has top-level statements?"}
+    ScriptEntry["Script entry<br/>lower entry-source statements"]
+    Compat{"1.0.5 legacy adapter<br/>single entry-source root?"}
+    LegacyEntry["Legacy protocol entry<br/>warning"]
+    NoRun["No executable entry"]
+
+    Sources --> EntrySource
+    Sources --> DependencySource
+    DependencySource --> DefinitionsOnly
+    EntrySource --> Explicit
+    Explicit -->|yes| ExplicitEntry
+    Explicit -->|no| HasScript
+    HasScript -->|yes| ScriptEntry
+    HasScript -->|no| Compat
+    Compat -->|yes| LegacyEntry
+    Compat -->|no| NoRun
+```
+
 ## Pipeline Stage Overview
 
 ```mermaid
 flowchart LR
-    AST["Program"]
+    AST["Resolved modules<br/>entry + dependencies"]
     Compile["IRCompiler<br/>CompileResult"]
     Validate["validate<br/>ValidationResult"]
     Typecheck["typecheck<br/>TypecheckResult"]
-    Plan["lower_ir_to_plan<br/>PlanProgram"]
+    Entry["Entry resolution<br/>explicit protocol / entry-source script<br/>or no run"]
+    Compat["Entry compatibility adapter<br/>1.0.5 entry-source legacy fallback"]
+    Plan["lower_ir_to_plan<br/>selected execution PlanProgram"]
 
     AST --> Compile
     Compile --> Validate
     Validate --> Typecheck
-    Typecheck --> Plan
+    Typecheck --> Entry
+    Entry --> Compat
+    Compat --> Plan
 ```
 
 ## Shared Pipeline Semantics
@@ -45,6 +77,7 @@ owned by a single stage handler.
 ```mermaid
 flowchart TB
     Scope["pipeline.scope"]
+    EntryCompat["pipeline.entrypoints<br/>compatibility adapter"]
     Compile["pipeline.compile"]
     Validate["pipeline.validate"]
     Typecheck["pipeline.typecheck"]
@@ -54,6 +87,7 @@ flowchart TB
     Validate -. uses .-> Scope
     Typecheck -. uses .-> Scope
     Plan -. uses .-> Scope
+    EntryCompat -. selects entry for .-> Plan
 ```
 
 ## Scope Service Target

@@ -75,7 +75,7 @@ flowchart TB
     Leaf["Build primitive parser values:<br/>identifiers, literals, quantities,<br/>booleans, selectors"]
     Expr["Build expression AST:<br/>operators, calls, members,<br/>indexing, lists, groups"]
     Stmt["Build statement AST:<br/>let, assign, return, step,<br/>with blocks, mutation, repeat, if"]
-    TopLevel["Build top-level AST:<br/>source includes, imports, protocols, Program"]
+    TopLevel["Build top-level AST:<br/>source includes, imports,<br/>script statements, protocols, Program"]
     Return["Return AST value to parent rule"]
 
     Start --> Dispatch
@@ -116,7 +116,7 @@ sequenceDiagram
         Ctx->>Common: use shared parser helpers
         alt top-level rule
             Base->>Top: construct_ast(...)
-            Top->>AST: construct Program or ProtocolDecl
+            Top->>AST: construct Program / ProtocolDecl / top-level Statement
             AST-->>Top: AST value
             Top-->>Base: AST value
         else statement rule
@@ -147,7 +147,7 @@ classDiagram
     class ParserAPI {
         +parse(source) Program
         +parse_file(path) Program
-        +parse_files(paths, entry_protocol) Program
+        +parse_files(paths) Program
         -_tag_protocol_modules(program, module_name) None
     }
 
@@ -239,6 +239,9 @@ classDiagram
     ExpressionRuleHandler <|-- MethodCallExprHandler
     TopLevelRuleHandler --> Program : constructs
     TopLevelRuleHandler --> ProtocolDecl : constructs
+    TopLevelRuleHandler --> Statement : constructs script statements
+    Program --> Statement : owns script statements
+    Program --> ProtocolDecl : owns protocol definitions
     StatementRuleHandler --> Statement : constructs
     ExpressionRuleHandler --> Expression : constructs
 ```

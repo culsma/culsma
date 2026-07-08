@@ -9,6 +9,7 @@ Semantic checks belong in a later stage.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import TypeGuard
 
 from culsma.common.source import Span
 
@@ -19,10 +20,15 @@ from culsma.common.source import Span
 
 @dataclass
 class Program:
-    """A Culsma source file (or merged workspace) with includes and protocols."""
+    """A Culsma source file (or merged workspace) with includes, script statements, and protocols."""
     source_includes: list[SourceIncludeDecl] = field(default_factory=list)
     library_imports: list[LibraryImportDecl] = field(default_factory=list)
+    statements: list[Statement] = field(default_factory=list)
     protocols: list[ProtocolDecl] = field(default_factory=list)
+    module_name: str | None = None
+    source_path: str | None = None
+    source_role: str | None = None
+    entry_source_paths: tuple[str, ...] = ()
     span: Span | None = None
 
 
@@ -49,6 +55,8 @@ class ProtocolDecl:
     """protocol <name>([params]) { <statements> }"""
     name: str
     module: str | None = None
+    source_path: str | None = None
+    source_role: str | None = None
     params: list[ParamDecl] = field(default_factory=list)
     returns: list[str] = field(default_factory=list)
     statements: list[Statement] = field(default_factory=list)
@@ -347,6 +355,10 @@ Statement = (
     | RepeatStatement
     | IfStatement
 )
+
+
+def is_statement_node(value: object) -> TypeGuard[Statement]:
+    return isinstance(value, Statement)
 
 Expression = (
     BinaryOp

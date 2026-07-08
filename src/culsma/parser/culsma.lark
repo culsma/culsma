@@ -16,10 +16,13 @@
 // 1. Top-level structure
 // ------------------------------------------------------------
 
-start: pre_protocol_decl* protocol_decl*
+start: pre_protocol_decl* top_level_item*
 
 ?pre_protocol_decl: source_include_decl
     | library_import_decl
+
+?top_level_item: protocol_decl
+    | statement
 
 source_include_decl: "include" STRING ";" -> source_include_decl
 library_import_decl: "import" IDENTIFIER ";" -> library_import_decl

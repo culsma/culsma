@@ -39,20 +39,25 @@ evaluation, and `plan/statements.py` owns statement dispatch and handlers.
 flowchart TB
     Start(["Start plan lowering"])
     Init["Prepare lowering state:<br/>protocol lookup, referenced protocol names,<br/>diagnostics collection"]
-    Roots["Select executable root protocols:<br/>protocols not referenced by other protocols;<br/>fall back to all protocols when cycles hide every root"]
-    ProtocolLoop{"More root protocols?"}
-    Bind["Bind entry protocol parameters<br/>into a protocol-local runtime env"]
-    StatementLoop{"More IR statements<br/>in this protocol or nested block?"}
+    Entry{"Did EntryResolution select<br/>an executable boundary?"}
+    PickEntry["Use selected script / explicit protocol<br/>/ compatibility protocol as root"]
+    NoRun["Return no executable plan:<br/>definitions were checked,<br/>but no runtime session is created"]
+    ProtocolLoop{"Selected root ready?"}
+    Bind["Bind entry parameters when needed<br/>and create runtime env"]
+    StatementLoop{"More IR statements<br/>in this entry or nested block?"}
     Dispatch["Select lowering behavior<br/>by IR statement type"]
     LowerStmt["Rewrite current IR statement into runtime plan form:<br/>update local env, expand protocol references,<br/>serialize payloads, resolve parameter-bound static control,<br/>attach env/constraint/branch gates,<br/>or emit direct PlanStep values"]
     NextStmt["Continue lowering the next statement"]
     Linearize["Turn emitted steps into an ordered execution chain<br/>by filling linear dependencies"]
-    Build["Assemble one protocol execution plan:<br/>returns, return bindings, ordered steps"]
+    Build["Assemble one execution plan:<br/>entry kind, returns, return bindings, ordered steps"]
     Return["Return PlanProgram(plans, diagnostics)"]
 
     Start --> Init
-    Init --> Roots
-    Roots --> ProtocolLoop
+    Init --> Entry
+    Entry -->|yes| PickEntry
+    Entry -->|no| NoRun
+    NoRun --> Return
+    PickEntry --> ProtocolLoop
     ProtocolLoop -->|yes| Bind
     Bind --> StatementLoop
     StatementLoop -->|yes| Dispatch
@@ -78,11 +83,14 @@ sequenceDiagram
     participant Static as "PlanStaticEvaluator"
     participant Diag as "Diagnostic"
 
-    Caller->>API: lower_ir_to_plan(ir, entry_args_by_protocol)
+    Caller->>API: lower_ir_to_plan(ir, entry_resolution, entry_args_by_protocol)
     API->>Ref: collect_referenced_protocol_names(...)
-    API->>API: select_root_protocols
+    API->>API: resolve_entry_execution_boundary
 
-    loop IRProtocol root
+    alt EntryResolution selects script
+        API->>Ctx: PlanLoweringContext(...)
+        API->>Lower: lower_list(script.statements, ctx)
+    else EntryResolution selects explicit or compatibility protocol
         API->>Ref: bind_protocol_params(..., entry_mode=True)
         Ref->>Diag: PLAN_CALL_* / PLAN_ENTRY_*
         API->>Ctx: PlanLoweringContext(...)
@@ -92,6 +100,8 @@ sequenceDiagram
         Lower->>Diag: PLAN_STATIC_* / PLAN_REFERENCE_*
         API->>Ser: linearize_steps(ordered_steps)
         API->>API: ProtocolPlan(...)
+    else no entry selected
+        API->>API: return PlanProgram(plans=[], diagnostics)
     end
 
     API-->>Caller: PlanProgram(plans, diagnostics)
@@ -253,7 +263,15 @@ flowchart TB
 ```mermaid
 classDiagram
     class PlanAPI {
-        +lower_ir_to_plan(ir, entry_args_by_protocol) PlanProgram
+        +lower_ir_to_plan(ir, entry_resolution, entry_args_by_protocol) PlanProgram
+    }
+
+    class EntryResolution {
+        +entry_kind
+        +entry_module
+        +entry_protocol
+        +source
+        +diagnostics
     }
 
     class PlanLoweringContext {
@@ -364,6 +382,7 @@ classDiagram
     class IRStatement
 
     PlanAPI --> PlanLoweringContext : creates
+    PlanAPI --> EntryResolution : reads
     PlanAPI --> PlanStatementLowerer : uses
     PlanAPI --> PlanProgram : returns
     PlanLoweringContext --> Diagnostic : appends

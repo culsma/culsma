@@ -56,6 +56,8 @@ def expand_component_calls(
         ProtocolDecl(
             name=protocol.name,
             module=protocol.module,
+            source_path=protocol.source_path,
+            source_role=protocol.source_role,
             params=list(protocol.params),
             returns=list(protocol.returns),
             statements=_expand_statement_list(protocol.statements, lookup=lookup, call_stack=[protocol.name], token_seed=protocol.name),
@@ -66,7 +68,17 @@ def expand_component_calls(
     return Program(
         source_includes=list(program.source_includes),
         library_imports=list(program.library_imports),
+        statements=_expand_statement_list(
+            program.statements,
+            lookup=lookup,
+            call_stack=["entry"],
+            token_seed="entry",
+        ),
         protocols=protocols,
+        module_name=program.module_name,
+        source_path=program.source_path,
+        source_role=program.source_role,
+        entry_source_paths=tuple(program.entry_source_paths),
         span=program.span,
     )
 

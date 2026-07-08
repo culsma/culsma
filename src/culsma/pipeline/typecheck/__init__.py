@@ -47,6 +47,16 @@ def typecheck(
     scope_model = analysis.scope if analysis is not None else ScopeAnalyzer().analyze(ir)
     scope_query = ScopeQueryService.from_model(scope_model)
 
+    if ir.script_entry is not None:
+        ctx = TypecheckContext(
+            operation_specs=operation_specs,
+            diagnostics=diagnostics,
+            expr_bindings={},
+            scope_query=scope_query,
+            statement_typechecker=statement_typechecker,
+        )
+        statement_typechecker.typecheck_list(ir.script_entry.statements, ctx)
+
     for protocol in ir.protocols:
         ctx = TypecheckContext(
             operation_specs=operation_specs,

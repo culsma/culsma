@@ -224,6 +224,9 @@ IRStatement = IRInclude | IRLet | IRAssign | IRStep | IRWithEnv | IRWithConstrai
 class IRProtocol:
     id: str
     name: str
+    module: str | None = None
+    source_path: str | None = None
+    source_role: str | None = None
     params: list[IRParam] = field(default_factory=list)
     returns: list[str] = field(default_factory=list)
     return_value: IRExpr | None = None
@@ -233,8 +236,20 @@ class IRProtocol:
 
 
 @dataclass(frozen=True)
+class IRScriptEntry:
+    id: str
+    statements: list[IRStatement] = field(default_factory=list)
+    returns: list[str] = field(default_factory=list)
+    return_value: IRExpr | None = None
+    return_bindings: list[IRArg] = field(default_factory=list)
+    source_paths: tuple[str, ...] = ()
+    span: Span | None = None
+
+
+@dataclass(frozen=True)
 class IRProgram:
     protocols: list[IRProtocol] = field(default_factory=list)
+    script_entry: IRScriptEntry | None = None
     span: Span | None = None
 
     def to_dict(self) -> dict[str, Any]:

@@ -72,7 +72,7 @@ class LibraryResolver:
 
             stack.append(import_name)
             try:
-                imported_program = parse_files([path])
+                imported_program = parse_files([path], entry_sources=())
                 self._tag_protocol_modules(imported_program.protocols, module_name=import_name)
                 for nested_import in imported_program.library_imports:
                     visit_import(nested_import)
@@ -141,7 +141,12 @@ class NamespaceAssembler:
         return Program(
             source_includes=list(entry_program.source_includes),
             library_imports=list(entry_program.library_imports),
+            statements=list(entry_program.statements),
             protocols=merged_protocols,
+            module_name=entry_program.module_name,
+            source_path=entry_program.source_path,
+            source_role=entry_program.source_role,
+            entry_source_paths=tuple(entry_program.entry_source_paths),
             span=entry_program.span,
         )
 

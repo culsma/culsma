@@ -69,6 +69,37 @@ protocol A { include B; Step1(); }
     assert plan.diagnostics == []
 
 
+def test_entry_protocol_selects_single_root_from_independent_protocols():
+    src = """
+protocol Wrapper { StepWrapper(); }
+protocol Section { StepSection(); }
+"""
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)), entry_protocol="Wrapper")
+
+    assert [protocol.protocol_name for protocol in plan.plans] == ["Wrapper"]
+    assert [step.op for step in plan.plans[0].steps] == ["StepWrapper"]
+    assert plan.diagnostics == []
+
+
+def test_missing_entry_protocol_emits_diagnostic():
+    src = "protocol Root { StepRoot(); }"
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)), entry_protocol="Missing")
+
+    assert plan.plans == []
+    assert [diagnostic.code for diagnostic in plan.diagnostics] == ["ENTRY_PROTOCOL_NOT_FOUND"]
+
+
+def test_multi_protocol_source_without_entry_does_not_infer_roots():
+    src = """
+protocol Wrapper { StepWrapper(); }
+protocol Section { StepSection(); }
+"""
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)))
+
+    assert plan.plans == []
+    assert [diagnostic.code for diagnostic in plan.diagnostics] == ["ENTRY_NO_ENTRYPOINT"]
+
+
 def test_include_unknown_reference_emits_plan_unknown_reference():
     src = 'protocol A { include Missing; Step1(); }'
     plan = lower_ir_to_plan(compile_to_ir(parse(src)))
@@ -82,14 +113,14 @@ def test_include_cross_cycle_emits_plan_reference_cycle():
 protocol A { include B; Step1(); }
 protocol B { include A; Step2(); }
 """
-    plan = lower_ir_to_plan(compile_to_ir(parse(src)))
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)), entry_protocol="A")
     codes = [d.code for d in plan.diagnostics]
     assert "PLAN_REFERENCE_CYCLE" in codes
 
 
 def test_include_self_cycle_emits_plan_reference_cycle():
     src = "protocol A { include A; Step1(); }"
-    plan = lower_ir_to_plan(compile_to_ir(parse(src)))
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)), entry_protocol="A")
     codes = [d.code for d in plan.diagnostics]
     assert "PLAN_REFERENCE_CYCLE" in codes
 

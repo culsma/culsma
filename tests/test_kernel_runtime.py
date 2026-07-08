@@ -94,6 +94,42 @@ protocol T {
     assert kinds.count("STEP_COMPLETED") == 3
 
 
+def test_runtime_entry_protocol_avoids_multi_root_material_state_reuse():
+    source = """
+protocol Wrapper {
+  let mix = tube(
+    label = "Mix",
+    capacity = 100uL,
+    load = [content(kind = formulation, type = master_mix, code = "MIX"):70uL]
+  );
+}
+protocol Section {
+  let mix = tube(
+    label = "Mix",
+    capacity = 100uL,
+    load = [content(kind = formulation, type = master_mix, code = "MIX"):70uL]
+  );
+}
+"""
+    compiled = _compile_ast(resolve_program(parse(source)).prepared_program)
+    sem = _validate(compiled.ir, analysis=compiled.analysis)
+    assert sem.ok, [d.to_dict() for d in sem.diagnostics]
+    typ = typecheck(sem.ir, analysis=compiled.analysis)
+    assert typ.ok, [d.to_dict() for d in typ.diagnostics]
+
+    full_file_plan = lower_ir_to_plan(typ.ir, analysis=compiled.analysis)
+    full_file_result = run(plan=full_file_plan, driver=StubDriver())
+    assert full_file_plan.plans == []
+    assert full_file_result.ok
+    assert [d.code for d in full_file_result.diagnostics] == ["ENTRY_NO_ENTRYPOINT"]
+
+    entry_plan = lower_ir_to_plan(typ.ir, analysis=compiled.analysis, entry_protocol="Wrapper")
+    entry_result = run(plan=entry_plan, driver=StubDriver())
+
+    assert [protocol.protocol_name for protocol in entry_plan.plans] == ["Wrapper"]
+    assert entry_result.ok, [d.to_dict() for d in entry_result.diagnostics]
+
+
 @pytest.mark.parametrize(
     ("ctor", "binding", "overflow_volume"),
     [

@@ -32,7 +32,10 @@ the actual parameter-bound static evaluation remains owned by plan lowering.
 flowchart TB
     Start([Start compile])
     Session["Create compile session:<br/>protocol lookup, protocol ids,<br/>analysis builder, shared compiler state"]
-    ProtocolLoop{"More protocols?"}
+    ScriptEntry{"Entry-source script<br/>statements present?"}
+    CompileScript["Compile entry-source top-level statements<br/>into first-class script entry"]
+    RecordEntry["Record IR script entry<br/>or no script entry"]
+    ProtocolLoop{"More protocol definitions<br/>from any resolved source?"}
     ProtocolSetup["Prepare protocol context:<br/>protocol id, params as local/formal names,<br/>return contract checks"]
     StatementLoop{"More source statements?"}
     Dispatch["Select statement lowering handler<br/>by AST statement type"]
@@ -48,7 +51,11 @@ flowchart TB
     Unsupported["Raise unsupported statement error"]
 
     Start --> Session
-    Session --> ProtocolLoop
+    Session --> ScriptEntry
+    ScriptEntry -->|yes| CompileScript
+    CompileScript --> RecordEntry
+    ScriptEntry -->|no| RecordEntry
+    RecordEntry --> ProtocolLoop
     ProtocolLoop -->|yes| ProtocolSetup
     ProtocolSetup --> StatementLoop
 
@@ -85,6 +92,14 @@ sequenceDiagram
     Caller->>API: compile_ast(prepared_ast)
     API->>C: IRCompiler(ast).compile_program(ast)
     C->>Session: from_program(ast)
+
+    alt entry source has top-level script statements
+        C->>SC: compile_list(ast.statements, script_ctx)
+        SC-->>C: list[IRStatement]
+        C-->>C: IRScriptEntry(statements)
+    else no script statements
+        C-->>C: no script entry
+    end
 
     loop ProtocolDecl
         C->>C: compile_protocol(proto, proto_index)
@@ -335,6 +350,7 @@ classDiagram
     class CompileSession {
         +qualified_protocol_lookup
         +protocol_lookup
+        +entry_boundary
         +protocol_id_by_name
         +analysis_builder
         +state

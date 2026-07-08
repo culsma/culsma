@@ -45,6 +45,7 @@ from culsma.parser.ast_nodes import (
     UnaryOp,
     WithConstraintStmt,
     WithEnvStmt,
+    is_statement_node,
 )
 
 _QUANTITY_RE = re.compile(
@@ -85,7 +86,6 @@ class CommonHelpers:
     def decode_boolean(token: Any, span: Span | None) -> BooleanLiteral:
         return BooleanLiteral(value=str(token) == "true", span=span)
 
-    @staticmethod
     @staticmethod
     def decode_selector_region(start_token: Any, end_token: Any | None, span: Span | None) -> SelectorRegion:
         return SelectorRegion(
@@ -208,6 +208,7 @@ class StartHandler(TopLevelRuleHandler):
         del meta, ctx
         source_includes: list[SourceIncludeDecl] = []
         library_imports: list[LibraryImportDecl] = []
+        statements: list[Any] = []
         protocols: list[ProtocolDecl] = []
         for item in items:
             if isinstance(item, SourceIncludeDecl):
@@ -219,10 +220,14 @@ class StartHandler(TopLevelRuleHandler):
             if isinstance(item, ProtocolDecl):
                 protocols.append(item)
                 continue
+            if is_statement_node(item):
+                statements.append(item)
+                continue
             raise TypeError(f"Unexpected top-level node type: {type(item).__name__}")
         return Program(
             source_includes=source_includes,
             library_imports=library_imports,
+            statements=statements,
             protocols=protocols,
             span=state.span,
         )

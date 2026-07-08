@@ -22,7 +22,6 @@ from culsma.pipeline.ir_nodes import (
     IRIdentifier,
     IRLet,
     IRProgram,
-    IRProtocol,
     IRRepeat,
     IRStatement,
     IRWithConstraint,
@@ -70,41 +69,31 @@ class ScopeAnalyzer:
         frame_id_by_node_id: dict[str, str] = {}
         assignment_effects_by_node_id: dict[str, list[ScopeAssignmentEffect]] = {}
 
-        for protocol in ir.protocols:
-            frame_id = self.protocol_frame_id(protocol)
-            frames[frame_id] = ScopeFrame(
-                frame_id=frame_id,
-                protocol_id=protocol.id,
-                parent_id=None,
-                owner_node_id=protocol.id,
+        if ir.script_entry is not None:
+            self.record_scope_root(
+                root_id=ir.script_entry.id,
+                statements=ir.script_entry.statements,
+                params=[],
+                frames=frames,
+                slots=slots,
+                slots_by_frame_name=slots_by_frame_name,
+                slots_by_protocol_name=slots_by_protocol_name,
+                frame_id_by_node_id=frame_id_by_node_id,
+                assignment_effects_by_node_id=assignment_effects_by_node_id,
             )
-            frame_id_by_node_id[protocol.id] = frame_id
-            mutable_names = self.collect_assigned_ir_local_names(protocol.statements)
-            for param in protocol.params:
-                self.add_slot(
-                    slots=slots,
-                    slots_by_frame_name=slots_by_frame_name,
-                    slots_by_protocol_name=slots_by_protocol_name,
-                    frame_id=frame_id,
-                    protocol_id=protocol.id,
-                    name=param.name,
-                    kind="parameter",
-                    mutable=param.name in mutable_names,
-                    declared_at=protocol.id,
-                )
-            for stmt in protocol.statements:
-                self.record_statement_scope(
-                    stmt,
-                    protocol=protocol,
-                    frame_id=frame_id,
-                    mutable_names=mutable_names,
-                    frames=frames,
-                    slots=slots,
-                    slots_by_frame_name=slots_by_frame_name,
-                    slots_by_protocol_name=slots_by_protocol_name,
-                    frame_id_by_node_id=frame_id_by_node_id,
-                    assignment_effects_by_node_id=assignment_effects_by_node_id,
-                )
+
+        for protocol in ir.protocols:
+            self.record_scope_root(
+                root_id=protocol.id,
+                statements=protocol.statements,
+                params=protocol.params,
+                frames=frames,
+                slots=slots,
+                slots_by_frame_name=slots_by_frame_name,
+                slots_by_protocol_name=slots_by_protocol_name,
+                frame_id_by_node_id=frame_id_by_node_id,
+                assignment_effects_by_node_id=assignment_effects_by_node_id,
+            )
 
         return ScopeModel(
             frames=MappingProxyType(frames),
@@ -117,11 +106,59 @@ class ScopeAnalyzer:
             ),
         )
 
+    def record_scope_root(
+        self,
+        *,
+        root_id: str,
+        statements: list[IRStatement],
+        params: list[Any],
+        frames: dict[str, ScopeFrame],
+        slots: dict[str, ScopeSlot],
+        slots_by_frame_name: dict[tuple[str, str], str],
+        slots_by_protocol_name: dict[tuple[str, str], str],
+        frame_id_by_node_id: dict[str, str],
+        assignment_effects_by_node_id: dict[str, list[ScopeAssignmentEffect]],
+    ) -> None:
+        frame_id = self.scope_frame_id(root_id)
+        frames[frame_id] = ScopeFrame(
+            frame_id=frame_id,
+            protocol_id=root_id,
+            parent_id=None,
+            owner_node_id=root_id,
+        )
+        frame_id_by_node_id[root_id] = frame_id
+        mutable_names = self.collect_assigned_ir_local_names(statements)
+        for param in params:
+            self.add_slot(
+                slots=slots,
+                slots_by_frame_name=slots_by_frame_name,
+                slots_by_protocol_name=slots_by_protocol_name,
+                frame_id=frame_id,
+                protocol_id=root_id,
+                name=param.name,
+                kind="parameter",
+                mutable=param.name in mutable_names,
+                declared_at=root_id,
+            )
+        for stmt in statements:
+            self.record_statement_scope(
+                stmt,
+                protocol_id=root_id,
+                frame_id=frame_id,
+                mutable_names=mutable_names,
+                frames=frames,
+                slots=slots,
+                slots_by_frame_name=slots_by_frame_name,
+                slots_by_protocol_name=slots_by_protocol_name,
+                frame_id_by_node_id=frame_id_by_node_id,
+                assignment_effects_by_node_id=assignment_effects_by_node_id,
+            )
+
     def record_statement_scope(
         self,
         stmt: IRStatement,
         *,
-        protocol: IRProtocol,
+        protocol_id: str,
         frame_id: str,
         mutable_names: set[str],
         frames: dict[str, ScopeFrame],
@@ -135,7 +172,7 @@ class ScopeAnalyzer:
         if hasattr(stmt, "id"):
             node_id = getattr(stmt, "id")
         else:
-            node_id = protocol.id
+            node_id = protocol_id
         frame_id_by_node_id[node_id] = frame_id
 
         if isinstance(stmt, IRLet):
@@ -145,7 +182,7 @@ class ScopeAnalyzer:
                 slots_by_frame_name=slots_by_frame_name,
                 slots_by_protocol_name=slots_by_protocol_name,
                 frame_id=frame_id,
-                protocol_id=protocol.id,
+                protocol_id=protocol_id,
                 name=name,
                 kind="local",
                 mutable=name in mutable_names,
@@ -157,7 +194,7 @@ class ScopeAnalyzer:
             effects.append(
                 ScopeAssignmentEffect(
                     node_id=node_id,
-                    protocol_id=protocol.id,
+                    protocol_id=protocol_id,
                     frame_id=frame_id,
                     name=stmt.target.name,
                     slot_id=slot.slot_id if slot is not None else None,
@@ -169,7 +206,7 @@ class ScopeAnalyzer:
             child_frame_id = self.child_frame_id(frame_id, node_id, child.label)
             frames[child_frame_id] = ScopeFrame(
                 frame_id=child_frame_id,
-                protocol_id=protocol.id,
+                protocol_id=protocol_id,
                 parent_id=frame_id,
                 owner_node_id=node_id,
             )
@@ -179,7 +216,7 @@ class ScopeAnalyzer:
                     slots_by_frame_name=slots_by_frame_name,
                     slots_by_protocol_name=slots_by_protocol_name,
                     frame_id=child_frame_id,
-                    protocol_id=protocol.id,
+                    protocol_id=protocol_id,
                     name=child.repeat_binding,
                     kind="repeat_binding",
                     mutable=False,
@@ -190,7 +227,7 @@ class ScopeAnalyzer:
                 effects.extend(
                     self.record_statement_scope(
                         nested,
-                        protocol=protocol,
+                        protocol_id=protocol_id,
                         frame_id=child_frame_id,
                         mutable_names=mutable_names,
                         frames=frames,
@@ -270,8 +307,8 @@ class ScopeAnalyzer:
             current_id = frame.parent_id if frame is not None else None
         return None
 
-    def protocol_frame_id(self, protocol: IRProtocol) -> str:
-        return f"{protocol.id}.scope"
+    def scope_frame_id(self, root_id: str) -> str:
+        return f"{root_id}.scope"
 
     def child_frame_id(self, parent_frame_id: str, node_id: str, label: str) -> str:
         return f"{parent_frame_id}.{node_id}.{label}"

@@ -39,6 +39,8 @@ flowchart LR
 ```mermaid
 flowchart TB
     Program["IRProgram"]
+    Module["IRModule"]
+    Script["IRScriptEntry"]
     Protocol["IRProtocol"]
     Param["IRParam"]
     Statement["IRStatement (union)"]
@@ -46,6 +48,8 @@ flowchart TB
     Arg["IRArg"]
 
     Program --> Protocol
+    Program --> Module
+    Program --> Script
     Protocol --> Param
     Protocol --> Statement
     Protocol --> Expr
@@ -58,17 +62,25 @@ flowchart TB
 ```mermaid
 flowchart TB
     Program["IRProgram"]
+    Module["IRModule"]
+    Script["IRScriptEntry"]
     Protocol["IRProtocol"]
     Param["IRParam"]
     Arg["IRArg"]
 
-    ProgramFields["protocols, span"]
-    ProtocolFields["id, name, params, returns, return_value, return_bindings, statements, span"]
+    ProgramFields["entry_module, modules, protocols,<br/>script_entry, span"]
+    ModuleFields["name, role"]
+    ScriptFields["module, statements, span"]
+    ProtocolFields["id, module, name, params, returns,<br/>return_value, return_bindings, statements, span"]
     ParamFields["name, default, span"]
     ArgFields["name, value, span"]
 
     Program --> ProgramFields
+    Program --> Module
+    Program --> Script
     Program --> Protocol
+    Module --> ModuleFields
+    Script --> ScriptFields
     Protocol --> ProtocolFields
     Protocol --> Param
     Protocol --> Arg

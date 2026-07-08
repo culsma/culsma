@@ -114,6 +114,14 @@ class TestASTStructure:
         assert isinstance(assign.value, BinaryOp)
         assert assign.value.op == "+"
 
+    def test_top_level_script_statements_parse_as_program_statements(self):
+        ast = parse('let sample = tube(label = "S", capacity = 100uL); hold(sample); protocol Helper {}')
+
+        assert len(ast.statements) == 2
+        assert isinstance(ast.statements[0], LetStatement)
+        assert isinstance(ast.statements[1], StepCall)
+        assert [protocol.name for protocol in ast.protocols] == ["Helper"]
+
     def test_member_assignment_statement_parses(self):
         ast = parse('protocol T { let read = data_ref(kind = sequence_read); read.result.sequence = []; }')
         assign = ast.protocols[0].statements[1]
@@ -684,8 +692,10 @@ class TestSourceIncludeDecl:
         assert ast.protocols[0].name == "T"
 
     def test_source_include_must_be_string_path(self):
-        with pytest.raises(UnexpectedInput):
-            parse("include SomeProtocol; protocol T {}")
+        ast = parse("include SomeProtocol; protocol T {}")
+        assert len(ast.source_includes) == 0
+        assert isinstance(ast.statements[0], IncludeStatement)
+        assert ast.statements[0].name == "SomeProtocol"
 
     def test_source_include_must_be_before_protocol_decls(self):
         with pytest.raises(UnexpectedInput):
@@ -767,6 +777,44 @@ class TestParseFilesWorkspaceInclude:
 
         ast = parse_files([root])
         assert [p.name for p in ast.protocols] == ["Shared", "A", "B", "Root"]
+
+    def test_parse_files_skips_source_include_top_level_statements(self, tmp_path: Path):
+        shared = tmp_path / "shared.culs"
+        shared.write_text(
+            'let hidden = tube(label = "INCLUDE_SCRIPT", capacity = 10uL);\nprotocol Shared {}',
+            encoding="utf-8",
+        )
+
+        root = tmp_path / "root.culs"
+        root.write_text(
+            'include "shared.culs";\nlet visible = tube(label = "ENTRY_SCRIPT", capacity = 10uL);\nprotocol Root {}',
+            encoding="utf-8",
+        )
+
+        ast = parse_files([root])
+        assert [p.name for p in ast.protocols] == ["Shared", "Root"]
+        assert [stmt.name for stmt in ast.statements if isinstance(stmt, LetStatement)] == ["visible"]
+        assert [p.source_role for p in ast.protocols] == ["dependency", "entry"]
+
+    def test_parse_files_executes_included_file_statements_when_file_is_explicit_entry(self, tmp_path: Path):
+        shared = tmp_path / "shared.culs"
+        shared.write_text(
+            'let shared_visible = tube(label = "SHARED_ENTRY", capacity = 10uL);\nprotocol Shared {}',
+            encoding="utf-8",
+        )
+
+        root = tmp_path / "root.culs"
+        root.write_text(
+            'include "shared.culs";\nlet root_visible = tube(label = "ROOT_ENTRY", capacity = 10uL);\nprotocol Root {}',
+            encoding="utf-8",
+        )
+
+        ast = parse_files([root, shared])
+        assert [stmt.name for stmt in ast.statements if isinstance(stmt, LetStatement)] == [
+            "shared_visible",
+            "root_visible",
+        ]
+        assert [p.source_role for p in ast.protocols] == ["entry", "entry"]
 
     def test_parse_files_rejects_include_cycle(self, tmp_path: Path):
         a = tmp_path / "a.culs"

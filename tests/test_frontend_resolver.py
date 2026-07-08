@@ -196,6 +196,30 @@ protocol T(sample) {
     assert helpers[0].module == "Bio"
 
 
+def test_imported_single_protocol_does_not_create_legacy_entry(tmp_path: Path):
+    from culsma.pipeline.compile import compile_ast
+    from culsma.pipeline.entrypoints import resolve_entry
+
+    (tmp_path / "Bio.culs").write_text(
+        """
+protocol OnlyLibraryProtocol {
+  StepFromLibrary();
+}
+""",
+        encoding="utf-8",
+    )
+    main = tmp_path / "main.culs"
+    main.write_text("import Bio;\n", encoding="utf-8")
+
+    bundle = resolve_files([main], include_bundled_stdlib=False, library_roots=[tmp_path])
+    ir = compile_ast(bundle.prepared_program).ir
+    entry = resolve_entry(ir)
+
+    assert entry.kind == "none"
+    assert entry.entry_protocol is None
+    assert [protocol.source_role for protocol in ir.protocols] == ["dependency"]
+
+
 def test_resolve_files_rejects_imported_protocol_name_conflict_with_entry_program(tmp_path: Path):
     (tmp_path / "Bio.culs").write_text(
         """

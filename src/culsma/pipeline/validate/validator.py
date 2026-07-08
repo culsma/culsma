@@ -6,7 +6,7 @@ from typing import Mapping
 
 from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.analysis import CompileAnalysis, ProtocolAnalysis
-from culsma.pipeline.ir_nodes import IRBoolean, IRList, IRParam, IRProgram, IRQuantity, IRString
+from culsma.pipeline.ir_nodes import IRBoolean, IRList, IRParam, IRProgram, IRQuantity, IRScriptEntry, IRString
 from culsma.pipeline.operation_specs import BUILTIN_OPERATION_SPECS, OperationSpec
 from culsma.pipeline.scope import ScopeQueryService
 
@@ -28,6 +28,19 @@ def validate(
     diagnostics: list[Diagnostic] = []
     operations = operation_specs
     scope_query = ScopeQueryService.from_model(analysis.scope)
+
+    if ir.script_entry is not None:
+        validate_script_entry(
+            ir.script_entry,
+            analysis=analysis,
+            operations=operations,
+            scope_query=scope_query,
+            diagnostics=diagnostics,
+            initial_defined_names=initial_defined_names,
+            enforce_binding=enforce_binding,
+            content_whitelist_mode=content_whitelist_mode,
+            content_type_policy=content_type_policy,
+        )
 
     for protocol in ir.protocols:
         literal_bindings = literal_param_bindings(protocol.params)
@@ -57,6 +70,36 @@ def validate(
         validate_statement_list_with_context(protocol.statements, ctx)
 
     return ValidationResult(ir=ir, diagnostics=_dedupe_diagnostics(diagnostics))
+
+
+def validate_script_entry(
+    script: IRScriptEntry,
+    *,
+    analysis: CompileAnalysis,
+    operations: Mapping[str, OperationSpec],
+    scope_query: ScopeQueryService,
+    diagnostics: list[Diagnostic],
+    initial_defined_names: set[str] | None,
+    enforce_binding: bool,
+    content_whitelist_mode: str,
+    content_type_policy: str,
+) -> None:
+    ctx = StatementValidationContext(
+        literal_bindings={},
+        expr_bindings={},
+        group_bindings={},
+        defined_names=set(initial_defined_names or set()),
+        active_requirements=(),
+        diagnostics=diagnostics,
+        operations=operations,
+        analysis=analysis,
+        protocol_analysis=analysis.protocols.get(script.id, ProtocolAnalysis()),
+        enforce_binding=enforce_binding,
+        content_whitelist_mode=content_whitelist_mode,
+        content_type_policy=content_type_policy,
+        scope_query=scope_query,
+    )
+    validate_statement_list_with_context(script.statements, ctx)
 
 
 def literal_param_bindings(params: list[IRParam]) -> dict[str, object]:

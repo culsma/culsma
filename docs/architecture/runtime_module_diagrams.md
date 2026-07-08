@@ -43,8 +43,9 @@ The implementation now follows a scheduler plus dispatcher plus handler split:
 ```mermaid
 flowchart TB
     Start(["Start runtime run"])
-    Init["Prepare runtime state:<br/>init or reuse RuntimeState,<br/>create EventLog, diagnostics, step lookup tables"]
-    Order["Flatten protocol plans into one ordered step list:<br/>compute dependency layers, protocol output capture points,<br/>reference-call groups and cache"]
+    Boundary["Confirm execution boundary:<br/>selected entry session"]
+    Init["Prepare session-scoped runtime state:<br/>init or reuse RuntimeState,<br/>create EventLog, diagnostics, step lookup tables"]
+    Order["Order steps inside the session:<br/>compute dependency layers, protocol output capture points,<br/>reference-call groups and cache"]
     RoundLoop{"More scheduler rounds<br/>with progress?"}
     StepLoop{"More pending steps<br/>to scan this round?"}
     Select["Select one pending step"]
@@ -61,7 +62,8 @@ flowchart TB
     Build["Build user-facing run summary"]
     Return["Return RunResult(state, events, diagnostics, user_result)"]
 
-    Start --> Init
+    Start --> Boundary
+    Boundary --> Init
     Init --> Order
     Order --> RoundLoop
     RoundLoop -->|yes| StepLoop
@@ -100,7 +102,7 @@ sequenceDiagram
     participant Final as "runtime/finalize.py::RuntimeFinalizer"
     participant User as "runtime/user_result.py::build_user_result"
 
-    Caller->>API: run(plan, driver, state, ...)
+    Caller->>API: run(selected-entry plan, driver, state, ...)
     API->>Exec: RuntimeExecutor(...)
     API->>Session: create RuntimeSession(plan, driver, runtime_state, services)
     API->>Exec: execute(session)

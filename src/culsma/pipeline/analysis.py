@@ -110,6 +110,13 @@ def build_compile_analysis(ir: IRProgram) -> CompileAnalysis:
     """Build sidecar analysis for downstream pipeline stages."""
     protocols_by_name = {protocol.name: protocol for protocol in ir.protocols}
     protocol_analysis: dict[str, ProtocolAnalysis] = {}
+    if ir.script_entry is not None:
+        protocol_analysis[ir.script_entry.id] = ProtocolAnalysis(
+            runtime_exports=frozenset(_compute_runtime_exports(ir.script_entry.statements)),
+            include_targets=MappingProxyType(
+                _collect_include_targets(ir.script_entry.statements, protocols_by_name=protocols_by_name)
+            ),
+        )
     for protocol in ir.protocols:
         include_targets = _collect_include_targets(protocol.statements, protocols_by_name=protocols_by_name)
         protocol_analysis[protocol.id] = ProtocolAnalysis(

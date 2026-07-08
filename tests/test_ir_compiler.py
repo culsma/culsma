@@ -11,6 +11,21 @@ from culsma.frontend.resolver import resolve_program
 from culsma.pipeline.analysis import build_compile_analysis
 from culsma.pipeline.compile import compile_ast as _compile_ast
 from culsma.pipeline.component_expander import expand_component_calls
+from culsma.pipeline.entrypoints import (
+    collect_referenced_protocol_names,
+    collect_user_protocols,
+    resolve_entry,
+    resolve_legacy_single_protocol_entry,
+)
+from culsma.pipeline.ir_nodes import (
+    IRBoolean,
+    IRConditional,
+    IRInclude,
+    IRList,
+    IRRepeat,
+    IRWithConstraint,
+    IRWithEnv,
+)
 from culsma.parser.ast_nodes import CallExpr, LetStatement, Program, ProtocolDecl, Quantity
 from culsma.parser.parser import parse, parse_file, parse_files
 
@@ -40,6 +55,73 @@ def test_compile_current_frontend_core_fixture_smoke():
     ir = compile_to_ir(ast)
     assert ir.protocols
     assert ir.protocols[0].name == "CurrentFrontendCore"
+
+
+def test_compile_top_level_script_statements_become_script_entry():
+    ir = compile_to_ir(parse('let sample = tube(label = "S", capacity = 100uL); StepA(sample = sample); protocol Helper {}'))
+
+    assert ir.script_entry is not None
+    assert [stmt.__class__.__name__ for stmt in ir.script_entry.statements] == ["IRLet", "IRStep"]
+    assert [protocol.name for protocol in ir.protocols] == ["Helper"]
+
+
+def test_compile_protocol_names_do_not_create_default_entry_without_script_statements():
+    ir = compile_to_ir(parse("protocol Helper {} protocol EntryLike { StepMain(); }"))
+
+    assert ir.script_entry is None
+
+
+def test_resolve_entry_uses_isolated_legacy_single_protocol_fallback():
+    ir = compile_to_ir(parse("protocol T { StepA(); }"))
+    entry = resolve_entry(ir)
+
+    assert ir.script_entry is None
+    assert entry.kind == "protocol"
+    assert entry.entry_protocol == "T"
+    assert entry.source == "legacy_single_protocol"
+    assert [diagnostic.code for diagnostic in entry.diagnostics] == ["ENTRY_LEGACY_IMPLICIT_SINGLE_PROTOCOL"]
+
+
+def test_collect_user_protocols_returns_protocol_definitions_only():
+    ir = compile_to_ir(parse('StepA(); protocol Helper { StepB(); }'))
+
+    assert ir.script_entry is not None
+    assert [protocol.name for protocol in collect_user_protocols(ir)] == ["Helper"]
+
+
+def test_collect_referenced_protocol_names_recurses_through_nested_blocks():
+    statements = [
+        IRWithEnv(id="env", statements=[IRInclude(id="env.include", name="EnvChild")]),
+        IRWithConstraint(id="constraint", statements=[IRInclude(id="constraint.include", name="ConstraintChild")]),
+        IRRepeat(
+            id="repeat",
+            binding="item",
+            iterable=IRList(),
+            statements=[IRInclude(id="repeat.include", name="RepeatChild")],
+        ),
+        IRConditional(
+            id="conditional",
+            condition=IRBoolean(True),
+            then_statements=[IRInclude(id="then.include", name="ThenChild")],
+            else_statements=[IRInclude(id="else.include", name="ElseChild")],
+        ),
+    ]
+
+    assert collect_referenced_protocol_names(statements) == [
+        "EnvChild",
+        "ConstraintChild",
+        "RepeatChild",
+        "ThenChild",
+        "ElseChild",
+    ]
+
+
+def test_resolve_legacy_single_protocol_entry_requires_one_unreferenced_root():
+    single_root_ir = compile_to_ir(parse("protocol Wrapper { include Section; } protocol Section {}"))
+    multi_root_ir = compile_to_ir(parse("protocol Wrapper {} protocol Section {}"))
+
+    assert resolve_legacy_single_protocol_entry(single_root_ir).name == "Wrapper"
+    assert resolve_legacy_single_protocol_entry(multi_root_ir) is None
 
 
 def test_compile_rejects_nested_let_redeclaring_outer_name():

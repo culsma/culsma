@@ -56,6 +56,7 @@ sequenceDiagram
     participant CA as "analysis.py::CompileAnalysis"
     participant V as "validate/validator.py::validate"
     participant T as "typecheck/__init__.py::typecheck"
+    participant ER as "entrypoints.py::resolve_entry"
     participant P as "plan/__init__.py::lower_ir_to_plan"
     participant QS as "scope/queries.py::ScopeQueryService"
 
@@ -80,7 +81,10 @@ sequenceDiagram
     QS-->>T: ScopeQueryService
     T-->>E: TypecheckResult
 
-    E->>P: lower_ir_to_plan(typ.ir, analysis=compile_result.analysis)
+    E->>ER: resolve_entry(typ.ir, entry_source, compatibility_policy)
+    ER-->>E: EntryResolution
+
+    E->>P: lower_ir_to_plan(typ.ir, entry_resolution, analysis=compile_result.analysis)
     P->>QS: from_model(analysis.scope)
     QS-->>P: ScopeQueryService
     P->>QS: assignment_effects(node_id)

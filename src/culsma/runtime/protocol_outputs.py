@@ -21,7 +21,8 @@ class ProtocolOutputRecorder:
         if not isinstance(outputs, dict):
             return
         for protocol in session.plan.plans:
-            if protocol.protocol_name in outputs:
+            output_name = protocol.output_name or protocol.protocol_name
+            if output_name in outputs:
                 continue
             self.capture_protocol(protocol, session)
 
@@ -30,11 +31,14 @@ class ProtocolOutputRecorder:
         if not isinstance(outputs, dict):
             return
 
+        output_name = protocol.output_name or protocol.protocol_name
         payload: dict[str, Any] = {
             "protocol_id": protocol.protocol_id,
             "protocol_name": protocol.protocol_name,
             "returns": list(protocol.returns),
         }
+        if protocol.entry_kind != "protocol":
+            payload["entry_kind"] = protocol.entry_kind
         resolver = session.value_resolver
         if protocol.return_bindings:
             bindings: dict[str, Any] = {}
@@ -45,4 +49,4 @@ class ProtocolOutputRecorder:
         elif protocol.return_value is not None:
             value = resolver.eval_protocol_output_expr(protocol.return_value, session.state)
             payload["value"] = None if value is UNRESOLVED else resolver.protocol_output_serialize(value)
-        outputs[protocol.protocol_name] = payload
+        outputs[output_name] = payload

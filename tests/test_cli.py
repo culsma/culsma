@@ -4,6 +4,7 @@ import json
 import sys
 from pathlib import Path
 
+from culsma.cli import execute_pipeline
 from culsma.cli import main
 
 
@@ -49,6 +50,88 @@ def test_cli_run_prints_machine_output_json_when_requested(tmp_path, monkeypatch
     assert captured.err == ""
 
 
+def test_cli_entry_protocol_selects_single_top_level_protocol(tmp_path, monkeypatch, capsys):
+    source = tmp_path / "multi_root.culs"
+    source.write_text(
+        """
+protocol Wrapper returns (mix) {
+  let mix = tube(
+    label = "Mix",
+    capacity = 100uL,
+    load = [content(kind = formulation, type = master_mix, code = "MIX"):70uL]
+  );
+  return mix;
+}
+protocol Section returns (mix) {
+  let mix = tube(
+    label = "Mix",
+    capacity = 100uL,
+    load = [content(kind = formulation, type = master_mix, code = "MIX"):70uL]
+  );
+  return mix;
+}
+""",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(source), "--entry-protocol", "Wrapper", "--json"])
+
+    main()
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert payload["ok"]
+    assert list(payload["returns"]) == ["Wrapper"]
+    assert payload["returns"]["Wrapper"]["value"]["id"] == "Mix"
+    assert captured.err == ""
+
+
+def test_run_entry_file_script_imported_file_script_is_definitions_only(tmp_path):
+    library = tmp_path / "Bio.culs"
+    library.write_text(
+        """
+protocol LibPrepare(sample) {
+  return sample;
+}
+protocol LibQc(sample) {
+  return sample;
+}
+let lib_demo = tube(label = "LIB_DEMO", capacity = 100uL);
+Bio.LibPrepare(sample = lib_demo);
+return lib_demo;
+""",
+        encoding="utf-8",
+    )
+    source = tmp_path / "run.culs"
+    source.write_text(
+        """
+import Bio;
+protocol LocalPrepare(sample) {
+  return sample;
+}
+protocol LocalQc(sample) {
+  return sample;
+}
+let sample = tube(label = "RUN_SAMPLE", capacity = 100uL);
+Bio.LibPrepare(sample = sample);
+LocalPrepare(sample = sample);
+return sample;
+""",
+        encoding="utf-8",
+    )
+
+    output = execute_pipeline([source], library_roots=[tmp_path])["output"]
+    returned_values = [entry["value"]["id"] for entry in output["returns"].values()]
+    touched_names = output["report"]["resource_summary"]["containers"]["touched_names"]
+
+    assert output["ok"]
+    assert list(output["returns"]) == ["entry"]
+    assert output["returns"]["entry"]["entry_kind"] == "script"
+    assert returned_values == ["RUN_SAMPLE"]
+    assert touched_names == ["RUN_SAMPLE"]
+    assert "LIB_DEMO" not in json.dumps(output)
+    assert "__script__" not in json.dumps(output)
+
+
 def test_cli_accepts_top_level_input_path_shorthand(tmp_path, monkeypatch, capsys):
     source = _write_smoke_source(tmp_path)
     monkeypatch.setattr(sys, "argv", ["culsma", str(source)])
@@ -76,7 +159,9 @@ def test_cli_human_summary_includes_returned_container_state(tmp_path, monkeypat
         "    volume: 1000 uL\n"
         "    mass: 1000 mg\n"
         "\n"
-        "execution: 3/3 steps completed, 0 diagnostics\n"
+        "execution: 3/3 steps completed, 1 diagnostics\n"
+        "alerts:\n"
+        "  ENTRY_LEGACY_IMPLICIT_SINGLE_PROTOCOL: Implicitly running protocol 'CliSmoke' is deprecated; add top-level script statements or select an entry protocol explicitly\n"
     )
 
 

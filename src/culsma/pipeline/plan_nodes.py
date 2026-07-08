@@ -23,6 +23,8 @@ class PlanStep:
 class ProtocolPlan:
     protocol_id: str
     protocol_name: str
+    entry_kind: str = "protocol"
+    output_name: str | None = None
     returns: list[str] = field(default_factory=list)
     return_value: Any | None = None
     return_bindings: dict[str, Any] = field(default_factory=dict)

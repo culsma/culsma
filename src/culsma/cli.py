@@ -14,6 +14,7 @@ from typing import Any
 from culsma.frontend.resolver import resolve_files
 from culsma.pipeline.compile import compile_ast
 from culsma.driver.stub import StubDriver
+from culsma.pipeline.entrypoints import resolve_entry
 from culsma.pipeline.plan import lower_ir_to_plan
 from culsma.runtime.replay import replay_events
 from culsma.runtime.executor import run
@@ -231,6 +232,7 @@ def execute_pipeline(
     fail_ops: set[str] | None = None,
     material_state_path: Path | None = None,
     inventory_check: bool = False,
+    entry_protocol: str | None = None,
     library_roots: list[Path] | None = None,
 ) -> dict[str, Any]:
     frontend = resolve_files(input_paths, library_roots=library_roots or ())
@@ -250,7 +252,8 @@ def execute_pipeline(
 
     typ = typecheck(sem.ir, analysis=compile_result.analysis)
 
-    plan = lower_ir_to_plan(typ.ir, analysis=compile_result.analysis)
+    entry = resolve_entry(typ.ir, explicit_entry=entry_protocol)
+    plan = lower_ir_to_plan(typ.ir, analysis=compile_result.analysis, entry_resolution=entry)
 
     state = init_state(plan)
     state.artifacts["material_state"] = deepcopy(initial_material_state)
@@ -388,6 +391,11 @@ def main() -> None:
         default=[],
         help="Optional directory containing importable library .culs modules (repeatable).",
     )
+    run_cmd.add_argument(
+        "--entry-protocol",
+        default=None,
+        help="Protocol name to use as the run entrypoint when a source defines multiple top-level protocols.",
+    )
 
     replay_cmd = sub.add_parser("replay", help="Replay state from a run artifact JSON")
     replay_cmd.add_argument("--run-json", required=True, help="Path to an explicit run.json artifact")
@@ -403,6 +411,7 @@ def main() -> None:
             fail_ops=set(args.fail_op),
             material_state_path=Path(args.material_state_json) if args.material_state_json else None,
             inventory_check=bool(args.inventory_check),
+            entry_protocol=args.entry_protocol,
             library_roots=[Path(p) for p in args.library_root],
         )
         if args.output:
