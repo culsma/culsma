@@ -1,5 +1,27 @@
 # Changelog
 
+## Culsma v1.0.5rc2
+
+### Scope
+
+This second 1.0.5 prerelease keeps the entry-source release-candidate surface
+from `v1.0.5rc1` and adds two focused compiler/runtime fixes found during
+canonical protocol verification.
+
+It includes:
+
+- repeat iterator bindings are validated as repeat-body-local names so sibling
+  repeat blocks may reuse an iterator name without changing protocol semantics
+- `agit(sample = group([...]))` and `agit(sample = let_bound_group)` apply the
+  agitation material-state effect independently to each grouped sample
+- regression coverage for repeat-binding shadowing boundaries and grouped
+  agitation over explicit and let-bound groups
+
+### Verified
+
+- `python -m pytest -q`
+  - result: `750 passed`
+
 ## Culsma v1.0.5rc1
 
 ### Scope
