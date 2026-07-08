@@ -25,24 +25,27 @@ execution, material compute, and concrete drivers are documented separately.
 
 ```mermaid
 flowchart TB
+    CliInputs["CLI run inputs"]
+    Batch{"Multiple input files?"}
+    PerFile["Per-file independent run"]
     Sources["Resolved source set"]
     EntrySource["Entry source<br/>CLI input file"]
     DependencySource["Dependency sources<br/>import / include / stdlib"]
     DefinitionsOnly["Definitions only<br/>protocols visible to entry"]
-    Explicit{"Explicit entry<br/>requested?"}
-    ExplicitEntry["Explicit protocol entry"]
     HasScript{"Default run:<br/>entry source has top-level statements?"}
     ScriptEntry["Script entry<br/>lower entry-source statements"]
     Compat{"1.0.5 legacy adapter<br/>single entry-source root?"}
     LegacyEntry["Legacy protocol entry<br/>warning"]
     NoRun["No executable entry"]
 
+    CliInputs --> Batch
+    Batch -->|one| Sources
+    Batch -->|many| PerFile
+    PerFile --> Sources
     Sources --> EntrySource
     Sources --> DependencySource
     DependencySource --> DefinitionsOnly
-    EntrySource --> Explicit
-    Explicit -->|yes| ExplicitEntry
-    Explicit -->|no| HasScript
+    EntrySource --> HasScript
     HasScript -->|yes| ScriptEntry
     HasScript -->|no| Compat
     Compat -->|yes| LegacyEntry
@@ -57,7 +60,7 @@ flowchart LR
     Compile["IRCompiler<br/>CompileResult"]
     Validate["validate<br/>ValidationResult"]
     Typecheck["typecheck<br/>TypecheckResult"]
-    Entry["Entry resolution<br/>explicit protocol / entry-source script<br/>or no run"]
+    Entry["Entry resolution<br/>entry-source script / compatibility fallback<br/>or no run"]
     Compat["Entry compatibility adapter<br/>1.0.5 entry-source legacy fallback"]
     Plan["lower_ir_to_plan<br/>selected execution PlanProgram"]
 

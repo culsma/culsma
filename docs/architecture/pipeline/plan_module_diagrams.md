@@ -40,7 +40,7 @@ flowchart TB
     Start(["Start plan lowering"])
     Init["Prepare lowering state:<br/>protocol lookup, referenced protocol names,<br/>diagnostics collection"]
     Entry{"Did EntryResolution select<br/>an executable boundary?"}
-    PickEntry["Use selected script / explicit protocol<br/>/ compatibility protocol as root"]
+    PickEntry["Use selected script<br/>or compatibility protocol as root"]
     NoRun["Return no executable plan:<br/>definitions were checked,<br/>but no runtime session is created"]
     ProtocolLoop{"Selected root ready?"}
     Bind["Bind entry parameters when needed<br/>and create runtime env"]
@@ -269,7 +269,7 @@ classDiagram
     class EntryResolution {
         +entry_kind
         +entry_module
-        +entry_protocol
+        +protocol_name
         +source
         +diagnostics
     }

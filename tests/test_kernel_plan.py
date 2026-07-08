@@ -69,24 +69,25 @@ protocol A { include B; Step1(); }
     assert plan.diagnostics == []
 
 
-def test_entry_protocol_selects_single_root_from_independent_protocols():
+def test_script_entry_calls_one_protocol_from_independent_definitions():
     src = """
+include Wrapper;
 protocol Wrapper { StepWrapper(); }
 protocol Section { StepSection(); }
 """
-    plan = lower_ir_to_plan(compile_to_ir(parse(src)), entry_protocol="Wrapper")
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)))
 
-    assert [protocol.protocol_name for protocol in plan.plans] == ["Wrapper"]
+    assert [protocol.protocol_name for protocol in plan.plans] == ["entry"]
     assert [step.op for step in plan.plans[0].steps] == ["StepWrapper"]
     assert plan.diagnostics == []
 
 
-def test_missing_entry_protocol_emits_diagnostic():
-    src = "protocol Root { StepRoot(); }"
-    plan = lower_ir_to_plan(compile_to_ir(parse(src)), entry_protocol="Missing")
+def test_script_entry_unknown_protocol_reference_emits_diagnostic():
+    src = "include Missing; protocol Root { StepRoot(); }"
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)))
 
-    assert plan.plans == []
-    assert [diagnostic.code for diagnostic in plan.diagnostics] == ["ENTRY_PROTOCOL_NOT_FOUND"]
+    assert len(plan.plans) == 1
+    assert [diagnostic.code for diagnostic in plan.diagnostics] == ["PLAN_UNKNOWN_REFERENCE"]
 
 
 def test_multi_protocol_source_without_entry_does_not_infer_roots():
@@ -110,17 +111,18 @@ def test_include_unknown_reference_emits_plan_unknown_reference():
 
 def test_include_cross_cycle_emits_plan_reference_cycle():
     src = """
+include A;
 protocol A { include B; Step1(); }
 protocol B { include A; Step2(); }
 """
-    plan = lower_ir_to_plan(compile_to_ir(parse(src)), entry_protocol="A")
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)))
     codes = [d.code for d in plan.diagnostics]
     assert "PLAN_REFERENCE_CYCLE" in codes
 
 
 def test_include_self_cycle_emits_plan_reference_cycle():
-    src = "protocol A { include A; Step1(); }"
-    plan = lower_ir_to_plan(compile_to_ir(parse(src)), entry_protocol="A")
+    src = "include A; protocol A { include A; Step1(); }"
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)))
     codes = [d.code for d in plan.diagnostics]
     assert "PLAN_REFERENCE_CYCLE" in codes
 
@@ -251,7 +253,7 @@ protocol Root {
     assert "PLAN_CALL_ARG_MISSING" in codes
 
 
-def test_entry_protocol_missing_required_param_emits_diagnostic():
+def test_legacy_single_protocol_missing_required_param_emits_diagnostic():
     src = "protocol Root(input) { StepRoot(v = input); }"
     plan = lower_ir_to_plan(compile_to_ir(parse(src)))
     codes = [d.code for d in plan.diagnostics]

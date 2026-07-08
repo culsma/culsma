@@ -19,14 +19,14 @@ from culsma.pipeline.ir_nodes import (
 
 
 EntryKind = Literal["protocol", "script", "none"]
-EntrySource = Literal["explicit", "script", "legacy_single_protocol", "none"]
+EntrySource = Literal["script", "legacy_single_protocol", "none"]
 CompatibilityPolicy = Literal["legacy_single_protocol", "strict"]
 
 
 @dataclass(frozen=True)
 class EntryResolution:
     kind: EntryKind
-    entry_protocol: str | None
+    protocol_name: str | None
     source: EntrySource
     diagnostics: list[Diagnostic] = field(default_factory=list)
 
@@ -37,7 +37,7 @@ __all__ = [
     "EntryResolution",
     "EntrySource",
     "collect_referenced_protocol_names",
-    "collect_entry_protocols",
+    "collect_entry_source_protocols",
     "collect_user_protocols",
     "resolve_entry",
     "resolve_legacy_single_protocol_entry",
@@ -47,32 +47,12 @@ __all__ = [
 def resolve_entry(
     ir: IRProgram,
     *,
-    explicit_entry: str | None = None,
     compatibility_policy: CompatibilityPolicy = "legacy_single_protocol",
     warn_on_legacy: bool = True,
 ) -> EntryResolution:
     """Resolve the executable entry while isolating 1.0 compatibility fallback."""
-    protocol_by_name = {protocol.name: protocol for protocol in ir.protocols}
-
-    if explicit_entry is not None:
-        if explicit_entry not in protocol_by_name:
-            return EntryResolution(
-                kind="none",
-                entry_protocol=None,
-                source="none",
-                diagnostics=[
-                    Diagnostic(
-                        code="ENTRY_PROTOCOL_NOT_FOUND",
-                        message=f"Entry protocol '{explicit_entry}' not found",
-                        span=ir.span,
-                        node_id=None,
-                    )
-                ],
-            )
-        return EntryResolution(kind="protocol", entry_protocol=explicit_entry, source="explicit")
-
     if ir.script_entry is not None:
-        return EntryResolution(kind="script", entry_protocol=None, source="script")
+        return EntryResolution(kind="script", protocol_name=None, source="script")
 
     if compatibility_policy == "legacy_single_protocol":
         protocol = resolve_legacy_single_protocol_entry(ir)
@@ -84,7 +64,7 @@ def resolve_entry(
                         code="ENTRY_LEGACY_IMPLICIT_SINGLE_PROTOCOL",
                         message=(
                             f"Implicitly running protocol '{protocol.name}' is deprecated; "
-                            "add top-level script statements or select an entry protocol explicitly"
+                            "add top-level script statements"
                         ),
                         span=protocol.span,
                         severity="warning",
@@ -93,19 +73,19 @@ def resolve_entry(
                 )
             return EntryResolution(
                 kind="protocol",
-                entry_protocol=protocol.name,
+                protocol_name=protocol.name,
                 source="legacy_single_protocol",
                 diagnostics=diagnostics,
             )
 
     return EntryResolution(
         kind="none",
-        entry_protocol=None,
+        protocol_name=None,
         source="none",
         diagnostics=[
             Diagnostic(
                 code="ENTRY_NO_ENTRYPOINT",
-                message="No executable entrypoint; add top-level script statements or select an entry protocol explicitly",
+                message="No executable entrypoint; add top-level script statements",
                 span=ir.span,
                 severity="warning",
                 node_id=None,
@@ -118,7 +98,7 @@ def collect_user_protocols(ir: IRProgram) -> list[IRProtocol]:
     return list(ir.protocols)
 
 
-def collect_entry_protocols(ir: IRProgram) -> list[IRProtocol]:
+def collect_entry_source_protocols(ir: IRProgram) -> list[IRProtocol]:
     return [
         protocol
         for protocol in collect_user_protocols(ir)
@@ -127,7 +107,7 @@ def collect_entry_protocols(ir: IRProgram) -> list[IRProtocol]:
 
 
 def resolve_legacy_single_protocol_entry(ir: IRProgram) -> IRProtocol | None:
-    user_protocols = collect_entry_protocols(ir)
+    user_protocols = collect_entry_source_protocols(ir)
     referenced = {
         name
         for protocol in user_protocols

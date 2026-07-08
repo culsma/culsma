@@ -18,7 +18,6 @@ _STDLIB_PATH = Path(__file__).resolve().parents[1] / "stdlib" / "current_stdlib.
 @dataclass(frozen=True)
 class ResolveRequest:
     entry_files: tuple[Path, ...] = ()
-    entry_protocol: str | None = None
     include_bundled_stdlib: bool = True
     library_roots: tuple[Path, ...] = ()
 
@@ -35,7 +34,7 @@ class SourceResolver:
     def resolve_local_sources(self, request: ResolveRequest) -> Program:
         if not request.entry_files:
             raise ValueError("LOAD_NO_INPUT_SOURCES: No input source files were provided")
-        return parse_files(list(request.entry_files), entry_protocol=request.entry_protocol)
+        return parse_files(list(request.entry_files))
 
 
 class LibraryResolver:
@@ -183,7 +182,6 @@ class FrontendResolver:
     ) -> FrontendBundle:
         request = ResolveRequest(
             entry_files=(),
-            entry_protocol=None,
             include_bundled_stdlib=include_bundled_stdlib,
             library_roots=tuple(Path(root).expanduser().resolve() for root in library_roots),
         )
@@ -220,13 +218,11 @@ class FrontendResolver:
 def resolve_files(
     entry_files: Iterable[str | Path],
     *,
-    entry_protocol: str | None = None,
     include_bundled_stdlib: bool = True,
     library_roots: Iterable[str | Path] = (),
 ) -> FrontendBundle:
     request = ResolveRequest(
         entry_files=tuple(Path(path).expanduser().resolve() for path in entry_files),
-        entry_protocol=entry_protocol,
         include_bundled_stdlib=include_bundled_stdlib,
         library_roots=tuple(Path(root).expanduser().resolve() for root in library_roots),
     )

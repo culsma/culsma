@@ -77,7 +77,7 @@ def test_resolve_entry_uses_isolated_legacy_single_protocol_fallback():
 
     assert ir.script_entry is None
     assert entry.kind == "protocol"
-    assert entry.entry_protocol == "T"
+    assert entry.protocol_name == "T"
     assert entry.source == "legacy_single_protocol"
     assert [diagnostic.code for diagnostic in entry.diagnostics] == ["ENTRY_LEGACY_IMPLICIT_SINGLE_PROTOCOL"]
 

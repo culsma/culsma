@@ -4,6 +4,9 @@ import json
 import sys
 from pathlib import Path
 
+import pytest
+
+from culsma.cli import execute_batch_pipeline
 from culsma.cli import execute_pipeline
 from culsma.cli import main
 
@@ -50,39 +53,115 @@ def test_cli_run_prints_machine_output_json_when_requested(tmp_path, monkeypatch
     assert captured.err == ""
 
 
-def test_cli_entry_protocol_selects_single_top_level_protocol(tmp_path, monkeypatch, capsys):
+def test_cli_rejects_removed_protocol_entry_option(tmp_path, monkeypatch, capsys):
     source = tmp_path / "multi_root.culs"
-    source.write_text(
-        """
-protocol Wrapper returns (mix) {
-  let mix = tube(
-    label = "Mix",
-    capacity = 100uL,
-    load = [content(kind = formulation, type = master_mix, code = "MIX"):70uL]
-  );
-  return mix;
-}
-protocol Section returns (mix) {
-  let mix = tube(
-    label = "Mix",
-    capacity = 100uL,
-    load = [content(kind = formulation, type = master_mix, code = "MIX"):70uL]
-  );
-  return mix;
-}
-""",
-        encoding="utf-8",
-    )
+    source.write_text("protocol Wrapper {}\n", encoding="utf-8")
     monkeypatch.setattr(sys, "argv", ["culsma", "run", str(source), "--entry-protocol", "Wrapper", "--json"])
+
+    with pytest.raises(SystemExit):
+        main()
+
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "unrecognized arguments: --entry-protocol" in captured.err
+
+
+def test_cli_does_not_treat_trailing_name_as_protocol_entry(tmp_path, monkeypatch):
+    source = tmp_path / "script_entry.culs"
+    source.write_text('let sample = tube(label = "S", capacity = 100uL);\nreturn sample;\n', encoding="utf-8")
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(source), "Wrapper", "--json"])
+
+    with pytest.raises(FileNotFoundError, match="Wrapper"):
+        main()
+
+
+def test_execute_pipeline_rejects_multiple_entry_sources(tmp_path):
+    first = tmp_path / "first.culs"
+    second = tmp_path / "second.culs"
+    first.write_text('return "first";\n', encoding="utf-8")
+    second.write_text('return "second";\n', encoding="utf-8")
+
+    with pytest.raises(ValueError, match="RUN_SINGLE_ENTRY_SOURCE_REQUIRED"):
+        execute_pipeline([first, second])
+
+
+def test_cli_multi_input_runs_as_independent_batch(tmp_path, monkeypatch, capsys):
+    first = tmp_path / "first.culs"
+    second = tmp_path / "second.culs"
+    first.write_text('let sample = tube(label = "FIRST", capacity = 100uL);\nreturn sample;\n', encoding="utf-8")
+    second.write_text('let sample = tube(label = "SECOND", capacity = 100uL);\nreturn sample;\n', encoding="utf-8")
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(first), str(second), "--json"])
 
     main()
 
     captured = capsys.readouterr()
     payload = json.loads(captured.out)
+    assert payload["schema"] == "culsma_batch_run_output_v1"
     assert payload["ok"]
-    assert list(payload["returns"]) == ["Wrapper"]
-    assert payload["returns"]["Wrapper"]["value"]["id"] == "Mix"
+    assert [Path(item["input"]).name for item in payload["runs"]] == ["first.culs", "second.culs"]
+    assert [item["output"]["returns"]["entry"]["value"]["id"] for item in payload["runs"]] == ["FIRST", "SECOND"]
+    assert [
+        item["output"]["report"]["resource_summary"]["containers"]["touched_names"] for item in payload["runs"]
+    ] == [["FIRST"], ["SECOND"]]
     assert captured.err == ""
+
+
+def test_cli_multi_input_prints_batch_human_summary(tmp_path, monkeypatch, capsys):
+    first = tmp_path / "first.culs"
+    second = tmp_path / "second.culs"
+    first.write_text('return "first";\n', encoding="utf-8")
+    second.write_text('return "second";\n', encoding="utf-8")
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(first), str(second)])
+
+    main()
+
+    captured = capsys.readouterr()
+    assert captured.out == (
+        "Culsma batch ok\n"
+        "\n"
+        "runs:\n"
+        "  first.culs: entry ok\n"
+        "  second.culs: entry ok\n"
+        "\n"
+        "execution: 2/2 runs ok\n"
+    )
+    assert captured.err == ""
+
+
+def test_cli_multi_input_writes_batch_artifacts(tmp_path, monkeypatch, capsys):
+    first = tmp_path / "first.culs"
+    second = tmp_path / "second.culs"
+    artifacts_dir = tmp_path / "artifacts"
+    first.write_text('return "first";\n', encoding="utf-8")
+    second.write_text('return "second";\n', encoding="utf-8")
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["culsma", "run", str(first), str(second), "--json", "--artifacts-dir", str(artifacts_dir)],
+    )
+
+    main()
+
+    captured = capsys.readouterr()
+    assert json.loads(captured.out)["schema"] == "culsma_batch_run_output_v1"
+    assert sorted(path.name for path in artifacts_dir.iterdir()) == [
+        "001_first",
+        "002_second",
+        "output.json",
+        "summary.json",
+    ]
+    assert (artifacts_dir / "001_first" / "run.json").exists()
+    assert (artifacts_dir / "002_second" / "run.json").exists()
+    assert captured.err == ""
+
+
+def test_execute_batch_pipeline_keeps_single_input_output_shape(tmp_path):
+    source = tmp_path / "single.culs"
+    source.write_text('return "single";\n', encoding="utf-8")
+
+    output = execute_batch_pipeline([source])["output"]
+
+    assert output["schema"] == "culsma_run_output_v1"
 
 
 def test_run_entry_file_script_imported_file_script_is_definitions_only(tmp_path):
@@ -161,7 +240,7 @@ def test_cli_human_summary_includes_returned_container_state(tmp_path, monkeypat
         "\n"
         "execution: 3/3 steps completed, 1 diagnostics\n"
         "alerts:\n"
-        "  ENTRY_LEGACY_IMPLICIT_SINGLE_PROTOCOL: Implicitly running protocol 'CliSmoke' is deprecated; add top-level script statements or select an entry protocol explicitly\n"
+        "  ENTRY_LEGACY_IMPLICIT_SINGLE_PROTOCOL: Implicitly running protocol 'CliSmoke' is deprecated; add top-level script statements\n"
     )
 
 

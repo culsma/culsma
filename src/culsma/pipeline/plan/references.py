@@ -118,7 +118,7 @@ class PlanReferenceResolver:
                 Diagnostic(
                     code="PLAN_ENTRY_PARAM_MISSING" if entry_mode else "PLAN_CALL_ARG_MISSING",
                     message=(
-                        f"Missing required parameter '{param.name}' for entry protocol '{target_protocol.name}'"
+                        f"Missing required parameter '{param.name}' for selected protocol '{target_protocol.name}'"
                         if entry_mode
                         else f"Missing required argument '{param.name}' for protocol '{target_protocol.name}'"
                     ),

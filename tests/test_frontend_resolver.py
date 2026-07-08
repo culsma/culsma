@@ -216,7 +216,7 @@ protocol OnlyLibraryProtocol {
     entry = resolve_entry(ir)
 
     assert entry.kind == "none"
-    assert entry.entry_protocol is None
+    assert entry.protocol_name is None
     assert [protocol.source_role for protocol in ir.protocols] == ["dependency"]
 
 

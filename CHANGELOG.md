@@ -15,7 +15,8 @@ It includes:
 - imported and included dependency files load definitions without executing
   their top-level scripts
 - protocol definitions no longer become default run entries by name
-- explicit protocol entry selection remains supported
+- repeated CLI input files now run as independent batch items instead of one
+  merged entry program
 - isolated 1.0.5 fallback for legacy single entry-source protocol files
 - parser, IR, plan, scope, validation, typecheck, runtime, and architecture
   diagram updates for the entry boundary
@@ -23,7 +24,7 @@ It includes:
 ### Verified
 
 - `python -m pytest -q`
-  - result: `739 passed`
+  - result: `744 passed`
 
 ## Culsma v1.0.4
 

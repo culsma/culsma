@@ -796,7 +796,7 @@ class TestParseFilesWorkspaceInclude:
         assert [stmt.name for stmt in ast.statements if isinstance(stmt, LetStatement)] == ["visible"]
         assert [p.source_role for p in ast.protocols] == ["dependency", "entry"]
 
-    def test_parse_files_executes_included_file_statements_when_file_is_explicit_entry(self, tmp_path: Path):
+    def test_parse_files_executes_included_file_statements_when_file_is_cli_entry(self, tmp_path: Path):
         shared = tmp_path / "shared.culs"
         shared.write_text(
             'let shared_visible = tube(label = "SHARED_ENTRY", capacity = 10uL);\nprotocol Shared {}',
@@ -853,14 +853,6 @@ class TestParseFilesWorkspaceInclude:
 
         with pytest.raises(ValueError, match="Duplicate module name 'common'"):
             parse_files([mod_a, mod_b])
-
-    def test_parse_files_rejects_missing_entry_protocol(self, tmp_path: Path):
-        root = tmp_path / "root.culs"
-        root.write_text("protocol Root {}", encoding="utf-8")
-
-        with pytest.raises(ValueError, match="LOAD_ENTRY_PROTOCOL_NOT_FOUND"):
-            parse_files([root], entry_protocol="MissingEntry")
-
 
 # ============================================================
 # 10. repeat statement

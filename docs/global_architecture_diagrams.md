@@ -16,16 +16,23 @@ module names are included only to connect the architecture to the repository.
 
 ```mermaid
 flowchart LR
+    CLI["0. CLI run inputs<br/>one file or batch"]
+    Batch{"Multiple input files?"}
+    PerFile["Per-file run boundary<br/>independent state + output"]
     Source["1. Source files<br/>entry source + definition dependencies"]
     ParseCompile["2. Parse + compile<br/>parser, module roles,<br/>Canonical IR generation"]
     Validate["3. Semantic validation<br/>reference shape, contracts,<br/>lowering gates"]
     Typecheck["4. Type + unit checking<br/>dimensional and ordered-step consistency"]
-    Entry["5. Entry resolution<br/>explicit protocol,<br/>entry-source script,<br/>or no run"]
+    Entry["5. Entry resolution<br/>entry-source script,<br/>compatibility fallback,<br/>or no run"]
     Compat["6. 1.0.5 compatibility adapter<br/>entry-source legacy single-protocol entry"]
     Plan["7. Plan lowering<br/>selected root, workflow plan,<br/>dependencies, execution gates"]
     Runtime["8. Runtime execution session<br/>scheduler, lifecycle, material compute,<br/>events, artifacts, user result"]
     Driver["Driver module<br/>backend realization"]
 
+    CLI --> Batch
+    Batch -->|one| Source
+    Batch -->|many| PerFile
+    PerFile --> Source
     Source --> ParseCompile
     ParseCompile --> Validate
     Validate --> Typecheck
@@ -60,7 +67,7 @@ sequenceDiagram
     IRCompiler-->>CompileResult: CompileResult
     CompileResult-->>ValidationResult: validate(IRProgram)
     ValidationResult-->>TypecheckResult: typecheck(IRProgram)
-    TypecheckResult->>EntrySelection: resolve explicit entry, entry-source script, or no-run
+    TypecheckResult->>EntrySelection: resolve entry-source script, compatibility fallback, or no-run
     EntrySelection->>EntryCompatibilityAdapter: apply isolated 1.0.5 entry-source fallback if enabled
     alt selected entry
         EntryCompatibilityAdapter->>PlanStatementLowerer: lower selected execution boundary

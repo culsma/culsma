@@ -62,6 +62,25 @@ def build_run_output(*, ok: bool, returns: dict[str, Any], report: dict[str, Any
     }
 
 
+def build_batch_run_output(*, run_items: list[dict[str, Any]]) -> dict[str, Any]:
+    runs = []
+    for item in run_items:
+        bundle = item["bundle"]
+        runs.append(
+            {
+                "input": str(item["input"]),
+                "ok": bool(bundle["output"].get("ok")),
+                "output": bundle["output"],
+                "summary": bundle["summary"],
+            }
+        )
+    return {
+        "schema": "culsma_batch_run_output_v1",
+        "ok": all(run["ok"] for run in runs),
+        "runs": runs,
+    }
+
+
 def _format_number(value: Any) -> str:
     if not isinstance(value, (int, float)):
         return str(value)
@@ -153,6 +172,9 @@ def _format_return_value(value: Any, *, indent: str = "  ") -> list[str]:
 
 def format_terminal_result(bundle: dict[str, Any]) -> str:
     """Render a compact, human-readable result for the default CLI path."""
+    if bundle.get("batch"):
+        return format_batch_terminal_result(bundle)
+
     result = bundle.get("result", {})
     execution = result.get("execution", {}) if isinstance(result, dict) else {}
     ok = bool(execution.get("ok"))
@@ -218,6 +240,30 @@ def format_terminal_result(bundle: dict[str, Any]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def format_batch_terminal_result(bundle: dict[str, Any]) -> str:
+    output = bundle.get("output", {})
+    runs = output.get("runs", []) if isinstance(output, dict) else []
+    runs = runs if isinstance(runs, list) else []
+    ok = bool(output.get("ok")) if isinstance(output, dict) else False
+
+    lines = [f"Culsma batch {'ok' if ok else 'failed'}", "", "runs:"]
+    for run_item in runs:
+        if not isinstance(run_item, dict):
+            continue
+        input_path = Path(str(run_item.get("input", "")))
+        run_output = run_item.get("output", {})
+        run_ok = bool(run_item.get("ok"))
+        returns = run_output.get("returns", {}) if isinstance(run_output, dict) else {}
+        names = list(returns) if isinstance(returns, dict) else []
+        title = names[0] if len(names) == 1 else input_path.name
+        lines.append(f"  {input_path.name}: {title} {'ok' if run_ok else 'failed'}")
+
+    completed = sum(1 for run_item in runs if isinstance(run_item, dict) and run_item.get("ok"))
+    lines.append("")
+    lines.append(f"execution: {completed}/{len(runs)} runs ok")
+    return "\n".join(lines) + "\n"
+
+
 def _load_initial_material_state(material_state_path: Path | None) -> dict[str, Any]:
     if material_state_path is None:
         return {"containers": {}}
@@ -232,9 +278,11 @@ def execute_pipeline(
     fail_ops: set[str] | None = None,
     material_state_path: Path | None = None,
     inventory_check: bool = False,
-    entry_protocol: str | None = None,
     library_roots: list[Path] | None = None,
 ) -> dict[str, Any]:
+    if len(input_paths) != 1:
+        raise ValueError("RUN_SINGLE_ENTRY_SOURCE_REQUIRED: execute_pipeline requires exactly one entry source")
+
     frontend = resolve_files(input_paths, library_roots=library_roots or ())
     compile_result = compile_ast(frontend.prepared_program)
     ir = compile_result.ir
@@ -252,7 +300,7 @@ def execute_pipeline(
 
     typ = typecheck(sem.ir, analysis=compile_result.analysis)
 
-    entry = resolve_entry(typ.ir, explicit_entry=entry_protocol)
+    entry = resolve_entry(typ.ir)
     plan = lower_ir_to_plan(typ.ir, analysis=compile_result.analysis, entry_resolution=entry)
 
     state = init_state(plan)
@@ -315,8 +363,64 @@ def execute_pipeline(
     }
 
 
+def execute_batch_pipeline(
+    input_paths: list[Path],
+    fail_ops: set[str] | None = None,
+    material_state_path: Path | None = None,
+    inventory_check: bool = False,
+    library_roots: list[Path] | None = None,
+) -> dict[str, Any]:
+    if not input_paths:
+        raise ValueError("RUN_NO_INPUT_SOURCES: No input source files were provided")
+    if len(input_paths) == 1:
+        return execute_pipeline(
+            input_paths=input_paths,
+            fail_ops=fail_ops,
+            material_state_path=material_state_path,
+            inventory_check=inventory_check,
+            library_roots=library_roots,
+        )
+
+    run_items = []
+    for input_path in input_paths:
+        run_items.append(
+            {
+                "input": input_path,
+                "bundle": execute_pipeline(
+                    input_paths=[input_path],
+                    fail_ops=fail_ops,
+                    material_state_path=material_state_path,
+                    inventory_check=inventory_check,
+                    library_roots=library_roots,
+                ),
+            }
+        )
+
+    output = build_batch_run_output(run_items=run_items)
+    return {
+        "batch": True,
+        "runs": run_items,
+        "output": output,
+        "summary": {
+            "inputs": [str(path) for path in input_paths],
+            "run_count": len(run_items),
+            "ok_count": sum(1 for run_item in output["runs"] if run_item["ok"]),
+            "runtime_ok": output["ok"],
+        },
+    }
+
+
 def write_run_artifacts(bundle: dict[str, Any], outdir: Path) -> None:
     outdir.mkdir(parents=True, exist_ok=True)
+    if bundle.get("batch"):
+        _write_json(outdir / "summary.json", bundle["summary"])
+        _write_json(outdir / "output.json", bundle["output"])
+        for index, run_item in enumerate(bundle["runs"], start=1):
+            input_path = Path(str(run_item["input"]))
+            run_dir = outdir / f"{index:03d}_{input_path.stem}"
+            write_run_artifacts(run_item["bundle"], run_dir)
+        return
+
     _write_json(outdir / "summary.json", bundle["summary"])
     _write_json(outdir / "ast.json", bundle["ast"])
     _write_json(outdir / "ir.json", bundle["ir"])
@@ -346,13 +450,13 @@ def main() -> None:
     run_cmd.add_argument(
         "paths",
         nargs="*",
-        help="Path to .culs protocol file (repeatable for multi-file merge)",
+        help="Path to .culs protocol file (repeatable for batch execution)",
     )
     run_cmd.add_argument(
         "--input",
         action="append",
         default=[],
-        help="Path to .culs protocol file (repeatable for multi-file merge)",
+        help="Path to .culs protocol file (repeatable for batch execution)",
     )
     run_cmd.add_argument(
         "--json",
@@ -391,11 +495,6 @@ def main() -> None:
         default=[],
         help="Optional directory containing importable library .culs modules (repeatable).",
     )
-    run_cmd.add_argument(
-        "--entry-protocol",
-        default=None,
-        help="Protocol name to use as the run entrypoint when a source defines multiple top-level protocols.",
-    )
 
     replay_cmd = sub.add_parser("replay", help="Replay state from a run artifact JSON")
     replay_cmd.add_argument("--run-json", required=True, help="Path to an explicit run.json artifact")
@@ -406,12 +505,11 @@ def main() -> None:
         input_values = [*args.input, *args.paths]
         if not input_values:
             parser.error("run requires at least one input path")
-        bundle = execute_pipeline(
+        bundle = execute_batch_pipeline(
             input_paths=[Path(p) for p in input_values],
             fail_ops=set(args.fail_op),
             material_state_path=Path(args.material_state_json) if args.material_state_json else None,
             inventory_check=bool(args.inventory_check),
-            entry_protocol=args.entry_protocol,
             library_roots=[Path(p) for p in args.library_root],
         )
         if args.output:

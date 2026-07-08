@@ -62,7 +62,6 @@ def parse_file(path: str | Path, *, source_role: str = "entry") -> Program:
 def parse_files(
     paths: list[str | Path],
     *,
-    entry_protocol: str | None = None,
     entry_sources: list[str | Path] | tuple[str | Path, ...] | None = None,
 ) -> Program:
     """Parse and merge one or more .culs files into one Program."""
@@ -162,8 +161,6 @@ def parse_files(
         entry_source_paths=tuple(str(path) for path in input_paths),
         span=None,
     )
-    if entry_protocol is not None and not any(p.name == entry_protocol for p in merged.protocols):
-        raise ValueError(f"LOAD_ENTRY_PROTOCOL_NOT_FOUND: Entry protocol '{entry_protocol}' not found")
     return merged
 
 

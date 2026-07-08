@@ -22,7 +22,6 @@ def lower_ir_to_plan(
     *,
     analysis: CompileAnalysis | None = None,
     entry_resolution: EntryResolution | None = None,
-    entry_protocol: str | None = None,
     entry_args_by_protocol: dict[str, dict[str, Any]] | None = None,
 ) -> PlanProgram:
     """Lower validated IR into protocol-scoped execution plans."""
@@ -30,7 +29,6 @@ def lower_ir_to_plan(
     diagnostics: list[Diagnostic] = []
     entry_resolution = entry_resolution or resolve_entry(
         ir,
-        explicit_entry=entry_protocol,
         warn_on_legacy=False,
     )
     diagnostics.extend(entry_resolution.diagnostics)
@@ -71,14 +69,14 @@ def lower_ir_to_plan(
         return PlanProgram(plans=plans, diagnostics=diagnostics, span=ir.span)
 
     root_protocol = next(
-        (protocol for protocol in ir.protocols if protocol.name == entry_resolution.entry_protocol),
+        (protocol for protocol in ir.protocols if protocol.name == entry_resolution.protocol_name),
         None,
     )
     if root_protocol is None:
         diagnostics.append(
             Diagnostic(
-                code="PLAN_ENTRY_PROTOCOL_NOT_FOUND",
-                message=f"Entry protocol '{entry_resolution.entry_protocol}' not found",
+                code="PLAN_SELECTED_PROTOCOL_NOT_FOUND",
+                message=f"Selected protocol '{entry_resolution.protocol_name}' not found",
                 span=ir.span,
                 node_id=None,
             )
