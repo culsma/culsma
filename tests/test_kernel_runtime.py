@@ -1456,6 +1456,69 @@ protocol T {
     assert contents_state["invalid_reason"] == "explicit_mixing"
 
 
+def test_runtime_agit_applies_to_each_explicit_group_sample():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let tube1 = tube(label = "Tube1", capacity = 500uL, load = [
+    content(kind = "particulate", code = "BEADS1", type = "beads"):20uL,
+    buffer(code = "BIND1", type = "buffer"):180uL
+  ]);
+  let tube2 = tube(label = "Tube2", capacity = 500uL, load = [
+    content(kind = "particulate", code = "BEADS2", type = "beads"):20uL,
+    buffer(code = "BIND2", type = "buffer"):180uL
+  ]);
+
+  sep(sample = tube1, program = magnetic_program(duration = 5min));
+  sep(sample = tube2, program = magnetic_program(duration = 5min));
+  agit(sample = group([tube1, tube2]), mode = shake, duration = 30s, rate = 800rpm);
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    contents_states = result.state.artifacts["material_state"]["contents_states"]
+    assert contents_states["Tube1"]["valid"] is False
+    assert contents_states["Tube1"]["kind"] == "mixed"
+    assert contents_states["Tube1"]["invalid_reason"] == "explicit_mixing"
+    assert contents_states["Tube2"]["valid"] is False
+    assert contents_states["Tube2"]["kind"] == "mixed"
+    assert contents_states["Tube2"]["invalid_reason"] == "explicit_mixing"
+
+
+def test_runtime_agit_applies_to_each_let_bound_group_sample():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let tube1 = tube(label = "Tube1", capacity = 500uL, load = [
+    content(kind = "particulate", code = "BEADS1", type = "beads"):20uL,
+    buffer(code = "BIND1", type = "buffer"):180uL
+  ]);
+  let tube2 = tube(label = "Tube2", capacity = 500uL, load = [
+    content(kind = "particulate", code = "BEADS2", type = "beads"):20uL,
+    buffer(code = "BIND2", type = "buffer"):180uL
+  ]);
+  let bead_tubes = group([tube1, tube2]);
+
+  sep(sample = tube1, program = magnetic_program(duration = 5min));
+  sep(sample = tube2, program = magnetic_program(duration = 5min));
+  agit(sample = bead_tubes, mode = shake, duration = 30s, rate = 800rpm);
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok
+    contents_states = result.state.artifacts["material_state"]["contents_states"]
+    assert contents_states["Tube1"]["valid"] is False
+    assert contents_states["Tube1"]["kind"] == "mixed"
+    assert contents_states["Tube2"]["valid"] is False
+    assert contents_states["Tube2"]["kind"] == "mixed"
+
+
 def test_runtime_contents_self_transfer_invalidates_contents_state_without_material_move():
     plan = _build_plan_from_source(
         """

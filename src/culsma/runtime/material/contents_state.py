@@ -403,6 +403,17 @@ class MaterialIndexedPartsStateManager:
 
     def apply_agit(self, step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
         sample_arg = step.args.get("sample")
+        sample_ids = self._resolve_structured_ref_group_ids(state, sample_arg)
+        if sample_ids is not None:
+            impacts = {
+                sample_id: mark_contents_state_mixed(state, sample_id, step_id=step.step_id)
+                for sample_id in sample_ids
+            }
+            return MaterialUpdateResult(
+                material_state=state,
+                diagnostics=[],
+                delta={"op": "agit", "samples": sample_ids, "contents_state_impacts": impacts},
+            )
         sample_id = resolve_structured_ref(state, sample_arg, create_if_identifier=False)
         if sample_id is None:
             return diagnostic_result(
@@ -417,6 +428,20 @@ class MaterialIndexedPartsStateManager:
             diagnostics=[],
             delta={"op": "agit", "sample": sample_id, "contents_state_impact": impact},
         )
+
+    def _resolve_structured_ref_group_ids(self, state: dict[str, Any], value: Any) -> list[str] | None:
+        if not isinstance(value, dict) or value.get("kind") != "IRGroup":
+            return None
+        elements = value.get("elements")
+        if not isinstance(elements, list):
+            return None
+        sample_ids: list[str] = []
+        for element in elements:
+            sample_id = resolve_structured_ref(state, element, create_if_identifier=False)
+            if sample_id is None:
+                return None
+            sample_ids.append(sample_id)
+        return sample_ids
 
     def apply_mutation_transition(self, step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
         target_expr = step.args.get("target")
