@@ -73,7 +73,7 @@ protocol Section returns (mix) {
 """,
         encoding="utf-8",
     )
-    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(source), "--entry-protocol", "Wrapper", "--json"])
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(source), "Wrapper", "--json"])
 
     main()
 
@@ -82,6 +82,33 @@ protocol Section returns (mix) {
     assert payload["ok"]
     assert list(payload["returns"]) == ["Wrapper"]
     assert payload["returns"]["Wrapper"]["value"]["id"] == "Mix"
+    assert captured.err == ""
+
+
+def test_cli_input_option_accepts_positional_entry_protocol(tmp_path, monkeypatch, capsys):
+    source = tmp_path / "multi_root_input.culs"
+    source.write_text(
+        """
+protocol Wrapper {
+  let mix = tube(label = "InputMix", capacity = 100uL);
+  return mix;
+}
+protocol Section {
+  let other = tube(label = "OtherMix", capacity = 100uL);
+  return other;
+}
+""",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", "--input", str(source), "Wrapper", "--json"])
+
+    main()
+
+    captured = capsys.readouterr()
+    payload = json.loads(captured.out)
+    assert payload["ok"]
+    assert list(payload["returns"]) == ["Wrapper"]
+    assert payload["returns"]["Wrapper"]["value"]["id"] == "InputMix"
     assert captured.err == ""
 
 
