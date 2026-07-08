@@ -51,12 +51,80 @@ class ScopeAnalyzer:
         protocol_name: str = "protocol",
     ) -> None:
         declared = set(reserved_names or set())
-        for name in self.collect_declared_source_local_names(statements):
-            if self.is_internal_generated_name(name):
-                continue
-            if name in declared:
-                raise ValueError(f"local name '{name}' is already declared in protocol '{protocol_name}'")
-            declared.add(name)
+        self._validate_source_block_names(
+            statements,
+            protocol_name=protocol_name,
+            declared=declared,
+            active_bindings=set(),
+        )
+
+    def _validate_source_block_names(
+        self,
+        statements: list[Statement],
+        *,
+        protocol_name: str,
+        declared: set[str],
+        active_bindings: set[str],
+    ) -> None:
+        for stmt in statements:
+            if isinstance(stmt, LetStatement):
+                self._validate_source_local_declaration(
+                    stmt.name,
+                    protocol_name=protocol_name,
+                    declared=declared,
+                    active_bindings=active_bindings,
+                )
+                declared.add(stmt.name)
+            elif isinstance(stmt, IfStatement):
+                self._validate_source_block_names(
+                    stmt.then_statements,
+                    protocol_name=protocol_name,
+                    declared=declared,
+                    active_bindings=active_bindings,
+                )
+                self._validate_source_block_names(
+                    stmt.else_statements,
+                    protocol_name=protocol_name,
+                    declared=declared,
+                    active_bindings=active_bindings,
+                )
+            elif isinstance(stmt, RepeatStatement):
+                nested_bindings = active_bindings
+                if stmt.binding is not None:
+                    self._validate_source_local_declaration(
+                        stmt.binding,
+                        protocol_name=protocol_name,
+                        declared=declared,
+                        active_bindings=active_bindings,
+                    )
+                    nested_bindings = set(active_bindings)
+                    nested_bindings.add(stmt.binding)
+                self._validate_source_block_names(
+                    stmt.statements,
+                    protocol_name=protocol_name,
+                    declared=declared,
+                    active_bindings=nested_bindings,
+                )
+            elif isinstance(stmt, (WithEnvStmt, WithConstraintStmt)):
+                self._validate_source_block_names(
+                    stmt.statements,
+                    protocol_name=protocol_name,
+                    declared=declared,
+                    active_bindings=active_bindings,
+                )
+
+    def _validate_source_local_declaration(
+        self,
+        name: str,
+        *,
+        protocol_name: str,
+        declared: set[str],
+        active_bindings: set[str],
+    ) -> None:
+        if self.is_internal_generated_name(name):
+            return
+        if name in declared or name in active_bindings:
+            raise ValueError(f"local name '{name}' is already declared in protocol '{protocol_name}'")
 
     def is_internal_generated_name(self, name: str) -> bool:
         return name.startswith("__cmp_")
@@ -337,22 +405,6 @@ class ScopeAnalyzer:
                 names.update(self.collect_assigned_source_local_names(stmt.statements))
             elif isinstance(stmt, (WithEnvStmt, WithConstraintStmt)):
                 names.update(self.collect_assigned_source_local_names(stmt.statements))
-        return names
-
-    def collect_declared_source_local_names(self, statements: list[Statement]) -> list[str]:
-        names: list[str] = []
-        for stmt in statements:
-            if isinstance(stmt, LetStatement):
-                names.append(stmt.name)
-            elif isinstance(stmt, IfStatement):
-                names.extend(self.collect_declared_source_local_names(stmt.then_statements))
-                names.extend(self.collect_declared_source_local_names(stmt.else_statements))
-            elif isinstance(stmt, RepeatStatement):
-                if stmt.binding is not None:
-                    names.append(stmt.binding)
-                names.extend(self.collect_declared_source_local_names(stmt.statements))
-            elif isinstance(stmt, (WithEnvStmt, WithConstraintStmt)):
-                names.extend(self.collect_declared_source_local_names(stmt.statements))
         return names
 
     def collect_assigned_ir_local_names(self, statements: list[IRStatement]) -> set[str]:

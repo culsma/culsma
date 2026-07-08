@@ -169,6 +169,78 @@ protocol T {
         compile_to_ir(parse(src))
 
 
+def test_compile_rejects_let_redeclaring_repeat_binding():
+    src = """
+protocol T {
+  let cells = tube(label = "Cells", capacity = 500uL);
+  let events = stream(sample = cells, unit = single_cell);
+
+  repeat cell in events {
+    let cell = 1;
+  }
+}
+"""
+
+    with pytest.raises(ValueError, match="local name 'cell' is already declared"):
+        compile_to_ir(parse(src))
+
+
+def test_compile_rejects_nested_repeat_binding_reusing_outer_repeat_binding():
+    src = """
+protocol T {
+  let cells = tube(label = "Cells", capacity = 500uL);
+  let events = stream(sample = cells, unit = single_cell);
+
+  repeat cell in events {
+    repeat cell in events {
+      Step(v = cell);
+    }
+  }
+}
+"""
+
+    with pytest.raises(ValueError, match="local name 'cell' is already declared"):
+        compile_to_ir(parse(src))
+
+
+def test_compile_allows_sibling_repeat_bindings_to_reuse_name():
+    src = """
+protocol T {
+  let cells = tube(label = "Cells", capacity = 500uL);
+  let events = stream(sample = cells, unit = single_cell);
+
+  repeat cell in events {
+    StepA(v = cell);
+  }
+
+  repeat cell in events {
+    StepB(v = cell);
+  }
+}
+"""
+
+    ir = compile_to_ir(parse(src))
+    repeats = [stmt for stmt in ir.protocols[0].statements if isinstance(stmt, IRRepeat)]
+    assert [repeat.binding for repeat in repeats] == ["cell", "cell"]
+
+
+def test_compile_allows_sibling_schedule_repeat_bindings_to_reuse_name():
+    src = """
+protocol T {
+  repeat cycle in schedule(start = 1, end = 1, step = 1) {
+    StepA(v = cycle);
+  }
+
+  repeat cycle in schedule(start = 1, end = 1, step = 1) {
+    StepB(v = cycle);
+  }
+}
+"""
+
+    ir = compile_to_ir(parse(src))
+    assert [stmt.name for stmt in ir.protocols[0].statements] == ["StepA", "StepB"]
+
+
 def test_compile_rejects_with_env_block_let_redeclaring_outer_name():
     src = """
 protocol T {
