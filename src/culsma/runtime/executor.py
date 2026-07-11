@@ -12,13 +12,13 @@ from culsma.pipeline.plan_nodes import PlanProgram, PlanStep, ProtocolPlan
 from culsma.runtime.event_log import EventLog, RuntimeEvent
 from culsma.runtime.finalize import RuntimeFinalizer
 from culsma.runtime.gates import GateEvaluator
+from culsma.runtime.material.accounting import MaterialAccountingRecorder
 from culsma.runtime.observation import ObservationRecorder
 from culsma.runtime.protocol_outputs import ProtocolOutputRecorder
 from culsma.runtime.references import RefReuseDecider
 from culsma.runtime.session import RuntimeSession
 from culsma.runtime.state import RuntimeState, init_state
 from culsma.runtime.steps import RuntimeStepDispatcher
-from culsma.runtime.user_result import build_user_result
 from culsma.runtime.values import RuntimeValueResolver
 
 
@@ -98,6 +98,8 @@ class RuntimeExecutor:
         value_resolver = RuntimeValueResolver()
         observation_recorder = ObservationRecorder()
         protocol_output_recorder = ProtocolOutputRecorder()
+        material_accounting_recorder = MaterialAccountingRecorder()
+        material_accounting = material_accounting_recorder.initialize(initial_material_state)
         finalizer = RuntimeFinalizer()
         ref_groups = ref_reuse_decider.build_groups(steps)
         ref_groups_by_first = {group.first_step_id: group for group in ref_groups.values()}
@@ -116,6 +118,7 @@ class RuntimeExecutor:
             ref_groups=ref_groups,
             ref_groups_by_first=ref_groups_by_first,
             ref_cache=ref_cache,
+            initial_material_state=initial_material_state,
             on_error=self.on_error,
             fail_fast=self.on_error != "continue",
             gate_evaluator=gate_evaluator,
@@ -123,6 +126,8 @@ class RuntimeExecutor:
             value_resolver=value_resolver,
             observation_recorder=observation_recorder,
             protocol_output_recorder=protocol_output_recorder,
+            material_accounting_recorder=material_accounting_recorder,
+            material_accounting=material_accounting,
             finalizer=finalizer,
         )
         dispatcher = RuntimeStepDispatcher()
@@ -160,14 +165,7 @@ class RuntimeExecutor:
         finalizer.finalize(session, aborted_due_to_error=aborted_due_to_error)
         events = list(log.events)
         result = RunResult(state=runtime_state, events=events, diagnostics=session.diagnostics)
-        user_result = build_user_result(
-            ok=result.ok,
-            diagnostics=session.diagnostics,
-            state=runtime_state,
-            events=events,
-            plan=plan,
-            initial_material_state=initial_material_state,
-        )
+        user_result = finalizer.build_report(session, ok=result.ok).to_dict()
         return RunResult(
             state=runtime_state,
             events=events,

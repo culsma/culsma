@@ -319,6 +319,12 @@ class DriverBackedStepHandler(BaseRuntimeStepHandler):
                 if material_result.ok:
                     session.state.artifacts["material_state"] = material_result.material_state
                     material_delta = material_result.delta or None
+                    if session.material_accounting_recorder is not None and session.material_accounting is not None:
+                        session.material_accounting_recorder.record(
+                            step=runtime_step,
+                            result=material_result,
+                            accounting=session.material_accounting,
+                        )
                     for binding_event in session.observation_recorder.extract_binding_overwrite_events(material_delta):
                         session.event_log.emit(
                             "BINDING_OVERWRITTEN",

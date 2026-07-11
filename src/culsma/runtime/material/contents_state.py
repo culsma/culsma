@@ -296,6 +296,7 @@ class MaterialIndexedPartsStateManager:
             delta={
                 "op": "sep",
                 "program_kind": program_kind,
+                "source": source_id,
                 "bind": bind_name,
                 "slots": {"0": slot0_id, "1": slot1_id},
                 "keep_source": keep_source,
@@ -394,6 +395,7 @@ class MaterialIndexedPartsStateManager:
             delta={
                 "op": "frac",
                 "bind": bind_name,
+                "source": source_id,
                 "bins": bins,
                 "slots": dict(slot_bindings),
                 "split_ratio": split_ratio,

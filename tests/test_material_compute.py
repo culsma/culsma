@@ -353,6 +353,10 @@ def test_mutation_quantified_source_moves_requested_volume():
     assert result.ok
     assert result.material_state["containers"]["A"]["volume_uL"] == 75.0
     assert result.material_state["containers"]["B"]["volume_uL"] == 25.0
+    assert [
+        (movement.source, movement.destination, movement.volume_uL, movement.mass_mg)
+        for movement in result.movements
+    ] == [("A", "B", 25.0, 0.0)]
 
 
 def test_unit_collect_stales_existing_contents_state_via_classifier():
@@ -524,6 +528,13 @@ def test_sep_creates_two_slot_indexed_group_binding():
     assert set(slots) == {"0", "1"}
     assert result.material_state["containers"][slots["0"]]["volume_uL"] == 50.0
     assert result.material_state["containers"][slots["1"]]["volume_uL"] == 50.0
+    assert {
+        (movement.source, movement.destination, movement.volume_uL, movement.mass_mg)
+        for movement in result.movements
+    } == {
+        ("lysate", slots["0"], 50.0, 50.0),
+        ("lysate", slots["1"], 50.0, 50.0),
+    }
 
 
 def test_sep_keep_source_pellet_reuses_source_container_for_slot_1():

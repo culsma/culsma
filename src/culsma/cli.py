@@ -19,7 +19,7 @@ from culsma.pipeline.plan import lower_ir_to_plan
 from culsma.runtime.replay import replay_events
 from culsma.runtime.executor import run
 from culsma.runtime.state import init_state
-from culsma.runtime.user_result import build_user_result
+from culsma.runtime.user_result import build_unexecuted_report
 from culsma.pipeline.typecheck import typecheck
 from culsma.pipeline.validate import validate
 
@@ -311,21 +311,18 @@ def execute_pipeline(
     can_run = sem.ok and typ.ok
     if can_run:
         run_result = run(plan=plan, driver=StubDriver(fail_ops=fail_ops or set()), state=state)
+        if run_result.user_result is None:
+            raise RuntimeError("RUN_REPORT_MISSING: Runtime execution completed without a report")
+        user_result = run_result.user_result
     else:
         run_result = SimpleNamespace(ok=False, diagnostics=[], state=state, events=[])
-
-    user_result = (
-        run_result.user_result
-        if can_run and getattr(run_result, "user_result", None) is not None
-        else build_user_result(
+        user_result = build_unexecuted_report(
             ok=run_result.ok,
             diagnostics=list(run_result.diagnostics),
             state=run_result.state,
-            events=list(run_result.events),
             plan=plan,
             initial_material_state=initial_material_state,
         )
-    )
     run_payload = {
         "ok": run_result.ok,
         "diagnostics": [d.to_dict() for d in run_result.diagnostics],

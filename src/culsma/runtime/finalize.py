@@ -3,10 +3,15 @@
 from __future__ import annotations
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.runtime.report import LabReport
 from culsma.runtime.session import RuntimeSession
+from culsma.runtime.user_result import ReportBuilder
 
 
 class RuntimeFinalizer:
+    def __init__(self, report_builder: ReportBuilder | None = None) -> None:
+        self.report_builder = report_builder or ReportBuilder()
+
     def finalize(self, session: RuntimeSession, *, aborted_due_to_error: bool) -> None:
         if aborted_due_to_error:
             for step in session.step_by_id.values():
@@ -70,3 +75,13 @@ class RuntimeFinalizer:
             )
             for d in session.diagnostics
         ]
+
+    def build_report(self, session: RuntimeSession, *, ok: bool) -> LabReport:
+        return self.report_builder.build(
+            ok=ok,
+            diagnostics=session.diagnostics,
+            state=session.state,
+            plan=session.plan,
+            initial_material_state=session.initial_material_state,
+            material_accounting=session.material_accounting,
+        )

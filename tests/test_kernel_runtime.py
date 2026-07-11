@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -13,8 +14,10 @@ from culsma.driver.stub import StubDriver
 from culsma.pipeline.plan import lower_ir_to_plan
 from culsma.pipeline.plan_nodes import PlanProgram, PlanStep, ProtocolPlan
 from culsma.runtime.executor import run
+from culsma.runtime.material.accounting import InputLot, MaterialAccounting, MaterialQuantity
 from culsma.runtime.replay import replay_events
 from culsma.runtime.state import init_state
+from culsma.runtime.user_result import build_user_result
 from culsma.pipeline.typecheck import typecheck
 from culsma.pipeline.validate import validate as _validate
 from culsma.parser.parser import parse, parse_file
@@ -801,6 +804,307 @@ protocol T {
     names = [row["name"] for row in reagent_consumption]
     assert "Feed" in names
     assert "Spare" not in names
+
+
+def test_runtime_user_result_combines_initial_and_runtime_loaded_inputs():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let reactor = tube(label = "Reactor", capacity = 1000uL);
+  let feed = tube(label = "Feed", capacity = 1000uL, load = [buffer(code = "MED", type = "media"):100uL]);
+  reactor << [feed:25uL];
+}
+"""
+    )
+    state = init_state(plan)
+    state.artifacts["material_state"] = {
+        "containers": {
+            "external": {
+                "volume_uL": 40.0,
+                "mass_mg": 0.0,
+                "components": {},
+                "metadata": {"label": "External"},
+            }
+        }
+    }
+
+    result = run(plan=plan, driver=StubDriver(), state=state)
+
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    assert result.user_result is not None
+    materials = result.user_result["materials"]
+    assert {row["name"] for row in materials["input_inventory"]} == {"External", "Feed"}
+    assert materials["reagent_consumption"] == [
+        {
+            "name": "Feed",
+            "roles": ["source"],
+            "consumed_uL": 25.0,
+            "consumed_mL": 0.025,
+            "consumed_mg": None,
+        }
+    ]
+
+
+def test_runtime_report_exposes_complete_end_to_end_contract():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let reactor = tube(label = "Reactor", capacity = 1000uL);
+  let feed = tube(
+    label = "Feed",
+    capacity = 1000uL,
+    load = [buffer(code = "MED", type = "media"):100uL]
+  );
+  reactor << [feed:25uL];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    assert result.user_result == {
+        "schema": "lab_report_v1",
+        "execution": {
+            "ok": True,
+            "diagnostic_count": 0,
+            "total_steps": 5,
+            "completed_steps": 5,
+            "failed_steps": 0,
+            "skipped_steps": 0,
+        },
+        "headline": "Experiment completed successfully with no runtime errors.",
+        "materials": {
+            "has_material_state": True,
+            "input_inventory": [
+                {
+                    "name": "Feed",
+                    "initial_uL": 100.0,
+                    "initial_mL": 0.1,
+                    "initial_mg": 0.0,
+                }
+            ],
+            "final_products": [
+                {
+                    "name": "Reactor",
+                    "volume_uL": 25.0,
+                    "volume_mL": 0.025,
+                    "mass_mg": 25.0,
+                    "primary_component": "MED",
+                }
+            ],
+            "intermediate_materials": [],
+            "reagent_consumption": [
+                {
+                    "name": "Feed",
+                    "roles": ["source"],
+                    "consumed_uL": 25.0,
+                    "consumed_mL": 0.025,
+                    "consumed_mg": None,
+                }
+            ],
+        },
+        "qc_results": [],
+        "resource_summary": {
+            "containers": {
+                "allocated_count": 2,
+                "touched_count": 2,
+                "container_kinds": [{"kind": "tube", "count": 2}],
+                "touched_names": ["Feed", "Reactor"],
+            },
+            "instruments": {"tools": [], "devices": []},
+        },
+        "process_summary": {
+            "mutation_steps": 1,
+            "separation_steps": 0,
+            "environment_steps": 0,
+            "readout_steps": 0,
+        },
+        "alerts": [],
+    }
+
+
+def test_runtime_user_result_reagent_consumption_is_not_display_capped():
+    feeds = "\n".join(
+        f'  let feed_{idx} = tube(\n'
+        f'    label = "Feed {idx:02d}",\n'
+        f"    capacity = 100uL,\n"
+        f'    load = [buffer(code = "B{idx:02d}", type = "buffer"):10uL]\n'
+        f"  );"
+        for idx in range(25)
+    )
+    source_refs = ", ".join(f"feed_{idx}:1uL" for idx in range(25))
+    plan = _build_plan_from_source(
+        f"""
+protocol T {{
+  let reactor = tube(label = "Reactor", capacity = 1000uL);
+{feeds}
+  reactor << [{source_refs}];
+}}
+"""
+    )
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    assert result.user_result is not None
+    materials = result.user_result["materials"]
+    assert len(materials["reagent_consumption"]) == 25
+    assert {row["name"] for row in materials["reagent_consumption"]} == {
+        f"Feed {idx:02d}" for idx in range(25)
+    }
+
+
+def test_runtime_user_result_attributes_fraction_usage_to_original_input():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let sample = tube(label = "Sample", capacity = 1000uL, load = [content(kind = "biosample", code = "S", type = "dna_stock"):100uL]);
+  let out = tube(label = "Out", capacity = 1000uL);
+  let parts = sep(sample = sample, program = centrifuge_program(drive = 1000g));
+  out << [parts[0]];
+}
+"""
+    )
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    assert result.user_result is not None
+    materials = result.user_result["materials"]
+    assert materials["reagent_consumption"] == [
+        {
+            "name": "Sample",
+            "roles": ["sample"],
+            "consumed_uL": 100.0,
+            "consumed_mL": 0.1,
+            "consumed_mg": None,
+        }
+    ]
+
+
+def test_runtime_user_result_models_mass_only_accounting_and_wire_contract():
+    state = SimpleNamespace(
+        step_status={},
+        artifacts={
+            "material_state": {
+                "containers": {
+                    "stock": {
+                        "volume_uL": 0.0,
+                        "mass_mg": 3.0,
+                        "components": {"Powder": 3.0},
+                        "metadata": {"label": "Powder"},
+                    }
+                },
+                "bindings": {},
+                "content_registry": {},
+                "measurements": [],
+            }
+        },
+    )
+    accounting = MaterialAccounting()
+    accounting.register_input_lot(
+        InputLot(
+            lot_id="load:stock",
+            container_id="stock",
+            name="Powder",
+            origin="load_content",
+            initial=MaterialQuantity(mass_mg=5.0),
+        )
+    )
+    accounting.record_movement(
+        step_id="move",
+        source="stock",
+        destination="reactor",
+        quantity=MaterialQuantity(mass_mg=2.0),
+    )
+
+    report = build_user_result(
+        ok=True,
+        diagnostics=[],
+        state=state,
+        events=[],
+        plan=SimpleNamespace(plans=[]),
+        initial_material_state={"containers": {}},
+        material_accounting=accounting,
+    )
+
+    assert set(report) == {
+        "schema",
+        "execution",
+        "headline",
+        "materials",
+        "qc_results",
+        "resource_summary",
+        "process_summary",
+        "alerts",
+    }
+    assert set(report["materials"]) == {
+        "has_material_state",
+        "input_inventory",
+        "final_products",
+        "intermediate_materials",
+        "reagent_consumption",
+    }
+    assert report["materials"]["reagent_consumption"] == [
+        {
+            "name": "Powder",
+            "roles": [],
+            "consumed_uL": None,
+            "consumed_mL": None,
+            "consumed_mg": 2.0,
+        }
+    ]
+
+
+def test_runtime_user_result_keeps_complete_report_lists():
+    names = [f"Product {idx:02d}" for idx in range(12)]
+    steps = [
+        PlanStep(
+            step_id=f"s{idx}",
+            op="Mutation",
+            args={"target": {"kind": "IRIdentifier", "name": name}, "sources": []},
+        )
+        for idx, name in enumerate(names)
+    ]
+    plan = PlanProgram(
+        plans=[ProtocolPlan(protocol_id="p", protocol_name="P", steps=steps)]
+    )
+    state = SimpleNamespace(
+        step_status={step.step_id: "completed" for step in steps},
+        artifacts={
+            "material_state": {
+                "containers": {
+                    name: {
+                        "volume_uL": float(idx + 1),
+                        "mass_mg": 0.0,
+                        "components": {},
+                        "metadata": {"label": name},
+                    }
+                    for idx, name in enumerate(names)
+                },
+                "bindings": {},
+                "content_registry": {},
+                "measurements": [],
+            }
+        },
+    )
+    diagnostics = [
+        SimpleNamespace(code=f"WARN_{idx}", message=f"warning {idx}")
+        for idx in range(7)
+    ]
+
+    report = build_user_result(
+        ok=True,
+        diagnostics=diagnostics,
+        state=state,
+        events=[],
+        plan=plan,
+        initial_material_state={"containers": {}},
+        material_accounting=MaterialAccounting(),
+    )
+
+    assert len(report["materials"]["final_products"]) == 12
+    assert len(report["resource_summary"]["containers"]["touched_names"]) == 12
+    assert len(report["alerts"]) == 7
 
 
 def test_runtime_user_result_keeps_same_consumable_summary_for_data_and_container_returns():

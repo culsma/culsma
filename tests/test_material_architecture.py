@@ -45,6 +45,40 @@ def _material_step(op: str, *, step_id: str = "p0.s1") -> PlanStep:
     return PlanStep(step_id=step_id, op=op, args={}, deps=[], gate=None, span=None)
 
 
+def test_material_compute_rejects_quantity_change_without_movement_contract():
+    class MissingMovementManager:
+        def plan_material_state_change(self, *, step, state):
+            return object()
+
+        def apply_change(self, change_plan, state):
+            state["containers"]["A"]["volume_uL"] -= 10.0
+            state["containers"]["B"]["volume_uL"] += 10.0
+            return MaterialUpdateResult(
+                material_state=state,
+                delta={
+                    "op": "FutureTransfer",
+                    "source": "A",
+                    "destination": "B",
+                    "moved_uL": 10.0,
+                },
+            )
+
+    result = MaterialCompute(state_manager=MissingMovementManager()).apply_step(
+        _material_step("FutureTransfer"),
+        {
+            "containers": {
+                "A": {"volume_uL": 100.0, "mass_mg": 0.0},
+                "B": {"volume_uL": 0.0, "mass_mg": 0.0},
+            }
+        },
+    )
+
+    assert not result.ok
+    assert [diagnostic.code for diagnostic in result.diagnostics] == [
+        "MAT_MOVEMENT_CONTRACT_MISSING"
+    ]
+
+
 def _partitioned_state(*, valid: bool = True, preservation_contract: bool = False) -> dict[str, object]:
     record = {
         "kind": "partitioned",

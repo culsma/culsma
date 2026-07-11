@@ -1,6 +1,6 @@
 # Runtime Module Diagrams
 
-Last updated: 2026-04-25
+Last updated: 2026-07-11
 
 Related plan/runtime documents:
 
@@ -10,7 +10,7 @@ Related plan/runtime documents:
 ## Scope
 
 This document records the current runtime structure with one functional
-flowchart plus material-compute detail diagrams and four structural diagrams:
+flowchart plus material-compute detail diagrams and structural diagrams:
 
 1. Functional flowchart: what runtime execution actually does.
 2. Runtime sequence.
@@ -18,7 +18,9 @@ flowchart plus material-compute detail diagrams and four structural diagrams:
 4. Runtime step detail flowchart.
 5. Material compute `sep` detail flowchart.
 6. Proposed `sep` partition strategy diagram.
-7. Class/module diagram.
+7. Report data-structure diagram.
+8. Report-accounting integration.
+9. Class/module diagram.
 
 Runtime consumes `PlanProgram` and returns `RunResult(state, events,
 diagnostics, user_result)`. It owns deterministic scheduling, dependency and
@@ -27,6 +29,11 @@ decisions, driver capability checks, driver execution, material-state compute,
 observation recording, protocol-output capture, and user-facing run summary
 generation. It does not parse source, validate IR, lower IR to plan, or define
 driver backends.
+
+For executable programs, `run()` is the only report-producing execution path.
+If frontend errors prevent execution, the CLI preserves the output contract
+with an explicitly unexecuted report; it does not treat that report as an
+experiment result.
 
 The implementation now follows a scheduler plus dispatcher plus handler split:
 
@@ -99,11 +106,13 @@ sequenceDiagram
     participant Session as "runtime/session.py::RuntimeSession"
     participant Disp as "runtime/steps.py::RuntimeStepDispatcher"
     participant H as "runtime/steps.py::BaseRuntimeStepHandler"
+    participant Accounting as "runtime/material/accounting.py::MaterialAccountingRecorder"
     participant Final as "runtime/finalize.py::RuntimeFinalizer"
-    participant User as "runtime/user_result.py::build_user_result"
+    participant Report as "runtime/user_result.py::ReportBuilder"
 
     Caller->>API: run(selected-entry plan, driver, state, ...)
     API->>Exec: RuntimeExecutor(...)
+    Exec->>Accounting: initialize(initial_material_state)
     API->>Session: create RuntimeSession(plan, driver, runtime_state, services)
     API->>Exec: execute(session)
 
@@ -111,11 +120,13 @@ sequenceDiagram
         Exec->>Exec: scan pending steps and pick ready step
         Exec->>Disp: dispatch(step, session)
         Disp->>H: handle(step, session)
+        H->>Accounting: record successful material update
         H-->>Exec: step result recorded through session
     end
 
     Exec->>Final: finalize(session)
-    Exec->>User: build_user_result(...)
+    Exec->>Final: build_report(session, ok)
+    Final->>Report: build(...)
     Exec-->>Caller: RunResult(state, events, diagnostics, user_result)
 ```
 
@@ -290,6 +301,306 @@ Design judgment:
    explicit program semantics; it does not infer biological intent from labels
    or hard-coded component names.
 
+## Report Data Structure
+
+`ReportBuilder` builds these dataclasses from runtime state and online material
+accounting. `LabReport.to_dict()` projects them to the compatible
+`lab_report_v1` JSON format held in `RunResult.user_result`; it is not the
+formal protocol return value.
+
+```mermaid
+classDiagram
+    class LabReport {
+        +execution
+        +headline
+        +materials
+        +qc_results
+        +resource_summary
+        +process_summary
+        +alerts
+        +to_dict() dict
+    }
+
+    class ExecutionSummary {
+        +ok
+        +diagnostic_count
+        +total_steps
+        +completed_steps
+        +failed_steps
+        +skipped_steps
+    }
+
+    class MaterialsReport {
+        +has_material_state
+        +input_inventory
+        +final_products
+        +intermediate_materials
+        +reagent_consumption
+    }
+
+    class InputInventoryRow {
+        +name
+        +initial_uL
+        +initial_mL
+        +initial_mg
+    }
+
+    class FinalProductRow {
+        +name
+        +volume_uL
+        +volume_mL
+        +mass_mg
+        +primary_component
+    }
+
+    class IntermediateMaterialRow {
+        +name
+        +final_uL
+        +final_mL
+        +mass_mg
+        +primary_component
+    }
+
+    class ReagentConsumptionRow {
+        +name
+        +roles
+        +consumed_uL
+        +consumed_mL
+        +consumed_mg
+    }
+
+    class QcResult {
+        +item
+        +values
+    }
+
+    class ResourceSummary {
+        +containers
+        +instruments
+    }
+
+    class ContainerResourceSummary {
+        +allocated_count
+        +touched_count
+        +container_kinds
+        +touched_names
+    }
+
+    class ContainerKindCount {
+        +kind
+        +count
+    }
+
+    class InstrumentSummary {
+        +tools
+        +devices
+    }
+
+    class NamedCount {
+        +name
+        +count
+    }
+
+    class ProcessSummary {
+        +mutation_steps
+        +separation_steps
+        +environment_steps
+        +readout_steps
+    }
+
+    LabReport *-- ExecutionSummary : execution
+    LabReport *-- MaterialsReport : materials
+    LabReport *-- QcResult : qc_results
+    LabReport *-- ResourceSummary : resource_summary
+    LabReport *-- ProcessSummary : process_summary
+    MaterialsReport *-- InputInventoryRow : input_inventory
+    MaterialsReport *-- FinalProductRow : final_products
+    MaterialsReport *-- IntermediateMaterialRow : intermediate_materials
+    MaterialsReport *-- ReagentConsumptionRow : reagent_consumption
+    ResourceSummary *-- ContainerResourceSummary : containers
+    ResourceSummary *-- InstrumentSummary : instruments
+    ContainerResourceSummary *-- ContainerKindCount : container_kinds
+    InstrumentSummary *-- NamedCount : tools / devices
+```
+
+## Report-Accounting Integration
+
+`MaterialAccounting` is a runtime artifact. It is distinct from the existing
+`MaterialLedger`, which mutates container quantities but does not keep input
+provenance. Report calculation reads accounting directly; `EventLog` remains a
+trace and diagnostic record, not the source of report accounting.
+
+### Class Design
+
+Names in this class diagram are exact Python symbols.
+
+```mermaid
+classDiagram
+    class MaterialAccountingRecorder {
+        +initialize(initial_material_state) MaterialAccounting
+        +record(step, result, accounting) None
+    }
+
+    class MaterialUpdateResult {
+        +material_state
+        +diagnostics
+        +delta
+        +movements
+    }
+
+    class MaterialMovementSpec {
+        +source
+        +destination
+        +volume_uL
+        +mass_mg
+    }
+
+    class MaterialAccounting {
+        +input_lots
+        +container_allocations
+        +movements
+        +consumed_allocations
+        +register_input_lot(lot) None
+        +record_movement(step_id, source, destination, quantity) None
+        +list_input_lots() list
+        +consumption_by_input() dict
+        +container_allocation(container_id) dict
+    }
+
+    class ReportBuilder {
+        +build(ok, diagnostics, state, plan, initial_material_state, material_accounting) LabReport
+    }
+
+    class RuntimeExecutor
+    class RuntimeSession {
+        +material_accounting_recorder
+        +material_accounting
+    }
+    class BaseRuntimeStepHandler
+    class MaterialCompute
+    class derive_material_movements
+    class RuntimeFinalizer
+    class LabReport
+
+    RuntimeExecutor --> MaterialAccountingRecorder : initializes through
+    RuntimeSession o-- MaterialAccountingRecorder : owns service
+    RuntimeSession o-- MaterialAccounting : owns run artifact
+    BaseRuntimeStepHandler --> MaterialAccountingRecorder : records through
+    MaterialCompute --> derive_material_movements : derives operation movements
+    derive_material_movements --> MaterialMovementSpec : creates
+    MaterialUpdateResult *-- MaterialMovementSpec : movements
+    MaterialAccountingRecorder --> MaterialUpdateResult : consumes movements
+    MaterialAccountingRecorder --> MaterialAccounting : creates and updates
+    RuntimeFinalizer --> ReportBuilder : build_report
+    ReportBuilder --> MaterialAccounting : reads
+    ReportBuilder --> LabReport : builds
+```
+
+`MaterialAccountingRecorder` has two public lifecycle methods: `initialize()`
+creates the run accounting from initial state, and `record()` applies one
+successful material update. `MaterialAccounting` owns mutation and query
+methods so `ReportBuilder` does not inspect its internal dictionaries. The
+recorder is a `RuntimeSession` service: `RuntimeExecutor` uses it once for
+initialization, and `BaseRuntimeStepHandler` uses it after each successful
+material update.
+
+### Accounting Activity
+
+```mermaid
+flowchart TD
+    Start(["Experiment begins"]) --> Initial["Register every starting material as a separately identifiable input batch"]
+    Initial --> Execute["Perform the next experimental operation"]
+    Execute --> Success{"Did the operation succeed?"}
+
+    Success -- "No" --> Unchanged["Leave material accounting unchanged"]
+    Success -- "Yes" --> NewInput{"Did new material enter the experiment?"}
+    NewInput -- "Yes" --> Register["Register the new material as a distinct input batch"]
+    NewInput -- "No" --> QuantityChange{"Did any material quantity move or leave the system?"}
+
+    QuantityChange -- "No" --> NoMovement["Keep existing material origins and quantities unchanged"]
+    QuantityChange -- "Yes" --> Relation{"Are the source, destination, and moved quantity explicit?"}
+    Relation -- "No" --> Incomplete["The operation cannot be accounted reliably and must define the missing movement relationship"]
+    Relation -- "Yes" --> Movement["Create one movement record for each source-to-destination relationship"]
+
+    Movement --> MoreMovements{"Are there unprocessed movement records?"}
+    MoreMovements -- "Yes" --> Composition["Determine the moved material's input-batch composition from its source"]
+    Composition --> Withdraw["Remove that composition from the source"]
+    Withdraw --> Destination{"Does the movement have a destination?"}
+    Destination -- "Yes" --> Propagate["Add the same input-batch composition to the destination"]
+    Destination -- "No" --> Remove["Record the material as removed from the experiment"]
+    Propagate --> Original{"Did the material leave its original input container?"}
+    Remove --> Original
+    Original -- "Yes" --> Consume["Add the moved quantity to that input batch's consumption total"]
+    Original -- "No" --> MoreMovements
+    Consume --> MoreMovements
+    MoreMovements -- "No" --> Continue
+
+    Register --> Continue
+    NoMovement --> Continue
+    Unchanged --> Continue
+    Continue{"Are there more experimental operations?"}
+    Continue -- "Yes" --> Execute
+    Continue -- "No" --> Report["Summarize inputs, consumption, remaining materials, resources, and execution status"]
+    Report --> Output(["Produce the structured experiment report"])
+```
+
+### Runtime Sequence
+
+```mermaid
+sequenceDiagram
+    participant RuntimeExecutor
+    participant RuntimeSession
+    participant BaseRuntimeStepHandler
+    participant MaterialCompute
+    participant MaterialAccountingRecorder
+    participant MaterialAccounting
+    participant EventLog
+    participant RuntimeFinalizer
+    participant ReportBuilder
+
+    RuntimeExecutor->>MaterialAccountingRecorder: initialize(initial_material_state)
+    MaterialAccountingRecorder->>MaterialAccounting: register_input_lot(lot)
+    RuntimeExecutor->>RuntimeSession: material_accounting_recorder = recorder
+    RuntimeExecutor->>RuntimeSession: material_accounting = accounting
+
+    loop each successful material step
+        RuntimeExecutor->>BaseRuntimeStepHandler: handle(step, session)
+        BaseRuntimeStepHandler->>MaterialCompute: apply_step(step, material_state)
+        MaterialCompute->>MaterialCompute: normalize operation semantics into movements
+        MaterialCompute-->>BaseRuntimeStepHandler: MaterialUpdateResult(movements)
+        RuntimeSession-->>BaseRuntimeStepHandler: material_accounting_recorder, material_accounting
+        BaseRuntimeStepHandler->>MaterialAccountingRecorder: record(step, result, accounting)
+        alt LoadContent
+            MaterialAccountingRecorder->>MaterialAccounting: register_input_lot(lot)
+        else transfer or sep
+            MaterialAccountingRecorder->>MaterialAccounting: record_movement() for each result.movements item
+        end
+        BaseRuntimeStepHandler->>EventLog: emit(STEP_COMPLETED, payload)
+    end
+
+    RuntimeExecutor->>RuntimeFinalizer: finalize(session)
+    RuntimeSession-->>RuntimeFinalizer: material_accounting, runtime_state
+    RuntimeFinalizer->>ReportBuilder: build(ok, diagnostics, state, plan, initial_material_state, material_accounting)
+    ReportBuilder->>MaterialAccounting: list_input_lots()
+    ReportBuilder->>MaterialAccounting: consumption_by_input()
+    ReportBuilder-->>RuntimeFinalizer: LabReport
+```
+
+Accounting invariants:
+
+1. Initial inventory and every `LoadContent` create distinct input lots, even
+   when they share a container.
+2. Every quantity-changing operation exposes normalized
+   `MaterialUpdateResult.movements`; `MaterialAccountingRecorder` consumes only
+   that contract and does not reconstruct movements from state differences.
+3. `ReportBuilder` emits complete lists. Terminal and UI renderers own any
+   top-N or compact display policy.
+4. Multiple sources and targets are represented as separate movement records.
+   Missing source-to-destination relations are an operation implementation gap,
+   never an invitation to invent allocations from aggregate totals. A
+   quantity-changing operation without movements fails with
+   `MAT_MOVEMENT_CONTRACT_MISSING`.
+
 ## Class And Module Diagram
 
 ```mermaid
@@ -394,6 +705,7 @@ classDiagram
 
     class RuntimeFinalizer {
         +finalize(session, *, aborted_due_to_error) None
+        +build_report(session, *, ok) LabReport
     }
 
     class MaterialCompute {
@@ -407,8 +719,15 @@ classDiagram
         +ok
     }
 
-    class UserResultBuilder {
-        +build_user_result(ok, diagnostics, state, events, plan, initial_material_state) dict
+    class MaterialAccountingRecorder {
+        +initialize(initial_material_state) MaterialAccounting
+        +record(step, result, accounting) None
+    }
+
+    class MaterialAccounting
+
+    class ReportBuilder {
+        +build(...) LabReport
     }
 
     class RunResult {
@@ -423,7 +742,6 @@ classDiagram
 
     RuntimeAPI --> RuntimeExecutor : creates
     RuntimeAPI --> RuntimeSession : builds
-    RuntimeAPI --> UserResultBuilder : builds report through
     RuntimeExecutor --> RuntimeSession : mutates
     RuntimeExecutor --> RuntimeStepDispatcher : dispatches through
     RuntimeExecutor --> RuntimeFinalizer : finalizes through
@@ -441,6 +759,12 @@ classDiagram
     BaseRuntimeStepHandler --> ProtocolOutputRecorder : uses
     BaseRuntimeStepHandler --> Driver : uses
     BaseRuntimeStepHandler --> MaterialCompute : uses
+    RuntimeExecutor --> MaterialAccountingRecorder : initializes through
+    RuntimeSession --> MaterialAccountingRecorder : owns service
+    RuntimeSession --> MaterialAccounting : owns run artifact
+    BaseRuntimeStepHandler --> MaterialAccountingRecorder : records through
+    MaterialAccountingRecorder --> MaterialAccounting : updates
+    RuntimeFinalizer --> ReportBuilder : builds through
     MaterialCompute --> MaterialUpdateResult : returns
     BaseRuntimeStepHandler <|-- ControlStepHandler
     BaseRuntimeStepHandler <|-- LocalStateStepHandler

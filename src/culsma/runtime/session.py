@@ -26,6 +26,7 @@ class RuntimeSession:
     ref_groups: dict[str, Any]
     ref_groups_by_first: dict[str, Any]
     ref_cache: dict[str, Any]
+    initial_material_state: dict[str, Any] | None = None
     ref_pending_updates: dict[str, dict[str, Any]] = field(default_factory=dict)
     on_error: str = "abort"
     fail_fast: bool = True
@@ -34,6 +35,8 @@ class RuntimeSession:
     value_resolver: Any = None
     observation_recorder: Any = None
     protocol_output_recorder: Any = None
+    material_accounting_recorder: Any = None
+    material_accounting: Any = None
     finalizer: Any = None
 
     def emit_diagnostic(self, diagnostic: Diagnostic) -> None:

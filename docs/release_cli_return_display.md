@@ -15,6 +15,14 @@ Protocol return projection rules are tracked separately in
 - Container/tube display is a runtime projection of the returned container state, not a new binding model.
 - `lab_report_v1` is a generated execution report. It is not the protocol return value.
 - Machine-readable run output keeps `returns` separate from `report`.
+- `report.materials.reagent_consumption` is the complete runtime-derived table
+  of consumed input samples and reagents. It excludes runtime-generated
+  intermediate fractions such as `entry...::0` unless the container was
+  explicitly loaded as an input.
+- For a consumption row, an unmeasured unit axis is `null`; it is not reported
+  as a measured zero. Volume-only and mass-only input consumption are both
+  represented.
+- Display truncation belongs in terminal/UI rendering, not in report data.
 - If a protocol has no explicit return, the CLI may summarize inferred final products, but it must not label them as protocol returns.
 - Debug artifacts remain opt-in through `--artifacts-dir`.
 
