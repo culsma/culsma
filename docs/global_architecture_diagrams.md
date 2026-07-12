@@ -24,7 +24,7 @@ flowchart LR
     Validate["3. Semantic validation<br/>reference shape, contracts,<br/>lowering gates"]
     Typecheck["4. Type + unit checking<br/>dimensional and ordered-step consistency"]
     Entry["5. Entry resolution<br/>entry-source script,<br/>compatibility fallback,<br/>or no run"]
-    Compat["6. 1.0.5 compatibility adapter<br/>entry-source legacy single-protocol entry"]
+    Compat["6. 1.0.5 compatibility adapter<br/>unique unreferenced root protocol"]
     Plan["7. Plan lowering<br/>selected root, workflow plan,<br/>dependencies, execution gates"]
     Runtime["8. Runtime execution session<br/>scheduler, lifecycle, material compute,<br/>events, artifacts, user result"]
     Driver["Driver module<br/>backend realization"]

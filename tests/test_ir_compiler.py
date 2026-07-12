@@ -79,7 +79,7 @@ def test_resolve_entry_uses_isolated_legacy_single_protocol_fallback():
     assert entry.kind == "protocol"
     assert entry.protocol_name == "T"
     assert entry.source == "legacy_single_protocol"
-    assert [diagnostic.code for diagnostic in entry.diagnostics] == ["ENTRY_LEGACY_IMPLICIT_SINGLE_PROTOCOL"]
+    assert [diagnostic.code for diagnostic in entry.diagnostics] == ["ENTRY_LEGACY_IMPLICIT_PROTOCOL"]
 
 
 def test_collect_user_protocols_returns_protocol_definitions_only():

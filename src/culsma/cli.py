@@ -308,14 +308,21 @@ def execute_pipeline(
     if isinstance(state.artifacts["material_state"], dict):
         state.artifacts["material_state"]["_inventory_check"] = bool(inventory_check)
 
-    can_run = sem.ok and typ.ok
+    can_run = sem.ok and typ.ok and not any(
+        diagnostic.severity == "error" for diagnostic in plan.diagnostics
+    )
     if can_run:
         run_result = run(plan=plan, driver=StubDriver(fail_ops=fail_ops or set()), state=state)
         if run_result.user_result is None:
             raise RuntimeError("RUN_REPORT_MISSING: Runtime execution completed without a report")
         user_result = run_result.user_result
     else:
-        run_result = SimpleNamespace(ok=False, diagnostics=[], state=state, events=[])
+        run_result = SimpleNamespace(
+            ok=False,
+            diagnostics=list(plan.diagnostics),
+            state=state,
+            events=[],
+        )
         user_result = build_unexecuted_report(
             ok=run_result.ok,
             diagnostics=list(run_result.diagnostics),
@@ -518,6 +525,8 @@ def main() -> None:
                 print(format_terminal_result(bundle), end="")
         if args.artifacts_dir:
             write_run_artifacts(bundle, Path(args.artifacts_dir))
+        if not bundle["output"]["ok"]:
+            raise SystemExit(1)
         return
 
     if args.command == "replay":

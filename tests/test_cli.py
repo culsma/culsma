@@ -85,6 +85,40 @@ def test_execute_pipeline_rejects_multiple_entry_sources(tmp_path):
         execute_pipeline([first, second])
 
 
+def test_execute_pipeline_rejects_entry_source_without_executable_entry(tmp_path):
+    source = tmp_path / "definitions.culs"
+    source.write_text("protocol First {}\nprotocol Second {}\n", encoding="utf-8")
+
+    bundle = execute_pipeline([source])
+
+    assert not bundle["output"]["ok"]
+    assert bundle["returns"] == {}
+    assert bundle["run"]["events"] == []
+    assert bundle["run"]["state"]["step_status"] == {}
+    assert [diagnostic["code"] for diagnostic in bundle["run"]["diagnostics"]] == [
+        "ENTRY_NO_ENTRYPOINT"
+    ]
+    assert bundle["run"]["diagnostics"][0]["severity"] == "error"
+
+
+def test_cli_entry_source_without_executable_entry_exits_nonzero(tmp_path, monkeypatch, capsys):
+    source = tmp_path / "definitions.culs"
+    source.write_text("protocol First {}\nprotocol Second {}\n", encoding="utf-8")
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(source), "--json"])
+
+    with pytest.raises(SystemExit) as exc_info:
+        main()
+
+    assert exc_info.value.code == 1
+    payload = json.loads(capsys.readouterr().out)
+    assert not payload["ok"]
+    assert payload["returns"] == {}
+    assert payload["report"]["execution"]["diagnostic_count"] == 1
+    assert payload["report"]["alerts"] == [
+        "ENTRY_NO_ENTRYPOINT: No executable entrypoint; add top-level script statements"
+    ]
+
+
 def test_cli_multi_input_runs_as_independent_batch(tmp_path, monkeypatch, capsys):
     first = tmp_path / "first.culs"
     second = tmp_path / "second.culs"
@@ -240,7 +274,7 @@ def test_cli_human_summary_includes_returned_container_state(tmp_path, monkeypat
         "\n"
         "execution: 3/3 steps completed, 1 diagnostics\n"
         "alerts:\n"
-        "  ENTRY_LEGACY_IMPLICIT_SINGLE_PROTOCOL: Implicitly running protocol 'CliSmoke' is deprecated; add top-level script statements\n"
+        "  ENTRY_LEGACY_IMPLICIT_PROTOCOL: Implicitly running protocol 'CliSmoke' is deprecated; add top-level script statements\n"
     )
 
 

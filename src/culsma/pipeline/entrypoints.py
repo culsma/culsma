@@ -61,7 +61,7 @@ def resolve_entry(
             if warn_on_legacy:
                 diagnostics.append(
                     Diagnostic(
-                        code="ENTRY_LEGACY_IMPLICIT_SINGLE_PROTOCOL",
+                        code="ENTRY_LEGACY_IMPLICIT_PROTOCOL",
                         message=(
                             f"Implicitly running protocol '{protocol.name}' is deprecated; "
                             "add top-level script statements"
@@ -87,7 +87,7 @@ def resolve_entry(
                 code="ENTRY_NO_ENTRYPOINT",
                 message="No executable entrypoint; add top-level script statements",
                 span=ir.span,
-                severity="warning",
+                severity="error",
                 node_id=None,
             )
         ],

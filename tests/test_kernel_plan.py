@@ -99,6 +99,7 @@ protocol Section { StepSection(); }
 
     assert plan.plans == []
     assert [diagnostic.code for diagnostic in plan.diagnostics] == ["ENTRY_NO_ENTRYPOINT"]
+    assert [diagnostic.severity for diagnostic in plan.diagnostics] == ["error"]
 
 
 def test_include_unknown_reference_emits_plan_unknown_reference():
