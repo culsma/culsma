@@ -1,5 +1,46 @@
 # Changelog
 
+## Culsma v1.0.5
+
+### Scope
+
+This release makes entry-source scripts the explicit execution boundary,
+strengthens runtime report material accounting, and includes focused compiler
+and grouped-sample fixes while retaining the 1.0.5 compatibility adapter for
+legacy single-protocol entry sources.
+
+It includes:
+
+- top-level entry-source statements as the executable script, with include and
+  import dependencies contributing definitions without executing their scripts
+- independent CLI batch runs for repeated input files
+- a hard `ENTRY_NO_ENTRYPOINT` failure when an entry source has neither script
+  statements nor an eligible legacy single-protocol entry
+- repeat-body-local iterator validation so sibling repeats may reuse names
+- grouped-sample agitation effects for explicit and let-bound sample groups
+- structured runtime report models and complete input-lot material accounting
+  across external inventory, protocol-created inputs, and material movements
+- complete, untruncated reagent-consumption output that excludes generated
+  intermediate material from input consumption
+- runtime rejection of quantity changes without an auditable material-movement
+  contract
+
+### Compatibility
+
+- Existing accepted single-protocol entry files continue to run through the
+  isolated 1.0.5 compatibility adapter and emit a deprecation diagnostic.
+- Protocol return values remain separate from the generated execution report.
+- Existing report serialization fields are preserved for this patch release.
+
+### Verified
+
+- `python -m pytest -q`
+  - Python 3.11: `763 passed`
+  - Python 3.12: `763 passed`
+  - Python 3.13: `763 passed`
+- CLI source and installed-wheel smoke checks passed.
+- Wheel and source distribution builds passed `twine check`.
+
 ## Culsma v1.0.5rc2
 
 ### Scope
