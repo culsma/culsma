@@ -31,6 +31,10 @@ def _ir_call(name: str, args: list[dict[str, object]]) -> dict[str, object]:
     return {"kind": "IRCall", "name": name, "args": args, "span": None}
 
 
+def _ir_group(elements: list[dict[str, object]]) -> dict[str, object]:
+    return {"kind": "IRGroup", "elements": elements, "span": None}
+
+
 def _mutation_step(
     target: dict[str, object],
     sources: list[dict[str, object]],
@@ -142,6 +146,31 @@ def test_mutation_full_source_moves_all_content():
     assert result.delta["op"] == "Mutation"
     assert result.material_state["containers"]["A"]["volume_uL"] == 0.0
     assert result.material_state["containers"]["B"]["volume_uL"] == 100.0
+
+
+def test_agit_group_resolution_failure_has_no_partial_effects():
+    step = PlanStep(
+        step_id="p0.s0",
+        op="agit",
+        args={"sample": _ir_group([_ir_identifier("A"), _ir_identifier("Missing")])},
+        deps=[],
+        gate=None,
+        span=None,
+    )
+    state = {
+        "containers": {
+            "A": {"volume_uL": 100.0, "mass_mg": 100.0, "components": {}, "metadata": {}},
+        },
+        "contents_states": {
+            "A": {"valid": True, "kind": "partitioned", "program_kind": "magnetic"},
+        },
+    }
+
+    result = apply_step(step=step, material_state=state)
+
+    assert not result.ok
+    assert [diagnostic.code for diagnostic in result.diagnostics] == ["MAT_BINDING_NOT_FOUND"]
+    assert result.material_state["contents_states"]["A"] == state["contents_states"]["A"]
 
 
 def test_alloc_container_preserves_open_metadata():
