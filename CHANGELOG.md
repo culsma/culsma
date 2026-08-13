@@ -1,5 +1,59 @@
 # Changelog
 
+## Internal 1.0.6rc1
+
+### Scope
+
+This internal GitHub prerelease adds first-class centrifugal filtration while
+keeping filtration, rather than sedimentation, as the material separation
+semantics.
+
+It includes:
+
+- `centrifugal_filtration_program(...)` with required `membrane` and
+  centrifugal `drive` fields plus optional action-local `duration`
+- `g` and `rpm` validation through the existing centrifugal-setting type
+- stable `filtrate` / `retentate` outputs using the filtration material
+  partition strategy
+- distinct human and robot driver bindings for centrifugal filtration
+- validation, typecheck, runtime, material-compute, and driver regression tests
+- architecture and material-strategy documentation aligned with the accepted
+  reference ratios
+
+### Compatibility
+
+- `filtration_program(...)` remains the general filtration descriptor with a
+  named text drive.
+- `centrifuge_program(...)` remains a sedimentation-oriented separation with
+  `supernatant` / `pellet` outputs.
+- Existing separation partition ratios and fallback behavior are unchanged.
+
+### Install
+
+After the GitHub prerelease assets are published:
+
+```bash
+python -m pip install https://github.com/culsma/culsma/releases/download/internal-1.0.6rc1/culsma-1.0.6rc1-py3-none-any.whl
+```
+
+Source tag install:
+
+```bash
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@internal-1.0.6rc1"
+```
+
+### Verified
+
+- `python -m pytest -q`
+  - result: `775 passed`
+- source CLI and installed-wheel CLI smoke checks passed
+- `python -m build`
+  - result: `culsma-1.0.6rc1.tar.gz` and
+    `culsma-1.0.6rc1-py3-none-any.whl` built
+- `python -m twine check`
+  - result: passed for both distributions
+- isolated wheel install reports `culsma.__version__ == "1.0.6rc1"`
+
 ## Culsma v1.0.5
 
 ### Scope
