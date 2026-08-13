@@ -117,6 +117,17 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         ),
         result_contract_key="sep_container_group",
     ),
+    "centrifugal_filtration_program": _spec(
+        "centrifugal_filtration_program",
+        family="sep",
+        owners=("sep", "partition"),
+        fields=(
+            _field("membrane", required=True, value_kind="text"),
+            _field("drive", required=True, value_kind="quantity", dimension="centrifuge_speed"),
+            _field("duration", value_kind="quantity", dimension="time"),
+        ),
+        result_contract_key="sep_container_group",
+    ),
     "phase_partition_program": _spec(
         "phase_partition_program",
         family="sep",

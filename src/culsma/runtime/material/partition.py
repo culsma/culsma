@@ -447,6 +447,10 @@ class FiltrationPartitionStrategy(SepPartitionStrategy):
         return partition_class
 
 
+class CentrifugalFiltrationPartitionStrategy(FiltrationPartitionStrategy):
+    program_kind = "centrifugal_filtration_program"
+
+
 class MagneticPartitionStrategy(SepPartitionStrategy):
     program_kind = "magnetic_program"
     slot_contract = {"0": "bound", "1": "flowthrough"}
@@ -506,6 +510,7 @@ _SEP_PARTITION_STRATEGIES: dict[str, SepPartitionStrategy] = {
         PhasePartitionStrategy(),
         PrecipitationPartitionStrategy(),
         FiltrationPartitionStrategy(),
+        CentrifugalFiltrationPartitionStrategy(),
         MagneticPartitionStrategy(),
         DisruptPartitionStrategy(),
         FieldPartitionStrategy(),

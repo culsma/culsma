@@ -19,6 +19,7 @@ _ACTION_BY_OP = {
 
 _ACTION_BY_PROGRAM_KIND = {
     "centrifuge_program": "device.centrifuge.run",
+    "centrifugal_filtration_program": "device.centrifuge.filter.run",
     "filtration_program": "device.filter.run",
     "phase_partition_program": "material.separate.phase_partition",
     "density_gradient_program": "device.fractionation.run",

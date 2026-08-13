@@ -538,6 +538,7 @@ classDiagram
     class PhasePartitionStrategy
     class PrecipitationPartitionStrategy
     class FiltrationPartitionStrategy
+    class CentrifugalFiltrationPartitionStrategy
     class MagneticPartitionStrategy
     class DisruptPartitionStrategy
     class FieldPartitionStrategy
@@ -566,6 +567,7 @@ classDiagram
     SepPartitionStrategy <|-- PhasePartitionStrategy
     SepPartitionStrategy <|-- PrecipitationPartitionStrategy
     SepPartitionStrategy <|-- FiltrationPartitionStrategy
+    FiltrationPartitionStrategy <|-- CentrifugalFiltrationPartitionStrategy
     SepPartitionStrategy <|-- MagneticPartitionStrategy
     SepPartitionStrategy <|-- DisruptPartitionStrategy
     SepPartitionStrategy <|-- FieldPartitionStrategy

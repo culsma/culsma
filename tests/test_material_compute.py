@@ -61,10 +61,9 @@ def _sep_step(
     keep_source: str | None = None,
     step_id: str = "p0.s0",
     program_name: str = "centrifuge_program",
+    program_args_override: list[dict[str, object]] | None = None,
 ) -> PlanStep:
-    program_args = [
-        _ir_arg("drive", _ir_quantity(12000.0, "g")),
-    ]
+    program_args = program_args_override or [_ir_arg("drive", _ir_quantity(12000.0, "g"))]
     if keep_source is not None:
         program_args.append(_ir_arg("keep_source", _ir_string(keep_source)))
     return PlanStep(
@@ -704,6 +703,38 @@ def test_sep_filtration_sends_liquid_to_filtrate_and_target_to_retentate():
     }
     slot1_classes = result.material_state["containers"][slots["1"]]["metadata"]["component_partition_classes"]
     assert slot1_classes["DNA"] == "retained_fraction"
+
+
+def test_sep_centrifugal_filtration_uses_filtrate_and_retentate_slots():
+    result = apply_step(
+        step=_sep_step(
+            program_name="centrifugal_filtration_program",
+            program_args_override=[
+                _ir_arg("membrane", _ir_string("silica")),
+                _ir_arg("drive", _ir_quantity(8000.0, "g")),
+                _ir_arg("duration", _ir_quantity(1.0, "min")),
+            ],
+        ),
+        material_state=_partition_state(
+            components={"DNA": 100.0, "WASH": 100.0},
+            registry={
+                "DNA": ("bio_molecule_or_virus", "dna"),
+                "WASH": ("formulation", "buffer"),
+            },
+        ),
+    )
+
+    assert result.ok
+    slots = result.material_state["indexed_bindings"]["sep_group"]
+    assert result.delta["partition"]["slot_contract"] == {"0": "filtrate", "1": "retentate"}
+    assert _rounded_components(result.material_state["containers"][slots["0"]]) == {
+        "DNA": 1.0,
+        "WASH": 99.0,
+    }
+    assert _rounded_components(result.material_state["containers"][slots["1"]]) == {
+        "DNA": 99.0,
+        "WASH": 1.0,
+    }
 
 
 def test_sep_magnetic_sends_target_and_beads_to_bound_fraction():

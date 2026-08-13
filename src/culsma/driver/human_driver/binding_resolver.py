@@ -34,6 +34,7 @@ _DEFAULT_TOOL_BY_OP = {
 
 _TOOL_BY_PROGRAM_KIND = {
     "centrifuge_program": "manual centrifuge workflow",
+    "centrifugal_filtration_program": "manual centrifugal filtration workflow",
     "filtration_program": "manual filtration workflow",
     "phase_partition_program": "manual phase-partition workflow",
     "density_gradient_program": "manual density-gradient workflow",

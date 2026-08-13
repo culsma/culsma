@@ -220,7 +220,7 @@ flowchart TB
     Op{"step.op == sep?"}
     Other["Dispatch to other material op handler:<br/>AllocContainer, DefineContent, LoadContent,<br/>Mutation, frac, or no-op"]
     Resolve["Resolve sep args:<br/>sample, bind name, program call"]
-    Program["Read program kind:<br/>centrifuge, filtration, phase partition,<br/>precipitation, magnetic, disrupt, field"]
+    Program["Read program kind:<br/>centrifuge, filtration, centrifugal filtration,<br/>phase partition, precipitation, magnetic, disrupt, field"]
     Slots["Determine output slot contract:<br/>group[0] / group[1] semantic names"]
     Identity["Apply identity policy:<br/>centrifuge keep_source may reuse source container"]
     Partition["Compute material partition:<br/>bulk volume/mass, component fate"]
@@ -241,10 +241,12 @@ flowchart TB
 Current implementation note:
 
 1. `Program` reads `program_kind`.
-2. `Identity` handles `centrifuge_program(..., keep_source=...)` source-container
+2. `centrifugal_filtration_program(..., drive=..., duration=...)` is a distinct
+   program kind whose slot contract remains filtrate / retentate.
+3. `Identity` handles `centrifuge_program(..., keep_source=...)` source-container
    reuse.
-3. `Partition` uses a strategy selected by `program_kind`.
-4. Component fate uses program-specific ratios; bulk `volume_uL` and `mass_mg`
+4. `Partition` uses a strategy selected by `program_kind`.
+5. Component fate uses program-specific ratios; bulk `volume_uL` and `mass_mg`
    continue to use conservative accounting and are not derived from those
    component fate ratios.
 
@@ -266,6 +268,7 @@ flowchart TB
     Phase["PhasePartitionStrategy<br/>target_phase / other_phase"]
     Precip["PrecipitationPartitionStrategy<br/>precipitate / supernatant"]
     Filter["FiltrationPartitionStrategy<br/>filtrate / retentate"]
+    CentrifugalFilter["CentrifugalFiltrationPartitionStrategy<br/>filtrate / retentate"]
     Magnetic["MagneticPartitionStrategy<br/>bound / flowthrough"]
     Disrupt["DisruptPartitionStrategy<br/>lysate / debris_or_residue"]
     Field["FieldPartitionStrategy<br/>target_band / non_target"]
@@ -278,6 +281,7 @@ flowchart TB
     Registry -->|phase_partition_program| Phase
     Registry -->|precipitation_program| Precip
     Registry -->|filtration_program| Filter
+    Registry -->|centrifugal_filtration_program| CentrifugalFilter
     Registry -->|magnetic_program| Magnetic
     Registry -->|disrupt_program| Disrupt
     Registry -->|field_program| Field
@@ -286,6 +290,7 @@ flowchart TB
     Phase --> Result
     Precip --> Result
     Filter --> Result
+    CentrifugalFilter --> Result
     Magnetic --> Result
     Disrupt --> Result
     Field --> Result

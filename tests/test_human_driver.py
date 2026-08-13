@@ -146,6 +146,36 @@ def test_human_run_sheet_groups_projections_by_category_in_order():
     assert sheet.sections == ()
 
 
+def test_human_driver_renders_centrifugal_filtration_program():
+    step = PlanStep(
+        step_id="step.sep.filtration",
+        op="sep",
+        args={
+            "sample": {"kind": "IRIdentifier", "name": "silica_column"},
+            "program": {
+                "kind": "IRCall",
+                "name": "centrifugal_filtration_program",
+                "args": [
+                    {"name": "membrane", "value": {"kind": "IRString", "value": "silica"}},
+                    {
+                        "name": "drive",
+                        "value": {"kind": "IRQuantity", "value": 8000, "unit": "g"},
+                    },
+                    {"name": "duration", "value": {"kind": "IRQuantity", "value": 1, "unit": "min"}},
+                ],
+            },
+        },
+    )
+
+    result = HumanDriver().execute(step)
+
+    assert result.ok
+    assert result.payload["instruction"]["summary"] == (
+        "Run centrifugal filtration on silica_column across a silica membrane at 8000g for 1min."
+    )
+    assert result.payload["binding"]["tool_label"] == "manual centrifugal filtration workflow"
+
+
 def test_human_run_sheet_hides_internal_setup_and_merges_repeated_steps():
     driver = HumanDriver()
     sheet = build_run_sheet(

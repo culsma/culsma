@@ -277,6 +277,59 @@ protocol T {
     assert "TYPE_PROGRAM_FIELD_DIMENSION_MISMATCH" in _codes(result)
 
 
+def test_typecheck_centrifugal_filtration_program_accepts_drive_and_duration():
+    src = """
+protocol T {
+  let g = sep(
+    sample = column,
+    program = centrifugal_filtration_program(
+      membrane = "silica",
+      drive = 8000g,
+      duration = 1min
+    )
+  );
+}
+"""
+    ir = _compile_source(src)
+    result = typecheck(ir)
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+
+
+def test_typecheck_centrifugal_filtration_program_rejects_invalid_drive_dimension():
+    src = """
+protocol T {
+  let g = sep(
+    sample = column,
+    program = centrifugal_filtration_program(
+      membrane = "silica",
+      drive = 8000uL
+    )
+  );
+}
+"""
+    ir = _compile_source(src)
+    result = typecheck(ir)
+    assert "TYPE_PROGRAM_FIELD_DIMENSION_MISMATCH" in _codes(result)
+
+
+def test_typecheck_centrifugal_filtration_program_rejects_invalid_duration_dimension():
+    src = """
+protocol T {
+  let g = sep(
+    sample = column,
+    program = centrifugal_filtration_program(
+      membrane = "silica",
+      drive = 8000g,
+      duration = 1uL
+    )
+  );
+}
+"""
+    ir = _compile_source(src)
+    result = typecheck(ir)
+    assert "TYPE_PROGRAM_FIELD_DIMENSION_MISMATCH" in _codes(result)
+
+
 def test_typecheck_mutation_accepts_let_bound_quantity():
     src = "protocol T { let vol = 5uL; tube << [feed:vol]; }"
     ir = _compile_source(src)

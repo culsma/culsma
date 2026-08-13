@@ -146,7 +146,6 @@ partition values.
 Interpretation:
 
 - `0.99 / 0.01`: very strong bias with small carryover;
-- `0.98 / 0.02`: strong bias;
 - `0.95 / 0.05`: biased but with more loss or residue;
 - `0.50 / 0.50`: unknown, conservative fallback, should warn.
 
@@ -155,16 +154,16 @@ Interpretation:
 | `centrifuge_program` | `group[0] = supernatant`, `group[1] = pellet` | liquid / matrix | 0.99 | 0.01 | Most liquid remains in the supernatant; pellet has small carryover. |
 | `centrifuge_program` | `group[0] = supernatant`, `group[1] = pellet` | particles / cells / pelletable material | 0.01 | 0.99 | Pelletable material mostly sediments. |
 | `centrifuge_program` | `group[0] = supernatant`, `group[1] = pellet` | material bound to particles | 0.01 | 0.99 | Bound material follows the particles. |
-| `phase_partition_program` | `group[0] = target_phase`, `group[1] = other_phase` | target-phase material | 0.98 | 0.02 | Target material mostly follows the selected phase. |
-| `phase_partition_program` | `group[0] = target_phase`, `group[1] = other_phase` | other-phase solvent / extraction reagent | 0.02 | 0.98 | Extraction solvent mostly follows the non-target phase. |
-| `phase_partition_program` | `group[0] = target_phase`, `group[1] = other_phase` | interface / contaminant | 0.10 | 0.90 | Draft conservative default; should often be explicit. |
+| `phase_partition_program` | `group[0] = target_phase`, `group[1] = other_phase` | target-phase material | 0.99 | 0.01 | Target material mostly follows the selected phase. |
+| `phase_partition_program` | `group[0] = target_phase`, `group[1] = other_phase` | other-phase solvent / extraction reagent | 0.01 | 0.99 | Extraction solvent mostly follows the non-target phase. |
+| `phase_partition_program` | `group[0] = target_phase`, `group[1] = other_phase` | interface / contaminant | 0.50 | 0.50 | Unknown behavior uses the conservative fallback. |
 | `precipitation_program` | `group[0] = precipitate`, `group[1] = supernatant` | precipitable target | 0.95 | 0.05 | Product mostly enters the precipitate, with some loss. |
-| `precipitation_program` | `group[0] = precipitate`, `group[1] = supernatant` | liquid / matrix / precipitation reagent | 0.03 | 0.97 | Most liquid remains in the supernatant; precipitate has carryover. |
-| `filtration_program` | `group[0] = filtrate`, `group[1] = retentate` | pass-through material | 0.98 | 0.02 | Material that can pass the filter mostly enters filtrate. |
-| `filtration_program` | `group[0] = filtrate`, `group[1] = retentate` | retained material | 0.02 | 0.98 | Material retained by the membrane/column mostly stays in retentate. |
-| `filtration_program` | `group[0] = filtrate`, `group[1] = retentate` | wash liquid / matrix | 0.98 | 0.02 | Wash liquid mostly leaves through filtrate. |
-| `magnetic_program` | `group[0] = bound`, `group[1] = flowthrough` | captured / bead-bound material | 0.98 | 0.02 | Captured material mostly remains bound. |
-| `magnetic_program` | `group[0] = bound`, `group[1] = flowthrough` | unbound material / wash liquid | 0.02 | 0.98 | Unbound material mostly leaves in flowthrough. |
+| `precipitation_program` | `group[0] = precipitate`, `group[1] = supernatant` | liquid / matrix / precipitation reagent | 0.01 | 0.99 | Most liquid remains in the supernatant; precipitate has carryover. |
+| `filtration_program` / `centrifugal_filtration_program` | `group[0] = filtrate`, `group[1] = retentate` | pass-through material | 0.99 | 0.01 | Material that can pass the filter mostly enters filtrate. |
+| `filtration_program` / `centrifugal_filtration_program` | `group[0] = filtrate`, `group[1] = retentate` | retained material | 0.01 | 0.99 | Material retained by the membrane/column mostly stays in retentate. |
+| `filtration_program` / `centrifugal_filtration_program` | `group[0] = filtrate`, `group[1] = retentate` | wash liquid / matrix | 0.99 | 0.01 | Wash liquid mostly leaves through filtrate. |
+| `magnetic_program` | `group[0] = bound`, `group[1] = flowthrough` | captured / bead-bound material | 0.99 | 0.01 | Captured material mostly remains bound. |
+| `magnetic_program` | `group[0] = bound`, `group[1] = flowthrough` | unbound material / wash liquid | 0.01 | 0.99 | Unbound material mostly leaves in flowthrough. |
 | `disrupt_program` | `group[0] = lysate`, `group[1] = debris_or_residue` | released material | 0.95 | 0.05 | Released contents mostly enter lysate. |
 | `disrupt_program` | `group[0] = lysate`, `group[1] = debris_or_residue` | debris / residue | 0.05 | 0.95 | Debris mostly remains residue. |
 | `field_program` | `group[0] = target_band_fraction`, `group[1] = non_target_fraction` | target-band material | 0.95 | 0.05 | Target material mostly enters the selected band. |
@@ -186,6 +185,7 @@ author knows the expected recovery or carryover.
 | `phase_partition_program` | `PhasePartitionStrategy` |
 | `precipitation_program` | `PrecipitationPartitionStrategy` |
 | `filtration_program` | `FiltrationPartitionStrategy` |
+| `centrifugal_filtration_program` | `CentrifugalFiltrationPartitionStrategy` |
 | `magnetic_program` | `MagneticPartitionStrategy` |
 | `disrupt_program` | `DisruptPartitionStrategy` |
 | `field_program` | `FieldPartitionStrategy` |
@@ -207,6 +207,7 @@ from public protocol returns.
 | `phase_partition_program` keeps target-phase material separate from extraction reagent. | `test_sep_phase_partition_sends_target_phase_material_away_from_extraction_reagent` |
 | `precipitation_program` keeps target in precipitate and liquid in supernatant. | `test_sep_precipitation_sends_target_to_precipitate_and_liquid_to_supernatant` |
 | `filtration_program` keeps pass-through liquid in filtrate and retained target in retentate. | `test_sep_filtration_sends_liquid_to_filtrate_and_target_to_retentate` |
+| `centrifugal_filtration_program` preserves the filtration slot contract while carrying centrifugal run parameters. | `test_sep_centrifugal_filtration_uses_filtrate_and_retentate_slots` |
 | `magnetic_program` keeps target and beads in bound fraction and wash in flowthrough. | `test_sep_magnetic_sends_target_and_beads_to_bound_fraction` |
 | `disrupt_program` sends released material to lysate and cells/debris to residue. | `test_sep_disrupt_sends_released_material_to_lysate_and_cells_to_residue` |
 | `field_program` sends target to selected band/fraction and non-target material away. | `test_sep_field_sends_target_to_band_fraction_and_stain_to_non_target_fraction` |

@@ -60,3 +60,33 @@ def test_robot_driver_prefers_readout_quantity_specific_action_binding():
     assert result.ok
     assert result.payload["binding"]["program_kind"] is None
     assert result.payload["binding"]["action"] == "sensor.temperature.read"
+
+
+def test_robot_driver_preserves_centrifugal_filtration_program_parameters():
+    step = PlanStep(
+        step_id="step.robot.filtration",
+        op="sep",
+        args={
+            "sample": {"kind": "IRIdentifier", "name": "silica_column"},
+            "program": {
+                "kind": "IRCall",
+                "name": "centrifugal_filtration_program",
+                "args": [
+                    {"name": "membrane", "value": {"kind": "IRString", "value": "silica"}},
+                    {
+                        "name": "drive",
+                        "value": {"kind": "IRQuantity", "value": 8000, "unit": "g"},
+                    },
+                    {"name": "duration", "value": {"kind": "IRQuantity", "value": 1, "unit": "min"}},
+                ],
+            },
+        },
+    )
+
+    result = RobotDriver().execute(step)
+
+    assert result.ok
+    assert result.payload["binding"]["action"] == "device.centrifuge.filter.run"
+    assert result.payload["projection"]["semantic_args"]["program"] == (
+        "centrifugal_filtration_program(membrane=silica, drive=8000g, duration=1min)"
+    )

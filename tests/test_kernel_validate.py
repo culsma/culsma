@@ -185,6 +185,7 @@ def test_validate_removed_public_program_constructors_are_rejected(program_name:
         "disrupt_program",
         "field_program",
         "filtration_program",
+        "centrifugal_filtration_program",
         "phase_partition_program",
         "precipitation_program",
         "density_gradient_program",
@@ -197,6 +198,7 @@ def test_validate_current_program_constructors_can_be_let_bound_as_descriptors(p
         "centrifuge_program": "drive = 12000g",
         "field_program": "field = 100V",
         "filtration_program": 'membrane = "silica", drive = pressure',
+        "centrifugal_filtration_program": 'membrane = "silica", drive = 8000g, duration = 1min',
         "phase_partition_program": 'solvent = "phenol_chloroform"',
         "precipitation_program": "reagent = cleanup_capture",
         "density_gradient_program": "axis = density, order = top_to_bottom, bins = 8",
@@ -760,6 +762,60 @@ protocol T {
     ir = _compile_source(src)
     result = validate(ir)
     assert "SEM_UNKNOWN_ARG" in _codes(result)
+
+
+def test_validate_filtration_program_does_not_accept_centrifugal_run_fields():
+    src = """
+protocol T {
+  let g = sep(
+    sample = column,
+    program = filtration_program(
+      membrane = "silica",
+      drive = pressure,
+      centrifuge_speed = 8000g,
+      duration = 1min
+    )
+  );
+}
+"""
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert _codes(result).count("SEM_UNKNOWN_ARG") == 2
+
+
+def test_validate_centrifugal_filtration_program_accepts_run_parameters():
+    src = """
+protocol T {
+  let g = sep(
+    sample = column,
+    program = centrifugal_filtration_program(
+      membrane = "silica",
+      drive = 8000g,
+      duration = 1min
+    )
+  );
+}
+"""
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+
+
+def test_validate_centrifugal_filtration_program_requires_drive():
+    src = """
+protocol T {
+  let g = sep(
+    sample = column,
+    program = centrifugal_filtration_program(
+      membrane = "silica"
+    )
+  );
+}
+"""
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert "SEM_MISSING_REQUIRED_ARG" in _codes(result)
+    assert any("drive" in d.message for d in result.diagnostics)
 
 
 def test_validate_keep_source_only_accepts_supernatant_or_pellet():

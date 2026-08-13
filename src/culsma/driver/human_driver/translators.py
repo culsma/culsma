@@ -187,6 +187,12 @@ def _render_program_aware_separation_summary(record: HumanMappingRecord, sample:
         membrane = value_to_text(program_args.get("membrane"))
         drive = value_to_text(program_args.get("drive"))
         return f"Separate {sample} across a {membrane} membrane using {drive} drive."
+    if record.semantic_op == "sep" and record.program_kind == "centrifugal_filtration_program":
+        membrane = value_to_text(program_args.get("membrane"))
+        drive = value_to_text(program_args.get("drive"))
+        duration = value_to_text(program_args.get("duration"))
+        duration_suffix = f" for {duration}" if duration != "null" else ""
+        return f"Run centrifugal filtration on {sample} across a {membrane} membrane at {drive}{duration_suffix}."
     if record.semantic_op == "sep" and record.program_kind == "phase_partition_program":
         solvent = value_to_text(program_args.get("solvent"))
         return f"Separate {sample} by solvent partition using {solvent}."

@@ -2634,6 +2634,35 @@ protocol T {
     assert material["containers"][slots["1"]]["volume_uL"] == 50.0
 
 
+def test_runtime_executes_centrifugal_filtration_with_filtration_slots():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let column = tube(label = "SpinColumn", capacity = 500uL, load = [
+    content(kind = "biosample", code = "DNA", type = "dna_sample"):100uL,
+    buffer(code = "WASH", type = "buffer"):100uL
+  ]);
+  let filter_group = sep(
+    sample = column,
+    program = centrifugal_filtration_program(
+      membrane = "silica",
+      drive = 8000g,
+      duration = 1min
+    )
+  );
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    material = result.state.artifacts["material_state"]
+    slots = material["indexed_bindings"]["filter_group"]
+    assert material["containers"][slots["0"]]["components"] == {"DNA": 1.0, "WASH": 99.0}
+    assert material["containers"][slots["1"]]["components"] == {"DNA": 99.0, "WASH": 1.0}
+
+
 def test_runtime_append_mutates_data_group_items():
     plan = _build_plan_from_source(
         """
