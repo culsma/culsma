@@ -642,6 +642,20 @@ protocol T {
     assert result.ok, [d.to_dict() for d in result.diagnostics]
 
 
+def test_validate_plate_selector_group_rejects_static_out_of_range_index():
+    src = """
+protocol T {
+  let plate96 = plate(label = "Assay", format = "96well", carrier_id = "PlateA");
+  let selected_wells = plate96[A3:A5];
+  let missing_well = selected_wells[3];
+}
+"""
+    ir = _compile_source(src)
+    result = validate(ir)
+
+    assert "SEM_INDEX_OUT_OF_RANGE" in _codes(result)
+
+
 def test_validate_grouped_img_binding_rejects_static_out_of_range_index():
     src = """
 protocol T {

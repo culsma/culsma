@@ -21,7 +21,7 @@ class GroupIndexValidator:
     ) -> _GroupBinding | None:
         resolved = ExprResolver.resolve_bound_expr(expr, expr_bindings)
         if isinstance(resolved, (IRGroup, IRPlateSelector)):
-            return _GroupBinding(kind="container_group", size=None)
+            return _GroupBinding(kind="container_group", size=_static_group_cardinality(resolved))
         call = ExprResolver.resolve_call_expr(expr, expr_bindings)
         if call is None:
             return None
@@ -137,6 +137,15 @@ class GroupIndexValidator:
                 Diagnostic(
                     code="SEM_INDEX_OUT_OF_RANGE",
                     message=f"data_group_ref index {index_value} is out of range for size={binding.size}",
+                    span=expr.index.span or expr.span,
+                    node_id=node_id,
+                )
+            )
+        if binding.kind == "container_group" and binding.size is not None and index_value >= binding.size:
+            diagnostics.append(
+                Diagnostic(
+                    code="SEM_INDEX_OUT_OF_RANGE",
+                    message=f"container_group index {index_value} is out of range for size={binding.size}",
                     span=expr.index.span or expr.span,
                     node_id=node_id,
                 )

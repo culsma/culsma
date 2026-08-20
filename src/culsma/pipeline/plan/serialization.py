@@ -11,6 +11,7 @@ from culsma.pipeline.ir_nodes import (
     IRCall,
     IRConditional,
     IRIdentifier,
+    IRIndex,
     IRRecord,
     IRRepeat,
     IRString,
@@ -92,6 +93,19 @@ class PlanExpressionSerializer:
         """Serialize IR expression dataclass into JSON-friendly structure."""
         if isinstance(value, IRIdentifier) and env is not None and value.name in env:
             return env[value.name]
+        if isinstance(value, IRIndex) and env is not None:
+            base = self.serialize_expr(value.base, env)
+            index = self.serialize_expr(value.index, env)
+            static_index = self.static_nonnegative_index(index)
+            elements = base.get("elements") if isinstance(base, dict) and base.get("kind") == "IRGroup" else None
+            if static_index is not None and isinstance(elements, list) and static_index < len(elements):
+                return elements[static_index]
+            return {
+                "base": base,
+                "index": index,
+                "span": self.serialize_expr(value.span, env),
+                "kind": "IRIndex",
+            }
         if isinstance(value, IRRecord):
             return {key: self.serialize_expr(record_value, None) for key, record_value in value.entries.items()}
         if is_dataclass(value):
@@ -104,6 +118,18 @@ class PlanExpressionSerializer:
         if isinstance(value, dict):
             return {k: self.serialize_expr(v, env) for k, v in value.items()}
         return value
+
+    @staticmethod
+    def static_nonnegative_index(value: Any) -> int | None:
+        if not isinstance(value, dict) or value.get("kind") != "IRQuantity" or value.get("unit") is not None:
+            return None
+        raw_value = value.get("value")
+        if not isinstance(raw_value, (int, float)):
+            return None
+        numeric_value = float(raw_value)
+        if not numeric_value.is_integer() or numeric_value < 0:
+            return None
+        return int(numeric_value)
 
 
 DEFAULT_PLAN_EXPRESSION_SERIALIZER = PlanExpressionSerializer()

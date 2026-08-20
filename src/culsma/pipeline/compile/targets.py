@@ -31,7 +31,7 @@ from culsma.parser.ast_nodes import (
     WithConstraintStmt,
     WithEnvStmt,
 )
-from culsma.pipeline.ir_nodes import IRArg, IRCall, IRLet, IRString
+from culsma.pipeline.ir_nodes import IRArg, IRCall, IRLet, IRQuantity, IRString
 from culsma.pipeline.content_vocab import ContainerKind
 from culsma.pipeline.container_views import classify_container_target_view, is_container_target_view_namespace_path
 
@@ -492,7 +492,7 @@ def _materialize_plate_selector(
     return prefix, members
 
 
-def _resolve_plate_descriptor(name: str, let_bindings: dict[str, Expression]) -> dict[str, str | int | None]:
+def _resolve_plate_descriptor(name: str, let_bindings: dict[str, Expression]) -> dict[str, object]:
     bound = let_bindings.get(name)
     if not isinstance(bound, CallExpr) or bound.name != "plate":
         raise ValueError(f"plate selector base '{name}' must resolve to let-bound plate(...)")
@@ -502,6 +502,7 @@ def _resolve_plate_descriptor(name: str, let_bindings: dict[str, Expression]) ->
     cols_arg = _find_named_arg(bound.args, "cols")
     carrier_id_arg = _find_named_arg(bound.args, "carrier_id")
     label_arg = _find_named_arg(bound.args, "label")
+    capacity_arg = _find_named_arg(bound.args, "capacity")
 
     rows: int | None = None
     cols: int | None = None
@@ -521,6 +522,9 @@ def _resolve_plate_descriptor(name: str, let_bindings: dict[str, Expression]) ->
 
     carrier_id = carrier_id_arg.value.value if carrier_id_arg and isinstance(carrier_id_arg.value, StringLiteral) else name
     label = label_arg.value.value if label_arg and isinstance(label_arg.value, StringLiteral) else None
+    capacity = capacity_arg.value if capacity_arg is not None else None
+    if capacity is not None and not isinstance(capacity, Quantity):
+        raise ValueError(f"plate capacity for '{name}' must be a quantity")
 
     return {
         "rows": rows,
@@ -528,13 +532,14 @@ def _resolve_plate_descriptor(name: str, let_bindings: dict[str, Expression]) ->
         "carrier_id": carrier_id,
         "label": label,
         "format": format_value,
+        "capacity": capacity,
     }
 
 
 def _expand_selector_positions(
     selector: PlateSelectorExpr,
     *,
-    descriptor: dict[str, str | int | None],
+    descriptor: dict[str, object],
 ) -> list[str]:
     rows = int(descriptor["rows"])
     cols = int(descriptor["cols"])
@@ -592,7 +597,7 @@ def _ensure_synthesized_well(
     *,
     plate_name: str,
     position: str,
-    descriptor: dict[str, str | int | None],
+    descriptor: dict[str, object],
     stmt_id: str,
     state: _CompilerState,
     span,
@@ -615,6 +620,15 @@ def _ensure_synthesized_well(
     if isinstance(label_prefix, str):
         ir_args.append(
             IRArg(name="label", value=IRString(value=f"{label_prefix}_{position}", span=span), span=span)
+        )
+    capacity = descriptor.get("capacity")
+    if isinstance(capacity, Quantity):
+        ir_args.append(
+            IRArg(
+                name="capacity",
+                value=IRQuantity(value=capacity.value, unit=capacity.unit, span=capacity.span),
+                span=capacity.span,
+            )
         )
 
     ir_let = IRLet(

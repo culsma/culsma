@@ -996,6 +996,22 @@ protocol T {
     assert targets == synth_names
 
 
+def test_compile_plate_selector_wells_inherit_descriptor_capacity():
+    src = """
+protocol T {
+  let plate24 = plate(label = "Editing", format = "24well", carrier_id = "Editing24", capacity = 3mL);
+  let well_a1 = plate24[A1];
+}
+"""
+    ir = compile_to_ir(parse(src))
+    synthesized_well = ir.protocols[0].statements[1]
+    capacity_arg = next(arg for arg in synthesized_well.value.args if arg.name == "capacity")
+
+    assert synthesized_well.name == "__lw_plate_plate24_A1"
+    assert capacity_arg.value.value == 3
+    assert capacity_arg.value.unit == "mL"
+
+
 def test_compile_with_env_on_group_binding_flattens_targets_without_duplicate_env_steps():
     src = """
 protocol T {

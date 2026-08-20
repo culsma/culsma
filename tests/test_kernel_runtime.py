@@ -2445,6 +2445,57 @@ protocol T {
     ]
 
 
+def test_runtime_plate_selector_well_inherits_capacity_for_case06_volume():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let plate24 = plate(label = "Editing", format = "24well", carrier_id = "Editing24", capacity = 3mL);
+  let well_a1 = plate24[A1];
+  let culture = tube(
+    label = "Culture",
+    capacity = 2mL,
+    load = [content(kind = bio_cellular, type = cell_line, code = "HEK293T"):1mL]
+  );
+  well_a1 << [culture:1mL];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    well = result.state.artifacts["material_state"]["containers"]["Editing_A1"]
+    assert well["metadata"]["capacity_uL"] == 3000.0
+    assert well["volume_uL"] == 1000.0
+
+
+def test_runtime_static_plate_group_index_aliases_original_selected_well():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let plate96 = plate(label = "Clones", format = "96well", carrier_id = "ClonePlate", capacity = 200uL);
+  let selected_wells = plate96[A3:A5];
+  let selected_clone_a_well = selected_wells[0];
+  let clone_material = tube(
+    label = "CloneMaterial",
+    capacity = 200uL,
+    load = [content(kind = bio_cellular, type = cell_population, code = "CLONE_A"):100uL]
+  );
+  selected_clone_a_well << [clone_material:100uL];
+}
+"""
+    )
+
+    mutation = next(step for step in plan.plans[0].steps if step.op == "Mutation")
+    assert mutation.args["target"]["name"] == "__lw_plate_plate96_A3"
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    material = result.state.artifacts["material_state"]
+    assert material["containers"]["Clones_A3"]["components"]["CLONE_A"] == 100.0
+
+
 def test_runtime_observation_if_executes_then_branch_when_predicate_true():
     plan = _build_plan_from_source(
         """
