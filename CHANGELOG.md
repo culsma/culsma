@@ -1,5 +1,62 @@
 # Changelog
 
+## Internal 1.0.6rc2
+
+### Scope
+
+This internal GitHub prerelease fixes plate-selector well identity and capacity
+handling found while validating paper benchmark Case 06.
+
+It includes:
+
+- inheritance of an explicit `plate(..., capacity = Q)` value by every concrete
+  well synthesized from that plate's selectors
+- static indexing of plate selector-derived container groups, with the indexed
+  binding resolving to the original selected well rather than a reconstructed
+  container
+- early `SEM_INDEX_OUT_OF_RANGE` validation for statically known container
+  group cardinality
+- focused compiler, plan, validation, and runtime regression coverage for a
+  24-well plate receiving 1 mL and for selected clone-well aliases
+- synchronized reference and user-guide clarification that plate capacity is
+  per well and static group indexing preserves container identity
+
+### Compatibility
+
+- No new constructor or indexing syntax is introduced.
+- A plate without an explicit `capacity` retains the existing runtime default
+  for synthesized wells; capacity is not inferred from manufacturer-dependent
+  plate-format conventions.
+- `group[index]` aliases the existing ordered group member. Explicit container
+  constructors such as `well(...)` continue to allocate new containers.
+- Separation and source-partition behavior is unchanged.
+
+### Install
+
+After the GitHub prerelease assets are published:
+
+```bash
+python -m pip install https://github.com/culsma/culsma/releases/download/internal-1.0.6rc2/culsma-1.0.6rc2-py3-none-any.whl
+```
+
+Source tag install:
+
+```bash
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@internal-1.0.6rc2"
+```
+
+### Verified
+
+- `python -m pytest -q`
+  - result: `779 passed`
+- source CLI and installed-wheel CLI smoke checks passed
+- `python -m build`
+  - result: `culsma-1.0.6rc2.tar.gz` and
+    `culsma-1.0.6rc2-py3-none-any.whl` built
+- `python -m twine check`
+  - result: passed for both distributions
+- isolated wheel install reports `culsma.__version__ == "1.0.6rc2"`
+
 ## Internal 1.0.6rc1
 
 ### Scope
