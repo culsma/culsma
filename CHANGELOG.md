@@ -1,5 +1,74 @@
 # Changelog
 
+## Internal 1.0.6rc3
+
+### Scope
+
+This internal GitHub prerelease adds an independent cell-count quantity axis so
+cell identity and quantity no longer need to be encoded as carrier-liquid
+volume. It also makes count-aware separation bulk mass follow the partitioned
+carrier-volume ratio when no explicit component mass is available.
+
+It includes:
+
+- the `count` quantity dimension with `cells` as the initial cellular unit
+- constructor loads such as `RPE1:100000cells`, restricted to non-negative
+  integer counts on `bio_cellular` content
+- per-component `dimension`, `unit`, and `value` records that keep cell count
+  independent from carrier volume and container capacity
+- proportional cell-count carry-forward for volume/mass transfers plus direct
+  count transfers such as `target << [source:25000cells]`
+- count preservation through `sep`, `frac`, indexed contents, material
+  movements, conservation checks, accounting, reports, CLI output, and public
+  protocol returns
+- count-aware separation volume derived from volume-bearing components, with
+  source bulk mass distributed by the resulting carrier-volume ratio when no
+  explicit mass-bearing component quantity is available
+- inspectable separation bulk-quantity policy metadata and focused end-to-end
+  centrifuge, filtration, fractionation, mixing, and downstream-transfer tests
+- material-state and runtime architecture documentation aligned with the new
+  quantity axis and bulk-mass fallback
+
+### Compatibility
+
+- Existing volume- and mass-only constructor loads and transfers retain their
+  prior behavior.
+- Count does not add container volume or consume volume capacity.
+- `cells` is intentionally limited to cellular content in this prerelease;
+  general piece, particle, copy, amount-of-substance, or scientific-model
+  plugin support is not introduced.
+- Legacy volume/mass-only separation retains conservative bulk accounting.
+- The future injectable scientific-model gateway is tracked separately and is
+  not part of this prerelease.
+
+### Install
+
+After the GitHub prerelease assets are published:
+
+```bash
+python -m pip install https://github.com/culsma/culsma/releases/download/internal-1.0.6rc3/culsma-1.0.6rc3-py3-none-any.whl
+```
+
+Source tag install:
+
+```bash
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@internal-1.0.6rc3"
+```
+
+### Verified
+
+- `python -m pytest -q`
+  - result: `792 passed`
+- canonical Case 08 source and strict-inventory CLI runs
+  - result: `108/108` steps completed with `0 diagnostics` in both modes
+- source CLI and installed-wheel CLI smoke checks passed
+- `python -m build`
+  - result: `culsma-1.0.6rc3.tar.gz` and
+    `culsma-1.0.6rc3-py3-none-any.whl` built
+- `python -m twine check`
+  - result: passed for both distributions
+- isolated wheel install reports `culsma.__version__ == "1.0.6rc3"`
+
 ## Internal 1.0.6rc2
 
 ### Scope
