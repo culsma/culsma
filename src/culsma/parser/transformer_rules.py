@@ -50,7 +50,7 @@ from culsma.parser.ast_nodes import (
 
 _QUANTITY_RE = re.compile(
     r"^(\d+(?:\.\d+)?)"
-    r"(ng_per_uL|ug_per_mL|day|sec|rpm|rcf|pct|min|mL|ml|uL|ul|mM|uM|nM|nm|mW|mV|mg|ug|kg|um|hr|Hz|xg|ms|L|g|s|h|C|K|M|W|V|X|%)?$"
+    r"(ng_per_uL|ug_per_mL|cells|day|sec|rpm|rcf|pct|min|mL|ml|uL|ul|mM|uM|nM|nm|mW|mV|mg|ug|kg|um|hr|Hz|xg|ms|L|g|s|h|C|K|M|W|V|X|%)?$"
 )
 
 

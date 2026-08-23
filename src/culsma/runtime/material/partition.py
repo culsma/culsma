@@ -188,14 +188,28 @@ def partition_sep_material(
 ) -> dict[str, Any]:
     strategy = SepPartitionStrategyRegistry().strategy_for(program_kind)
     source_components = source.setdefault("components", {})
+    source_quantities = source.get("component_quantities")
+    source_quantities = source_quantities if isinstance(source_quantities, dict) else {}
     if not isinstance(source_components, dict) or not source_components:
         ratio0, ratio1 = 0.5, 0.5
         source_volume = float(source.get("volume_uL", 0.0))
         source_mass = float(source.get("mass_mg", 0.0))
-        set_container_material(slot0, volume_uL=source_volume * ratio0, mass_mg=source_mass * ratio0, components={})
-        set_container_material(slot1, volume_uL=source_volume * ratio1, mass_mg=source_mass * ratio1, components={})
+        set_container_material(
+            slot0,
+            volume_uL=source_volume * ratio0,
+            mass_mg=source_mass * ratio0,
+            components={},
+            component_quantities={},
+        )
+        set_container_material(
+            slot1,
+            volume_uL=source_volume * ratio1,
+            mass_mg=source_mass * ratio1,
+            components={},
+            component_quantities={},
+        )
         if source is not slot0 and source is not slot1:
-            set_container_material(source, volume_uL=0.0, mass_mg=0.0, components={})
+            set_container_material(source, volume_uL=0.0, mass_mg=0.0, components={}, component_quantities={})
         out: dict[str, Any] = {
             "mode": "generic_empty",
             "default_ratio": ratio0,
@@ -210,6 +224,8 @@ def partition_sep_material(
     class_resolver = ContentClassResolver()
     slot0_components: dict[str, float] = {}
     slot1_components: dict[str, float] = {}
+    slot0_quantities: dict[str, dict[str, Any]] = {}
+    slot1_quantities: dict[str, dict[str, Any]] = {}
     slot0_classes: dict[str, str] = {}
     slot1_classes: dict[str, str] = {}
     class_counts: dict[str, int] = {}
@@ -239,6 +255,19 @@ def partition_sep_material(
         ratios_by_component[str(name)] = (ratio0, ratio1)
         slot0_components[str(name)] = slot0_components.get(str(name), 0.0) + amount_f * ratio0
         slot1_components[str(name)] = slot1_components.get(str(name), 0.0) + amount_f * ratio1
+        source_quantity = source_quantities.get(str(name))
+        if isinstance(source_quantity, dict):
+            quantity_value = float(source_quantity.get("value", amount_f))
+            slot0_quantities[str(name)] = {
+                "dimension": source_quantity.get("dimension"),
+                "unit": source_quantity.get("unit"),
+                "value": quantity_value * ratio0,
+            }
+            slot1_quantities[str(name)] = {
+                "dimension": source_quantity.get("dimension"),
+                "unit": source_quantity.get("unit"),
+                "value": quantity_value * ratio1,
+            }
         slot0_classes[str(name)] = strategy.output_class(partition_class, slot="0").value
         slot1_classes[str(name)] = strategy.output_class(partition_class, slot="1").value
 
@@ -250,6 +279,7 @@ def partition_sep_material(
         mass_mg=source_mass * 0.5,
         components=slot0_components,
         component_classes=slot0_classes,
+        component_quantities=slot0_quantities,
     )
     set_container_material(
         slot1,
@@ -257,9 +287,16 @@ def partition_sep_material(
         mass_mg=source_mass * 0.5,
         components=slot1_components,
         component_classes=slot1_classes,
+        component_quantities=slot1_quantities,
+    )
+    bulk_quantity_policy = normalize_partition_slot_bulk_pair(
+        slot0,
+        slot1,
+        source_volume_uL=source_volume,
+        source_mass_mg=source_mass,
     )
     if source is not slot0 and source is not slot1:
-        set_container_material(source, volume_uL=0.0, mass_mg=0.0, components={})
+        set_container_material(source, volume_uL=0.0, mass_mg=0.0, components={}, component_quantities={})
 
     out = {
         "mode": "program_partition",
@@ -269,6 +306,7 @@ def partition_sep_material(
         "ratios_by_class": {name: {"0": ratios[0], "1": ratios[1]} for name, ratios in ratios_by_class.items()},
         "ratios_by_component": {name: {"0": ratios[0], "1": ratios[1]} for name, ratios in ratios_by_component.items()},
         "fallback_components": fallback_components,
+        "bulk_quantity_policy": bulk_quantity_policy,
     }
     preservation_contract = strategy.preservation_contract()
     if preservation_contract is not None:
@@ -276,13 +314,80 @@ def partition_sep_material(
     return out
 
 
+def normalize_partition_slot_bulk_pair(
+    slot0: dict[str, Any],
+    slot1: dict[str, Any],
+    *,
+    source_volume_uL: float,
+    source_mass_mg: float,
+) -> dict[str, str]:
+    slots = (slot0, slot1)
+    has_count = any(_has_quantity_dimension(slot, "count") for slot in slots)
+    if not has_count:
+        return {"volume": "conservative_equal_split", "mass": "conservative_equal_split"}
+
+    for slot in slots:
+        normalize_source_partition_slot_bulk(slot)
+
+    has_volume = any(_has_quantity_dimension(slot, "volume") for slot in slots)
+    has_mass = any(_has_quantity_dimension(slot, "mass") for slot in slots)
+    volume_policy = "component_quantity_sum" if has_volume else "conservative_equal_split"
+    if has_mass:
+        return {"volume": volume_policy, "mass": "component_quantity_sum"}
+    if not has_volume:
+        return {"volume": volume_policy, "mass": "conservative_equal_split"}
+
+    carrier_volume_total = sum(float(slot.get("volume_uL", 0.0)) for slot in slots)
+    if carrier_volume_total <= 0.0 or source_volume_uL <= 0.0:
+        return {"volume": volume_policy, "mass": "conservative_equal_split"}
+
+    for slot in slots:
+        slot_volume = float(slot.get("volume_uL", 0.0))
+        slot["mass_mg"] = source_mass_mg * slot_volume / carrier_volume_total
+    return {"volume": volume_policy, "mass": "carrier_volume_ratio"}
+
+
 def normalize_source_partition_slot_bulk(slot: dict[str, Any]) -> None:
+    quantities = slot.get("component_quantities")
+    has_count_quantity = isinstance(quantities, dict) and any(
+        isinstance(quantity, dict) and quantity.get("dimension") == "count"
+        for quantity in quantities.values()
+    )
+    if isinstance(quantities, dict) and quantities and has_count_quantity:
+        volume_total = 0.0
+        mass_total = 0.0
+        has_volume = False
+        has_mass = False
+        for quantity in quantities.values():
+            if not isinstance(quantity, dict):
+                continue
+            dimension = quantity.get("dimension")
+            value = float(quantity.get("value", 0.0))
+            if dimension == "volume":
+                has_volume = True
+                volume_total += value
+            elif dimension == "mass":
+                has_mass = True
+                mass_total += value
+        if has_volume:
+            slot["volume_uL"] = volume_total
+        if has_mass:
+            slot["mass_mg"] = mass_total
+        return
     components = slot.get("components")
     if not isinstance(components, dict) or not components:
         return
     amount = sum(float(value) for value in components.values())
     slot["volume_uL"] = amount
     slot["mass_mg"] = amount
+
+
+def _has_quantity_dimension(slot: dict[str, Any], dimension: str) -> bool:
+    quantities = slot.get("component_quantities")
+    return isinstance(quantities, dict) and any(
+        isinstance(quantity, dict) and quantity.get("dimension") == dimension
+        for quantity in quantities.values()
+    )
 
 
 def _partition_fallback_reason(partition_class: PartitionClass) -> str:

@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from culsma.runtime.material.result import MaterialMovementSpec
+from culsma.runtime.material.ledger import container_count_cells
 
 
 EPSILON = 1e-9
@@ -20,7 +21,13 @@ def material_quantities_changed(
     for container_id in set(before) | set(after):
         before_volume, before_mass = _container_quantity(before.get(container_id))
         after_volume, after_mass = _container_quantity(after.get(container_id))
-        if abs(after_volume - before_volume) > EPSILON or abs(after_mass - before_mass) > EPSILON:
+        before_cells = container_count_cells(before.get(container_id))
+        after_cells = container_count_cells(after.get(container_id))
+        if (
+            abs(after_volume - before_volume) > EPSILON
+            or abs(after_mass - before_mass) > EPSILON
+            or abs(after_cells - before_cells) > EPSILON
+        ):
             return True
     return False
 
@@ -93,8 +100,9 @@ def _movement_from_dict(
         destination=destination,
         volume_uL=_first_number(raw, "moved_uL", "removed_uL", "requested_uL", "converted_uL"),
         mass_mg=_first_number(raw, "moved_mg", "removed_mg", "requested_mg", "converted_mg"),
+        count_cells=_first_number(raw, "moved_cells", "removed_cells", "requested_cells"),
     )
-    return movement if movement.volume_uL > EPSILON or movement.mass_mg > EPSILON else None
+    return movement if movement.volume_uL > EPSILON or movement.mass_mg > EPSILON or movement.count_cells > EPSILON else None
 
 
 def _source_to_slots_movements(
@@ -117,8 +125,12 @@ def _source_to_slots_movements(
             destination=destination,
             volume_uL=max(0.0, after_volume - before_volume),
             mass_mg=max(0.0, after_mass - before_mass),
+            count_cells=max(
+                0.0,
+                container_count_cells(after.get(destination)) - container_count_cells(before.get(destination)),
+            ),
         )
-        if movement.volume_uL > EPSILON or movement.mass_mg > EPSILON:
+        if movement.volume_uL > EPSILON or movement.mass_mg > EPSILON or movement.count_cells > EPSILON:
             movements.append(movement)
     return movements
 

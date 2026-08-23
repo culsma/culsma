@@ -7,7 +7,8 @@ from typing import Any
 
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.material.result import MaterialUpdateResult
-from culsma.runtime.material.units import MASS_TO_MG, VOLUME_TO_UL
+from culsma.runtime.material.ledger import container_count_cells
+from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_UL
 
 
 EPSILON = 1e-9
@@ -17,6 +18,7 @@ EPSILON = 1e-9
 class MaterialQuantity:
     volume_uL: float = 0.0
     mass_mg: float = 0.0
+    count_cells: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -52,6 +54,7 @@ class MaterialAccounting:
         allocations[lot.lot_id] = MaterialQuantity(
             volume_uL=current.volume_uL + lot.initial.volume_uL,
             mass_mg=current.mass_mg + lot.initial.mass_mg,
+            count_cells=current.count_cells + lot.initial.count_cells,
         )
 
     def record_movement(
@@ -72,6 +75,7 @@ class MaterialAccounting:
                 target[lot_id] = MaterialQuantity(
                     volume_uL=current.volume_uL + allocation.volume_uL,
                     mass_mg=current.mass_mg + allocation.mass_mg,
+                    count_cells=current.count_cells + allocation.count_cells,
                 )
         self.movements.append(
             MaterialMovement(
@@ -98,6 +102,7 @@ class MaterialAccounting:
             return {}
         total_volume = sum(item.volume_uL for item in allocations.values())
         total_mass = sum(item.mass_mg for item in allocations.values())
+        total_cells = sum(item.count_cells for item in allocations.values())
         moved: dict[str, MaterialQuantity] = {}
         for lot_id, current in list(allocations.items()):
             moved_volume = (
@@ -110,15 +115,25 @@ class MaterialAccounting:
                 if total_mass > EPSILON and quantity.mass_mg > EPSILON
                 else 0.0
             )
-            if moved_volume <= EPSILON and moved_mass <= EPSILON:
+            moved_cells = (
+                min(current.count_cells, quantity.count_cells * current.count_cells / total_cells)
+                if total_cells > EPSILON and quantity.count_cells > EPSILON
+                else 0.0
+            )
+            if moved_volume <= EPSILON and moved_mass <= EPSILON and moved_cells <= EPSILON:
                 continue
-            allocation = MaterialQuantity(volume_uL=moved_volume, mass_mg=moved_mass)
+            allocation = MaterialQuantity(volume_uL=moved_volume, mass_mg=moved_mass, count_cells=moved_cells)
             moved[lot_id] = allocation
             remaining = MaterialQuantity(
                 volume_uL=max(0.0, current.volume_uL - moved_volume),
                 mass_mg=max(0.0, current.mass_mg - moved_mass),
+                count_cells=max(0.0, current.count_cells - moved_cells),
             )
-            if remaining.volume_uL <= EPSILON and remaining.mass_mg <= EPSILON:
+            if (
+                remaining.volume_uL <= EPSILON
+                and remaining.mass_mg <= EPSILON
+                and remaining.count_cells <= EPSILON
+            ):
                 allocations.pop(lot_id, None)
             else:
                 allocations[lot_id] = remaining
@@ -128,6 +143,7 @@ class MaterialAccounting:
                 self.consumed_allocations[lot_id] = MaterialQuantity(
                     volume_uL=min(lot.initial.volume_uL, consumed.volume_uL + moved_volume),
                     mass_mg=min(lot.initial.mass_mg, consumed.mass_mg + moved_mass),
+                    count_cells=min(lot.initial.count_cells, consumed.count_cells + moved_cells),
                 )
         if not allocations:
             self.container_allocations.pop(source, None)
@@ -174,6 +190,7 @@ class MaterialAccountingRecorder:
                 quantity=MaterialQuantity(
                     volume_uL=movement.volume_uL,
                     mass_mg=movement.mass_mg,
+                    count_cells=movement.count_cells,
                 ),
             )
 
@@ -218,6 +235,7 @@ def _container_quantity(raw: Any) -> MaterialQuantity:
     return MaterialQuantity(
         volume_uL=float(raw.get("volume_uL", 0.0)),
         mass_mg=float(raw.get("mass_mg", 0.0)),
+        count_cells=container_count_cells(raw),
     )
 
 
@@ -226,6 +244,8 @@ def _quantity_from_amount(amount: float, unit: str) -> MaterialQuantity | None:
         return MaterialQuantity(volume_uL=amount * VOLUME_TO_UL[unit])
     if unit in MASS_TO_MG:
         return MaterialQuantity(mass_mg=amount * MASS_TO_MG[unit])
+    if unit in COUNT_TO_CELLS:
+        return MaterialQuantity(count_cells=amount * COUNT_TO_CELLS[unit])
     return None
 
 
@@ -240,4 +260,4 @@ def _container_name(container_id: str, raw: Any) -> str:
 
 
 def _has_quantity(quantity: MaterialQuantity) -> bool:
-    return quantity.volume_uL > EPSILON or quantity.mass_mg > EPSILON
+    return quantity.volume_uL > EPSILON or quantity.mass_mg > EPSILON or quantity.count_cells > EPSILON

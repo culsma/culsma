@@ -107,8 +107,9 @@ def _partition_state(
     components: dict[str, float],
     registry: dict[str, tuple[str, str]],
     metadata: dict[str, object] | None = None,
+    component_quantities: dict[str, dict[str, object]] | None = None,
 ) -> dict[str, object]:
-    return {
+    state: dict[str, object] = {
         "containers": {
             "lysate": {
                 "volume_uL": 200.0,
@@ -122,6 +123,9 @@ def _partition_state(
             for code, (kind, content_type) in registry.items()
         },
     }
+    if component_quantities is not None:
+        state["containers"]["lysate"]["component_quantities"] = component_quantities
+    return state
 
 
 def _rounded_components(container: dict[str, object]) -> dict[str, float]:
@@ -607,6 +611,34 @@ def test_sep_centrifuge_partitions_liquid_to_supernatant_and_cells_to_pellet():
     }
 
 
+def test_sep_count_aware_bulk_mass_follows_partitioned_carrier_volume():
+    result = apply_step(
+        step=_sep_step(program_name="centrifuge_program"),
+        material_state=_partition_state(
+            components={"MEDIUM": 200.0, "CELLS": 100000.0},
+            component_quantities={
+                "MEDIUM": {"dimension": "volume", "unit": "uL", "value": 200.0},
+                "CELLS": {"dimension": "count", "unit": "cells", "value": 100000.0},
+            },
+            registry={
+                "MEDIUM": ("formulation", "medium"),
+                "CELLS": ("bio_cellular", "cell_population"),
+            },
+        ),
+    )
+
+    assert result.ok
+    slots = result.material_state["indexed_bindings"]["sep_group"]
+    supernatant = result.material_state["containers"][slots["0"]]
+    pellet = result.material_state["containers"][slots["1"]]
+    assert (supernatant["volume_uL"], supernatant["mass_mg"]) == (198.0, 198.0)
+    assert (pellet["volume_uL"], pellet["mass_mg"]) == (2.0, 2.0)
+    assert result.delta["partition"]["bulk_quantity_policy"] == {
+        "volume": "component_quantity_sum",
+        "mass": "carrier_volume_ratio",
+    }
+
+
 def test_sep_phase_partition_sends_target_phase_material_away_from_extraction_reagent():
     result = apply_step(
         step=_sep_step(program_name="phase_partition_program"),
@@ -872,6 +904,38 @@ def test_frac_creates_ordered_indexed_bindings():
     slots = result.material_state["indexed_bindings"]["frac_group"]
     assert list(slots.keys()) == ["0", "1", "2", "3"]
     assert all(result.material_state["containers"][slot_id]["volume_uL"] == 30.0 for slot_id in slots.values())
+
+
+def test_frac_splits_count_only_cellular_material_across_bins():
+    step = _frac_step(bins=4)
+    state = {
+        "containers": {
+            "gradient_tube": {
+                "volume_uL": 0.0,
+                "mass_mg": 0.0,
+                "components": {"CELLS": 100000.0},
+                "component_quantities": {
+                    "CELLS": {"dimension": "count", "unit": "cells", "value": 100000.0}
+                },
+                "metadata": {},
+            }
+        },
+        "content_registry": {
+            "CELLS": {"content_kind": "bio_cellular", "content_type": "cell_population"}
+        },
+        "inventory_check": True,
+    }
+
+    result = apply_step(step=step, material_state=state)
+
+    assert result.ok
+    slots = result.material_state["indexed_bindings"]["frac_group"]
+    assert len(slots) == 4
+    assert all(
+        result.material_state["containers"][slot_id]["component_quantities"]["CELLS"]["value"] == 25000.0
+        for slot_id in slots.values()
+    )
+    assert sum(movement.count_cells for movement in result.movements) == 100000.0
 
 
 def test_runtime_emits_material_delta_on_current_material_success():

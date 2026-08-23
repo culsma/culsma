@@ -21,7 +21,7 @@ from culsma.runtime.material.refs import (
     resolve_or_create_container_ref,
 )
 from culsma.runtime.material.result import MaterialUpdateResult
-from culsma.runtime.material.units import MASS_TO_MG, VOLUME_TO_UL
+from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_UL
 
 
 def apply_alloc_container(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
@@ -164,9 +164,18 @@ def apply_load_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateR
     if not isinstance(container_contents, dict):
         index[container_id] = {}
         container_contents = index[container_id]
-    slot = container_contents.setdefault(content_id, {"volume_uL": 0.0, "mass_mg": 0.0, "axis": None})
+    slot = container_contents.setdefault(
+        content_id,
+        {"volume_uL": 0.0, "mass_mg": 0.0, "count_cells": 0.0, "axis": None, "unit": None},
+    )
     if not isinstance(slot, dict):
-        container_contents[content_id] = {"volume_uL": 0.0, "mass_mg": 0.0, "axis": None}
+        container_contents[content_id] = {
+            "volume_uL": 0.0,
+            "mass_mg": 0.0,
+            "count_cells": 0.0,
+            "axis": None,
+            "unit": None,
+        }
         slot = container_contents[content_id]
 
     unit = str(amount["unit"])
@@ -175,10 +184,38 @@ def apply_load_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateR
         axis = "volume"
         moved_uL = value * VOLUME_TO_UL[unit]
         moved_mg = moved_uL
+        moved_cells = 0.0
+        canonical_value = moved_uL
+        canonical_unit = "uL"
     elif unit in MASS_TO_MG:
         axis = "mass"
         moved_mg = value * MASS_TO_MG[unit]
         moved_uL = moved_mg
+        moved_cells = 0.0
+        canonical_value = moved_mg
+        canonical_unit = "mg"
+    elif unit in COUNT_TO_CELLS:
+        axis = "count"
+        content = registry[content_id]
+        if content.get("content_kind") != "bio_cellular":
+            return diagnostic_result(
+                step,
+                state,
+                "MAT_CONTENT_LOAD_AXIS_MISMATCH",
+                f"Cell-count unit '{unit}' requires bio_cellular content, got '{content.get('content_kind')}'",
+            )
+        if value < 0 or not value.is_integer():
+            return diagnostic_result(
+                step,
+                state,
+                "MAT_CELL_COUNT_VALUE_INVALID",
+                "Loaded cell count must be a non-negative integer",
+            )
+        moved_uL = 0.0
+        moved_mg = 0.0
+        moved_cells = value * COUNT_TO_CELLS[unit]
+        canonical_value = moved_cells
+        canonical_unit = "cells"
     else:
         return diagnostic_result(step, state, "MAT_CONTENT_LOAD_AXIS_MISMATCH", f"Unsupported amount unit '{unit}'")
     cap_diag = check_capacity_guard(step=step, state=state, container_id=container_id, added_uL=moved_uL)
@@ -194,14 +231,23 @@ def apply_load_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateR
             f"Content '{content_id}' in container '{container_id}' has axis '{existing_axis}', got '{axis}'",
         )
     slot["axis"] = axis
+    slot["unit"] = canonical_unit
     slot["volume_uL"] = float(slot.get("volume_uL", 0.0)) + moved_uL
     slot["mass_mg"] = float(slot.get("mass_mg", 0.0)) + moved_mg
+    slot["count_cells"] = float(slot.get("count_cells", 0.0)) + moved_cells
 
     container["volume_uL"] = float(container.get("volume_uL", 0.0)) + moved_uL
     container["mass_mg"] = float(container.get("mass_mg", 0.0)) + moved_mg
     comps = container.setdefault("components", {})
     if isinstance(comps, dict):
-        comps[content_id] = float(comps.get(content_id, 0.0)) + moved_mg
+        comps[content_id] = float(comps.get(content_id, 0.0)) + canonical_value
+    component_quantities = container.setdefault("component_quantities", {})
+    if isinstance(component_quantities, dict):
+        existing_quantity = component_quantities.get(content_id)
+        if not isinstance(existing_quantity, dict):
+            existing_quantity = {"dimension": axis, "unit": canonical_unit, "value": 0.0}
+            component_quantities[content_id] = existing_quantity
+        existing_quantity["value"] = float(existing_quantity.get("value", 0.0)) + canonical_value
     invalidate_contents_state(state, container_id, reason="content_load")
 
     return MaterialUpdateResult(

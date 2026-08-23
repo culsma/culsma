@@ -62,6 +62,41 @@ def test_runtime_detects_container_content_state_conflict():
     assert [d.code for d in missing_result.diagnostics] == ["MAT_CONTENT_NOT_FOUND"]
 
 
+def test_runtime_loads_cell_count_without_adding_container_volume():
+    define = PlanStep(
+        step_id="define",
+        op="DefineContent",
+        args={
+            "kind": _ir_string("bio_cellular"),
+            "code": _ir_string("RPE1"),
+            "type": _ir_string("cell_line"),
+        },
+    )
+    defined = apply_step(step=define, material_state={"containers": {}, "content_registry": {}, "content_bindings": {}})
+    load = PlanStep(
+        step_id="load",
+        op="LoadContent",
+        args={
+            "container": _ir_string("TubeA"),
+            "content": _ir_string("RPE1"),
+            "amount": _ir_quantity(100000, "cells"),
+        },
+    )
+
+    result = apply_step(step=load, material_state=defined.material_state)
+
+    assert result.ok
+    container = result.material_state["containers"]["TubeA"]
+    assert container["volume_uL"] == 0.0
+    assert container["mass_mg"] == 0.0
+    assert container["components"]["RPE1"] == 100000.0
+    assert container["component_quantities"]["RPE1"] == {
+        "dimension": "count",
+        "unit": "cells",
+        "value": 100000.0,
+    }
+
+
 def test_runtime_detects_container_overflow():
     step = PlanStep(
         step_id="p0.s0",

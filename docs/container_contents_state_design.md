@@ -78,8 +78,8 @@ partly removable at once.
 ```mermaid
 flowchart TB
     MS["MaterialState"]
-    Q["Quantity ledger<br/>volume / mass"]
-    C["Composition ledger<br/>components / amounts"]
+    Q["Dimensioned quantities<br/>volume / mass / count"]
+    C["Composition ledger<br/>components + per-component quantities"]
     O["Organization state<br/>homogeneous / partitioned / fractionated / lane-resolved"]
     A["Association state<br/>free / bead-bound / resin-bound / membrane-bound / cell-associated"]
     X["Accessibility state<br/>retained / flowthrough / removable / streamable / immobilized"]
@@ -97,8 +97,8 @@ flowchart TB
 
 | Dimension | Existing evidence | Meaning |
 | --- | --- | --- |
-| `quantity` | runtime `volume_uL`, `mass_mg` | Conservation-facing amount state. |
-| `composition` | runtime `components`, content registry | What materials are present and in what amounts. |
+| `quantity` | runtime `volume_uL`, `mass_mg`, dimensioned `component_quantities` | Conservation-facing amount state across volume, mass, and count; count does not imply volume or capacity use. |
+| `composition` | runtime `components`, `component_quantities`, content registry | What materials are present and the per-component quantities attached to them. |
 | `organization` | `sep`, `frac`, `source.partition(...)`, `container.contents[i]` | How current contents are internally organized or indexed. |
 | `association` | `attrs.state`, magnetic bead, resin, membrane, cell-retained cases | How components are bound or associated with supports/cells/surfaces. |
 | `accessibility` | bound/flowthrough slot contracts, `stream`, waste routing | Which portion can be removed, retained, streamed, or observed. |
@@ -249,7 +249,7 @@ Several existing material-runtime problems fit naturally into this model.
 | Container overflow diagnostics | Volume-increasing writes can exceed container capacity. | `quantity` state transition to overflow diagnostic; not an organization issue. |
 | Component carry-forward during transfer | Reagents and samples move proportionally or by selected amount. | `composition` transform for mutation. |
 | `sep` component partition ratios | Component classes use program-specific ratios to decide which slot gets DNA, cells, beads, wash liquid, etc. | `composition` fate transform coordinated with `organization = partitioned`. |
-| Bulk volume after `sep` | Runtime currently uses conservative bulk accounting rather than scientific volume prediction. | `quantity` split/routing policy; separate from component fate ratios. |
+| Bulk volume and mass after `sep` | Dimensioned component quantities determine known output quantities. When count and carrier volume coexist without explicit mass, runtime preserves source mass in proportion to carrier volume; unsupported cases retain a conservative fallback. | `quantity` split/routing policy; separate from component fate ratios and future pluggable scientific prediction. |
 | Filtration retentate/filtrate routing | Filtered material and liquid phase must land in the correct slots. | `organization` slot contract plus `accessibility` retained/flowthrough states. |
 | Magnetic bead bound/flowthrough routing | Bead-bound material should stay retained while wash liquid is removable. | `association` bead-bound state + `accessibility` retained/flowthrough + `preservation` field contract. |
 | Wash buffer dominating final product reports | Wash liquid may be present as process liquid but should not define target identity. | `composition` component fate plus projection/report policy; not a container identity issue. |
@@ -411,7 +411,7 @@ binding, and not a separate material ledger.
 ```mermaid
 flowchart TB
     Container["Container<br/>tube"]
-    Totals["Material totals<br/>volume, mass, components"]
+    Totals["Material totals<br/>dimensioned quantities + components"]
     Contents["Contents state<br/>organization of current contents"]
     Parts["Indexed parts<br/>contents[0], contents[1], ..."]
     Context["Active context<br/>env / constraints"]

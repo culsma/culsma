@@ -7,6 +7,7 @@ from typing import Any
 from culsma.pipeline.content_vocab import ContentKind, ContentType
 from culsma.pipeline.program_registry import program_tool_label
 from culsma.runtime.material.accounting import MaterialAccounting, MaterialAccountingRecorder
+from culsma.runtime.material.ledger import container_count_cells
 from culsma.runtime.report import (
     ContainerKindCount,
     ContainerResourceSummary,
@@ -144,6 +145,7 @@ def _build_report(
             "volume_uL": round(after["volume_uL"] - before["volume_uL"], 6),
             "mass_mg": round(after["mass_mg"] - before["mass_mg"], 6),
             "components_total": round(after["components_total"] - before["components_total"], 6),
+            "count_cells": round(after["count_cells"] - before["count_cells"], 6),
         }
         container_stats[name] = {
             "before": before,
@@ -207,7 +209,7 @@ def _build_report(
 
 def _container_metrics(raw: Any) -> dict[str, float]:
     if not isinstance(raw, dict):
-        return {"volume_uL": 0.0, "mass_mg": 0.0, "components_total": 0.0}
+        return {"volume_uL": 0.0, "mass_mg": 0.0, "components_total": 0.0, "count_cells": 0.0}
     comp = raw.get("components", {})
     if isinstance(comp, dict):
         comp_total = sum(float(v) for v in comp.values())
@@ -217,11 +219,17 @@ def _container_metrics(raw: Any) -> dict[str, float]:
         "volume_uL": float(raw.get("volume_uL", 0.0)),
         "mass_mg": float(raw.get("mass_mg", 0.0)),
         "components_total": float(comp_total),
+        "count_cells": container_count_cells(raw),
     }
 
 
 def _has_material(metrics: dict[str, float]) -> bool:
-    return metrics["volume_uL"] > 1e-12 or metrics["mass_mg"] > 1e-12 or metrics["components_total"] > 1e-12
+    return (
+        metrics["volume_uL"] > 1e-12
+        or metrics["mass_mg"] > 1e-12
+        or metrics["components_total"] > 1e-12
+        or metrics["count_cells"] > 1e-12
+    )
 
 
 def _extract_calculation_summary(*, plan: Any, state: Any) -> ProcessSummary:
@@ -348,7 +356,7 @@ def _final_products(
     for name, data in container_stats.items():
         after = data["after"]
         delta = data["delta"]
-        if after["volume_uL"] <= 1e-9 and after["mass_mg"] <= 1e-9:
+        if after["volume_uL"] <= 1e-9 and after["mass_mg"] <= 1e-9 and after["count_cells"] <= 1e-9:
             continue
         if "::" in name:
             continue
@@ -359,6 +367,7 @@ def _final_products(
         if not (
             delta["volume_uL"] > 1e-9
             or delta["mass_mg"] > 1e-9
+            or delta["count_cells"] > 1e-9
             or name in measured_names
         ):
             continue
@@ -375,6 +384,7 @@ def _final_products(
                 volume_mL=round(after["volume_uL"] / 1000.0, 6),
                 mass_mg=mass_mg,
                 primary_component=primary_component,
+                count_cells=round(after["count_cells"], 3),
             )
         )
     rows.sort(key=lambda x: x.volume_uL, reverse=True)
@@ -382,12 +392,13 @@ def _final_products(
 
 
 def _input_inventory(accounting: MaterialAccounting) -> list[InputInventoryRow]:
-    totals: dict[str, tuple[float, float]] = {}
+    totals: dict[str, tuple[float, float, float]] = {}
     for lot in accounting.list_input_lots():
-        volume_uL, mass_mg = totals.get(lot.name, (0.0, 0.0))
+        volume_uL, mass_mg, count_cells = totals.get(lot.name, (0.0, 0.0, 0.0))
         totals[lot.name] = (
             volume_uL + lot.initial.volume_uL,
             mass_mg + lot.initial.mass_mg,
+            count_cells + lot.initial.count_cells,
         )
     rows = [
         InputInventoryRow(
@@ -395,10 +406,11 @@ def _input_inventory(accounting: MaterialAccounting) -> list[InputInventoryRow]:
             initial_uL=round(volume_uL, 3),
             initial_mL=round(volume_uL / 1000.0, 6),
             initial_mg=round(mass_mg, 3),
+            initial_cells=round(count_cells, 3),
         )
-        for name, (volume_uL, mass_mg) in totals.items()
+        for name, (volume_uL, mass_mg, count_cells) in totals.items()
     ]
-    rows.sort(key=lambda row: (-row.initial_uL, -row.initial_mg, row.name))
+    rows.sort(key=lambda row: (-row.initial_uL, -row.initial_mg, -row.initial_cells, row.name))
     return rows
 
 
@@ -415,7 +427,7 @@ def _intermediate_materials(
         if name in final_names or "::" in name:
             continue
         after = data["after"]
-        if after["volume_uL"] <= 1e-9:
+        if after["volume_uL"] <= 1e-9 and after["count_cells"] <= 1e-9:
             continue
         name_roles = roles.get(name, set())
         is_process_container = bool(name_roles & {"dest", "mix_target"}) and not _is_user_output_name(name)
@@ -432,6 +444,7 @@ def _intermediate_materials(
                 final_mL=round(after["volume_uL"] / 1000.0, 6),
                 mass_mg=mass_mg,
                 primary_component=primary_component,
+                count_cells=round(after["count_cells"], 3),
             )
         )
     rows.sort(key=lambda x: x.final_uL, reverse=True)
@@ -444,15 +457,20 @@ def _reagent_consumption(
     roles: dict[str, set[str]],
 ) -> list[ReagentConsumptionRow]:
     consumed = accounting.consumption_by_input()
-    totals: dict[str, tuple[float, float, set[str]]] = {}
+    totals: dict[str, tuple[float, float, float, set[str]]] = {}
     for lot in accounting.list_input_lots():
         quantity = consumed.get(lot.lot_id)
-        if quantity is None or (quantity.volume_uL <= 1e-9 and quantity.mass_mg <= 1e-9):
+        if quantity is None or (
+            quantity.volume_uL <= 1e-9
+            and quantity.mass_mg <= 1e-9
+            and quantity.count_cells <= 1e-9
+        ):
             continue
-        volume_uL, mass_mg, row_roles = totals.get(lot.name, (0.0, 0.0, set()))
+        volume_uL, mass_mg, count_cells, row_roles = totals.get(lot.name, (0.0, 0.0, 0.0, set()))
         totals[lot.name] = (
             volume_uL + quantity.volume_uL,
             mass_mg + quantity.mass_mg,
+            count_cells + quantity.count_cells,
             row_roles | roles.get(lot.container_id, set()),
         )
     rows = [
@@ -462,10 +480,18 @@ def _reagent_consumption(
             consumed_uL=round(volume_uL, 3) if volume_uL > 1e-9 else None,
             consumed_mL=round(volume_uL / 1000.0, 6) if volume_uL > 1e-9 else None,
             consumed_mg=round(mass_mg, 3) if mass_mg > 1e-9 else None,
+            consumed_cells=round(count_cells, 3) if count_cells > 1e-9 else None,
         )
-        for name, (volume_uL, mass_mg, row_roles) in totals.items()
+        for name, (volume_uL, mass_mg, count_cells, row_roles) in totals.items()
     ]
-    rows.sort(key=lambda row: (-(row.consumed_uL or 0.0), -(row.consumed_mg or 0.0), row.name))
+    rows.sort(
+        key=lambda row: (
+            -(row.consumed_uL or 0.0),
+            -(row.consumed_mg or 0.0),
+            -(row.consumed_cells or 0.0),
+            row.name,
+        )
+    )
     return rows
 
 

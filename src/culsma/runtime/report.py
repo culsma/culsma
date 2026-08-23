@@ -33,14 +33,18 @@ class InputInventoryRow:
     initial_uL: float
     initial_mL: float
     initial_mg: float
+    initial_cells: float = 0.0
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        out = {
             "name": self.name,
             "initial_uL": self.initial_uL,
             "initial_mL": self.initial_mL,
             "initial_mg": self.initial_mg,
         }
+        if self.initial_cells > 0.0:
+            out["initial_cells"] = self.initial_cells
+        return out
 
 
 @dataclass(frozen=True)
@@ -50,15 +54,19 @@ class FinalProductRow:
     volume_mL: float
     mass_mg: float | None
     primary_component: str | None
+    count_cells: float = 0.0
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        out = {
             "name": self.name,
             "volume_uL": self.volume_uL,
             "volume_mL": self.volume_mL,
             "mass_mg": self.mass_mg,
             "primary_component": self.primary_component,
         }
+        if self.count_cells > 0.0:
+            out["count_cells"] = self.count_cells
+        return out
 
 
 @dataclass(frozen=True)
@@ -68,15 +76,19 @@ class IntermediateMaterialRow:
     final_mL: float
     mass_mg: float | None
     primary_component: str | None
+    count_cells: float = 0.0
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        out = {
             "name": self.name,
             "final_uL": self.final_uL,
             "final_mL": self.final_mL,
             "mass_mg": self.mass_mg,
             "primary_component": self.primary_component,
         }
+        if self.count_cells > 0.0:
+            out["count_cells"] = self.count_cells
+        return out
 
 
 @dataclass(frozen=True)
@@ -86,15 +98,19 @@ class ReagentConsumptionRow:
     consumed_uL: float | None
     consumed_mL: float | None
     consumed_mg: float | None
+    consumed_cells: float | None = None
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        out = {
             "name": self.name,
             "roles": list(self.roles),
             "consumed_uL": self.consumed_uL,
             "consumed_mL": self.consumed_mL,
             "consumed_mg": self.consumed_mg,
         }
+        if self.consumed_cells is not None:
+            out["consumed_cells"] = self.consumed_cells
+        return out
 
 
 @dataclass(frozen=True)

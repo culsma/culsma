@@ -246,9 +246,13 @@ Current implementation note:
 3. `Identity` handles `centrifuge_program(..., keep_source=...)` source-container
    reuse.
 4. `Partition` uses a strategy selected by `program_kind`.
-5. Component fate uses program-specific ratios; bulk `volume_uL` and `mass_mg`
-   continue to use conservative accounting and are not derived from those
-   component fate ratios.
+5. Component fate uses program-specific ratios. Legacy volume/mass-only state
+   retains conservative bulk accounting. When dimensioned cell-count content is
+   present, volume-bearing component quantities determine bulk volume while
+   count-bearing quantities remain outside capacity accounting. Without an
+   explicit mass-bearing component quantity, output bulk mass follows the
+   partitioned carrier-volume ratio and preserves total source mass. The
+   partition delta records the selected bulk-quantity policy.
 
 ## Implemented `sep` Partition Strategy
 
@@ -348,6 +352,7 @@ classDiagram
         +initial_uL
         +initial_mL
         +initial_mg
+        +initial_cells
     }
 
     class FinalProductRow {
@@ -356,6 +361,7 @@ classDiagram
         +volume_mL
         +mass_mg
         +primary_component
+        +count_cells
     }
 
     class IntermediateMaterialRow {
@@ -364,6 +370,7 @@ classDiagram
         +final_mL
         +mass_mg
         +primary_component
+        +count_cells
     }
 
     class ReagentConsumptionRow {
@@ -372,6 +379,7 @@ classDiagram
         +consumed_uL
         +consumed_mL
         +consumed_mg
+        +consumed_cells
     }
 
     class QcResult {
@@ -458,6 +466,7 @@ classDiagram
         +destination
         +volume_uL
         +mass_mg
+        +count_cells
     }
 
     class MaterialAccounting {

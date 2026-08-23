@@ -14,6 +14,7 @@ class MaterialMovementSpec:
     destination: str | None
     volume_uL: float = 0.0
     mass_mg: float = 0.0
+    count_cells: float = 0.0
 
 
 @dataclass(frozen=True)

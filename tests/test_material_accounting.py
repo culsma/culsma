@@ -66,6 +66,51 @@ def test_accounting_combines_initial_and_loaded_lots_in_one_container():
     assert reactor["load:load:stock"].volume_uL == 5.0
 
 
+def test_accounting_tracks_loaded_and_moved_cell_counts():
+    recorder = MaterialAccountingRecorder()
+    accounting = recorder.initialize(None)
+    loaded_state = {
+        "containers": {
+            "cells": {
+                **_container(0.0, label="Cells"),
+                "components": {"RPE1": 100000.0},
+                "component_quantities": {
+                    "RPE1": {"dimension": "count", "unit": "cells", "value": 100000.0}
+                },
+            }
+        }
+    }
+    recorder.record(
+        step=PlanStep(step_id="load_cells", op="LoadContent"),
+        result=MaterialUpdateResult(
+            material_state=loaded_state,
+            delta={
+                "op": "LoadContent",
+                "container": "cells",
+                "content_id": "RPE1",
+                "amount": 100000.0,
+                "unit": "cells",
+            },
+        ),
+        accounting=accounting,
+    )
+    recorder.record(
+        step=PlanStep(step_id="move_cells", op="Mutation"),
+        result=MaterialUpdateResult(
+            material_state=loaded_state,
+            movements=[
+                MaterialMovementSpec(source="cells", destination="target", count_cells=25000.0)
+            ],
+        ),
+        accounting=accounting,
+    )
+
+    consumed = accounting.consumption_by_input()["load:load_cells:cells"]
+    target = accounting.container_allocation("target")["load:load_cells:cells"]
+    assert consumed.count_cells == 25000.0
+    assert target.count_cells == 25000.0
+
+
 def test_accounting_uses_explicit_multi_source_multi_target_movements():
     recorder = MaterialAccountingRecorder()
     before = {

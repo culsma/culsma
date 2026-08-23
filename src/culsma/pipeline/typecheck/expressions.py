@@ -6,6 +6,7 @@ from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.container_views import classify_container_target_view, is_container_target_view
+from culsma.pipeline.content_vocab import ContentKind, normalize_content_classification
 from culsma.pipeline.ir_nodes import (
     IRAssign,
     IRBinary,
@@ -50,6 +51,7 @@ _UNIT_TO_DIMENSION: dict[str, str] = {
     "mg": "mass",
     "g": "mass",
     "kg": "mass",
+    "cells": "count",
     "V": "electric_potential",
     "mV": "electric_potential",
     "rpm": "rotation_rate",
@@ -152,7 +154,7 @@ class TypecheckExpressionServices:
             diagnostics.extend(
                 self.validate_quantity_dimensions(
                     amount,
-                    expected=["volume", "mass"],
+                    expected=["volume", "mass", "count"],
                     non_quantity_code="TYPE_MUTATION_QUANTITY_UNIT_REQUIRED",
                     mismatch_code="TYPE_MUTATION_QUANTITY_DIMENSION_MISMATCH",
                     unknown_code="TYPE_UNKNOWN_UNIT",
@@ -162,6 +164,17 @@ class TypecheckExpressionServices:
                     node_id=stmt.id,
                 )
             )
+            if isinstance(amount, IRQuantity) and amount.unit == "cells" and (
+                amount.value < 0 or not float(amount.value).is_integer()
+            ):
+                diagnostics.append(
+                    Diagnostic(
+                        code="TYPE_CELL_COUNT_VALUE_INVALID",
+                        message="mutation cell count must be a non-negative integer",
+                        span=source.right.span or source.span or stmt.span,
+                        node_id=stmt.id,
+                    )
+                )
         return diagnostics
 
     def typecheck_let_call(
@@ -321,7 +334,7 @@ class TypecheckExpressionServices:
             diagnostics.extend(
                 self.validate_quantity_dimensions(
                     amount,
-                    expected=["volume", "mass"],
+                    expected=["volume", "mass", "count"],
                     non_quantity_code="TYPE_LOAD_QUANTITY_UNIT_REQUIRED",
                     mismatch_code="TYPE_LOAD_QUANTITY_DIMENSION_MISMATCH",
                     unknown_code="TYPE_UNKNOWN_UNIT",
@@ -331,6 +344,32 @@ class TypecheckExpressionServices:
                     node_id=node_id,
                 )
             )
+            if isinstance(amount, IRQuantity) and amount.unit == "cells":
+                if amount.value < 0 or not float(amount.value).is_integer():
+                    diagnostics.append(
+                        Diagnostic(
+                            code="TYPE_CELL_COUNT_VALUE_INVALID",
+                            message="constructor load cell count must be a non-negative integer",
+                            span=item.right.span or item.span,
+                            node_id=node_id,
+                        )
+                    )
+                content_kind, content_type = _content_call_kind_type(item.left)
+                normalized = (
+                    normalize_content_classification(content_kind, content_type)
+                    if content_kind is not None and content_type is not None
+                    else None
+                )
+                effective_kind = normalized.kind if normalized is not None else content_kind
+                if effective_kind is not None and effective_kind != ContentKind.BIO_CELLULAR.value:
+                    diagnostics.append(
+                        Diagnostic(
+                            code="TYPE_LOAD_COUNT_CONTENT_MISMATCH",
+                            message="unit 'cells' requires bio_cellular content",
+                            span=item.left.span or item.span,
+                            node_id=node_id,
+                        )
+                    )
         return diagnostics
 
     def validate_quantity_dimensions(
@@ -948,6 +987,18 @@ def _validate_quantity_dimensions(
         span=span,
         node_id=node_id,
     )
+
+
+def _content_call_kind_type(call: IRCall) -> tuple[str | None, str | None]:
+    values: dict[str, str] = {}
+    for arg in call.args:
+        if arg.name not in {"kind", "type"}:
+            continue
+        if isinstance(arg.value, IRString):
+            values[arg.name] = arg.value.value
+        elif isinstance(arg.value, IRIdentifier):
+            values[arg.name] = arg.value.name
+    return values.get("kind"), values.get("type")
 
 
 def _coerce_quantity_like(value: Any) -> IRQuantity | None:

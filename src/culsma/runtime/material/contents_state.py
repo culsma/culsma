@@ -14,6 +14,8 @@ from culsma.runtime.material.ledger import (
     check_capacity_guard,
     container,
     container_component_classes,
+    container_component_quantities,
+    container_count_cells,
     ensure_container,
     move_explicit,
 )
@@ -28,7 +30,7 @@ from culsma.runtime.material.refs import (
     resolve_target_ref,
 )
 from culsma.runtime.material.result import MaterialUpdateResult
-from culsma.runtime.material.units import MASS_TO_MG, VOLUME_TO_UL
+from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_UL
 
 
 @dataclass(frozen=True)
@@ -283,6 +285,9 @@ class MaterialIndexedPartsStateManager:
             slot1=slot1,
             program_kind=program_kind,
         )
+        if _has_count_quantity(slot0) or _has_count_quantity(slot1):
+            normalize_source_partition_slot_bulk(slot0)
+            normalize_source_partition_slot_bulk(slot1)
         diagnostics = _partition_fallback_diagnostics(step, partition)
         binding_events = bind_indexed_group(
             working,
@@ -364,6 +369,7 @@ class MaterialIndexedPartsStateManager:
 
         source_volume = float(source.get("volume_uL", 0.0))
         source_mass = float(source.get("mass_mg", 0.0))
+        source_cells = container_count_cells(source)
         split_ratio = 1.0 / bins
         slot_bindings: dict[str, str] = {}
         for i in range(bins - 1):
@@ -373,10 +379,15 @@ class MaterialIndexedPartsStateManager:
             moved_mass = source_mass * split_ratio
             current_volume = float(source.get("volume_uL", 0.0))
             current_mass = float(source.get("mass_mg", 0.0))
+            current_cells = container_count_cells(source)
             component_ratio = (
                 moved_volume / current_volume
                 if current_volume > 0
-                else (moved_mass / current_mass if current_mass > 0 else 0.0)
+                else (
+                    moved_mass / current_mass
+                    if current_mass > 0
+                    else (source_cells * split_ratio / current_cells if current_cells > 0 else 0.0)
+                )
             )
             move_explicit(source, slot, moved_volume, moved_mass, component_ratio=component_ratio)
             slot_bindings[str(i)] = slot_id
@@ -546,7 +557,7 @@ class MaterialIndexedPartsStateManager:
         amount = _contents_transfer_amount(step=step, state=state, selection=selection, qty=qty)
         if isinstance(amount, MaterialUpdateResult):
             return amount
-        moved_uL, moved_mg, ratio, mode = amount
+        moved_uL, moved_mg, moved_cells, ratio, mode = amount
 
         cap_diag = check_capacity_guard(step=step, state=state, container_id=target_id, added_uL=moved_uL)
         if cap_diag is not None:
@@ -585,6 +596,7 @@ class MaterialIndexedPartsStateManager:
                 "dest": target_id,
                 "moved_uL": moved_uL,
                 "moved_mg": moved_mg,
+                "moved_cells": moved_cells,
                 "contents_state_impact": {
                     "source": self.record_source_selection_impact(state=state, selection=selection),
                     "target": target_impact,
@@ -665,6 +677,7 @@ class MaterialIndexedPartsStateManager:
 
         source_volume = float(source.get("volume_uL", 0.0))
         source_mass = float(source.get("mass_mg", 0.0))
+        source_cells = container_count_cells(source)
         split_ratio = 1.0 / bins
         slot_bindings: dict[str, str] = {}
 
@@ -675,10 +688,15 @@ class MaterialIndexedPartsStateManager:
             moved_mass = source_mass * split_ratio
             current_volume = float(source.get("volume_uL", 0.0))
             current_mass = float(source.get("mass_mg", 0.0))
+            current_cells = container_count_cells(source)
             component_ratio = (
                 moved_volume / current_volume
                 if current_volume > 0
-                else (moved_mass / current_mass if current_mass > 0 else 0.0)
+                else (
+                    moved_mass / current_mass
+                    if current_mass > 0
+                    else (source_cells * split_ratio / current_cells if current_cells > 0 else 0.0)
+                )
             )
             move_explicit(source, slot, moved_volume, moved_mass, component_ratio=component_ratio)
             slot_bindings[str(i)] = slot_id
@@ -876,7 +894,7 @@ def record_partitioned_contents_state(
             continue
         residual_uL = float(slot_part.get("volume_uL", 0.0))
         residual_mg = float(slot_part.get("mass_mg", 0.0))
-        if residual_uL or residual_mg:
+        if residual_uL or residual_mg or container_count_cells(slot_part):
             move_explicit(slot_part, source, residual_uL, residual_mg, component_ratio=1.0)
     contract = slot_contract if isinstance(slot_contract, dict) else {slot: f"slot_{slot}" for slot in copied_parts}
     record = {
@@ -1056,12 +1074,13 @@ def _contents_transfer_amount(
     state: dict[str, Any],
     selection: ContentsPartSelection,
     qty: dict[str, Any] | None,
-) -> tuple[float, float, float, str] | MaterialUpdateResult:
+) -> tuple[float, float, float, float, str] | MaterialUpdateResult:
     part = selection.part
     if qty is None:
         return (
             float(part.get("volume_uL", 0.0)),
             float(part.get("mass_mg", 0.0)),
+            container_count_cells(part),
             1.0,
             "contents_state_full",
         )
@@ -1083,7 +1102,7 @@ def _contents_transfer_amount(
             )
         ratio = 0.0 if part_volume == 0 else moved_uL / part_volume
         moved_mg = part_mass * ratio
-        return moved_uL, moved_mg, ratio, "contents_state_volume"
+        return moved_uL, moved_mg, container_count_cells(part) * ratio, ratio, "contents_state_volume"
     if unit in MASS_TO_MG:
         moved_mg = value * MASS_TO_MG[unit]
         if part_mass < moved_mg:
@@ -1095,7 +1114,26 @@ def _contents_transfer_amount(
             )
         ratio = 0.0 if part_mass == 0 else moved_mg / part_mass
         moved_uL = part_volume * ratio
-        return moved_uL, moved_mg, ratio, "contents_state_mass"
+        return moved_uL, moved_mg, container_count_cells(part) * ratio, ratio, "contents_state_mass"
+    if unit in COUNT_TO_CELLS:
+        moved_cells = value * COUNT_TO_CELLS[unit]
+        if not moved_cells.is_integer():
+            return diagnostic_result(
+                step,
+                state,
+                "MAT_CELL_COUNT_VALUE_INVALID",
+                "Transferred cell count must be a non-negative integer",
+            )
+        part_cells = container_count_cells(part)
+        if part_cells < moved_cells:
+            return diagnostic_result(
+                step,
+                state,
+                "MAT_INSUFFICIENT_COUNT",
+                f"Insufficient contents-state cell count in '{selection.source_id}'",
+            )
+        ratio = 0.0 if part_cells == 0 else moved_cells / part_cells
+        return part_volume * ratio, part_mass * ratio, moved_cells, ratio, "contents_state_count"
     return diagnostic_result(step, state, "MAT_UNSUPPORTED_UNIT", f"Unsupported transfer unit '{unit}'")
 
 
@@ -1131,11 +1169,32 @@ def _move_contents_part_material(
     part_classes = container_component_classes(part)
     target_classes = container_component_classes(target, create=True)
     source_classes = container_component_classes(source)
+    part_quantities = container_component_quantities(part)
+    source_quantities = container_component_quantities(source)
+    target_quantities = container_component_quantities(target, create=bool(part_quantities))
     for name, amount in list(part_components.items()):
         moved = float(amount) * ratio
         part_components[name] = _clamp_near_zero(float(amount) - moved)
         source_components[name] = _clamp_near_zero(float(source_components.get(name, 0.0)) - moved)
         target_components[name] = float(target_components.get(name, 0.0)) + moved
+        part_quantity = part_quantities.get(name) if isinstance(part_quantities, dict) else None
+        if isinstance(part_quantity, dict):
+            moved_quantity = float(part_quantity.get("value", amount)) * ratio
+            part_quantity["value"] = _clamp_near_zero(float(part_quantity.get("value", amount)) - moved_quantity)
+            if isinstance(source_quantities, dict) and isinstance(source_quantities.get(name), dict):
+                source_quantities[name]["value"] = _clamp_near_zero(
+                    float(source_quantities[name].get("value", 0.0)) - moved_quantity
+                )
+            if isinstance(target_quantities, dict):
+                target_quantity = target_quantities.get(name)
+                if not isinstance(target_quantity, dict):
+                    target_quantity = {
+                        "dimension": part_quantity.get("dimension"),
+                        "unit": part_quantity.get("unit"),
+                        "value": 0.0,
+                    }
+                    target_quantities[name] = target_quantity
+                target_quantity["value"] = float(target_quantity.get("value", 0.0)) + moved_quantity
         if moved > 1e-12:
             part_class = part_classes.get(name) if isinstance(part_classes, dict) else None
             if isinstance(part_class, str) and isinstance(target_classes, dict):
@@ -1148,6 +1207,16 @@ def _move_contents_part_material(
 
 def _clamp_near_zero(value: float) -> float:
     return 0.0 if abs(value) <= 1e-12 else value
+
+
+def _has_count_quantity(container_value: Any) -> bool:
+    if not isinstance(container_value, dict):
+        return False
+    quantities = container_value.get("component_quantities")
+    return isinstance(quantities, dict) and any(
+        isinstance(quantity, dict) and quantity.get("dimension") == "count"
+        for quantity in quantities.values()
+    )
 
 
 def _partition_fallback_diagnostics(step: PlanStep, partition: dict[str, Any]) -> list[Diagnostic]:

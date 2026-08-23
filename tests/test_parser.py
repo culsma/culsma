@@ -1066,6 +1066,21 @@ class TestCallAndIndexExpressions:
         assert isinstance(pair_item.right, Quantity)
         assert pair_item.right.value == 100.0
 
+    def test_constructor_load_accepts_cell_count_quantity(self):
+        ast = parse(
+            'protocol T { let cells = tube(load = [content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells]); }'
+        )
+        stmt = ast.protocols[0].statements[0]
+        assert isinstance(stmt, LetStatement)
+        assert isinstance(stmt.value, CallExpr)
+        load_arg = next(arg for arg in stmt.value.args if arg.name == "load")
+        assert isinstance(load_arg.value, ListLiteral)
+        pair_item = load_arg.value.elements[0]
+        assert isinstance(pair_item, PairExpr)
+        assert isinstance(pair_item.right, Quantity)
+        assert pair_item.right.value == 100000.0
+        assert pair_item.right.unit == "cells"
+
     def test_quantity_units_cover_percent_volt_millivolt_and_ms(self):
         ast = parse('protocol T { let a = 5%; let b = 100V; let c = 200ms; let d = 50mV; }')
         a_stmt, b_stmt, c_stmt, d_stmt = ast.protocols[0].statements

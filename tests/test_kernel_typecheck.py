@@ -351,6 +351,24 @@ def test_typecheck_constructor_load_quantity_requires_volume_or_mass():
     assert "TYPE_LOAD_QUANTITY_DIMENSION_MISMATCH" in _codes(result)
 
 
+def test_typecheck_constructor_load_accepts_integer_cell_count_for_cellular_content():
+    src = 'protocol T { let cells = tube(load = [content(kind = bio_cellular, code = "RPE1", type = cell_line):100000cells]); }'
+    result = typecheck(_compile_source(src))
+    assert result.ok
+
+
+def test_typecheck_constructor_load_rejects_cell_count_for_non_cellular_content():
+    src = 'protocol T { let medium = tube(load = [content(kind = formulation, code = "M", type = medium):100cells]); }'
+    result = typecheck(_compile_source(src))
+    assert "TYPE_LOAD_COUNT_CONTENT_MISMATCH" in _codes(result)
+
+
+def test_typecheck_constructor_load_rejects_fractional_cell_literal():
+    src = 'protocol T { let cells = tube(load = [content(kind = bio_cellular, code = "RPE1", type = cell_line):1.5cells]); }'
+    result = typecheck(_compile_source(src))
+    assert "TYPE_CELL_COUNT_VALUE_INVALID" in _codes(result)
+
+
 def test_typecheck_rejects_structure_facet_as_mutation_target():
     src = "protocol T { tube.structure.top << [feed:1uL]; }"
     ir = _compile_source(src)

@@ -101,11 +101,22 @@ def _format_container_state(value: dict[str, Any], *, indent: str = "  ") -> lis
         lines.append(f"{indent}  volume: {_format_number(value.get('volume_uL'))} uL")
     if "mass_mg" in value:
         lines.append(f"{indent}  mass: {_format_number(value.get('mass_mg'))} mg")
+    if float(value.get("count_cells", 0.0) or 0.0) > 0.0:
+        lines.append(f"{indent}  cells: {_format_number(value.get('count_cells'))}")
     components = value.get("components")
     if isinstance(components, dict) and components:
         lines.append(f"{indent}  components:")
         for name, amount in sorted(components.items()):
             lines.append(f"{indent}    {name}: {_format_number(amount)}")
+    component_quantities = value.get("component_quantities")
+    if isinstance(component_quantities, dict) and component_quantities:
+        lines.append(f"{indent}  component quantities:")
+        for name, quantity in sorted(component_quantities.items()):
+            if not isinstance(quantity, dict):
+                continue
+            lines.append(
+                f"{indent}    {name}: {_format_number(quantity.get('value'))}{quantity.get('unit') or ''}"
+            )
     return lines
 
 

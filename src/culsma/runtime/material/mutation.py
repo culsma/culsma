@@ -25,6 +25,8 @@ from culsma.runtime.material.ledger import (
     ensure_container,
     move_explicit,
     move_ratio,
+    container_component_quantities,
+    container_count_cells,
 )
 from culsma.runtime.material.partition import normalize_source_partition_slot_bulk, partition_sep_material
 from culsma.runtime.material.refs import (
@@ -37,7 +39,7 @@ from culsma.runtime.material.refs import (
     top_up_source_for_estimate,
 )
 from culsma.runtime.material.result import MaterialUpdateResult
-from culsma.runtime.material.units import MASS_TO_MG, VOLUME_TO_UL
+from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_UL
 
 
 @dataclass(frozen=True)
@@ -84,7 +86,7 @@ class QuantifiedSourcePartitionHandler(MutationSourceHandler):
         pair = ctx.source_expr
         qty = _quantified_source_qty(ctx)
         if qty is None:
-            return diagnostic_result(ctx.step, ctx.state, "MAT_UNSUPPORTED_UNIT", "Mutation quantified source must carry volume or mass unit")
+            return diagnostic_result(ctx.step, ctx.state, "MAT_UNSUPPORTED_UNIT", "Mutation quantified source must carry volume, mass, or count unit")
         transfer = apply_source_partition_transfer(
             step=ctx.step,
             state=ctx.state,
@@ -116,7 +118,7 @@ class QuantifiedContainerSourceHandler(MutationSourceHandler):
         left = pair.get("left")
         qty = _quantified_source_qty(ctx)
         if qty is None:
-            return diagnostic_result(ctx.step, ctx.state, "MAT_UNSUPPORTED_UNIT", "Mutation quantified source must carry volume or mass unit")
+            return diagnostic_result(ctx.step, ctx.state, "MAT_UNSUPPORTED_UNIT", "Mutation quantified source must carry volume, mass, or count unit")
         source_id = resolve_source_ref(ctx.state, left, qty=qty)
         if source_id is None:
             return diagnostic_result(
@@ -243,6 +245,7 @@ class FullContainerSourceHandler(MutationSourceHandler):
             return diagnostic_result(ctx.step, ctx.state, "MAT_BINDING_NOT_FOUND", "Mutation references unknown container")
         moved_uL = float(source.get("volume_uL", 0.0))
         moved_mg = float(source.get("mass_mg", 0.0))
+        moved_cells = container_count_cells(source)
         cap_diag = check_capacity_guard(step=ctx.step, state=ctx.state, container_id=ctx.target_id, added_uL=moved_uL)
         if cap_diag is not None:
             return cap_diag
@@ -265,6 +268,7 @@ class FullContainerSourceHandler(MutationSourceHandler):
                 "target": ctx.target_id,
                 "moved_uL": moved_uL,
                 "moved_mg": moved_mg,
+                "moved_cells": moved_cells,
                 "contents_state_impact": {
                     "source": {"action": "stale", "reason": "whole_container_transfer"},
                     "target": target_impact,
@@ -395,6 +399,7 @@ def apply_source_partition_transfer(
     if qty is None:
         moved_uL = float(selected.get("volume_uL", 0.0))
         moved_mg = float(selected.get("mass_mg", 0.0))
+        moved_cells = container_count_cells(selected)
         cap_diag = check_capacity_guard(step=step, state=state, container_id=target_id, added_uL=moved_uL)
         if cap_diag is not None:
             return cap_diag
@@ -413,6 +418,7 @@ def apply_source_partition_transfer(
             "dest": target_id,
             "moved_uL": moved_uL,
             "moved_mg": moved_mg,
+            "moved_cells": moved_cells,
         }
     else:
         transfer = apply_transfer_by_qty(step=step, state=state, src_id=selected_id, dst_id=target_id, qty=qty)
@@ -431,7 +437,7 @@ def apply_source_partition_transfer(
             continue
         residual_uL = float(residual.get("volume_uL", 0.0))
         residual_mg = float(residual.get("mass_mg", 0.0))
-        if residual_uL or residual_mg:
+        if residual_uL or residual_mg or container_count_cells(residual):
             move_explicit(residual, source_after, residual_uL, residual_mg, component_ratio=1.0)
     containers = state.setdefault("containers", {})
     if isinstance(containers, dict):
@@ -482,6 +488,9 @@ def apply_transfer_by_qty(
     if unit in MASS_TO_MG:
         requested_mg = value * MASS_TO_MG[unit]
         return _apply_transfer_mass(step, state, src_id, dst_id, requested_mg)
+    if unit in COUNT_TO_CELLS:
+        requested_cells = value * COUNT_TO_CELLS[unit]
+        return _apply_transfer_count(step, state, src_id, dst_id, requested_cells)
     return diagnostic_result(
         step=step,
         state=state,
@@ -554,11 +563,19 @@ def _apply_transfer_volume(
 
     if src_volume >= requested_uL:
         ratio = 0.0 if src_volume == 0 else requested_uL / src_volume
+        moved_cells = container_count_cells(src) * ratio
         move_ratio(src, dst, ratio)
         return MaterialUpdateResult(
             material_state=state,
             diagnostics=[],
-            delta={"op": "material_move", "mode": "volume", "source": src_id, "dest": dst_id, "moved_uL": requested_uL},
+            delta={
+                "op": "material_move",
+                "mode": "volume",
+                "source": src_id,
+                "dest": dst_id,
+                "moved_uL": requested_uL,
+                "moved_cells": moved_cells,
+            },
         )
 
     if src_volume > 0:
@@ -580,6 +597,7 @@ def _apply_transfer_volume(
     src["mass_mg"] = effective_src_mass
     src["volume_uL"] = effective_src_volume
     component_ratio = 0.0 if effective_src_mass == 0 else requested_mg / effective_src_mass
+    moved_cells = container_count_cells(src) * component_ratio
     move_explicit(
         src=src,
         dst=dst,
@@ -597,6 +615,7 @@ def _apply_transfer_volume(
             "dest": dst_id,
             "requested_uL": requested_uL,
             "converted_mg": requested_mg,
+            "moved_cells": moved_cells,
             "density_mg_per_uL": density,
         },
     )
@@ -622,6 +641,7 @@ def _apply_transfer_mass(
     if src_mass >= requested_mg:
         ratio = 0.0 if src_mass == 0 else requested_mg / src_mass
         moved_uL = ratio * float(src.get("volume_uL", 0.0))
+        moved_cells = container_count_cells(src) * ratio
         cap_diag = check_capacity_guard(step=step, state=state, container_id=dst_id, added_uL=moved_uL)
         if cap_diag is not None:
             return cap_diag
@@ -629,7 +649,14 @@ def _apply_transfer_mass(
         return MaterialUpdateResult(
             material_state=state,
             diagnostics=[],
-            delta={"op": "material_move", "mode": "mass", "source": src_id, "dest": dst_id, "moved_mg": requested_mg},
+            delta={
+                "op": "material_move",
+                "mode": "mass",
+                "source": src_id,
+                "dest": dst_id,
+                "moved_mg": requested_mg,
+                "moved_cells": moved_cells,
+            },
         )
 
     if src_mass > 0:
@@ -654,6 +681,7 @@ def _apply_transfer_mass(
     src["volume_uL"] = effective_src_volume
     src["mass_mg"] = effective_src_mass
     component_ratio = 0.0 if effective_src_volume == 0 else requested_uL / effective_src_volume
+    moved_cells = container_count_cells(src) * component_ratio
     move_explicit(
         src=src,
         dst=dst,
@@ -671,6 +699,90 @@ def _apply_transfer_mass(
             "dest": dst_id,
             "requested_mg": requested_mg,
             "converted_uL": requested_uL,
+            "moved_cells": moved_cells,
             "density_mg_per_uL": density,
+        },
+    )
+
+
+def _apply_transfer_count(
+    step: PlanStep,
+    state: dict[str, Any],
+    src_id: str,
+    dst_id: str,
+    requested_cells: float,
+) -> MaterialUpdateResult:
+    src = state["containers"][src_id]
+    dst = state["containers"][dst_id]
+    if requested_cells < 0 or not requested_cells.is_integer():
+        return diagnostic_result(
+            step,
+            state,
+            "MAT_CELL_COUNT_VALUE_INVALID",
+            "Transferred cell count must be a non-negative integer",
+        )
+
+    available_cells = container_count_cells(src)
+    if not inventory_check_enabled(state) and available_cells < requested_cells:
+        top_up_source_for_estimate(
+            source=src,
+            qty=requested_cells - available_cells,
+            mode="count",
+            source_name=src_id,
+        )
+        available_cells = container_count_cells(src)
+    if available_cells + 1e-12 < requested_cells:
+        return diagnostic_result(step, state, "MAT_INSUFFICIENT_COUNT", f"Insufficient source cell count in '{src_id}'")
+    if requested_cells == 0:
+        return MaterialUpdateResult(
+            material_state=state,
+            diagnostics=[],
+            delta={"op": "material_move", "mode": "count", "source": src_id, "dest": dst_id, "moved_cells": 0.0},
+        )
+
+    ratio = requested_cells / available_cells
+    src_quantities = container_component_quantities(src)
+    dst_quantities = container_component_quantities(dst, create=True)
+    src_components = src.setdefault("components", {})
+    dst_components = dst.setdefault("components", {})
+    if not isinstance(src_quantities, dict) or not isinstance(dst_quantities, dict):
+        return diagnostic_result(step, state, "MAT_STATE_INVARIANT_VIOLATION", "Missing count quantity ledger")
+    if not isinstance(src_components, dict) or not isinstance(dst_components, dict):
+        return diagnostic_result(step, state, "MAT_STATE_INVARIANT_VIOLATION", "Missing component ledger")
+
+    for name, source_quantity in list(src_quantities.items()):
+        if (
+            not isinstance(source_quantity, dict)
+            or source_quantity.get("dimension") != "count"
+            or source_quantity.get("unit") != "cells"
+        ):
+            continue
+        source_value = float(source_quantity.get("value", 0.0))
+        moved_value = source_value * ratio
+        source_quantity["value"] = max(0.0, source_value - moved_value)
+        target_quantity = dst_quantities.get(name)
+        if not isinstance(target_quantity, dict):
+            target_quantity = {"dimension": "count", "unit": "cells", "value": 0.0}
+            dst_quantities[name] = target_quantity
+        if target_quantity.get("dimension") != "count" or target_quantity.get("unit") != "cells":
+            return diagnostic_result(
+                step,
+                state,
+                "MAT_CONTENT_LOAD_AXIS_MISMATCH",
+                f"Content '{name}' has incompatible quantity axis in target '{dst_id}'",
+            )
+        target_quantity["value"] = float(target_quantity.get("value", 0.0)) + moved_value
+        src_components[name] = max(0.0, float(src_components.get(name, source_value)) - moved_value)
+        dst_components[name] = float(dst_components.get(name, 0.0)) + moved_value
+
+    return MaterialUpdateResult(
+        material_state=state,
+        diagnostics=[],
+        delta={
+            "op": "material_move",
+            "mode": "count",
+            "source": src_id,
+            "dest": dst_id,
+            "moved_cells": requested_cells,
         },
     )

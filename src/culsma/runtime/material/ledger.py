@@ -32,6 +32,7 @@ class MaterialLedger:
         mass_mg: float,
         components: dict[str, float],
         component_classes: dict[str, str] | None = None,
+        component_quantities: dict[str, dict[str, Any]] | None = None,
     ) -> None:
         set_container_material(
             container,
@@ -39,6 +40,7 @@ class MaterialLedger:
             mass_mg=mass_mg,
             components=components,
             component_classes=component_classes,
+            component_quantities=component_quantities,
         )
 
     @staticmethod
@@ -99,10 +101,13 @@ def set_container_material(
     mass_mg: float,
     components: dict[str, float],
     component_classes: dict[str, str] | None = None,
+    component_quantities: dict[str, dict[str, Any]] | None = None,
 ) -> None:
     container["volume_uL"] = volume_uL
     container["mass_mg"] = mass_mg
     container["components"] = dict(components)
+    if component_quantities is not None:
+        container["component_quantities"] = deepcopy(component_quantities)
     metadata = container.setdefault("metadata", {})
     if isinstance(metadata, dict):
         if component_classes:
@@ -133,18 +138,40 @@ def move_explicit(
 
     src_comp = src.setdefault("components", {})
     dst_comp = dst.setdefault("components", {})
+    src_quantities = container_component_quantities(src)
+    dst_quantities = container_component_quantities(dst, create=bool(src_quantities))
     src_classes = container_component_classes(src)
     dst_classes = container_component_classes(dst, create=True)
     for name, amount in list(src_comp.items()):
         moved = component_ratio * float(amount)
         src_comp[name] = float(amount) - moved
         dst_comp[name] = float(dst_comp.get(name, 0.0)) + moved
+        if isinstance(src_quantities, dict) and isinstance(src_quantities.get(name), dict):
+            source_quantity = src_quantities[name]
+            moved_quantity_value = component_ratio * float(source_quantity.get("value", amount))
+            source_quantity["value"] = float(source_quantity.get("value", amount)) - moved_quantity_value
+            if isinstance(dst_quantities, dict):
+                target_quantity = dst_quantities.get(name)
+                if not isinstance(target_quantity, dict):
+                    target_quantity = {
+                        "dimension": source_quantity.get("dimension"),
+                        "unit": source_quantity.get("unit"),
+                        "value": 0.0,
+                    }
+                    dst_quantities[name] = target_quantity
+                if (
+                    target_quantity.get("dimension") == source_quantity.get("dimension")
+                    and target_quantity.get("unit") == source_quantity.get("unit")
+                ):
+                    target_quantity["value"] = float(target_quantity.get("value", 0.0)) + moved_quantity_value
         if moved > CONSERVATION_ABS_EPS and isinstance(dst_classes, dict):
             src_class = src_classes.get(name) if isinstance(src_classes, dict) else None
             if isinstance(src_class, str) and src_class:
                 dst_classes[name] = src_class
         if abs(float(src_comp[name])) <= CONSERVATION_ABS_EPS:
             src_comp[name] = 0.0
+            if isinstance(src_quantities, dict) and isinstance(src_quantities.get(name), dict):
+                src_quantities[name]["value"] = 0.0
             if isinstance(src_classes, dict):
                 src_classes.pop(name, None)
 
@@ -165,12 +192,42 @@ def container_component_classes(container: dict[str, Any], *, create: bool = Fal
     return classes
 
 
+def container_component_quantities(container: dict[str, Any], *, create: bool = False) -> dict[str, Any] | None:
+    quantities = container.setdefault("component_quantities", {}) if create else container.get("component_quantities")
+    if not isinstance(quantities, dict):
+        if not create:
+            return None
+        container["component_quantities"] = {}
+        quantities = container["component_quantities"]
+    return quantities
+
+
+def container_count_cells(container: Any) -> float:
+    if not isinstance(container, dict):
+        return 0.0
+    quantities = container_component_quantities(container)
+    if not isinstance(quantities, dict):
+        return 0.0
+    total = 0.0
+    for quantity in quantities.values():
+        if not isinstance(quantity, dict) or quantity.get("dimension") != "count":
+            continue
+        if quantity.get("unit") == "cells":
+            total += float(quantity.get("value", 0.0))
+    return total
+
+
 def remove_ratio(source: dict[str, Any], ratio: float) -> None:
     source["volume_uL"] = float(source.get("volume_uL", 0.0)) * (1.0 - ratio)
     source["mass_mg"] = float(source.get("mass_mg", 0.0)) * (1.0 - ratio)
     comp = source.setdefault("components", {})
     for name, amount in list(comp.items()):
         comp[name] = float(amount) * (1.0 - ratio)
+    quantities = container_component_quantities(source)
+    if isinstance(quantities, dict):
+        for quantity in quantities.values():
+            if isinstance(quantity, dict):
+                quantity["value"] = float(quantity.get("value", 0.0)) * (1.0 - ratio)
 
 
 def primary_concentration(container: dict[str, Any]) -> float | None:

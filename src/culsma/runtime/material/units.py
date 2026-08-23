@@ -17,3 +17,7 @@ MASS_TO_MG: dict[str, float] = {
     "g": 1000.0,
     "kg": 1_000_000.0,
 }
+
+COUNT_TO_CELLS: dict[str, float] = {
+    "cells": 1.0,
+}

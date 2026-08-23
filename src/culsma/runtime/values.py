@@ -658,6 +658,8 @@ def _runtime_protocol_output_serialize(value: Any) -> Any:
                 "id",
                 "volume_uL",
                 "mass_mg",
+                "count_cells",
+                "component_quantities",
                 "container_kind",
                 "label",
                 "barcode",
@@ -731,6 +733,20 @@ def _container_ref_payload(material_state: Any, container_id: str) -> dict[str, 
         for name, amount in components.items():
             if isinstance(amount, (int, float)):
                 component_map[str(name)] = round(float(amount), 6)
+    raw_quantities = raw.get("component_quantities")
+    component_quantities: dict[str, Any] = {}
+    count_cells = 0.0
+    if isinstance(raw_quantities, dict):
+        for name, quantity in raw_quantities.items():
+            if not isinstance(quantity, dict):
+                continue
+            record = deepcopy(quantity)
+            value = record.get("value")
+            if isinstance(value, (int, float)):
+                record["value"] = round(float(value), 6)
+                if record.get("dimension") == "count" and record.get("unit") == "cells":
+                    count_cells += float(value)
+            component_quantities[str(name)] = record
     payload: dict[str, Any] = {
         "kind": "container_ref",
         "id": container_id,
@@ -739,6 +755,9 @@ def _container_ref_payload(material_state: Any, container_id: str) -> dict[str, 
         "components": component_map,
         "metadata": metadata_out,
     }
+    if count_cells > 0.0:
+        payload["component_quantities"] = component_quantities
+        payload["count_cells"] = round(count_cells, 6)
     container_kind = metadata_out.get("kind")
     if isinstance(container_kind, str):
         payload["container_kind"] = container_kind

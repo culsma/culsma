@@ -170,7 +170,7 @@ flowchart TB
     Slots["Define meaningful output parts<br/>and source identity policy"]
     Classify["Classify source contents<br/>by component behavior"]
     Fate["Compute component fate<br/>for each output slot"]
-    Quantities["Compute part volume and mass<br/>from source quantity policy"]
+    Quantities["Compute part quantities<br/>explicit component quantities first;<br/>carrier-volume mass inference second;<br/>conservative fallback last"]
     Preservation["Attach a preservation condition<br/>when required"]
     Plan["Return partition plan:<br/>output parts, component fate,<br/>identity policy, and preservation condition"]
 
@@ -188,8 +188,12 @@ Design judgment:
 
 1. Program-specific component fate should stay in strategy classes, not in a
    growing conditional ladder.
-2. Bulk volume and mass accounting remain separate from component fate ratios,
-   but both are returned in the same partition plan.
+2. Bulk quantity accounting remains separate from component fate ratios, but
+   both are returned in the same partition plan. Dimensioned component
+   quantities are authoritative. When count and carrier volume coexist without
+   explicit mass quantities, bulk mass follows the partitioned carrier-volume
+   ratio while preserving source mass; insufficient information retains the
+   conservative fallback.
 3. Indexed group returns and indexed contents state are projections of the
    contents-state transition that consumes this plan, not separate material
    truth.

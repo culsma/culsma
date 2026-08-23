@@ -6,7 +6,7 @@ from typing import Any
 
 from culsma.runtime.material.args import arg_string
 from culsma.runtime.material.ledger import ensure_container
-from culsma.runtime.material.units import MASS_TO_MG, VOLUME_TO_UL
+from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_UL
 
 
 class MaterialRefResolver:
@@ -284,6 +284,9 @@ def provision_source_for_estimate(state: dict[str, Any], name: str, qty: dict[st
     elif unit in MASS_TO_MG:
         requested_mg = value * MASS_TO_MG[unit]
         top_up_source_for_estimate(source=source, qty=requested_mg, mode="mass", source_name=name)
+    elif unit in COUNT_TO_CELLS:
+        requested_cells = value * COUNT_TO_CELLS[unit]
+        top_up_source_for_estimate(source=source, qty=requested_cells, mode="count", source_name=name)
     return source_id
 
 
@@ -295,10 +298,20 @@ def top_up_source_for_estimate(source: dict[str, Any], qty: float, mode: str, so
         source["volume_uL"] = float(source.get("volume_uL", 0.0)) + qty
         source["mass_mg"] = float(source.get("mass_mg", 0.0)) + qty
         comps[source_name] = float(comps.get(source_name, 0.0)) + qty
-    else:
+    elif mode == "mass":
         source["mass_mg"] = float(source.get("mass_mg", 0.0)) + qty
         source["volume_uL"] = float(source.get("volume_uL", 0.0)) + qty
         comps[source_name] = float(comps.get(source_name, 0.0)) + qty
+    else:
+        comps[source_name] = float(comps.get(source_name, 0.0)) + qty
+        quantities = source.setdefault("component_quantities", {})
+        if isinstance(quantities, dict):
+            record = quantities.setdefault(
+                source_name,
+                {"dimension": "count", "unit": "cells", "value": 0.0},
+            )
+            if isinstance(record, dict):
+                record["value"] = float(record.get("value", 0.0)) + qty
 
 
 def _is_qualified_name(name: str) -> bool:

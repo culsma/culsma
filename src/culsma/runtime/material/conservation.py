@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from culsma.runtime.material.ledger import CONSERVATION_ABS_EPS, density_mg_per_uL
+from culsma.runtime.material.ledger import CONSERVATION_ABS_EPS, container_count_cells, density_mg_per_uL
 
 
 CONSERVATION_REL_EPS = 1e-9
@@ -25,6 +25,7 @@ def state_totals(state: dict[str, Any]) -> dict[str, float]:
     total_volume = 0.0
     total_mass = 0.0
     total_components = 0.0
+    total_cells = 0.0
     containers = state.setdefault("containers", {})
     for obj in containers.values():
         if not isinstance(obj, dict):
@@ -41,13 +42,19 @@ def state_totals(state: dict[str, Any]) -> dict[str, float]:
         comp = obj.get("components", {})
         if isinstance(comp, dict):
             total_components += sum(float(v) for v in comp.values())
-    return {"volume_uL": total_volume, "mass_mg": total_mass, "components": total_components}
+        total_cells += container_count_cells(obj)
+    return {
+        "volume_uL": total_volume,
+        "mass_mg": total_mass,
+        "count_cells": total_cells,
+        "components": total_components,
+    }
 
 
 def totals_conserved(before: dict[str, float], after: dict[str, float]) -> bool:
     return all(
         _close_enough(float(before.get(key, 0.0)), float(after.get(key, 0.0)))
-        for key in ("volume_uL", "mass_mg", "components")
+        for key in ("volume_uL", "mass_mg", "count_cells", "components")
     )
 
 
