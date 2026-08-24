@@ -33,6 +33,7 @@ from .environment import EnvContractValidator
 from .expression_contracts import validate_expr_contracts
 from .groups import GroupIndexValidator
 from .programs import ProgramContractValidator
+from .separation import validate_component_fates_contract
 from .statement_contracts import (
     BUILTIN_METHOD_STEPS,
     dedupe_requirement_names,
@@ -907,6 +908,16 @@ class StepHandler(BaseStatementHandler):
                         literal_bindings=ctx.literal_bindings,
                     ),
                 )
+        if stmt.name == "sep":
+            self.append_diagnostics(
+                ctx,
+                validate_component_fates_contract(
+                    stmt.args,
+                    expr_bindings=ctx.expr_bindings,
+                    node_id=stmt.id,
+                    span=stmt.span,
+                ),
+            )
 
     def apply_state_after_children(
         self,

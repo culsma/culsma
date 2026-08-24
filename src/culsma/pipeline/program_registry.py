@@ -68,6 +68,18 @@ def _spec(
 
 KEEP_SOURCE_VALUES = ("supernatant", "pellet")
 
+SEPARATION_SLOT_CONTRACTS: dict[str, dict[str, str]] = {
+    "sep_program": {"0": "fraction_0", "1": "fraction_1"},
+    "centrifuge_program": {"0": "supernatant", "1": "pellet"},
+    "magnetic_program": {"0": "bound", "1": "flowthrough"},
+    "disrupt_program": {"0": "lysate", "1": "debris_or_residue"},
+    "field_program": {"0": "target_band_fraction", "1": "non_target_fraction"},
+    "filtration_program": {"0": "filtrate", "1": "retentate"},
+    "centrifugal_filtration_program": {"0": "filtrate", "1": "retentate"},
+    "phase_partition_program": {"0": "target_phase", "1": "other_phase"},
+    "precipitation_program": {"0": "precipitate", "1": "supernatant"},
+}
+
 
 PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
     "centrifuge_program": _spec(
@@ -193,6 +205,11 @@ LEGACY_GENERIC_PROGRAMS = frozenset(
 
 def get_program_spec(kind: str) -> ProgramSpec | None:
     return PROGRAM_REGISTRY.get(kind)
+
+
+def get_separation_slot_contract(kind: str) -> dict[str, str] | None:
+    contract = SEPARATION_SLOT_CONTRACTS.get(kind)
+    return dict(contract) if contract is not None else None
 
 
 def is_known_program_kind(kind: str) -> bool:

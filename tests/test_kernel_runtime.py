@@ -2715,6 +2715,7 @@ protocol T {
         "unit": "cells",
         "value": 33333.333333,
     }
+    assert returned["material_relationships"][0]["subtype"] == "cell_suspension"
 
 
 def test_runtime_cell_suspension_transfer_merges_with_preloaded_target():
@@ -2764,14 +2765,14 @@ protocol T {
     assert source["volume_uL"] + target["volume_uL"] == 350.0
 
 
-def test_runtime_direct_cell_count_transfer_moves_no_bulk_volume():
+def test_runtime_direct_cell_count_transfer_resolves_default_suspension_volume():
     plan = _build_plan_from_source(
         """
 protocol T {
-  let source = tube(label = "Source", capacity = 10uL, load = [
+  let source = tube(label = "Source", capacity = 200uL, load = [
     content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells
   ]);
-  let target = tube(label = "Target", capacity = 10uL);
+  let target = tube(label = "Target", capacity = 50uL);
   target << [source:25000cells];
 }
 """
@@ -2781,10 +2782,389 @@ protocol T {
 
     assert result.ok, [d.to_dict() for d in result.diagnostics]
     containers = result.state.artifacts["material_state"]["containers"]
-    assert containers["Source"]["volume_uL"] == 0.0
-    assert containers["Target"]["volume_uL"] == 0.0
+    assert containers["Source"]["volume_uL"] == 75.0
+    assert containers["Target"]["volume_uL"] == 25.0
     assert containers["Source"]["component_quantities"]["RPE1"]["value"] == 75000.0
     assert containers["Target"]["component_quantities"]["RPE1"]["value"] == 25000.0
+    assert containers["Target"]["material_relationships"][0]["concentration"]["value"] == 1000.0
+    assert containers["Target"]["material_relationships"][0]["concentration"]["source"] == "default"
+    assert "ASSUMED_CELL_SUSPENSION_CONCENTRATION" in [d.code for d in result.diagnostics]
+
+
+def test_runtime_marks_default_suspension_concentration_as_derived_after_dilution():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 200uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells
+  ]);
+  let target = tube(label = "Target", capacity = 100uL, load = [
+    content(kind = formulation, type = buffer, code = "PBS"):50uL
+  ]);
+  target << [source:25000cells];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    relationship = result.state.artifacts["material_state"]["containers"]["Target"]["material_relationships"][0]
+    assert relationship["carrier_volume_uL"] == 75.0
+    assert relationship["concentration"]["value"] == pytest.approx(25000.0 / 75.0)
+    assert relationship["concentration"]["source"] == "derived"
+    assert relationship["assumption_policy_ids"] == ["default_cell_suspension_concentration"]
+
+
+def test_runtime_does_not_treat_formulation_supplement_as_cell_carrier():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 200uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells,
+    content(kind = formulation, type = supplement, code = "SUPPLEMENT"):50uL
+  ]);
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    source = result.state.artifacts["material_state"]["containers"]["Source"]
+    relationship = source["material_relationships"][0]
+    assert relationship["carrier_component_ids"] == ["__implicit_cell_carrier__::Source"]
+    assert relationship["carrier_volume_uL"] == 100.0
+    assert relationship["concentration"]["value"] == 1000.0
+    assert source["volume_uL"] == 150.0
+
+
+def test_runtime_cell_count_transfer_uses_explicit_carrier_concentration_and_moves_all_contents():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 250uL, load = [
+    content(kind = formulation, type = medium, code = "MEDIUM"):200uL,
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells
+  ]);
+  let target = tube(label = "Target", capacity = 100uL);
+  target << [source:25000cells];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    containers = result.state.artifacts["material_state"]["containers"]
+    assert containers["Source"]["volume_uL"] == 150.0
+    assert containers["Target"]["volume_uL"] == 50.0
+    assert containers["Target"]["component_quantities"]["RPE1"]["value"] == 25000.0
+    assert containers["Target"]["component_quantities"]["MEDIUM"]["value"] == 50.0
+    relationship = containers["Target"]["material_relationships"][0]
+    assert relationship["concentration"]["value"] == 500.0
+    assert relationship["concentration"]["source"] == "derived"
+
+
+def test_runtime_count_transfer_uses_carrier_volume_not_cross_axis_bulk_proxy():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 500uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells,
+    content(kind = formulation, type = medium, code = "MEDIUM"):300uL,
+    content(kind = chemical, type = inorganic_compound, code = "SALT"):10mg
+  ]);
+  let target = tube(label = "Target", capacity = 100uL);
+  target << [source:25000cells];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    target = result.state.artifacts["material_state"]["containers"]["Target"]
+    assert target["volume_uL"] == 77.5
+    assert target["component_quantities"]["MEDIUM"]["value"] == 75.0
+    assert target["component_quantities"]["SALT"]["value"] == 2.5
+    relationship = target["material_relationships"][0]
+    assert relationship["carrier_volume_uL"] == 75.0
+    assert relationship["concentration"]["value"] == pytest.approx(100000.0 / 300.0)
+
+    mutation_step_id = next(
+        step.step_id for protocol in plan.plans for step in protocol.steps if step.op == "Mutation"
+    )
+    mutation_event = next(
+        event for event in result.events if event.kind == "STEP_COMPLETED" and event.step_id == mutation_step_id
+    )
+    transfer_delta = mutation_event.payload["material_delta"]["sources"][0]["transfer_delta"]
+    assert transfer_delta["resolved_transfer_volume_uL"] == 75.0
+    assert transfer_delta["moved_bulk_volume_uL"] == 77.5
+    assert transfer_delta["component_ratio"] == 0.25
+    assert transfer_delta["concentration_cells_per_uL"] == pytest.approx(100000.0 / 300.0)
+
+
+def test_runtime_count_transfer_capacity_uses_physical_carrier_volume():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 500uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells,
+    content(kind = formulation, type = medium, code = "MEDIUM"):300uL,
+    content(kind = chemical, type = inorganic_compound, code = "SALT"):10mg
+  ]);
+  let target = tube(label = "Target", capacity = 76uL);
+  target << [source:25000cells];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    target = result.state.artifacts["material_state"]["containers"]["Target"]
+    assert target["component_quantities"]["MEDIUM"]["value"] == 75.0
+    assert target["volume_uL"] == 77.5
+
+
+def test_runtime_resolves_cell_count_to_volume_before_driver_execution():
+    class CapturingHumanDriver:
+        def __init__(self):
+            self.delegate = HumanDriver()
+            self.executed_steps = []
+
+        def check(self, step):
+            return self.delegate.check(step)
+
+        def execute(self, step):
+            self.executed_steps.append(step)
+            return self.delegate.execute(step)
+
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 500uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells,
+    content(kind = formulation, type = medium, code = "MEDIUM"):300uL
+  ]);
+  let target = tube(label = "Target", capacity = 100uL);
+  target << [source:25000cells];
+}
+"""
+    )
+    driver = CapturingHumanDriver()
+
+    result = run(plan=plan, driver=driver)
+
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    mutation_step = next(step for step in driver.executed_steps if step.op == "Mutation")
+    assert mutation_step.args["sources"][0]["right"]["unit"] == "uL"
+    assert mutation_step.args["sources"][0]["right"]["value"] == 75.0
+    resolution = mutation_step.args["_runtime_material_resolution"]["sources"][0]
+    assert resolution["requested"]["value"] == 25000.0
+    assert resolution["requested"]["unit"] == "cells"
+    mutation_event = next(
+        event for event in result.events if event.kind == "STEP_COMPLETED" and event.step_id == mutation_step.step_id
+    )
+    assert mutation_event.payload["driver_payload"]["binding"]["pipette_label"] == "P200 single-channel pipette"
+    assert "25000.0cells corresponds to 75.0uL" in " ".join(
+        mutation_event.payload["driver_payload"]["instruction"]["details"]
+    )
+
+
+def test_runtime_does_not_dispatch_internal_constructor_finalizer_to_driver():
+    class FinalizerRejectingDriver:
+        def __init__(self):
+            self.delegate = StubDriver()
+            self.executed_ops = []
+
+        def check(self, step):
+            assert step.op != "FinalizeContainerContents"
+            return self.delegate.check(step)
+
+        def execute(self, step):
+            assert step.op != "FinalizeContainerContents"
+            self.executed_ops.append(step.op)
+            return self.delegate.execute(step)
+
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 200uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells
+  ]);
+}
+"""
+    )
+    driver = FinalizerRejectingDriver()
+
+    result = run(plan=plan, driver=driver)
+
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    assert "FinalizeContainerContents" not in driver.executed_ops
+    finalize_event = next(
+        event
+        for event in result.events
+        if event.kind == "STEP_COMPLETED" and event.payload.get("driver_code") == "RUNTIME_MATERIAL_INTERNAL"
+    )
+    assert finalize_event.payload["driver_payload"] == {
+        "op": "FinalizeContainerContents",
+        "internal": True,
+    }
+
+
+def test_runtime_rejects_cell_count_transfer_from_adherent_cells_without_resuspension():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = surface(label = "Culture", load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1", attrs = { state: adherent }):100000cells
+  ]);
+  let target = tube(label = "Target", capacity = 100uL);
+  target << [source:25000cells];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert not result.ok
+    assert "MAT_COUNT_TRANSFER_SOURCE_NOT_SUSPENSION" in [d.code for d in result.diagnostics]
+    source = result.state.artifacts["material_state"]["containers"]["Culture"]
+    assert source["volume_uL"] == 0.0
+    assert source["material_relationships"][0]["material_state"] == "adherent"
+
+
+def test_runtime_rejects_ambiguous_count_transfer_with_multiple_cell_populations():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 200uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):50000cells,
+    content(kind = bio_cellular, type = cell_line, code = "HEK293"):50000cells,
+    content(kind = formulation, type = medium, code = "MEDIUM"):100uL
+  ]);
+  let target = tube(label = "Target", capacity = 50uL);
+  target << [source:25000cells];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert not result.ok
+    assert "MAT_COUNT_TRANSFER_AMBIGUOUS" in [d.code for d in result.diagnostics]
+
+
+def test_runtime_count_diagnostic_order_is_shared_and_material_error_prevents_dispatch():
+    class CapturingDriver:
+        def __init__(self):
+            self.delegate = StubDriver()
+            self.executed_ops = []
+
+        def check(self, step):
+            return self.delegate.check(step)
+
+        def execute(self, step):
+            self.executed_ops.append(step.op)
+            return self.delegate.execute(step)
+
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 200uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):50000cells,
+    content(kind = bio_cellular, type = cell_line, code = "HEK293"):50000cells,
+    content(kind = formulation, type = medium, code = "MEDIUM"):100uL
+  ]);
+  let target = tube(label = "Target", capacity = 200uL);
+  target << [source:200000cells];
+}
+"""
+    )
+    driver = CapturingDriver()
+
+    result = run(plan=plan, driver=driver)
+
+    assert not result.ok
+    codes = [d.code for d in result.diagnostics]
+    assert "MAT_COUNT_TRANSFER_AMBIGUOUS" in codes
+    assert "MAT_INSUFFICIENT_COUNT" not in codes
+    assert "Mutation" not in driver.executed_ops
+
+
+def test_runtime_frac_rebuilds_transferable_suspension_relationships():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 100uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells,
+    content(kind = formulation, type = medium, code = "MEDIUM"):100uL
+  ]);
+  let fractions = frac(
+    sample = source,
+    program = density_gradient_program(axis = density, order = top_to_bottom, bins = 4)
+  );
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    material = result.state.artifacts["material_state"]
+    slots = material["indexed_bindings"]["fractions"]
+    for slot_id in slots.values():
+        fraction = material["containers"][slot_id]
+        assert fraction["volume_uL"] == 25.0
+        assert fraction["component_quantities"]["RPE1"]["value"] == 25000.0
+        relationship = fraction["material_relationships"][0]
+        assert relationship["material_state"] == "suspension"
+        assert relationship["transferability"] == "homogeneous_aliquot"
+        assert relationship["concentration"]["value"] == 1000.0
+
+
+def test_runtime_contents_count_transfer_uses_shared_carrier_resolution_fields():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 300uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells,
+    content(kind = formulation, type = medium, code = "MEDIUM"):300uL
+  ]);
+  sep(sample = source, program = centrifuge_program(drive = 12000g));
+  let target = tube(label = "Target", capacity = 200uL);
+  target << [source.contents[0]:500cells];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    target = result.state.artifacts["material_state"]["containers"]["Target"]
+    assert target["component_quantities"]["RPE1"]["value"] == 500.0
+    assert target["component_quantities"]["MEDIUM"]["value"] == 148.5
+
+    mutation_step_id = next(
+        step.step_id for protocol in plan.plans for step in protocol.steps if step.op == "Mutation"
+    )
+    mutation_event = next(
+        event for event in result.events if event.kind == "STEP_COMPLETED" and event.step_id == mutation_step_id
+    )
+    transfer_delta = mutation_event.payload["material_delta"]["sources"][0]
+    assert transfer_delta["mode"] == "contents_state_count_resolved_volume"
+    assert transfer_delta["resolved_transfer_volume_uL"] == 148.5
+    assert transfer_delta["moved_bulk_volume_uL"] == 148.5
+    assert transfer_delta["component_ratio"] == 0.5
+    assert transfer_delta["concentration_cells_per_uL"] == pytest.approx(1000.0 / 297.0)
+    assert transfer_delta["concentration_source"] == "derived"
+    assert transfer_delta["policy_id"] == "explicit_carrier_volume"
+    contents_part = result.state.artifacts["material_state"]["contents_states"]["Source"]["parts"]["0"]
+    assert contents_part["component_quantities"]["RPE1"]["value"] == 500.0
+    assert contents_part["component_quantities"]["MEDIUM"]["value"] == 148.5
+    assert contents_part["material_relationships"][0]["carrier_volume_uL"] == 148.5
 
 
 def test_runtime_centrifuge_routes_cell_count_to_pellet_and_allows_downstream_transfer():
@@ -2835,6 +3215,86 @@ protocol T {
     assert supernatant["mass_mg"] + pellet["mass_mg"] == 300.0
     returned = result.state.artifacts["protocol_outputs"]["T"]["value"]
     assert returned["count_cells"] == 99000.0
+    assert supernatant["material_relationships"][0]["material_state"] == "suspension"
+    assert pellet["material_relationships"][0]["material_state"] == "pellet"
+    assert pellet["material_relationships"][0]["transferability"] == "non_homogeneous"
+
+
+def test_runtime_rejects_count_aliquot_from_centrifuge_pellet():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 300uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells,
+    content(kind = formulation, type = medium, code = "MEDIUM"):300uL
+  ]);
+  let separated = sep(sample = source, program = centrifuge_program(drive = 12000g));
+  let target = tube(label = "Target", capacity = 100uL);
+  target << [separated[1]:25000cells];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert not result.ok
+    assert "MAT_COUNT_TRANSFER_SOURCE_NOT_SUSPENSION" in [d.code for d in result.diagnostics]
+
+
+@pytest.mark.parametrize("use_contents", [False, True])
+def test_runtime_zero_cell_transfer_is_a_shared_noop(use_contents):
+    separation = (
+        'sep(sample = source, program = centrifuge_program(drive = 12000g));'
+        if use_contents
+        else 'let separated = sep(sample = source, program = centrifuge_program(drive = 12000g));'
+    )
+    source_expr = "source.contents[1]" if use_contents else "separated[1]"
+    plan = _build_plan_from_source(
+        f"""
+protocol T {{
+  let source = tube(label = "Source", capacity = 300uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells,
+    content(kind = formulation, type = medium, code = "MEDIUM"):300uL
+  ]);
+  {separation}
+  let target = tube(label = "Target", capacity = 100uL);
+  target << [{source_expr}:0cells];
+}}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    target = result.state.artifacts["material_state"]["containers"]["Target"]
+    assert target["volume_uL"] == 0.0
+    assert target.get("component_quantities", {}) == {}
+
+
+def test_runtime_rejects_count_aliquot_from_precipitate():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 300uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells,
+    content(kind = formulation, type = medium, code = "MEDIUM"):300uL
+  ]);
+  let parts = sep(sample = source, program = precipitation_program(reagent = "x"));
+  let target = tube(label = "Target", capacity = 300uL);
+  target << [parts[0]:25000cells];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert not result.ok
+    assert "MAT_COUNT_TRANSFER_SOURCE_NOT_SUSPENSION" in [d.code for d in result.diagnostics]
+    material = result.state.artifacts["material_state"]
+    precipitate_id = material["indexed_bindings"]["parts"]["0"]
+    relationship = material["containers"][precipitate_id]["material_relationships"][0]
+    assert relationship["material_state"] == "precipitate"
+    assert relationship["transferability"] == "non_homogeneous"
 
 
 def test_runtime_filtration_partitions_cell_count_and_carrier_volume_independently():
@@ -2863,6 +3323,224 @@ protocol T {
     assert retentate["mass_mg"] == 3.0
     assert filtrate["component_quantities"]["RPE1"]["value"] == 1000.0
     assert retentate["component_quantities"]["RPE1"]["value"] == 99000.0
+    assert filtrate["material_relationships"][0]["material_state"] == "suspension"
+    assert retentate["material_relationships"][0]["material_state"] == "retained"
+    assert retentate["material_relationships"][0]["transferability"] == "non_homogeneous"
+
+
+def test_runtime_aspiration_keeps_adherent_cells_and_contents_transfer_preserves_conservation():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 300uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1", attrs = { state: adherent }):100000cells,
+    content(kind = formulation, type = medium, code = "MEDIUM"):300uL
+  ]);
+  sep(
+    sample = source,
+    program = filtration_program(membrane = "adherent_cell_surface", drive = "aspiration")
+  );
+  let removed = tube(label = "Removed", capacity = 300uL);
+  removed << [source.contents[0]];
+  let retained = tube(label = "Retained", capacity = 10uL);
+  retained << [source.contents[1]];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    containers = result.state.artifacts["material_state"]["containers"]
+    assert containers["Removed"]["component_quantities"]["RPE1"]["value"] == 0.0
+    assert containers["Retained"]["component_quantities"]["RPE1"]["value"] == 100000.0
+    assert containers["Removed"]["component_quantities"]["MEDIUM"]["value"] == 297.0
+    assert containers["Retained"]["component_quantities"]["MEDIUM"]["value"] == 3.0
+    assert (
+        containers["Removed"]["component_quantities"]["RPE1"]["value"]
+        + containers["Retained"]["component_quantities"]["RPE1"]["value"]
+        == 100000.0
+    )
+
+
+def test_runtime_author_component_fates_override_reference_prediction_with_semantic_slot_names():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 300uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1", attrs = { state: adherent }):100000cells,
+    content(kind = formulation, type = medium, code = "MEDIUM"):300uL
+  ]);
+  let filtered = sep(
+    sample = source,
+    program = filtration_program(membrane = "adherent_cell_surface", drive = "aspiration"),
+    component_fates = {
+      RPE1: { filtrate: 25%, retentate: 75% }
+    }
+  );
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    material = result.state.artifacts["material_state"]
+    slots = material["indexed_bindings"]["filtered"]
+    filtrate = material["containers"][slots["0"]]
+    retentate = material["containers"][slots["1"]]
+    assert filtrate["component_quantities"]["RPE1"]["value"] == 25000.0
+    assert retentate["component_quantities"]["RPE1"]["value"] == 75000.0
+
+    sep_step_id = next(step.step_id for protocol in plan.plans for step in protocol.steps if step.op == "sep")
+    sep_event = next(
+        event for event in result.events if event.kind == "STEP_COMPLETED" and event.step_id == sep_step_id
+    )
+    fate = sep_event.payload["material_delta"]["partition"]["fates_by_component"]["RPE1"]
+    assert fate["source"] == "author_explicit_fate"
+    assert fate["ratios"] == {"0": 0.25, "1": 0.75}
+
+
+@pytest.mark.parametrize(
+    ("rule", "expected_code"),
+    [
+        ("{ RPE1: { filtrate: 20%, retentate: 70% } }", "SEM_SEPARATION_FATE_RULE_TOTAL_INVALID"),
+        ("{ RPE1: { liquid: 20%, retentate: 80% } }", "SEM_SEPARATION_FATE_RULE_SLOT_INVALID"),
+        ("{ RPE1: { filtrate: 20% } }", "SEM_SEPARATION_FATE_RULE_SHAPE_INVALID"),
+        ("{ RPE1: { filtrate: 20uL, retentate: 80% } }", "SEM_SEPARATION_FATE_RULE_VALUE_INVALID"),
+    ],
+)
+def test_frontend_rejects_invalid_author_component_fates(rule, expected_code):
+    source = f"""
+protocol T {{
+  let source = tube(label = "Source", capacity = 300uL);
+  let filtered = sep(
+    sample = source,
+    program = filtration_program(membrane = "0.2um", drive = "pressure"),
+    component_fates = {rule}
+  );
+}}
+"""
+    compile_result = _compile_ast(resolve_program(parse(source)).prepared_program)
+    sem = _validate(compile_result.ir, analysis=compile_result.analysis)
+
+    assert expected_code in [diagnostic.code for diagnostic in sem.diagnostics]
+
+
+def test_runtime_rejects_author_fate_for_content_not_present_in_source():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 100uL, load = [
+    content(kind = formulation, type = medium, code = "MEDIUM"):100uL
+  ]);
+  sep(
+    sample = source,
+    program = filtration_program(membrane = "0.2um", drive = "pressure"),
+    component_fates = { MISSING: { filtrate: 100%, retentate: 0% } }
+  );
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert not result.ok
+    assert "MAT_SEPARATION_FATE_COMPONENT_NOT_FOUND" in [
+        diagnostic.code for diagnostic in result.diagnostics
+    ]
+
+
+def test_runtime_sep_preserves_bulk_with_count_volume_and_mass_components():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 500uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells,
+    content(kind = formulation, type = medium, code = "MEDIUM"):300uL,
+    content(kind = chemical, type = inorganic_compound, code = "SALT"):10mg
+  ]);
+  let separated = sep(sample = source, program = centrifuge_program(drive = 12000g));
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    material = result.state.artifacts["material_state"]
+    slots = material["indexed_bindings"]["separated"]
+    outputs = [material["containers"][slots[index]] for index in ("0", "1")]
+    assert sum(output["volume_uL"] for output in outputs) == 310.0
+    assert sum(output["mass_mg"] for output in outputs) == 310.0
+    assert sum(output["component_quantities"]["RPE1"]["value"] for output in outputs) == 100000.0
+
+
+def test_runtime_source_partition_preserves_mixed_axis_bulk_and_components():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 500uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells,
+    content(kind = formulation, type = medium, code = "MEDIUM"):300uL,
+    content(kind = chemical, type = inorganic_compound, code = "SALT"):10mg
+  ]);
+  let target = tube(label = "Target", capacity = 500uL);
+  target << [source.partition(centrifuge_program(drive = 12000g))[1]];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    containers = result.state.artifacts["material_state"]["containers"]
+    source = containers["Source"]
+    target = containers["Target"]
+    assert source["volume_uL"] + target["volume_uL"] == 310.0
+    assert source["mass_mg"] + target["mass_mg"] == 310.0
+    for component_id, expected in {"RPE1": 100000.0, "MEDIUM": 300.0, "SALT": 10.0}.items():
+        assert (
+            source["component_quantities"][component_id]["value"]
+            + target["component_quantities"][component_id]["value"]
+            == expected
+        )
+    assert target["material_relationships"][0]["material_state"] == "pellet"
+
+
+def test_runtime_source_partition_count_transfer_uses_shared_carrier_resolution():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Source", capacity = 300uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells,
+    content(kind = formulation, type = medium, code = "MEDIUM"):300uL
+  ]);
+  let target = tube(label = "Target", capacity = 200uL);
+  target << [source.partition(centrifuge_program(drive = 12000g))[0]:500cells];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    target = result.state.artifacts["material_state"]["containers"]["Target"]
+    assert target["component_quantities"]["RPE1"]["value"] == 500.0
+    assert target["component_quantities"]["MEDIUM"]["value"] == 148.5
+    assert target["material_relationships"][0]["carrier_volume_uL"] == 148.5
+
+    mutation_step_id = next(
+        step.step_id for protocol in plan.plans for step in protocol.steps if step.op == "Mutation"
+    )
+    mutation_event = next(
+        event for event in result.events if event.kind == "STEP_COMPLETED" and event.step_id == mutation_step_id
+    )
+    transfer_delta = mutation_event.payload["material_delta"]["sources"][0]["transfer_delta"]["transfer"]
+    assert transfer_delta["mode"] == "count_resolved_volume"
+    assert transfer_delta["resolved_transfer_volume_uL"] == 148.5
+    assert transfer_delta["moved_bulk_volume_uL"] == 148.5
+    assert transfer_delta["component_ratio"] == 0.5
 
 
 def test_runtime_executes_centrifugal_filtration_with_filtration_slots():

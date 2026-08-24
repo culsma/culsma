@@ -14,6 +14,12 @@ from culsma.pipeline.content_vocab import (
     parse_content_type,
 )
 from culsma.runtime.material.ledger import set_container_material
+from culsma.runtime.material.separation_fate import (
+    ExplicitContentFate,
+    resolve_content_fate,
+    resolve_content_physical_state,
+    resolve_separation_operation_contract,
+)
 
 
 class PartitionClass(StrEnum):
@@ -184,9 +190,16 @@ def partition_sep_material(
     source: dict[str, Any],
     slot0: dict[str, Any],
     slot1: dict[str, Any],
-    program_kind: str,
+    program: dict[str, Any],
+    explicit_fates: dict[str, ExplicitContentFate] | None = None,
 ) -> dict[str, Any]:
+    program_kind = str(program.get("name")) if isinstance(program.get("name"), str) else "sep_program"
     strategy = SepPartitionStrategyRegistry().strategy_for(program_kind)
+    operation_contract = resolve_separation_operation_contract(
+        program,
+        slot_contract=strategy.slot_contract,
+    )
+    author_fates = explicit_fates or {}
     source_components = source.setdefault("components", {})
     source_quantities = source.get("component_quantities")
     source_quantities = source_quantities if isinstance(source_quantities, dict) else {}
@@ -215,6 +228,7 @@ def partition_sep_material(
             "default_ratio": ratio0,
             "strategy": strategy.program_kind,
             "slot_contract": dict(strategy.slot_contract),
+            "operation_contract": operation_contract.to_dict(),
         }
         preservation_contract = strategy.preservation_contract()
         if preservation_contract is not None:
@@ -231,45 +245,63 @@ def partition_sep_material(
     class_counts: dict[str, int] = {}
     ratios_by_class: dict[str, tuple[float, float]] = {}
     ratios_by_component: dict[str, tuple[float, float]] = {}
+    fates_by_component: dict[str, dict[str, Any]] = {}
     fallback_components: list[dict[str, str]] = []
 
     for name, amount in list(source_components.items()):
         amount_f = float(amount)
-        partition_class = class_resolver.classify(state, source, str(name))
-        explicit_ratios = _component_partition_ratios(source, str(name))
-        if explicit_ratios is None:
-            ratio0, ratio1 = strategy.ratios(partition_class)
-            if (ratio0, ratio1) == _EQUAL_SPLIT:
-                fallback_components.append(
-                    {
-                        "component": str(name),
-                        "partition_class": partition_class.value,
-                        "reason": _partition_fallback_reason(partition_class),
-                    }
+        component_id = str(name)
+        partition_class = class_resolver.classify(state, source, component_id)
+        explicit_fate = author_fates.get(component_id)
+        if explicit_fate is None:
+            legacy_ratios = _component_partition_ratios(source, component_id)
+            if legacy_ratios is not None:
+                explicit_fate = ExplicitContentFate(
+                    component_id=component_id,
+                    ratios=legacy_ratios,
+                    declared_slots=("0", "1"),
+                    source="source_metadata_override",
                 )
-        else:
-            ratio0, ratio1 = explicit_ratios
+        physical_state = resolve_content_physical_state(state, source, component_id)
+        fate = resolve_content_fate(
+            contract=operation_contract,
+            physical_state=physical_state,
+            default_ratios=strategy.ratios(partition_class),
+            explicit_fate=explicit_fate,
+        )
+        ratio0, ratio1 = fate.ratios
+        if fate.uncertainty_reason is not None or (
+            (ratio0, ratio1) == _EQUAL_SPLIT and fate.source == "reference_prediction"
+        ):
+            fallback_components.append(
+                {
+                    "component": component_id,
+                    "partition_class": partition_class.value,
+                    "reason": fate.uncertainty_reason or _partition_fallback_reason(partition_class),
+                }
+            )
         class_key = partition_class.value
         class_counts[class_key] = class_counts.get(class_key, 0) + 1
         ratios_by_class[class_key] = (ratio0, ratio1)
-        ratios_by_component[str(name)] = (ratio0, ratio1)
-        slot0_components[str(name)] = slot0_components.get(str(name), 0.0) + amount_f * ratio0
-        slot1_components[str(name)] = slot1_components.get(str(name), 0.0) + amount_f * ratio1
-        source_quantity = source_quantities.get(str(name))
+        ratios_by_component[component_id] = (ratio0, ratio1)
+        fates_by_component[component_id] = fate.to_dict()
+        slot0_components[component_id] = slot0_components.get(component_id, 0.0) + amount_f * ratio0
+        slot1_components[component_id] = slot1_components.get(component_id, 0.0) + amount_f * ratio1
+        source_quantity = source_quantities.get(component_id)
         if isinstance(source_quantity, dict):
             quantity_value = float(source_quantity.get("value", amount_f))
-            slot0_quantities[str(name)] = {
+            slot0_quantities[component_id] = {
                 "dimension": source_quantity.get("dimension"),
                 "unit": source_quantity.get("unit"),
                 "value": quantity_value * ratio0,
             }
-            slot1_quantities[str(name)] = {
+            slot1_quantities[component_id] = {
                 "dimension": source_quantity.get("dimension"),
                 "unit": source_quantity.get("unit"),
                 "value": quantity_value * ratio1,
             }
-        slot0_classes[str(name)] = strategy.output_class(partition_class, slot="0").value
-        slot1_classes[str(name)] = strategy.output_class(partition_class, slot="1").value
+        slot0_classes[component_id] = strategy.output_class(partition_class, slot="0").value
+        slot1_classes[component_id] = strategy.output_class(partition_class, slot="1").value
 
     source_volume = float(source.get("volume_uL", 0.0))
     source_mass = float(source.get("mass_mg", 0.0))
@@ -305,8 +337,10 @@ def partition_sep_material(
         "classes": class_counts,
         "ratios_by_class": {name: {"0": ratios[0], "1": ratios[1]} for name, ratios in ratios_by_class.items()},
         "ratios_by_component": {name: {"0": ratios[0], "1": ratios[1]} for name, ratios in ratios_by_component.items()},
+        "fates_by_component": fates_by_component,
         "fallback_components": fallback_components,
         "bulk_quantity_policy": bulk_quantity_policy,
+        "operation_contract": operation_contract.to_dict(),
     }
     preservation_contract = strategy.preservation_contract()
     if preservation_contract is not None:
@@ -331,20 +365,66 @@ def normalize_partition_slot_bulk_pair(
 
     has_volume = any(_has_quantity_dimension(slot, "volume") for slot in slots)
     has_mass = any(_has_quantity_dimension(slot, "mass") for slot in slots)
-    volume_policy = "component_quantity_sum" if has_volume else "conservative_equal_split"
-    if has_mass:
-        return {"volume": volume_policy, "mass": "component_quantity_sum"}
-    if not has_volume:
-        return {"volume": volume_policy, "mass": "conservative_equal_split"}
+    if not has_volume and not has_mass:
+        return {"volume": "conservative_equal_split", "mass": "conservative_equal_split"}
 
-    carrier_volume_total = sum(float(slot.get("volume_uL", 0.0)) for slot in slots)
-    if carrier_volume_total <= 0.0 or source_volume_uL <= 0.0:
-        return {"volume": volume_policy, "mass": "conservative_equal_split"}
+    volume_policy = _normalize_partition_bulk_axis(
+        slots,
+        key="volume_uL",
+        source_total=source_volume_uL,
+        explicit_dimension="volume",
+        proxy_dimension="mass",
+    )
+    mass_policy = _normalize_partition_bulk_axis(
+        slots,
+        key="mass_mg",
+        source_total=source_mass_mg,
+        explicit_dimension="mass",
+        proxy_dimension="volume",
+    )
+    return {"volume": volume_policy, "mass": mass_policy}
 
-    for slot in slots:
-        slot_volume = float(slot.get("volume_uL", 0.0))
-        slot["mass_mg"] = source_mass_mg * slot_volume / carrier_volume_total
-    return {"volume": volume_policy, "mass": "carrier_volume_ratio"}
+
+def _normalize_partition_bulk_axis(
+    slots: tuple[dict[str, Any], dict[str, Any]],
+    *,
+    key: str,
+    source_total: float,
+    explicit_dimension: str,
+    proxy_dimension: str,
+) -> str:
+    explicit_values = [_quantity_dimension_sum(slot, explicit_dimension) for slot in slots]
+    explicit_total = sum(explicit_values)
+    proxy_values = [_quantity_dimension_sum(slot, proxy_dimension) for slot in slots]
+    proxy_total = sum(proxy_values)
+
+    if explicit_total > source_total + 1e-12:
+        scale = 0.0 if explicit_total <= 0.0 else max(0.0, source_total) / explicit_total
+        for slot, value in zip(slots, explicit_values, strict=True):
+            slot[key] = value * scale
+        return "component_quantity_scaled_to_source_bulk"
+
+    residual = max(0.0, source_total - explicit_total)
+    if residual <= 1e-12:
+        for slot, value in zip(slots, explicit_values, strict=True):
+            slot[key] = value
+        return "component_quantity_sum"
+
+    if proxy_total > 1e-12:
+        for slot, explicit_value, proxy_value in zip(slots, explicit_values, proxy_values, strict=True):
+            slot[key] = explicit_value + residual * proxy_value / proxy_total
+        if explicit_total > 1e-12:
+            return "component_quantity_sum_plus_cross_axis_proxy"
+        return "carrier_volume_ratio" if proxy_dimension == "volume" else "carrier_mass_ratio"
+
+    existing_values = [max(0.0, float(slot.get(key, 0.0))) for slot in slots]
+    existing_total = sum(existing_values)
+    if existing_total <= 1e-12:
+        existing_values = [1.0, 1.0]
+        existing_total = 2.0
+    for slot, explicit_value, existing_value in zip(slots, explicit_values, existing_values, strict=True):
+        slot[key] = explicit_value + residual * existing_value / existing_total
+    return "conservative_equal_split"
 
 
 def normalize_source_partition_slot_bulk(slot: dict[str, Any]) -> None:
@@ -387,6 +467,17 @@ def _has_quantity_dimension(slot: dict[str, Any], dimension: str) -> bool:
     return isinstance(quantities, dict) and any(
         isinstance(quantity, dict) and quantity.get("dimension") == dimension
         for quantity in quantities.values()
+    )
+
+
+def _quantity_dimension_sum(slot: dict[str, Any], dimension: str) -> float:
+    quantities = slot.get("component_quantities")
+    if not isinstance(quantities, dict):
+        return 0.0
+    return sum(
+        float(quantity.get("value", 0.0))
+        for quantity in quantities.values()
+        if isinstance(quantity, dict) and quantity.get("dimension") == dimension
     )
 
 
@@ -480,6 +571,9 @@ class SepPartitionStrategy:
     def preservation_contract(self) -> dict[str, Any] | None:
         return None
 
+    def cell_material_state(self, *, slot: str) -> str:
+        return "suspension"
+
 
 class CentrifugePartitionStrategy(SepPartitionStrategy):
     program_kind = "centrifuge_program"
@@ -489,6 +583,9 @@ class CentrifugePartitionStrategy(SepPartitionStrategy):
         if partition_class in _PELLET_PARTITION_CLASSES:
             return _NEAR_COMPLETE_TO_SLOT1
         return _NEAR_COMPLETE_TO_SLOT0
+
+    def cell_material_state(self, *, slot: str) -> str:
+        return "pellet" if slot == "1" else "suspension"
 
 
 class PhasePartitionStrategy(SepPartitionStrategy):
@@ -533,6 +630,9 @@ class PrecipitationPartitionStrategy(SepPartitionStrategy):
             return PartitionClass.RETAINED_FRACTION
         return partition_class
 
+    def cell_material_state(self, *, slot: str) -> str:
+        return "precipitate" if slot == "0" else "suspension"
+
 
 class FiltrationPartitionStrategy(SepPartitionStrategy):
     program_kind = "filtration_program"
@@ -550,6 +650,9 @@ class FiltrationPartitionStrategy(SepPartitionStrategy):
         ):
             return PartitionClass.RETAINED_FRACTION
         return partition_class
+
+    def cell_material_state(self, *, slot: str) -> str:
+        return "retained" if slot == "1" else "suspension"
 
 
 class CentrifugalFiltrationPartitionStrategy(FiltrationPartitionStrategy):
@@ -586,6 +689,9 @@ class MagneticPartitionStrategy(SepPartitionStrategy):
             return PartitionClass.RETAINED_FRACTION
         return partition_class
 
+    def cell_material_state(self, *, slot: str) -> str:
+        return "retained" if slot == "0" else "suspension"
+
 
 class DisruptPartitionStrategy(SepPartitionStrategy):
     program_kind = "disrupt_program"
@@ -595,6 +701,9 @@ class DisruptPartitionStrategy(SepPartitionStrategy):
         if partition_class in _PELLET_PARTITION_CLASSES:
             return _TARGETED_RECOVERY_TO_SLOT1
         return _TARGETED_RECOVERY_TO_SLOT0
+
+    def cell_material_state(self, *, slot: str) -> str:
+        return "lysate" if slot == "0" else "debris"
 
 
 class FieldPartitionStrategy(SepPartitionStrategy):
@@ -633,3 +742,15 @@ class SepPartitionStrategyRegistry:
 
 def _sep_partition_strategy(program_kind: str) -> SepPartitionStrategy:
     return SepPartitionStrategyRegistry().strategy_for(program_kind)
+
+
+def separation_cell_material_state(program_kind: str, *, slot: str) -> str:
+    """Return the program-owned cellular material state for one output slot."""
+
+    return SepPartitionStrategyRegistry().strategy_for(program_kind).cell_material_state(slot=slot)
+
+
+def separation_slot_contract(program_kind: str) -> dict[str, str]:
+    """Return the semantic output names for one separation program."""
+
+    return dict(SepPartitionStrategyRegistry().strategy_for(program_kind).slot_contract)

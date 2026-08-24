@@ -25,10 +25,14 @@ from culsma.runtime.material.ledger import (
     ensure_container,
     move_explicit,
     move_ratio,
-    container_component_quantities,
     container_count_cells,
+    component_quantity_merge_conflict,
 )
-from culsma.runtime.material.partition import normalize_source_partition_slot_bulk, partition_sep_material
+from culsma.runtime.material.partition import (
+    normalize_source_partition_slot_bulk,
+    partition_sep_material,
+    separation_cell_material_state,
+)
 from culsma.runtime.material.refs import (
     inventory_check_enabled,
     is_serialized_pair,
@@ -39,6 +43,12 @@ from culsma.runtime.material.refs import (
     top_up_source_for_estimate,
 )
 from culsma.runtime.material.result import MaterialUpdateResult
+from culsma.runtime.material.suspension import (
+    cell_suspension_relationship,
+    count_component_ids,
+    refresh_cell_suspension_relationship,
+    resolve_count_aliquot,
+)
 from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_UL
 
 
@@ -249,8 +259,18 @@ class FullContainerSourceHandler(MutationSourceHandler):
         cap_diag = check_capacity_guard(step=ctx.step, state=ctx.state, container_id=ctx.target_id, added_uL=moved_uL)
         if cap_diag is not None:
             return cap_diag
+        conflict = _quantity_axis_conflict(ctx.step, ctx.state, source, target, source_id, ctx.target_id)
+        if conflict is not None:
+            return conflict
         source_before = deepcopy(source)
+        moved_cell_state = _cell_material_state(source)
         move_explicit(source, target, moved_uL, moved_mg, component_ratio=1.0)
+        refresh_cell_suspension_relationship(ctx.state, source_id)
+        refresh_cell_suspension_relationship(
+            ctx.state,
+            ctx.target_id,
+            forced_state=_merged_cell_material_state(target, moved_cell_state),
+        )
         invalidate_contents_state(ctx.state, source_id, reason="whole_container_transfer")
         moved_snapshot = moved_snapshot_from_explicit(source_before, moved_uL=moved_uL, moved_mg=moved_mg, ratio=1.0)
         target_impact = apply_target_addition_impact(
@@ -385,10 +405,21 @@ def apply_source_partition_transfer(
         source=source,
         slot0=slot0,
         slot1=slot1,
-        program_kind=program_kind,
+        program=program,
     )
-    normalize_source_partition_slot_bulk(slot0)
-    normalize_source_partition_slot_bulk(slot1)
+    refresh_cell_suspension_relationship(
+        state,
+        slot0_id,
+        forced_state=separation_cell_material_state(program_kind, slot="0"),
+    )
+    refresh_cell_suspension_relationship(
+        state,
+        slot1_id,
+        forced_state=separation_cell_material_state(program_kind, slot="1"),
+    )
+    if not (count_component_ids(slot0) or count_component_ids(slot1)):
+        normalize_source_partition_slot_bulk(slot0)
+        normalize_source_partition_slot_bulk(slot1)
     diagnostics = _partition_fallback_diagnostics(step, partition)
     selected_id = slot0_id if slot_key == "0" else slot1_id
     selected = container(state, selected_id)
@@ -396,6 +427,7 @@ def apply_source_partition_transfer(
         return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "Source partition selected unknown slot")
 
     selected_before = deepcopy(selected)
+    selected_cell_state = _cell_material_state(selected)
     if qty is None:
         moved_uL = float(selected.get("volume_uL", 0.0))
         moved_mg = float(selected.get("mass_mg", 0.0))
@@ -403,6 +435,9 @@ def apply_source_partition_transfer(
         cap_diag = check_capacity_guard(step=step, state=state, container_id=target_id, added_uL=moved_uL)
         if cap_diag is not None:
             return cap_diag
+        conflict = _quantity_axis_conflict(step, state, selected, target, selected_id, target_id)
+        if conflict is not None:
+            return conflict
         move_explicit(selected, target, moved_uL, moved_mg, component_ratio=1.0)
         moved_snapshot = moved_snapshot_from_explicit(
             selected_before,
@@ -438,11 +473,20 @@ def apply_source_partition_transfer(
         residual_uL = float(residual.get("volume_uL", 0.0))
         residual_mg = float(residual.get("mass_mg", 0.0))
         if residual_uL or residual_mg or container_count_cells(residual):
+            conflict = _quantity_axis_conflict(step, state, residual, source_after, residual_id, source_id)
+            if conflict is not None:
+                return conflict
             move_explicit(residual, source_after, residual_uL, residual_mg, component_ratio=1.0)
     containers = state.setdefault("containers", {})
     if isinstance(containers, dict):
         containers.pop(slot0_id, None)
         containers.pop(slot1_id, None)
+    refresh_cell_suspension_relationship(state, source_id)
+    refresh_cell_suspension_relationship(
+        state,
+        target_id,
+        forced_state=_merged_cell_material_state(target, selected_cell_state),
+    )
     invalidate_contents_state(state, source_id, reason="source_partition_transfer")
     if source_id == target_id:
         target_impact = {"action": "stale", "reason": "source_partition_self_transfer"}
@@ -564,7 +608,15 @@ def _apply_transfer_volume(
     if src_volume >= requested_uL:
         ratio = 0.0 if src_volume == 0 else requested_uL / src_volume
         moved_cells = container_count_cells(src) * ratio
+        moved_cell_state = _cell_material_state(src)
+        conflict = _quantity_axis_conflict(step, state, src, dst, src_id, dst_id)
+        if conflict is not None:
+            return conflict
         move_ratio(src, dst, ratio)
+        refresh_cell_suspension_relationship(state, src_id)
+        refresh_cell_suspension_relationship(
+            state, dst_id, forced_state=_merged_cell_material_state(dst, moved_cell_state)
+        )
         return MaterialUpdateResult(
             material_state=state,
             diagnostics=[],
@@ -598,12 +650,20 @@ def _apply_transfer_volume(
     src["volume_uL"] = effective_src_volume
     component_ratio = 0.0 if effective_src_mass == 0 else requested_mg / effective_src_mass
     moved_cells = container_count_cells(src) * component_ratio
+    moved_cell_state = _cell_material_state(src)
+    conflict = _quantity_axis_conflict(step, state, src, dst, src_id, dst_id)
+    if conflict is not None:
+        return conflict
     move_explicit(
         src=src,
         dst=dst,
         moved_volume_uL=requested_uL,
         moved_mass_mg=requested_mg,
         component_ratio=component_ratio,
+    )
+    refresh_cell_suspension_relationship(state, src_id)
+    refresh_cell_suspension_relationship(
+        state, dst_id, forced_state=_merged_cell_material_state(dst, moved_cell_state)
     )
     return MaterialUpdateResult(
         material_state=state,
@@ -642,10 +702,18 @@ def _apply_transfer_mass(
         ratio = 0.0 if src_mass == 0 else requested_mg / src_mass
         moved_uL = ratio * float(src.get("volume_uL", 0.0))
         moved_cells = container_count_cells(src) * ratio
+        moved_cell_state = _cell_material_state(src)
         cap_diag = check_capacity_guard(step=step, state=state, container_id=dst_id, added_uL=moved_uL)
         if cap_diag is not None:
             return cap_diag
+        conflict = _quantity_axis_conflict(step, state, src, dst, src_id, dst_id)
+        if conflict is not None:
+            return conflict
         move_ratio(src, dst, ratio)
+        refresh_cell_suspension_relationship(state, src_id)
+        refresh_cell_suspension_relationship(
+            state, dst_id, forced_state=_merged_cell_material_state(dst, moved_cell_state)
+        )
         return MaterialUpdateResult(
             material_state=state,
             diagnostics=[],
@@ -682,12 +750,20 @@ def _apply_transfer_mass(
     src["mass_mg"] = effective_src_mass
     component_ratio = 0.0 if effective_src_volume == 0 else requested_uL / effective_src_volume
     moved_cells = container_count_cells(src) * component_ratio
+    moved_cell_state = _cell_material_state(src)
+    conflict = _quantity_axis_conflict(step, state, src, dst, src_id, dst_id)
+    if conflict is not None:
+        return conflict
     move_explicit(
         src=src,
         dst=dst,
         moved_volume_uL=requested_uL,
         moved_mass_mg=requested_mg,
         component_ratio=component_ratio,
+    )
+    refresh_cell_suspension_relationship(state, src_id)
+    refresh_cell_suspension_relationship(
+        state, dst_id, forced_state=_merged_cell_material_state(dst, moved_cell_state)
     )
     return MaterialUpdateResult(
         material_state=state,
@@ -723,66 +799,133 @@ def _apply_transfer_count(
         )
 
     available_cells = container_count_cells(src)
-    if not inventory_check_enabled(state) and available_cells < requested_cells:
+    count_ids = count_component_ids(src)
+    if (
+        requested_cells > 0
+        and len(count_ids) == 1
+        and not inventory_check_enabled(state)
+        and available_cells < requested_cells
+    ):
         top_up_source_for_estimate(
             source=src,
             qty=requested_cells - available_cells,
             mode="count",
-            source_name=src_id,
+            source_name=count_ids[0],
         )
-        available_cells = container_count_cells(src)
-    if available_cells + 1e-12 < requested_cells:
-        return diagnostic_result(step, state, "MAT_INSUFFICIENT_COUNT", f"Insufficient source cell count in '{src_id}'")
-    if requested_cells == 0:
+
+    relationship = refresh_cell_suspension_relationship(state, src_id)
+    resolution = resolve_count_aliquot(
+        step=step,
+        state=state,
+        container=src,
+        source_id=src_id,
+        requested_cells=requested_cells,
+        relationship=relationship,
+    )
+    if isinstance(resolution, MaterialUpdateResult):
+        return resolution
+    if resolution.requested_cells == 0:
         return MaterialUpdateResult(
             material_state=state,
             diagnostics=[],
-            delta={"op": "material_move", "mode": "count", "source": src_id, "dest": dst_id, "moved_cells": 0.0},
+            delta={
+                "op": "material_move",
+                "mode": "count_resolved_volume",
+                "source": src_id,
+                "dest": dst_id,
+                "requested_cells": 0.0,
+                "moved_cells": 0.0,
+                "component_ratio": 0.0,
+                "carrier_volume_uL": 0.0,
+                "resolved_transfer_volume_uL": 0.0,
+                "moved_uL": 0.0,
+                "moved_bulk_volume_uL": 0.0,
+                "moved_mg": 0.0,
+                "concentration_cells_per_uL": resolution.concentration_cells_per_uL,
+                "concentration_source": resolution.concentration_source,
+                "policy_id": resolution.policy_id,
+            },
         )
-
-    ratio = requested_cells / available_cells
-    src_quantities = container_component_quantities(src)
-    dst_quantities = container_component_quantities(dst, create=True)
-    src_components = src.setdefault("components", {})
-    dst_components = dst.setdefault("components", {})
-    if not isinstance(src_quantities, dict) or not isinstance(dst_quantities, dict):
-        return diagnostic_result(step, state, "MAT_STATE_INVARIANT_VIOLATION", "Missing count quantity ledger")
-    if not isinstance(src_components, dict) or not isinstance(dst_components, dict):
-        return diagnostic_result(step, state, "MAT_STATE_INVARIANT_VIOLATION", "Missing component ledger")
-
-    for name, source_quantity in list(src_quantities.items()):
-        if (
-            not isinstance(source_quantity, dict)
-            or source_quantity.get("dimension") != "count"
-            or source_quantity.get("unit") != "cells"
-        ):
-            continue
-        source_value = float(source_quantity.get("value", 0.0))
-        moved_value = source_value * ratio
-        source_quantity["value"] = max(0.0, source_value - moved_value)
-        target_quantity = dst_quantities.get(name)
-        if not isinstance(target_quantity, dict):
-            target_quantity = {"dimension": "count", "unit": "cells", "value": 0.0}
-            dst_quantities[name] = target_quantity
-        if target_quantity.get("dimension") != "count" or target_quantity.get("unit") != "cells":
-            return diagnostic_result(
-                step,
-                state,
-                "MAT_CONTENT_LOAD_AXIS_MISMATCH",
-                f"Content '{name}' has incompatible quantity axis in target '{dst_id}'",
-            )
-        target_quantity["value"] = float(target_quantity.get("value", 0.0)) + moved_value
-        src_components[name] = max(0.0, float(src_components.get(name, source_value)) - moved_value)
-        dst_components[name] = float(dst_components.get(name, 0.0)) + moved_value
-
+    cap_diag = check_capacity_guard(
+        step=step,
+        state=state,
+        container_id=dst_id,
+        added_uL=resolution.resolved_transfer_volume_uL,
+    )
+    if cap_diag is not None:
+        return cap_diag
+    conflict = _quantity_axis_conflict(step, state, src, dst, src_id, dst_id)
+    if conflict is not None:
+        return conflict
+    target_quantities = dst.get("component_quantities")
+    target_was_empty = not isinstance(target_quantities, dict) or not any(
+        isinstance(quantity, dict) and abs(float(quantity.get("value", 0.0))) > 1e-12
+        for quantity in target_quantities.values()
+    )
+    move_ratio(src, dst, resolution.component_ratio)
+    refresh_cell_suspension_relationship(state, src_id)
+    target_relationship = refresh_cell_suspension_relationship(
+        state,
+        dst_id,
+        forced_state=_merged_cell_material_state(dst, "suspension"),
+        concentration_source=resolution.concentration_source if target_was_empty else "derived",
+    )
     return MaterialUpdateResult(
         material_state=state,
         diagnostics=[],
         delta={
             "op": "material_move",
-            "mode": "count",
+            "mode": "count_resolved_volume",
             "source": src_id,
             "dest": dst_id,
-            "moved_cells": requested_cells,
+            "requested_cells": resolution.requested_cells,
+            "moved_cells": resolution.requested_cells,
+            "component_ratio": resolution.component_ratio,
+            "carrier_volume_uL": resolution.carrier_volume_uL,
+            "resolved_transfer_volume_uL": resolution.resolved_transfer_volume_uL,
+            "moved_uL": resolution.moved_bulk_volume_uL,
+            "moved_bulk_volume_uL": resolution.moved_bulk_volume_uL,
+            "moved_mg": resolution.moved_bulk_mass_mg,
+            "concentration_cells_per_uL": resolution.concentration_cells_per_uL,
+            "concentration_source": resolution.concentration_source,
+            "policy_id": resolution.policy_id,
+            "target_relationship": target_relationship,
         },
     )
+
+
+def _quantity_axis_conflict(
+    step: PlanStep,
+    state: dict[str, Any],
+    source: dict[str, Any],
+    target: dict[str, Any],
+    source_id: str,
+    target_id: str,
+) -> MaterialUpdateResult | None:
+    component = component_quantity_merge_conflict(source, target)
+    if component is None:
+        return None
+    return diagnostic_result(
+        step,
+        state,
+        "MAT_CONTENT_QUANTITY_AXIS_CONFLICT",
+        (
+            f"Content '{component}' cannot merge from '{source_id}' into '{target_id}' "
+            "because their quantity dimensions or units differ"
+        ),
+    )
+
+
+def _cell_material_state(container_value: Any) -> str | None:
+    relationship = cell_suspension_relationship(container_value)
+    material_state = relationship.get("material_state") if isinstance(relationship, dict) else None
+    return material_state if isinstance(material_state, str) else None
+
+
+def _merged_cell_material_state(target: Any, incoming_state: str | None) -> str | None:
+    if incoming_state is None:
+        return _cell_material_state(target)
+    existing_state = _cell_material_state(target)
+    if existing_state is None or existing_state == incoming_state:
+        return incoming_state
+    return "mixed"

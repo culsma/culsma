@@ -28,6 +28,7 @@ from .context import _GroupBinding
 from .expression_contracts import validate_expr_contracts
 from .operations import OperationContractValidator
 from .resolution import ExprResolver
+from .separation import validate_component_fates_contract
 
 BUILTIN_METHOD_STEPS = {"append"}
 CONSTRAINT_CUSTOMIZED = "customized"
@@ -550,6 +551,15 @@ def validate_let_call_contract(
                 span=value.span,
             )
         )
+        if value.name == "sep":
+            diagnostics.extend(
+                validate_component_fates_contract(
+                    value.args,
+                    expr_bindings=expr_bindings,
+                    node_id=stmt.id,
+                    span=value.span,
+                )
+            )
         return diagnostics
     diagnostics = OperationContractValidator.validate_call(
         value,

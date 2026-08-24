@@ -16,10 +16,16 @@ from culsma.runtime.material.ledger import (
     container_component_classes,
     container_component_quantities,
     container_count_cells,
+    component_quantity_merge_conflict,
     ensure_container,
     move_explicit,
 )
-from culsma.runtime.material.partition import normalize_source_partition_slot_bulk, partition_sep_material
+from culsma.runtime.material.partition import (
+    normalize_source_partition_slot_bulk,
+    partition_sep_material,
+    separation_cell_material_state,
+    separation_slot_contract,
+)
 from culsma.runtime.material.refs import (
     bind_indexed_group,
     inventory_check_enabled,
@@ -30,6 +36,16 @@ from culsma.runtime.material.refs import (
     resolve_target_ref,
 )
 from culsma.runtime.material.result import MaterialUpdateResult
+from culsma.runtime.material.separation_fate import (
+    ExplicitContentFate,
+    parse_explicit_content_fates,
+)
+from culsma.runtime.material.suspension import (
+    cell_suspension_relationship,
+    refresh_cell_suspension_relationship,
+    refresh_cell_suspension_relationship_record,
+    resolve_count_aliquot,
+)
 from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_UL
 
 
@@ -231,17 +247,31 @@ class MaterialIndexedPartsStateManager:
         if source is None:
             return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", f"Unknown sep sample '{ref_display(sample_arg)}'")
 
-        working = deepcopy(state)
         program_kind = str(program.get("name")) if isinstance(program.get("name"), str) else "sep_program"
         keep_source = call_arg_string(program, "keep_source")
+        explicit_fates, fate_issues = parse_explicit_content_fates(
+            step.args.get("component_fates"),
+            slot_contract=separation_slot_contract(program_kind),
+            known_components=(
+                set(source.get("components", {}))
+                if isinstance(source.get("components"), dict)
+                else set()
+            ),
+        )
+        if fate_issues:
+            issue = fate_issues[0]
+            return diagnostic_result(step, state, issue.code, issue.message)
+
+        working = deepcopy(state)
 
         if bind_name is None:
             transition = self.record_sep_transition(
                 step=step,
                 state=working,
                 source_id=source_id,
-                program_kind=program_kind,
+                program=program,
                 keep_source=keep_source,
+                explicit_fates=explicit_fates,
             )
             if isinstance(transition, MaterialUpdateResult):
                 return transition
@@ -283,11 +313,10 @@ class MaterialIndexedPartsStateManager:
             source=source,
             slot0=slot0,
             slot1=slot1,
-            program_kind=program_kind,
+            program=program,
+            explicit_fates=explicit_fates,
         )
-        if _has_count_quantity(slot0) or _has_count_quantity(slot1):
-            normalize_source_partition_slot_bulk(slot0)
-            normalize_source_partition_slot_bulk(slot1)
+        _refresh_separation_relationships(working, source_id, slot0_id, slot1_id, program_kind)
         diagnostics = _partition_fallback_diagnostics(step, partition)
         binding_events = bind_indexed_group(
             working,
@@ -390,6 +419,7 @@ class MaterialIndexedPartsStateManager:
                 )
             )
             move_explicit(source, slot, moved_volume, moved_mass, component_ratio=component_ratio)
+            refresh_cell_suspension_relationship(working, slot_id, forced_state="suspension")
             slot_bindings[str(i)] = slot_id
 
         last_slot_id = f"{step.step_id}::{bins - 1}"
@@ -397,6 +427,8 @@ class MaterialIndexedPartsStateManager:
         residual_volume = float(source.get("volume_uL", 0.0))
         residual_mass = float(source.get("mass_mg", 0.0))
         move_explicit(source, last_slot, residual_volume, residual_mass, component_ratio=1.0)
+        refresh_cell_suspension_relationship(working, last_slot_id, forced_state="suspension")
+        refresh_cell_suspension_relationship(working, source_id)
         slot_bindings[str(bins - 1)] = last_slot_id
 
         binding_events = bind_indexed_group(working, bind_name, slot_bindings, step.step_id)
@@ -557,13 +589,64 @@ class MaterialIndexedPartsStateManager:
         amount = _contents_transfer_amount(step=step, state=state, selection=selection, qty=qty)
         if isinstance(amount, MaterialUpdateResult):
             return amount
-        moved_uL, moved_mg, moved_cells, ratio, mode = amount
+        moved_uL, moved_mg, moved_cells, ratio, mode, count_resolution = amount
 
-        cap_diag = check_capacity_guard(step=step, state=state, container_id=target_id, added_uL=moved_uL)
+        if ratio == 0 and moved_uL == 0 and moved_mg == 0 and moved_cells == 0:
+            return MaterialUpdateResult(
+                material_state=state,
+                diagnostics=[],
+                delta={
+                    "op": "contents_state_transfer",
+                    "mode": mode,
+                    "source": selection.source_id,
+                    "selected_slot": selection.slot,
+                    "dest": target_id,
+                    "moved_uL": 0.0,
+                    "moved_mg": 0.0,
+                    "moved_cells": 0.0,
+                    **count_resolution,
+                    "contents_state_impact": {
+                        "source": {"action": "unchanged", "reason": "zero_quantity_noop"},
+                        "target": {"action": "unchanged", "reason": "zero_quantity_noop"},
+                    },
+                },
+            )
+
+        physical_added_uL = float(count_resolution.get("resolved_transfer_volume_uL", moved_uL))
+        cap_diag = check_capacity_guard(
+            step=step,
+            state=state,
+            container_id=target_id,
+            added_uL=physical_added_uL,
+        )
         if cap_diag is not None:
             return cap_diag
+        conflict_component = component_quantity_merge_conflict(selection.part, target)
+        if conflict_component is not None:
+            return diagnostic_result(
+                step,
+                state,
+                "MAT_CONTENT_QUANTITY_AXIS_CONFLICT",
+                (
+                    f"Content '{conflict_component}' cannot merge from contents of "
+                    f"'{selection.source_id}' into '{target_id}' because their quantity axes differ"
+                ),
+            )
 
         part_before = deepcopy(selection.part)
+        selected_relationship = cell_suspension_relationship(selection.part)
+        selected_cell_state = (
+            selected_relationship.get("material_state") if isinstance(selected_relationship, dict) else None
+        )
+        target_relationship = cell_suspension_relationship(target)
+        target_cell_state = target_relationship.get("material_state") if isinstance(target_relationship, dict) else None
+        merged_cell_state = selected_cell_state
+        if (
+            isinstance(selected_cell_state, str)
+            and isinstance(target_cell_state, str)
+            and selected_cell_state != target_cell_state
+        ):
+            merged_cell_state = "mixed"
         _move_contents_part_material(
             part=selection.part,
             source=source,
@@ -571,6 +654,17 @@ class MaterialIndexedPartsStateManager:
             moved_uL=moved_uL,
             moved_mg=moved_mg,
             ratio=ratio,
+        )
+        refresh_cell_suspension_relationship_record(
+            state,
+            selection.part,
+            forced_state=selected_cell_state if isinstance(selected_cell_state, str) else None,
+        )
+        refresh_cell_suspension_relationship(state, selection.source_id)
+        refresh_cell_suspension_relationship(
+            state,
+            target_id,
+            forced_state=merged_cell_state if isinstance(merged_cell_state, str) else None,
         )
         moved_snapshot = moved_snapshot_from_explicit(
             part_before,
@@ -597,6 +691,7 @@ class MaterialIndexedPartsStateManager:
                 "moved_uL": moved_uL,
                 "moved_mg": moved_mg,
                 "moved_cells": moved_cells,
+                **count_resolution,
                 "contents_state_impact": {
                     "source": self.record_source_selection_impact(state=state, selection=selection),
                     "target": target_impact,
@@ -610,12 +705,15 @@ class MaterialIndexedPartsStateManager:
         step: PlanStep,
         state: dict[str, Any],
         source_id: str,
-        program_kind: str,
+        program: dict[str, Any],
         keep_source: str | None,
+        explicit_fates: dict[str, ExplicitContentFate],
     ) -> ContentsPartitionTransition | MaterialUpdateResult:
         source = container(state, source_id)
         if source is None:
             return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", f"Unknown sep sample '{source_id}'")
+
+        program_kind = str(program.get("name")) if isinstance(program.get("name"), str) else "sep_program"
 
         slot0_id = f"{step.step_id}::0"
         slot1_id = f"{step.step_id}::1"
@@ -639,10 +737,13 @@ class MaterialIndexedPartsStateManager:
             source=source,
             slot0=slot0,
             slot1=slot1,
-            program_kind=program_kind,
+            program=program,
+            explicit_fates=explicit_fates,
         )
-        normalize_source_partition_slot_bulk(slot0)
-        normalize_source_partition_slot_bulk(slot1)
+        _refresh_separation_relationships(state, source_id, slot0_id, slot1_id, program_kind)
+        if not (_has_count_quantity(slot0) or _has_count_quantity(slot1)):
+            normalize_source_partition_slot_bulk(slot0)
+            normalize_source_partition_slot_bulk(slot1)
         contents_state = record_partitioned_contents_state(
             state=state,
             source_id=source_id,
@@ -699,6 +800,7 @@ class MaterialIndexedPartsStateManager:
                 )
             )
             move_explicit(source, slot, moved_volume, moved_mass, component_ratio=component_ratio)
+            refresh_cell_suspension_relationship(state, slot_id, forced_state="suspension")
             slot_bindings[str(i)] = slot_id
 
         last_slot_id = f"{step.step_id}::{bins - 1}"
@@ -706,6 +808,8 @@ class MaterialIndexedPartsStateManager:
         residual_volume = float(source.get("volume_uL", 0.0))
         residual_mass = float(source.get("mass_mg", 0.0))
         move_explicit(source, last_slot, residual_volume, residual_mass, component_ratio=1.0)
+        refresh_cell_suspension_relationship(state, last_slot_id, forced_state="suspension")
+        refresh_cell_suspension_relationship(state, source_id)
         slot_bindings[str(bins - 1)] = last_slot_id
 
         parts = {slot: container(state, slot_id) for slot, slot_id in slot_bindings.items()}
@@ -1074,7 +1178,7 @@ def _contents_transfer_amount(
     state: dict[str, Any],
     selection: ContentsPartSelection,
     qty: dict[str, Any] | None,
-) -> tuple[float, float, float, float, str] | MaterialUpdateResult:
+) -> tuple[float, float, float, float, str, dict[str, Any]] | MaterialUpdateResult:
     part = selection.part
     if qty is None:
         return (
@@ -1083,6 +1187,7 @@ def _contents_transfer_amount(
             container_count_cells(part),
             1.0,
             "contents_state_full",
+            {},
         )
 
     unit = str(qty["unit"])
@@ -1102,7 +1207,7 @@ def _contents_transfer_amount(
             )
         ratio = 0.0 if part_volume == 0 else moved_uL / part_volume
         moved_mg = part_mass * ratio
-        return moved_uL, moved_mg, container_count_cells(part) * ratio, ratio, "contents_state_volume"
+        return moved_uL, moved_mg, container_count_cells(part) * ratio, ratio, "contents_state_volume", {}
     if unit in MASS_TO_MG:
         moved_mg = value * MASS_TO_MG[unit]
         if part_mass < moved_mg:
@@ -1114,26 +1219,37 @@ def _contents_transfer_amount(
             )
         ratio = 0.0 if part_mass == 0 else moved_mg / part_mass
         moved_uL = part_volume * ratio
-        return moved_uL, moved_mg, container_count_cells(part) * ratio, ratio, "contents_state_mass"
+        return moved_uL, moved_mg, container_count_cells(part) * ratio, ratio, "contents_state_mass", {}
     if unit in COUNT_TO_CELLS:
         moved_cells = value * COUNT_TO_CELLS[unit]
-        if not moved_cells.is_integer():
-            return diagnostic_result(
-                step,
-                state,
-                "MAT_CELL_COUNT_VALUE_INVALID",
-                "Transferred cell count must be a non-negative integer",
-            )
-        part_cells = container_count_cells(part)
-        if part_cells < moved_cells:
-            return diagnostic_result(
-                step,
-                state,
-                "MAT_INSUFFICIENT_COUNT",
-                f"Insufficient contents-state cell count in '{selection.source_id}'",
-            )
-        ratio = 0.0 if part_cells == 0 else moved_cells / part_cells
-        return part_volume * ratio, part_mass * ratio, moved_cells, ratio, "contents_state_count"
+        relationship = cell_suspension_relationship(part)
+        resolution = resolve_count_aliquot(
+            step=step,
+            state=state,
+            container=part,
+            source_id=selection.source_id,
+            requested_cells=moved_cells,
+            relationship=relationship,
+        )
+        if isinstance(resolution, MaterialUpdateResult):
+            return resolution
+        return (
+            resolution.moved_bulk_volume_uL,
+            resolution.moved_bulk_mass_mg,
+            resolution.requested_cells,
+            resolution.component_ratio,
+            "contents_state_count_resolved_volume",
+            {
+                "requested_cells": resolution.requested_cells,
+                "component_ratio": resolution.component_ratio,
+                "carrier_volume_uL": resolution.carrier_volume_uL,
+                "resolved_transfer_volume_uL": resolution.resolved_transfer_volume_uL,
+                "moved_bulk_volume_uL": resolution.moved_bulk_volume_uL,
+                "concentration_cells_per_uL": resolution.concentration_cells_per_uL,
+                "concentration_source": resolution.concentration_source,
+                "policy_id": resolution.policy_id,
+            },
+        )
     return diagnostic_result(step, state, "MAT_UNSUPPORTED_UNIT", f"Unsupported transfer unit '{unit}'")
 
 
@@ -1216,6 +1332,26 @@ def _has_count_quantity(container_value: Any) -> bool:
     return isinstance(quantities, dict) and any(
         isinstance(quantity, dict) and quantity.get("dimension") == "count"
         for quantity in quantities.values()
+    )
+
+
+def _refresh_separation_relationships(
+    state: dict[str, Any],
+    source_id: str,
+    slot0_id: str,
+    slot1_id: str,
+    program_kind: str,
+) -> None:
+    refresh_cell_suspension_relationship(state, source_id)
+    refresh_cell_suspension_relationship(
+        state,
+        slot0_id,
+        forced_state=separation_cell_material_state(program_kind, slot="0"),
+    )
+    refresh_cell_suspension_relationship(
+        state,
+        slot1_id,
+        forced_state=separation_cell_material_state(program_kind, slot="1"),
     )
 
 

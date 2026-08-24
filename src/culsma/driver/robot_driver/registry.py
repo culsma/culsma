@@ -23,6 +23,7 @@ def build_default_registry() -> TranslatorRegistry:
             "DefineContent": generic,
             "LoadContent": generic,
             "AnnotateContent": generic,
+            "FinalizeContainerContents": generic,
         },
         default_translator=generic,
     )

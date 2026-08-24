@@ -1,6 +1,6 @@
 # Material Compute Module Diagrams
 
-Last updated: 2026-06-16
+Last updated: 2026-08-24
 
 Related runtime document:
 
@@ -20,12 +20,16 @@ and a `material_state`, then returns a `MaterialUpdateResult`.
 Current responsibilities include:
 
 1. dispatching material operations;
-2. allocating containers and defining/loading/annotating content;
+2. allocating containers, defining/loading content, and finalizing container
+   material relationships;
 3. resolving container, content, and indexed-group references;
-4. moving volume, mass, components, and internal component metadata;
+4. resolving count-addressed cell-suspension aliquots from eligible carrier
+   volume and moving volume, mass, components, and internal metadata;
 5. applying `sep` and `frac` material transforms;
 6. classifying content for separation partitioning;
-7. checking conservation invariants.
+7. checking conservation invariants;
+8. distinguishing physical volume used for capacity and driver execution from
+   cross-axis bulk compatibility proxies.
 
 ## Material Operation Responsibility Flowchart
 
@@ -33,13 +37,13 @@ This top-level flowchart shows the target lifecycle for one material runtime
 step. It shows how the runtime decides what material state, if any, changes for
 that step.
 
-Read the three flowcharts as nested views:
+Read the three diagrams as nested views:
 
 1. Material operation responsibility is the top-level apply-step lifecycle.
 2. Material state change expands how a step changes material records,
    quantities, components, or indexed parts.
-3. Sep partition detail expands the separation/fractionation partition planning
-   used by material state changes.
+3. The separation outcome activity diagram expands how `sep` derives and
+   records indexed container contents.
 
 ```mermaid
 flowchart TB
@@ -91,14 +95,14 @@ flowchart TB
     Step(["Apply the material state change"])
     Action{"What kind of material<br/>state changes?"}
 
-    ContainerRecord["Container or content record:<br/>create a container,<br/>define content,<br/>load material,<br/>or add annotations"]
-    ContainerApply["Write container, content,<br/>or annotation records"]
+    ContainerRecord["Container or content record:<br/>create a container, define content,<br/>load material, finalize relationships,<br/>or add annotations"]
+    ContainerApply["Write container/content records;<br/>FinalizeContainerContents may derive<br/>a cell-suspension carrier + relation"]
 
-    QuantityComposition["Quantity or composition:<br/>move or update volume, mass,<br/>components, and metadata"]
-    QuantityApply["Use ledger primitives<br/>to update material quantities<br/>and component records"]
+    QuantityComposition["Quantity or composition:<br/>resolve volume, mass, or cells;<br/>move components and metadata"]
+    QuantityApply["Count request: validate suspension,<br/>resolve carrier volume + component ratio;<br/>move bulk through ledger primitives"]
 
     SepFrac["Separation or fractionation:<br/>create tracked output parts"]
-    Partition["Decide output parts,<br/>component fate, part quantities,<br/>and any preservation condition<br/>(expanded in Flowchart 3)"]
+    Partition["Decide output parts,<br/>component fate, part quantities,<br/>and any preservation condition<br/>(expanded in the activity diagram below)"]
     Materialize["Use ledger primitives<br/>to materialize the output parts"]
     RecordPartition["Record active indexed parts"]
 
@@ -154,49 +158,308 @@ Design judgment:
 6. Preservation checks are scoped to the source, target, group members, wells,
    or shared environment affected by the current operation. They should not scan
    unrelated material state.
+7. `suspension.py` owns the runtime policy, implicit-carrier provenance,
+   dispersion relationships, and relationship refresh after movement or
+   partitioning. It does not add a new content kind.
 
-## Sep Partition Detail Flowchart
+## Separation Outcome UML Activity Overview
 
-This flowchart expands the partition-planning step from Flowchart 2. It is
-inside the separation/fractionation state change, but it does not record state
-or mutate the ledger directly. It returns a partition plan used to materialize
-and track output parts.
+The overview shows the sequential calculation boundary. The following four
+activity diagrams expand every major action without depending on implementation
+module names.
 
 ```mermaid
-flowchart TB
-    Start(["A separation or fractionation<br/>change needs a partition plan"])
-    Program["Identify the separation program"]
-    Strategy["Choose the matching partition rule set"]
-    Slots["Define meaningful output parts<br/>and source identity policy"]
-    Classify["Classify source contents<br/>by component behavior"]
-    Fate["Compute component fate<br/>for each output slot"]
-    Quantities["Compute part quantities<br/>explicit component quantities first;<br/>carrier-volume mass inference second;<br/>conservative fallback last"]
-    Preservation["Attach a preservation condition<br/>when required"]
-    Plan["Return partition plan:<br/>output parts, component fate,<br/>identity policy, and preservation condition"]
+stateDiagram-v2
+    direction TB
 
-    Start --> Program
-    Program --> Strategy
-    Strategy --> Slots
-    Slots --> Classify
-    Classify --> Fate
-    Fate --> Quantities
-    Quantities --> Preservation
-    Preservation --> Plan
+    [*] --> ResolveContract
+    state "Resolve the operation contract<br/>(Detail A)" as ResolveContract
+    state ContractChoice <<choice>>
+    ResolveContract --> ContractChoice
+
+    state "Initialize content iteration" as InitializeIteration
+    ContractChoice --> InitializeIteration : [contract is usable]
+    ContractChoice --> FailureMerge : [contract is invalid]
+    InitializeIteration --> ContentChoice
+
+    state ContentChoice <<choice>>
+    ContentChoice --> ResolveFate : [an unprocessed content remains]
+    ContentChoice --> FinalizeResult : [all contents are evaluated]
+
+    state "Resolve one content's physical fate<br/>(Detail B)" as ResolveFate
+    state FateChoice <<choice>>
+    ResolveFate --> FateChoice
+    FateChoice --> AllocateQuantity : [fate is resolved or safely conservative]
+    FateChoice --> FailureMerge : [state or constraints contradict]
+
+    state "Allocate the content's quantities<br/>(Detail C)" as AllocateQuantity
+    state AllocationChoice <<choice>>
+    AllocateQuantity --> AllocationChoice
+    AllocationChoice --> ContentChoice : [allocation is valid]
+    AllocationChoice --> FailureMerge : [allocation is invalid]
+
+    state "Finalize and validate all resulting parts<br/>(Detail D)" as FinalizeResult
+    state FinalChoice <<choice>>
+    FinalizeResult --> FinalChoice
+    FinalChoice --> Record : [all invariants hold]
+    FinalChoice --> FailureMerge : [an invariant fails]
+
+    state FailureMerge <<choice>>
+    state "Record the resulting indexed parts" as Record
+    state "Reject the result and<br/>report a diagnostic" as Reject
+    FailureMerge --> Reject
+    Record --> [*]
+    Reject --> [*]
+```
+
+### Detail A: Operation Contract Resolution
+
+This activity determines what the operation means physically before any
+content quantity is routed.
+
+```mermaid
+stateDiagram-v2
+    direction TB
+
+    [*] --> ReadDescription
+    state "Read the complete operation description" as ReadDescription
+    state "Validate required operation conditions<br/>and normalize declared values" as ValidateDescription
+    ReadDescription --> ValidateDescription
+
+    state DescriptionChoice <<choice>>
+    ValidateDescription --> DescriptionChoice
+    DescriptionChoice --> DefineParts : [description is supported]
+    DescriptionChoice --> FailureMerge : [required information is invalid]
+
+    state "Define each resulting part's<br/>physical and semantic meaning" as DefineParts
+    state "Identify transport mechanisms:<br/>phase movement, size, affinity,<br/>field, density, or disruption" as IdentifyTransport
+    state "Identify retention mechanisms:<br/>surface, support, boundary,<br/>pellet, membrane, or field" as IdentifyRetention
+    state "Identify conditions that must remain true<br/>for a retained state to stay valid" as IdentifyPreservation
+    DefineParts --> IdentifyTransport
+    IdentifyTransport --> IdentifyRetention
+    IdentifyRetention --> IdentifyPreservation
+
+    state SufficiencyChoice <<choice>>
+    IdentifyPreservation --> SufficiencyChoice
+    SufficiencyChoice --> CompleteContract : [conditions determine safe routing]
+    SufficiencyChoice --> ConservativeContract : [safe conservative behavior exists]
+    SufficiencyChoice --> FailureMerge : [no safe interpretation exists]
+
+    state "Record part meanings, movement rules,<br/>retention rules, and preservation conditions" as CompleteContract
+    state "Record conservative movement rules<br/>and an uncertainty diagnostic" as ConservativeContract
+    state FailureMerge <<choice>>
+    state "Reject the operation contract<br/>and report a diagnostic" as Reject
+    FailureMerge --> Reject
+    CompleteContract --> [*]
+    ConservativeContract --> [*]
+    Reject --> [*]
+```
+
+### Detail B: Per-Content Physical Fate
+
+This activity resolves one content independently of its quantity dimension.
+Count, volume, and mass describe amount; they do not by themselves establish
+whether the content is mobile or retained.
+
+```mermaid
+stateDiagram-v2
+    direction TB
+
+    [*] --> ReadFacts
+    state "Read physical form, association,<br/>accessibility, preservation state,<br/>classification, and declared fate rules" as ReadFacts
+
+    state ExplicitRuleChoice <<choice>>
+    ReadFacts --> ExplicitRuleChoice
+    ExplicitRuleChoice --> ValidateExplicitRule : [an explicit fate rule exists]
+    ExplicitRuleChoice --> CheckAssociation : [no explicit fate rule exists]
+
+    state "Validate the explicit rule against<br/>part meanings, ratio bounds,<br/>and quantity conservation" as ValidateExplicitRule
+    state ExplicitRuleValidity <<choice>>
+    ValidateExplicitRule --> ExplicitRuleValidity
+    ExplicitRuleValidity --> ApplyExplicitRule : [rule is valid]
+    ExplicitRuleValidity --> FailureMerge : [rule contradicts constraints]
+    state "Use the explicit content-fate rule" as ApplyExplicitRule
+
+    state "Determine whether the content is free<br/>or associated with a surface, support,<br/>particle, boundary, or other material" as CheckAssociation
+    state AssociationChoice <<choice>>
+    CheckAssociation --> AssociationChoice
+    AssociationChoice --> EvaluateAssociation : [content has a known association]
+    AssociationChoice --> EvaluateTransport : [content is known to be free]
+    AssociationChoice --> EvaluateTransport : [no retained association is declared]
+
+    state "Compare the association with the operation's<br/>release, retention, and preservation rules" as EvaluateAssociation
+    state AssociationEffect <<choice>>
+    EvaluateAssociation --> AssociationEffect
+    AssociationEffect --> EvaluateTransport : [operation explicitly releases the association]
+    AssociationEffect --> KeepAssociated : [operation preserves the association and required conditions hold]
+    AssociationEffect --> FailureMerge : [a required preservation condition is violated]
+    AssociationEffect --> ConservativeRoute : [operation effect on association is unspecified]
+
+    state "Keep content with the part<br/>that preserves its association" as KeepAssociated
+
+    state "Compare the free content's physical form<br/>with the operation's transport mechanisms" as EvaluateTransport
+    state TransportChoice <<choice>>
+    EvaluateTransport --> TransportChoice
+    TransportChoice --> ApplySelection : [a declared selection mechanism applies]
+    TransportChoice --> FollowPhase : [otherwise, content follows a moving phase]
+    TransportChoice --> KeepImmobile : [otherwise, physical form is immobile]
+    TransportChoice --> ConservativeRoute : [mobility cannot be determined]
+
+    state "Route content according to the<br/>declared selection mechanism" as ApplySelection
+    state "Route content with<br/>the moving phase" as FollowPhase
+    state "Keep content with the<br/>stationary or residual part" as KeepImmobile
+    state "Use a conservative fate<br/>and emit an uncertainty diagnostic" as ConservativeRoute
+
+    state FateMerge <<choice>>
+    ApplyExplicitRule --> FateMerge
+    KeepAssociated --> FateMerge
+    ApplySelection --> FateMerge
+    FollowPhase --> FateMerge
+    KeepImmobile --> FateMerge
+    ConservativeRoute --> FateMerge
+
+    state "Produce an ideal per-part fate<br/>and the resulting association,<br/>accessibility, and preservation states" as ProduceFate
+    FateMerge --> ProduceFate
+    ProduceFate --> [*]
+
+    state FailureMerge <<choice>>
+    state "Reject this content fate<br/>and report a diagnostic" as Reject
+    FailureMerge --> Reject
+    Reject --> [*]
+```
+
+The association path is the implemented decision boundary. It compares
+the complete operation contract from Detail A with the content's association
+and preservation state. The quantity axis is carried forward for accounting,
+but it does not select the retained or mobile branch.
+
+An author may override the reference fate for a named content at the `sep`
+boundary. Output names come from the selected program's part contract; both
+outputs are required and their ratios must sum to 100%.
+
+```culsma
+let parts = sep(
+  sample = source,
+  program = filtration_program(membrane = "0.2um", drive = "pressure"),
+  component_fates = {
+    RPE1: { filtrate: 25%, retentate: 75% }
+  }
+);
+```
+
+| Fate source precedence | Meaning |
+| --- | --- |
+| author-declared content fate | Exact conservative split supplied by the protocol author |
+| preserved or released association | Deterministic consequence of the operation contract |
+| reference transport prediction | Default split for freely mobile classified content |
+| conservative unresolved fate | Equal split plus an uncertainty diagnostic |
+
+### Detail C: Per-Content Quantity Allocation
+
+This activity converts the physical fate into quantities while preserving the
+content's authoritative quantity axis.
+
+```mermaid
+stateDiagram-v2
+    direction TB
+
+    [*] --> ReadQuantity
+    state "Read the authoritative quantity axis<br/>and source amount" as ReadQuantity
+    state "Apply the ideal per-part fate<br/>on that same quantity axis" as ApplyIdealFate
+    ReadQuantity --> ApplyIdealFate
+
+    state PredictionChoice <<choice>>
+    ApplyIdealFate --> PredictionChoice
+    PredictionChoice --> ApplyPrediction : [an applicable prediction is configured]
+    PredictionChoice --> PredictionMerge : [no prediction is configured]
+
+    state "Apply explicit recovery, loss,<br/>and carryover estimates with provenance" as ApplyPrediction
+    state PredictionValidity <<choice>>
+    ApplyPrediction --> PredictionValidity
+    PredictionValidity --> PredictionMerge : [prediction is valid]
+    PredictionValidity --> FailureMerge : [prediction is invalid or out of range]
+
+    state PredictionMerge <<choice>>
+    state "Calculate each part's amount<br/>on the native count, volume, or mass axis" as CalculateNativeAmounts
+    PredictionMerge --> CalculateNativeAmounts
+
+    state "Derive only permitted bulk compatibility values<br/>from explicit volume or mass and valid carrier relations" as DeriveBulk
+    CalculateNativeAmounts --> DeriveBulk
+
+    state "Check non-negative amounts, ratio bounds,<br/>axis consistency, and explicit loss accounting" as ValidateAllocation
+    DeriveBulk --> ValidateAllocation
+
+    state AllocationValidity <<choice>>
+    ValidateAllocation --> AllocationValidity
+    AllocationValidity --> [*] : [allocation is valid]
+    AllocationValidity --> FailureMerge : [allocation is invalid]
+
+    state FailureMerge <<choice>>
+    state "Reject this allocation<br/>and report a diagnostic" as Reject
+    FailureMerge --> Reject
+    Reject --> [*]
+```
+
+### Detail D: Aggregate Result Finalization
+
+This activity validates the complete separation result before it becomes
+container-owned indexed contents.
+
+```mermaid
+stateDiagram-v2
+    direction TB
+
+    [*] --> AssembleParts
+    state "Assemble all routed contents<br/>into the defined resulting parts" as AssembleParts
+    state "Apply resulting association,<br/>accessibility, and preservation states" as ApplyStates
+    AssembleParts --> ApplyStates
+
+    state "Compare source and result totals<br/>independently on count, volume, and mass axes" as CheckConservation
+    ApplyStates --> CheckConservation
+
+    state ConservationChoice <<choice>>
+    CheckConservation --> ConservationChoice
+    ConservationChoice --> CheckOrganization : [outputs plus explicit loss equal the source]
+    ConservationChoice --> FailureMerge : [material is created or disappears without an explicit loss]
+
+    state "Check part meanings, component placement,<br/>state consistency, and preservation requirements" as CheckOrganization
+    state ResultChoice <<choice>>
+    CheckOrganization --> ResultChoice
+    ResultChoice --> Record : [result is internally consistent]
+    ResultChoice --> FailureMerge : [result is inconsistent]
+
+    state "Record the active indexed contents<br/>as the result of this separation" as Record
+    state FailureMerge <<choice>>
+    state "Reject the complete result without<br/>committing partial material changes" as Reject
+    FailureMerge --> Reject
+    Record --> [*]
+    Reject --> [*]
 ```
 
 Design judgment:
 
-1. Program-specific component fate should stay in strategy classes, not in a
-   growing conditional ladder.
-2. Bulk quantity accounting remains separate from component fate ratios, but
-   both are returned in the same partition plan. Dimensioned component
-   quantities are authoritative. When count and carrier volume coexist without
-   explicit mass quantities, bulk mass follows the partitioned carrier-volume
-   ratio while preserving source mass; insufficient information retains the
-   conservative fallback.
-3. Indexed group returns and indexed contents state are projections of the
-   contents-state transition that consumes this plan, not separate material
-   truth.
+1. Separation planning receives the complete operation conditions, not only a
+   broad separation category.
+2. Quantity dimension does not decide mobility. A count-bearing cell component
+   may be suspended, pelleted, surface-associated, or otherwise immobilized.
+3. Association and accessibility decide whether the operation may move a
+   component. A preserved association follows the retaining part by default; a
+   prediction model may later add explicit loss.
+4. The same separation outcome determines each part's physical state. Solid or
+   retained parts must not become transferable suspensions merely because
+   residual liquid exists.
+5. Concentration uses eligible carrier component quantities. Aggregate
+   `container.volume_uL` remains the compatibility bulk ledger and may include
+   cross-axis proxy volume.
+6. Bulk quantity accounting remains separate from component fate ratios, but
+   both belong to the same separation outcome. Dimensioned component
+   quantities are authoritative. Any remaining legacy bulk contribution is
+   preserved as a cross-axis proxy: mass residual follows partitioned carrier
+   volume, while volume residual follows partitioned explicit mass. This covers
+   mixed count/volume/mass state without losing bulk totals; insufficient
+   information retains the conservative fallback.
+7. Indexed contents are projections of the recorded separation outcome;
+   indexed access must not rerun or reinterpret the separation model.
 
 ## Material Operation Sequence
 
@@ -205,9 +468,8 @@ Read the three sequence diagrams as nested views:
 1. Material operation sequence is the top-level target runtime dispatch path.
 2. Material state change sequence expands
    `MaterialStateManager.apply_change(...)`.
-3. Sep partition detail sequence expands the
-   `material.partition.partition_sep_material(...)` call made while applying a
-   separation or fractionation state change.
+3. Separation implementation detail shows how the complete program description,
+   content state, and optional author fate reach native-axis allocation.
 
 ```mermaid
 sequenceDiagram
@@ -337,7 +599,7 @@ indexed-part access, and tracked-part reset enter
 `MaterialIndexedPartsStateManager` only after `MaterialStateManager` has selected
 that kind of material-state change.
 
-## Sep Partition Detail Sequence
+## Current Separation Implementation Gap
 
 ```mermaid
 sequenceDiagram
@@ -346,37 +608,37 @@ sequenceDiagram
     participant Registry as "material.partition.SepPartitionStrategyRegistry"
     participant Strategy as "material.partition.SepPartitionStrategy"
     participant Classes as "material.partition.ContentClassResolver"
+    participant Fate as "material.separation_fate"
     participant Ledger as "material.ledger"
 
-    PartsManager->>Partition: partition_sep_material(state=state, source=source, slot0=slot0, slot1=slot1, program_kind=program_kind)
+    PartsManager->>Partition: partition_sep_material(state, source, slot0, slot1, program, explicit_fates)
     Partition->>Registry: strategy_for(program_kind)
     Registry-->>Partition: SepPartitionStrategy
+    Partition->>Fate: resolve operation contract from complete program and slot meanings
+    Fate-->>Partition: movement, retention, release, and preservation rules
 
     loop for name, amount in list(source_components.items())
         Partition->>Classes: classify(state, source, str(name))
         Classes-->>Partition: PartitionClass
-        Partition->>Partition: _component_partition_ratios(source, str(name))
-        alt explicit_ratios is None
-            Partition->>Strategy: ratios(partition_class)
-        end
+        Partition->>Fate: resolve physical state and author override
+        Partition->>Strategy: ratios(partition_class)
+        Partition->>Fate: resolve content fate using precedence contract
+        Fate-->>Partition: slot ratios and provenance
+        Partition->>Partition: allocate authoritative count, volume, or mass quantity
         Partition->>Strategy: output_class(partition_class, slot="0")
         Partition->>Strategy: output_class(partition_class, slot="1")
     end
 
-    Partition->>Ledger: set_container_material(slot0, volume_uL=source_volume * 0.5, mass_mg=source_mass * 0.5, components=slot0_components, component_classes=slot0_classes)
-    Partition->>Ledger: set_container_material(slot1, volume_uL=source_volume * 0.5, mass_mg=source_mass * 0.5, components=slot1_components, component_classes=slot1_classes)
+    Partition->>Ledger: set each slot's component quantities on their native axes
+    Partition->>Partition: normalize permitted bulk compatibility quantities and validate conservation
     Partition->>Ledger: set_container_material(source, volume_uL=0.0, mass_mg=0.0, components={})
     Partition->>Strategy: preservation_contract()
-    Partition-->>PartsManager: dict
+    Partition-->>PartsManager: parts, fate provenance, operation contract, and diagnostics
 ```
 
-`sep` and `frac` are material-state changes whose partitioned or indexed-part
-details are handled by `MaterialIndexedPartsStateManager`.
-Program-specific partition logic should remain separate in `partition.py`; it
-is already its own strategy submodule and should be used by the manager.
-`MaterialIndexedPartsStateManager` remains an internal collaborator because
-separation, fractionation, indexed-part access, and tracked-part reset all use
-the same partition/index records.
+The implementation now retains the complete operation description through fate
+resolution. Indexed contents record the resulting parts and serve projections;
+they do not rerun the separation decision.
 
 ## Target Module Boundaries
 

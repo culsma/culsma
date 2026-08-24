@@ -30,6 +30,7 @@ _DEFAULT_TOOL_BY_OP = {
     "AllocContainer": "setup workflow",
     "LoadContent": "setup workflow",
     "DefineContent": "setup workflow",
+    "FinalizeContainerContents": "setup workflow",
 }
 
 _TOOL_BY_PROGRAM_KIND = {

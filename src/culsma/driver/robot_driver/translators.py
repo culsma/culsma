@@ -24,6 +24,7 @@ class MutationRobotTranslator:
     def translate(self, record: MappingRecord, binding: dict[str, object]) -> DriverProjection:
         target = value_to_text(record.semantic_args.get("target"))
         sources = value_to_text(record.semantic_args.get("sources"))
+        material_resolution = record.semantic_args.get("_runtime_material_resolution")
         return DriverProjection(
             step_id=record.step_id,
             semantic_op=record.semantic_op,
@@ -33,7 +34,11 @@ class MutationRobotTranslator:
             details=(f"Sources: {sources}.",),
             category="command",
             binding=dict(binding),
-            payload={"target": target, "sources": sources},
+            payload={
+                "target": target,
+                "sources": sources,
+                "material_resolution": material_resolution if isinstance(material_resolution, dict) else None,
+            },
         )
 
 

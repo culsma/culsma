@@ -53,7 +53,7 @@ class MaterialCompute:
         )
         if (
             result.ok
-            and result.delta.get("op") != "LoadContent"
+            and result.delta.get("op") not in {"LoadContent", "FinalizeContainerContents"}
             and not movement_specs
             and material_quantities_changed(
                 before_state=movement_before_state,

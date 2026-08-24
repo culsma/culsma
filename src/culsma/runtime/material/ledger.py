@@ -58,6 +58,10 @@ class MaterialLedger:
         move_explicit(src, dst, moved_volume_uL, moved_mass_mg, component_ratio)
 
     @staticmethod
+    def component_quantity_merge_conflict(src: dict[str, Any], dst: dict[str, Any]) -> str | None:
+        return component_quantity_merge_conflict(src, dst)
+
+    @staticmethod
     def container_component_classes(container: dict[str, Any], *, create: bool = False) -> dict[str, Any] | None:
         return container_component_classes(container, create=create)
 
@@ -174,6 +178,25 @@ def move_explicit(
                 src_quantities[name]["value"] = 0.0
             if isinstance(src_classes, dict):
                 src_classes.pop(name, None)
+
+
+def component_quantity_merge_conflict(src: dict[str, Any], dst: dict[str, Any]) -> str | None:
+    """Return the first component whose source and destination axes cannot merge."""
+
+    src_quantities = container_component_quantities(src)
+    dst_quantities = container_component_quantities(dst)
+    if not isinstance(src_quantities, dict) or not isinstance(dst_quantities, dict):
+        return None
+    for name, source_quantity in src_quantities.items():
+        target_quantity = dst_quantities.get(name)
+        if not isinstance(source_quantity, dict) or not isinstance(target_quantity, dict):
+            continue
+        if (
+            source_quantity.get("dimension") != target_quantity.get("dimension")
+            or source_quantity.get("unit") != target_quantity.get("unit")
+        ):
+            return str(name)
+    return None
 
 
 def container_component_classes(container: dict[str, Any], *, create: bool = False) -> dict[str, Any] | None:
@@ -315,7 +338,7 @@ def check_capacity_guard(
         return diagnostic_result(step, state, "MAT_INVALID_CAPACITY", f"Invalid capacity value for '{container_id}'")
     if capacity_uL <= 0:
         return diagnostic_result(step, state, "MAT_INVALID_CAPACITY", f"Invalid capacity value for '{container_id}'")
-    current_uL = float(target.get("volume_uL", 0.0))
+    current_uL = container_physical_volume_uL(target)
     if current_uL + float(added_uL) > capacity_uL + 1e-12:
         return diagnostic_result(
             step,
@@ -324,6 +347,25 @@ def check_capacity_guard(
             f"Container '{container_id}' capacity exceeded ({current_uL + float(added_uL)}uL > {capacity_uL}uL)",
         )
     return None
+
+
+def container_physical_volume_uL(container_value: dict[str, Any]) -> float:
+    """Return physical volume without cross-axis bulk compatibility proxies."""
+
+    quantities = container_value.get("component_quantities")
+    if isinstance(quantities, dict):
+        volume_uL = 0.0
+        for quantity in quantities.values():
+            if not isinstance(quantity, dict) or quantity.get("dimension") != "volume":
+                continue
+            unit = quantity.get("unit")
+            raw_value = quantity.get("value")
+            if unit not in VOLUME_TO_UL or not isinstance(raw_value, (int, float)):
+                continue
+            volume_uL += float(raw_value) * VOLUME_TO_UL[str(unit)]
+        if quantities:
+            return volume_uL
+    return float(container_value.get("volume_uL", 0.0))
 
 
 def default_container_capacity_uL(kind: str | None) -> float | None:

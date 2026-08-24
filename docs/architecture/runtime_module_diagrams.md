@@ -60,10 +60,12 @@ flowchart TB
     Gate["Evaluate runtime gate:<br/>run, skip, or fail if unresolved"]
     Ref["Decide whether a referenced-protocol subtree<br/>should reuse cached results or rerun"]
     StartStep["Mark step running and emit STEP_STARTED"]
-    Family["Choose execution family:<br/>built-in runtime step or driver-backed step"]
+    Family["Choose execution family:<br/>built-in, internal material,<br/>or driver-backed step"]
     BuiltIn["Run built-in runtime behavior:<br/>local assign, member assign, append,<br/>repeat body execution, break/continue"]
-    DriverPath["Run driver-backed behavior:<br/>resolve runtime args, check driver capability,<br/>execute driver step"]
-    Material["Apply deterministic material-state update<br/>and record observation artifacts when needed"]
+    InternalMaterial["Apply runtime-only material step<br/>without driver dispatch"]
+    Preflight["Preflight material update on a working copy;<br/>resolve count aliquots to physical volume"]
+    DriverPath["Check capability and execute driver<br/>with resolved physical transfer arguments"]
+    Material["On driver success, commit preflight state;<br/>record material and observation artifacts"]
     Finish["Record terminal result:<br/>completed / skipped / failed,<br/>history, diagnostics, events,<br/>protocol outputs, ref cache"]
     Finalize["Finalize unresolved steps:<br/>mark unsatisfied dependency skips,<br/>mark stuck pending failures,<br/>capture protocol outputs"]
     Build["Build user-facing run summary"]
@@ -85,10 +87,15 @@ flowchart TB
     Ref -->|rerun| StartStep
     StartStep --> Family
     Family -->|built-in runtime step| BuiltIn
-    Family -->|driver-backed step| DriverPath
+    Family -->|internal material step| InternalMaterial
+    Family -->|driver-backed step| Preflight
     BuiltIn --> Finish
-    DriverPath --> Material
+    InternalMaterial --> Finish
+    Preflight -->|material error| Finish
+    Preflight -->|valid resolved step| DriverPath
     Material --> Finish
+    DriverPath -->|driver success| Material
+    DriverPath -->|driver error| Finish
     Finish --> StepLoop
     StepLoop -->|no| RoundLoop
     RoundLoop -->|no| Finalize
@@ -160,9 +167,11 @@ sequenceDiagram
                 H->>Session: apply local/control/repeat effects
             else driver-backed handler
                 H->>Values: resolve_step_args(step, state)
-                H->>Driver: check(step)
-                H->>Driver: execute(step)
-                H->>Mat: apply_step(step, material_state)
+                H->>Mat: preflight apply_step(step, working material state)
+                Mat-->>H: diagnostics, delta, resolved count aliquot, candidate state
+                H->>Driver: check(resolved physical step)
+                H->>Driver: execute(resolved physical step)
+                H->>Session: commit candidate material state on driver success
                 H->>Obs: record(step, session, driver_code, driver_payload)
             end
             H->>Out: capture_if_ready(step, session)
@@ -203,8 +212,8 @@ flowchart TB
 | `evaluate gate and ready-step policy` | Decide whether the already-ready step should run, skip, or fail before side effects begin. | gate evaluator, scheduler/handler boundary |
 | `decide ref-subtree reuse or rerun` | Apply protocol-reference caching policy before executing a reference-root subtree. | ref reuse decider |
 | `mark running and emit STEP_STARTED` | Publish the transition into active execution. | base handler / runtime session |
-| `dispatch into built-in or driver-backed execution path` | Separate pure-runtime steps from driver-mediated steps. | step dispatcher / concrete handlers |
-| `execute step-family behavior` | Perform local/control/repeat logic or driver check/execute logic. | concrete runtime handlers |
+| `dispatch into built-in, internal-material, or driver-backed execution path` | Keep runtime-only material finalization outside the physical driver boundary. | step dispatcher / concrete handlers |
+| `execute step-family behavior` | Perform local/control/repeat logic, internal material logic, or material-preflight plus driver execution. | concrete runtime handlers |
 | `apply material, observation, protocol-output, and cache effects` | Push cross-cutting execution side effects into dedicated services. | material compute, observation recorder, protocol-output recorder, ref cache updater |
 | `record terminal status, diagnostics, history, and events` | Close the step with one consistent terminal outcome. | runtime session / final recorder logic |
 
@@ -251,8 +260,11 @@ Current implementation note:
    present, volume-bearing component quantities determine bulk volume while
    count-bearing quantities remain outside capacity accounting. Without an
    explicit mass-bearing component quantity, output bulk mass follows the
-   partitioned carrier-volume ratio and preserves total source mass. The
-   partition delta records the selected bulk-quantity policy.
+   partitioned carrier-volume ratio. When explicit volume and mass quantities
+   coexist, each explicit axis is applied first and the remaining legacy
+   cross-axis bulk proxy follows the opposite explicit axis. Total source bulk
+   volume and mass remain conserved. The partition delta records the selected
+   bulk-quantity policy.
 
 ## Implemented `sep` Partition Strategy
 
@@ -276,7 +288,7 @@ flowchart TB
     Magnetic["MagneticPartitionStrategy<br/>bound / flowthrough"]
     Disrupt["DisruptPartitionStrategy<br/>lysate / debris_or_residue"]
     Field["FieldPartitionStrategy<br/>target_band / non_target"]
-    Result["SepPartitionResult:<br/>slot containers, component deltas,<br/>diagnostics, binding metadata"]
+    Result["SepPartitionResult:<br/>slot containers, component deltas,<br/>cellular output state, diagnostics,<br/>binding metadata"]
 
     Apply --> Sep
     Sep --> Registry
@@ -309,6 +321,9 @@ Design judgment:
 2. A strategy registry preserves the runtime boundary: the runtime executes
    explicit program semantics; it does not infer biological intent from labels
    or hard-coded component names.
+3. The same strategy owns each slot's cellular material state. This keeps
+   ordinary `sep`, tracked contents, and `source.partition` transferability
+   consistent.
 
 ## Report Data Structure
 

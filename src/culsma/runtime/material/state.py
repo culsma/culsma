@@ -12,6 +12,7 @@ from culsma.runtime.material.container_content import (
     apply_define_content,
     apply_load_content,
 )
+from culsma.runtime.material.suspension import apply_finalize_container_contents
 from culsma.runtime.material.contents_state import (
     ContentsStateTransitionPlan,
     MaterialIndexedPartsStateManager,
@@ -40,7 +41,7 @@ class MaterialStateManager:
         step: PlanStep,
         state: dict[str, Any],
     ) -> MaterialStateChangePlan | None:
-        if step.op in {"AllocContainer", "DefineContent", "LoadContent", "AnnotateContent"}:
+        if step.op in {"AllocContainer", "DefineContent", "LoadContent", "AnnotateContent", "FinalizeContainerContents"}:
             return MaterialStateChangePlan(kind="container_record", step=step)
 
         if step.op in {"sep", "frac", "agit"}:
@@ -103,6 +104,8 @@ class MaterialStateManager:
             return apply_load_content(step, state)
         if step.op == "AnnotateContent":
             return apply_annotate_content(step, state)
+        if step.op == "FinalizeContainerContents":
+            return apply_finalize_container_contents(step, state)
         return diagnostic_result(
             step,
             state,

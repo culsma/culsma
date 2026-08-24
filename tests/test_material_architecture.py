@@ -4,6 +4,7 @@ import ast
 from pathlib import Path
 
 from culsma.pipeline.plan_nodes import PlanStep
+from culsma.pipeline.program_registry import SEPARATION_SLOT_CONTRACTS
 from culsma.runtime.material.compute import MaterialCompute
 from culsma.runtime.material.contents_state import (
     ContentsPartitionTransition,
@@ -12,6 +13,7 @@ from culsma.runtime.material.contents_state import (
 )
 from culsma.runtime.material.result import MaterialUpdateResult
 from culsma.runtime.material.state import MaterialStateChangePlan, MaterialStateManager
+from culsma.runtime.material.partition import separation_slot_contract
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -43,6 +45,13 @@ def _step(*, field: str | None = None) -> PlanStep:
 
 def _material_step(op: str, *, step_id: str = "p0.s1") -> PlanStep:
     return PlanStep(step_id=step_id, op=op, args={}, deps=[], gate=None, span=None)
+
+
+def test_pipeline_and_runtime_share_separation_output_meanings() -> None:
+    assert {
+        program_kind: separation_slot_contract(program_kind)
+        for program_kind in SEPARATION_SLOT_CONTRACTS
+    } == SEPARATION_SLOT_CONTRACTS
 
 
 def test_material_compute_rejects_quantity_change_without_movement_contract():
@@ -317,8 +326,9 @@ def test_indexed_parts_state_manager_records_sep_transition() -> None:
         step=_material_step("sep"),
         state=state,
         source_id="Tube",
-        program_kind="magnetic_program",
+        program={"kind": "IRCall", "name": "magnetic_program", "args": []},
         keep_source=None,
+        explicit_fates={},
     )
 
     assert isinstance(result, ContentsPartitionTransition)

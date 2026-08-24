@@ -38,6 +38,7 @@ class MutationTranslator:
         amount_text = ", then ".join(f"transfer {text}" for text in rendered_sources) if rendered_sources else "transfer the prepared material"
         details = [
             f"Use {pipette_label} with a {tip_label}.",
+            *_material_resolution_details(record.semantic_args),
             *_strategy_detail_lines(binding),
             *_requirement_details(binding),
             *_env_detail(binding),
@@ -168,6 +169,21 @@ def _render_mutation_sources(raw_sources: Any) -> tuple[list[str], list[str], li
     return rendered, source_names, source_amounts
 
 
+def _material_resolution_details(args: dict[str, Any]) -> list[str]:
+    raw = args.get("_runtime_material_resolution")
+    records = raw.get("sources") if isinstance(raw, dict) else None
+    if not isinstance(records, list):
+        return []
+    details: list[str] = []
+    for record in records:
+        if not isinstance(record, dict):
+            continue
+        requested = value_to_text(record.get("requested"))
+        resolved = value_to_text(record.get("resolved"))
+        details.append(f"Runtime material resolution: {requested} corresponds to {resolved} of suspension.")
+    return details
+
+
 def _env_detail(binding: dict[str, Any]) -> list[str]:
     env_summary = binding.get("env_summary")
     if isinstance(env_summary, str) and env_summary:
@@ -251,12 +267,16 @@ def _render_setup_text(
             (),
             args,
         )
-    if op in {"DefineContent", "AnnotateContent"}:
+    if op in {"DefineContent", "AnnotateContent", "FinalizeContainerContents"}:
         content = args.get("code") or args.get("content") or "the material definition"
         return (
             "internal_setup",
             "Content Definition",
-            f"Register {content} for downstream execution.",
+            (
+                f"Finalize {content} for downstream execution."
+                if op == "FinalizeContainerContents"
+                else f"Register {content} for downstream execution."
+            ),
             (),
             args,
         )

@@ -30,6 +30,7 @@ def build_default_registry() -> TranslatorRegistry:
             "DefineContent": SetupTranslator(),
             "LoadContent": SetupTranslator(),
             "AnnotateContent": SetupTranslator(),
+            "FinalizeContainerContents": SetupTranslator(),
         },
         default_translator=GenericTranslator(),
     )

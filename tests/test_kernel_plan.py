@@ -899,10 +899,36 @@ protocol T {
 """
     plan = lower_ir_to_plan(compile_to_ir(parse(src)))
     steps = plan.plans[0].steps
-    assert [step.op for step in steps] == ["AllocContainer", "DefineContent", "LoadContent"]
+    assert [step.op for step in steps] == [
+        "AllocContainer",
+        "DefineContent",
+        "LoadContent",
+    ]
     assert steps[0].args["bind"] == "tube_a"
     assert steps[1].args["code"]["value"] == "S1"
     assert steps[2].args["container"]["kind"] == "IRIdentifier"
     assert steps[2].args["container"]["name"] == "tube_a"
     assert steps[2].args["content"]["value"] == "S1"
     assert steps[2].args["amount"]["value"] == 100.0
+
+
+def test_plan_emits_internal_finalizer_only_for_cell_count_constructor_loads():
+    src = """
+protocol T {
+  let tube_a = tube(
+    label = "Tube_A",
+    capacity = 500uL,
+    load = [content(kind = bio_cellular, code = "RPE1", type = cell_line):100000cells]
+  );
+}
+"""
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)))
+    steps = plan.plans[0].steps
+
+    assert [step.op for step in steps] == [
+        "AllocContainer",
+        "DefineContent",
+        "LoadContent",
+        "FinalizeContainerContents",
+    ]
+    assert steps[-1].args["container"]["name"] == "tube_a"

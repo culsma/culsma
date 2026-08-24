@@ -13,7 +13,13 @@ from culsma.runtime.session import RuntimeSession
 from culsma.runtime.values import UNRESOLVED
 
 
-_MATERIAL_BOOTSTRAP_OPS = {"AllocContainer", "DefineContent", "LoadContent", "AnnotateContent"}
+_MATERIAL_BOOTSTRAP_OPS = {
+    "AllocContainer",
+    "DefineContent",
+    "LoadContent",
+    "AnnotateContent",
+    "FinalizeContainerContents",
+}
 
 
 @dataclass
@@ -273,8 +279,29 @@ class RepeatStepHandler(BaseRuntimeStepHandler):
 class DriverBackedStepHandler(BaseRuntimeStepHandler):
     def execute_current_step(self, step: PlanStep, session: RuntimeSession, state: RuntimeStepState) -> bool:
         runtime_step = session.value_resolver.resolve_step_args(step, session.state)
-        state.resolved_step = runtime_step
-        capability = session.driver.check(runtime_step)
+        material_result = _preflight_material_step(runtime_step, session)
+        if material_result is not None and not material_result.ok:
+            session.extend_diagnostics(material_result.diagnostics)
+            session.record_failed(
+                step,
+                reason="material_compute_error",
+                diagnostic=Diagnostic(
+                    code="RT_MATERIAL_ERROR",
+                    message=f"Material compute failed for step '{step.step_id}'",
+                    span=step.span,
+                    node_id=step.step_id,
+                ),
+                driver_code="RUNTIME_MATERIAL_REJECTED",
+            )
+            state.recorded = True
+            return session.fail_fast
+
+        driver_step = _step_with_material_resolution(
+            runtime_step,
+            material_result.delta if material_result is not None else None,
+        )
+        state.resolved_step = driver_step
+        capability = session.driver.check(driver_step)
         if not capability.ok:
             unsupported_parts = list(capability.unsupported_requirements) + list(
                 capability.unsupported_constraint_options
@@ -305,49 +332,20 @@ class DriverBackedStepHandler(BaseRuntimeStepHandler):
             state.recorded = True
             return session.fail_fast
 
-        result = session.driver.execute(runtime_step)
+        result = session.driver.execute(driver_step)
         if result.ok:
-            material_delta: dict[str, Any] | None = None
             observation_delta: dict[str, Any] | None = None
-            material_state = session.state.artifacts.get("material_state")
-            if not isinstance(material_state, dict) and runtime_step.op in _MATERIAL_BOOTSTRAP_OPS:
-                session.state.artifacts["material_state"] = {"containers": {}}
-                material_state = session.state.artifacts["material_state"]
-            if isinstance(material_state, dict):
-                material_result = apply_material_step(step=runtime_step, material_state=material_state)
+            material_delta = (material_result.delta or None) if material_result is not None else None
+            if material_result is not None:
                 session.extend_diagnostics(material_result.diagnostics)
-                if material_result.ok:
-                    session.state.artifacts["material_state"] = material_result.material_state
-                    material_delta = material_result.delta or None
-                    if session.material_accounting_recorder is not None and session.material_accounting is not None:
-                        session.material_accounting_recorder.record(
-                            step=runtime_step,
-                            result=material_result,
-                            accounting=session.material_accounting,
-                        )
-                    for binding_event in session.observation_recorder.extract_binding_overwrite_events(material_delta):
-                        session.event_log.emit(
-                            "BINDING_OVERWRITTEN",
-                            step.step_id,
-                            payload=binding_event,
-                            span=step.span,
-                        )
-                else:
-                    session.record_failed(
-                        step,
-                        reason="material_compute_error",
-                        diagnostic=Diagnostic(
-                            code="RT_MATERIAL_ERROR",
-                            message=f"Material compute failed for step '{step.step_id}'",
-                            span=step.span,
-                            node_id=step.step_id,
-                        ),
-                        driver_code=result.code,
-                    )
-                    state.recorded = True
-                    return session.fail_fast
+                _commit_material_result(
+                    step=runtime_step,
+                    source_step=step,
+                    session=session,
+                    material_result=material_result,
+                )
             observation_delta = session.observation_recorder.record(
-                runtime_step,
+                driver_step,
                 session,
                 driver_code=result.code,
                 driver_payload=result.payload,
@@ -380,11 +378,48 @@ class DriverBackedStepHandler(BaseRuntimeStepHandler):
         return session.fail_fast and severity == "fatal"
 
 
+class InternalMaterialStepHandler(BaseRuntimeStepHandler):
+    """Execute runtime-only material operations without exposing them to drivers."""
+
+    def execute_current_step(self, step: PlanStep, session: RuntimeSession, state: RuntimeStepState) -> bool:
+        runtime_step = session.value_resolver.resolve_step_args(step, session.state)
+        state.resolved_step = runtime_step
+        material_result = _preflight_material_step(runtime_step, session)
+        if material_result is None:
+            material_result = apply_material_step(step=runtime_step, material_state={"containers": {}})
+        session.extend_diagnostics(material_result.diagnostics)
+        if not material_result.ok:
+            session.record_failed(
+                step,
+                reason="material_compute_error",
+                diagnostic=Diagnostic(
+                    code="RT_MATERIAL_ERROR",
+                    message=f"Material compute failed for step '{step.step_id}'",
+                    span=step.span,
+                    node_id=step.step_id,
+                ),
+                driver_code="RUNTIME_MATERIAL_REJECTED",
+            )
+            state.recorded = True
+            return session.fail_fast
+        _commit_material_result(
+            step=runtime_step,
+            source_step=step,
+            session=session,
+            material_result=material_result,
+        )
+        state.driver_code = "RUNTIME_MATERIAL_INTERNAL"
+        state.driver_payload = {"op": runtime_step.op, "internal": True}
+        state.material_delta = material_result.delta or None
+        return False
+
+
 class RuntimeStepDispatcher:
     def __init__(self) -> None:
         self.control_handler = ControlStepHandler()
         self.local_state_handler = LocalStateStepHandler()
         self.repeat_handler = RepeatStepHandler()
+        self.internal_material_handler = InternalMaterialStepHandler()
         self.driver_handler = DriverBackedStepHandler()
 
     def dispatch(self, step: PlanStep, session: RuntimeSession) -> bool:
@@ -394,7 +429,109 @@ class RuntimeStepDispatcher:
             return self.local_state_handler.handle(step, session)
         if step.op == "repeat_bind":
             return self.repeat_handler.handle(step, session)
+        if step.op == "FinalizeContainerContents":
+            return self.internal_material_handler.handle(step, session)
         return self.driver_handler.handle(step, session)
+
+
+def _preflight_material_step(runtime_step: PlanStep, session: RuntimeSession):
+    material_state = session.state.artifacts.get("material_state")
+    if not isinstance(material_state, dict):
+        if runtime_step.op not in _MATERIAL_BOOTSTRAP_OPS:
+            return None
+        material_state = {"containers": {}}
+    return apply_material_step(step=runtime_step, material_state=material_state)
+
+
+def _commit_material_result(*, step: PlanStep, source_step: PlanStep, session: RuntimeSession, material_result: Any) -> None:
+    session.state.artifacts["material_state"] = material_result.material_state
+    if session.material_accounting_recorder is not None and session.material_accounting is not None:
+        session.material_accounting_recorder.record(
+            step=step,
+            result=material_result,
+            accounting=session.material_accounting,
+        )
+    material_delta = material_result.delta or None
+    for binding_event in session.observation_recorder.extract_binding_overwrite_events(material_delta):
+        session.event_log.emit(
+            "BINDING_OVERWRITTEN",
+            source_step.step_id,
+            payload=binding_event,
+            span=source_step.span,
+        )
+
+
+def _step_with_material_resolution(step: PlanStep, material_delta: dict[str, Any] | None) -> PlanStep:
+    if step.op != "Mutation" or not isinstance(material_delta, dict):
+        return step
+    sources = step.args.get("sources")
+    source_deltas = material_delta.get("sources")
+    if not isinstance(sources, list) or not isinstance(source_deltas, list):
+        return step
+
+    resolved_sources = deepcopy(sources)
+    resolution_records: list[dict[str, Any]] = []
+    for ordinal, (source, source_delta) in enumerate(zip(resolved_sources, source_deltas)):
+        if not _is_count_pair(source):
+            continue
+        resolution = _find_count_resolution(source_delta)
+        if resolution is None:
+            continue
+        resolved_uL = float(resolution["resolved_transfer_volume_uL"])
+        requested = deepcopy(source.get("right"))
+        source["right"] = {
+            "kind": "IRQuantity",
+            "value": resolved_uL,
+            "unit": "uL",
+            "span": requested.get("span") if isinstance(requested, dict) else None,
+        }
+        resolution_records.append(
+            {
+                "source_ordinal": ordinal,
+                "requested": requested,
+                "resolved": deepcopy(source["right"]),
+                "concentration_cells_per_uL": resolution.get("concentration_cells_per_uL"),
+                "concentration_source": resolution.get("concentration_source"),
+                "policy_id": resolution.get("policy_id"),
+            }
+        )
+    if not resolution_records:
+        return step
+    args = deepcopy(step.args)
+    args["sources"] = resolved_sources
+    args["_runtime_material_resolution"] = {"sources": resolution_records}
+    return PlanStep(
+        step_id=step.step_id,
+        op=step.op,
+        args=args,
+        deps=list(step.deps),
+        gate=deepcopy(step.gate),
+        span=step.span,
+    )
+
+
+def _is_count_pair(value: Any) -> bool:
+    if not isinstance(value, dict) or value.get("kind") != "IRPair":
+        return False
+    quantity = value.get("right")
+    return (
+        isinstance(quantity, dict)
+        and quantity.get("kind") == "IRQuantity"
+        and quantity.get("unit") == "cells"
+    )
+
+
+def _find_count_resolution(value: Any) -> dict[str, Any] | None:
+    if not isinstance(value, dict):
+        return None
+    resolved = value.get("resolved_transfer_volume_uL")
+    if isinstance(resolved, (int, float)):
+        return value
+    for child in value.values():
+        found = _find_count_resolution(child)
+        if found is not None:
+            return found
+    return None
 
 
 def _loop_frames(step_id: str) -> list[tuple[str, int]]:

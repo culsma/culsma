@@ -31,6 +31,40 @@ def test_robot_driver_emits_structured_mutation_command_payload():
     assert result.payload["binding"]["requirement_flags"] == ["gentle"]
 
 
+def test_robot_driver_emits_runtime_resolved_cell_aliquot_volume_and_provenance():
+    step = PlanStep(
+        step_id="step.robot.cells",
+        op="Mutation",
+        args={
+            "target": {"kind": "IRIdentifier", "name": "dst"},
+            "sources": [
+                {
+                    "kind": "IRPair",
+                    "left": {"kind": "IRIdentifier", "name": "src"},
+                    "right": {"kind": "IRQuantity", "value": 75.0, "unit": "uL"},
+                }
+            ],
+            "_runtime_material_resolution": {
+                "sources": [
+                    {
+                        "source_ordinal": 0,
+                        "requested": {"kind": "IRQuantity", "value": 25000.0, "unit": "cells"},
+                        "resolved": {"kind": "IRQuantity", "value": 75.0, "unit": "uL"},
+                    }
+                ]
+            },
+        },
+    )
+
+    result = RobotDriver().execute(step)
+
+    assert result.ok
+    assert result.payload["projection"]["sources"] == "[src:75.0uL]"
+    resolution = result.payload["projection"]["material_resolution"]["sources"][0]
+    assert resolution["requested"]["value"] == 25000.0
+    assert resolution["requested"]["unit"] == "cells"
+
+
 def test_robot_driver_preserves_stub_payload_for_observation_results():
     step = PlanStep(
         step_id="step.robot.obs.1",

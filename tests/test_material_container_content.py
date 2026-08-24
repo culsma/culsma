@@ -12,6 +12,34 @@ def _ir_quantity(value: float, unit: str) -> dict[str, object]:
     return {"kind": "IRQuantity", "value": value, "unit": unit, "span": None}
 
 
+def _count_only_loaded_state() -> dict[str, object]:
+    defined = apply_step(
+        step=PlanStep(
+            step_id="define",
+            op="DefineContent",
+            args={
+                "kind": _ir_string("bio_cellular"),
+                "code": _ir_string("RPE1"),
+                "type": _ir_string("cell_line"),
+            },
+        ),
+        material_state={"containers": {}, "content_registry": {}, "content_bindings": {}},
+    )
+    loaded = apply_step(
+        step=PlanStep(
+            step_id="load",
+            op="LoadContent",
+            args={
+                "container": _ir_string("TubeA"),
+                "content": _ir_string("RPE1"),
+                "amount": _ir_quantity(100000, "cells"),
+            },
+        ),
+        material_state=defined.material_state,
+    )
+    return loaded.material_state
+
+
 def test_runtime_detects_container_content_state_conflict():
     """CF-CNT-005: runtime/material layer owns container-content state conflict diagnostics."""
     define = PlanStep(
@@ -95,6 +123,140 @@ def test_runtime_loads_cell_count_without_adding_container_volume():
         "unit": "cells",
         "value": 100000.0,
     }
+
+
+def test_runtime_finalizes_count_only_cells_as_implicit_suspension_without_erasing_count():
+    define = PlanStep(
+        step_id="define",
+        op="DefineContent",
+        args={
+            "kind": _ir_string("bio_cellular"),
+            "code": _ir_string("RPE1"),
+            "type": _ir_string("cell_line"),
+        },
+    )
+    defined = apply_step(step=define, material_state={"containers": {}, "content_registry": {}, "content_bindings": {}})
+    loaded = apply_step(
+        step=PlanStep(
+            step_id="load",
+            op="LoadContent",
+            args={
+                "container": _ir_string("TubeA"),
+                "content": _ir_string("RPE1"),
+                "amount": _ir_quantity(100000, "cells"),
+            },
+        ),
+        material_state=defined.material_state,
+    )
+
+    result = apply_step(
+        step=PlanStep(
+            step_id="finalize",
+            op="FinalizeContainerContents",
+            args={"container": _ir_string("TubeA")},
+        ),
+        material_state=loaded.material_state,
+    )
+
+    assert result.ok
+    assert [diagnostic.code for diagnostic in result.diagnostics] == ["ASSUMED_CELL_SUSPENSION_CONCENTRATION"]
+    container = result.material_state["containers"]["TubeA"]
+    assert container["volume_uL"] == 100.0
+    assert container["mass_mg"] == 100.0
+    assert container["component_quantities"]["RPE1"]["value"] == 100000.0
+    relationship = container["material_relationships"][0]
+    assert relationship["dispersed_component_ids"] == ["RPE1"]
+    assert relationship["material_state_source"] == "policy_default"
+    assert relationship["assumption_policy_ids"] == ["default_cell_suspension_concentration"]
+    assert relationship["concentration"] == {
+        "value": 1000.0,
+        "unit": "cells_per_uL",
+        "source": "default",
+        "policy_id": "default_cell_suspension_concentration",
+    }
+
+
+def test_runtime_uses_configured_default_cell_suspension_concentration():
+    define = PlanStep(
+        step_id="define",
+        op="DefineContent",
+        args={
+            "kind": _ir_string("bio_cellular"),
+            "code": _ir_string("RPE1"),
+            "type": _ir_string("cell_line"),
+        },
+    )
+    defined = apply_step(step=define, material_state={"containers": {}, "content_registry": {}})
+    loaded = apply_step(
+        step=PlanStep(
+            step_id="load",
+            op="LoadContent",
+            args={
+                "container": _ir_string("TubeA"),
+                "content": _ir_string("RPE1"),
+                "amount": _ir_quantity(100000, "cells"),
+            },
+        ),
+        material_state=defined.material_state,
+    )
+    loaded.material_state["material_policy"] = {
+        "cell_suspension": {"default_concentration_cells_per_uL": 500.0}
+    }
+
+    result = apply_step(
+        step=PlanStep(
+            step_id="finalize",
+            op="FinalizeContainerContents",
+            args={"container": _ir_string("TubeA")},
+        ),
+        material_state=loaded.material_state,
+    )
+
+    assert result.ok
+    container = result.material_state["containers"]["TubeA"]
+    assert container["volume_uL"] == 200.0
+    assert container["material_relationships"][0]["concentration"]["value"] == 500.0
+
+
+def test_runtime_rejects_invalid_configured_cell_suspension_concentration():
+    state = _count_only_loaded_state()
+    state["material_policy"] = {
+        "cell_suspension": {"default_concentration_cells_per_uL": "invalid"}
+    }
+
+    result = apply_step(
+        step=PlanStep(
+            step_id="finalize",
+            op="FinalizeContainerContents",
+            args={"container": _ir_string("TubeA")},
+        ),
+        material_state=state,
+    )
+
+    assert not result.ok
+    assert [diagnostic.code for diagnostic in result.diagnostics] == [
+        "MAT_INVALID_CELL_SUSPENSION_CONCENTRATION"
+    ]
+
+
+def test_runtime_can_disable_implicit_carrier_without_rejecting_constructor():
+    state = _count_only_loaded_state()
+    state["material_policy"] = {"cell_suspension": {"allow_implicit_carrier": False}}
+
+    result = apply_step(
+        step=PlanStep(
+            step_id="finalize",
+            op="FinalizeContainerContents",
+            args={"container": _ir_string("TubeA")},
+        ),
+        material_state=state,
+    )
+
+    assert result.ok
+    assert result.diagnostics == []
+    container = result.material_state["containers"]["TubeA"]
+    assert container["volume_uL"] == 0.0
+    assert container["material_relationships"][0]["transferability"] == "non_homogeneous"
 
 
 def test_runtime_detects_container_overflow():

@@ -4,6 +4,7 @@ from culsma.driver.stub import StubDriver
 from culsma.pipeline.plan_nodes import PlanProgram, PlanStep, ProtocolPlan
 from culsma.runtime.executor import run
 from culsma.runtime.material_compute import apply_step
+from culsma.runtime.material.partition import separation_cell_material_state
 from culsma.runtime.state import init_state
 
 
@@ -134,6 +135,29 @@ def _rounded_components(container: dict[str, object]) -> dict[str, float]:
     return {str(key): round(float(value), 6) for key, value in sorted(components.items())}
 
 
+def test_separation_strategies_own_cell_material_state_by_output_slot():
+    expected = {
+        "centrifuge_program": {"0": "suspension", "1": "pellet"},
+        "phase_partition_program": {"0": "suspension", "1": "suspension"},
+        "precipitation_program": {"0": "precipitate", "1": "suspension"},
+        "filtration_program": {"0": "suspension", "1": "retained"},
+        "centrifugal_filtration_program": {"0": "suspension", "1": "retained"},
+        "magnetic_program": {"0": "retained", "1": "suspension"},
+        "disrupt_program": {"0": "lysate", "1": "debris"},
+        "field_program": {"0": "suspension", "1": "suspension"},
+    }
+
+    actual = {
+        program: {
+            slot: separation_cell_material_state(program, slot=slot)
+            for slot in ("0", "1")
+        }
+        for program in expected
+    }
+
+    assert actual == expected
+
+
 def test_mutation_full_source_moves_all_content():
     step = _mutation_step(_ir_identifier("B"), [_ir_identifier("A")], tool="Vortex")
     state = {
@@ -149,6 +173,39 @@ def test_mutation_full_source_moves_all_content():
     assert result.delta["op"] == "Mutation"
     assert result.material_state["containers"]["A"]["volume_uL"] == 0.0
     assert result.material_state["containers"]["B"]["volume_uL"] == 100.0
+
+
+def test_mutation_rejects_same_content_code_with_different_quantity_axes_before_merge():
+    step = _mutation_step(_ir_identifier("B"), [_ir_identifier("A")])
+    state = {
+        "containers": {
+            "A": {
+                "volume_uL": 10.0,
+                "mass_mg": 10.0,
+                "components": {"AB1": 1000.0},
+                "component_quantities": {
+                    "AB1": {"dimension": "count", "unit": "cells", "value": 1000.0}
+                },
+                "metadata": {},
+            },
+            "B": {
+                "volume_uL": 10.0,
+                "mass_mg": 10.0,
+                "components": {"AB1": 10.0},
+                "component_quantities": {
+                    "AB1": {"dimension": "volume", "unit": "uL", "value": 10.0}
+                },
+                "metadata": {},
+            },
+        }
+    }
+
+    result = apply_step(step=step, material_state=state)
+
+    assert not result.ok
+    assert [diagnostic.code for diagnostic in result.diagnostics] == ["MAT_CONTENT_QUANTITY_AXIS_CONFLICT"]
+    assert result.material_state["containers"]["A"]["component_quantities"]["AB1"]["value"] == 1000.0
+    assert result.material_state["containers"]["B"]["component_quantities"]["AB1"]["value"] == 10.0
 
 
 def test_agit_group_resolution_failure_has_no_partial_effects():
@@ -639,6 +696,39 @@ def test_sep_count_aware_bulk_mass_follows_partitioned_carrier_volume():
     }
 
 
+def test_sep_count_aware_mixed_volume_and_mass_preserves_cross_axis_bulk_proxies():
+    state = _partition_state(
+        components={"MEDIUM": 300.0, "SALT": 10.0, "CELLS": 100000.0},
+        component_quantities={
+            "MEDIUM": {"dimension": "volume", "unit": "uL", "value": 300.0},
+            "SALT": {"dimension": "mass", "unit": "mg", "value": 10.0},
+            "CELLS": {"dimension": "count", "unit": "cells", "value": 100000.0},
+        },
+        registry={
+            "MEDIUM": ("formulation", "medium"),
+            "SALT": ("chemical", "inorganic_compound"),
+            "CELLS": ("bio_cellular", "cell_population"),
+        },
+    )
+    state["containers"]["lysate"]["volume_uL"] = 310.0
+    state["containers"]["lysate"]["mass_mg"] = 310.0
+
+    result = apply_step(step=_sep_step(program_name="centrifuge_program"), material_state=state)
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    slots = result.material_state["indexed_bindings"]["sep_group"]
+    slot0 = result.material_state["containers"][slots["0"]]
+    slot1 = result.material_state["containers"][slots["1"]]
+    assert slot0["volume_uL"] + slot1["volume_uL"] == 310.0
+    assert slot0["mass_mg"] + slot1["mass_mg"] == 310.0
+    assert slot0["component_quantities"]["MEDIUM"]["value"] == 297.0
+    assert slot1["component_quantities"]["MEDIUM"]["value"] == 3.0
+    assert result.delta["partition"]["bulk_quantity_policy"] == {
+        "volume": "component_quantity_sum_plus_cross_axis_proxy",
+        "mass": "component_quantity_sum_plus_cross_axis_proxy",
+    }
+
+
 def test_sep_phase_partition_sends_target_phase_material_away_from_extraction_reagent():
     result = apply_step(
         step=_sep_step(program_name="phase_partition_program"),
@@ -735,6 +825,76 @@ def test_sep_filtration_sends_liquid_to_filtrate_and_target_to_retentate():
     }
     slot1_classes = result.material_state["containers"][slots["1"]]["metadata"]["component_partition_classes"]
     assert slot1_classes["DNA"] == "retained_fraction"
+
+
+def test_sep_aspiration_preserves_surface_associated_content_on_its_native_count_axis():
+    state = _partition_state(
+        components={"RPE1": 100000.0, "MEDIUM": 300.0},
+        component_quantities={
+            "RPE1": {"dimension": "count", "unit": "cells", "value": 100000.0},
+            "MEDIUM": {"dimension": "volume", "unit": "uL", "value": 300.0},
+        },
+        registry={
+            "RPE1": ("bio_cellular", "cell_line"),
+            "MEDIUM": ("formulation", "medium"),
+        },
+    )
+    state["content_registry"]["RPE1"]["content_attrs"] = {"state": "adherent"}
+
+    result = apply_step(
+        step=_sep_step(
+            program_name="filtration_program",
+            program_args_override=[
+                _ir_arg("membrane", _ir_string("adherent_cell_surface")),
+                _ir_arg("drive", _ir_string("aspiration")),
+            ],
+        ),
+        material_state=state,
+    )
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    slots = result.material_state["indexed_bindings"]["sep_group"]
+    filtrate = result.material_state["containers"][slots["0"]]
+    retentate = result.material_state["containers"][slots["1"]]
+    assert filtrate["component_quantities"]["RPE1"]["value"] == 0.0
+    assert retentate["component_quantities"]["RPE1"]["value"] == 100000.0
+    assert filtrate["component_quantities"]["MEDIUM"]["value"] == 297.0
+    assert retentate["component_quantities"]["MEDIUM"]["value"] == 3.0
+    fate = result.delta["partition"]["fates_by_component"]["RPE1"]
+    assert fate["source"] == "preserved_association"
+    assert fate["association"] == "container_surface"
+    assert fate["retained_slot"] == "1"
+    assert result.delta["partition"]["operation_contract"]["program_args"] == {
+        "membrane": "adherent_cell_surface",
+        "drive": "aspiration",
+    }
+
+
+def test_sep_aspiration_does_not_treat_free_cell_count_as_surface_associated():
+    result = apply_step(
+        step=_sep_step(
+            program_name="filtration_program",
+            program_args_override=[
+                _ir_arg("membrane", _ir_string("adherent_cell_surface")),
+                _ir_arg("drive", _ir_string("aspiration")),
+            ],
+        ),
+        material_state=_partition_state(
+            components={"RPE1": 100000.0},
+            component_quantities={
+                "RPE1": {"dimension": "count", "unit": "cells", "value": 100000.0},
+            },
+            registry={"RPE1": ("bio_cellular", "cell_line")},
+        ),
+    )
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    slots = result.material_state["indexed_bindings"]["sep_group"]
+    filtrate = result.material_state["containers"][slots["0"]]
+    retentate = result.material_state["containers"][slots["1"]]
+    assert filtrate["component_quantities"]["RPE1"]["value"] == 1000.0
+    assert retentate["component_quantities"]["RPE1"]["value"] == 99000.0
+    assert result.delta["partition"]["fates_by_component"]["RPE1"]["source"] == "reference_prediction"
 
 
 def test_sep_centrifugal_filtration_uses_filtrate_and_retentate_slots():
