@@ -1,5 +1,83 @@
 # Changelog
 
+## Internal 1.0.6rc4
+
+### Scope
+
+This internal GitHub prerelease completes the cell-count material model started
+in rc3 and makes separation fate depend on physical association and the full
+operation description rather than quantity units or a program name alone.
+
+It includes:
+
+- constructor finalization after all load items, with explicit carrier
+  preference and a recorded default `500 cells/uL` policy for free count-only
+  cellular populations
+- typed cell-material relationships covering suspension, adherent, pellet, and
+  other non-homogeneous states, including concentration provenance and
+  transferability
+- concentration-resolved count aliquots that move the corresponding carrier
+  volume through the ordinary transfer path instead of moving cells with zero
+  bulk material
+- shared count-transfer behavior for ordinary sources, source-local partition
+  selectors, and indexed `container.contents[i]` sources
+- atomic diagnostics for invalid suspension concentration, ambiguous cellular
+  populations, non-suspension count transfer, implicit-carrier overflow,
+  insufficient count, and cross-axis content merge conflicts
+- complete separation program descriptors at material-fate resolution,
+  association-aware retention/release, native count/volume/mass allocation,
+  and inspectable fate provenance
+- the optional public `sep(..., component_fates = {...})` override with semantic
+  output names, ratio/conservation validation, and runtime source-content checks
+- adherent-cell aspiration coverage using standalone `sep(...)` followed by
+  `container.contents[0]`, while preserving cell count on the retained surface
+- driver-facing pre-resolution fields for physical count-transfer volume and
+  synchronized architecture, reference, and user-guide documentation
+
+### Compatibility
+
+- The published `internal-1.0.6rc3` tag and release remain unchanged.
+- Existing volume- and mass-only material behavior remains compatible.
+- A free count-only cellular constructor may now gain inferred carrier volume
+  during finalization and may fail capacity validation if that physical volume
+  does not fit.
+- Adherent count remains count-only unless explicit liquid is loaded; direct
+  count aliquots from adherent, pellet, or other non-homogeneous states are
+  rejected.
+- `source.partition(program)[i]` remains a compatibility selector and shares
+  the same material model, while standalone `sep(...)` plus
+  `container.contents[i]` is the preferred reusable contents-state path.
+- `component_fates` describes conservative two-output allocation only. Explicit
+  recovery loss and predictive scientific models remain outside this release.
+
+### Install
+
+After the GitHub prerelease assets are published:
+
+```bash
+python -m pip install https://github.com/culsma/culsma/releases/download/internal-1.0.6rc4/culsma-1.0.6rc4-py3-none-any.whl
+```
+
+Source tag install:
+
+```bash
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@internal-1.0.6rc4"
+```
+
+### Verified
+
+- `python -m pytest -q`
+  - result: `830 passed`
+- corrected canonical Case08 source run
+  - result: `133/133` steps completed with `0 diagnostics`
+- source CLI and isolated installed-wheel CLI smoke checks passed
+- `python -m build`
+  - result: `culsma-1.0.6rc4.tar.gz` and
+    `culsma-1.0.6rc4-py3-none-any.whl` built
+- `python -m twine check`
+  - result: passed for both distributions
+- isolated wheel install reports `culsma.__version__ == "1.0.6rc4"`
+
 ## Internal 1.0.6rc3
 
 ### Scope
