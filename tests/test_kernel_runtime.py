@@ -1379,12 +1379,12 @@ protocol T() returns (plasmid_dna) {
     }
     components = result.state.artifacts["material_state"]["containers"]["Plasmid DNA"]["components"]
     assert {key: round(float(value), 6) for key, value in sorted(components.items())} == {
-        "AQ": 0.002215,
-        "DNA_EXT": 5.208923,
-        "ETOH70": 0.559441,
-        "ETOH_ABS": 0.005035,
-        "PCI": 0.000025,
-        "TE": 2.797203,
+        "AQ": 0.012921,
+        "DNA_EXT": 30.380375,
+        "ETOH70": 3.262865,
+        "ETOH_ABS": 0.029366,
+        "PCI": 0.000147,
+        "TE": 16.314326,
     }
     final_products = result.user_result["materials"]["final_products"]
     plasmid = next(item for item in final_products if item["name"] == "Plasmid DNA")
@@ -2681,8 +2681,8 @@ protocol T {
     assert material["bindings"]["sample_tube"] == "SampleTube"
     slots = material["indexed_bindings"]["sep_group"]
     assert set(slots.keys()) == {"0", "1"}
-    assert material["containers"][slots["0"]]["volume_uL"] == 50.0
-    assert material["containers"][slots["1"]]["volume_uL"] == 50.0
+    assert material["containers"][slots["0"]]["volume_uL"] == 99.0
+    assert material["containers"][slots["1"]]["volume_uL"] == 1.0
 
 
 def test_runtime_cell_count_load_and_volume_transfer_keep_count_independent():
@@ -3401,6 +3401,36 @@ protocol T {
     assert fate["ratios"] == {"0": 0.25, "1": 0.75}
 
 
+def test_runtime_volume_transfer_uses_bulk_projected_from_author_component_fate():
+    plan = _build_plan_from_source(
+        """
+protocol T returns (supernatant) {
+  let source = tube(label = "Source", capacity = 100uL, load = [
+    content(kind = bio_molecule_or_virus, type = dna, code = "AMPLIFIED_CDNA"):100uL
+  ]);
+  let supernatant = tube(label = "Supernatant", capacity = 100uL);
+  let parts = sep(
+    sample = source,
+    program = magnetic_program(duration = 2min),
+    component_fates = {
+      AMPLIFIED_CDNA: { bound: 1%, flowthrough: 99% }
+    }
+  );
+  supernatant << [parts[1]:90uL];
+  return supernatant = supernatant;
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    material = result.state.artifacts["material_state"]
+    supernatant = material["containers"][material["bindings"]["supernatant"]]
+    assert supernatant["volume_uL"] == 90.0
+    assert supernatant["component_quantities"]["AMPLIFIED_CDNA"]["value"] == 90.0
+
+
 @pytest.mark.parametrize(
     ("rule", "expected_code"),
     [
@@ -4001,8 +4031,8 @@ protocol T() returns (supernatant_out) {
         "value": {
             "kind": "container_ref",
             "id": "p0.s1::0",
-            "volume_uL": 50,
-            "mass_mg": 50,
+            "volume_uL": 99,
+            "mass_mg": 99,
         },
     }
     assert result.state.artifacts["material_state"]["containers"]["p0.s1::0"]["components"]["S1"] == 99.0
@@ -4076,7 +4106,7 @@ protocol T() returns (fractions_out) {
     assert group["kind"] == "container_group_ref"
     assert group["member_count"] == 2
     assert [member["id"] for member in group["members"]] == ["p0.s1::0", "p0.s1::1"]
-    assert [member["volume_uL"] for member in group["members"]] == [50, 50]
+    assert [member["volume_uL"] for member in group["members"]] == [99, 1]
 
 
 def test_runtime_captures_frac_group_return_as_container_group_ref():

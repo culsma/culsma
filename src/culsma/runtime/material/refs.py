@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from culsma.runtime.material.args import arg_string
-from culsma.runtime.material.ledger import ensure_container
+from culsma.runtime.material.ledger import ensure_container, refresh_container_aggregates
 from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_UL
 
 
@@ -294,17 +294,21 @@ def top_up_source_for_estimate(source: dict[str, Any], qty: float, mode: str, so
     if qty <= 0:
         return
     comps = source.setdefault("components", {})
+    quantities = source.setdefault("component_quantities", {})
     if mode == "volume":
-        source["volume_uL"] = float(source.get("volume_uL", 0.0)) + qty
-        source["mass_mg"] = float(source.get("mass_mg", 0.0)) + qty
         comps[source_name] = float(comps.get(source_name, 0.0)) + qty
+        if isinstance(quantities, dict):
+            record = quantities.setdefault(source_name, {"dimension": "volume", "unit": "uL", "value": 0.0})
+            if isinstance(record, dict):
+                record["value"] = float(record.get("value", 0.0)) + qty
     elif mode == "mass":
-        source["mass_mg"] = float(source.get("mass_mg", 0.0)) + qty
-        source["volume_uL"] = float(source.get("volume_uL", 0.0)) + qty
         comps[source_name] = float(comps.get(source_name, 0.0)) + qty
+        if isinstance(quantities, dict):
+            record = quantities.setdefault(source_name, {"dimension": "mass", "unit": "mg", "value": 0.0})
+            if isinstance(record, dict):
+                record["value"] = float(record.get("value", 0.0)) + qty
     else:
         comps[source_name] = float(comps.get(source_name, 0.0)) + qty
-        quantities = source.setdefault("component_quantities", {})
         if isinstance(quantities, dict):
             record = quantities.setdefault(
                 source_name,
@@ -312,6 +316,7 @@ def top_up_source_for_estimate(source: dict[str, Any], qty: float, mode: str, so
             )
             if isinstance(record, dict):
                 record["value"] = float(record.get("value", 0.0)) + qty
+    refresh_container_aggregates(source)
 
 
 def _is_qualified_name(name: str) -> bool:

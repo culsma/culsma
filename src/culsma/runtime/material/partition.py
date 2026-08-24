@@ -13,7 +13,7 @@ from culsma.pipeline.content_vocab import (
     parse_content_kind,
     parse_content_type,
 )
-from culsma.runtime.material.ledger import set_container_material
+from culsma.runtime.material.ledger import refresh_container_aggregates, set_container_material
 from culsma.runtime.material.separation_fate import (
     ExplicitContentFate,
     resolve_content_fate,
@@ -203,37 +203,8 @@ def partition_sep_material(
     source_components = source.setdefault("components", {})
     source_quantities = source.get("component_quantities")
     source_quantities = source_quantities if isinstance(source_quantities, dict) else {}
-    if not isinstance(source_components, dict) or not source_components:
-        ratio0, ratio1 = 0.5, 0.5
-        source_volume = float(source.get("volume_uL", 0.0))
-        source_mass = float(source.get("mass_mg", 0.0))
-        set_container_material(
-            slot0,
-            volume_uL=source_volume * ratio0,
-            mass_mg=source_mass * ratio0,
-            components={},
-            component_quantities={},
-        )
-        set_container_material(
-            slot1,
-            volume_uL=source_volume * ratio1,
-            mass_mg=source_mass * ratio1,
-            components={},
-            component_quantities={},
-        )
-        if source is not slot0 and source is not slot1:
-            set_container_material(source, volume_uL=0.0, mass_mg=0.0, components={}, component_quantities={})
-        out: dict[str, Any] = {
-            "mode": "generic_empty",
-            "default_ratio": ratio0,
-            "strategy": strategy.program_kind,
-            "slot_contract": dict(strategy.slot_contract),
-            "operation_contract": operation_contract.to_dict(),
-        }
-        preservation_contract = strategy.preservation_contract()
-        if preservation_contract is not None:
-            out["preservation_contract"] = preservation_contract
-        return out
+    if not isinstance(source_components, dict):
+        source_components = {}
 
     class_resolver = ContentClassResolver()
     slot0_components: dict[str, float] = {}
@@ -290,45 +261,28 @@ def partition_sep_material(
         source_quantity = source_quantities.get(component_id)
         if isinstance(source_quantity, dict):
             quantity_value = float(source_quantity.get("value", amount_f))
-            slot0_quantities[component_id] = {
-                "dimension": source_quantity.get("dimension"),
-                "unit": source_quantity.get("unit"),
-                "value": quantity_value * ratio0,
-            }
-            slot1_quantities[component_id] = {
-                "dimension": source_quantity.get("dimension"),
-                "unit": source_quantity.get("unit"),
-                "value": quantity_value * ratio1,
-            }
+            slot0_quantities[component_id] = dict(source_quantity)
+            slot0_quantities[component_id]["value"] = quantity_value * ratio0
+            slot1_quantities[component_id] = dict(source_quantity)
+            slot1_quantities[component_id]["value"] = quantity_value * ratio1
         slot0_classes[component_id] = strategy.output_class(partition_class, slot="0").value
         slot1_classes[component_id] = strategy.output_class(partition_class, slot="1").value
 
-    source_volume = float(source.get("volume_uL", 0.0))
-    source_mass = float(source.get("mass_mg", 0.0))
     set_container_material(
         slot0,
-        volume_uL=source_volume * 0.5,
-        mass_mg=source_mass * 0.5,
         components=slot0_components,
         component_classes=slot0_classes,
         component_quantities=slot0_quantities,
     )
     set_container_material(
         slot1,
-        volume_uL=source_volume * 0.5,
-        mass_mg=source_mass * 0.5,
         components=slot1_components,
         component_classes=slot1_classes,
         component_quantities=slot1_quantities,
     )
-    bulk_quantity_policy = normalize_partition_slot_bulk_pair(
-        slot0,
-        slot1,
-        source_volume_uL=source_volume,
-        source_mass_mg=source_mass,
-    )
+    bulk_quantity_policy = project_partition_slot_aggregates(slot0, slot1)
     if source is not slot0 and source is not slot1:
-        set_container_material(source, volume_uL=0.0, mass_mg=0.0, components={}, component_quantities={})
+        set_container_material(source, components={}, component_quantities={})
 
     out = {
         "mode": "program_partition",
@@ -348,137 +302,15 @@ def partition_sep_material(
     return out
 
 
-def normalize_partition_slot_bulk_pair(
+def project_partition_slot_aggregates(
     slot0: dict[str, Any],
     slot1: dict[str, Any],
-    *,
-    source_volume_uL: float,
-    source_mass_mg: float,
 ) -> dict[str, str]:
-    slots = (slot0, slot1)
-    has_count = any(_has_quantity_dimension(slot, "count") for slot in slots)
-    if not has_count:
-        return {"volume": "conservative_equal_split", "mass": "conservative_equal_split"}
+    """Project both aggregate caches only from each slot's routed detail."""
 
-    for slot in slots:
-        normalize_source_partition_slot_bulk(slot)
-
-    has_volume = any(_has_quantity_dimension(slot, "volume") for slot in slots)
-    has_mass = any(_has_quantity_dimension(slot, "mass") for slot in slots)
-    if not has_volume and not has_mass:
-        return {"volume": "conservative_equal_split", "mass": "conservative_equal_split"}
-
-    volume_policy = _normalize_partition_bulk_axis(
-        slots,
-        key="volume_uL",
-        source_total=source_volume_uL,
-        explicit_dimension="volume",
-        proxy_dimension="mass",
-    )
-    mass_policy = _normalize_partition_bulk_axis(
-        slots,
-        key="mass_mg",
-        source_total=source_mass_mg,
-        explicit_dimension="mass",
-        proxy_dimension="volume",
-    )
-    return {"volume": volume_policy, "mass": mass_policy}
-
-
-def _normalize_partition_bulk_axis(
-    slots: tuple[dict[str, Any], dict[str, Any]],
-    *,
-    key: str,
-    source_total: float,
-    explicit_dimension: str,
-    proxy_dimension: str,
-) -> str:
-    explicit_values = [_quantity_dimension_sum(slot, explicit_dimension) for slot in slots]
-    explicit_total = sum(explicit_values)
-    proxy_values = [_quantity_dimension_sum(slot, proxy_dimension) for slot in slots]
-    proxy_total = sum(proxy_values)
-
-    if explicit_total > source_total + 1e-12:
-        scale = 0.0 if explicit_total <= 0.0 else max(0.0, source_total) / explicit_total
-        for slot, value in zip(slots, explicit_values, strict=True):
-            slot[key] = value * scale
-        return "component_quantity_scaled_to_source_bulk"
-
-    residual = max(0.0, source_total - explicit_total)
-    if residual <= 1e-12:
-        for slot, value in zip(slots, explicit_values, strict=True):
-            slot[key] = value
-        return "component_quantity_sum"
-
-    if proxy_total > 1e-12:
-        for slot, explicit_value, proxy_value in zip(slots, explicit_values, proxy_values, strict=True):
-            slot[key] = explicit_value + residual * proxy_value / proxy_total
-        if explicit_total > 1e-12:
-            return "component_quantity_sum_plus_cross_axis_proxy"
-        return "carrier_volume_ratio" if proxy_dimension == "volume" else "carrier_mass_ratio"
-
-    existing_values = [max(0.0, float(slot.get(key, 0.0))) for slot in slots]
-    existing_total = sum(existing_values)
-    if existing_total <= 1e-12:
-        existing_values = [1.0, 1.0]
-        existing_total = 2.0
-    for slot, explicit_value, existing_value in zip(slots, explicit_values, existing_values, strict=True):
-        slot[key] = explicit_value + residual * existing_value / existing_total
-    return "conservative_equal_split"
-
-
-def normalize_source_partition_slot_bulk(slot: dict[str, Any]) -> None:
-    quantities = slot.get("component_quantities")
-    has_count_quantity = isinstance(quantities, dict) and any(
-        isinstance(quantity, dict) and quantity.get("dimension") == "count"
-        for quantity in quantities.values()
-    )
-    if isinstance(quantities, dict) and quantities and has_count_quantity:
-        volume_total = 0.0
-        mass_total = 0.0
-        has_volume = False
-        has_mass = False
-        for quantity in quantities.values():
-            if not isinstance(quantity, dict):
-                continue
-            dimension = quantity.get("dimension")
-            value = float(quantity.get("value", 0.0))
-            if dimension == "volume":
-                has_volume = True
-                volume_total += value
-            elif dimension == "mass":
-                has_mass = True
-                mass_total += value
-        if has_volume:
-            slot["volume_uL"] = volume_total
-        if has_mass:
-            slot["mass_mg"] = mass_total
-        return
-    components = slot.get("components")
-    if not isinstance(components, dict) or not components:
-        return
-    amount = sum(float(value) for value in components.values())
-    slot["volume_uL"] = amount
-    slot["mass_mg"] = amount
-
-
-def _has_quantity_dimension(slot: dict[str, Any], dimension: str) -> bool:
-    quantities = slot.get("component_quantities")
-    return isinstance(quantities, dict) and any(
-        isinstance(quantity, dict) and quantity.get("dimension") == dimension
-        for quantity in quantities.values()
-    )
-
-
-def _quantity_dimension_sum(slot: dict[str, Any], dimension: str) -> float:
-    quantities = slot.get("component_quantities")
-    if not isinstance(quantities, dict):
-        return 0.0
-    return sum(
-        float(quantity.get("value", 0.0))
-        for quantity in quantities.values()
-        if isinstance(quantity, dict) and quantity.get("dimension") == dimension
-    )
+    refresh_container_aggregates(slot0)
+    refresh_container_aggregates(slot1)
+    return {"volume": "detail_ledger_projection", "mass": "detail_ledger_projection"}
 
 
 def _partition_fallback_reason(partition_class: PartitionClass) -> str:

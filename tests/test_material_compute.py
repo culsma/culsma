@@ -4,6 +4,7 @@ from culsma.driver.stub import StubDriver
 from culsma.pipeline.plan_nodes import PlanProgram, PlanStep, ProtocolPlan
 from culsma.runtime.executor import run
 from culsma.runtime.material_compute import apply_step
+from culsma.runtime.material.ledger import move_ratio
 from culsma.runtime.material.partition import separation_cell_material_state
 from culsma.runtime.state import init_state
 
@@ -617,6 +618,16 @@ def test_sep_creates_two_slot_indexed_group_binding():
     assert set(slots) == {"0", "1"}
     assert result.material_state["containers"][slots["0"]]["volume_uL"] == 50.0
     assert result.material_state["containers"][slots["1"]]["volume_uL"] == 50.0
+    for slot in slots.values():
+        quantity = result.material_state["containers"][slot]["component_quantities"]["DNA"]
+        assert quantity == {
+            "dimension": "volume",
+            "unit": "uL",
+            "value": 50.0,
+            "source": "compatibility_input_normalization",
+            "density_mg_per_uL": 1.0,
+        }
+        assert "legacy_residual_quantities" not in result.material_state["containers"][slot]["metadata"]
     assert {
         (movement.source, movement.destination, movement.volume_uL, movement.mass_mg)
         for movement in result.movements
@@ -624,6 +635,116 @@ def test_sep_creates_two_slot_indexed_group_binding():
         ("lysate", slots["0"], 50.0, 50.0),
         ("lysate", slots["1"], 50.0, 50.0),
     }
+
+
+def test_sep_ignores_stale_source_aggregate_and_projects_only_from_detail():
+    for supplied_aggregate in (25.0, 250.0):
+        state = {
+            "containers": {
+                "lysate": {
+                    "volume_uL": supplied_aggregate,
+                    "mass_mg": supplied_aggregate,
+                    "components": {"DNA": 100.0},
+                    "component_quantities": {
+                        "DNA": {"dimension": "volume", "unit": "uL", "value": 100.0}
+                    },
+                    "metadata": {},
+                }
+            }
+        }
+
+        result = apply_step(step=_sep_step(), material_state=state)
+
+        assert result.ok
+        slots = result.material_state["indexed_bindings"]["sep_group"]
+        assert [result.material_state["containers"][slots[key]]["volume_uL"] for key in ("0", "1")] == [
+            50.0,
+            50.0,
+        ]
+        assert result.delta["partition"]["bulk_quantity_policy"] == {
+            "volume": "detail_ledger_projection",
+            "mass": "detail_ledger_projection",
+        }
+
+
+def test_sep_routes_quantity_only_input_as_authoritative_component_detail():
+    state = {
+        "containers": {
+            "lysate": {
+                "volume_uL": 0.0,
+                "mass_mg": 0.0,
+                "component_quantities": {
+                    "DNA": {"dimension": "volume", "unit": "uL", "value": 100.0}
+                },
+                "metadata": {},
+            }
+        },
+        "content_registry": {
+            "DNA": {"content_kind": "bio_molecule_or_virus", "content_type": "dna"}
+        },
+    }
+
+    result = apply_step(step=_sep_step(), material_state=state)
+
+    assert result.ok
+    slots = result.material_state["indexed_bindings"]["sep_group"]
+    assert [result.material_state["containers"][slots[key]]["volume_uL"] for key in ("0", "1")] == [99.0, 1.0]
+
+
+def test_capacity_guard_uses_the_same_detail_projection_for_mass_only_content():
+    step = _mutation_step(
+        _ir_identifier("target"),
+        [{"kind": "IRPair", "left": _ir_identifier("source"), "right": _ir_quantity(60.0, "uL"), "span": None}],
+    )
+    state = {
+        "containers": {
+            "source": {
+                "components": {"BUFFER": 60.0},
+                "component_quantities": {
+                    "BUFFER": {"dimension": "volume", "unit": "uL", "value": 60.0}
+                },
+                "metadata": {},
+            },
+            "target": {
+                "components": {"SALT": 150.0},
+                "component_quantities": {
+                    "SALT": {"dimension": "mass", "unit": "mg", "value": 150.0}
+                },
+                "metadata": {"capacity_uL": 200.0},
+            },
+        }
+    }
+
+    result = apply_step(step=step, material_state=state)
+
+    assert not result.ok
+    assert [diagnostic.code for diagnostic in result.diagnostics] == ["MAT_CONTAINER_OVERFLOW"]
+
+
+def test_compatibility_aggregate_becomes_movable_detail_before_separation():
+    state = {
+        "containers": {
+            "lysate": {
+                "volume_uL": 100.0,
+                "mass_mg": 100.0,
+                "components": {"DNA": 10.0},
+                "metadata": {},
+            }
+        }
+    }
+
+    result = apply_step(step=_sep_step(), material_state=state)
+
+    assert result.ok
+    slot_id = result.material_state["indexed_bindings"]["sep_group"]["0"]
+    slot = result.material_state["containers"][slot_id]
+    target = {"volume_uL": 0.0, "mass_mg": 0.0, "components": {}, "metadata": {}}
+    move_ratio(slot, target, 0.5)
+    assert slot["component_quantities"]["DNA"]["value"] == 25.0
+    assert slot["volume_uL"] == 25.0
+    assert target["component_quantities"]["DNA"]["value"] == 25.0
+    assert target["volume_uL"] == 25.0
+    assert "legacy_residual_quantities" not in slot["metadata"]
 
 
 def test_sep_keep_source_pellet_reuses_source_container_for_slot_1():
@@ -668,6 +789,88 @@ def test_sep_centrifuge_partitions_liquid_to_supernatant_and_cells_to_pellet():
     }
 
 
+def test_sep_volume_only_bulk_is_projected_from_component_fates():
+    state = _partition_state(
+        components={"LYSIS_BUFFER": 2000.0, "CELL_PELLET": 1000.0},
+        component_quantities={
+            "LYSIS_BUFFER": {"dimension": "volume", "unit": "uL", "value": 2000.0},
+            "CELL_PELLET": {"dimension": "volume", "unit": "uL", "value": 1000.0},
+        },
+        registry={
+            "LYSIS_BUFFER": ("formulation", "buffer"),
+            "CELL_PELLET": ("bio_cellular", "microbial_cells"),
+        },
+    )
+    state["containers"]["lysate"]["volume_uL"] = 3000.0
+    state["containers"]["lysate"]["mass_mg"] = 3000.0
+    state["content_registry"]["LYSIS_BUFFER"]["content_attrs"] = {"role": "lysis"}
+    state["content_registry"]["CELL_PELLET"]["content_attrs"] = {"state": "pellet"}
+
+    result = apply_step(step=_sep_step(program_name="centrifuge_program"), material_state=state)
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    slots = result.material_state["indexed_bindings"]["sep_group"]
+    supernatant = result.material_state["containers"][slots["0"]]
+    pellet = result.material_state["containers"][slots["1"]]
+    assert supernatant["component_quantities"]["LYSIS_BUFFER"]["value"] == 1980.0
+    assert supernatant["component_quantities"]["CELL_PELLET"]["value"] == 0.0
+    assert pellet["component_quantities"]["LYSIS_BUFFER"]["value"] == 20.0
+    assert pellet["component_quantities"]["CELL_PELLET"]["value"] == 1000.0
+    assert (supernatant["volume_uL"], pellet["volume_uL"]) == (1980.0, 1020.0)
+    assert result.delta["partition"]["bulk_quantity_policy"]["volume"] == "detail_ledger_projection"
+
+
+def test_sep_magnetic_volume_only_bulk_follows_the_same_component_fate():
+    state = _partition_state(
+        components={"AMPLIFIED_CDNA": 100.0},
+        component_quantities={
+            "AMPLIFIED_CDNA": {"dimension": "volume", "unit": "uL", "value": 100.0},
+        },
+        registry={"AMPLIFIED_CDNA": ("bio_molecule_or_virus", "dna")},
+    )
+    state["containers"]["lysate"]["volume_uL"] = 100.0
+    state["containers"]["lysate"]["mass_mg"] = 100.0
+    result = apply_step(
+        step=_sep_step(program_name="magnetic_program"),
+        material_state=state,
+    )
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    slots = result.material_state["indexed_bindings"]["sep_group"]
+    bound = result.material_state["containers"][slots["0"]]
+    flowthrough = result.material_state["containers"][slots["1"]]
+    assert bound["component_quantities"]["AMPLIFIED_CDNA"]["value"] == 99.0
+    assert flowthrough["component_quantities"]["AMPLIFIED_CDNA"]["value"] == 1.0
+    assert (bound["volume_uL"], flowthrough["volume_uL"]) == (99.0, 1.0)
+    assert result.delta["partition"]["bulk_quantity_policy"]["volume"] == "detail_ledger_projection"
+
+
+def test_material_compute_rejects_invalid_component_quantity_before_projection():
+    invalid_quantities = (
+        ({"dimension": "volume", "unit": "unsupported", "value": 100.0}, "invalid unit 'unsupported'"),
+        ({"dimension": "volume", "unit": "uL", "value": float("nan")}, "non-negative numeric value"),
+        (
+            {"dimension": "volume", "unit": "uL", "value": 100.0, "density_mg_per_uL": float("inf")},
+            "invalid density",
+        ),
+    )
+    for quantity, expected_message in invalid_quantities:
+        state = _partition_state(
+            components={"AMPLIFIED_CDNA": 100.0},
+            component_quantities={"AMPLIFIED_CDNA": quantity},
+            registry={"AMPLIFIED_CDNA": ("bio_molecule_or_virus", "dna")},
+        )
+
+        result = apply_step(
+            step=_sep_step(program_name="magnetic_program"),
+            material_state=state,
+        )
+
+        assert not result.ok
+        assert [diagnostic.code for diagnostic in result.diagnostics] == ["MAT_INVALID_COMPONENT_QUANTITY"]
+        assert expected_message in result.diagnostics[0].message
+
+
 def test_sep_count_aware_bulk_mass_follows_partitioned_carrier_volume():
     result = apply_step(
         step=_sep_step(program_name="centrifuge_program"),
@@ -691,8 +894,8 @@ def test_sep_count_aware_bulk_mass_follows_partitioned_carrier_volume():
     assert (supernatant["volume_uL"], supernatant["mass_mg"]) == (198.0, 198.0)
     assert (pellet["volume_uL"], pellet["mass_mg"]) == (2.0, 2.0)
     assert result.delta["partition"]["bulk_quantity_policy"] == {
-        "volume": "component_quantity_sum",
-        "mass": "carrier_volume_ratio",
+        "volume": "detail_ledger_projection",
+        "mass": "detail_ledger_projection",
     }
 
 
@@ -724,8 +927,8 @@ def test_sep_count_aware_mixed_volume_and_mass_preserves_cross_axis_bulk_proxies
     assert slot0["component_quantities"]["MEDIUM"]["value"] == 297.0
     assert slot1["component_quantities"]["MEDIUM"]["value"] == 3.0
     assert result.delta["partition"]["bulk_quantity_policy"] == {
-        "volume": "component_quantity_sum_plus_cross_axis_proxy",
-        "mass": "component_quantity_sum_plus_cross_axis_proxy",
+        "volume": "detail_ledger_projection",
+        "mass": "detail_ledger_projection",
     }
 
 
@@ -839,6 +1042,8 @@ def test_sep_aspiration_preserves_surface_associated_content_on_its_native_count
             "MEDIUM": ("formulation", "medium"),
         },
     )
+    state["containers"]["lysate"]["volume_uL"] = 300.0
+    state["containers"]["lysate"]["mass_mg"] = 300.0
     state["content_registry"]["RPE1"]["content_attrs"] = {"state": "adherent"}
 
     result = apply_step(

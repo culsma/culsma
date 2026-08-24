@@ -16,12 +16,13 @@ from culsma.runtime.material.ledger import (
     container_component_classes,
     container_component_quantities,
     container_count_cells,
+    normalize_material_state_detail_ledger,
     component_quantity_merge_conflict,
     ensure_container,
     move_explicit,
+    refresh_container_aggregates,
 )
 from culsma.runtime.material.partition import (
-    normalize_source_partition_slot_bulk,
     partition_sep_material,
     separation_cell_material_state,
     separation_slot_contract,
@@ -124,13 +125,9 @@ def apply_target_addition_impact(
         if not isinstance(moved, dict):
             return {"action": "stale", "reason": "missing_material_snapshot"}
         part = impact.get("part")
-        moved_uL = float(moved.get("volume_uL", 0.0))
-        moved_mg = float(moved.get("mass_mg", 0.0))
         move_explicit(
             moved,
             part,
-            moved_uL,
-            moved_mg,
             component_ratio=1.0,
         )
         return {
@@ -167,19 +164,17 @@ def moved_snapshot_from_delta(source_before: Any, delta: dict[str, Any]) -> dict
         ratio = _best_effort_component_ratio(source_before, moved_uL=moved_uL, moved_mg=moved_mg)
     else:
         return None
-    return moved_snapshot_from_explicit(source_before, moved_uL=moved_uL, moved_mg=moved_mg, ratio=ratio)
+    return moved_snapshot_from_explicit(source_before, ratio=ratio)
 
 
 def moved_snapshot_from_explicit(
     source_before: dict[str, Any],
     *,
-    moved_uL: float,
-    moved_mg: float,
     ratio: float,
 ) -> dict[str, Any]:
     snapshot = {"volume_uL": 0.0, "mass_mg": 0.0, "components": {}, "metadata": {}}
     source_copy = deepcopy(source_before)
-    move_explicit(source_copy, snapshot, moved_uL, moved_mg, component_ratio=ratio)
+    move_explicit(source_copy, snapshot, component_ratio=ratio)
     return snapshot
 
 
@@ -418,7 +413,7 @@ class MaterialIndexedPartsStateManager:
                     else (source_cells * split_ratio / current_cells if current_cells > 0 else 0.0)
                 )
             )
-            move_explicit(source, slot, moved_volume, moved_mass, component_ratio=component_ratio)
+            move_explicit(source, slot, component_ratio=component_ratio)
             refresh_cell_suspension_relationship(working, slot_id, forced_state="suspension")
             slot_bindings[str(i)] = slot_id
 
@@ -426,7 +421,7 @@ class MaterialIndexedPartsStateManager:
         last_slot = ensure_container(working, last_slot_id)
         residual_volume = float(source.get("volume_uL", 0.0))
         residual_mass = float(source.get("mass_mg", 0.0))
-        move_explicit(source, last_slot, residual_volume, residual_mass, component_ratio=1.0)
+        move_explicit(source, last_slot, component_ratio=1.0)
         refresh_cell_suspension_relationship(working, last_slot_id, forced_state="suspension")
         refresh_cell_suspension_relationship(working, source_id)
         slot_bindings[str(bins - 1)] = last_slot_id
@@ -651,8 +646,6 @@ class MaterialIndexedPartsStateManager:
             part=selection.part,
             source=source,
             target=target,
-            moved_uL=moved_uL,
-            moved_mg=moved_mg,
             ratio=ratio,
         )
         refresh_cell_suspension_relationship_record(
@@ -668,8 +661,6 @@ class MaterialIndexedPartsStateManager:
         )
         moved_snapshot = moved_snapshot_from_explicit(
             part_before,
-            moved_uL=moved_uL,
-            moved_mg=moved_mg,
             ratio=ratio,
         )
         target_impact = self.record_target_addition_impact(
@@ -709,6 +700,9 @@ class MaterialIndexedPartsStateManager:
         keep_source: str | None,
         explicit_fates: dict[str, ExplicitContentFate],
     ) -> ContentsPartitionTransition | MaterialUpdateResult:
+        detail_error = normalize_material_state_detail_ledger(state)
+        if detail_error is not None:
+            return diagnostic_result(step, state, "MAT_INVALID_COMPONENT_QUANTITY", detail_error)
         source = container(state, source_id)
         if source is None:
             return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", f"Unknown sep sample '{source_id}'")
@@ -741,9 +735,6 @@ class MaterialIndexedPartsStateManager:
             explicit_fates=explicit_fates,
         )
         _refresh_separation_relationships(state, source_id, slot0_id, slot1_id, program_kind)
-        if not (_has_count_quantity(slot0) or _has_count_quantity(slot1)):
-            normalize_source_partition_slot_bulk(slot0)
-            normalize_source_partition_slot_bulk(slot1)
         contents_state = record_partitioned_contents_state(
             state=state,
             source_id=source_id,
@@ -772,6 +763,9 @@ class MaterialIndexedPartsStateManager:
         bins: int,
         program_kind: str,
     ) -> ContentsPartitionTransition | MaterialUpdateResult:
+        detail_error = normalize_material_state_detail_ledger(state)
+        if detail_error is not None:
+            return diagnostic_result(step, state, "MAT_INVALID_COMPONENT_QUANTITY", detail_error)
         source = container(state, source_id)
         if source is None:
             return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", f"Unknown frac sample '{source_id}'")
@@ -799,7 +793,7 @@ class MaterialIndexedPartsStateManager:
                     else (source_cells * split_ratio / current_cells if current_cells > 0 else 0.0)
                 )
             )
-            move_explicit(source, slot, moved_volume, moved_mass, component_ratio=component_ratio)
+            move_explicit(source, slot, component_ratio=component_ratio)
             refresh_cell_suspension_relationship(state, slot_id, forced_state="suspension")
             slot_bindings[str(i)] = slot_id
 
@@ -807,7 +801,7 @@ class MaterialIndexedPartsStateManager:
         last_slot = ensure_container(state, last_slot_id)
         residual_volume = float(source.get("volume_uL", 0.0))
         residual_mass = float(source.get("mass_mg", 0.0))
-        move_explicit(source, last_slot, residual_volume, residual_mass, component_ratio=1.0)
+        move_explicit(source, last_slot, component_ratio=1.0)
         refresh_cell_suspension_relationship(state, last_slot_id, forced_state="suspension")
         refresh_cell_suspension_relationship(state, source_id)
         slot_bindings[str(bins - 1)] = last_slot_id
@@ -999,7 +993,7 @@ def record_partitioned_contents_state(
         residual_uL = float(slot_part.get("volume_uL", 0.0))
         residual_mg = float(slot_part.get("mass_mg", 0.0))
         if residual_uL or residual_mg or container_count_cells(slot_part):
-            move_explicit(slot_part, source, residual_uL, residual_mg, component_ratio=1.0)
+            move_explicit(slot_part, source, component_ratio=1.0)
     contract = slot_contract if isinstance(slot_contract, dict) else {slot: f"slot_{slot}" for slot in copied_parts}
     record = {
         "kind": kind,
@@ -1258,17 +1252,8 @@ def _move_contents_part_material(
     part: dict[str, Any],
     source: dict[str, Any],
     target: dict[str, Any],
-    moved_uL: float,
-    moved_mg: float,
     ratio: float,
 ) -> None:
-    part["volume_uL"] = _clamp_near_zero(float(part.get("volume_uL", 0.0)) - moved_uL)
-    part["mass_mg"] = _clamp_near_zero(float(part.get("mass_mg", 0.0)) - moved_mg)
-    source["volume_uL"] = _clamp_near_zero(float(source.get("volume_uL", 0.0)) - moved_uL)
-    source["mass_mg"] = _clamp_near_zero(float(source.get("mass_mg", 0.0)) - moved_mg)
-    target["volume_uL"] = float(target.get("volume_uL", 0.0)) + moved_uL
-    target["mass_mg"] = float(target.get("mass_mg", 0.0)) + moved_mg
-
     part_components = part.setdefault("components", {})
     source_components = source.setdefault("components", {})
     target_components = target.setdefault("components", {})
@@ -1304,11 +1289,8 @@ def _move_contents_part_material(
             if isinstance(target_quantities, dict):
                 target_quantity = target_quantities.get(name)
                 if not isinstance(target_quantity, dict):
-                    target_quantity = {
-                        "dimension": part_quantity.get("dimension"),
-                        "unit": part_quantity.get("unit"),
-                        "value": 0.0,
-                    }
+                    target_quantity = deepcopy(part_quantity)
+                    target_quantity["value"] = 0.0
                     target_quantities[name] = target_quantity
                 target_quantity["value"] = float(target_quantity.get("value", 0.0)) + moved_quantity
         if moved > 1e-12:
@@ -1319,20 +1301,13 @@ def _move_contents_part_material(
             part_classes.pop(name, None)
         if source_components.get(name) == 0.0 and isinstance(source_classes, dict):
             source_classes.pop(name, None)
+    refresh_container_aggregates(part)
+    refresh_container_aggregates(source)
+    refresh_container_aggregates(target)
 
 
 def _clamp_near_zero(value: float) -> float:
     return 0.0 if abs(value) <= 1e-12 else value
-
-
-def _has_count_quantity(container_value: Any) -> bool:
-    if not isinstance(container_value, dict):
-        return False
-    quantities = container_value.get("component_quantities")
-    return isinstance(quantities, dict) and any(
-        isinstance(quantity, dict) and quantity.get("dimension") == "count"
-        for quantity in quantities.values()
-    )
 
 
 def _refresh_separation_relationships(

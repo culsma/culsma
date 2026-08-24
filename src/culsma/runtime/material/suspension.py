@@ -10,7 +10,7 @@ from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.material.args import arg_string
 from culsma.runtime.material.diagnostics import diagnostic_result
-from culsma.runtime.material.ledger import check_capacity_guard, ensure_container
+from culsma.runtime.material.ledger import check_capacity_guard, ensure_container, refresh_container_aggregates
 from culsma.runtime.material.refs import resolve_or_create_container_ref
 from culsma.runtime.material.result import MaterialUpdateResult
 
@@ -503,8 +503,7 @@ def _add_implicit_carrier(
     quantities = container.setdefault("component_quantities", {})
     if isinstance(quantities, dict):
         quantities[carrier_id] = {"dimension": "volume", "unit": "uL", "value": volume_uL}
-    container["volume_uL"] = float(container.get("volume_uL", 0.0)) + volume_uL
-    container["mass_mg"] = float(container.get("mass_mg", 0.0)) + volume_uL
+    refresh_container_aggregates(container)
     index = state.setdefault("container_content_index", {})
     if isinstance(index, dict):
         contents = index.setdefault(container_id, {})

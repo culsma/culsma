@@ -21,6 +21,7 @@ from culsma.runtime.material.ledger import (
     check_capacity_guard,
     collect_unit_into_container,
     container,
+    container_component_quantity_total,
     density_mg_per_uL,
     ensure_container,
     move_explicit,
@@ -29,7 +30,6 @@ from culsma.runtime.material.ledger import (
     component_quantity_merge_conflict,
 )
 from culsma.runtime.material.partition import (
-    normalize_source_partition_slot_bulk,
     partition_sep_material,
     separation_cell_material_state,
 )
@@ -264,7 +264,7 @@ class FullContainerSourceHandler(MutationSourceHandler):
             return conflict
         source_before = deepcopy(source)
         moved_cell_state = _cell_material_state(source)
-        move_explicit(source, target, moved_uL, moved_mg, component_ratio=1.0)
+        move_explicit(source, target, component_ratio=1.0)
         refresh_cell_suspension_relationship(ctx.state, source_id)
         refresh_cell_suspension_relationship(
             ctx.state,
@@ -272,7 +272,7 @@ class FullContainerSourceHandler(MutationSourceHandler):
             forced_state=_merged_cell_material_state(target, moved_cell_state),
         )
         invalidate_contents_state(ctx.state, source_id, reason="whole_container_transfer")
-        moved_snapshot = moved_snapshot_from_explicit(source_before, moved_uL=moved_uL, moved_mg=moved_mg, ratio=1.0)
+        moved_snapshot = moved_snapshot_from_explicit(source_before, ratio=1.0)
         target_impact = apply_target_addition_impact(
             step=ctx.step,
             state=ctx.state,
@@ -417,9 +417,6 @@ def apply_source_partition_transfer(
         slot1_id,
         forced_state=separation_cell_material_state(program_kind, slot="1"),
     )
-    if not (count_component_ids(slot0) or count_component_ids(slot1)):
-        normalize_source_partition_slot_bulk(slot0)
-        normalize_source_partition_slot_bulk(slot1)
     diagnostics = _partition_fallback_diagnostics(step, partition)
     selected_id = slot0_id if slot_key == "0" else slot1_id
     selected = container(state, selected_id)
@@ -438,11 +435,9 @@ def apply_source_partition_transfer(
         conflict = _quantity_axis_conflict(step, state, selected, target, selected_id, target_id)
         if conflict is not None:
             return conflict
-        move_explicit(selected, target, moved_uL, moved_mg, component_ratio=1.0)
+        move_explicit(selected, target, component_ratio=1.0)
         moved_snapshot = moved_snapshot_from_explicit(
             selected_before,
-            moved_uL=moved_uL,
-            moved_mg=moved_mg,
             ratio=1.0,
         )
         transfer_delta = {
@@ -476,7 +471,7 @@ def apply_source_partition_transfer(
             conflict = _quantity_axis_conflict(step, state, residual, source_after, residual_id, source_id)
             if conflict is not None:
                 return conflict
-            move_explicit(residual, source_after, residual_uL, residual_mg, component_ratio=1.0)
+            move_explicit(residual, source_after, component_ratio=1.0)
     containers = state.setdefault("containers", {})
     if isinstance(containers, dict):
         containers.pop(slot0_id, None)
@@ -594,10 +589,10 @@ def _apply_transfer_volume(
 ) -> MaterialUpdateResult:
     src = state["containers"][src_id]
     dst = state["containers"][dst_id]
-    src_volume = float(src.get("volume_uL", 0.0))
+    src_volume = container_component_quantity_total(src, "volume")
     if not inventory_check_enabled(state) and src_volume < requested_uL:
         top_up_source_for_estimate(source=src, qty=requested_uL - src_volume, mode="volume", source_name=src_id)
-        src_volume = float(src.get("volume_uL", 0.0))
+        src_volume = container_component_quantity_total(src, "volume")
 
     if requested_uL < 0:
         return diagnostic_result(step, state, "MAT_UNSUPPORTED_UNIT", "Negative transfer amount is not allowed")
@@ -640,14 +635,12 @@ def _apply_transfer_volume(
         return diagnostic_result(step, state, "MAT_INVALID_DENSITY", f"Invalid density metadata for '{src_id}'")
 
     requested_mg = requested_uL * density
-    src_mass = float(src.get("mass_mg", 0.0))
+    src_mass = container_component_quantity_total(src, "mass")
     effective_src_mass = max(src_mass, src_volume * density)
     effective_src_volume = max(src_volume, effective_src_mass / density)
     if effective_src_mass < requested_mg:
         return diagnostic_result(step, state, "MAT_INSUFFICIENT_MASS", f"Insufficient source mass in '{src_id}'")
 
-    src["mass_mg"] = effective_src_mass
-    src["volume_uL"] = effective_src_volume
     component_ratio = 0.0 if effective_src_mass == 0 else requested_mg / effective_src_mass
     moved_cells = container_count_cells(src) * component_ratio
     moved_cell_state = _cell_material_state(src)
@@ -657,8 +650,6 @@ def _apply_transfer_volume(
     move_explicit(
         src=src,
         dst=dst,
-        moved_volume_uL=requested_uL,
-        moved_mass_mg=requested_mg,
         component_ratio=component_ratio,
     )
     refresh_cell_suspension_relationship(state, src_id)
@@ -690,10 +681,10 @@ def _apply_transfer_mass(
 ) -> MaterialUpdateResult:
     src = state["containers"][src_id]
     dst = state["containers"][dst_id]
-    src_mass = float(src.get("mass_mg", 0.0))
+    src_mass = container_component_quantity_total(src, "mass")
     if not inventory_check_enabled(state) and src_mass < requested_mg:
         top_up_source_for_estimate(source=src, qty=requested_mg - src_mass, mode="mass", source_name=src_id)
-        src_mass = float(src.get("mass_mg", 0.0))
+        src_mass = container_component_quantity_total(src, "mass")
 
     if requested_mg < 0:
         return diagnostic_result(step, state, "MAT_UNSUPPORTED_UNIT", "Negative transfer amount is not allowed")
@@ -746,8 +737,6 @@ def _apply_transfer_mass(
     if effective_src_volume < requested_uL:
         return diagnostic_result(step, state, "MAT_INSUFFICIENT_VOLUME", f"Insufficient source volume in '{src_id}'")
 
-    src["volume_uL"] = effective_src_volume
-    src["mass_mg"] = effective_src_mass
     component_ratio = 0.0 if effective_src_volume == 0 else requested_uL / effective_src_volume
     moved_cells = container_count_cells(src) * component_ratio
     moved_cell_state = _cell_material_state(src)
@@ -757,8 +746,6 @@ def _apply_transfer_mass(
     move_explicit(
         src=src,
         dst=dst,
-        moved_volume_uL=requested_uL,
-        moved_mass_mg=requested_mg,
         component_ratio=component_ratio,
     )
     refresh_cell_suspension_relationship(state, src_id)

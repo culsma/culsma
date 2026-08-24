@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from math import isfinite
 from typing import Any
 
 from culsma.pipeline.content_vocab import ContainerKind
@@ -10,7 +11,7 @@ from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.material.args import arg_quantity
 from culsma.runtime.material.diagnostics import diagnostic_result
 from culsma.runtime.material.result import MaterialUpdateResult
-from culsma.runtime.material.units import VOLUME_TO_UL
+from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_UL
 
 
 CONSERVATION_ABS_EPS = 1e-12
@@ -28,16 +29,12 @@ class MaterialLedger:
     def set_container_material(
         container: dict[str, Any],
         *,
-        volume_uL: float,
-        mass_mg: float,
         components: dict[str, float],
         component_classes: dict[str, str] | None = None,
         component_quantities: dict[str, dict[str, Any]] | None = None,
     ) -> None:
         set_container_material(
             container,
-            volume_uL=volume_uL,
-            mass_mg=mass_mg,
             components=components,
             component_classes=component_classes,
             component_quantities=component_quantities,
@@ -51,11 +48,9 @@ class MaterialLedger:
     def move_explicit(
         src: dict[str, Any],
         dst: dict[str, Any],
-        moved_volume_uL: float,
-        moved_mass_mg: float,
         component_ratio: float,
     ) -> None:
-        move_explicit(src, dst, moved_volume_uL, moved_mass_mg, component_ratio)
+        move_explicit(src, dst, component_ratio)
 
     @staticmethod
     def component_quantity_merge_conflict(src: dict[str, Any], dst: dict[str, Any]) -> str | None:
@@ -101,14 +96,10 @@ class MaterialLedger:
 def set_container_material(
     container: dict[str, Any],
     *,
-    volume_uL: float,
-    mass_mg: float,
     components: dict[str, float],
     component_classes: dict[str, str] | None = None,
     component_quantities: dict[str, dict[str, Any]] | None = None,
 ) -> None:
-    container["volume_uL"] = volume_uL
-    container["mass_mg"] = mass_mg
     container["components"] = dict(components)
     if component_quantities is not None:
         container["component_quantities"] = deepcopy(component_quantities)
@@ -120,26 +111,18 @@ def set_container_material(
             }
         else:
             metadata.pop("component_partition_classes", None)
+    refresh_container_aggregates(container)
 
 
 def move_ratio(src: dict[str, Any], dst: dict[str, Any], ratio: float) -> None:
-    moved_volume = ratio * float(src.get("volume_uL", 0.0))
-    moved_mass = ratio * float(src.get("mass_mg", 0.0))
-    move_explicit(src=src, dst=dst, moved_volume_uL=moved_volume, moved_mass_mg=moved_mass, component_ratio=ratio)
+    move_explicit(src=src, dst=dst, component_ratio=ratio)
 
 
 def move_explicit(
     src: dict[str, Any],
     dst: dict[str, Any],
-    moved_volume_uL: float,
-    moved_mass_mg: float,
     component_ratio: float,
 ) -> None:
-    src["volume_uL"] = float(src.get("volume_uL", 0.0)) - moved_volume_uL
-    dst["volume_uL"] = float(dst.get("volume_uL", 0.0)) + moved_volume_uL
-    src["mass_mg"] = float(src.get("mass_mg", 0.0)) - moved_mass_mg
-    dst["mass_mg"] = float(dst.get("mass_mg", 0.0)) + moved_mass_mg
-
     src_comp = src.setdefault("components", {})
     dst_comp = dst.setdefault("components", {})
     src_quantities = container_component_quantities(src)
@@ -157,11 +140,8 @@ def move_explicit(
             if isinstance(dst_quantities, dict):
                 target_quantity = dst_quantities.get(name)
                 if not isinstance(target_quantity, dict):
-                    target_quantity = {
-                        "dimension": source_quantity.get("dimension"),
-                        "unit": source_quantity.get("unit"),
-                        "value": 0.0,
-                    }
+                    target_quantity = deepcopy(source_quantity)
+                    target_quantity["value"] = 0.0
                     dst_quantities[name] = target_quantity
                 if (
                     target_quantity.get("dimension") == source_quantity.get("dimension")
@@ -178,6 +158,8 @@ def move_explicit(
                 src_quantities[name]["value"] = 0.0
             if isinstance(src_classes, dict):
                 src_classes.pop(name, None)
+    refresh_container_aggregates(src)
+    refresh_container_aggregates(dst)
 
 
 def component_quantity_merge_conflict(src: dict[str, Any], dst: dict[str, Any]) -> str | None:
@@ -226,6 +208,12 @@ def container_component_quantities(container: dict[str, Any], *, create: bool = 
 
 
 def container_count_cells(container: Any) -> float:
+    return container_component_quantity_total(container, "count")
+
+
+def container_component_quantity_total(container: Any, dimension: str) -> float:
+    """Project one canonical quantity-axis total from authoritative component detail."""
+
     if not isinstance(container, dict):
         return 0.0
     quantities = container_component_quantities(container)
@@ -233,16 +221,223 @@ def container_count_cells(container: Any) -> float:
         return 0.0
     total = 0.0
     for quantity in quantities.values():
-        if not isinstance(quantity, dict) or quantity.get("dimension") != "count":
+        if not isinstance(quantity, dict) or quantity.get("dimension") != dimension:
             continue
-        if quantity.get("unit") == "cells":
-            total += float(quantity.get("value", 0.0))
+        value = float(quantity.get("value", 0.0))
+        unit = str(quantity.get("unit", ""))
+        if dimension == "volume" and unit in VOLUME_TO_UL:
+            total += value * VOLUME_TO_UL[unit]
+        elif dimension == "mass" and unit in MASS_TO_MG:
+            total += value * MASS_TO_MG[unit]
+        elif dimension == "count" and unit in COUNT_TO_CELLS:
+            total += value * COUNT_TO_CELLS[unit]
     return total
 
 
+def container_detail_aggregates(container: Any) -> tuple[float, float]:
+    """Project compatibility volume and mass exclusively from quantity detail."""
+
+    if not isinstance(container, dict):
+        return 0.0, 0.0
+    quantities = container_component_quantities(container)
+    if not isinstance(quantities, dict):
+        return 0.0, 0.0
+    container_density = density_mg_per_uL(container)
+    volume_uL = 0.0
+    mass_mg = 0.0
+    for quantity in quantities.values():
+        if not isinstance(quantity, dict):
+            continue
+        dimension = quantity.get("dimension")
+        value = float(quantity.get("value", 0.0))
+        unit = str(quantity.get("unit", ""))
+        raw_density = quantity.get("density_mg_per_uL")
+        try:
+            quantity_density = float(raw_density) if raw_density is not None else None
+        except (TypeError, ValueError):
+            quantity_density = None
+        cross_axis_projection = quantity.get("cross_axis_projection", True) is not False
+        density = quantity_density or container_density or (1.0 if cross_axis_projection else None)
+        if density is not None and density <= 0.0:
+            density = None
+        if dimension == "volume" and unit in VOLUME_TO_UL:
+            native_volume = value * VOLUME_TO_UL[unit]
+            volume_uL += native_volume
+            if density is not None:
+                mass_mg += native_volume * density
+        elif dimension == "mass" and unit in MASS_TO_MG:
+            native_mass = value * MASS_TO_MG[unit]
+            mass_mg += native_mass
+            if density is not None:
+                volume_uL += native_mass / density
+    return volume_uL, mass_mg
+
+
+def refresh_container_aggregates(container: Any) -> None:
+    """Refresh aggregate compatibility fields from the authoritative detail ledger."""
+
+    if not isinstance(container, dict):
+        return
+    volume_uL, mass_mg = container_detail_aggregates(container)
+    container["volume_uL"] = volume_uL
+    container["mass_mg"] = mass_mg
+
+
+def normalize_material_state_detail_ledger(state: dict[str, Any]) -> str | None:
+    """Normalize compatibility-only API input into component quantity detail."""
+
+    containers = state.get("containers")
+    if not isinstance(containers, dict):
+        return None
+    for container_id, raw_container in containers.items():
+        if not isinstance(raw_container, dict):
+            continue
+        error = _component_quantity_validation_error(str(container_id), raw_container)
+        if error is not None:
+            return error
+    for container_id, raw_container in containers.items():
+        if isinstance(raw_container, dict):
+            _normalize_container_detail_ledger(str(container_id), raw_container)
+    return None
+
+
+def _component_quantity_validation_error(container_id: str, container: dict[str, Any]) -> str | None:
+    quantities = container.get("component_quantities")
+    if quantities is None:
+        return None
+    if not isinstance(quantities, dict):
+        return f"Container '{container_id}' component_quantities must be a mapping"
+    unit_maps = {"volume": VOLUME_TO_UL, "mass": MASS_TO_MG, "count": COUNT_TO_CELLS}
+    for component_id, quantity in quantities.items():
+        if not isinstance(quantity, dict):
+            return f"Container '{container_id}' quantity for '{component_id}' must be a mapping"
+        dimension = quantity.get("dimension")
+        unit_map = unit_maps.get(str(dimension))
+        if unit_map is None:
+            return f"Container '{container_id}' quantity for '{component_id}' has invalid dimension '{dimension}'"
+        unit = str(quantity.get("unit", ""))
+        if unit not in unit_map:
+            return f"Container '{container_id}' quantity for '{component_id}' has invalid unit '{unit}'"
+        value = quantity.get("value")
+        if (
+            not isinstance(value, (int, float))
+            or isinstance(value, bool)
+            or not isfinite(float(value))
+            or float(value) < 0.0
+        ):
+            return f"Container '{container_id}' quantity for '{component_id}' must have a non-negative numeric value"
+        raw_density = quantity.get("density_mg_per_uL")
+        if raw_density is not None and (
+            not isinstance(raw_density, (int, float))
+            or isinstance(raw_density, bool)
+            or not isfinite(float(raw_density))
+            or float(raw_density) <= 0.0
+        ):
+            return f"Container '{container_id}' quantity for '{component_id}' has invalid density"
+    return None
+
+
+def refresh_material_state_aggregates(state: dict[str, Any]) -> None:
+    """Reproject every runtime container aggregate from authoritative detail."""
+
+    containers = state.get("containers")
+    if not isinstance(containers, dict):
+        return
+    for raw_container in containers.values():
+        refresh_container_aggregates(raw_container)
+
+
+def _normalize_container_detail_ledger(container_id: str, container: dict[str, Any]) -> None:
+    supplied_volume = max(0.0, float(container.get("volume_uL", 0.0)))
+    supplied_mass = max(0.0, float(container.get("mass_mg", 0.0)))
+    components = container.setdefault("components", {})
+    if not isinstance(components, dict):
+        container["components"] = {}
+        components = container["components"]
+    quantities = container_component_quantities(container, create=True)
+    assert isinstance(quantities, dict)
+    for component_id, quantity in quantities.items():
+        if component_id not in components and isinstance(quantity, dict):
+            components[str(component_id)] = float(quantity.get("value", 0.0))
+
+    _apply_declared_density(quantities, density_mg_per_uL(container))
+
+    projected_volume, projected_mass = container_detail_aggregates(container)
+    missing_component_ids = [
+        str(component_id)
+        for component_id in components
+        if not isinstance(quantities.get(str(component_id)), dict)
+    ]
+    compatibility_only_input = not quantities and (
+        supplied_volume > CONSERVATION_ABS_EPS or supplied_mass > CONSERVATION_ABS_EPS
+    )
+    if missing_component_ids or compatibility_only_input:
+        residual_volume = max(0.0, supplied_volume - projected_volume)
+        residual_mass = max(0.0, supplied_mass - projected_mass)
+    else:
+        residual_volume = 0.0
+        residual_mass = 0.0
+    if residual_volume > CONSERVATION_ABS_EPS or residual_mass > CONSERVATION_ABS_EPS:
+        recipients = missing_component_ids or [_compatibility_residual_id(container_id, components, quantities)]
+        weights = _component_weights(components, recipients)
+        dimension = "volume" if residual_volume > CONSERVATION_ABS_EPS else "mass"
+        total = residual_volume if dimension == "volume" else residual_mass
+        unit = "uL" if dimension == "volume" else "mg"
+        declared_density = density_mg_per_uL(container)
+        residual_density = declared_density if declared_density is not None and declared_density > 0.0 else None
+        if (
+            residual_density is None
+            and residual_volume > CONSERVATION_ABS_EPS
+            and residual_mass > CONSERVATION_ABS_EPS
+        ):
+            residual_density = residual_mass / residual_volume
+        for component_id, weight in zip(recipients, weights, strict=True):
+            if component_id not in components:
+                components[component_id] = total * weight
+            normalized_quantity = {
+                "dimension": dimension,
+                "unit": unit,
+                "value": total * weight,
+                "source": "compatibility_input_normalization",
+            }
+            if residual_density is not None:
+                normalized_quantity["density_mg_per_uL"] = residual_density
+            else:
+                normalized_quantity["cross_axis_projection"] = False
+            quantities[component_id] = normalized_quantity
+    refresh_container_aggregates(container)
+
+
+def _component_weights(components: dict[str, Any], component_ids: list[str]) -> list[float]:
+    raw_weights = [max(0.0, float(components.get(component_id, 0.0))) for component_id in component_ids]
+    total = sum(raw_weights)
+    if total <= CONSERVATION_ABS_EPS:
+        return [1.0 / len(component_ids)] * len(component_ids)
+    return [weight / total for weight in raw_weights]
+
+
+def _apply_declared_density(quantities: dict[str, Any], container_density: float | None) -> None:
+    if container_density is not None and container_density > 0.0:
+        for quantity in quantities.values():
+            if isinstance(quantity, dict) and quantity.get("dimension") in {"volume", "mass"}:
+                quantity.setdefault("density_mg_per_uL", container_density)
+
+
+def _compatibility_residual_id(
+    container_id: str,
+    components: dict[str, Any],
+    quantities: dict[str, Any],
+) -> str:
+    base = f"__compatibility_residual__::{container_id}"
+    candidate = base
+    ordinal = 1
+    while candidate in components or candidate in quantities:
+        candidate = f"{base}::{ordinal}"
+        ordinal += 1
+    return candidate
+
+
 def remove_ratio(source: dict[str, Any], ratio: float) -> None:
-    source["volume_uL"] = float(source.get("volume_uL", 0.0)) * (1.0 - ratio)
-    source["mass_mg"] = float(source.get("mass_mg", 0.0)) * (1.0 - ratio)
     comp = source.setdefault("components", {})
     for name, amount in list(comp.items()):
         comp[name] = float(amount) * (1.0 - ratio)
@@ -251,6 +446,7 @@ def remove_ratio(source: dict[str, Any], ratio: float) -> None:
         for quantity in quantities.values():
             if isinstance(quantity, dict):
                 quantity["value"] = float(quantity.get("value", 0.0)) * (1.0 - ratio)
+    refresh_container_aggregates(source)
 
 
 def primary_concentration(container: dict[str, Any]) -> float | None:
@@ -350,22 +546,10 @@ def check_capacity_guard(
 
 
 def container_physical_volume_uL(container_value: dict[str, Any]) -> float:
-    """Return physical volume without cross-axis bulk compatibility proxies."""
+    """Return physical volume from the same authoritative detail projection."""
 
-    quantities = container_value.get("component_quantities")
-    if isinstance(quantities, dict):
-        volume_uL = 0.0
-        for quantity in quantities.values():
-            if not isinstance(quantity, dict) or quantity.get("dimension") != "volume":
-                continue
-            unit = quantity.get("unit")
-            raw_value = quantity.get("value")
-            if unit not in VOLUME_TO_UL or not isinstance(raw_value, (int, float)):
-                continue
-            volume_uL += float(raw_value) * VOLUME_TO_UL[str(unit)]
-        if quantities:
-            return volume_uL
-    return float(container_value.get("volume_uL", 0.0))
+    volume_uL, _ = container_detail_aggregates(container_value)
+    return volume_uL
 
 
 def default_container_capacity_uL(kind: str | None) -> float | None:

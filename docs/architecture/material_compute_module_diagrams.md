@@ -354,6 +354,40 @@ let parts = sep(
 | reference transport prediction | Default split for freely mobile classified content |
 | conservative unresolved fate | Equal split plus an uncertainty diagnostic |
 
+### Detail C0: Material Ledger Normalization
+
+Every material calculation begins from one authoritative detail ledger. At the
+material-compute API boundary, compatibility-only aggregate input is converted
+into provenance-bearing component quantity detail. When detail already exists,
+any supplied aggregate value is discarded and reprojected; it is never compared
+or retained as an independent quantity decision.
+
+```mermaid
+stateDiagram-v2
+    direction TB
+
+    [*] --> ReadState
+    state "Read named component quantities,<br/>material relations, and any supplied<br/>aggregate volume or mass" as ReadState
+    state "Project the explainable aggregate<br/>from the available detail" as ProjectKnown
+    ReadState --> ProjectKnown
+
+    state DetailChoice <<choice>>
+    ProjectKnown --> DetailChoice
+    DetailChoice --> AcceptDetail : [quantity detail exists]
+    DetailChoice --> MaterializeCompatibilityDetail : [only aggregate compatibility input exists]
+    DetailChoice --> RejectState : [quantity detail has an invalid axis or unit]
+
+    state "Use the named detail and discard<br/>any supplied aggregate cache value" as AcceptDetail
+    state "Convert compatibility-only aggregate input<br/>into named or unattributed quantity detail<br/>with provenance" as MaterializeCompatibilityDetail
+    state "Reject invalid quantity detail<br/>with a focused diagnostic" as RejectState
+    AcceptDetail --> Reproject
+    MaterializeCompatibilityDetail --> Reproject
+
+    state "Reproject aggregate compatibility caches<br/>from the complete normalized detail ledger" as Reproject
+    Reproject --> [*]
+    RejectState --> [*]
+```
+
 ### Detail C: Per-Content Quantity Allocation
 
 This activity converts the physical fate into quantities while preserving the
@@ -364,7 +398,7 @@ stateDiagram-v2
     direction TB
 
     [*] --> ReadQuantity
-    state "Read the authoritative quantity axis<br/>and source amount" as ReadQuantity
+    state "Read the normalized detail ledger:<br/>named content quantities plus any<br/>explicit legacy residual" as ReadQuantity
     state "Apply the ideal per-part fate<br/>on that same quantity axis" as ApplyIdealFate
     ReadQuantity --> ApplyIdealFate
 
@@ -380,13 +414,13 @@ stateDiagram-v2
     PredictionValidity --> FailureMerge : [prediction is invalid or out of range]
 
     state PredictionMerge <<choice>>
-    state "Calculate each part's amount<br/>on the native count, volume, or mass axis" as CalculateNativeAmounts
+    state "Calculate each part's detail amounts<br/>on their native count, volume, or mass axes" as CalculateNativeAmounts
     PredictionMerge --> CalculateNativeAmounts
 
-    state "Derive only permitted bulk compatibility values<br/>from explicit volume or mass and valid carrier relations" as DeriveBulk
+    state "Project each part's aggregate volume and mass<br/>once from its routed detail ledger,<br/>carrier relations, and declared density" as DeriveBulk
     CalculateNativeAmounts --> DeriveBulk
 
-    state "Check non-negative amounts, ratio bounds,<br/>axis consistency, and explicit loss accounting" as ValidateAllocation
+    state "Check non-negative amounts, ratio bounds,<br/>axis consistency, explicit loss accounting,<br/>and aggregate-to-detail equivalence" as ValidateAllocation
     DeriveBulk --> ValidateAllocation
 
     state AllocationValidity <<choice>>
@@ -414,7 +448,7 @@ stateDiagram-v2
     state "Apply resulting association,<br/>accessibility, and preservation states" as ApplyStates
     AssembleParts --> ApplyStates
 
-    state "Compare source and result totals<br/>independently on count, volume, and mass axes" as CheckConservation
+    state "Compare source and result detail totals<br/>independently on count, volume, and mass axes" as CheckConservation
     ApplyStates --> CheckConservation
 
     state ConservationChoice <<choice>>
@@ -422,7 +456,7 @@ stateDiagram-v2
     ConservationChoice --> CheckOrganization : [outputs plus explicit loss equal the source]
     ConservationChoice --> FailureMerge : [material is created or disappears without an explicit loss]
 
-    state "Check part meanings, component placement,<br/>state consistency, and preservation requirements" as CheckOrganization
+    state "Check part meanings, component placement,<br/>state consistency, preservation requirements,<br/>and cached aggregate equality" as CheckOrganization
     state ResultChoice <<choice>>
     CheckOrganization --> ResultChoice
     ResultChoice --> Record : [result is internally consistent]
@@ -448,16 +482,18 @@ Design judgment:
 4. The same separation outcome determines each part's physical state. Solid or
    retained parts must not become transferable suspensions merely because
    residual liquid exists.
-5. Concentration uses eligible carrier component quantities. Aggregate
-   `container.volume_uL` remains the compatibility bulk ledger and may include
-   cross-axis proxy volume.
-6. Bulk quantity accounting remains separate from component fate ratios, but
-   both belong to the same separation outcome. Dimensioned component
-   quantities are authoritative. Any remaining legacy bulk contribution is
-   preserved as a cross-axis proxy: mass residual follows partitioned carrier
-   volume, while volume residual follows partitioned explicit mass. This covers
-   mixed count/volume/mass state without losing bulk totals; insufficient
-   information retains the conservative fallback.
+5. Concentration uses eligible carrier component quantities. Dimensioned
+   component quantities and explicit residual detail are the only authoritative
+   material ledger. Aggregate `container.volume_uL` and `container.mass_mg` are
+   compatibility caches projected from that ledger; they never receive an
+   independent separation ratio.
+6. Compatibility input that supplies aggregate bulk without complete component
+   detail is normalized at the material-compute API boundary as attributed or
+   unattributed component quantity detail with provenance. A conservative fate
+   may be assigned to unattributed detail when its mobility is unknown, but
+   separation never reads the original aggregate. Cross-axis compatibility values may follow explicit
+   volume, mass, carrier, or density relations; they must not create a second
+   source of truth.
 7. Indexed contents are projections of the recorded separation outcome;
    indexed access must not rerun or reinterpret the separation model.
 

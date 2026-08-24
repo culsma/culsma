@@ -14,6 +14,7 @@ from culsma.runtime.material.ledger import (
     default_container_capacity_uL,
     ensure_container,
     normalize_capacity_uL,
+    refresh_container_aggregates,
 )
 from culsma.runtime.material.refs import (
     bind_name,
@@ -236,8 +237,6 @@ def apply_load_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateR
     slot["mass_mg"] = float(slot.get("mass_mg", 0.0)) + moved_mg
     slot["count_cells"] = float(slot.get("count_cells", 0.0)) + moved_cells
 
-    container["volume_uL"] = float(container.get("volume_uL", 0.0)) + moved_uL
-    container["mass_mg"] = float(container.get("mass_mg", 0.0)) + moved_mg
     comps = container.setdefault("components", {})
     if isinstance(comps, dict):
         comps[content_id] = float(comps.get(content_id, 0.0)) + canonical_value
@@ -248,6 +247,7 @@ def apply_load_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateR
             existing_quantity = {"dimension": axis, "unit": canonical_unit, "value": 0.0}
             component_quantities[content_id] = existing_quantity
         existing_quantity["value"] = float(existing_quantity.get("value", 0.0)) + canonical_value
+    refresh_container_aggregates(container)
     invalidate_contents_state(state, container_id, reason="content_load")
 
     return MaterialUpdateResult(

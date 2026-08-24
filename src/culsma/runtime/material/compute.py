@@ -12,6 +12,10 @@ from culsma.runtime.material.conservation import (
     totals_conserved,
 )
 from culsma.runtime.material.diagnostics import diagnostic_result
+from culsma.runtime.material.ledger import (
+    normalize_material_state_detail_ledger,
+    refresh_material_state_aggregates,
+)
 from culsma.runtime.material.refs import initialize_bindings, inventory_check_enabled
 from culsma.runtime.material.movements import derive_material_movements, material_quantities_changed
 from culsma.runtime.material.result import MaterialUpdateResult
@@ -26,6 +30,14 @@ class MaterialCompute:
         """Apply deterministic material update for one runtime step."""
         state = deepcopy(material_state)
         state.setdefault("containers", {})
+        detail_error = normalize_material_state_detail_ledger(state)
+        if detail_error is not None:
+            return diagnostic_result(
+                step=step,
+                state=state,
+                code="MAT_INVALID_COMPONENT_QUANTITY",
+                message=detail_error,
+            )
         initialize_bindings(state)
         before_totals = state_totals(state)
         movement_before_state = deepcopy(state)
@@ -35,6 +47,9 @@ class MaterialCompute:
             result = self.state_manager.apply_change(change_plan, state)
         else:
             result = MaterialUpdateResult(material_state=state, diagnostics=[], delta={})
+
+        operation_result_state = deepcopy(result.material_state)
+        refresh_material_state_aggregates(result.material_state)
 
         if result.ok and step.op in CONSERVATION_OPS and inventory_check_enabled(state):
             after_totals = state_totals(result.material_state)
@@ -57,7 +72,7 @@ class MaterialCompute:
             and not movement_specs
             and material_quantities_changed(
                 before_state=movement_before_state,
-                after_state=result.material_state,
+                after_state=operation_result_state,
             )
         ):
             return diagnostic_result(
