@@ -1,5 +1,73 @@
 # Changelog
 
+## Internal 1.0.6rc5
+
+### Scope
+
+This internal GitHub prerelease makes dimensioned component quantities the
+single authoritative material ledger for separation and downstream movement.
+Container-level volume and mass are now projections of routed component detail,
+not independently partitioned quantities.
+
+It includes:
+
+- one normalized `component_quantities` ledger for count, volume, and mass
+- API-boundary conversion of compatibility-only aggregate input into movable,
+  provenance-bearing component detail
+- rejection of invalid dimensions, units, negative values, and non-finite
+  quantity or density values before material calculation
+- component-fate routing of native-axis detail followed by aggregate volume and
+  mass projection from each output slot
+- removal of the independent conservative `50 / 50` aggregate split that could
+  disagree with already-routed component detail
+- detail-based transfer, capacity, contents-state, suspension, and estimate
+  accounting through the same ledger
+- preservation of authored `component_fates` and explicit uncertainty warnings
+  when a component fate itself still requires conservative `50 / 50` fallback
+- synchronized architecture, reference, conformance, and language-guide
+  documentation
+
+### Compatibility
+
+- The published `internal-1.0.6rc4` tag and release remain unchanged.
+- Aggregate-only compatibility input is accepted at the material-compute API
+  boundary and converted to component detail before use.
+- When complete component quantity detail exists, stale supplied aggregate
+  volume or mass is discarded and reprojected from detail.
+- Conservative `50 / 50` component-fate fallback remains available for unknown
+  scientific routing and emits `MAT_CONTENT_PARTITION_FALLBACK`; it no longer
+  creates an independent aggregate accounting path.
+
+### Install
+
+After the GitHub prerelease assets are published:
+
+```bash
+python -m pip install https://github.com/culsma/culsma/releases/download/internal-1.0.6rc5/culsma-1.0.6rc5-py3-none-any.whl
+```
+
+Source tag install:
+
+```bash
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@internal-1.0.6rc5"
+```
+
+### Verified
+
+- `python -m pytest -q`
+  - result: `838 passed`
+- canonical Case07 source run
+  - result: `133/133` steps completed with documented fate/entry warnings
+- vendor Case13 source run
+  - result: `56/56` steps completed with `0 diagnostics`
+- source CLI and isolated installed-wheel CLI smoke checks passed
+- `python -m build`
+  - result: `culsma-1.0.6rc5.tar.gz` and
+    `culsma-1.0.6rc5-py3-none-any.whl` built
+- `python -m twine check`
+  - result: passed for both distributions
+- isolated wheel install reports `culsma.__version__ == "1.0.6rc5"`
+
 ## Internal 1.0.6rc4
 
 ### Scope
