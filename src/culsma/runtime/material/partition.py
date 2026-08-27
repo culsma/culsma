@@ -102,6 +102,7 @@ _PELLET_PARTITION_CLASSES = {
 }
 _TARGET_PARTITION_CLASSES = {PartitionClass.MOLECULAR_TARGET}
 _EQUAL_SPLIT = (0.5, 0.5)
+_EXACT_TO_SLOT1 = (0.0, 1.0)
 _NEAR_COMPLETE_TO_SLOT0 = (0.99, 0.01)
 _NEAR_COMPLETE_TO_SLOT1 = (0.01, 0.99)
 _TARGETED_RECOVERY_TO_SLOT0 = (0.95, 0.05)
@@ -412,6 +413,8 @@ class CentrifugePartitionStrategy(SepPartitionStrategy):
     slot_contract = {"0": "supernatant", "1": "pellet"}
 
     def _known_ratios(self, partition_class: PartitionClass) -> tuple[float, float]:
+        if partition_class == PartitionClass.PELLETABLE_CELLS:
+            return _EXACT_TO_SLOT1
         if partition_class in _PELLET_PARTITION_CLASSES:
             return _NEAR_COMPLETE_TO_SLOT1
         return _NEAR_COMPLETE_TO_SLOT0

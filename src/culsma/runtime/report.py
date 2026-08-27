@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+from culsma.runtime.inventory import unchecked_inventory_result
+
 LAB_REPORT_SCHEMA = "lab_report_v1"
 
 @dataclass(frozen=True)
@@ -223,6 +225,7 @@ class LabReport:
     resource_summary: ResourceSummary
     process_summary: ProcessSummary
     alerts: list[str]
+    external_inventory: dict[str, Any] = field(default_factory=unchecked_inventory_result)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -234,4 +237,5 @@ class LabReport:
             "resource_summary": self.resource_summary.to_dict(),
             "process_summary": self.process_summary.to_dict(),
             "alerts": list(self.alerts),
+            "external_inventory": dict(self.external_inventory),
         }

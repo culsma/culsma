@@ -16,7 +16,7 @@ from culsma.runtime.material.ledger import (
     normalize_material_state_detail_ledger,
     refresh_material_state_aggregates,
 )
-from culsma.runtime.material.refs import initialize_bindings, inventory_check_enabled
+from culsma.runtime.material.refs import initialize_bindings
 from culsma.runtime.material.movements import derive_material_movements, material_quantities_changed
 from culsma.runtime.material.result import MaterialUpdateResult
 from culsma.runtime.material.state import MaterialStateManager
@@ -51,7 +51,7 @@ class MaterialCompute:
         operation_result_state = deepcopy(result.material_state)
         refresh_material_state_aggregates(result.material_state)
 
-        if result.ok and step.op in CONSERVATION_OPS and inventory_check_enabled(state):
+        if result.ok and step.op in CONSERVATION_OPS:
             after_totals = state_totals(result.material_state)
             if not totals_conserved(before_totals, after_totals):
                 return diagnostic_result(

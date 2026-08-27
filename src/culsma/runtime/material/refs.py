@@ -5,18 +5,13 @@ from __future__ import annotations
 from typing import Any
 
 from culsma.runtime.material.args import arg_string
-from culsma.runtime.material.ledger import ensure_container, refresh_container_aggregates
-from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_UL
+from culsma.runtime.material.ledger import ensure_container
 
 
 class MaterialRefResolver:
     @staticmethod
     def initialize_bindings(state: dict[str, Any]) -> None:
         initialize_bindings(state)
-
-    @staticmethod
-    def inventory_check_enabled(state: dict[str, Any]) -> bool:
-        return inventory_check_enabled(state)
 
     @staticmethod
     def resolve_container_ref(state: dict[str, Any], name: str) -> str | None:
@@ -27,8 +22,8 @@ class MaterialRefResolver:
         return resolve_target_ref(state, value)
 
     @staticmethod
-    def resolve_source_ref(state: dict[str, Any], value: Any, qty: dict[str, Any] | None) -> str | None:
-        return resolve_source_ref(state, value, qty)
+    def resolve_source_ref(state: dict[str, Any], value: Any) -> str | None:
+        return resolve_source_ref(state, value)
 
     @staticmethod
     def resolve_structured_ref(
@@ -75,13 +70,6 @@ def initialize_bindings(state: dict[str, Any]) -> None:
         state["indexed_bindings"] = {}
 
 
-def inventory_check_enabled(state: dict[str, Any]) -> bool:
-    raw = state.get("_inventory_check")
-    if isinstance(raw, bool):
-        return raw
-    return True
-
-
 def resolve_container_ref(state: dict[str, Any], name: str) -> str | None:
     containers = state.setdefault("containers", {})
     if _is_qualified_name(name):
@@ -98,22 +86,15 @@ def resolve_container_ref(state: dict[str, Any], name: str) -> str | None:
 def resolve_target_ref(state: dict[str, Any], value: Any) -> str | None:
     name = arg_string(value)
     if name is not None:
-        return resolve_or_create_container_ref(state, name)
-    return resolve_structured_ref(state, value, create_if_identifier=True)
+        return resolve_container_ref(state, name)
+    return resolve_structured_ref(state, value, create_if_identifier=False)
 
 
-def resolve_source_ref(state: dict[str, Any], value: Any, qty: dict[str, Any] | None) -> str | None:
+def resolve_source_ref(state: dict[str, Any], value: Any) -> str | None:
     name = arg_string(value)
     if name is not None:
-        resolved = resolve_container_ref(state, name)
-        if resolved is not None:
-            return resolved
-        if inventory_check_enabled(state):
-            return None
-        if qty is not None:
-            return provision_source_for_estimate(state=state, name=name, qty=qty)
-        return resolve_or_create_container_ref(state, name)
-    return resolve_structured_ref(state, value, create_if_identifier=not inventory_check_enabled(state))
+        return resolve_container_ref(state, name)
+    return resolve_structured_ref(state, value, create_if_identifier=False)
 
 
 def resolve_structured_ref(state: dict[str, Any], value: Any, *, create_if_identifier: bool) -> str | None:
@@ -271,52 +252,6 @@ def is_serialized_pair(value: Any) -> bool:
 
 def is_unit_ref(value: Any) -> bool:
     return isinstance(value, dict) and value.get("kind") == "unit_ref"
-
-
-def provision_source_for_estimate(state: dict[str, Any], name: str, qty: dict[str, Any]) -> str:
-    source_id = resolve_or_create_container_ref(state, name)
-    source = ensure_container(state, source_id)
-    unit = str(qty["unit"])
-    value = float(qty["value"])
-    if unit in VOLUME_TO_UL:
-        requested_uL = value * VOLUME_TO_UL[unit]
-        top_up_source_for_estimate(source=source, qty=requested_uL, mode="volume", source_name=name)
-    elif unit in MASS_TO_MG:
-        requested_mg = value * MASS_TO_MG[unit]
-        top_up_source_for_estimate(source=source, qty=requested_mg, mode="mass", source_name=name)
-    elif unit in COUNT_TO_CELLS:
-        requested_cells = value * COUNT_TO_CELLS[unit]
-        top_up_source_for_estimate(source=source, qty=requested_cells, mode="count", source_name=name)
-    return source_id
-
-
-def top_up_source_for_estimate(source: dict[str, Any], qty: float, mode: str, source_name: str) -> None:
-    if qty <= 0:
-        return
-    comps = source.setdefault("components", {})
-    quantities = source.setdefault("component_quantities", {})
-    if mode == "volume":
-        comps[source_name] = float(comps.get(source_name, 0.0)) + qty
-        if isinstance(quantities, dict):
-            record = quantities.setdefault(source_name, {"dimension": "volume", "unit": "uL", "value": 0.0})
-            if isinstance(record, dict):
-                record["value"] = float(record.get("value", 0.0)) + qty
-    elif mode == "mass":
-        comps[source_name] = float(comps.get(source_name, 0.0)) + qty
-        if isinstance(quantities, dict):
-            record = quantities.setdefault(source_name, {"dimension": "mass", "unit": "mg", "value": 0.0})
-            if isinstance(record, dict):
-                record["value"] = float(record.get("value", 0.0)) + qty
-    else:
-        comps[source_name] = float(comps.get(source_name, 0.0)) + qty
-        if isinstance(quantities, dict):
-            record = quantities.setdefault(
-                source_name,
-                {"dimension": "count", "unit": "cells", "value": 0.0},
-            )
-            if isinstance(record, dict):
-                record["value"] = float(record.get("value", 0.0)) + qty
-    refresh_container_aggregates(source)
 
 
 def _is_qualified_name(name: str) -> bool:

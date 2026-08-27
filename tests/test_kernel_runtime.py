@@ -921,6 +921,14 @@ protocol T {
             "readout_steps": 0,
         },
         "alerts": [],
+        "external_inventory": {
+            "schema": "culsma_inventory_reconciliation_v1",
+            "checked": False,
+            "sufficient": None,
+            "reason": "inventory_not_supplied",
+            "items": [],
+            "shortages": [],
+        },
     }
 
 
@@ -1036,6 +1044,7 @@ def test_runtime_user_result_models_mass_only_accounting_and_wire_contract():
         "resource_summary",
         "process_summary",
         "alerts",
+        "external_inventory",
     }
     assert set(report["materials"]) == {
         "has_material_state",
@@ -3125,7 +3134,7 @@ protocol T {
         assert relationship["concentration"]["value"] == 1000.0
 
 
-def test_runtime_contents_count_transfer_uses_shared_carrier_resolution_fields():
+def test_runtime_authored_fate_contents_count_transfer_uses_shared_carrier_resolution_fields():
     plan = _build_plan_from_source(
         """
 protocol T {
@@ -3133,7 +3142,11 @@ protocol T {
     content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells,
     content(kind = formulation, type = medium, code = "MEDIUM"):300uL
   ]);
-  sep(sample = source, program = centrifuge_program(drive = 12000g));
+  sep(
+    sample = source,
+    program = centrifuge_program(drive = 12000g),
+    component_fates = { RPE1: { supernatant: 1%, pellet: 99% } }
+  );
   let target = tube(label = "Target", capacity = 200uL);
   target << [source.contents[0]:500cells];
 }
@@ -3201,12 +3214,12 @@ protocol T {
     assert supernatant["component_quantities"]["RPE1"] == {
         "dimension": "count",
         "unit": "cells",
-        "value": 1000.0,
+        "value": 0.0,
     }
     assert pellet["component_quantities"]["RPE1"] == {
         "dimension": "count",
         "unit": "cells",
-        "value": 99000.0,
+        "value": 100000.0,
     }
     assert supernatant["component_quantities"]["MEDIUM"]["value"] == 297.0
     assert pellet["component_quantities"]["MEDIUM"]["value"] == 3.0
@@ -3214,10 +3227,37 @@ protocol T {
     assert supernatant["volume_uL"] + pellet["volume_uL"] == 300.0
     assert supernatant["mass_mg"] + pellet["mass_mg"] == 300.0
     returned = result.state.artifacts["protocol_outputs"]["T"]["value"]
-    assert returned["count_cells"] == 99000.0
-    assert supernatant["material_relationships"][0]["material_state"] == "suspension"
+    assert returned["count_cells"] == 100000.0
+    assert supernatant["material_relationships"] == []
     assert pellet["material_relationships"][0]["material_state"] == "pellet"
     assert pellet["material_relationships"][0]["transferability"] == "non_homogeneous"
+
+
+def test_runtime_centrifuge_supernatant_report_does_not_select_zero_cell_component():
+    plan = _build_plan_from_source(
+        """
+protocol T returns (clarified) {
+  let source = tube(label = "Source", capacity = 300uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells,
+    content(kind = formulation, type = medium, code = "MEDIUM"):300uL
+  ]);
+  let separated = sep(sample = source, program = centrifuge_program(drive = 12000g));
+  let clarified = tube(label = "Clarified", capacity = 200uL);
+  clarified << [separated[0]:100uL];
+  return clarified = clarified;
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    assert result.user_result is not None
+    clarified = next(
+        item for item in result.user_result["materials"]["final_products"] if item["name"] == "Clarified"
+    )
+    assert clarified["primary_component"] == "MEDIUM"
+    assert "count_cells" not in clarified
 
 
 def test_runtime_rejects_count_aliquot_from_centrifuge_pellet():
@@ -3538,7 +3578,7 @@ protocol T {
     assert target["material_relationships"][0]["material_state"] == "pellet"
 
 
-def test_runtime_source_partition_count_transfer_uses_shared_carrier_resolution():
+def test_runtime_magnetic_source_partition_count_transfer_uses_shared_carrier_resolution():
     plan = _build_plan_from_source(
         """
 protocol T {
@@ -3547,7 +3587,7 @@ protocol T {
     content(kind = formulation, type = medium, code = "MEDIUM"):300uL
   ]);
   let target = tube(label = "Target", capacity = 200uL);
-  target << [source.partition(centrifuge_program(drive = 12000g))[0]:500cells];
+  target << [source.partition(magnetic_program(duration = 2min))[1]:500cells];
 }
 """
     )
@@ -3556,9 +3596,9 @@ protocol T {
 
     assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
     target = result.state.artifacts["material_state"]["containers"]["Target"]
-    assert target["component_quantities"]["RPE1"]["value"] == 500.0
-    assert target["component_quantities"]["MEDIUM"]["value"] == 148.5
-    assert target["material_relationships"][0]["carrier_volume_uL"] == 148.5
+    assert target["component_quantities"]["RPE1"]["value"] == pytest.approx(500.0)
+    assert target["component_quantities"]["MEDIUM"]["value"] == pytest.approx(1.5)
+    assert target["material_relationships"][0]["carrier_volume_uL"] == pytest.approx(1.5)
 
     mutation_step_id = next(
         step.step_id for protocol in plan.plans for step in protocol.steps if step.op == "Mutation"
@@ -3568,9 +3608,9 @@ protocol T {
     )
     transfer_delta = mutation_event.payload["material_delta"]["sources"][0]["transfer_delta"]["transfer"]
     assert transfer_delta["mode"] == "count_resolved_volume"
-    assert transfer_delta["resolved_transfer_volume_uL"] == 148.5
-    assert transfer_delta["moved_bulk_volume_uL"] == 148.5
-    assert transfer_delta["component_ratio"] == 0.5
+    assert transfer_delta["resolved_transfer_volume_uL"] == pytest.approx(1.5)
+    assert transfer_delta["moved_bulk_volume_uL"] == pytest.approx(1.5)
+    assert transfer_delta["component_ratio"] == pytest.approx(500.0 / 99000.0)
 
 
 def test_runtime_executes_centrifugal_filtration_with_filtration_slots():

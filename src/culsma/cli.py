@@ -18,6 +18,7 @@ from culsma.pipeline.entrypoints import resolve_entry
 from culsma.pipeline.plan import lower_ir_to_plan
 from culsma.runtime.replay import replay_events
 from culsma.runtime.executor import run
+from culsma.runtime.inventory import reconcile_external_inventory
 from culsma.runtime.state import init_state
 from culsma.runtime.user_result import build_unexecuted_report
 from culsma.pipeline.typecheck import typecheck
@@ -243,6 +244,14 @@ def format_terminal_result(bundle: dict[str, Any]) -> str:
         f"{_format_number(execution.get('total_steps', 0))} steps completed, "
         f"{_format_number(execution.get('diagnostic_count', 0))} diagnostics"
     )
+    inventory = result.get("external_inventory", {}) if isinstance(result, dict) else {}
+    if isinstance(inventory, dict) and inventory.get("checked") is True:
+        shortages = inventory.get("shortages")
+        shortage_count = len(shortages) if isinstance(shortages, list) else 0
+        if inventory.get("sufficient") is True:
+            lines.append("inventory: sufficient")
+        else:
+            lines.append(f"inventory: insufficient ({shortage_count} shortages)")
     alerts = result.get("alerts", []) if isinstance(result, dict) else []
     if isinstance(alerts, list) and alerts:
         lines.append("alerts:")
@@ -284,11 +293,20 @@ def _load_initial_material_state(material_state_path: Path | None) -> dict[str, 
     return {"containers": {}}
 
 
+def _load_inventory_snapshot(inventory_path: Path | None) -> dict[str, Any] | None:
+    if inventory_path is None:
+        return None
+    payload = json.loads(inventory_path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError("INVENTORY_SNAPSHOT_INVALID: snapshot root must be an object")
+    return payload
+
+
 def execute_pipeline(
     input_paths: list[Path],
     fail_ops: set[str] | None = None,
     material_state_path: Path | None = None,
-    inventory_check: bool = False,
+    inventory_check: bool | dict[str, Any] | None = None,
     library_roots: list[Path] | None = None,
 ) -> dict[str, Any]:
     if len(input_paths) != 1:
@@ -306,7 +324,7 @@ def execute_pipeline(
         ir,
         analysis=compile_result.analysis,
         initial_defined_names=initial_defined_names,
-        enforce_binding=inventory_check,
+        enforce_binding=True,
     )
 
     typ = typecheck(sem.ir, analysis=compile_result.analysis)
@@ -316,8 +334,6 @@ def execute_pipeline(
 
     state = init_state(plan)
     state.artifacts["material_state"] = deepcopy(initial_material_state)
-    if isinstance(state.artifacts["material_state"], dict):
-        state.artifacts["material_state"]["_inventory_check"] = bool(inventory_check)
 
     can_run = sem.ok and typ.ok and not any(
         diagnostic.severity == "error" for diagnostic in plan.diagnostics
@@ -341,6 +357,10 @@ def execute_pipeline(
             plan=plan,
             initial_material_state=initial_material_state,
         )
+    user_result = reconcile_external_inventory(
+        report=user_result,
+        snapshot=inventory_check if isinstance(inventory_check, dict) else None,
+    )
     run_payload = {
         "ok": run_result.ok,
         "diagnostics": [d.to_dict() for d in run_result.diagnostics],
@@ -382,7 +402,7 @@ def execute_batch_pipeline(
     input_paths: list[Path],
     fail_ops: set[str] | None = None,
     material_state_path: Path | None = None,
-    inventory_check: bool = False,
+    inventory_check: bool | dict[str, Any] | None = None,
     library_roots: list[Path] | None = None,
 ) -> dict[str, Any]:
     if not input_paths:
@@ -501,8 +521,14 @@ def main() -> None:
     )
     run_cmd.add_argument(
         "--inventory-check",
-        action="store_true",
-        help="Enable strict inventory validation (bindings and insufficient-material failures).",
+        nargs="?",
+        const=True,
+        default=None,
+        metavar="INVENTORY_JSON",
+        help=(
+            "Optionally compare final reagent consumption with an external inventory JSON. "
+            "The legacy value-less form remains accepted."
+        ),
     )
     run_cmd.add_argument(
         "--library-root",
@@ -524,7 +550,11 @@ def main() -> None:
             input_paths=[Path(p) for p in input_values],
             fail_ops=set(args.fail_op),
             material_state_path=Path(args.material_state_json) if args.material_state_json else None,
-            inventory_check=bool(args.inventory_check),
+            inventory_check=(
+                _load_inventory_snapshot(Path(args.inventory_check))
+                if isinstance(args.inventory_check, str)
+                else args.inventory_check
+            ),
             library_roots=[Path(p) for p in args.library_root],
         )
         if args.output:

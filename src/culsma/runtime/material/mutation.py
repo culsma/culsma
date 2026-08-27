@@ -34,18 +34,15 @@ from culsma.runtime.material.partition import (
     separation_cell_material_state,
 )
 from culsma.runtime.material.refs import (
-    inventory_check_enabled,
     is_serialized_pair,
     is_unit_ref,
     ref_display,
     resolve_source_ref,
     resolve_target_ref,
-    top_up_source_for_estimate,
 )
 from culsma.runtime.material.result import MaterialUpdateResult
 from culsma.runtime.material.suspension import (
     cell_suspension_relationship,
-    count_component_ids,
     refresh_cell_suspension_relationship,
     resolve_count_aliquot,
 )
@@ -129,7 +126,7 @@ class QuantifiedContainerSourceHandler(MutationSourceHandler):
         qty = _quantified_source_qty(ctx)
         if qty is None:
             return diagnostic_result(ctx.step, ctx.state, "MAT_UNSUPPORTED_UNIT", "Mutation quantified source must carry volume, mass, or count unit")
-        source_id = resolve_source_ref(ctx.state, left, qty=qty)
+        source_id = resolve_source_ref(ctx.state, left)
         if source_id is None:
             return diagnostic_result(
                 ctx.step,
@@ -235,7 +232,7 @@ class FullContainerSourceHandler(MutationSourceHandler):
         return True
 
     def apply(self, ctx: MutationSourceContext) -> MaterialUpdateResult:
-        source_id = resolve_source_ref(ctx.state, ctx.source_expr, qty=None)
+        source_id = resolve_source_ref(ctx.state, ctx.source_expr)
         if source_id is None:
             return diagnostic_result(
                 ctx.step,
@@ -381,7 +378,7 @@ def apply_source_partition_transfer(
     if slot_key not in {"0", "1"}:
         return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "source partition index must be 0 or 1")
 
-    source_id = resolve_source_ref(state, partition_ref.get("source"), qty=qty)
+    source_id = resolve_source_ref(state, partition_ref.get("source"))
     if source_id is None:
         return diagnostic_result(
             step,
@@ -590,9 +587,6 @@ def _apply_transfer_volume(
     src = state["containers"][src_id]
     dst = state["containers"][dst_id]
     src_volume = container_component_quantity_total(src, "volume")
-    if not inventory_check_enabled(state) and src_volume < requested_uL:
-        top_up_source_for_estimate(source=src, qty=requested_uL - src_volume, mode="volume", source_name=src_id)
-        src_volume = container_component_quantity_total(src, "volume")
 
     if requested_uL < 0:
         return diagnostic_result(step, state, "MAT_UNSUPPORTED_UNIT", "Negative transfer amount is not allowed")
@@ -682,9 +676,6 @@ def _apply_transfer_mass(
     src = state["containers"][src_id]
     dst = state["containers"][dst_id]
     src_mass = container_component_quantity_total(src, "mass")
-    if not inventory_check_enabled(state) and src_mass < requested_mg:
-        top_up_source_for_estimate(source=src, qty=requested_mg - src_mass, mode="mass", source_name=src_id)
-        src_mass = container_component_quantity_total(src, "mass")
 
     if requested_mg < 0:
         return diagnostic_result(step, state, "MAT_UNSUPPORTED_UNIT", "Negative transfer amount is not allowed")
@@ -786,19 +777,6 @@ def _apply_transfer_count(
         )
 
     available_cells = container_count_cells(src)
-    count_ids = count_component_ids(src)
-    if (
-        requested_cells > 0
-        and len(count_ids) == 1
-        and not inventory_check_enabled(state)
-        and available_cells < requested_cells
-    ):
-        top_up_source_for_estimate(
-            source=src,
-            qty=requested_cells - available_cells,
-            mode="count",
-            source_name=count_ids[0],
-        )
 
     relationship = refresh_cell_suspension_relationship(state, src_id)
     resolution = resolve_count_aliquot(

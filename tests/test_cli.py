@@ -66,6 +66,99 @@ def test_cli_rejects_removed_protocol_entry_option(tmp_path, monkeypatch, capsys
     assert "unrecognized arguments: --entry-protocol" in captured.err
 
 
+def test_cli_accepts_legacy_value_less_inventory_check_option(tmp_path, monkeypatch, capsys):
+    source = _write_smoke_source(tmp_path)
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(source), "--inventory-check"])
+
+    main()
+
+    captured = capsys.readouterr()
+    assert captured.out.startswith("CliSmoke ok")
+    assert captured.err == ""
+
+
+def test_execute_pipeline_never_synthesizes_insufficient_source_material(tmp_path):
+    source = tmp_path / "insufficient_source.culs"
+    source.write_text(
+        """
+protocol InsufficientSource returns (target) {
+  let source = tube(
+    label = "VolumeSource",
+    capacity = 100uL,
+    load = [content(kind = formulation, type = buffer, code = "BUFFER"):10uL]
+  );
+  let target = tube(label = "VolumeTarget", capacity = 100uL);
+  target << [source:20uL];
+  return target = target;
+}
+""",
+        encoding="utf-8",
+    )
+
+    bundle = execute_pipeline([source])
+
+    assert not bundle["output"]["ok"]
+    assert "MAT_INSUFFICIENT_VOLUME" in [
+        diagnostic["code"] for diagnostic in bundle["run"]["diagnostics"]
+    ]
+    containers = bundle["run"]["state"]["artifacts"]["material_state"]["containers"]
+    assert containers["VolumeSource"]["volume_uL"] == 10.0
+    assert containers["VolumeTarget"]["volume_uL"] == 0.0
+
+
+def test_cli_adds_external_inventory_shortage_to_final_result_without_failing_runtime(
+    tmp_path, monkeypatch, capsys
+):
+    source = tmp_path / "inventory_result.culs"
+    source.write_text(
+        """
+protocol InventoryResult {
+  let stock = tube(
+    label = "Stock",
+    capacity = 100uL,
+    load = [content(kind = formulation, type = buffer, code = "BUFFER"):10uL]
+  );
+  let target = tube(label = "Target", capacity = 100uL);
+  target << [stock:5uL];
+}
+""",
+        encoding="utf-8",
+    )
+    inventory = tmp_path / "inventory.json"
+    inventory.write_text(
+        json.dumps(
+            {
+                "schema": "culsma_inventory_snapshot_v1",
+                "items": [{"name": "Stock", "available": {"volume_uL": 2.0}}],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["culsma", "run", str(source), "--inventory-check", str(inventory), "--json"],
+    )
+
+    main()
+
+    payload = json.loads(capsys.readouterr().out)
+    assert payload["ok"] is True
+    result = payload["report"]["external_inventory"]
+    assert result["checked"] is True
+    assert result["sufficient"] is False
+    assert result["items"] == [
+        {
+            "name": "Stock",
+            "sufficient": False,
+            "required": {"volume_uL": 5.0, "mass_mg": None, "count_cells": None},
+            "available": {"volume_uL": 2.0, "mass_mg": None, "count_cells": None},
+            "shortage": {"volume_uL": 3.0, "mass_mg": None, "count_cells": None},
+            "remaining": {"volume_uL": 0.0, "mass_mg": None, "count_cells": None},
+        }
+    ]
+
+
 def test_cli_does_not_treat_trailing_name_as_protocol_entry(tmp_path, monkeypatch):
     source = tmp_path / "script_entry.culs"
     source.write_text('let sample = tube(label = "S", capacity = 100uL);\nreturn sample;\n', encoding="utf-8")

@@ -29,10 +29,8 @@ from culsma.runtime.material.partition import (
 )
 from culsma.runtime.material.refs import (
     bind_indexed_group,
-    inventory_check_enabled,
     is_serialized_pair,
     ref_display,
-    resolve_or_create_container_ref,
     resolve_structured_ref,
     resolve_target_ref,
 )
@@ -225,19 +223,14 @@ class MaterialIndexedPartsStateManager:
         if program is None:
             return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "sep requires sample/program")
 
-        source_id = resolve_structured_ref(state, sample_arg, create_if_identifier=not inventory_check_enabled(state))
+        source_id = resolve_structured_ref(state, sample_arg, create_if_identifier=False)
         if source_id is None:
-            if inventory_check_enabled(state):
-                return diagnostic_result(
-                    step,
-                    state,
-                    "MAT_BINDING_NOT_FOUND",
-                    f"Unknown sep sample '{ref_display(sample_arg)}'",
-                )
-            sample_name = arg_string(sample_arg)
-            if sample_name is None:
-                return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "sep requires sample/program")
-            source_id = resolve_or_create_container_ref(state, sample_name)
+            return diagnostic_result(
+                step,
+                state,
+                "MAT_BINDING_NOT_FOUND",
+                f"Unknown sep sample '{ref_display(sample_arg)}'",
+            )
         source = container(state, source_id)
         if source is None:
             return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", f"Unknown sep sample '{ref_display(sample_arg)}'")
@@ -345,19 +338,14 @@ class MaterialIndexedPartsStateManager:
         if bins is None or bins <= 0:
             return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "frac requires positive bins")
 
-        source_id = resolve_structured_ref(state, sample_arg, create_if_identifier=not inventory_check_enabled(state))
+        source_id = resolve_structured_ref(state, sample_arg, create_if_identifier=False)
         if source_id is None:
-            if inventory_check_enabled(state):
-                return diagnostic_result(
-                    step,
-                    state,
-                    "MAT_BINDING_NOT_FOUND",
-                    f"Unknown frac sample '{ref_display(sample_arg)}'",
-                )
-            sample_name = arg_string(sample_arg)
-            if sample_name is None:
-                return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "frac requires sample/program")
-            source_id = resolve_or_create_container_ref(state, sample_name)
+            return diagnostic_result(
+                step,
+                state,
+                "MAT_BINDING_NOT_FOUND",
+                f"Unknown frac sample '{ref_display(sample_arg)}'",
+            )
         source = container(state, source_id)
         if source is None:
             return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", f"Unknown frac sample '{ref_display(sample_arg)}'")

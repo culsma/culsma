@@ -149,4 +149,12 @@ def test_lab_report_serializes_complete_model_to_stable_json_contract():
             "readout_steps": 1,
         },
         "alerts": ["WARN: review"],
+        "external_inventory": {
+            "schema": "culsma_inventory_reconciliation_v1",
+            "checked": False,
+            "sufficient": None,
+            "reason": "inventory_not_supplied",
+            "items": [],
+            "shortages": [],
+        },
     }

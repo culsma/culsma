@@ -780,11 +780,11 @@ def test_sep_centrifuge_partitions_liquid_to_supernatant_and_cells_to_pellet():
     slots = result.material_state["indexed_bindings"]["sep_group"]
     assert result.delta["partition"]["slot_contract"] == {"0": "supernatant", "1": "pellet"}
     assert _rounded_components(result.material_state["containers"][slots["0"]]) == {
-        "CELLS": 1.0,
+        "CELLS": 0.0,
         "MEDIUM": 99.0,
     }
     assert _rounded_components(result.material_state["containers"][slots["1"]]) == {
-        "CELLS": 99.0,
+        "CELLS": 100.0,
         "MEDIUM": 1.0,
     }
 
@@ -1288,7 +1288,6 @@ def test_frac_splits_count_only_cellular_material_across_bins():
         "content_registry": {
             "CELLS": {"content_kind": "bio_cellular", "content_type": "cell_population"}
         },
-        "inventory_check": True,
     }
 
     result = apply_step(step=step, material_state=state)

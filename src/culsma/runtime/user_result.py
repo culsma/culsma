@@ -565,6 +565,8 @@ def _select_primary_component(
     candidates: list[tuple[str, float, bool]] = []
     for name, amount in components.items():
         amount_f = float(amount)
+        if amount_f <= 1e-9:
+            continue
         meta = content_registry.get(name)
         meta = meta if isinstance(meta, dict) else {}
         kind = str(meta.get("content_kind", "")).lower()
@@ -578,6 +580,8 @@ def _select_primary_component(
         )
         candidates.append((str(name), amount_f, is_background))
 
+    if not candidates:
+        return None, None
     preferred = [(name, amount) for name, amount, is_background in candidates if not is_background]
     selected = preferred if preferred else [(name, amount) for name, amount, _ in candidates]
     return max(selected, key=lambda item: item[1])

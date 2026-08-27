@@ -16,13 +16,13 @@ liquids appear as major final product components even when the protocol has
 selected the correct output slot.
 
 This design replaces the generic 50/50 behavior with program-specific
-approximate partition rules:
+partition rules:
 
 1. each separation program defines the two output slots;
-2. each component class gets an approximate percentage into each slot;
+2. each component class gets a semantic default for each slot;
 3. small residuals can be marked as trace or ignored by final-product display;
-4. unknown or user-defined material uses a conservative fallback until explicit
-   author overrides are added.
+4. unknown or user-defined material uses a conservative fallback unless the
+   author supplies `component_fates`.
 
 ## Core Idea
 
@@ -33,21 +33,21 @@ amount in group[0] = input amount * group0_ratio
 amount in group[1] = input amount * group1_ratio
 ```
 
-The ratios are not intended to be exact. They are semantic defaults that keep
-material tracking plausible.
+The ratios are semantic defaults for deterministic material tracking. Most are
+coarse approximations; a program may also define an exact routing consequence
+when the reference semantics intentionally treats a component as wholly present
+in one output.
 
-These ratios are for component fate only. They must not be treated as physical
-volume or mass estimators. Until Culsma has explicit volume partition or
-carryover-volume syntax, `volume_uL` and `mass_mg` should continue to use the
-runtime's conservative bulk material accounting. Component partitioning only
-affects `components`, component identity, trace reporting, and final-product
-summary behavior.
+These ratios route each component on its native quantity axis. They are not
+independent physical volume or mass estimators. Runtime projects aggregate
+`volume_uL` and `mass_mg` from the routed component detail, density, and carrier
+relations; cell count alone does not create volume.
 
 Example for centrifuging a cell culture and keeping the pellet:
 
 ```text
 liquid medium -> 99% supernatant, 1% pellet carryover
-cells         -> 1% supernatant, 99% pellet
+cells         -> 0% supernatant, 100% pellet
 cell-bound target -> follows cells
 ```
 
@@ -62,8 +62,9 @@ a major final product component.
    component class.
 3. Non-standard runtime state uses a conservative 50/50 fallback as a guard;
    user-authored protocols should be rejected before runtime.
-4. Defaults are approximate. User-authored ratio overrides remain a follow-up
-   syntax/API item rather than current runtime behavior.
+4. Defaults are deterministic reference behavior. Empirical recovery or
+   carryover may differ and belongs in an authored component fate or an
+   applicable scientific model.
 5. Trace filtering should affect reports first. Conservation-sensitive raw
    material state should either keep trace values or record explicit loss/prune
    events.
@@ -123,7 +124,7 @@ Mapping rules:
 
 Program strategies then map these partition classes to ratios. For example,
 `liquid_matrix` uses the liquid rule in `centrifuge_program`, while
-`pelletable_cells` uses the pelletable rule.
+`pelletable_cells` uses the exact cell-to-pellet rule.
 
 Known first-version limitation:
 
@@ -145,6 +146,7 @@ partition values.
 
 Interpretation:
 
+- `0.00 / 1.00`: exact reference routing to `group[1]`;
 - `0.99 / 0.01`: very strong bias with small carryover;
 - `0.95 / 0.05`: biased but with more loss or residue;
 - `0.50 / 0.50`: unknown, conservative fallback, should warn.
@@ -152,7 +154,8 @@ Interpretation:
 | Program | Slot contract | Component class | `group[0]` ratio | `group[1]` ratio | Notes |
 | --- | --- | --- | ---: | ---: | --- |
 | `centrifuge_program` | `group[0] = supernatant`, `group[1] = pellet` | liquid / matrix | 0.99 | 0.01 | Most liquid remains in the supernatant; pellet has small carryover. |
-| `centrifuge_program` | `group[0] = supernatant`, `group[1] = pellet` | particles / cells / pelletable material | 0.01 | 0.99 | Pelletable material mostly sediments. |
+| `centrifuge_program` | `group[0] = supernatant`, `group[1] = pellet` | pelletable cells | 0.00 | 1.00 | Intact cells route wholly to the pellet in the idealized reference semantics. |
+| `centrifuge_program` | `group[0] = supernatant`, `group[1] = pellet` | particles / pelletable material | 0.01 | 0.99 | Other pelletable material mostly sediments. |
 | `centrifuge_program` | `group[0] = supernatant`, `group[1] = pellet` | material bound to particles | 0.01 | 0.99 | Bound material follows the particles. |
 | `phase_partition_program` | `group[0] = target_phase`, `group[1] = other_phase` | target-phase material | 0.99 | 0.01 | Target material mostly follows the selected phase. |
 | `phase_partition_program` | `group[0] = target_phase`, `group[1] = other_phase` | other-phase solvent / extraction reagent | 0.01 | 0.99 | Extraction solvent mostly follows the non-target phase. |
@@ -170,13 +173,13 @@ Interpretation:
 | `field_program` | `group[0] = target_band_fraction`, `group[1] = non_target_fraction` | non-target material | 0.05 | 0.95 | Non-target material mostly remains outside the target band. |
 | any `sep` program | program-specific slots | unknown component class | 0.50 | 0.50 | Conservative fallback. |
 
-User override need remains high for most programs. Defaults should be good
-enough for plausible reports, but explicit ratios should be available when the
-author knows the expected recovery or carryover.
+User override need remains high for most programs. Defaults provide a stable
+reference ledger; expected experimental recovery or carryover should be
+expressed by an authored fate or supplied by a scientific model.
 
 ## Current Implementation
 
-`src/culsma/runtime/material_compute.py` implements the default behavior through
+`src/culsma/runtime/material/partition.py` implements the default behavior through
 `SepPartitionStrategy` subclasses selected by program kind:
 
 | Program | Strategy class |
@@ -191,8 +194,9 @@ author knows the expected recovery or carryover.
 | `field_program` | `FieldPartitionStrategy` |
 | unknown `sep` program | base `SepPartitionStrategy` fallback |
 
-The strategy affects component fate only. `volume_uL` and `mass_mg` use
-conservative bulk accounting and are not derived from these component ratios.
+The strategy routes authoritative component quantities. Aggregate `volume_uL`
+and `mass_mg` are then projected from the routed detail and carrier relations;
+count does not itself inflate either aggregate.
 
 The runtime also keeps internal `component_partition_classes` metadata on
 intermediate containers when a program turns a component into a retained
@@ -203,7 +207,7 @@ from public protocol returns.
 
 | Requirement | Test |
 | --- | --- |
-| `centrifuge_program` sends liquid to `group[0]` and pelletable material to `group[1]`. | `test_sep_centrifuge_partitions_liquid_to_supernatant_and_cells_to_pellet` |
+| `centrifuge_program` sends liquid primarily to `group[0]`, routes pelletable cells exactly to `group[1]`, conserves both component quantities, and does not report zero cells as the supernatant's primary component. | `test_sep_centrifuge_partitions_liquid_to_supernatant_and_cells_to_pellet`, `test_runtime_centrifuge_routes_cell_count_to_pellet_and_allows_downstream_transfer`, `test_runtime_centrifuge_supernatant_report_does_not_select_zero_cell_component` |
 | `phase_partition_program` keeps target-phase material separate from extraction reagent. | `test_sep_phase_partition_sends_target_phase_material_away_from_extraction_reagent` |
 | `precipitation_program` keeps target in precipitate and liquid in supernatant. | `test_sep_precipitation_sends_target_to_precipitate_and_liquid_to_supernatant` |
 | `filtration_program` keeps pass-through liquid in filtrate and retained target in retentate. | `test_sep_filtration_sends_liquid_to_filtrate_and_target_to_retentate` |
@@ -215,38 +219,25 @@ from public protocol returns.
 | custom components can use explicit per-component partition ratios. | `test_sep_custom_component_uses_configured_partition_ratio` |
 | DNA cleanup issue path keeps wash/extraction reagents out of public product return and preserves raw ledger internally. | `test_runtime_sep_partition_keeps_dna_cleanup_product_from_wash_reagents` |
 
-## Future Override Shape
+## Author Overrides
 
-The exact syntax is not frozen. A later language/API addition should support an
-authoring shape equivalent to:
+When a protocol intentionally models non-default recovery or carryover, it can
+override the reference fate for an existing source component:
 
-```text
-partition_rules = [
-  class liquid_matrix -> group[0]: 0.99, group[1]: 0.01,
-  class pelletable -> group[0]: 0.01, group[1]: 0.99
-]
+```culsma
+let separated = sep(
+  sample = culture,
+  program = centrifuge_program(drive = 12000g),
+  component_fates = {
+    CELLS: { supernatant: 0.5%, pellet: 99.5% }
+  }
+);
 ```
 
-or a per-component equivalent:
-
-```text
-partition_rules = [
-  component culture_medium -> group[0]: 0.99, group[1]: 0.01,
-  component cells -> group[0]: 0.01, group[1]: 0.99
-]
-```
-
-The current runtime API supports the per-component equivalent through source
-container metadata:
-
-```text
-metadata.component_partition_ratios = {
-  CUSTOM: {0: 0.2, 1: 0.8}
-}
-```
-
-The public authoring syntax for this metadata is still a future language/API
-design item.
+Authored fates take precedence over the reference strategy, must name both
+program slots, and must sum to 100%. A scientific model may supply empirical
+fates when the protocol does not author them; the deterministic defaults remain
+the no-model reference behavior.
 
 ## Trace And Reporting
 
@@ -269,10 +260,8 @@ remaining available in detailed material-state output.
 
 ## Remaining Design Items
 
-1. Whether overrides live on `sep(...)`, inside `program(...)`, or in a separate
-   material policy block.
-2. Whether unknown components warn only, fall back to proportional split, or
+1. Whether unknown components warn only, fall back to proportional split, or
    require explicit rules in strict mode.
-3. Whether trace pruning changes only reports or also mutates stored
+2. Whether trace pruning changes only reports or also mutates stored
    `components`.
-4. How conservation checks account for trace pruning if raw state is mutated.
+3. How conservation checks account for trace pruning if raw state is mutated.
