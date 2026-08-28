@@ -3,7 +3,7 @@
 > Status: local implementation record; not yet promoted to accepted language semantics.
 >
 > Scope: constructor cell-count initialization, carrier resolution, count-based
-> transfer, and separation behavior. Scientific Model Gateway work remains
+> transfer, and separation behavior. Scientific Model Resolver work remains
 > separate.
 >
 > Implementation status (2026-08-23): phases 1-6 are implemented locally;
@@ -52,7 +52,7 @@ flowchart LR
 | Runtime | Store count, carrier volume, concentration, state, and provenance | Erase count after conversion to volume |
 | Transfer | Convert a requested count into a suspension aliquot volume | Bare-cell teleportation through ordinary `<<` |
 | Separation | Partition cells and carrier by independent fates | Predict biological recovery beyond current deterministic policies |
-| Extensibility | Use a general dispersion relationship that can later support beads or particles | Implement Scientific Model Gateway phase 1 in this change |
+| Extensibility | Use a general dispersion relationship that can later support beads or particles | Activate Scientific Model Resolver decisions in this change |
 
 ## 3. Authoring Surface
 
@@ -526,13 +526,13 @@ are accepted:
    transfer, separation relationship recomputation, and diagnostics.
 6. Publish a new internal prerelease; do not mutate `internal-1.0.6rc3`.
 
-## 15. Future Gateway Boundary
+## 15. Future Scientific-Model Boundary
 
 The kernel can deterministically derive concentration when count and carrier
 volume are known. The default concentration policy is a recorded fallback. A
-future Scientific Model Gateway may replace or refine the fallback using cell
+future provider selected through the Scientific Model Resolver may replace or refine the fallback using cell
 type, viability, aggregation, recovery, device, or protocol context.
 
-The gateway must not directly mutate material state. It returns a typed,
-provenanced prediction; the kernel validates it and applies the resulting state
-transition.
+The resolver and provider must not directly mutate material state. They return a
+typed, provenanced proposal; the kernel validates it and applies the resulting
+state transition.

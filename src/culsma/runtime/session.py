@@ -9,6 +9,7 @@ from culsma.common.diagnostics import Diagnostic
 from culsma.driver.base import Driver
 from culsma.pipeline.plan_nodes import PlanProgram, PlanStep, ProtocolPlan
 from culsma.runtime.event_log import EventLog
+from culsma.runtime.material.compute import MaterialCompute
 from culsma.runtime.state import RuntimeState
 
 
@@ -26,6 +27,7 @@ class RuntimeSession:
     ref_groups: dict[str, Any]
     ref_groups_by_first: dict[str, Any]
     ref_cache: dict[str, Any]
+    material_compute: MaterialCompute
     initial_material_state: dict[str, Any] | None = None
     ref_pending_updates: dict[str, dict[str, Any]] = field(default_factory=dict)
     on_error: str = "abort"

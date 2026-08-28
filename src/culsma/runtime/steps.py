@@ -8,7 +8,6 @@ from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.plan_nodes import PlanProgram, PlanStep, ProtocolPlan
-from culsma.runtime.material_compute import apply_step as apply_material_step
 from culsma.runtime.session import RuntimeSession
 from culsma.runtime.values import UNRESOLVED
 
@@ -386,7 +385,10 @@ class InternalMaterialStepHandler(BaseRuntimeStepHandler):
         state.resolved_step = runtime_step
         material_result = _preflight_material_step(runtime_step, session)
         if material_result is None:
-            material_result = apply_material_step(step=runtime_step, material_state={"containers": {}})
+            material_result = session.material_compute.apply_step(
+                step=runtime_step,
+                material_state={"containers": {}},
+            )
         session.extend_diagnostics(material_result.diagnostics)
         if not material_result.ok:
             session.record_failed(
@@ -440,7 +442,10 @@ def _preflight_material_step(runtime_step: PlanStep, session: RuntimeSession):
         if runtime_step.op not in _MATERIAL_BOOTSTRAP_OPS:
             return None
         material_state = {"containers": {}}
-    return apply_material_step(step=runtime_step, material_state=material_state)
+    return session.material_compute.apply_step(
+        step=runtime_step,
+        material_state=material_state,
+    )
 
 
 def _commit_material_result(*, step: PlanStep, source_step: PlanStep, session: RuntimeSession, material_result: Any) -> None:

@@ -9,10 +9,15 @@ from typing import Any
 from culsma.common.diagnostics import Diagnostic
 from culsma.driver.base import Driver
 from culsma.pipeline.plan_nodes import PlanProgram, PlanStep, ProtocolPlan
+from culsma.scientific_model import (
+    ScientificModelResolver,
+    create_default_scientific_model_resolver,
+)
 from culsma.runtime.event_log import EventLog, RuntimeEvent
 from culsma.runtime.finalize import RuntimeFinalizer
 from culsma.runtime.gates import GateEvaluator
 from culsma.runtime.material.accounting import MaterialAccountingRecorder
+from culsma.runtime.material.compute import MaterialCompute
 from culsma.runtime.observation import ObservationRecorder
 from culsma.runtime.protocol_outputs import ProtocolOutputRecorder
 from culsma.runtime.references import RefReuseDecider
@@ -44,6 +49,7 @@ def run(
     state: RuntimeState | None = None,
     max_scheduler_rounds: int | None = None,
     on_error: str = "abort",
+    scientific_model: ScientificModelResolver | None = None,
 ) -> RunResult:
     """Execute plan with deterministic scheduling."""
     runtime_state = state or init_state(plan)
@@ -56,12 +62,18 @@ def run(
         max_scheduler_rounds=max_scheduler_rounds,
         on_error=on_error,
     )
+    selected_scientific_model = (
+        scientific_model
+        if scientific_model is not None
+        else create_default_scientific_model_resolver()
+    )
     return executor.execute(
         plan=plan,
         driver=driver,
         runtime_state=runtime_state,
         diagnostics=diagnostics,
         initial_material_state=initial_material_state,
+        scientific_model=selected_scientific_model,
     )
 
 
@@ -78,6 +90,7 @@ class RuntimeExecutor:
         runtime_state: RuntimeState,
         diagnostics: list[Diagnostic],
         initial_material_state: dict[str, Any] | None,
+        scientific_model: ScientificModelResolver,
     ) -> RunResult:
         log = EventLog()
         steps = [step for protocol in plan.plans for step in protocol.steps]
@@ -104,6 +117,7 @@ class RuntimeExecutor:
         ref_groups = ref_reuse_decider.build_groups(steps)
         ref_groups_by_first = {group.first_step_id: group for group in ref_groups.values()}
         ref_cache = ref_reuse_decider.ensure_cache(runtime_state)
+        material_compute = MaterialCompute(scientific_model=scientific_model)
 
         session = RuntimeSession(
             plan=plan,
@@ -118,6 +132,7 @@ class RuntimeExecutor:
             ref_groups=ref_groups,
             ref_groups_by_first=ref_groups_by_first,
             ref_cache=ref_cache,
+            material_compute=material_compute,
             initial_material_state=initial_material_state,
             on_error=self.on_error,
             fail_fast=self.on_error != "continue",

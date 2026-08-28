@@ -6,6 +6,11 @@ from copy import deepcopy
 from typing import Any
 
 from culsma.pipeline.plan_nodes import PlanStep
+from culsma.scientific_model import (
+    ScientificModelResolver,
+    create_default_scientific_model_resolver,
+)
+from culsma.scientific_model.material import SepEffectCoordinator
 from culsma.runtime.material.conservation import (
     CONSERVATION_OPS,
     state_totals,
@@ -23,8 +28,18 @@ from culsma.runtime.material.state import MaterialStateManager
 
 
 class MaterialCompute:
-    def __init__(self, state_manager: MaterialStateManager | None = None) -> None:
+    def __init__(
+        self,
+        state_manager: MaterialStateManager | None = None,
+        scientific_model: ScientificModelResolver | None = None,
+    ) -> None:
         self.state_manager = state_manager or MaterialStateManager()
+        self.scientific_model = (
+            scientific_model
+            if scientific_model is not None
+            else create_default_scientific_model_resolver()
+        )
+        self.sep_effect_coordinator = SepEffectCoordinator(self.scientific_model)
 
     def apply_step(self, step: PlanStep, material_state: dict[str, Any]) -> MaterialUpdateResult:
         """Apply deterministic material update for one runtime step."""
@@ -92,5 +107,9 @@ class MaterialCompute:
         )
 
 
-def apply_step(step: PlanStep, material_state: dict[str, Any]) -> MaterialUpdateResult:
-    return MaterialCompute().apply_step(step, material_state)
+def apply_step(
+    step: PlanStep,
+    material_state: dict[str, Any],
+    scientific_model: ScientificModelResolver | None = None,
+) -> MaterialUpdateResult:
+    return MaterialCompute(scientific_model=scientific_model).apply_step(step, material_state)

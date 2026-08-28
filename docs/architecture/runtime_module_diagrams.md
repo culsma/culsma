@@ -1,6 +1,6 @@
 # Runtime Module Diagrams
 
-Last updated: 2026-07-11
+Last updated: 2026-08-25
 
 Related plan/runtime documents:
 
@@ -21,6 +21,7 @@ flowchart plus material-compute detail diagrams and structural diagrams:
 7. Report data-structure diagram.
 8. Report-accounting integration.
 9. Class/module diagram.
+10. Proposed pluggable scientific-model boundary.
 
 Runtime consumes `PlanProgram` and returns `RunResult(state, events,
 diagnostics, user_result)`. It owns deterministic scheduling, dependency and
@@ -44,6 +45,292 @@ The implementation now follows a scheduler plus dispatcher plus handler split:
 - concrete handlers own built-in/runtime/driver-backed execution families
 - helper services own gate evaluation, value resolution, ref reuse,
   observation capture, protocol-output capture, and finalization helpers
+
+## Proposed Pluggable Scientific-Model Boundary
+
+This is a component structure, not an execution-flow or concurrency diagram.
+Arrows describe dependency and contract direction; they do not introduce a
+runtime fork. The scientific-model boundary is run-scoped; custom injection
+is optional because the default resolver binds the built-in Reference provider.
+
+```mermaid
+flowchart LR
+    subgraph Culsma["Culsma runtime boundary"]
+        RunAPI["Runtime composition root<br/>run(..., scientific_model=...)"]
+        Supplied{"resolver supplied?"}
+        DefaultResolver["create default resolver<br/>bind built-in provider"]
+        Runtime["Runtime kernel<br/>scheduling + operation execution"]
+        Session["Runtime session<br/>owns configured MaterialCompute"]
+        Compute["MaterialCompute<br/>existing material-state executor"]
+        Effect["Operation-effect coordinator<br/>builds an immutable request"]
+        Validate["Kernel effect validator<br/>units + bounds + conservation + allowed effects"]
+        Commit["Authoritative commit<br/>material ledger + observations + provenance"]
+
+        RunAPI --> Runtime
+        RunAPI --> Supplied
+        Supplied -->|"no"| DefaultResolver
+        Runtime --> Session
+        Session -->|"owns"| Compute
+        Compute --> Effect
+        Validate --> Commit
+    end
+
+    subgraph ExecutionBoundary["Existing execution backend boundary"]
+        Driver["Driver<br/>capability check + execution receipt"]
+    end
+
+    subgraph ResolverBoundary["Stable resolution boundary"]
+        Resolver["one ScientificModelResolver per run<br/>default: RegistryScientificModelResolver"]
+        Registry["ScientificModelRegistry<br/>many capability@version bindings"]
+        NoModel["No-model implementation<br/>returns not applicable"]
+
+        NoModel -. implements .-> Resolver
+        Resolver -->|"select binding"| Registry
+    end
+
+    subgraph PluginBoundary["zero-to-many replaceable providers"]
+        Builtin["Built-in Reference Rulebook provider<br/>default separation_fate + state_transition"]
+        ProviderA["Provider A<br/>explicit capability replacement"]
+        ProviderB["Provider B<br/>another scientific capability"]
+    end
+
+    Effect -->|"immutable semantic facts"| Resolver
+    Supplied -->|"yes: use supplied instance"| Resolver
+    DefaultResolver --> Resolver
+    Resolver -. "inject selected instance" .-> Compute
+    Runtime -->|"execute declared operation"| Driver
+    Driver -->|"execution receipt"| Runtime
+    Registry -->|"material.separation_fate@1.0"| Builtin
+    Registry -->|"material.state_transition@1.0"| Builtin
+    Registry -. "replace one explicit binding" .-> ProviderA
+    Registry -. "additional capability binding" .-> ProviderB
+    Builtin -->|"typed proposed effect + provenance"| Resolver
+    ProviderA -->|"same typed result boundary"| Resolver
+    ProviderB -. "same typed result boundary" .-> Resolver
+    Resolver -->|"resolved or not-applicable result"| Validate
+```
+
+The ownership boundary is fixed:
+
+| Owner | Responsibility |
+| --- | --- |
+| Runtime kernel | Scheduling, operation success, structural invariants, and commit timing |
+| Runtime composition root | Select one resolver and construct `MaterialCompute` for the run |
+| Runtime session | Own the configured `MaterialCompute`; no duplicate resolver reference |
+| `MaterialCompute` | Existing material-state execution, validation, movement derivation, and commit boundary |
+| Scientific Model Resolver | Capability selection and typed transport; no state mutation |
+| Model provider | Proposed scientific effect, assumptions, uncertainty, model identity, and version |
+| Kernel effect validator | Reject or accept the proposal against the operation contract and runtime invariants |
+| Authoritative commit | Apply only validated effects and record their provenance |
+
+With no resolver supplied, the runtime constructs one resolver whose two default
+material bindings use the built-in Reference Rulebook provider. The resolver may
+hold many providers at the same time, while each `capability@contract_version`
+selects exactly one provider for that run. The no-model
+implementation remains available for an explicitly disabled or unsupported
+capability. Aggregate volume and mass stay inside the kernel and are projected
+from the authoritative component-detail ledger.
+
+## Proposed Scientific Model API Contract
+
+The API has three layers. The caller injects one resolver, the resolver dispatches
+to explicitly configured providers, and the kernel privately validates every
+proposal. Providers never receive `RuntimeState` and never receive a commit
+handle.
+
+```mermaid
+classDiagram
+    class RuntimeAPI {
+        +run(plan, driver, scientific_model=None) RunResult
+    }
+
+    class ScientificModelResolver {
+        <<interface>>
+        +capabilities() CapabilityDescriptor[]
+        +resolve(request) ModelResult
+    }
+
+    class NoScientificModelResolver {
+        +capabilities() CapabilityDescriptor[]
+        +resolve(request) ModelResult
+    }
+
+    class RegistryScientificModelResolver {
+        -providers
+        +capabilities() CapabilityDescriptor[]
+        +resolve(request) ModelResult
+    }
+
+    class ScientificModelProvider {
+        <<interface>>
+        +descriptor() ProviderDescriptor
+        +resolve(request) ModelResult
+    }
+
+    class BuiltinMaterialRulebookProvider {
+        +descriptor() ProviderDescriptor
+        +resolve(request) ModelResult
+    }
+
+    class ProviderDescriptor {
+        +provider_id
+        +provider_version
+        +capabilities
+        +deterministic
+    }
+
+    class CapabilityDescriptor {
+        +capability
+        +contract_version
+        +lifecycle
+    }
+
+    class ModelRequest {
+        +request_id
+        +capability
+        +contract_version
+        +lifecycle
+        +seed
+        +payload
+    }
+
+    class ModelResult {
+        +status
+        +proposal
+        +provenance
+        +assumptions
+        +uncertainty
+        +diagnostics
+    }
+
+    class ScientificEffectValidator {
+        <<kernel-private>>
+        +validate(request, result) ValidatedEffect
+    }
+
+    RuntimeAPI --> ScientificModelResolver : injects
+    NoScientificModelResolver ..|> ScientificModelResolver
+    RegistryScientificModelResolver ..|> ScientificModelResolver
+    RegistryScientificModelResolver o-- ScientificModelProvider : explicit capability binding
+    BuiltinMaterialRulebookProvider ..|> ScientificModelProvider
+    RegistryScientificModelResolver o-- BuiltinMaterialRulebookProvider : default material binding
+    ScientificModelProvider --> ProviderDescriptor
+    ProviderDescriptor o-- CapabilityDescriptor
+    ScientificModelResolver --> ModelRequest
+    ScientificModelResolver --> ModelResult
+    ModelResult --> ScientificEffectValidator : proposed effect only
+```
+
+The public composition surface is intentionally small:
+
+```python
+result = run(
+    plan=plan,
+    driver=driver,
+    scientific_model=resolver,  # optional
+)
+```
+
+The stable provider-facing protocol is synchronous in Phase 1. A remote or
+container adapter implements the same protocol and owns transport details.
+
+```python
+class ScientificModelResolver(Protocol):
+    def capabilities(self) -> tuple[CapabilityDescriptor, ...]: ...
+    def resolve(self, request: ModelRequest) -> ModelResult: ...
+
+
+class ScientificModelProvider(Protocol):
+    @property
+    def descriptor(self) -> ProviderDescriptor: ...
+    def resolve(self, request: ModelRequest) -> ModelResult: ...
+```
+
+Capability identifiers and contract versions are separate. The first binding
+uses `capability="material.separation_fate"` and `contract_version="1.0"`;
+the version is not embedded into the capability name.
+
+### Common Request Envelope
+
+| Field | Contract |
+| --- | --- |
+| `request_id` | Stable identifier for one resolution attempt within a run |
+| `capability` | Names the requested scientific effect family |
+| `contract_version` | Selects the typed payload/result schema |
+| `lifecycle` | `runtime_precommit`, with future planning and post-run values reserved |
+| `seed` | Optional deterministic seed selected by the runtime policy |
+| `payload` | Immutable capability-specific semantic facts; never a mutable runtime object |
+
+### Common Result Envelope
+
+| Field | Contract |
+| --- | --- |
+| `status` | `resolved`, `not_applicable`, or `failed` |
+| `proposal` | Capability-specific proposed effect; required only for `resolved` |
+| `provenance` | Model ID, model version, provider ID, and optional calibration/dataset digest |
+| `assumptions` | Explicit assumptions used by the provider |
+| `uncertainty` | Optional typed interval, confidence, or provider-specific uncertainty record |
+| `diagnostics` | Structured provider diagnostics; they do not directly become committed runtime diagnostics |
+
+`rejected` is not a provider status. Rejection belongs to the kernel validator:
+the provider may successfully produce a result that the kernel rejects as
+out of bounds, non-conserving, incompatible with the operation contract, or
+otherwise invalid.
+
+### First Capability: `material.separation_fate`
+
+The request contains every non-authored scientific fate candidate. Components
+already owned by a validated author `component_fates` rule are resolved before
+the resolver. The built-in Reference Rulebook is the default provider for the
+remaining candidates; it is not a second fallback layer after the resolver.
+
+| Request fact | Meaning |
+| --- | --- |
+| Operation descriptor | Separation program kind and complete declared arguments |
+| Output contract | Stable part IDs plus semantic meanings such as `supernatant` and `pellet` |
+| Environment | Declared thermal, duration, field, and other relevant execution facts |
+| Component snapshot | Content ID, canonical kind/type, closed recognized attrs, native quantity axis, and quantity |
+| Physical relationship | Association, accessibility, preservation state, and their provenance |
+| Optional model context | Explicit calibration/device facts supplied by runtime configuration, not inferred from names |
+
+The Phase 1 proposal is deliberately narrow:
+
+```text
+SeparationFateProposal
+  component_fates[]
+    component_id
+    part_fractions[]
+      part_id
+      fraction
+```
+
+Every proposed component must exist in the request, every part ID must exist in
+the output contract, each fraction must be finite and within `[0, 1]`, and the
+fractions for one component must sum to `1` within the kernel tolerance. Loss,
+new material identities, and state transformation are later capability versions
+or separate capabilities; they are not implicit fields in the first contract.
+
+Provider selection is explicit in Phase 1: one configured provider per
+capability. The built-in Reference Rulebook is the default binding. An external
+provider may replace it, and a chain, fallback, or ensemble is itself one
+explicitly configured provider. This avoids hidden priority rules and makes run
+reproduction depend only on recorded configuration and provenance.
+
+The response path preserves current precedence:
+
+```text
+author rule
+  -> provider selected by resolver
+       default: built-in Reference Rulebook provider
+       custom: external or composite provider
+  -> explicit unresolved diagnostic
+```
+
+Provider exceptions are contained by the resolver and converted to `failed`.
+A `not_applicable`/`failed` response does not trigger an implicit second
+provider. A configured composite provider owns any desired fallback to the
+built-in Rulebook. Otherwise runtime produces the documented unresolved
+diagnostic without mutation.
 
 ## Functional Flowchart
 
