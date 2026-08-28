@@ -42,9 +42,10 @@ from culsma.runtime.material.refs import (
 )
 from culsma.runtime.material.result import MaterialUpdateResult
 from culsma.runtime.material.suspension import (
-    cell_suspension_relationship,
+    merged_cell_material_state,
     refresh_cell_suspension_relationship,
     resolve_count_aliquot,
+    transferred_cell_material_state,
 )
 from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_UL
 
@@ -260,13 +261,13 @@ class FullContainerSourceHandler(MutationSourceHandler):
         if conflict is not None:
             return conflict
         source_before = deepcopy(source)
-        moved_cell_state = _cell_material_state(source)
+        moved_cell_state = transferred_cell_material_state(source, moved_cells=moved_cells)
         move_explicit(source, target, component_ratio=1.0)
         refresh_cell_suspension_relationship(ctx.state, source_id)
         refresh_cell_suspension_relationship(
             ctx.state,
             ctx.target_id,
-            forced_state=_merged_cell_material_state(target, moved_cell_state),
+            forced_state=merged_cell_material_state(target, moved_cell_state),
         )
         invalidate_contents_state(ctx.state, source_id, reason="whole_container_transfer")
         moved_snapshot = moved_snapshot_from_explicit(source_before, ratio=1.0)
@@ -407,12 +408,16 @@ def apply_source_partition_transfer(
     refresh_cell_suspension_relationship(
         state,
         slot0_id,
-        forced_state=separation_cell_material_state(program_kind, slot="0"),
+        forced_state=separation_cell_material_state(
+            program_kind, slot="0", partition=partition, output=slot0
+        ),
     )
     refresh_cell_suspension_relationship(
         state,
         slot1_id,
-        forced_state=separation_cell_material_state(program_kind, slot="1"),
+        forced_state=separation_cell_material_state(
+            program_kind, slot="1", partition=partition, output=slot1
+        ),
     )
     diagnostics = _partition_fallback_diagnostics(step, partition)
     selected_id = slot0_id if slot_key == "0" else slot1_id
@@ -421,11 +426,11 @@ def apply_source_partition_transfer(
         return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "Source partition selected unknown slot")
 
     selected_before = deepcopy(selected)
-    selected_cell_state = _cell_material_state(selected)
     if qty is None:
         moved_uL = float(selected.get("volume_uL", 0.0))
         moved_mg = float(selected.get("mass_mg", 0.0))
         moved_cells = container_count_cells(selected)
+        selected_cell_state = transferred_cell_material_state(selected_before, moved_cells=moved_cells)
         cap_diag = check_capacity_guard(step=step, state=state, container_id=target_id, added_uL=moved_uL)
         if cap_diag is not None:
             return cap_diag
@@ -453,6 +458,8 @@ def apply_source_partition_transfer(
             return transfer
         state = transfer.material_state
         transfer_delta = transfer.delta
+        moved_cells = float(transfer.delta.get("moved_cells", 0.0))
+        selected_cell_state = transferred_cell_material_state(selected_before, moved_cells=moved_cells)
         moved_snapshot = moved_snapshot_from_delta(selected_before, transfer.delta)
 
     source_after = container(state, source_id)
@@ -477,7 +484,7 @@ def apply_source_partition_transfer(
     refresh_cell_suspension_relationship(
         state,
         target_id,
-        forced_state=_merged_cell_material_state(target, selected_cell_state),
+        forced_state=merged_cell_material_state(target, selected_cell_state),
     )
     invalidate_contents_state(state, source_id, reason="source_partition_transfer")
     if source_id == target_id:
@@ -597,14 +604,14 @@ def _apply_transfer_volume(
     if src_volume >= requested_uL:
         ratio = 0.0 if src_volume == 0 else requested_uL / src_volume
         moved_cells = container_count_cells(src) * ratio
-        moved_cell_state = _cell_material_state(src)
+        moved_cell_state = transferred_cell_material_state(src, moved_cells=moved_cells)
         conflict = _quantity_axis_conflict(step, state, src, dst, src_id, dst_id)
         if conflict is not None:
             return conflict
         move_ratio(src, dst, ratio)
         refresh_cell_suspension_relationship(state, src_id)
         refresh_cell_suspension_relationship(
-            state, dst_id, forced_state=_merged_cell_material_state(dst, moved_cell_state)
+            state, dst_id, forced_state=merged_cell_material_state(dst, moved_cell_state)
         )
         return MaterialUpdateResult(
             material_state=state,
@@ -637,7 +644,7 @@ def _apply_transfer_volume(
 
     component_ratio = 0.0 if effective_src_mass == 0 else requested_mg / effective_src_mass
     moved_cells = container_count_cells(src) * component_ratio
-    moved_cell_state = _cell_material_state(src)
+    moved_cell_state = transferred_cell_material_state(src, moved_cells=moved_cells)
     conflict = _quantity_axis_conflict(step, state, src, dst, src_id, dst_id)
     if conflict is not None:
         return conflict
@@ -648,7 +655,7 @@ def _apply_transfer_volume(
     )
     refresh_cell_suspension_relationship(state, src_id)
     refresh_cell_suspension_relationship(
-        state, dst_id, forced_state=_merged_cell_material_state(dst, moved_cell_state)
+        state, dst_id, forced_state=merged_cell_material_state(dst, moved_cell_state)
     )
     return MaterialUpdateResult(
         material_state=state,
@@ -684,7 +691,7 @@ def _apply_transfer_mass(
         ratio = 0.0 if src_mass == 0 else requested_mg / src_mass
         moved_uL = ratio * float(src.get("volume_uL", 0.0))
         moved_cells = container_count_cells(src) * ratio
-        moved_cell_state = _cell_material_state(src)
+        moved_cell_state = transferred_cell_material_state(src, moved_cells=moved_cells)
         cap_diag = check_capacity_guard(step=step, state=state, container_id=dst_id, added_uL=moved_uL)
         if cap_diag is not None:
             return cap_diag
@@ -694,7 +701,7 @@ def _apply_transfer_mass(
         move_ratio(src, dst, ratio)
         refresh_cell_suspension_relationship(state, src_id)
         refresh_cell_suspension_relationship(
-            state, dst_id, forced_state=_merged_cell_material_state(dst, moved_cell_state)
+            state, dst_id, forced_state=merged_cell_material_state(dst, moved_cell_state)
         )
         return MaterialUpdateResult(
             material_state=state,
@@ -730,7 +737,7 @@ def _apply_transfer_mass(
 
     component_ratio = 0.0 if effective_src_volume == 0 else requested_uL / effective_src_volume
     moved_cells = container_count_cells(src) * component_ratio
-    moved_cell_state = _cell_material_state(src)
+    moved_cell_state = transferred_cell_material_state(src, moved_cells=moved_cells)
     conflict = _quantity_axis_conflict(step, state, src, dst, src_id, dst_id)
     if conflict is not None:
         return conflict
@@ -741,7 +748,7 @@ def _apply_transfer_mass(
     )
     refresh_cell_suspension_relationship(state, src_id)
     refresh_cell_suspension_relationship(
-        state, dst_id, forced_state=_merged_cell_material_state(dst, moved_cell_state)
+        state, dst_id, forced_state=merged_cell_material_state(dst, moved_cell_state)
     )
     return MaterialUpdateResult(
         material_state=state,
@@ -832,7 +839,7 @@ def _apply_transfer_count(
     target_relationship = refresh_cell_suspension_relationship(
         state,
         dst_id,
-        forced_state=_merged_cell_material_state(dst, "suspension"),
+        forced_state=merged_cell_material_state(dst, "suspension"),
         concentration_source=resolution.concentration_source if target_was_empty else "derived",
     )
     return MaterialUpdateResult(
@@ -879,18 +886,3 @@ def _quantity_axis_conflict(
             "because their quantity dimensions or units differ"
         ),
     )
-
-
-def _cell_material_state(container_value: Any) -> str | None:
-    relationship = cell_suspension_relationship(container_value)
-    material_state = relationship.get("material_state") if isinstance(relationship, dict) else None
-    return material_state if isinstance(material_state, str) else None
-
-
-def _merged_cell_material_state(target: Any, incoming_state: str | None) -> str | None:
-    if incoming_state is None:
-        return _cell_material_state(target)
-    existing_state = _cell_material_state(target)
-    if existing_state is None or existing_state == incoming_state:
-        return incoming_state
-    return "mixed"

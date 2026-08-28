@@ -3045,6 +3045,73 @@ protocol T {
     assert source["material_relationships"][0]["material_state"] == "adherent"
 
 
+@pytest.mark.parametrize("declared_attrs", ["state: adherent", "culture_state: adherent_monolayer"])
+def test_runtime_volume_transfer_releases_adherent_cells_from_the_source_surface(declared_attrs):
+    plan = _build_plan_from_source(
+        f"""
+protocol T {{
+  let source = tube(label = "Culture", capacity = 200uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1", attrs = {{ {declared_attrs} }}):100000cells,
+    content(kind = formulation, type = medium, code = "MEDIUM"):200uL
+  ]);
+  let target = tube(label = "Lysate", capacity = 100uL);
+  target << [source:100uL];
+  let separated = sep(sample = target, program = centrifuge_program(drive = 12000g));
+}}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    material = result.state.artifacts["material_state"]
+    source = material["containers"]["Culture"]
+    slots = material["indexed_bindings"]["separated"]
+    supernatant = material["containers"][slots["0"]]
+    pellet = material["containers"][slots["1"]]
+    assert source["component_quantities"]["RPE1"]["value"] == 50000.0
+    assert source["material_relationships"][0]["material_state"] == "adherent"
+    assert supernatant["component_quantities"]["RPE1"]["value"] == 0.0
+    assert pellet["component_quantities"]["RPE1"]["value"] == 50000.0
+    assert supernatant["material_relationships"] == []
+    assert pellet["material_relationships"][0]["material_state"] == "pellet"
+
+
+def test_runtime_adherent_transfer_replaces_stale_retained_fraction_before_centrifugation():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let source = tube(label = "Culture", capacity = 200uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1", attrs = { state: adherent }):100000cells,
+    content(kind = formulation, type = medium, code = "CULTURE_MEDIUM"):100uL
+  ]);
+  sep(
+    sample = source,
+    program = filtration_program(membrane = "adherent_cell_surface", drive = "aspiration")
+  );
+  let lysis_buffer = tube(label = "LysisBuffer", capacity = 100uL, load = [
+    content(kind = formulation, type = buffer, code = "LYSIS_BUFFER", attrs = { role: lysis }):100uL
+  ]);
+  source << [lysis_buffer:100uL];
+  let lysate = tube(label = "Lysate", capacity = 200uL);
+  lysate << [source:200uL];
+  let separated = sep(sample = lysate, program = centrifuge_program(drive = 12000g));
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    material = result.state.artifacts["material_state"]
+    slots = material["indexed_bindings"]["separated"]
+    supernatant = material["containers"][slots["0"]]
+    pellet = material["containers"][slots["1"]]
+    assert supernatant["component_quantities"]["RPE1"]["value"] == 0.0
+    assert pellet["component_quantities"]["RPE1"]["value"] == 100000.0
+    assert supernatant["metadata"]["component_partition_classes"]["RPE1"] == "pelletable_cells"
+
+
 def test_runtime_rejects_ambiguous_count_transfer_with_multiple_cell_populations():
     plan = _build_plan_from_source(
         """
@@ -3396,6 +3463,8 @@ protocol T {
     assert containers["Retained"]["component_quantities"]["RPE1"]["value"] == 100000.0
     assert containers["Removed"]["component_quantities"]["MEDIUM"]["value"] == 297.0
     assert containers["Retained"]["component_quantities"]["MEDIUM"]["value"] == 3.0
+    assert containers["Retained"]["material_relationships"][0]["material_state"] == "suspension"
+    assert containers["Retained"]["metadata"]["component_partition_classes"]["RPE1"] == "pelletable_cells"
     assert (
         containers["Removed"]["component_quantities"]["RPE1"]["value"]
         + containers["Retained"]["component_quantities"]["RPE1"]["value"]

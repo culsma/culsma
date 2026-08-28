@@ -18,6 +18,18 @@ from culsma.runtime.material.result import MaterialUpdateResult
 DEFAULT_CELL_SUSPENSION_CONCENTRATION_CELLS_PER_UL = 1000.0
 IMPLICIT_CELL_CARRIER_PREFIX = "__implicit_cell_carrier__::"
 
+_CELL_MATERIAL_STATE_ALIASES = {
+    "suspended": "suspension",
+    "adherent_monolayer": "adherent",
+    "container_surface": "adherent",
+    "surface_bound": "adherent",
+    "surface_associated": "adherent",
+    "immobilized": "adherent",
+    "pelleted": "pellet",
+    "washed_pellet": "pellet",
+    "precipitated": "precipitate",
+}
+
 
 @dataclass(frozen=True)
 class CellSuspensionPolicy:
@@ -200,7 +212,7 @@ def refresh_cell_suspension_relationship_record(
 
     carrier_ids = _carrier_component_ids(state, container)
     policy = cell_suspension_policy(state)
-    material_state = forced_state
+    material_state = normalize_cell_material_state(forced_state)
     state_source = material_state_source
     if material_state is not None and state_source is None:
         state_source = "runtime_transition"
@@ -215,6 +227,8 @@ def refresh_cell_suspension_relationship_record(
         material_state, state_source = _inferred_cell_state_details(
             state, count_ids, policy.unspecified_state
         )
+    if material_state in {"suspension", "mixed"} and state_source == "runtime_transition":
+        _refresh_mobile_cell_partition_classes(container, count_ids)
     carrier_volume_uL = _carrier_volume_from_ids(container, carrier_ids)
     transferable = material_state == "suspension" and carrier_volume_uL > 0
     concentration = _total_count_cells(container) / carrier_volume_uL if transferable else None
@@ -467,15 +481,64 @@ def _inferred_cell_state_details(
         attrs = record.get("content_attrs") if isinstance(record, dict) else None
         raw = attrs.get("state") or attrs.get("culture_state") if isinstance(attrs, dict) else None
         if isinstance(raw, str) and raw.strip():
-            normalized = raw.strip().lower()
-            if normalized in {"suspended", "suspension"}:
-                normalized = "suspension"
+            normalized = normalize_cell_material_state(raw)
+            if normalized is None:
+                continue
             states.add(normalized)
     if not states:
         return default, "policy_default"
     if len(states) == 1:
         return next(iter(states)), "content_metadata"
     return "mixed", "content_metadata"
+
+
+def normalize_cell_material_state(value: Any) -> str | None:
+    """Return the canonical runtime token for a declared cell material state."""
+
+    if not isinstance(value, str) or not value.strip():
+        return None
+    token = value.strip().lower()
+    return _CELL_MATERIAL_STATE_ALIASES.get(token, token)
+
+
+def cell_material_state(container: Any) -> str | None:
+    relationship = cell_suspension_relationship(container)
+    material_state = relationship.get("material_state") if isinstance(relationship, dict) else None
+    return normalize_cell_material_state(material_state)
+
+
+def transferred_cell_material_state(container: Any, *, moved_cells: float) -> str | None:
+    """Release only container-local surface association when counted cells move."""
+
+    material_state = cell_material_state(container)
+    if moved_cells > 1e-12 and material_state == "adherent":
+        return "suspension"
+    return material_state
+
+
+def merged_cell_material_state(target: Any, incoming_state: str | None) -> str | None:
+    incoming_state = normalize_cell_material_state(incoming_state)
+    if incoming_state is None:
+        return cell_material_state(target)
+    existing_state = cell_material_state(target)
+    if existing_state is None or existing_state == incoming_state:
+        return incoming_state
+    return "mixed"
+
+
+def _refresh_mobile_cell_partition_classes(container: dict[str, Any], count_ids: list[str]) -> None:
+    """Discard stale separation-output classes after cells become mobile."""
+
+    metadata = container.setdefault("metadata", {})
+    if not isinstance(metadata, dict):
+        container["metadata"] = {}
+        metadata = container["metadata"]
+    overrides = metadata.setdefault("component_partition_classes", {})
+    if not isinstance(overrides, dict):
+        metadata["component_partition_classes"] = {}
+        overrides = metadata["component_partition_classes"]
+    for component_id in count_ids:
+        overrides[component_id] = "pelletable_cells"
 
 
 def _add_implicit_carrier(

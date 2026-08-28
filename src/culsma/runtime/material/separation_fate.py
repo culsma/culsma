@@ -378,7 +378,7 @@ def _association_from_material_state(value: Any) -> str | None:
     token = _normalized_token(value)
     if token in {"suspended", "suspension", "mixed", "free", "released"}:
         return "free"
-    if token in {"adherent", "surface_bound", "surface_associated", "immobilized"}:
+    if token in {"adherent", "adherent_monolayer", "surface_bound", "surface_associated", "immobilized"}:
         return "container_surface"
     if token in {"pellet", "pelleted", "washed_pellet"}:
         return "pellet"

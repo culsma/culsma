@@ -40,10 +40,13 @@ from culsma.runtime.material.separation_fate import (
     parse_explicit_content_fates,
 )
 from culsma.runtime.material.suspension import (
+    cell_material_state,
     cell_suspension_relationship,
+    merged_cell_material_state,
     refresh_cell_suspension_relationship,
     refresh_cell_suspension_relationship_record,
     resolve_count_aliquot,
+    transferred_cell_material_state,
 )
 from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_UL
 
@@ -304,7 +307,9 @@ class MaterialIndexedPartsStateManager:
             program=program,
             explicit_fates=explicit_fates,
         )
-        _refresh_separation_relationships(working, source_id, slot0_id, slot1_id, program_kind)
+        _refresh_separation_relationships(
+            working, source_id, slot0_id, slot1_id, program_kind, partition
+        )
         diagnostics = _partition_fallback_diagnostics(step, partition)
         binding_events = bind_indexed_group(
             working,
@@ -617,19 +622,9 @@ class MaterialIndexedPartsStateManager:
             )
 
         part_before = deepcopy(selection.part)
-        selected_relationship = cell_suspension_relationship(selection.part)
-        selected_cell_state = (
-            selected_relationship.get("material_state") if isinstance(selected_relationship, dict) else None
-        )
-        target_relationship = cell_suspension_relationship(target)
-        target_cell_state = target_relationship.get("material_state") if isinstance(target_relationship, dict) else None
-        merged_cell_state = selected_cell_state
-        if (
-            isinstance(selected_cell_state, str)
-            and isinstance(target_cell_state, str)
-            and selected_cell_state != target_cell_state
-        ):
-            merged_cell_state = "mixed"
+        selected_cell_state = cell_material_state(selection.part)
+        incoming_cell_state = transferred_cell_material_state(part_before, moved_cells=moved_cells)
+        target_cell_state = merged_cell_material_state(target, incoming_cell_state)
         _move_contents_part_material(
             part=selection.part,
             source=source,
@@ -645,7 +640,7 @@ class MaterialIndexedPartsStateManager:
         refresh_cell_suspension_relationship(
             state,
             target_id,
-            forced_state=merged_cell_state if isinstance(merged_cell_state, str) else None,
+            forced_state=target_cell_state,
         )
         moved_snapshot = moved_snapshot_from_explicit(
             part_before,
@@ -722,7 +717,9 @@ class MaterialIndexedPartsStateManager:
             program=program,
             explicit_fates=explicit_fates,
         )
-        _refresh_separation_relationships(state, source_id, slot0_id, slot1_id, program_kind)
+        _refresh_separation_relationships(
+            state, source_id, slot0_id, slot1_id, program_kind, partition
+        )
         contents_state = record_partitioned_contents_state(
             state=state,
             source_id=source_id,
@@ -1304,17 +1301,24 @@ def _refresh_separation_relationships(
     slot0_id: str,
     slot1_id: str,
     program_kind: str,
+    partition: dict[str, Any],
 ) -> None:
+    slot0 = container(state, slot0_id)
+    slot1 = container(state, slot1_id)
     refresh_cell_suspension_relationship(state, source_id)
     refresh_cell_suspension_relationship(
         state,
         slot0_id,
-        forced_state=separation_cell_material_state(program_kind, slot="0"),
+        forced_state=separation_cell_material_state(
+            program_kind, slot="0", partition=partition, output=slot0
+        ),
     )
     refresh_cell_suspension_relationship(
         state,
         slot1_id,
-        forced_state=separation_cell_material_state(program_kind, slot="1"),
+        forced_state=separation_cell_material_state(
+            program_kind, slot="1", partition=partition, output=slot1
+        ),
     )
 
 

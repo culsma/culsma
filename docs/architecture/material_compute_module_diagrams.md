@@ -161,6 +161,11 @@ Design judgment:
 7. `suspension.py` owns the runtime policy, implicit-carrier provenance,
    dispersion relationships, and relationship refresh after movement or
    partitioning. It does not add a new content kind.
+8. Cross-container movement releases only container-local cell-surface
+   association in the moved fraction. Relationship refresh also replaces any
+   stale separation-output class for those newly suspended cells; residual
+   source cells and unrelated pellet, precipitate, bead, membrane, or
+   cell-bound states retain their existing physical state.
 
 ## Separation Outcome UML Activity Overview
 

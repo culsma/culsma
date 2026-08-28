@@ -244,7 +244,7 @@ _LEGACY_TYPE_ALIASES: dict[tuple[str, str], tuple[str, str, dict[str, str]]] = {
     ("biosample", "adherent_cells"): (
         ContentKind.BIO_CELLULAR.value,
         ContentType.CELL_LINE.value,
-        _attrs(culture_state="adherent"),
+        _attrs(state="adherent"),
     ),
     ("biosample", "tissue_piece"): (ContentKind.BIO_ENTITY.value, ContentType.TISSUE.value, {}),
     ("biosample", "cell_or_tissue_sample"): (

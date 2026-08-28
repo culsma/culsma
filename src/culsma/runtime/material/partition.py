@@ -579,10 +579,42 @@ def _sep_partition_strategy(program_kind: str) -> SepPartitionStrategy:
     return SepPartitionStrategyRegistry().strategy_for(program_kind)
 
 
-def separation_cell_material_state(program_kind: str, *, slot: str) -> str:
+def separation_cell_material_state(
+    program_kind: str,
+    *,
+    slot: str,
+    partition: dict[str, Any] | None = None,
+    output: dict[str, Any] | None = None,
+) -> str:
     """Return the program-owned cellular material state for one output slot."""
 
-    return SepPartitionStrategyRegistry().strategy_for(program_kind).cell_material_state(slot=slot)
+    default_state = SepPartitionStrategyRegistry().strategy_for(program_kind).cell_material_state(slot=slot)
+    if not isinstance(partition, dict) or not isinstance(output, dict):
+        return default_state
+    quantities = output.get("component_quantities")
+    fates = partition.get("fates_by_component")
+    if not isinstance(quantities, dict) or not isinstance(fates, dict):
+        return default_state
+    states: set[str] = set()
+    for component_id, quantity in quantities.items():
+        if not isinstance(quantity, dict) or quantity.get("dimension") != "count":
+            continue
+        if abs(float(quantity.get("value", 0.0))) <= 1e-12:
+            continue
+        fate = fates.get(component_id)
+        if (
+            isinstance(fate, dict)
+            and fate.get("association") == "container_surface"
+            and fate.get("retained_slot") == slot
+        ):
+            states.add("adherent")
+        else:
+            states.add(default_state)
+    if len(states) == 1:
+        return next(iter(states))
+    if len(states) > 1:
+        return "mixed"
+    return default_state
 
 
 def separation_slot_contract(program_kind: str) -> dict[str, str]:
