@@ -2,9 +2,10 @@
 
 Status: `implementation in progress`
 Phase: `1 — material separation and state-transition decisions`
-Current boundary: `ResolvedMaterialEffect` is the Runtime handoff; centrifuge
-and both filtration programs use Tables 1–3 through one injected adapter;
-remaining `sep` programs await typed-context migration.
+Current boundary: `ResolvedMaterialEffect` is the Runtime handoff; every
+registered `sep` program uses the same injected adapter. Built-in phase and
+field fate remain explicitly `UNRESOLVED` without authored facts or replacement
+provider coverage.
 Normative extension contract: `culsma-reference/extensions/scientific_model/README.md`
 Built-in provider semantics: `culsma-reference/extensions/scientific_model/builtin_material_rulebook.md`
 
@@ -157,8 +158,8 @@ src/culsma/
 | `material/coordinator.py` | author precedence, resolver request, final typed decision | ledger commit |
 | `material/validation.py` | provider proposal shape, bounds, IDs, fraction sums | capacity and ledger conservation |
 | `runtime/material/scientific_model_adapter.py` | public snapshot adapter; combines capability decisions into one `ResolvedMaterialEffect`; no mutation | quantity projection, scientific rules, ledger commit |
-| `runtime/material/separation.py` | one separation application entry; provider handoff, effect projection, candidate commit, and temporary legacy delegation | scientific rules, resolver construction |
-| `runtime/material/partition.py` | compatibility-only classification and strategies for programs not yet migrated | provider calls, typed-effect projection, new separation orchestration |
+| `runtime/material/separation.py` | one separation application entry; provider handoff, effect projection, candidate commit, and unknown-input compatibility delegation | scientific rules, resolver construction |
+| `runtime/material/partition.py` | unknown-input compatibility shell plus preexisting direct Python symbols | provider calls, typed-effect projection, authoritative registered separation behavior |
 | `runtime/material/conservation.py` | candidate conservation | scientific resolution |
 | `runtime/material/ledger.py` | authoritative state mutation | scientific decisions |
 
@@ -438,20 +439,20 @@ result = run(
 
 ## 10. Current-to-Target Move Map
 
-### Current conflict: two program dispatch systems
+### Current boundary: one registered-program dispatch system
 
 ```mermaid
 flowchart TB
     Step["sep or compatibility source.partition operation"] --> Separation["apply_separation_material"]
     Separation --> ProgramRegistry["Program Registry<br/>single slot-contract source"]
-    Separation --> Gate{"program migrated?"}
+    Separation --> Gate{"registered separation program?"}
 
     Gate -->|yes| Adapter["ScientificModelPartitionAdapter"]
     Adapter --> Resolver["ScientificModelResolver"]
     Resolver --> Provider["built-in or external provider"]
     Provider --> Tables["Table 1 classification<br/>Table 2 fate<br/>Table 3 transition"]
 
-    Gate -->|no| Legacy["Runtime legacy scientific path"]
+    Gate -->|unknown compatibility input only| Legacy["Runtime compatibility shell"]
     Legacy --> RuntimeStrategy["SepPartitionStrategyRegistry"]
     Legacy --> OldClass["ContentClassResolver"]
     Legacy --> OldFate["per-program strategy ratios"]
@@ -470,11 +471,10 @@ flowchart TB
 
 | Current symptom | Architectural cause |
 | --- | --- |
-| Only migrated programs enter the adapter | Runtime still owns a temporary migration-set feature gate |
-| Other programs select Runtime subclasses | `SepPartitionStrategyRegistry` remains a second scientific dispatcher |
-| Precipitation and magnetic rules exist in two systems | Runtime strategy and Rulebook both own scientific fate |
-| Missing transition may fall back to strategy state | Runtime still retains a second state authority |
-| Centrifuge and filtration have no Runtime strategies, but other programs do | Migration state remains encoded by a program set |
+| Every registered separation program enters the adapter | Program Registry is the single accepted-program boundary |
+| Phase partition and field lack a built-in quantitative rule | Provider returns controlled `UNRESOLVED` unless the author supplies component fate |
+| Disrupt is a state transition rather than a fractional scientific guess | Provider returns the operation-shaped result and Table 3 transitions |
+| Unknown direct compatibility input can still reach the strategy shell | Preexisting Python strategy symbols remain compatible but registered Runtime operations do not select them |
 
 ### Target convergence: one scientific decision boundary
 
@@ -514,13 +514,14 @@ flowchart TB
 | Candidate validation and commit | Runtime kernel | Provider never mutates Runtime state |
 | Legacy compatibility, if temporarily required | provider behind the same resolver port | Never branch around the adapter |
 
-Target deletion condition:
+Major-version deletion condition:
 
 ```text
 separation.py is the only Runtime entry for separation decisions and application
-partition.py is reachable only through separation.py's temporary legacy delegation
-partition.py contains no scientific-model adapter or typed-effect projection
-all sep programs enter the same adapter
+all registered sep programs enter the same adapter
+partition.py owns no registered-program Runtime dispatch
+preexisting partition classes and exports remain available in minor versions
+unknown direct compatibility input is the only remaining legacy delegation
 ```
 
 ### Responsibility migration
@@ -558,14 +559,14 @@ flowchart LR
 
 | Current location | Current responsibility | Target |
 | --- | --- | --- |
-| `runtime/material/partition.py::PartitionClass` | calculation groups | `scientific_model/material/classification.py` |
-| `runtime/material/partition.py::_CONTENT_CLASS_BY_KIND_TYPE` | Table 1 | `scientific_model/material/classification.py` |
-| `runtime/material/partition.py::SepPartitionStrategy*` | ratios + output classes | `scientific_model/material/rulebook.py` |
+| `runtime/material/partition.py::PartitionClass` | compatibility calculation groups | retained through minor versions; authoritative classification is `scientific_model/material/classification.py` |
+| `runtime/material/partition.py::_CONTENT_CLASS_BY_KIND_TYPE` | compatibility Table 1 | retained through minor versions; authoritative Table 1 is in the provider |
+| `runtime/material/partition.py::SepPartitionStrategy*` | compatibility ratios + output classes | retained for direct Python callers; authoritative Runtime decisions come from `scientific_model/material/rulebook.py` |
 | `runtime/material/separation_fate.py` | operation/relationship decisions | contracts + Rulebook + coordinator |
 | `runtime/material/contents_state.py` relationship refresh | post-separation state decisions | apply validated Table 3 transitions only |
 | `runtime/material/scientific_model_adapter.py::ScientificModelPartitionAdapter` | immutable snapshots + provider decision resolution | stable Runtime/model boundary |
 | `runtime/material/separation.py::apply_separation_material` | decision application + one quantity projection | permanent single application boundary |
-| `runtime/material/partition.py::apply_legacy_partition_material` | compatibility classification, ratios, and projection | delete after all programs migrate |
+| `runtime/material/partition.py::apply_legacy_partition_material` | compatibility classification, ratios, and projection | retain in minor versions; delete with the compatibility API in a major version |
 | `runtime/steps.py::apply_material_step` | global material-compute facade | session-owned `MaterialCompute` |
 | `pipeline/program_registry.py` | program syntax/fields/result slots | unchanged |
 | `runtime/material/ledger.py` | authoritative quantities | unchanged |
@@ -581,9 +582,9 @@ flowchart LR
 | 5 | Done | Inject one adapter through ordinary `sep` and `source.partition` paths | no nested resolver construction or custom-provider bypass |
 | 6 | Done | Remove legacy centrifuge strategy and duplicate slot ownership | centrifuge uses Tables 1–3; Program Registry owns output roles |
 | 7 | Done | Migrate filtration and centrifugal filtration; preserve surface-bound aspiration and explicit retention facts | no filtration Runtime strategy or inferred carryover |
-| 8 | Pending | Migrate precipitation and magnetic | typed guards replace legacy guesses and preservation metadata is retained |
-| 9 | Pending | Route phase partition, field, generic `sep`, disrupt through coordinator | every registered `sep` has controlled outcome |
-| 10 | Pending | Remove compatibility-only classifier and strategy registry | no Runtime scientific dispatcher or migration-set feature gate |
+| 8 | Done | Migrate precipitation and magnetic | typed guards replace legacy guesses and preservation metadata is retained |
+| 9 | Done | Route phase partition, field, generic `sep`, disrupt through coordinator | every registered `sep` has controlled outcome |
+| 10 | Deferred to major version | Remove compatibility-only classifier, classes, exports, and registry | no Python API break in the 1.x minor line |
 
 ## 12. Phase 1 Invariants
 

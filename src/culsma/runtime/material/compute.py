@@ -13,8 +13,9 @@ from culsma.scientific_model import (
 from culsma.scientific_model.material import SepEffectCoordinator
 from culsma.runtime.material.conservation import (
     CONSERVATION_OPS,
+    declared_quantity_retirements,
     state_totals,
-    totals_conserved,
+    totals_conserved_with_declared_retirements,
 )
 from culsma.runtime.material.diagnostics import diagnostic_result
 from culsma.runtime.material.ledger import (
@@ -76,7 +77,11 @@ class MaterialCompute:
 
         if result.ok and step.op in CONSERVATION_OPS:
             after_totals = state_totals(result.material_state)
-            if not totals_conserved(before_totals, after_totals):
+            if not totals_conserved_with_declared_retirements(
+                before_totals,
+                after_totals,
+                result.delta,
+            ):
                 return diagnostic_result(
                     step=step,
                     state=result.material_state,
@@ -93,6 +98,7 @@ class MaterialCompute:
             result.ok
             and result.delta.get("op") not in {"LoadContent", "FinalizeContainerContents"}
             and not movement_specs
+            and not declared_quantity_retirements(result.delta)
             and material_quantities_changed(
                 before_state=movement_before_state,
                 after_state=operation_result_state,

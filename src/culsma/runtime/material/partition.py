@@ -414,6 +414,8 @@ class ContentClassResolver:
 
 
 class SepPartitionStrategy:
+    """Compatibility API; Runtime separation does not dispatch through it."""
+
     program_kind = "sep_program"
 
     def ratios(self, partition_class: PartitionClass) -> tuple[float, float]:
@@ -460,13 +462,21 @@ class PrecipitationPartitionStrategy(SepPartitionStrategy):
     program_kind = "precipitation_program"
 
     def known_ratios(self, partition_class: PartitionClass) -> tuple[float, float]:
-        if partition_class in _TARGET_PARTITION_CLASSES or partition_class in _PELLET_PARTITION_CLASSES:
+        if (
+            partition_class in _TARGET_PARTITION_CLASSES
+            or partition_class in _PELLET_PARTITION_CLASSES
+        ):
             return _TARGETED_RECOVERY_TO_SLOT0
         if partition_class in _LIQUID_PARTITION_CLASSES:
             return _NEAR_COMPLETE_TO_SLOT1
         return _EQUAL_SPLIT
 
-    def output_class(self, partition_class: PartitionClass, *, slot: str) -> PartitionClass:
+    def output_class(
+        self,
+        partition_class: PartitionClass,
+        *,
+        slot: str,
+    ) -> PartitionClass:
         if slot == "0" and (
             partition_class in _TARGET_PARTITION_CLASSES
             or partition_class in _PELLET_PARTITION_CLASSES
@@ -498,7 +508,12 @@ class MagneticPartitionStrategy(SepPartitionStrategy):
             return _NEAR_COMPLETE_TO_SLOT0
         return _NEAR_COMPLETE_TO_SLOT1
 
-    def output_class(self, partition_class: PartitionClass, *, slot: str) -> PartitionClass:
+    def output_class(
+        self,
+        partition_class: PartitionClass,
+        *,
+        slot: str,
+    ) -> PartitionClass:
         if slot == "0" and (
             partition_class in _TARGET_PARTITION_CLASSES
             or partition_class == PartitionClass.CAPTURE_PARTICLE

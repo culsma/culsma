@@ -520,7 +520,7 @@ flowchart TB
     Slots["Determine output slot contract:<br/>group[0] / group[1] semantic names"]
     Identity["Apply identity policy:<br/>centrifuge keep_source may reuse source container"]
     Separation["material.separation<br/>single application boundary"]
-    Gate{"scientific-model path migrated?"}
+    Gate{"registered separation program?"}
     ResolveEffect["Resolve typed material effect:<br/>built-in or replacement scientific provider"]
     Legacy["material.partition<br/>temporary compatibility strategy"]
     Project["Runtime projects candidate:<br/>quantities, state, conservation"]
@@ -535,8 +535,8 @@ flowchart TB
     Slots --> Identity
     Identity --> Separation
     Separation --> Gate
-    Gate -->|centrifuge or filtration| ResolveEffect
-    Gate -->|not yet| Legacy
+    Gate -->|yes| ResolveEffect
+    Gate -->|unknown compatibility input only| Legacy
     ResolveEffect --> Project
     Legacy --> Bind
     Project --> Bind
@@ -553,12 +553,13 @@ Current implementation note:
 4. `material.separation.apply_separation_material(...)` is the only application
    entry used by ordinary `sep` and the compatibility `source.partition(...)`
    syntax.
-5. Centrifuge and both filtration programs enter the injected scientific-model
-   adapter and return one immutable `ResolvedMaterialEffect`; Runtime projects
-   and commits it inside `material.separation`.
-6. Other `sep` programs temporarily delegate from `material.separation` to the
-   legacy strategy registry in `material.partition` until
-   their authoritative typed operation facts and Rulebook rules are complete.
+5. Every registered separation program enters the injected scientific-model
+   adapter and returns one immutable
+   `ResolvedMaterialEffect`; Runtime projects and commits it inside
+   `material.separation`.
+6. The legacy strategy shell is reachable from the application boundary only
+   for an unknown compatibility input. Its old classes remain callable through
+   the direct Python compatibility API but own no authoritative Runtime rule.
 7. Legacy volume/mass-only state
    retains conservative bulk accounting. When dimensioned cell-count content is
    present, volume-bearing component quantities determine bulk volume while
@@ -572,50 +573,37 @@ Current implementation note:
 
 ## Current `sep` Migration Boundary
 
-Centrifuge and both filtration programs no longer have Runtime strategies.
+Registered separation programs no longer dispatch through Runtime strategies.
 Their scientific decisions cross one typed boundary; Runtime retains only
-projection, validation, and commit. The remaining strategy registry is
-compatibility-only and is deleted after the corresponding programs have
-authoritative provider rules.
+projection, validation, and commit. Preexisting strategy classes and registry
+lookups remain import-compatible during the minor-version line, but the
+separation application boundary never selects them.
 
 ```mermaid
 flowchart TB
     Apply["apply_step"]
     Sep["_apply_sep orchestration"]
     Separation["material.separation<br/>apply_separation_material"]
-    Gate{"program migrated?"}
+    Gate{"registered program?"}
     Adapter["ScientificModelPartitionAdapter"]
     Effect["ResolvedMaterialEffect"]
     Project["generic Runtime projection<br/>+ validation + commit"]
     Legacy["material.partition<br/>compatibility only"]
     Registry["SepPartitionStrategy registry"]
     Default["SepPartitionStrategy<br/>unknown fallback"]
-    Phase["PhasePartitionStrategy<br/>target_phase / other_phase"]
-    Precip["PrecipitationPartitionStrategy<br/>precipitate / supernatant"]
-    Magnetic["MagneticPartitionStrategy<br/>bound / flowthrough"]
-    Disrupt["DisruptPartitionStrategy<br/>lysate / debris_or_residue"]
-    Field["FieldPartitionStrategy<br/>target_band / non_target"]
+    Compat["preexisting strategy classes<br/>direct Python compatibility only"]
     Result["SepPartitionResult:<br/>slot containers, component deltas,<br/>cellular output state, diagnostics,<br/>binding metadata"]
 
     Apply --> Sep
     Sep --> Separation
     Separation --> Gate
-    Gate -->|centrifuge or filtration| Adapter
+    Gate -->|yes| Adapter
     Adapter --> Effect --> Project --> Result
-    Gate -->|not yet migrated| Legacy
+    Gate -->|unknown compatibility input only| Legacy
     Legacy --> Registry
     Registry -->|unknown or unsupported| Default
-    Registry -->|phase_partition_program| Phase
-    Registry -->|precipitation_program| Precip
-    Registry -->|magnetic_program| Magnetic
-    Registry -->|disrupt_program| Disrupt
-    Registry -->|field_program| Field
+    Registry -. direct API only .-> Compat
     Default --> Result
-    Phase --> Result
-    Precip --> Result
-    Magnetic --> Result
-    Disrupt --> Result
-    Field --> Result
     Result --> Separation
     Separation --> Sep
 ```
@@ -626,8 +614,9 @@ Migration rule:
 2. Program Registry is the sole owner of output-slot roles.
 3. Legacy ratios are not copied into the built-in Rulebook without an accepted
    scientific rule.
-4. The final state contains no Runtime scientific strategy registry and no
-   program-kind feature gate.
+4. The minor-version state retains the old Python symbols but contains no
+   registered-program dispatch from Runtime into those strategies. Symbol
+   removal is reserved for a major version.
 
 ## Report Data Structure
 

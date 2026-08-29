@@ -647,10 +647,7 @@ sequenceDiagram
     participant Separation as "material.separation"
     participant Adapter as "material.scientific_model_adapter.ScientificModelPartitionAdapter"
     participant Model as "scientific-model public port"
-    participant Legacy as "material.partition (compatibility only)"
-    participant Registry as "material.partition.SepPartitionStrategyRegistry"
-    participant Strategy as "material.partition.SepPartitionStrategy"
-    participant Classes as "material.partition.ContentClassResolver"
+    participant Legacy as "material.partition (unknown-input compatibility only)"
     participant Fate as "material.separation_fate"
     participant Ledger as "material.ledger"
 
@@ -658,7 +655,7 @@ sequenceDiagram
     Separation->>Fate: resolve operation contract from complete program and slot meanings
     Fate-->>Separation: movement, retention, release, and preservation rules
 
-    alt centrifuge: scientific-model path
+    alt registered separation program
         Separation->>Adapter: resolve(immutable operation + component snapshots)
         Adapter->>Model: Table 2 fate request, then Table 3 transition requests
         Model-->>Adapter: validated typed decisions
@@ -666,17 +663,8 @@ sequenceDiagram
         Separation->>Separation: project_resolved_material_effect(effect)
         Separation->>Separation: validate candidate quantities and conservation
         Separation->>Ledger: commit_separation_candidate(candidate)
-    else compatibility path pending migration
+    else unknown compatibility input
         Separation->>Legacy: apply_legacy_partition_material(...)
-        Legacy->>Registry: strategy_for(program_kind)
-        Registry-->>Legacy: SepPartitionStrategy
-        loop each component
-            Legacy->>Classes: classify(state, source, content_ref)
-            Classes-->>Legacy: PartitionClass
-            Legacy->>Strategy: ratios(partition_class)
-            Legacy->>Strategy: output_class(partition_class, slot)
-        end
-        Legacy->>Legacy: allocate authoritative count, volume, or mass quantity
         Legacy->>Ledger: commit compatibility result
         Legacy-->>Separation: compatibility record
     end
@@ -701,8 +689,8 @@ as helper functions embedded in operation modules:
 | `container_content.py` | container/content record updates | material-state change planning |
 | `mutation.py` | mutation transform and mutation source dispatch | top-level material-state change planning |
 | `scientific_model_adapter.py` | public Runtime/model translation and typed decision resolution | quantity projection, ledger mutation, built-in rules |
-| `separation.py` | single separation entry, typed-effect projection, candidate commit, temporary legacy delegation | provider rules, resolver construction |
-| `partition.py` | temporary strategy/classification compatibility path | provider calls, typed-effect projection, main separation lifecycle |
+| `separation.py` | single separation entry, typed-effect projection, candidate commit, unknown-input compatibility delegation | provider rules, resolver construction |
+| `partition.py` | unknown-input compatibility shell plus preexisting direct Python symbols | provider calls, typed-effect projection, authoritative registered separation behavior |
 | `contents_state.py` | `MaterialIndexedPartsStateManager`, indexed part records, selection, sep/frac partition/index application, narrow preservation impact, invalidation, and mixed-state impact | top-level material-state change planning, full runtime step dispatch, broad protocol semantics |
 | `ledger.py` | volume, mass, component, and metadata mutation primitives | source-expression interpretation |
 | `diagnostics.py` | material diagnostic result construction | material state mutation |
@@ -863,12 +851,6 @@ classDiagram
         +output_class(partition_class, slot) str
     }
 
-    class PhasePartitionStrategy
-    class PrecipitationPartitionStrategy
-    class MagneticPartitionStrategy
-    class DisruptPartitionStrategy
-    class FieldPartitionStrategy
-
     MaterialCompute --> MaterialUpdateResult
     MaterialCompute --> MaterialStateManager
     MaterialCompute --> MaterialConservation
@@ -886,7 +868,7 @@ classDiagram
     ScientificModelPartitionAdapter --> ResolvedMaterialEffect
     ResolvedMaterialEffect --> MaterialSeparationCandidate
     MaterialSeparationCandidate --> MaterialLedger
-    SeparationApplication --> SepPartitionStrategyRegistry : temporary legacy delegation
+    SeparationApplication --> SepPartitionStrategyRegistry : unknown-input compatibility only
     MaterialIndexedPartsStateManager --> ContentsStateTransitionPlan
     MaterialIndexedPartsStateManager --> ContentsPartitionTransition
     MaterialIndexedPartsStateManager --> ContentsStateSummary
@@ -895,11 +877,6 @@ classDiagram
 
     SepPartitionStrategyRegistry --> SepPartitionStrategy
     SepPartitionStrategy --> ContentClassResolver
-    SepPartitionStrategy <|-- PhasePartitionStrategy
-    SepPartitionStrategy <|-- PrecipitationPartitionStrategy
-    SepPartitionStrategy <|-- MagneticPartitionStrategy
-    SepPartitionStrategy <|-- DisruptPartitionStrategy
-    SepPartitionStrategy <|-- FieldPartitionStrategy
 ```
 
 ## Refactor Status
@@ -917,12 +894,14 @@ The material compute refactor is in a transitional state:
    update branch have been removed from this target path.
 6. Every `sep` and compatibility `source.partition(...)` path enters
    `material.separation.apply_separation_material(...)` first.
-7. Centrifuge and both filtration programs use one injected
-   `ScientificModelPartitionAdapter`; each `ResolvedMaterialEffect` is projected
-   and committed inside `material.separation`.
-8. `material.partition` and `SepPartitionStrategy` remain only for
-   not-yet-migrated programs and are reached by temporary delegation from the
-   separation boundary.
+7. Every registered separation program uses one injected
+   `ScientificModelPartitionAdapter`; each
+   `ResolvedMaterialEffect` is projected and committed inside
+   `material.separation`.
+8. `material.partition` classes and registry remain for direct Python
+   compatibility. Registered Runtime separation does not dispatch through them;
+   the application boundary reaches the shell only for unknown compatibility
+   input.
 9. Argument reading, reference resolution, ledger mutation, diagnostics, and
    conservation now live behind public service modules instead of cross-module
    imports from `support.py`.

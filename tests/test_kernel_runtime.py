@@ -1349,14 +1349,22 @@ protocol T() returns (plasmid_dna) {
   aqueous << [phenol_chloroform:450uL];
   let extraction_group = sep(
     sample = aqueous,
-    program = phase_partition_program(solvent = "phenol_chloroform")
+    program = phase_partition_program(solvent = "phenol_chloroform"),
+    component_fates = {
+      DNA_EXT: { target_phase: 100%, other_phase: 0% },
+      AQ: { target_phase: 100%, other_phase: 0% },
+      PCI: { target_phase: 0%, other_phase: 100% }
+    }
   );
   aqueous_phase << [extraction_group[0]];
 
   aqueous_phase << [ethanol_abs:900uL];
   let precip_group = sep(
     sample = aqueous_phase,
-    program = precipitation_program(reagent = "ethanol")
+    program = precipitation_program(reagent = "ethanol"),
+    component_fates = {
+      DNA_EXT: { precipitate: 100%, supernatant: 0% }
+    }
   );
   dna_pellet << [precip_group[0]];
 
@@ -1389,11 +1397,11 @@ protocol T() returns (plasmid_dna) {
     components = result.state.artifacts["material_state"]["containers"]["Plasmid DNA"]["components"]
     assert {key: round(float(value), 6) for key, value in sorted(components.items())} == {
         "AQ": 0.0,
-        "DNA_EXT": 32.644915,
+        "DNA_EXT": 33.333333,
         "ETOH70": 0.0,
         "ETOH_ABS": 0.0,
         "PCI": 0.0,
-        "TE": 17.355085,
+        "TE": 16.666667,
     }
     final_products = result.user_result["materials"]["final_products"]
     plasmid = next(item for item in final_products if item["name"] == "Plasmid DNA")
@@ -1406,7 +1414,7 @@ protocol T() returns (plasmid_dna) {
     }
 
 
-def test_runtime_sep_partition_fallback_warning_reaches_run_diagnostics():
+def test_runtime_phase_partition_without_facts_is_unresolved():
     plan = _build_plan_from_source(
         """
 protocol T {
@@ -1423,19 +1431,10 @@ protocol T {
 
     result = run(plan=plan, driver=StubDriver())
 
-    assert result.ok
-    assert len(result.diagnostics) == 1
-    diagnostic = result.diagnostics[0]
-    assert diagnostic.code == "MAT_CONTENT_PARTITION_FALLBACK"
-    assert diagnostic.severity == "warning"
-    assert diagnostic.node_id == "p0.s1"
-    assert "Component 'CUSTOM' used conservative 0.50/0.50 partition" in diagnostic.message
-    assert "custom_content_classification" in diagnostic.message
-    assert diagnostic.span is not None
-    material_state = result.state.artifacts["material_state"]
-    slots = material_state["indexed_bindings"]["parts"]
-    assert material_state["containers"][slots["0"]]["components"] == {"CUSTOM": 50.0}
-    assert material_state["containers"][slots["1"]]["components"] == {"CUSTOM": 50.0}
+    assert not result.ok
+    assert "MAT_SCIENTIFIC_MODEL_UNRESOLVED" in [
+        diagnostic.code for diagnostic in result.diagnostics
+    ]
 
 
 def test_runtime_source_partition_magnetic_removes_flowthrough_without_sep_group():
@@ -1443,7 +1442,7 @@ def test_runtime_source_partition_magnetic_removes_flowthrough_without_sep_group
         """
 protocol T {
   let bead_tube = tube(label = "BeadTube", capacity = 500uL, load = [
-    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    content(kind = "particulate", code = "BEADS", type = "beads", attrs = { bead_property: magnetic }):20uL,
     buffer(code = "WASH", type = "buffer"):180uL
   ]);
   let waste = tube(label = "Waste", capacity = 500uL);
@@ -1463,10 +1462,10 @@ protocol T {
     assert "indexed_bindings" not in material_state or "mag_sep" not in material_state["indexed_bindings"]
     bead_components = material_state["containers"]["BeadTube"]["components"]
     waste_components = material_state["containers"]["Waste"]["components"]
-    assert round(float(bead_components["BEADS"]), 6) == 19.8
-    assert round(float(bead_components["WASH"]), 6) == 1.8
-    assert round(float(waste_components["BEADS"]), 6) == 0.2
-    assert round(float(waste_components["WASH"]), 6) == 178.2
+    assert round(float(bead_components["BEADS"]), 6) == 20.0
+    assert round(float(bead_components["WASH"]), 6) == 0.0
+    assert round(float(waste_components["BEADS"]), 6) == 0.0
+    assert round(float(waste_components["WASH"]), 6) == 180.0
 
 
 def test_runtime_standalone_sep_contents_index_transfers_flowthrough():
@@ -1474,7 +1473,7 @@ def test_runtime_standalone_sep_contents_index_transfers_flowthrough():
         """
 protocol T {
   let bead_tube = tube(label = "BeadTube", capacity = 500uL, load = [
-    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    content(kind = "particulate", code = "BEADS", type = "beads", attrs = { bead_property: magnetic }):20uL,
     buffer(code = "WASH", type = "buffer"):180uL
   ]);
   let waste = tube(label = "Waste", capacity = 500uL);
@@ -1496,10 +1495,10 @@ protocol T {
     assert contents_state["slot_contract"] == {"0": "bound", "1": "flowthrough"}
     bead_components = material_state["containers"]["BeadTube"]["components"]
     waste_components = material_state["containers"]["Waste"]["components"]
-    assert round(float(bead_components["BEADS"]), 6) == 19.8
-    assert round(float(bead_components["WASH"]), 6) == 1.8
-    assert round(float(waste_components["BEADS"]), 6) == 0.2
-    assert round(float(waste_components["WASH"]), 6) == 178.2
+    assert round(float(bead_components["BEADS"]), 6) == 20.0
+    assert round(float(bead_components["WASH"]), 6) == 0.0
+    assert round(float(waste_components["BEADS"]), 6) == 0.0
+    assert round(float(waste_components["WASH"]), 6) == 180.0
 
 
 def test_runtime_magnetic_contents_index_requires_preservation_context():
@@ -1507,7 +1506,7 @@ def test_runtime_magnetic_contents_index_requires_preservation_context():
         """
 protocol T {
   let bead_tube = tube(label = "BeadTube", capacity = 500uL, load = [
-    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    content(kind = "particulate", code = "BEADS", type = "beads", attrs = { bead_property: magnetic }):20uL,
     buffer(code = "WASH", type = "buffer"):180uL
   ]);
   let waste = tube(label = "Waste", capacity = 500uL);
@@ -1578,7 +1577,7 @@ def test_runtime_contents_index_rejects_stale_state_after_material_mutation():
         """
 protocol T {
   let sample_tube = tube(label = "SampleTube", capacity = 300uL, load = [
-    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    content(kind = "particulate", code = "BEADS", type = "beads", attrs = { bead_property: magnetic }):20uL,
     buffer(code = "WASH", type = "buffer"):100uL
   ]);
   let donor_tube = tube(label = "DonorTube", capacity = 100uL, load = [
@@ -1604,7 +1603,7 @@ def test_runtime_magnetic_env_preserves_contents_state_after_compatible_addition
         """
 protocol T {
   let bead_tube = tube(label = "BeadTube", capacity = 700uL, load = [
-    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    content(kind = "particulate", code = "BEADS", type = "beads", attrs = { bead_property: magnetic }):20uL,
     buffer(code = "BIND", type = "buffer"):180uL
   ]);
   let ethanol = tube(label = "Ethanol", capacity = 300uL, load = [
@@ -1635,10 +1634,10 @@ protocol T {
     }
     bead_components = material_state["containers"]["BeadTube"]["components"]
     waste_components = material_state["containers"]["Waste"]["components"]
-    assert round(float(bead_components["BEADS"]), 6) == 19.8
-    assert round(float(bead_components["BIND"]), 6) == 1.8
-    assert round(float(waste_components["BEADS"]), 6) == 0.2
-    assert round(float(waste_components["BIND"]), 6) == 178.2
+    assert round(float(bead_components["BEADS"]), 6) == 20.0
+    assert round(float(bead_components["BIND"]), 6) == 0.0
+    assert round(float(waste_components["BEADS"]), 6) == 0.0
+    assert round(float(waste_components["BIND"]), 6) == 180.0
     assert round(float(waste_components["ETOH"]), 6) == 200.0
 
 
@@ -1647,7 +1646,7 @@ def test_runtime_source_partition_target_addition_uses_contents_state_classifier
         """
 protocol T {
   let bead_tube = tube(label = "BeadTube", capacity = 700uL, load = [
-    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    content(kind = "particulate", code = "BEADS", type = "beads", attrs = { bead_property: magnetic }):20uL,
     buffer(code = "BIND", type = "buffer"):180uL
   ]);
   let donor = tube(label = "Donor", capacity = 200uL, load = [
@@ -1672,8 +1671,8 @@ protocol T {
     contents_state = material_state["contents_states"]["BeadTube"]
     assert contents_state["valid"] is True
     waste_components = material_state["containers"]["Waste"]["components"]
-    assert round(float(waste_components["BEADS"]), 6) == 0.2
-    assert round(float(waste_components["BIND"]), 6) == 178.2
+    assert round(float(waste_components["BEADS"]), 6) == 0.0
+    assert round(float(waste_components["BIND"]), 6) == 180.0
     assert round(float(waste_components["DON"]), 6) == 50.0
 
 
@@ -1682,7 +1681,7 @@ def test_runtime_magnetic_env_hold_target_does_not_narrow_block_context():
         """
 protocol T {
   let bead_tube = tube(label = "BeadTube", capacity = 700uL, load = [
-    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    content(kind = "particulate", code = "BEADS", type = "beads", attrs = { bead_property: magnetic }):20uL,
     buffer(code = "BIND", type = "buffer"):180uL
   ]);
   let shielded = tube(label = "Shielded", capacity = 100uL);
@@ -1708,8 +1707,8 @@ protocol T {
     contents_state = material_state["contents_states"]["BeadTube"]
     assert contents_state["valid"] is True
     waste_components = material_state["containers"]["Waste"]["components"]
-    assert round(float(waste_components["BEADS"]), 6) == 0.2
-    assert round(float(waste_components["BIND"]), 6) == 178.2
+    assert round(float(waste_components["BEADS"]), 6) == 0.0
+    assert round(float(waste_components["BIND"]), 6) == 180.0
     assert round(float(waste_components["ETOH"]), 6) == 200.0
 
 
@@ -1718,7 +1717,7 @@ def test_runtime_whole_container_removal_stales_contents_state_even_in_magnetic_
         """
 protocol T {
   let bead_tube = tube(label = "BeadTube", capacity = 700uL, load = [
-    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    content(kind = "particulate", code = "BEADS", type = "beads", attrs = { bead_property: magnetic }):20uL,
     buffer(code = "BIND", type = "buffer"):180uL
   ]);
   let waste = tube(label = "Waste", capacity = 700uL);
@@ -1747,7 +1746,7 @@ def test_runtime_agit_marks_contents_state_mixed_and_stale():
         """
 protocol T {
   let bead_tube = tube(label = "BeadTube", capacity = 500uL, load = [
-    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    content(kind = "particulate", code = "BEADS", type = "beads", attrs = { bead_property: magnetic }):20uL,
     buffer(code = "BIND", type = "buffer"):180uL
   ]);
   let waste = tube(label = "Waste", capacity = 500uL);
@@ -1774,11 +1773,11 @@ def test_runtime_agit_applies_to_each_explicit_group_sample():
         """
 protocol T {
   let tube1 = tube(label = "Tube1", capacity = 500uL, load = [
-    content(kind = "particulate", code = "BEADS1", type = "beads"):20uL,
+    content(kind = "particulate", code = "BEADS1", type = "beads", attrs = { bead_property: magnetic }):20uL,
     buffer(code = "BIND1", type = "buffer"):180uL
   ]);
   let tube2 = tube(label = "Tube2", capacity = 500uL, load = [
-    content(kind = "particulate", code = "BEADS2", type = "beads"):20uL,
+    content(kind = "particulate", code = "BEADS2", type = "beads", attrs = { bead_property: magnetic }):20uL,
     buffer(code = "BIND2", type = "buffer"):180uL
   ]);
 
@@ -1806,11 +1805,11 @@ def test_runtime_agit_applies_to_each_let_bound_group_sample():
         """
 protocol T {
   let tube1 = tube(label = "Tube1", capacity = 500uL, load = [
-    content(kind = "particulate", code = "BEADS1", type = "beads"):20uL,
+    content(kind = "particulate", code = "BEADS1", type = "beads", attrs = { bead_property: magnetic }):20uL,
     buffer(code = "BIND1", type = "buffer"):180uL
   ]);
   let tube2 = tube(label = "Tube2", capacity = 500uL, load = [
-    content(kind = "particulate", code = "BEADS2", type = "beads"):20uL,
+    content(kind = "particulate", code = "BEADS2", type = "beads", attrs = { bead_property: magnetic }):20uL,
     buffer(code = "BIND2", type = "buffer"):180uL
   ]);
   let bead_tubes = group([tube1, tube2]);
@@ -1837,7 +1836,7 @@ def test_runtime_contents_self_transfer_invalidates_contents_state_without_mater
         """
 protocol T {
   let bead_tube = tube(label = "BeadTube", capacity = 500uL, load = [
-    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    content(kind = "particulate", code = "BEADS", type = "beads", attrs = { bead_property: magnetic }):20uL,
     buffer(code = "WASH", type = "buffer"):180uL
   ]);
 
@@ -1866,7 +1865,7 @@ def test_runtime_contents_self_transfer_makes_later_contents_read_stale():
         """
 protocol T {
   let bead_tube = tube(label = "BeadTube", capacity = 500uL, load = [
-    content(kind = "particulate", code = "BEADS", type = "beads"):20uL,
+    content(kind = "particulate", code = "BEADS", type = "beads", attrs = { bead_property: magnetic }):20uL,
     buffer(code = "WASH", type = "buffer"):180uL
   ]);
   let waste = tube(label = "Waste", capacity = 500uL);
@@ -1886,7 +1885,7 @@ protocol T {
     assert any(d.code == "MAT_CONTENTS_STATE_NOT_INDEXED" for d in result.diagnostics)
 
 
-def test_runtime_source_partition_preserves_partition_fallback_warning():
+def test_runtime_source_partition_magnetic_does_not_guess_custom_fate():
     plan = _build_plan_from_source(
         """
 protocol T {
@@ -1903,20 +1902,13 @@ protocol T {
 
     result = run(plan=plan, driver=StubDriver())
 
-    assert result.ok
-    assert len(result.diagnostics) == 1
-    diagnostic = result.diagnostics[0]
-    assert diagnostic.code == "MAT_CONTENT_PARTITION_FALLBACK"
-    assert diagnostic.severity == "warning"
-    assert "Component 'CUSTOM' used conservative 0.50/0.50 partition" in diagnostic.message
-    assert "custom_content_classification" in diagnostic.message
-    material_state = result.state.artifacts["material_state"]
-    assert "indexed_bindings" not in material_state or "mag_sep" not in material_state["indexed_bindings"]
-    assert material_state["containers"]["Dst"]["components"] == {"CUSTOM": 50.0}
-    assert material_state["containers"]["Src"]["components"] == {"CUSTOM": 50.0}
+    assert not result.ok
+    assert "MAT_SCIENTIFIC_MODEL_UNRESOLVED" in [
+        diagnostic.code for diagnostic in result.diagnostics
+    ]
 
 
-def test_runtime_let_bound_electrophoresis_stdlib_yields_observation_binding():
+def test_runtime_electrophoresis_requires_field_fate_provider_coverage():
     plan = _build_plan_from_source(
         """
 protocol T {
@@ -1935,14 +1927,12 @@ protocol T {
 """
     )
     result = run(plan=plan, driver=StubDriver())
-    assert result.ok
+    assert not result.ok
+    assert "MAT_SCIENTIFIC_MODEL_UNRESOLVED" in [
+        diagnostic.code for diagnostic in result.diagnostics
+    ]
     ops = [step.op for protocol in plan.plans for step in protocol.steps]
     assert "Electrophoresis" not in ops
-    data_id = result.state.artifacts["data_bindings"]["gel_obs"]
-    record = result.state.artifacts["data_objects"][data_id]
-    assert record["op"] == "img"
-    assert record["contract_kind"] == "customized"
-    assert record["result"]["bands"] is None
 
 
 def test_replay_reconstructs_state_from_events():
@@ -3302,8 +3292,13 @@ protocol T {
     returned = result.state.artifacts["protocol_outputs"]["T"]["value"]
     assert returned["count_cells"] == 100000.0
     assert supernatant["material_relationships"] == []
-    assert pellet["material_relationships"][0]["material_state"] == "pellet"
-    assert pellet["material_relationships"][0]["transferability"] == "non_homogeneous"
+    cell_relationship = next(
+        relationship
+        for relationship in pellet["material_relationships"]
+        if relationship.get("subtype") == "cell_suspension"
+    )
+    assert cell_relationship["material_state"] == "pellet"
+    assert cell_relationship["transferability"] == "non_homogeneous"
 
 
 def test_runtime_centrifuge_supernatant_report_does_not_select_zero_cell_component():
@@ -3392,7 +3387,13 @@ protocol T {
     content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells,
     content(kind = formulation, type = medium, code = "MEDIUM"):300uL
   ]);
-  let parts = sep(sample = source, program = precipitation_program(reagent = "x"));
+  let parts = sep(
+    sample = source,
+    program = precipitation_program(reagent = "x"),
+    component_fates = {
+      RPE1: { precipitate: 100%, supernatant: 0% }
+    }
+  );
   let target = tube(label = "Target", capacity = 300uL);
   target << [parts[0]:25000cells];
 }
@@ -3682,7 +3683,7 @@ protocol T {
     assert transfer_delta["mode"] == "count_resolved_volume"
     assert transfer_delta["resolved_transfer_volume_uL"] == pytest.approx(1.5)
     assert transfer_delta["moved_bulk_volume_uL"] == pytest.approx(1.5)
-    assert transfer_delta["component_ratio"] == pytest.approx(500.0 / 99000.0)
+    assert transfer_delta["component_ratio"] == pytest.approx(500.0 / 100000.0)
 
 
 def test_runtime_executes_centrifugal_filtration_with_filtration_slots():

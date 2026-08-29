@@ -41,16 +41,27 @@ class MaterialLedger:
         )
 
     @staticmethod
-    def move_ratio(src: dict[str, Any], dst: dict[str, Any], ratio: float) -> None:
-        move_ratio(src, dst, ratio)
+    def move_ratio(
+        src: dict[str, Any],
+        dst: dict[str, Any],
+        ratio: float,
+        destination_id: str | None = None,
+    ) -> None:
+        move_ratio(src, dst, ratio, destination_id=destination_id)
 
     @staticmethod
     def move_explicit(
         src: dict[str, Any],
         dst: dict[str, Any],
         component_ratio: float,
+        destination_id: str | None = None,
     ) -> None:
-        move_explicit(src, dst, component_ratio)
+        move_explicit(
+            src,
+            dst,
+            component_ratio,
+            destination_id=destination_id,
+        )
 
     @staticmethod
     def component_quantity_merge_conflict(src: dict[str, Any], dst: dict[str, Any]) -> str | None:
@@ -114,14 +125,27 @@ def set_container_material(
     refresh_container_aggregates(container)
 
 
-def move_ratio(src: dict[str, Any], dst: dict[str, Any], ratio: float) -> None:
-    move_explicit(src=src, dst=dst, component_ratio=ratio)
+def move_ratio(
+    src: dict[str, Any],
+    dst: dict[str, Any],
+    ratio: float,
+    *,
+    destination_id: str | None = None,
+) -> None:
+    move_explicit(
+        src=src,
+        dst=dst,
+        component_ratio=ratio,
+        destination_id=destination_id,
+    )
 
 
 def move_explicit(
     src: dict[str, Any],
     dst: dict[str, Any],
     component_ratio: float,
+    *,
+    destination_id: str | None = None,
 ) -> None:
     src_comp = src.setdefault("components", {})
     dst_comp = dst.setdefault("components", {})
@@ -129,6 +153,7 @@ def move_explicit(
     dst_quantities = container_component_quantities(dst, create=bool(src_quantities))
     src_classes = container_component_classes(src)
     dst_classes = container_component_classes(dst, create=True)
+    moved_component_ids: set[str] = set()
     for name, amount in list(src_comp.items()):
         moved = component_ratio * float(amount)
         src_comp[name] = float(amount) - moved
@@ -148,6 +173,8 @@ def move_explicit(
                     and target_quantity.get("unit") == source_quantity.get("unit")
                 ):
                     target_quantity["value"] = float(target_quantity.get("value", 0.0)) + moved_quantity_value
+        if moved > CONSERVATION_ABS_EPS:
+            moved_component_ids.add(str(name))
         if moved > CONSERVATION_ABS_EPS and isinstance(dst_classes, dict):
             src_class = src_classes.get(name) if isinstance(src_classes, dict) else None
             if isinstance(src_class, str) and src_class:
@@ -158,8 +185,67 @@ def move_explicit(
                 src_quantities[name]["value"] = 0.0
             if isinstance(src_classes, dict):
                 src_classes.pop(name, None)
+    if destination_id is not None:
+        transfer_scientific_model_relationships(
+            source=src,
+            target=dst,
+            target_id=destination_id,
+            moved_component_ids=moved_component_ids,
+        )
     refresh_container_aggregates(src)
     refresh_container_aggregates(dst)
+
+
+def transfer_scientific_model_relationships(
+    *,
+    source: dict[str, Any],
+    target: dict[str, Any],
+    target_id: str,
+    moved_component_ids: set[str],
+) -> None:
+    """Carry provider-produced component relations with moved material."""
+
+    source_relationships = source.get("material_relationships")
+    if not isinstance(source_relationships, list) or not moved_component_ids:
+        return
+    target_relationships = target.setdefault("material_relationships", [])
+    if not isinstance(target_relationships, list):
+        target_relationships = []
+        target["material_relationships"] = target_relationships
+    for relationship in source_relationships:
+        if not isinstance(relationship, dict):
+            continue
+        if relationship.get("subtype") != "scientific_model_relation":
+            continue
+        if relationship.get("material_state") not in {"pellet", "precipitate"}:
+            continue
+        raw_component_ids = relationship.get("dispersed_component_ids")
+        if not isinstance(raw_component_ids, list):
+            continue
+        carried_ids = [
+            component_id
+            for component_id in raw_component_ids
+            if isinstance(component_id, str) and component_id in moved_component_ids
+        ]
+        if not carried_ids:
+            continue
+        carried = deepcopy(relationship)
+        carried["dispersed_component_ids"] = carried_ids
+        carried["associated_with"] = target_id
+        target_relationships[:] = [
+            existing
+            for existing in target_relationships
+            if not (
+                isinstance(existing, dict)
+                and existing.get("subtype") == "scientific_model_relation"
+                and isinstance(existing.get("dispersed_component_ids"), list)
+                and any(
+                    component_id in carried_ids
+                    for component_id in existing["dispersed_component_ids"]
+                )
+            )
+        ]
+        target_relationships.append(carried)
 
 
 def component_quantity_merge_conflict(src: dict[str, Any], dst: dict[str, Any]) -> str | None:

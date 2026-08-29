@@ -23,6 +23,7 @@ from culsma.scientific_model.material import (
 )
 from culsma.runtime.material.compute import MaterialCompute
 from culsma.runtime.material.contents_state import refresh_scientific_model_relationships
+from culsma.runtime.material.ledger import move_explicit
 from culsma.runtime.material.separation import (
     apply_separation_material,
     commit_separation_candidate,
@@ -532,5 +533,46 @@ def test_public_relationship_refresh_applies_transition_to_one_output() -> None:
                 "model_version": None,
                 "configuration": {},
             },
+        }
+    ]
+
+
+def test_material_move_carries_scientific_component_relation_to_destination() -> None:
+    source = {
+        "components": {"DNA": 100.0},
+        "component_quantities": {
+            "DNA": {"dimension": "volume", "unit": "uL", "value": 100.0}
+        },
+        "metadata": {},
+        "material_relationships": [
+            {
+                "kind": "association",
+                "subtype": "scientific_model_relation",
+                "dispersed_component_ids": ["DNA"],
+                "material_state": "precipitate",
+                "associated_with": "source",
+            }
+        ],
+    }
+    target = {
+        "components": {},
+        "component_quantities": {},
+        "metadata": {},
+    }
+
+    move_explicit(
+        source,
+        target,
+        component_ratio=1.0,
+        destination_id="target",
+    )
+
+    assert target["material_relationships"] == [
+        {
+            "kind": "association",
+            "subtype": "scientific_model_relation",
+            "dispersed_component_ids": ["DNA"],
+            "material_state": "precipitate",
+            "associated_with": "target",
         }
     ]

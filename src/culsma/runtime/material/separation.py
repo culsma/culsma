@@ -30,9 +30,15 @@ from culsma.runtime.material.separation_fate import (
 
 SCIENTIFIC_MODEL_SEPARATION_PROGRAMS = frozenset(
     {
+        "sep_program",
         "centrifuge_program",
         "filtration_program",
         "centrifugal_filtration_program",
+        "precipitation_program",
+        "magnetic_program",
+        "phase_partition_program",
+        "field_program",
+        "disrupt_program",
     }
 )
 
@@ -55,6 +61,7 @@ class MaterialSeparationCandidate:
     components_by_part: dict[str, dict[str, float]]
     quantities_by_part: dict[str, dict[str, dict[str, Any]]]
     classes_by_part: dict[str, dict[str, str]]
+    retired_quantities: dict[str, dict[str, Any]]
 
 
 @dataclass(frozen=True)
@@ -75,10 +82,37 @@ def project_resolved_material_effect(
     components_by_part = {output.part_id: {} for output in effect.outputs}
     quantities_by_part = {output.part_id: {} for output in effect.outputs}
     classes_by_part = {output.part_id: {} for output in effect.outputs}
+    retired_quantities: dict[str, dict[str, Any]] = {}
     for component in effect.component_effects:
         source_quantity = source_quantities.get(component.source_component_id)
         source_class = source_classes.get(component.source_component_id)
         for output in component.outputs:
+            if output.retire_quantity:
+                retired = retired_quantities.setdefault(
+                    component.source_component_id,
+                    {
+                        "component_amount": 0.0,
+                        "dimension": (
+                            source_quantity.get("dimension")
+                            if isinstance(source_quantity, dict)
+                            else None
+                        ),
+                        "unit": (
+                            source_quantity.get("unit")
+                            if isinstance(source_quantity, dict)
+                            else None
+                        ),
+                        "value": 0.0,
+                    },
+                )
+                retired["component_amount"] = float(
+                    retired["component_amount"]
+                ) + component.source_amount * output.fraction
+                if isinstance(source_quantity, dict):
+                    retired["value"] = float(retired["value"]) + float(
+                        source_quantity.get("value", component.source_amount)
+                    ) * output.fraction
+                continue
             output_components = components_by_part[output.part_id]
             output_components[component.source_component_id] = (
                 output_components.get(component.source_component_id, 0.0)
@@ -102,6 +136,7 @@ def project_resolved_material_effect(
         components_by_part=components_by_part,
         quantities_by_part=quantities_by_part,
         classes_by_part=classes_by_part,
+        retired_quantities=retired_quantities,
     )
 
 
@@ -249,6 +284,10 @@ def resolved_effect_separation_record(
         "ratios_by_component": ratios_by_component,
         "fates_by_component": fates_by_component,
         "transitions_by_component": transitions_by_component,
+        "retired_quantities": {
+            component_id: dict(retired)
+            for component_id, retired in candidate.retired_quantities.items()
+        },
         "fallback_components": [],
         "bulk_quantity_policy": bulk_quantity_policy,
         "operation_contract": operation_contract.to_dict(),

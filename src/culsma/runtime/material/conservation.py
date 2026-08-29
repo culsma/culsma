@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from culsma.runtime.material.ledger import CONSERVATION_ABS_EPS, container_count_cells, density_mg_per_uL
+from culsma.runtime.material.units import COUNT_TO_CELLS
 
 
 CONSERVATION_REL_EPS = 1e-9
@@ -19,6 +20,14 @@ class MaterialConservation:
     @staticmethod
     def totals_conserved(before: dict[str, float], after: dict[str, float]) -> bool:
         return totals_conserved(before, after)
+
+    @staticmethod
+    def totals_conserved_with_declared_retirements(
+        before: dict[str, float],
+        after: dict[str, float],
+        delta: dict[str, Any],
+    ) -> bool:
+        return totals_conserved_with_declared_retirements(before, after, delta)
 
 
 def state_totals(state: dict[str, Any]) -> dict[str, float]:
@@ -56,6 +65,58 @@ def totals_conserved(before: dict[str, float], after: dict[str, float]) -> bool:
         _close_enough(float(before.get(key, 0.0)), float(after.get(key, 0.0)))
         for key in ("volume_uL", "mass_mg", "count_cells", "components")
     )
+
+
+def totals_conserved_with_declared_retirements(
+    before: dict[str, float],
+    after: dict[str, float],
+    delta: dict[str, Any],
+) -> bool:
+    retirements = declared_quantity_retirements(delta)
+    if not retirements:
+        return totals_conserved(before, after)
+    expected = dict(before)
+    for retirement in retirements:
+        expected["components"] = max(
+            0.0,
+            float(expected.get("components", 0.0))
+            - float(retirement.get("component_amount", 0.0)),
+        )
+        if retirement.get("dimension") != "count":
+            return False
+        unit = str(retirement.get("unit", ""))
+        if unit not in COUNT_TO_CELLS:
+            return False
+        expected["count_cells"] = max(
+            0.0,
+            float(expected.get("count_cells", 0.0))
+            - float(retirement.get("value", 0.0)) * COUNT_TO_CELLS[unit],
+        )
+    return totals_conserved(expected, after)
+
+
+def declared_quantity_retirements(delta: Any) -> list[dict[str, Any]]:
+    if isinstance(delta, list):
+        return [
+            retirement
+            for item in delta
+            for retirement in declared_quantity_retirements(item)
+        ]
+    if not isinstance(delta, dict):
+        return []
+    retirements: list[dict[str, Any]] = []
+    raw = delta.get("retired_quantities")
+    if isinstance(raw, dict):
+        retirements.extend(
+            retirement
+            for retirement in raw.values()
+            if isinstance(retirement, dict)
+        )
+    for key, value in delta.items():
+        if key == "retired_quantities":
+            continue
+        retirements.extend(declared_quantity_retirements(value))
+    return retirements
 
 
 def _close_enough(before: float, after: float) -> bool:

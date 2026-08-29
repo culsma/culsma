@@ -268,7 +268,12 @@ class FullContainerSourceHandler(MutationSourceHandler):
             return conflict
         source_before = deepcopy(source)
         moved_cell_state = transferred_cell_material_state(source, moved_cells=moved_cells)
-        move_explicit(source, target, component_ratio=1.0)
+        move_explicit(
+            source,
+            target,
+            component_ratio=1.0,
+            destination_id=ctx.target_id,
+        )
         refresh_cell_suspension_relationship(ctx.state, source_id)
         refresh_cell_suspension_relationship(
             ctx.state,
@@ -469,7 +474,12 @@ def apply_source_partition_transfer(
         conflict = _quantity_axis_conflict(step, state, selected, target, selected_id, target_id)
         if conflict is not None:
             return conflict
-        move_explicit(selected, target, component_ratio=1.0)
+        move_explicit(
+            selected,
+            target,
+            component_ratio=1.0,
+            destination_id=target_id,
+        )
         moved_snapshot = moved_snapshot_from_explicit(
             selected_before,
             ratio=1.0,
@@ -507,7 +517,12 @@ def apply_source_partition_transfer(
             conflict = _quantity_axis_conflict(step, state, residual, source_after, residual_id, source_id)
             if conflict is not None:
                 return conflict
-            move_explicit(residual, source_after, component_ratio=1.0)
+            move_explicit(
+                residual,
+                source_after,
+                component_ratio=1.0,
+                destination_id=source_id,
+            )
     containers = state.setdefault("containers", {})
     if isinstance(containers, dict):
         containers.pop(slot0_id, None)
@@ -640,7 +655,7 @@ def _apply_transfer_volume(
         conflict = _quantity_axis_conflict(step, state, src, dst, src_id, dst_id)
         if conflict is not None:
             return conflict
-        move_ratio(src, dst, ratio)
+        move_ratio(src, dst, ratio, destination_id=dst_id)
         refresh_cell_suspension_relationship(state, src_id)
         refresh_cell_suspension_relationship(
             state, dst_id, forced_state=merged_cell_material_state(dst, moved_cell_state)
@@ -684,6 +699,7 @@ def _apply_transfer_volume(
         src=src,
         dst=dst,
         component_ratio=component_ratio,
+        destination_id=dst_id,
     )
     refresh_cell_suspension_relationship(state, src_id)
     refresh_cell_suspension_relationship(
@@ -730,7 +746,7 @@ def _apply_transfer_mass(
         conflict = _quantity_axis_conflict(step, state, src, dst, src_id, dst_id)
         if conflict is not None:
             return conflict
-        move_ratio(src, dst, ratio)
+        move_ratio(src, dst, ratio, destination_id=dst_id)
         refresh_cell_suspension_relationship(state, src_id)
         refresh_cell_suspension_relationship(
             state, dst_id, forced_state=merged_cell_material_state(dst, moved_cell_state)
@@ -777,6 +793,7 @@ def _apply_transfer_mass(
         src=src,
         dst=dst,
         component_ratio=component_ratio,
+        destination_id=dst_id,
     )
     refresh_cell_suspension_relationship(state, src_id)
     refresh_cell_suspension_relationship(
@@ -866,7 +883,12 @@ def _apply_transfer_count(
         isinstance(quantity, dict) and abs(float(quantity.get("value", 0.0))) > 1e-12
         for quantity in target_quantities.values()
     )
-    move_ratio(src, dst, resolution.component_ratio)
+    move_ratio(
+        src,
+        dst,
+        resolution.component_ratio,
+        destination_id=dst_id,
+    )
     refresh_cell_suspension_relationship(state, src_id)
     target_relationship = refresh_cell_suspension_relationship(
         state,

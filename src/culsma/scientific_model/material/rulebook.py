@@ -58,6 +58,8 @@ def resolve_separation_fate_rule(
     if program_kind in _CENTRIFUGE_OPERATIONS:
         if current_relation == MaterialRelation.PELLET:
             return SeparationFateMatch("F_CEN_PRESERVE", (0.0, 1.0))
+        if current_relation == MaterialRelation.PRECIPITATE:
+            return SeparationFateMatch("F_CEN_PRESERVE_PRECIPITATE", (0.0, 1.0))
         if current_relation != MaterialRelation.FREE:
             return None
         if group is CalculationGroup.MOBILE_PHASE:

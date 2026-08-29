@@ -109,16 +109,21 @@ class ScientificModelPartitionAdapter:
             )
             for output in output_roles
         )
-        provider_components = tuple(
-            self.build_component_snapshot(
-                state=state,
-                source=source,
-                source_quantities=source_quantities,
-                component=component,
-                source_id=source_id,
+        state_transition_only = operation_contract.program_kind == "disrupt_program"
+        provider_components = (
+            ()
+            if state_transition_only
+            else tuple(
+                self.build_component_snapshot(
+                    state=state,
+                    source=source,
+                    source_quantities=source_quantities,
+                    component=component,
+                    source_id=source_id,
+                )
+                for component in components.values()
+                if component.explicit_fate is None
             )
-            for component in components.values()
-            if component.explicit_fate is None
         )
         fractions_by_component = {
             component.component_id: component.explicit_fate.ratios
@@ -135,6 +140,15 @@ class ScientificModelPartitionAdapter:
             for component in components.values()
             if component.explicit_fate is not None
         }
+        if state_transition_only:
+            for component in components.values():
+                if component.explicit_fate is not None:
+                    continue
+                fractions_by_component[component.component_id] = (1.0, 0.0)
+                fate_source_by_component[component.component_id] = (
+                    "state_transition_operation_shape"
+                )
+                fate_provenance_by_component[component.component_id] = None
 
         if provider_components:
             fate_request = ModelRequest(
@@ -244,6 +258,19 @@ class ScientificModelPartitionAdapter:
                     ),
                     relationship=base_snapshot.relationship,
                 )
+                transition_effect_kind = (
+                    "disrupt"
+                    if state_transition_only and output.part_id == output_roles[0].part_id
+                    else "separate"
+                )
+                transition_output = (
+                    OutputRoleSnapshot(
+                        part_id=output.part_id,
+                        semantic_role="result_material",
+                    )
+                    if transition_effect_kind == "disrupt"
+                    else output
+                )
                 transition_request = ModelRequest(
                     request_id=(
                         f"{request_id}:state_transition:"
@@ -254,8 +281,8 @@ class ScientificModelPartitionAdapter:
                     payload=MaterialModelPayload(
                         operation=OperationSnapshot(
                             program_kind=operation_contract.program_kind,
-                            effect_kind="separate",
-                            output_roles=(output,),
+                            effect_kind=transition_effect_kind,
+                            output_roles=(transition_output,),
                             program_args=operation_contract.program_args,
                         ),
                         components=(projected_snapshot,),
@@ -379,7 +406,14 @@ class ScientificModelPartitionAdapter:
         authored_fate = component.explicit_fate is not None
         magnetic_support = self.is_magnetic_support(state, component.component_id)
         return {
+            "declared": operation_contract.program_kind == "disrupt_program",
             "release_declared": False,
+            "disruption_target": operation_contract.program_kind == "disrupt_program",
+            "target_remains_identifiable": self.component_context_flag(
+                state,
+                component.component_id,
+                "target_remains_identifiable",
+            ),
             "precipitation_established": (
                 authored_fate and output_role == "precipitate"
             ),

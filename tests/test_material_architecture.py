@@ -13,7 +13,12 @@ from culsma.runtime.material.contents_state import (
 )
 from culsma.runtime.material.result import MaterialUpdateResult
 from culsma.runtime.material.state import MaterialStateChangePlan, MaterialStateManager
-from culsma.runtime.material.separation import separation_slot_contract
+from culsma.runtime import material_compute as material_compute_compat
+from culsma.runtime.material.partition import PartitionClass
+from culsma.runtime.material.separation import (
+    SCIENTIFIC_MODEL_SEPARATION_PROGRAMS,
+    separation_slot_contract,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -264,7 +269,7 @@ def test_partition_does_not_duplicate_program_slot_contracts() -> None:
     assert duplicate_slot_contracts == []
 
 
-def test_migrated_separation_programs_have_no_runtime_strategy_classes() -> None:
+def test_partition_retains_only_the_preexisting_python_compatibility_classes() -> None:
     path = MATERIAL_DIR / "partition.py"
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
     class_names = {
@@ -272,10 +277,42 @@ def test_migrated_separation_programs_have_no_runtime_strategy_classes() -> None
     }
 
     assert {
+        "PrecipitationPartitionStrategy",
+        "MagneticPartitionStrategy",
+        "PhasePartitionStrategy",
+        "FieldPartitionStrategy",
+        "DisruptPartitionStrategy",
+    }.issubset(class_names)
+    assert {
         "CentrifugePartitionStrategy",
         "FiltrationPartitionStrategy",
         "CentrifugalFiltrationPartitionStrategy",
     }.isdisjoint(class_names)
+
+
+def test_every_registered_separation_program_uses_the_scientific_model_path() -> None:
+    assert SCIENTIFIC_MODEL_SEPARATION_PROGRAMS == frozenset(
+        SEPARATION_SLOT_CONTRACTS
+    )
+
+
+def test_legacy_partition_python_exports_remain_compatible() -> None:
+    expected = {
+        "PhasePartitionStrategy": (0.99, 0.01),
+        "PrecipitationPartitionStrategy": (0.95, 0.05),
+        "MagneticPartitionStrategy": (0.99, 0.01),
+        "DisruptPartitionStrategy": (0.95, 0.05),
+        "FieldPartitionStrategy": (0.95, 0.05),
+    }
+
+    actual = {
+        name: getattr(material_compute_compat, name)().ratios(
+            PartitionClass.MOLECULAR_TARGET
+        )
+        for name in expected
+    }
+
+    assert actual == expected
 
 
 def test_material_compute_routes_material_changes_through_state_manager() -> None:
@@ -428,8 +465,21 @@ def test_indexed_parts_state_manager_records_sep_transition() -> None:
                 "metadata": {},
             }
         },
+        "content_registry": {
+            "beads": {
+                "content_kind": "particulate",
+                "content_type": "beads",
+                "content_attrs": {"bead_property": "magnetic"},
+            },
+            "buffer": {
+                "content_kind": "formulation",
+                "content_type": "buffer",
+            },
+        },
     }
-    manager = MaterialIndexedPartsStateManager()
+    manager = MaterialIndexedPartsStateManager(
+        material_effect_adapter=MaterialCompute().material_effect_adapter
+    )
 
     result = manager.record_sep_transition(
         step=_material_step("sep"),

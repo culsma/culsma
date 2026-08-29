@@ -21,6 +21,7 @@ from culsma.runtime.material.ledger import (
     ensure_container,
     move_explicit,
     refresh_container_aggregates,
+    transfer_scientific_model_relationships,
 )
 from culsma.runtime.material.separation import (
     apply_separation_material,
@@ -657,6 +658,7 @@ class MaterialIndexedPartsStateManager:
             part=selection.part,
             source=source,
             target=target,
+            target_id=target_id,
             ratio=ratio,
         )
         refresh_cell_suspension_relationship_record(
@@ -1282,6 +1284,7 @@ def _move_contents_part_material(
     part: dict[str, Any],
     source: dict[str, Any],
     target: dict[str, Any],
+    target_id: str,
     ratio: float,
 ) -> None:
     part_components = part.setdefault("components", {})
@@ -1303,6 +1306,7 @@ def _move_contents_part_material(
     part_quantities = container_component_quantities(part)
     source_quantities = container_component_quantities(source)
     target_quantities = container_component_quantities(target, create=bool(part_quantities))
+    moved_component_ids: set[str] = set()
     for name, amount in list(part_components.items()):
         moved = float(amount) * ratio
         part_components[name] = _clamp_near_zero(float(amount) - moved)
@@ -1324,6 +1328,7 @@ def _move_contents_part_material(
                     target_quantities[name] = target_quantity
                 target_quantity["value"] = float(target_quantity.get("value", 0.0)) + moved_quantity
         if moved > 1e-12:
+            moved_component_ids.add(str(name))
             part_class = part_classes.get(name) if isinstance(part_classes, dict) else None
             if isinstance(part_class, str) and isinstance(target_classes, dict):
                 target_classes[name] = part_class
@@ -1331,6 +1336,12 @@ def _move_contents_part_material(
             part_classes.pop(name, None)
         if source_components.get(name) == 0.0 and isinstance(source_classes, dict):
             source_classes.pop(name, None)
+    transfer_scientific_model_relationships(
+        source=part,
+        target=target,
+        target_id=target_id,
+        moved_component_ids=moved_component_ids,
+    )
     refresh_container_aggregates(part)
     refresh_container_aggregates(source)
     refresh_container_aggregates(target)

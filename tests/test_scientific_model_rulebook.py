@@ -143,6 +143,18 @@ def test_table_2_returns_unresolved_for_composite_group_instead_of_guessing() ->
     ("program_kind", "roles", "component", "context", "expected"),
     [
         (
+            "centrifuge_program",
+            ("supernatant", "pellet"),
+            _component(
+                entry_id="DNA_PRECIPITATE:0",
+                kind="bio_molecule_or_virus",
+                content_type="dna",
+                relation="precipitate",
+            ),
+            {},
+            {"0": 0.0, "1": 1.0},
+        ),
+        (
             "filtration_program",
             ("filtrate", "retentate"),
             _component(entry_id="PBS:0", kind="formulation", content_type="buffer"),
