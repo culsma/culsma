@@ -3,8 +3,8 @@
 Status: `implementation in progress`
 Phase: `1 — material separation and state-transition decisions`
 Current boundary: `ResolvedMaterialEffect` is the Runtime handoff; centrifuge
-Tables 1–3 are authoritative through one injected adapter; remaining `sep`
-programs await typed-context migration.
+and both filtration programs use Tables 1–3 through one injected adapter;
+remaining `sep` programs await typed-context migration.
 Normative extension contract: `culsma-reference/extensions/scientific_model/README.md`
 Built-in provider semantics: `culsma-reference/extensions/scientific_model/builtin_material_rulebook.md`
 
@@ -45,6 +45,7 @@ flowchart LR
         Run["run()"]
         Session["RuntimeSession"]
         Material["MaterialCompute"]
+        Separation["material.separation<br/>single separation application boundary"]
         Adapter["ScientificModelPartitionAdapter<br/>snapshot + decision merge"]
         ResolvedEffect["ResolvedMaterialEffect<br/>one immutable Runtime handoff"]
         Candidate["candidate build + commit validation"]
@@ -74,7 +75,8 @@ flowchart LR
 
     Run -->|"construct with resolver"| Material
     Session -->|"owns configured instance"| Material
-    Material --> Adapter
+    Material --> Separation
+    Separation --> Adapter
     Adapter -->|"immutable operation + component snapshots"| Coordinator
     Coordinator --> Request
     Request --> Resolver
@@ -90,7 +92,8 @@ flowchart LR
     ProposalValidation -->|"validated decision"| Coordinator
     Coordinator -->|"validated capability decisions;<br/>no mutation"| Adapter
     Adapter -->|"merge Table 2 + Table 3"| ResolvedEffect
-    ResolvedEffect --> Candidate
+    ResolvedEffect --> Separation
+    Separation --> Candidate
     Candidate --> Ledger
 ```
 
@@ -132,6 +135,7 @@ src/culsma/
     └── material/
         ├── compute.py
         ├── scientific_model_adapter.py
+        ├── separation.py
         ├── partition.py
         ├── separation_fate.py
         ├── contents_state.py
@@ -153,7 +157,8 @@ src/culsma/
 | `material/coordinator.py` | author precedence, resolver request, final typed decision | ledger commit |
 | `material/validation.py` | provider proposal shape, bounds, IDs, fraction sums | capacity and ledger conservation |
 | `runtime/material/scientific_model_adapter.py` | public snapshot adapter; combines capability decisions into one `ResolvedMaterialEffect`; no mutation | quantity projection, scientific rules, ledger commit |
-| `runtime/material/partition.py` | one quantity projection and candidate construction from resolved decisions | provider calls, scientific classification and ratio tables |
+| `runtime/material/separation.py` | one separation application entry; provider handoff, effect projection, candidate commit, and temporary legacy delegation | scientific rules, resolver construction |
+| `runtime/material/partition.py` | compatibility-only classification and strategies for programs not yet migrated | provider calls, typed-effect projection, new separation orchestration |
 | `runtime/material/conservation.py` | candidate conservation | scientific resolution |
 | `runtime/material/ledger.py` | authoritative state mutation | scientific decisions |
 
@@ -369,7 +374,7 @@ sequenceDiagram
     participant API as run()
     participant Session as RuntimeSession
     participant Compute as MaterialCompute
-    participant Partition as runtime.material.partition
+    participant Separation as runtime.material.separation
     participant Adapter as ScientificModelPartitionAdapter
     participant Model as SepEffectCoordinator
     participant Resolver as ScientificModelResolver
@@ -378,8 +383,8 @@ sequenceDiagram
 
     API->>Compute: construct with custom or built-in resolver
     API->>Session: configured MaterialCompute
-    Compute->>Partition: apply sep/state-transition step
-    Partition->>Adapter: operation + Runtime component records
+    Compute->>Separation: apply separation material
+    Separation->>Adapter: operation + Runtime component records
     Adapter->>Adapter: build immutable operation + component snapshots
     opt fraction-producing separation
         Adapter->>Model: material.separation_fate request
@@ -404,10 +409,10 @@ sequenceDiagram
     end
     Model-->>Adapter: validated fate + transition decisions
     Adapter->>Adapter: merge as ResolvedMaterialEffect
-    Adapter-->>Partition: ResolvedMaterialEffect
-    Partition->>Partition: generic quantity projection + candidate
-    Partition->>Partition: validate state, capacity, conservation
-    Partition->>Ledger: atomic commit
+    Adapter-->>Separation: ResolvedMaterialEffect
+    Separation->>Separation: generic quantity projection + candidate
+    Separation->>Separation: validate state, capacity, conservation
+    Separation->>Ledger: atomic commit
 ```
 
 ### Runtime API
@@ -437,9 +442,9 @@ result = run(
 
 ```mermaid
 flowchart TB
-    Step["sep or source-partition operation"] --> Partition["partition_sep_material"]
-    Partition --> ProgramRegistry["Program Registry<br/>single slot-contract source"]
-    Partition --> Gate{"program_kind == centrifuge_program?"}
+    Step["sep or compatibility source.partition operation"] --> Separation["apply_separation_material"]
+    Separation --> ProgramRegistry["Program Registry<br/>single slot-contract source"]
+    Separation --> Gate{"program migrated?"}
 
     Gate -->|yes| Adapter["ScientificModelPartitionAdapter"]
     Adapter --> Resolver["ScientificModelResolver"]
@@ -465,11 +470,11 @@ flowchart TB
 
 | Current symptom | Architectural cause |
 | --- | --- |
-| Only centrifuge enters the adapter | Runtime owns a `program_kind` feature gate |
+| Only migrated programs enter the adapter | Runtime still owns a temporary migration-set feature gate |
 | Other programs select Runtime subclasses | `SepPartitionStrategyRegistry` remains a second scientific dispatcher |
-| Filtration, precipitation, and magnetic rules exist in two systems | Runtime strategy and Rulebook both own scientific fate |
+| Precipitation and magnetic rules exist in two systems | Runtime strategy and Rulebook both own scientific fate |
 | Missing transition may fall back to strategy state | Runtime still retains a second state authority |
-| Centrifuge has no Runtime strategy, but other programs do | Migration state remains encoded by `program_kind` |
+| Centrifuge and filtration have no Runtime strategies, but other programs do | Migration state remains encoded by a program set |
 
 ### Target convergence: one scientific decision boundary
 
@@ -477,9 +482,9 @@ flowchart TB
 flowchart TB
     Step["any registered sep program"] --> ProgramRegistry["Program Registry"]
     ProgramRegistry --> Contract["one normalized OperationContract<br/>program kind + output roles + operation facts"]
-    Step --> Partition["generic partition candidate builder"]
+    Step --> Separation["generic separation application boundary"]
     Contract --> Adapter["ScientificModelPartitionAdapter"]
-    Partition --> Adapter
+    Separation --> Adapter
 
     Adapter --> Coordinator["SepEffectCoordinator"]
     Coordinator --> Resolver["one configured ScientificModelResolver"]
@@ -493,7 +498,8 @@ flowchart TB
     T3 --> Decision
 
     Decision --> Adapter
-    Adapter --> Projector["generic quantity projector<br/>no program-specific branch"]
+    Adapter --> Separation
+    Separation --> Projector["generic quantity projector<br/>no program-specific branch"]
     Projector --> Validate["candidate validation"]
     Validate --> Ledger["atomic ledger commit"]
 ```
@@ -503,16 +509,17 @@ flowchart TB
 | Program names, fields, output roles | `pipeline.program_registry` | One contract source; consumers reference it |
 | Runtime dictionary ↔ immutable model contract | `ScientificModelPartitionAdapter` | No scientific rules and no mutation |
 | Program-specific scientific behavior | selected provider / Rulebook | Tables 1–3 are the only built-in authority |
-| Quantity projection | generic Runtime projector | Apply typed fractions once; no `program_kind` branch |
+| Separation application | `runtime.material.separation` | One fixed result handoff for both `sep` and compatibility syntax |
+| Quantity projection | generic Runtime projector in `separation.py` | Apply typed fractions once; no `program_kind` branch |
 | Candidate validation and commit | Runtime kernel | Provider never mutates Runtime state |
 | Legacy compatibility, if temporarily required | provider behind the same resolver port | Never branch around the adapter |
 
 Target deletion condition:
 
 ```text
-partition.py contains no per-program scientific strategy subclasses
-partition.py contains no scientific-model feature gate
-partition.py does not construct a resolver
+separation.py is the only Runtime entry for separation decisions and application
+partition.py is reachable only through separation.py's temporary legacy delegation
+partition.py contains no scientific-model adapter or typed-effect projection
 all sep programs enter the same adapter
 ```
 
@@ -557,7 +564,8 @@ flowchart LR
 | `runtime/material/separation_fate.py` | operation/relationship decisions | contracts + Rulebook + coordinator |
 | `runtime/material/contents_state.py` relationship refresh | post-separation state decisions | apply validated Table 3 transitions only |
 | `runtime/material/scientific_model_adapter.py::ScientificModelPartitionAdapter` | immutable snapshots + provider decision resolution | stable Runtime/model boundary |
-| `runtime/material/partition.py::partition_sep_material` | decision application + one quantity projection | candidate construction only |
+| `runtime/material/separation.py::apply_separation_material` | decision application + one quantity projection | permanent single application boundary |
+| `runtime/material/partition.py::apply_legacy_partition_material` | compatibility classification, ratios, and projection | delete after all programs migrate |
 | `runtime/steps.py::apply_material_step` | global material-compute facade | session-owned `MaterialCompute` |
 | `pipeline/program_registry.py` | program syntax/fields/result slots | unchanged |
 | `runtime/material/ledger.py` | authoritative quantities | unchanged |
@@ -572,9 +580,10 @@ flowchart LR
 | 4 | Done | Introduce `ResolvedMaterialEffect`, pure projection, candidate validation, and commit | one typed effect crosses into Runtime |
 | 5 | Done | Inject one adapter through ordinary `sep` and `source.partition` paths | no nested resolver construction or custom-provider bypass |
 | 6 | Done | Remove legacy centrifuge strategy and duplicate slot ownership | centrifuge uses Tables 1–3; Program Registry owns output roles |
-| 7 | Rules ready; adapter pending | Migrate filtration, centrifugal filtration, precipitation, magnetic | typed guards replace legacy guesses |
-| 8 | Pending | Route phase partition, field, generic `sep`, disrupt through coordinator | every registered `sep` has controlled outcome |
-| 9 | Pending | Remove compatibility-only classifier and strategy registry | no Runtime scientific dispatcher or `program_kind` feature gate |
+| 7 | Done | Migrate filtration and centrifugal filtration; preserve surface-bound aspiration and explicit retention facts | no filtration Runtime strategy or inferred carryover |
+| 8 | Pending | Migrate precipitation and magnetic | typed guards replace legacy guesses and preservation metadata is retained |
+| 9 | Pending | Route phase partition, field, generic `sep`, disrupt through coordinator | every registered `sep` has controlled outcome |
+| 10 | Pending | Remove compatibility-only classifier and strategy registry | no Runtime scientific dispatcher or migration-set feature gate |
 
 ## 12. Phase 1 Invariants
 

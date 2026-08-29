@@ -51,6 +51,7 @@ def resolve_separation_fate_rule(
     current_relation: str,
     filter_retains: bool = False,
     is_magnetic_support: bool = False,
+    surface_preserved: bool = False,
 ) -> SeparationFateMatch | None:
     """Resolve the first matching Table 2 row; `None` is UNRESOLVED."""
 
@@ -70,6 +71,11 @@ def resolve_separation_fate_rule(
         return None
 
     if program_kind in _FILTRATION_OPERATIONS:
+        if (
+            current_relation == MaterialRelation.CONTAINER_SURFACE
+            and surface_preserved
+        ):
+            return SeparationFateMatch("F_FIL_SURFACE_PRESERVE", (0.0, 1.0))
         if current_relation == MaterialRelation.MEMBRANE_BOUND:
             return SeparationFateMatch("F_FIL_PRESERVE", (0.0, 1.0))
         if current_relation != MaterialRelation.FREE:
@@ -79,6 +85,7 @@ def resolve_separation_fate_rule(
         if filter_retains and group in {
             CalculationGroup.SEDIMENTABLE_MATERIAL,
             CalculationGroup.CAPTURE_SUPPORT,
+            CalculationGroup.CONTEXT_DEPENDENT_TARGET,
         }:
             return SeparationFateMatch("F_FIL_RETAIN", (0.0, 1.0))
         return None
@@ -126,6 +133,7 @@ def resolve_relationship_transition_rule(
     membrane_preserved: bool = False,
     cell_integrity_preserved: bool = False,
     field_preserved: bool = False,
+    surface_preserved: bool = False,
     label_has_persistent_relation: bool = True,
     quantity_is_intact_cell_count: bool = False,
 ) -> RelationshipTransitionMatch | None:
@@ -192,6 +200,17 @@ def resolve_relationship_transition_rule(
             )
         return None
 
+    if (
+        current_relation == MaterialRelation.CONTAINER_SURFACE
+        and effect_kind == "separate"
+        and output_role == "retentate"
+        and surface_preserved
+    ):
+        return RelationshipTransitionMatch(
+            "T_PRESERVE_CONTAINER_SURFACE",
+            MaterialRelation.CONTAINER_SURFACE,
+            "retentate_output",
+        )
     if (
         current_relation == MaterialRelation.CONTAINER_SURFACE
         and effect_kind == "add_only"

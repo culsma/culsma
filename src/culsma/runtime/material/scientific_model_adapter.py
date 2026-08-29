@@ -165,6 +165,15 @@ class ScientificModelPartitionAdapter:
                             )
                             for component in provider_components
                         },
+                        "surface_preserved": {
+                            component.entry_id: self.operation_preserves_relation(
+                                operation_contract,
+                                relation="container_surface",
+                                output_part_id="1",
+                            )
+                            and component.relationship.relation == "container_surface"
+                            for component in provider_components
+                        },
                     },
                 ),
             )
@@ -253,7 +262,8 @@ class ScientificModelPartitionAdapter:
                         context=self.build_transition_context(
                             state=state,
                             component=component,
-                            program_kind=operation_contract.program_kind,
+                            operation_contract=operation_contract,
+                            output_part_id=output.part_id,
                             output_role=output.semantic_role,
                             current_relation=base_snapshot.relationship.relation,
                         ),
@@ -361,7 +371,8 @@ class ScientificModelPartitionAdapter:
         *,
         state: dict[str, Any],
         component: RuntimePartitionComponent,
-        program_kind: str,
+        operation_contract: SeparationOperationContract,
+        output_part_id: str,
         output_role: str,
         current_relation: str,
     ) -> dict[str, bool]:
@@ -374,7 +385,7 @@ class ScientificModelPartitionAdapter:
             ),
             "binding_established": authored_fate and output_role == "bound",
             "field_retention_established": (
-                program_kind == "magnetic_program"
+                operation_contract.program_kind == "magnetic_program"
                 and output_role == "bound"
                 and magnetic_support
             ),
@@ -386,7 +397,32 @@ class ScientificModelPartitionAdapter:
             "field_preserved": (
                 current_relation == "field_retained" and output_role == "bound"
             ),
+            "surface_preserved": (
+                current_relation == "container_surface"
+                and self.operation_preserves_relation(
+                    operation_contract,
+                    relation="container_surface",
+                    output_part_id=output_part_id,
+                )
+            ),
         }
+
+    def operation_preserves_relation(
+        self,
+        operation_contract: SeparationOperationContract,
+        *,
+        relation: str,
+        output_part_id: str,
+    ) -> bool:
+        runtime_relation = {
+            "bead_bound": "bead",
+            "membrane_bound": "membrane",
+            "cell_bound": "cell",
+        }.get(relation, relation)
+        return (
+            operation_contract.preserved_association_slots.get(runtime_relation)
+            == output_part_id
+        )
 
     def coordination_failure(
         self,

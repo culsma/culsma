@@ -29,8 +29,8 @@ from culsma.runtime.material.ledger import (
     container_count_cells,
     component_quantity_merge_conflict,
 )
-from culsma.runtime.material.partition import (
-    partition_sep_material,
+from culsma.runtime.material.separation import (
+    apply_separation_material,
     separation_cell_material_state,
 )
 from culsma.runtime.material.refs import (
@@ -411,7 +411,7 @@ def apply_source_partition_transfer(
     slot0 = ensure_container(state, slot0_id)
     slot1 = ensure_container(state, slot1_id)
 
-    partition_result = partition_sep_material(
+    separation_result = apply_separation_material(
         state=state,
         source=source,
         slot0=slot0,
@@ -421,14 +421,14 @@ def apply_source_partition_transfer(
         request_id=f"{step.step_id}:source_partition:{source_ordinal}",
         source_id=source_id,
     )
-    if partition_result.failure is not None:
+    if separation_result.failure is not None:
         return diagnostic_result(
             step,
             state,
-            partition_result.failure.code,
-            partition_result.failure.message,
+            separation_result.failure.code,
+            separation_result.failure.message,
         )
-    partition = partition_result.record
+    partition = separation_result.record
     refresh_cell_suspension_relationship(
         state,
         slot0_id,
@@ -437,7 +437,7 @@ def apply_source_partition_transfer(
             slot="0",
             partition=partition,
             output=slot0,
-            effect=partition_result.effect,
+            effect=separation_result.effect,
         ),
     )
     refresh_cell_suspension_relationship(
@@ -448,7 +448,7 @@ def apply_source_partition_transfer(
             slot="1",
             partition=partition,
             output=slot1,
-            effect=partition_result.effect,
+            effect=separation_result.effect,
         ),
     )
     diagnostics = _partition_fallback_diagnostics(step, partition)

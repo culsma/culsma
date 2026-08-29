@@ -23,9 +23,9 @@ from culsma.scientific_model.material import (
 )
 from culsma.runtime.material.compute import MaterialCompute
 from culsma.runtime.material.contents_state import refresh_scientific_model_relationships
-from culsma.runtime.material.partition import (
-    commit_partition_candidate,
-    partition_sep_material,
+from culsma.runtime.material.separation import (
+    apply_separation_material,
+    commit_separation_candidate,
     project_resolved_material_effect,
 )
 from culsma.runtime.material.scientific_model_adapter import (
@@ -228,7 +228,7 @@ def test_public_partition_entry_uses_injected_builtin_model_adapter() -> None:
     supernatant: dict[str, object] = {}
     pellet: dict[str, object] = {}
 
-    partition_result = partition_sep_material(
+    partition_result = apply_separation_material(
         state=state,
         source=source,
         slot0=supernatant,
@@ -315,7 +315,7 @@ def test_public_projector_consumes_one_resolved_effect_without_scientific_lookup
     }
     supernatant: dict[str, object] = {}
     pellet: dict[str, object] = {}
-    commit_partition_candidate(
+    commit_separation_candidate(
         candidate,
         source=source,
         outputs_by_part={"0": supernatant, "1": pellet},

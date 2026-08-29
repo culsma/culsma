@@ -22,8 +22,8 @@ from culsma.runtime.material.ledger import (
     move_explicit,
     refresh_container_aggregates,
 )
-from culsma.runtime.material.partition import (
-    partition_sep_material,
+from culsma.runtime.material.separation import (
+    apply_separation_material,
     separation_cell_material_state,
     separation_slot_contract,
 )
@@ -309,7 +309,7 @@ class MaterialIndexedPartsStateManager:
             )
         slot0 = ensure_container(working, slot0_id)
         slot1 = ensure_container(working, slot1_id)
-        partition_result = partition_sep_material(
+        separation_result = apply_separation_material(
             state=working,
             source=source,
             slot0=slot0,
@@ -320,14 +320,14 @@ class MaterialIndexedPartsStateManager:
             request_id=step.step_id,
             source_id=source_id,
         )
-        if partition_result.failure is not None:
+        if separation_result.failure is not None:
             return diagnostic_result(
                 step,
                 state,
-                partition_result.failure.code,
-                partition_result.failure.message,
+                separation_result.failure.code,
+                separation_result.failure.message,
             )
-        partition = partition_result.record
+        partition = separation_result.record
         refresh_separation_relationships(
             working,
             source_id,
@@ -335,7 +335,7 @@ class MaterialIndexedPartsStateManager:
             slot1_id,
             program_kind,
             partition,
-            effect=partition_result.effect,
+            effect=separation_result.effect,
         )
         diagnostics = _partition_fallback_diagnostics(step, partition)
         binding_events = bind_indexed_group(
@@ -737,7 +737,7 @@ class MaterialIndexedPartsStateManager:
 
         slot0 = ensure_container(state, slot0_id)
         slot1 = ensure_container(state, slot1_id)
-        partition_result = partition_sep_material(
+        separation_result = apply_separation_material(
             state=state,
             source=source,
             slot0=slot0,
@@ -748,14 +748,14 @@ class MaterialIndexedPartsStateManager:
             request_id=step.step_id,
             source_id=source_id,
         )
-        if partition_result.failure is not None:
+        if separation_result.failure is not None:
             return diagnostic_result(
                 step,
                 state,
-                partition_result.failure.code,
-                partition_result.failure.message,
+                separation_result.failure.code,
+                separation_result.failure.message,
             )
-        partition = partition_result.record
+        partition = separation_result.record
         refresh_separation_relationships(
             state,
             source_id,
@@ -763,7 +763,7 @@ class MaterialIndexedPartsStateManager:
             slot1_id,
             program_kind,
             partition,
-            effect=partition_result.effect,
+            effect=separation_result.effect,
         )
         contents_state = record_partitioned_contents_state(
             state=state,

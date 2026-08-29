@@ -6,11 +6,9 @@ from culsma.runtime.material.args import MaterialArgReader
 from culsma.runtime.material.conservation import MaterialConservation
 from culsma.runtime.material.compute import MaterialCompute, apply_step
 from culsma.runtime.material.partition import (
-    CentrifugalFiltrationPartitionStrategy,
     ContentClassResolver,
     DisruptPartitionStrategy,
     FieldPartitionStrategy,
-    FiltrationPartitionStrategy,
     MagneticPartitionStrategy,
     PartitionClass,
     PhasePartitionStrategy,
@@ -31,10 +29,8 @@ __all__ = [
     "SepPartitionStrategyRegistry",
     "ContentClassResolver",
     "PartitionClass",
-    "CentrifugalFiltrationPartitionStrategy",
     "PhasePartitionStrategy",
     "PrecipitationPartitionStrategy",
-    "FiltrationPartitionStrategy",
     "MagneticPartitionStrategy",
     "DisruptPartitionStrategy",
     "FieldPartitionStrategy",

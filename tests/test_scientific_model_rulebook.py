@@ -161,6 +161,29 @@ def test_table_2_returns_unresolved_for_composite_group_instead_of_guessing() ->
             {"0": 0.0, "1": 1.0},
         ),
         (
+            "filtration_program",
+            ("filtrate", "retentate"),
+            _component(
+                entry_id="DNA:0",
+                kind="bio_molecule_or_virus",
+                content_type="dna",
+            ),
+            {"filter_retains": {"DNA:0": True}},
+            {"0": 0.0, "1": 1.0},
+        ),
+        (
+            "filtration_program",
+            ("filtrate", "retentate"),
+            _component(
+                entry_id="ADHERENT:0",
+                kind="bio_cellular",
+                content_type="cell_line",
+                relation="container_surface",
+            ),
+            {"surface_preserved": {"ADHERENT:0": True}},
+            {"0": 0.0, "1": 1.0},
+        ),
+        (
             "centrifugal_filtration_program",
             ("filtrate", "retentate"),
             _component(
@@ -385,6 +408,19 @@ def test_table_3_returns_unresolved_for_unlisted_relationship() -> None:
             {"field_retention_established": True},
             "field_retained",
             "bound_output",
+        ),
+        (
+            _component(
+                entry_id="ADHERENT:0",
+                kind="bio_cellular",
+                content_type="cell_line",
+                relation="container_surface",
+            ),
+            "separate",
+            "retentate",
+            {"surface_preserved": True},
+            "container_surface",
+            "retentate_output",
         ),
         (
             _component(

@@ -13,7 +13,7 @@ from culsma.runtime.material.contents_state import (
 )
 from culsma.runtime.material.result import MaterialUpdateResult
 from culsma.runtime.material.state import MaterialStateChangePlan, MaterialStateManager
-from culsma.runtime.material.partition import separation_slot_contract
+from culsma.runtime.material.separation import separation_slot_contract
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -173,6 +173,7 @@ def test_material_modules_do_not_import_private_sibling_helpers() -> None:
 def test_scientific_model_core_logic_has_no_private_functions() -> None:
     paths = sorted(SCIENTIFIC_MODEL_DIR.rglob("*.py")) + [
         MATERIAL_DIR / "partition.py",
+        MATERIAL_DIR / "separation.py",
         MATERIAL_DIR / "scientific_model_adapter.py",
     ]
     offenders: list[tuple[str, str]] = []
@@ -200,6 +201,45 @@ def test_partition_does_not_construct_scientific_model_dependencies() -> None:
     assert "ScientificModelPartitionAdapter" not in constructed_names
 
 
+def test_partition_is_not_the_scientific_model_boundary() -> None:
+    path = MATERIAL_DIR / "partition.py"
+    source = path.read_text(encoding="utf-8")
+
+    assert "ScientificModelPartitionAdapter" not in source
+    assert "ResolvedMaterialEffect" not in source
+    assert "SCIENTIFIC_MODEL_SEPARATION_PROGRAMS" not in source
+    assert ".resolve(" not in source
+
+
+def test_separation_owns_the_scientific_model_application_boundary() -> None:
+    path = MATERIAL_DIR / "separation.py"
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    function_names = {
+        node.name for node in tree.body if isinstance(node, ast.FunctionDef)
+    }
+
+    assert {
+        "apply_separation_material",
+        "project_resolved_material_effect",
+        "commit_separation_candidate",
+    }.issubset(function_names)
+
+
+def test_runtime_separation_callers_do_not_bypass_separation_module() -> None:
+    offenders: list[str] = []
+    for filename in ("contents_state.py", "mutation.py"):
+        path = MATERIAL_DIR / filename
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in ast.walk(tree):
+            if (
+                isinstance(node, ast.ImportFrom)
+                and node.module == "culsma.runtime.material.partition"
+            ):
+                offenders.append(filename)
+
+    assert offenders == []
+
+
 def test_partition_does_not_duplicate_program_slot_contracts() -> None:
     path = MATERIAL_DIR / "partition.py"
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
@@ -224,14 +264,18 @@ def test_partition_does_not_duplicate_program_slot_contracts() -> None:
     assert duplicate_slot_contracts == []
 
 
-def test_migrated_centrifuge_has_no_runtime_strategy_class() -> None:
+def test_migrated_separation_programs_have_no_runtime_strategy_classes() -> None:
     path = MATERIAL_DIR / "partition.py"
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
     class_names = {
         node.name for node in tree.body if isinstance(node, ast.ClassDef)
     }
 
-    assert "CentrifugePartitionStrategy" not in class_names
+    assert {
+        "CentrifugePartitionStrategy",
+        "FiltrationPartitionStrategy",
+        "CentrifugalFiltrationPartitionStrategy",
+    }.isdisjoint(class_names)
 
 
 def test_material_compute_routes_material_changes_through_state_manager() -> None:
@@ -302,8 +346,8 @@ def test_material_handler_module_removed() -> None:
     assert not (MATERIAL_DIR / "handler.py").exists()
 
 
-def test_material_operation_transform_modules_removed() -> None:
-    assert not (MATERIAL_DIR / "separation.py").exists()
+def test_material_organization_transform_module_removed() -> None:
+    assert (MATERIAL_DIR / "separation.py").exists()
     assert not (MATERIAL_DIR / "organization.py").exists()
 
 

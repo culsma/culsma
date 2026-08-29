@@ -1303,7 +1303,7 @@ def test_runtime_statement_extract_dna_column_executes_expanded_primitive_path()
     plan = _build_plan_from_source(
         """
 protocol T {
-  let lysate = tube(label = "Lysate", capacity = 2000uL, load = [content(kind = "biosample", code = "DNA_COL", type = "dna_lysate"):600uL]);
+  let lysate = tube(label = "Lysate", capacity = 2000uL, load = [content(kind = "biosample", code = "DNA_COL", type = "dna_lysate", attrs = { filter_retains: true }):600uL]);
   let bind_in = tube(label = "Bind", capacity = 1000uL, load = [buffer(code = "BIND", type = "binding_buffer"):600uL]);
   let wash1 = tube(label = "Wash1", capacity = 1000uL, load = [buffer(code = "W1", type = "column_wash_buffer"):500uL]);
   let wash2 = tube(label = "Wash2", capacity = 1000uL, load = [buffer(code = "W2", type = "column_wash_buffer"):500uL]);
@@ -3415,7 +3415,7 @@ def test_runtime_filtration_partitions_cell_count_and_carrier_volume_independent
         """
 protocol T {
   let source = tube(label = "Source", capacity = 300uL, load = [
-    content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells,
+    content(kind = bio_cellular, type = cell_line, code = "RPE1", attrs = { filter_retains: true }):100000cells,
     content(kind = formulation, type = medium, code = "MEDIUM"):300uL
   ]);
   let filtered = sep(sample = source, program = filtration_program(membrane = "0.2um", drive = "pressure"));
@@ -3430,15 +3430,13 @@ protocol T {
     slots = material["indexed_bindings"]["filtered"]
     filtrate = material["containers"][slots["0"]]
     retentate = material["containers"][slots["1"]]
-    assert filtrate["volume_uL"] == 297.0
-    assert retentate["volume_uL"] == 3.0
-    assert filtrate["mass_mg"] == 297.0
-    assert retentate["mass_mg"] == 3.0
-    assert filtrate["component_quantities"]["RPE1"]["value"] == 1000.0
-    assert retentate["component_quantities"]["RPE1"]["value"] == 99000.0
-    assert filtrate["material_relationships"][0]["material_state"] == "suspension"
-    assert retentate["material_relationships"][0]["material_state"] == "retained"
-    assert retentate["material_relationships"][0]["transferability"] == "non_homogeneous"
+    assert filtrate["volume_uL"] == 300.0
+    assert retentate["volume_uL"] == 0.0
+    assert filtrate["mass_mg"] == 300.0
+    assert retentate["mass_mg"] == 0.0
+    assert filtrate["component_quantities"]["RPE1"]["value"] == 0.0
+    assert retentate["component_quantities"]["RPE1"]["value"] == 100000.0
+    assert retentate["material_relationships"][0]["material_state"] == "suspension"
 
 
 def test_runtime_aspiration_keeps_adherent_cells_and_contents_transfer_preserves_conservation():
@@ -3467,10 +3465,9 @@ protocol T {
     containers = result.state.artifacts["material_state"]["containers"]
     assert containers["Removed"]["component_quantities"]["RPE1"]["value"] == 0.0
     assert containers["Retained"]["component_quantities"]["RPE1"]["value"] == 100000.0
-    assert containers["Removed"]["component_quantities"]["MEDIUM"]["value"] == 297.0
-    assert containers["Retained"]["component_quantities"]["MEDIUM"]["value"] == 3.0
+    assert containers["Removed"]["component_quantities"]["MEDIUM"]["value"] == 300.0
+    assert containers["Retained"]["component_quantities"]["MEDIUM"]["value"] == 0.0
     assert containers["Retained"]["material_relationships"][0]["material_state"] == "suspension"
-    assert containers["Retained"]["metadata"]["component_partition_classes"]["RPE1"] == "pelletable_cells"
     assert (
         containers["Removed"]["component_quantities"]["RPE1"]["value"]
         + containers["Retained"]["component_quantities"]["RPE1"]["value"]
@@ -3483,7 +3480,7 @@ def test_runtime_author_component_fates_override_reference_prediction_with_seman
         """
 protocol T {
   let source = tube(label = "Source", capacity = 300uL, load = [
-    content(kind = bio_cellular, type = cell_line, code = "RPE1", attrs = { state: adherent }):100000cells,
+    content(kind = bio_cellular, type = cell_line, code = "RPE1"):100000cells,
     content(kind = formulation, type = medium, code = "MEDIUM"):300uL
   ]);
   let filtered = sep(
@@ -3693,7 +3690,7 @@ def test_runtime_executes_centrifugal_filtration_with_filtration_slots():
         """
 protocol T {
   let column = tube(label = "SpinColumn", capacity = 500uL, load = [
-    content(kind = "biosample", code = "DNA", type = "dna_sample"):100uL,
+    content(kind = "biosample", code = "DNA", type = "dna_sample", attrs = { filter_retains: true }):100uL,
     buffer(code = "WASH", type = "buffer"):100uL
   ]);
   let filter_group = sep(
@@ -3713,8 +3710,8 @@ protocol T {
     assert result.ok, [d.to_dict() for d in result.diagnostics]
     material = result.state.artifacts["material_state"]
     slots = material["indexed_bindings"]["filter_group"]
-    assert material["containers"][slots["0"]]["components"] == {"DNA": 1.0, "WASH": 99.0}
-    assert material["containers"][slots["1"]]["components"] == {"DNA": 99.0, "WASH": 1.0}
+    assert material["containers"][slots["0"]]["components"] == {"DNA": 0.0, "WASH": 100.0}
+    assert material["containers"][slots["1"]]["components"] == {"DNA": 100.0, "WASH": 0.0}
 
 
 def test_runtime_append_mutates_data_group_items():

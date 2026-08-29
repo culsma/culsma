@@ -18,6 +18,7 @@ class SeparationOperationContract:
     slot_contract: dict[str, str]
     preserved_association_slots: dict[str, str]
     released_associations: frozenset[str]
+    preservation_contract: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -26,6 +27,11 @@ class SeparationOperationContract:
             "slot_contract": dict(self.slot_contract),
             "preserved_association_slots": dict(self.preserved_association_slots),
             "released_associations": sorted(self.released_associations),
+            "preservation_contract": (
+                dict(self.preservation_contract)
+                if self.preservation_contract is not None
+                else None
+            ),
         }
 
 
@@ -85,6 +91,7 @@ def resolve_separation_operation_contract(
     program_args = _serialized_program_args(program)
     preserved: dict[str, str] = {}
     released: set[str] = set()
+    preservation_contract: dict[str, Any] | None = None
 
     if program_kind == "centrifuge_program":
         preserved["pellet"] = "1"
@@ -96,6 +103,12 @@ def resolve_separation_operation_contract(
             preserved["container_surface"] = "1"
     elif program_kind == "magnetic_program":
         preserved["bead"] = "0"
+        preservation_contract = {
+            "kind": "field_retention",
+            "field": "magnetic_rack",
+            "retained_slot": "0",
+            "default_incoming_slot": "1",
+        }
     elif program_kind == "precipitation_program":
         preserved["precipitate"] = "0"
     elif program_kind == "disrupt_program":
@@ -107,6 +120,7 @@ def resolve_separation_operation_contract(
         slot_contract=dict(slot_contract),
         preserved_association_slots=preserved,
         released_associations=frozenset(released),
+        preservation_contract=preservation_contract,
     )
 
 

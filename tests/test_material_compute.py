@@ -5,7 +5,7 @@ from culsma.pipeline.plan_nodes import PlanProgram, PlanStep, ProtocolPlan
 from culsma.runtime.executor import run
 from culsma.runtime.material_compute import apply_step
 from culsma.runtime.material.ledger import move_ratio
-from culsma.runtime.material.partition import separation_cell_material_state
+from culsma.runtime.material.separation import separation_cell_material_state
 from culsma.runtime.state import init_state
 
 
@@ -140,8 +140,6 @@ def test_remaining_legacy_separation_strategies_own_cell_material_state_by_outpu
     expected = {
         "phase_partition_program": {"0": "suspension", "1": "suspension"},
         "precipitation_program": {"0": "precipitate", "1": "suspension"},
-        "filtration_program": {"0": "suspension", "1": "retained"},
-        "centrifugal_filtration_program": {"0": "suspension", "1": "retained"},
         "magnetic_program": {"0": "retained", "1": "suspension"},
         "disrupt_program": {"0": "lysate", "1": "debris"},
         "field_program": {"0": "suspension", "1": "suspension"},
@@ -1012,30 +1010,33 @@ def test_sep_precipitation_sends_target_to_precipitate_and_liquid_to_supernatant
 
 
 def test_sep_filtration_sends_liquid_to_filtrate_and_target_to_retentate():
+    state = _partition_state(
+        components={"DNA": 100.0, "WASH": 100.0},
+        registry={
+            "DNA": ("bio_molecule_or_virus", "dna"),
+            "WASH": ("formulation", "buffer"),
+        },
+    )
+    state["content_registry"]["DNA"]["content_attrs"] = {"filter_retains": True}
     result = apply_step(
         step=_sep_step(program_name="filtration_program"),
-        material_state=_partition_state(
-            components={"DNA": 100.0, "WASH": 100.0},
-            registry={
-                "DNA": ("bio_molecule_or_virus", "dna"),
-                "WASH": ("formulation", "buffer"),
-            },
-        ),
+        material_state=state,
     )
 
     assert result.ok
     slots = result.material_state["indexed_bindings"]["sep_group"]
     assert result.delta["partition"]["slot_contract"] == {"0": "filtrate", "1": "retentate"}
     assert _rounded_components(result.material_state["containers"][slots["0"]]) == {
-        "DNA": 1.0,
-        "WASH": 99.0,
+        "DNA": 0.0,
+        "WASH": 100.0,
     }
     assert _rounded_components(result.material_state["containers"][slots["1"]]) == {
-        "DNA": 99.0,
-        "WASH": 1.0,
+        "DNA": 100.0,
+        "WASH": 0.0,
     }
-    slot1_classes = result.material_state["containers"][slots["1"]]["metadata"]["component_partition_classes"]
-    assert slot1_classes["DNA"] == "retained_fraction"
+    assert result.delta["partition"]["fates_by_component"]["DNA"]["source"] == (
+        "scientific_model_provider"
+    )
 
 
 def test_sep_aspiration_preserves_surface_associated_content_on_its_native_count_axis():
@@ -1071,19 +1072,21 @@ def test_sep_aspiration_preserves_surface_associated_content_on_its_native_count
     retentate = result.material_state["containers"][slots["1"]]
     assert filtrate["component_quantities"]["RPE1"]["value"] == 0.0
     assert retentate["component_quantities"]["RPE1"]["value"] == 100000.0
-    assert filtrate["component_quantities"]["MEDIUM"]["value"] == 297.0
-    assert retentate["component_quantities"]["MEDIUM"]["value"] == 3.0
+    assert filtrate["component_quantities"]["MEDIUM"]["value"] == 300.0
+    assert retentate["component_quantities"]["MEDIUM"]["value"] == 0.0
     fate = result.delta["partition"]["fates_by_component"]["RPE1"]
-    assert fate["source"] == "preserved_association"
+    assert fate["source"] == "scientific_model_provider"
     assert fate["association"] == "container_surface"
-    assert fate["retained_slot"] == "1"
+    assert result.delta["partition"]["transitions_by_component"]["RPE1"]["1"][
+        "next_relation"
+    ] == "container_surface"
     assert result.delta["partition"]["operation_contract"]["program_args"] == {
         "membrane": "adherent_cell_surface",
         "drive": "aspiration",
     }
 
 
-def test_sep_aspiration_does_not_treat_free_cell_count_as_surface_associated():
+def test_sep_aspiration_requires_a_retention_fact_for_free_cells():
     result = apply_step(
         step=_sep_step(
             program_name="filtration_program",
@@ -1101,16 +1104,21 @@ def test_sep_aspiration_does_not_treat_free_cell_count_as_surface_associated():
         ),
     )
 
-    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
-    slots = result.material_state["indexed_bindings"]["sep_group"]
-    filtrate = result.material_state["containers"][slots["0"]]
-    retentate = result.material_state["containers"][slots["1"]]
-    assert filtrate["component_quantities"]["RPE1"]["value"] == 1000.0
-    assert retentate["component_quantities"]["RPE1"]["value"] == 99000.0
-    assert result.delta["partition"]["fates_by_component"]["RPE1"]["source"] == "reference_prediction"
+    assert not result.ok
+    assert [diagnostic.code for diagnostic in result.diagnostics] == [
+        "MAT_SCIENTIFIC_MODEL_UNRESOLVED"
+    ]
 
 
 def test_sep_centrifugal_filtration_uses_filtrate_and_retentate_slots():
+    state = _partition_state(
+        components={"DNA": 100.0, "WASH": 100.0},
+        registry={
+            "DNA": ("bio_molecule_or_virus", "dna"),
+            "WASH": ("formulation", "buffer"),
+        },
+    )
+    state["content_registry"]["DNA"]["content_attrs"] = {"filter_retains": True}
     result = apply_step(
         step=_sep_step(
             program_name="centrifugal_filtration_program",
@@ -1120,25 +1128,19 @@ def test_sep_centrifugal_filtration_uses_filtrate_and_retentate_slots():
                 _ir_arg("duration", _ir_quantity(1.0, "min")),
             ],
         ),
-        material_state=_partition_state(
-            components={"DNA": 100.0, "WASH": 100.0},
-            registry={
-                "DNA": ("bio_molecule_or_virus", "dna"),
-                "WASH": ("formulation", "buffer"),
-            },
-        ),
+        material_state=state,
     )
 
     assert result.ok
     slots = result.material_state["indexed_bindings"]["sep_group"]
     assert result.delta["partition"]["slot_contract"] == {"0": "filtrate", "1": "retentate"}
     assert _rounded_components(result.material_state["containers"][slots["0"]]) == {
-        "DNA": 1.0,
-        "WASH": 99.0,
+        "DNA": 0.0,
+        "WASH": 100.0,
     }
     assert _rounded_components(result.material_state["containers"][slots["1"]]) == {
-        "DNA": 99.0,
-        "WASH": 1.0,
+        "DNA": 100.0,
+        "WASH": 0.0,
     }
 
 

@@ -102,6 +102,9 @@ class BuiltinMaterialRulebookProvider:
                 is_magnetic_support=context_predicate(
                     payload.context, "is_magnetic_support", component.entry_id
                 ),
+                surface_preserved=context_predicate(
+                    payload.context, "surface_preserved", component.entry_id
+                ),
             )
             if fate is None:
                 return self.unresolved(
@@ -187,6 +190,9 @@ class BuiltinMaterialRulebookProvider:
                 ),
                 field_preserved=context_predicate(
                     payload.context, "field_preserved", component.entry_id
+                ),
+                surface_preserved=context_predicate(
+                    payload.context, "surface_preserved", component.entry_id
                 ),
                 label_has_persistent_relation=context_predicate(
                     payload.context,

@@ -98,7 +98,7 @@ def apply_define_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpdat
     if normalized is not None and normalized.changed:
         candidate["content_original_kind"] = normalized.original_kind
         candidate["content_original_type"] = normalized.original_type
-    merged_candidate_attrs: dict[str, str] = {}
+    merged_candidate_attrs: dict[str, Any] = {}
     if normalized is not None and normalized.attrs:
         merged_candidate_attrs.update(normalized.attrs)
     if explicit_attrs:
@@ -279,14 +279,18 @@ def apply_annotate_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpd
     )
 
 
-def _arg_string_map(value: Any) -> dict[str, str]:
+def _arg_string_map(value: Any) -> dict[str, Any]:
     if not isinstance(value, dict):
         return {}
-    attrs: dict[str, str] = {}
+    attrs: dict[str, Any] = {}
     for key, raw in value.items():
         if not isinstance(key, str):
             continue
         text = arg_string(raw)
         if text is not None:
             attrs[key] = text
+            continue
+        boolean = arg_bool(raw)
+        if boolean is not None:
+            attrs[key] = boolean
     return attrs

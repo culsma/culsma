@@ -79,10 +79,9 @@ Design goal:
   cross-module imports of underscore-prefixed helper functions.
 - `MaterialIndexedPartsStateManager` is an internal collaborator for partitioned or
   indexed container contents. It is not a top-level material-operation branch.
-- Separation strategy remains a separate inheritance family because each
-  separation program owns a different slot contract and component-fate policy.
-  It is a strategy collaborator used while applying separation or
-  fractionation, not a top-level material-operation branch.
+- `material.separation` is the single Runtime application boundary for every
+  `sep` decision. `material.partition` is a temporary compatibility collaborator
+  and does not own the main separation lifecycle.
 
 ## Material State Change Flowchart
 
@@ -590,13 +589,13 @@ This sequence expands the material-state change from the top sequence. The
 manager can update container records, quantities, components, partitioned or
 indexed contents.
 
-## Partition And Indexed Contents Sequence
+## Separation And Indexed Contents Sequence
 
 ```mermaid
 sequenceDiagram
     participant PartsManager as "material.contents_state.MaterialIndexedPartsStateManager"
     participant PartsState as "material.contents_state"
-    participant Partition as "material.partition"
+    participant Separation as "material.separation"
     participant Ledger as "material.ledger"
 
     PartsManager->>PartsManager: apply_partition_or_index_change(transition_plan, state)
@@ -604,7 +603,7 @@ sequenceDiagram
     alt step.op == "sep"
         PartsManager->>PartsManager: apply_sep(step, state)
         PartsManager->>PartsManager: record_sep_transition(step=step, state=working, source_id=source_id, program_kind=program_kind, keep_source=keep_source)
-        PartsManager->>Partition: partition_sep_material(state=state, source=source, slot0=slot0, slot1=slot1, program_kind=program_kind)
+        PartsManager->>Separation: apply_separation_material(state, source, slot0, slot1, program)
         PartsManager->>PartsState: record_partitioned_contents_state(state=state, source_id=source_id, source=source, parts={"0": slot0, "1": slot1}, kind="partitioned", producer_op="sep", program_kind=program_kind, slot_contract=partition.get("slot_contract"), preservation_contract=partition.get("preservation_contract"), step_id=step.step_id)
         PartsManager->>PartsState: remove_transient_containers(state, [slot0_id, slot1_id], preserve=source_id)
     else step.op == "frac"
@@ -635,7 +634,7 @@ sequenceDiagram
     end
 ```
 
-This sequence is the target partition and indexed-part path. `sep`, `frac`,
+This sequence is the target separation and indexed-part path. `sep`, `frac`,
 indexed-part access, and tracked-part reset enter
 `MaterialIndexedPartsStateManager` only after `MaterialStateManager` has selected
 that kind of material-state change.
@@ -645,41 +644,44 @@ that kind of material-state change.
 ```mermaid
 sequenceDiagram
     participant PartsManager as "material.contents_state.MaterialIndexedPartsStateManager"
-    participant Partition as "material.partition"
+    participant Separation as "material.separation"
     participant Adapter as "material.scientific_model_adapter.ScientificModelPartitionAdapter"
     participant Model as "scientific-model public port"
+    participant Legacy as "material.partition (compatibility only)"
     participant Registry as "material.partition.SepPartitionStrategyRegistry"
     participant Strategy as "material.partition.SepPartitionStrategy"
     participant Classes as "material.partition.ContentClassResolver"
     participant Fate as "material.separation_fate"
     participant Ledger as "material.ledger"
 
-    PartsManager->>Partition: partition_sep_material(state, source, slot0, slot1, program, explicit_fates)
-    Partition->>Fate: resolve operation contract from complete program and slot meanings
-    Fate-->>Partition: movement, retention, release, and preservation rules
+    PartsManager->>Separation: apply_separation_material(state, source, slot0, slot1, program, explicit_fates)
+    Separation->>Fate: resolve operation contract from complete program and slot meanings
+    Fate-->>Separation: movement, retention, release, and preservation rules
 
     alt centrifuge: scientific-model path
-        Partition->>Adapter: resolve(immutable operation + component snapshots)
+        Separation->>Adapter: resolve(immutable operation + component snapshots)
         Adapter->>Model: Table 2 fate request, then Table 3 transition requests
         Model-->>Adapter: validated typed decisions
-        Adapter-->>Partition: ResolvedMaterialEffect; no mutation
-        Partition->>Partition: project_resolved_material_effect(effect)
-        Partition->>Partition: validate candidate quantities and conservation
-        Partition->>Ledger: commit_partition_candidate(candidate)
+        Adapter-->>Separation: ResolvedMaterialEffect; no mutation
+        Separation->>Separation: project_resolved_material_effect(effect)
+        Separation->>Separation: validate candidate quantities and conservation
+        Separation->>Ledger: commit_separation_candidate(candidate)
     else compatibility path pending migration
-        Partition->>Registry: strategy_for(program_kind)
-        Registry-->>Partition: SepPartitionStrategy
+        Separation->>Legacy: apply_legacy_partition_material(...)
+        Legacy->>Registry: strategy_for(program_kind)
+        Registry-->>Legacy: SepPartitionStrategy
         loop each component
-            Partition->>Classes: classify(state, source, content_ref)
-            Classes-->>Partition: PartitionClass
-            Partition->>Strategy: ratios(partition_class)
-            Partition->>Strategy: output_class(partition_class, slot)
+            Legacy->>Classes: classify(state, source, content_ref)
+            Classes-->>Legacy: PartitionClass
+            Legacy->>Strategy: ratios(partition_class)
+            Legacy->>Strategy: output_class(partition_class, slot)
         end
-        Partition->>Partition: allocate authoritative count, volume, or mass quantity
-        Partition->>Ledger: commit compatibility result
+        Legacy->>Legacy: allocate authoritative count, volume, or mass quantity
+        Legacy->>Ledger: commit compatibility result
+        Legacy-->>Separation: compatibility record
     end
 
-    Partition-->>PartsManager: PartitionApplicationResult(record, effect, failure)
+    Separation-->>PartsManager: SeparationApplicationResult(record, effect, failure)
 ```
 
 `ScientificModelPartitionAdapter` resolves decisions only. The Runtime projector
@@ -699,7 +701,8 @@ as helper functions embedded in operation modules:
 | `container_content.py` | container/content record updates | material-state change planning |
 | `mutation.py` | mutation transform and mutation source dispatch | top-level material-state change planning |
 | `scientific_model_adapter.py` | public Runtime/model translation and typed decision resolution | quantity projection, ledger mutation, built-in rules |
-| `partition.py` | typed-effect projection, candidate commit; temporary strategy/classification compatibility path | provider rules, runtime operation lifecycle |
+| `separation.py` | single separation entry, typed-effect projection, candidate commit, temporary legacy delegation | provider rules, resolver construction |
+| `partition.py` | temporary strategy/classification compatibility path | provider calls, typed-effect projection, main separation lifecycle |
 | `contents_state.py` | `MaterialIndexedPartsStateManager`, indexed part records, selection, sep/frac partition/index application, narrow preservation impact, invalidation, and mixed-state impact | top-level material-state change planning, full runtime step dispatch, broad protocol semantics |
 | `ledger.py` | volume, mass, component, and metadata mutation primitives | source-expression interpretation |
 | `diagnostics.py` | material diagnostic result construction | material state mutation |
@@ -829,8 +832,14 @@ classDiagram
         +resolve(...) ResolvedMaterialEffect | MaterialEffectFailure
     }
 
+    class SeparationApplication {
+        +apply_separation_material(...) SeparationApplicationResult
+        +project_resolved_material_effect(...) MaterialSeparationCandidate
+        +commit_separation_candidate(...) dict
+    }
+
     class ResolvedMaterialEffect
-    class MaterialPartitionCandidate
+    class MaterialSeparationCandidate
 
     class MaterialArgReader {
         +arg_string(value) str
@@ -856,8 +865,6 @@ classDiagram
 
     class PhasePartitionStrategy
     class PrecipitationPartitionStrategy
-    class FiltrationPartitionStrategy
-    class CentrifugalFiltrationPartitionStrategy
     class MagneticPartitionStrategy
     class DisruptPartitionStrategy
     class FieldPartitionStrategy
@@ -874,11 +881,12 @@ classDiagram
     MutationTransform --> MutationSourceDispatcher
     MutationTransform --> MaterialLedger
     MaterialIndexedPartsStateManager --> MaterialLedger
-    MaterialIndexedPartsStateManager --> ScientificModelPartitionAdapter
+    MaterialIndexedPartsStateManager --> SeparationApplication
+    SeparationApplication --> ScientificModelPartitionAdapter
     ScientificModelPartitionAdapter --> ResolvedMaterialEffect
-    ResolvedMaterialEffect --> MaterialPartitionCandidate
-    MaterialPartitionCandidate --> MaterialLedger
-    MaterialIndexedPartsStateManager --> SepPartitionStrategyRegistry
+    ResolvedMaterialEffect --> MaterialSeparationCandidate
+    MaterialSeparationCandidate --> MaterialLedger
+    SeparationApplication --> SepPartitionStrategyRegistry : temporary legacy delegation
     MaterialIndexedPartsStateManager --> ContentsStateTransitionPlan
     MaterialIndexedPartsStateManager --> ContentsPartitionTransition
     MaterialIndexedPartsStateManager --> ContentsStateSummary
@@ -889,8 +897,6 @@ classDiagram
     SepPartitionStrategy --> ContentClassResolver
     SepPartitionStrategy <|-- PhasePartitionStrategy
     SepPartitionStrategy <|-- PrecipitationPartitionStrategy
-    SepPartitionStrategy <|-- FiltrationPartitionStrategy
-    FiltrationPartitionStrategy <|-- CentrifugalFiltrationPartitionStrategy
     SepPartitionStrategy <|-- MagneticPartitionStrategy
     SepPartitionStrategy <|-- DisruptPartitionStrategy
     SepPartitionStrategy <|-- FieldPartitionStrategy
@@ -909,14 +915,18 @@ The material compute refactor is in a transitional state:
    fractionation, indexed part access, and tracked-part reset.
 5. `MaterialOpDispatcher`, `MaterialOpHandler`, and the ordinary material
    update branch have been removed from this target path.
-6. Centrifuge uses one injected `ScientificModelPartitionAdapter`; its
-   `ResolvedMaterialEffect` is projected to a candidate and committed by Runtime.
-7. `SepPartitionStrategy` remains only for not-yet-migrated `sep` programs and
-   is a temporary second scientific dispatcher.
-8. Argument reading, reference resolution, ledger mutation, diagnostics, and
+6. Every `sep` and compatibility `source.partition(...)` path enters
+   `material.separation.apply_separation_material(...)` first.
+7. Centrifuge and both filtration programs use one injected
+   `ScientificModelPartitionAdapter`; each `ResolvedMaterialEffect` is projected
+   and committed inside `material.separation`.
+8. `material.partition` and `SepPartitionStrategy` remain only for
+   not-yet-migrated programs and are reached by temporary delegation from the
+   separation boundary.
+9. Argument reading, reference resolution, ledger mutation, diagnostics, and
    conservation now live behind public service modules instead of cross-module
    imports from `support.py`.
-8. `runtime/material_compute.py` remains as a compatibility facade.
+10. `runtime/material_compute.py` remains as a compatibility facade.
 
 Conformance rule: every stage should keep the existing material tests passing,
 especially the separation program tests and DNA cleanup regression.
