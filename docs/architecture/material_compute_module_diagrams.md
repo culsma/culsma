@@ -640,12 +640,14 @@ indexed-part access, and tracked-part reset enter
 `MaterialIndexedPartsStateManager` only after `MaterialStateManager` has selected
 that kind of material-state change.
 
-## Current Separation Implementation Gap
+## Current Separation Decision And Projection Boundary
 
 ```mermaid
 sequenceDiagram
     participant PartsManager as "material.contents_state.MaterialIndexedPartsStateManager"
     participant Partition as "material.partition"
+    participant Adapter as "material.scientific_model_adapter.ScientificModelPartitionAdapter"
+    participant Model as "scientific-model public port"
     participant Registry as "material.partition.SepPartitionStrategyRegistry"
     participant Strategy as "material.partition.SepPartitionStrategy"
     participant Classes as "material.partition.ContentClassResolver"
@@ -653,33 +655,37 @@ sequenceDiagram
     participant Ledger as "material.ledger"
 
     PartsManager->>Partition: partition_sep_material(state, source, slot0, slot1, program, explicit_fates)
-    Partition->>Registry: strategy_for(program_kind)
-    Registry-->>Partition: SepPartitionStrategy
     Partition->>Fate: resolve operation contract from complete program and slot meanings
     Fate-->>Partition: movement, retention, release, and preservation rules
 
-    loop for name, amount in list(source_components.items())
-        Partition->>Classes: classify(state, source, str(name))
-        Classes-->>Partition: PartitionClass
-        Partition->>Fate: resolve physical state and author override
-        Partition->>Strategy: ratios(partition_class)
-        Partition->>Fate: resolve content fate using precedence contract
-        Fate-->>Partition: slot ratios and provenance
+    alt centrifuge: scientific-model path
+        Partition->>Adapter: resolve(immutable operation + component snapshots)
+        Adapter->>Model: Table 2 fate request, then Table 3 transition requests
+        Model-->>Adapter: validated typed decisions
+        Adapter-->>Partition: ResolvedMaterialEffect; no mutation
+        Partition->>Partition: project_resolved_material_effect(effect)
+        Partition->>Partition: validate candidate quantities and conservation
+        Partition->>Ledger: commit_partition_candidate(candidate)
+    else compatibility path pending migration
+        Partition->>Registry: strategy_for(program_kind)
+        Registry-->>Partition: SepPartitionStrategy
+        loop each component
+            Partition->>Classes: classify(state, source, content_ref)
+            Classes-->>Partition: PartitionClass
+            Partition->>Strategy: ratios(partition_class)
+            Partition->>Strategy: output_class(partition_class, slot)
+        end
         Partition->>Partition: allocate authoritative count, volume, or mass quantity
-        Partition->>Strategy: output_class(partition_class, slot="0")
-        Partition->>Strategy: output_class(partition_class, slot="1")
+        Partition->>Ledger: commit compatibility result
     end
 
-    Partition->>Ledger: set each slot's component quantities on their native axes
-    Partition->>Partition: normalize permitted bulk compatibility quantities and validate conservation
-    Partition->>Ledger: set_container_material(source, volume_uL=0.0, mass_mg=0.0, components={})
-    Partition->>Strategy: preservation_contract()
-    Partition-->>PartsManager: parts, fate provenance, operation contract, and diagnostics
+    Partition-->>PartsManager: PartitionApplicationResult(record, effect, failure)
 ```
 
-The implementation now retains the complete operation description through fate
-resolution. Indexed contents record the resulting parts and serve projections;
-they do not rerun the separation decision.
+`ScientificModelPartitionAdapter` resolves decisions only. The Runtime projector
+converts one immutable `ResolvedMaterialEffect` into a candidate; the committer
+applies that candidate. Indexed contents consume the same typed effect and do
+not rerun either decision or projection.
 
 ## Target Module Boundaries
 
@@ -692,7 +698,8 @@ as helper functions embedded in operation modules:
 | `state.py` | `MaterialStateManager`, `MaterialStateChangePlan`, material-state change planning, state-change dispatch | ledger primitives, partition strategy internals, runtime driver dispatch |
 | `container_content.py` | container/content record updates | material-state change planning |
 | `mutation.py` | mutation transform and mutation source dispatch | top-level material-state change planning |
-| `partition.py` | `SepPartitionStrategyRegistry`, `SepPartitionStrategy`, content partition classification | runtime operation lifecycle |
+| `scientific_model_adapter.py` | public Runtime/model translation and typed decision resolution | quantity projection, ledger mutation, built-in rules |
+| `partition.py` | typed-effect projection, candidate commit; temporary strategy/classification compatibility path | provider rules, runtime operation lifecycle |
 | `contents_state.py` | `MaterialIndexedPartsStateManager`, indexed part records, selection, sep/frac partition/index application, narrow preservation impact, invalidation, and mixed-state impact | top-level material-state change planning, full runtime step dispatch, broad protocol semantics |
 | `ledger.py` | volume, mass, component, and metadata mutation primitives | source-expression interpretation |
 | `diagnostics.py` | material diagnostic result construction | material state mutation |
@@ -818,6 +825,13 @@ classDiagram
         +classify(state, container, component_id) PartitionClass
     }
 
+    class ScientificModelPartitionAdapter {
+        +resolve(...) ResolvedMaterialEffect | MaterialEffectFailure
+    }
+
+    class ResolvedMaterialEffect
+    class MaterialPartitionCandidate
+
     class MaterialArgReader {
         +arg_string(value) str
         +arg_quantity(value) dict
@@ -836,12 +850,10 @@ classDiagram
 
     class SepPartitionStrategy {
         +str program_kind
-        +dict slot_contract
         +ratios(partition_class) tuple
         +output_class(partition_class, slot) str
     }
 
-    class CentrifugePartitionStrategy
     class PhasePartitionStrategy
     class PrecipitationPartitionStrategy
     class FiltrationPartitionStrategy
@@ -853,6 +865,7 @@ classDiagram
     MaterialCompute --> MaterialUpdateResult
     MaterialCompute --> MaterialStateManager
     MaterialCompute --> MaterialConservation
+    MaterialCompute --> ScientificModelPartitionAdapter
     MaterialStateManager --> MaterialStateChangePlan
     MaterialStateManager --> ContainerContent
     MaterialStateManager --> MutationTransform
@@ -861,6 +874,10 @@ classDiagram
     MutationTransform --> MutationSourceDispatcher
     MutationTransform --> MaterialLedger
     MaterialIndexedPartsStateManager --> MaterialLedger
+    MaterialIndexedPartsStateManager --> ScientificModelPartitionAdapter
+    ScientificModelPartitionAdapter --> ResolvedMaterialEffect
+    ResolvedMaterialEffect --> MaterialPartitionCandidate
+    MaterialPartitionCandidate --> MaterialLedger
     MaterialIndexedPartsStateManager --> SepPartitionStrategyRegistry
     MaterialIndexedPartsStateManager --> ContentsStateTransitionPlan
     MaterialIndexedPartsStateManager --> ContentsPartitionTransition
@@ -870,7 +887,6 @@ classDiagram
 
     SepPartitionStrategyRegistry --> SepPartitionStrategy
     SepPartitionStrategy --> ContentClassResolver
-    SepPartitionStrategy <|-- CentrifugePartitionStrategy
     SepPartitionStrategy <|-- PhasePartitionStrategy
     SepPartitionStrategy <|-- PrecipitationPartitionStrategy
     SepPartitionStrategy <|-- FiltrationPartitionStrategy
@@ -893,9 +909,11 @@ The material compute refactor is in a transitional state:
    fractionation, indexed part access, and tracked-part reset.
 5. `MaterialOpDispatcher`, `MaterialOpHandler`, and the ordinary material
    update branch have been removed from this target path.
-6. `SepPartitionStrategy` and its subclasses remain the second inheritance
-   family, owned by partition strategy behavior.
-7. Argument reading, reference resolution, ledger mutation, diagnostics, and
+6. Centrifuge uses one injected `ScientificModelPartitionAdapter`; its
+   `ResolvedMaterialEffect` is projected to a candidate and committed by Runtime.
+7. `SepPartitionStrategy` remains only for not-yet-migrated `sep` programs and
+   is a temporary second scientific dispatcher.
+8. Argument reading, reference resolution, ledger mutation, diagnostics, and
    conservation now live behind public service modules instead of cross-module
    imports from `support.py`.
 8. `runtime/material_compute.py` remains as a compatibility facade.

@@ -136,9 +136,8 @@ def _rounded_components(container: dict[str, object]) -> dict[str, float]:
     return {str(key): round(float(value), 6) for key, value in sorted(components.items())}
 
 
-def test_separation_strategies_own_cell_material_state_by_output_slot():
+def test_remaining_legacy_separation_strategies_own_cell_material_state_by_output_slot():
     expected = {
-        "centrifuge_program": {"0": "suspension", "1": "pellet"},
         "phase_partition_program": {"0": "suspension", "1": "suspension"},
         "precipitation_program": {"0": "precipitate", "1": "suspension"},
         "filtration_program": {"0": "suspension", "1": "retained"},
@@ -608,7 +607,10 @@ def test_sep_creates_two_slot_indexed_group_binding():
     state = {
         "containers": {
             "lysate": {"volume_uL": 100.0, "mass_mg": 100.0, "components": {"DNA": 10.0}, "metadata": {}},
-        }
+        },
+        "content_registry": {
+            "DNA": {"content_kind": "bio_molecule_or_virus", "content_type": "dna"}
+        },
     }
 
     result = apply_step(step=step, material_state=state)
@@ -616,24 +618,21 @@ def test_sep_creates_two_slot_indexed_group_binding():
     assert result.ok
     slots = result.material_state["indexed_bindings"]["sep_group"]
     assert set(slots) == {"0", "1"}
-    assert result.material_state["containers"][slots["0"]]["volume_uL"] == 50.0
-    assert result.material_state["containers"][slots["1"]]["volume_uL"] == 50.0
-    for slot in slots.values():
-        quantity = result.material_state["containers"][slot]["component_quantities"]["DNA"]
-        assert quantity == {
-            "dimension": "volume",
-            "unit": "uL",
-            "value": 50.0,
-            "source": "compatibility_input_normalization",
-            "density_mg_per_uL": 1.0,
-        }
-        assert "legacy_residual_quantities" not in result.material_state["containers"][slot]["metadata"]
+    assert result.material_state["containers"][slots["0"]]["volume_uL"] == 100.0
+    assert result.material_state["containers"][slots["1"]]["volume_uL"] == 0.0
+    assert result.material_state["containers"][slots["0"]]["component_quantities"]["DNA"] == {
+        "dimension": "volume",
+        "unit": "uL",
+        "value": 100.0,
+        "source": "compatibility_input_normalization",
+        "density_mg_per_uL": 1.0,
+    }
+    assert result.material_state["containers"][slots["1"]]["component_quantities"]["DNA"]["value"] == 0.0
     assert {
         (movement.source, movement.destination, movement.volume_uL, movement.mass_mg)
         for movement in result.movements
     } == {
-        ("lysate", slots["0"], 50.0, 50.0),
-        ("lysate", slots["1"], 50.0, 50.0),
+        ("lysate", slots["0"], 100.0, 100.0),
     }
 
 
@@ -650,7 +649,10 @@ def test_sep_ignores_stale_source_aggregate_and_projects_only_from_detail():
                     },
                     "metadata": {},
                 }
-            }
+            },
+            "content_registry": {
+                "DNA": {"content_kind": "bio_molecule_or_virus", "content_type": "dna"}
+            },
         }
 
         result = apply_step(step=_sep_step(), material_state=state)
@@ -658,8 +660,8 @@ def test_sep_ignores_stale_source_aggregate_and_projects_only_from_detail():
         assert result.ok
         slots = result.material_state["indexed_bindings"]["sep_group"]
         assert [result.material_state["containers"][slots[key]]["volume_uL"] for key in ("0", "1")] == [
-            50.0,
-            50.0,
+            100.0,
+            0.0,
         ]
         assert result.delta["partition"]["bulk_quantity_policy"] == {
             "volume": "detail_ledger_projection",
@@ -688,7 +690,7 @@ def test_sep_routes_quantity_only_input_as_authoritative_component_detail():
 
     assert result.ok
     slots = result.material_state["indexed_bindings"]["sep_group"]
-    assert [result.material_state["containers"][slots[key]]["volume_uL"] for key in ("0", "1")] == [99.0, 1.0]
+    assert [result.material_state["containers"][slots[key]]["volume_uL"] for key in ("0", "1")] == [100.0, 0.0]
 
 
 def test_capacity_guard_uses_the_same_detail_projection_for_mass_only_content():
@@ -712,7 +714,7 @@ def test_capacity_guard_uses_the_same_detail_projection_for_mass_only_content():
                 },
                 "metadata": {"capacity_uL": 200.0},
             },
-        }
+        },
     }
 
     result = apply_step(step=step, material_state=state)
@@ -730,7 +732,10 @@ def test_compatibility_aggregate_becomes_movable_detail_before_separation():
                 "components": {"DNA": 10.0},
                 "metadata": {},
             }
-        }
+        },
+        "content_registry": {
+            "DNA": {"content_kind": "bio_molecule_or_virus", "content_type": "dna"}
+        },
     }
 
     result = apply_step(step=_sep_step(), material_state=state)
@@ -740,10 +745,10 @@ def test_compatibility_aggregate_becomes_movable_detail_before_separation():
     slot = result.material_state["containers"][slot_id]
     target = {"volume_uL": 0.0, "mass_mg": 0.0, "components": {}, "metadata": {}}
     move_ratio(slot, target, 0.5)
-    assert slot["component_quantities"]["DNA"]["value"] == 25.0
-    assert slot["volume_uL"] == 25.0
-    assert target["component_quantities"]["DNA"]["value"] == 25.0
-    assert target["volume_uL"] == 25.0
+    assert slot["component_quantities"]["DNA"]["value"] == 50.0
+    assert slot["volume_uL"] == 50.0
+    assert target["component_quantities"]["DNA"]["value"] == 50.0
+    assert target["volume_uL"] == 50.0
     assert "legacy_residual_quantities" not in slot["metadata"]
 
 
@@ -752,7 +757,10 @@ def test_sep_keep_source_pellet_reuses_source_container_for_slot_1():
     state = {
         "containers": {
             "lysate": {"volume_uL": 100.0, "mass_mg": 100.0, "components": {"DNA": 10.0}, "metadata": {}},
-        }
+        },
+        "content_registry": {
+            "DNA": {"content_kind": "bio_molecule_or_virus", "content_type": "dna"}
+        },
     }
 
     result = apply_step(step=step, material_state=state)
@@ -760,8 +768,8 @@ def test_sep_keep_source_pellet_reuses_source_container_for_slot_1():
     assert result.ok
     slots = result.material_state["indexed_bindings"]["sep_group"]
     assert slots["1"] == "lysate"
-    assert result.material_state["containers"]["lysate"]["volume_uL"] == 50.0
-    assert result.material_state["containers"][slots["0"]]["volume_uL"] == 50.0
+    assert result.material_state["containers"]["lysate"]["volume_uL"] == 0.0
+    assert result.material_state["containers"][slots["0"]]["volume_uL"] == 100.0
 
 
 def test_sep_centrifuge_partitions_liquid_to_supernatant_and_cells_to_pellet():
@@ -781,11 +789,11 @@ def test_sep_centrifuge_partitions_liquid_to_supernatant_and_cells_to_pellet():
     assert result.delta["partition"]["slot_contract"] == {"0": "supernatant", "1": "pellet"}
     assert _rounded_components(result.material_state["containers"][slots["0"]]) == {
         "CELLS": 0.0,
-        "MEDIUM": 99.0,
+        "MEDIUM": 100.0,
     }
     assert _rounded_components(result.material_state["containers"][slots["1"]]) == {
         "CELLS": 100.0,
-        "MEDIUM": 1.0,
+        "MEDIUM": 0.0,
     }
 
 
@@ -812,11 +820,11 @@ def test_sep_volume_only_bulk_is_projected_from_component_fates():
     slots = result.material_state["indexed_bindings"]["sep_group"]
     supernatant = result.material_state["containers"][slots["0"]]
     pellet = result.material_state["containers"][slots["1"]]
-    assert supernatant["component_quantities"]["LYSIS_BUFFER"]["value"] == 1980.0
+    assert supernatant["component_quantities"]["LYSIS_BUFFER"]["value"] == 2000.0
     assert supernatant["component_quantities"]["CELL_PELLET"]["value"] == 0.0
-    assert pellet["component_quantities"]["LYSIS_BUFFER"]["value"] == 20.0
+    assert pellet["component_quantities"]["LYSIS_BUFFER"]["value"] == 0.0
     assert pellet["component_quantities"]["CELL_PELLET"]["value"] == 1000.0
-    assert (supernatant["volume_uL"], pellet["volume_uL"]) == (1980.0, 1020.0)
+    assert (supernatant["volume_uL"], pellet["volume_uL"]) == (2000.0, 1000.0)
     assert result.delta["partition"]["bulk_quantity_policy"]["volume"] == "detail_ledger_projection"
 
 
@@ -891,8 +899,8 @@ def test_sep_count_aware_bulk_mass_follows_partitioned_carrier_volume():
     slots = result.material_state["indexed_bindings"]["sep_group"]
     supernatant = result.material_state["containers"][slots["0"]]
     pellet = result.material_state["containers"][slots["1"]]
-    assert (supernatant["volume_uL"], supernatant["mass_mg"]) == (198.0, 198.0)
-    assert (pellet["volume_uL"], pellet["mass_mg"]) == (2.0, 2.0)
+    assert (supernatant["volume_uL"], supernatant["mass_mg"]) == (200.0, 200.0)
+    assert (pellet["volume_uL"], pellet["mass_mg"]) == (0.0, 0.0)
     assert result.delta["partition"]["bulk_quantity_policy"] == {
         "volume": "detail_ledger_projection",
         "mass": "detail_ledger_projection",
@@ -924,8 +932,8 @@ def test_sep_count_aware_mixed_volume_and_mass_preserves_cross_axis_bulk_proxies
     slot1 = result.material_state["containers"][slots["1"]]
     assert slot0["volume_uL"] + slot1["volume_uL"] == 310.0
     assert slot0["mass_mg"] + slot1["mass_mg"] == 310.0
-    assert slot0["component_quantities"]["MEDIUM"]["value"] == 297.0
-    assert slot1["component_quantities"]["MEDIUM"]["value"] == 3.0
+    assert slot0["component_quantities"]["MEDIUM"]["value"] == 300.0
+    assert slot1["component_quantities"]["MEDIUM"]["value"] == 0.0
     assert result.delta["partition"]["bulk_quantity_policy"] == {
         "volume": "detail_ledger_projection",
         "mass": "detail_ledger_projection",

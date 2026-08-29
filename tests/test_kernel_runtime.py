@@ -1388,12 +1388,12 @@ protocol T() returns (plasmid_dna) {
     }
     components = result.state.artifacts["material_state"]["containers"]["Plasmid DNA"]["components"]
     assert {key: round(float(value), 6) for key, value in sorted(components.items())} == {
-        "AQ": 0.012921,
-        "DNA_EXT": 30.380375,
-        "ETOH70": 3.262865,
-        "ETOH_ABS": 0.029366,
-        "PCI": 0.000147,
-        "TE": 16.314326,
+        "AQ": 0.0,
+        "DNA_EXT": 32.644915,
+        "ETOH70": 0.0,
+        "ETOH_ABS": 0.0,
+        "PCI": 0.0,
+        "TE": 17.355085,
     }
     final_products = result.user_result["materials"]["final_products"]
     plasmid = next(item for item in final_products if item["name"] == "Plasmid DNA")
@@ -2119,7 +2119,10 @@ def test_runtime_emits_binding_overwritten_event_for_fraction_rebind():
     state.artifacts["material_state"] = {
         "containers": {
             "Lysate": {"volume_uL": 1000.0, "mass_mg": 1000.0, "components": {"RNA": 100.0}, "metadata": {}}
-        }
+        },
+        "content_registry": {
+            "RNA": {"content_kind": "bio_molecule_or_virus", "content_type": "rna"}
+        },
     }
 
     result = run(plan=plan, driver=StubDriver(), state=state)
@@ -2359,7 +2362,10 @@ def test_runtime_resolves_group_index_for_observation_sample():
     state.artifacts["material_state"] = {
         "containers": {
             "lysate": {"volume_uL": 100.0, "mass_mg": 100.0, "components": {"DNA": 10.0}, "metadata": {}},
-        }
+        },
+        "content_registry": {
+            "DNA": {"content_kind": "bio_molecule_or_virus", "content_type": "dna"}
+        },
     }
 
     result = run(plan=plan, driver=StubDriver(), state=state)
@@ -2690,8 +2696,8 @@ protocol T {
     assert material["bindings"]["sample_tube"] == "SampleTube"
     slots = material["indexed_bindings"]["sep_group"]
     assert set(slots.keys()) == {"0", "1"}
-    assert material["containers"][slots["0"]]["volume_uL"] == 99.0
-    assert material["containers"][slots["1"]]["volume_uL"] == 1.0
+    assert material["containers"][slots["0"]]["volume_uL"] == 100.0
+    assert material["containers"][slots["1"]]["volume_uL"] == 0.0
 
 
 def test_runtime_cell_count_load_and_volume_transfer_keep_count_independent():
@@ -3225,7 +3231,7 @@ protocol T {
     assert result.ok, [d.to_dict() for d in result.diagnostics]
     target = result.state.artifacts["material_state"]["containers"]["Target"]
     assert target["component_quantities"]["RPE1"]["value"] == 500.0
-    assert target["component_quantities"]["MEDIUM"]["value"] == 148.5
+    assert target["component_quantities"]["MEDIUM"]["value"] == 150.0
 
     mutation_step_id = next(
         step.step_id for protocol in plan.plans for step in protocol.steps if step.op == "Mutation"
@@ -3235,16 +3241,16 @@ protocol T {
     )
     transfer_delta = mutation_event.payload["material_delta"]["sources"][0]
     assert transfer_delta["mode"] == "contents_state_count_resolved_volume"
-    assert transfer_delta["resolved_transfer_volume_uL"] == 148.5
-    assert transfer_delta["moved_bulk_volume_uL"] == 148.5
+    assert transfer_delta["resolved_transfer_volume_uL"] == 150.0
+    assert transfer_delta["moved_bulk_volume_uL"] == 150.0
     assert transfer_delta["component_ratio"] == 0.5
-    assert transfer_delta["concentration_cells_per_uL"] == pytest.approx(1000.0 / 297.0)
+    assert transfer_delta["concentration_cells_per_uL"] == pytest.approx(1000.0 / 300.0)
     assert transfer_delta["concentration_source"] == "derived"
     assert transfer_delta["policy_id"] == "explicit_carrier_volume"
     contents_part = result.state.artifacts["material_state"]["contents_states"]["Source"]["parts"]["0"]
     assert contents_part["component_quantities"]["RPE1"]["value"] == 500.0
-    assert contents_part["component_quantities"]["MEDIUM"]["value"] == 148.5
-    assert contents_part["material_relationships"][0]["carrier_volume_uL"] == 148.5
+    assert contents_part["component_quantities"]["MEDIUM"]["value"] == 150.0
+    assert contents_part["material_relationships"][0]["carrier_volume_uL"] == 150.0
 
 
 def test_runtime_centrifuge_routes_cell_count_to_pellet_and_allows_downstream_transfer():
@@ -3274,10 +3280,10 @@ protocol T {
     supernatant = material["containers"][slots["0"]]
     pellet = material["containers"]["Pellet"]
 
-    assert supernatant["volume_uL"] == 297.0
-    assert pellet["volume_uL"] == 3.0
-    assert supernatant["mass_mg"] == 297.0
-    assert pellet["mass_mg"] == 3.0
+    assert supernatant["volume_uL"] == 300.0
+    assert pellet["volume_uL"] == 0.0
+    assert supernatant["mass_mg"] == 300.0
+    assert pellet["mass_mg"] == 0.0
     assert supernatant["component_quantities"]["RPE1"] == {
         "dimension": "count",
         "unit": "cells",
@@ -3288,8 +3294,8 @@ protocol T {
         "unit": "cells",
         "value": 100000.0,
     }
-    assert supernatant["component_quantities"]["MEDIUM"]["value"] == 297.0
-    assert pellet["component_quantities"]["MEDIUM"]["value"] == 3.0
+    assert supernatant["component_quantities"]["MEDIUM"]["value"] == 300.0
+    assert pellet["component_quantities"]["MEDIUM"]["value"] == 0.0
     assert supernatant["component_quantities"]["RPE1"]["value"] + pellet["component_quantities"]["RPE1"]["value"] == 100000.0
     assert supernatant["volume_uL"] + pellet["volume_uL"] == 300.0
     assert supernatant["mass_mg"] + pellet["mass_mg"] == 300.0
@@ -4140,11 +4146,11 @@ protocol T() returns (supernatant_out) {
         "value": {
             "kind": "container_ref",
             "id": "p0.s1::0",
-            "volume_uL": 99,
-            "mass_mg": 99,
+            "volume_uL": 100,
+            "mass_mg": 100,
         },
     }
-    assert result.state.artifacts["material_state"]["containers"]["p0.s1::0"]["components"]["S1"] == 99.0
+    assert result.state.artifacts["material_state"]["containers"]["p0.s1::0"]["components"]["S1"] == 100.0
 
 
 def test_runtime_captures_direct_container_group_return():
@@ -4215,7 +4221,7 @@ protocol T() returns (fractions_out) {
     assert group["kind"] == "container_group_ref"
     assert group["member_count"] == 2
     assert [member["id"] for member in group["members"]] == ["p0.s1::0", "p0.s1::1"]
-    assert [member["volume_uL"] for member in group["members"]] == [99, 1]
+    assert [member["volume_uL"] for member in group["members"]] == [100, 0]
 
 
 def test_runtime_captures_frac_group_return_as_container_group_ref():

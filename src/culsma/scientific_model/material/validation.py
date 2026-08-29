@@ -9,6 +9,7 @@ from ..contracts import ModelRequest, ModelResult, ModelStatus
 from .contracts import (
     MATERIAL_SEPARATION_FATE,
     MATERIAL_STATE_TRANSITION,
+    MaterialRelation,
     MaterialModelPayload,
     SeparationDecision,
     StateTransitionDecision,
@@ -49,16 +50,16 @@ def validate_material_result(
         )
     if request.capability == MATERIAL_SEPARATION_FATE:
         if not isinstance(result.proposal, SeparationDecision):
-            return _proposal_type_issue("SeparationDecision")
-        return _validate_separation_decision(
+            return proposal_type_issue("SeparationDecision")
+        return validate_separation_decision(
             request.payload,
             result.proposal,
             fraction_tolerance=fraction_tolerance,
         )
     if request.capability == MATERIAL_STATE_TRANSITION:
         if not isinstance(result.proposal, StateTransitionDecision):
-            return _proposal_type_issue("StateTransitionDecision")
-        return _validate_state_transition_decision(request.payload, result.proposal)
+            return proposal_type_issue("StateTransitionDecision")
+        return validate_state_transition_decision(request.payload, result.proposal)
     return MaterialValidationResult(
         issues=(
             MaterialValidationIssue(
@@ -69,7 +70,7 @@ def validate_material_result(
     )
 
 
-def _proposal_type_issue(expected: str) -> MaterialValidationResult:
+def proposal_type_issue(expected: str) -> MaterialValidationResult:
     return MaterialValidationResult(
         issues=(
             MaterialValidationIssue(
@@ -80,7 +81,7 @@ def _proposal_type_issue(expected: str) -> MaterialValidationResult:
     )
 
 
-def _validate_separation_decision(
+def validate_separation_decision(
     payload: MaterialModelPayload,
     decision: SeparationDecision,
     *,
@@ -154,12 +155,17 @@ def _validate_separation_decision(
     return MaterialValidationResult(issues=tuple(issues))
 
 
-def _validate_state_transition_decision(
+def validate_state_transition_decision(
     payload: MaterialModelPayload,
     decision: StateTransitionDecision,
 ) -> MaterialValidationResult:
     issues: list[MaterialValidationIssue] = []
     component_ids = {component.entry_id for component in payload.components}
+    allowed_relations = {
+        relation.value
+        for relation in MaterialRelation
+        if relation is not MaterialRelation.UNRESOLVED
+    }
     seen_components: set[str] = set()
     for transition in decision.transitions:
         if transition.component_entry_id not in component_ids:
@@ -180,12 +186,13 @@ def _validate_state_transition_decision(
                 )
             )
         seen_components.add(transition.component_entry_id)
-        if not isinstance(transition.next_relation, str) or not transition.next_relation.strip():
+        if transition.next_relation not in allowed_relations:
             issues.append(
                 MaterialValidationIssue(
                     code="MATERIAL_MODEL_RELATION_INVALID",
                     message=(
-                        f"component '{transition.component_entry_id}' has an empty next relation"
+                        f"component '{transition.component_entry_id}' has invalid next relation "
+                        f"'{transition.next_relation}'"
                     ),
                 )
             )

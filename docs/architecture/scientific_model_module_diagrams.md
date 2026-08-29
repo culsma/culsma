@@ -2,7 +2,9 @@
 
 Status: `implementation in progress`
 Phase: `1 — material separation and state-transition decisions`
-Current boundary: `framework and Runtime dependency wiring complete; provider decisions not yet authoritative`
+Current boundary: `ResolvedMaterialEffect` is the Runtime handoff; centrifuge
+Tables 1–3 are authoritative through one injected adapter; remaining `sep`
+programs await typed-context migration.
 Normative extension contract: `culsma-reference/extensions/scientific_model/README.md`
 Built-in provider semantics: `culsma-reference/extensions/scientific_model/builtin_material_rulebook.md`
 
@@ -43,7 +45,8 @@ flowchart LR
         Run["run()"]
         Session["RuntimeSession"]
         Material["MaterialCompute"]
-        Adapter["material decision adapter<br/>snapshot ↔ candidate"]
+        Adapter["ScientificModelPartitionAdapter<br/>snapshot + decision merge"]
+        ResolvedEffect["ResolvedMaterialEffect<br/>one immutable Runtime handoff"]
         Candidate["candidate build + commit validation"]
         Ledger["material ledger commit"]
     end
@@ -85,8 +88,9 @@ flowchart LR
     ProviderAPI -->|"same versioned result contract"| Result
     Result --> ProposalValidation
     ProposalValidation -->|"validated decision"| Coordinator
-    Coordinator -->|"decision; no mutation"| Adapter
-    Adapter --> Candidate
+    Coordinator -->|"validated capability decisions;<br/>no mutation"| Adapter
+    Adapter -->|"merge Table 2 + Table 3"| ResolvedEffect
+    ResolvedEffect --> Candidate
     Candidate --> Ledger
 ```
 
@@ -127,6 +131,7 @@ src/culsma/
     ├── session.py
     └── material/
         ├── compute.py
+        ├── scientific_model_adapter.py
         ├── partition.py
         ├── separation_fate.py
         ├── contents_state.py
@@ -134,7 +139,7 @@ src/culsma/
         └── ledger.py
 ```
 
-## 5. Module Ownership
+## 5. Target Module Ownership
 
 | Module | Owns | Does not own |
 | --- | --- | --- |
@@ -147,7 +152,8 @@ src/culsma/
 | `material/builtin.py` | official provider implementing the Reference Rulebook | resolver selection, ledger commit |
 | `material/coordinator.py` | author precedence, resolver request, final typed decision | ledger commit |
 | `material/validation.py` | provider proposal shape, bounds, IDs, fraction sums | capacity and ledger conservation |
-| `runtime/material/partition.py` | snapshot adapter, quantity projection, candidate construction | scientific classification and ratio tables |
+| `runtime/material/scientific_model_adapter.py` | public snapshot adapter; combines capability decisions into one `ResolvedMaterialEffect`; no mutation | quantity projection, scientific rules, ledger commit |
+| `runtime/material/partition.py` | one quantity projection and candidate construction from resolved decisions | provider calls, scientific classification and ratio tables |
 | `runtime/material/conservation.py` | candidate conservation | scientific resolution |
 | `runtime/material/ledger.py` | authoritative state mutation | scientific decisions |
 
@@ -226,6 +232,56 @@ returns `SeparationDecision`, then Table 3 returns `StateTransitionDecision` for
 the positive output entries. A state-transition-only program such as `disrupt`
 uses only the second capability. Both decisions belong to one candidate and one
 atomic commit.
+
+### Runtime Handoff Contract
+
+```mermaid
+classDiagram
+    class ResolvedMaterialEffect {
+        +operation_id
+        +program_kind
+        +outputs
+        +component_effects
+    }
+
+    class ResolvedOutput {
+        +part_id
+        +semantic_role
+    }
+
+    class ResolvedComponentEffect {
+        +source_component_id
+        +source_amount
+        +source_relation
+        +source_accessibility
+        +source_preservation
+        +outputs
+    }
+
+    class ResolvedComponentOutput {
+        +part_id
+        +semantic_role
+        +fraction
+        +next_relation
+        +next_label
+        +retire_quantity
+        +replacement_quantity
+        +decision_source
+        +fate_provenance
+        +transition_provenance
+    }
+
+    ResolvedMaterialEffect *-- ResolvedOutput
+    ResolvedMaterialEffect *-- ResolvedComponentEffect
+    ResolvedComponentEffect *-- ResolvedComponentOutput
+```
+
+| Boundary side | Contract |
+| --- | --- |
+| Provider port | `ModelResult` containing one capability-specific proposal |
+| Coordinator → adapter | validated `SeparationDecision` and/or `StateTransitionDecision` |
+| Adapter → Runtime candidate builder | exactly one immutable `ResolvedMaterialEffect` |
+| Runtime consumers | must not read parallel `ratios`, `fates`, or `transitions` dictionaries |
 
 ## 7. Resolution Order
 
@@ -306,21 +362,24 @@ class ScientificModelProvider(Protocol):
 | Runtime objects | Never cross the boundary |
 | Commit authority | Never crosses the boundary |
 
-## 9. Runtime Composition
+## 9. Target Runtime Composition
 
 ```mermaid
 sequenceDiagram
     participant API as run()
     participant Session as RuntimeSession
     participant Compute as MaterialCompute
-    participant Adapter as runtime.material.partition
+    participant Partition as runtime.material.partition
+    participant Adapter as ScientificModelPartitionAdapter
     participant Model as SepEffectCoordinator
     participant Resolver as ScientificModelResolver
+    participant Provider as selected ScientificModelProvider
     participant Ledger as MaterialLedger
 
     API->>Compute: construct with custom or built-in resolver
     API->>Session: configured MaterialCompute
-    Compute->>Adapter: apply sep/state-transition step
+    Compute->>Partition: apply sep/state-transition step
+    Partition->>Adapter: operation + Runtime component records
     Adapter->>Adapter: build immutable operation + component snapshots
     opt fraction-producing separation
         Adapter->>Model: material.separation_fate request
@@ -328,6 +387,8 @@ sequenceDiagram
         opt no author fate decision
             Model->>Resolver: capability + contract version + immutable payload
             Resolver->>Resolver: select explicit provider or built-in default
+            Resolver->>Provider: resolve(request)
+            Provider-->>Resolver: ModelResult
             Resolver-->>Model: SeparationDecision / unresolved / failed
             Model->>Model: validate fraction proposal
         end
@@ -336,13 +397,17 @@ sequenceDiagram
         Adapter->>Model: material.state_transition request
         Model->>Resolver: capability + contract version + immutable payload
         Resolver->>Resolver: select explicit provider or built-in default
+        Resolver->>Provider: resolve(request)
+        Provider-->>Resolver: ModelResult
         Resolver-->>Model: StateTransitionDecision / unresolved / failed
         Model->>Model: validate transition proposal
     end
     Model-->>Adapter: validated fate + transition decisions
-    Adapter->>Adapter: project quantities + build one candidate
-    Adapter->>Adapter: validate state, capacity, conservation
-    Adapter->>Ledger: atomic commit
+    Adapter->>Adapter: merge as ResolvedMaterialEffect
+    Adapter-->>Partition: ResolvedMaterialEffect
+    Partition->>Partition: generic quantity projection + candidate
+    Partition->>Partition: validate state, capacity, conservation
+    Partition->>Ledger: atomic commit
 ```
 
 ### Runtime API
@@ -368,9 +433,94 @@ result = run(
 
 ## 10. Current-to-Target Move Map
 
+### Current conflict: two program dispatch systems
+
+```mermaid
+flowchart TB
+    Step["sep or source-partition operation"] --> Partition["partition_sep_material"]
+    Partition --> ProgramRegistry["Program Registry<br/>single slot-contract source"]
+    Partition --> Gate{"program_kind == centrifuge_program?"}
+
+    Gate -->|yes| Adapter["ScientificModelPartitionAdapter"]
+    Adapter --> Resolver["ScientificModelResolver"]
+    Resolver --> Provider["built-in or external provider"]
+    Provider --> Tables["Table 1 classification<br/>Table 2 fate<br/>Table 3 transition"]
+
+    Gate -->|no| Legacy["Runtime legacy scientific path"]
+    Legacy --> RuntimeStrategy["SepPartitionStrategyRegistry"]
+    Legacy --> OldClass["ContentClassResolver"]
+    Legacy --> OldFate["per-program strategy ratios"]
+    Legacy --> OldState["output_class + cell state<br/>+ preservation rules"]
+
+    Tables --> Projection["quantity projection"]
+    OldClass --> Projection
+    OldFate --> Projection
+    OldState --> Projection
+    ProgramRegistry --> Projection
+
+    OldClass -. "overlaps Table 1" .-> Tables
+    OldFate -. "overlaps Table 2" .-> Tables
+    OldState -. "overlaps Table 3" .-> Tables
+```
+
+| Current symptom | Architectural cause |
+| --- | --- |
+| Only centrifuge enters the adapter | Runtime owns a `program_kind` feature gate |
+| Other programs select Runtime subclasses | `SepPartitionStrategyRegistry` remains a second scientific dispatcher |
+| Filtration, precipitation, and magnetic rules exist in two systems | Runtime strategy and Rulebook both own scientific fate |
+| Missing transition may fall back to strategy state | Runtime still retains a second state authority |
+| Centrifuge has no Runtime strategy, but other programs do | Migration state remains encoded by `program_kind` |
+
+### Target convergence: one scientific decision boundary
+
+```mermaid
+flowchart TB
+    Step["any registered sep program"] --> ProgramRegistry["Program Registry"]
+    ProgramRegistry --> Contract["one normalized OperationContract<br/>program kind + output roles + operation facts"]
+    Step --> Partition["generic partition candidate builder"]
+    Contract --> Adapter["ScientificModelPartitionAdapter"]
+    Partition --> Adapter
+
+    Adapter --> Coordinator["SepEffectCoordinator"]
+    Coordinator --> Resolver["one configured ScientificModelResolver"]
+    Resolver --> Provider["selected built-in or external provider"]
+
+    Provider --> T1["Table 1<br/>component → calculation group"]
+    T1 --> Effect{"operation effect"}
+    Effect -->|fraction-producing| T2["Table 2<br/>ordered output fractions"]
+    Effect -->|all affected outputs| T3["Table 3<br/>relationship transition"]
+    T2 --> Decision["typed material-effect decision"]
+    T3 --> Decision
+
+    Decision --> Adapter
+    Adapter --> Projector["generic quantity projector<br/>no program-specific branch"]
+    Projector --> Validate["candidate validation"]
+    Validate --> Ledger["atomic ledger commit"]
+```
+
+| Boundary | Target owner | Rule |
+| --- | --- | --- |
+| Program names, fields, output roles | `pipeline.program_registry` | One contract source; consumers reference it |
+| Runtime dictionary ↔ immutable model contract | `ScientificModelPartitionAdapter` | No scientific rules and no mutation |
+| Program-specific scientific behavior | selected provider / Rulebook | Tables 1–3 are the only built-in authority |
+| Quantity projection | generic Runtime projector | Apply typed fractions once; no `program_kind` branch |
+| Candidate validation and commit | Runtime kernel | Provider never mutates Runtime state |
+| Legacy compatibility, if temporarily required | provider behind the same resolver port | Never branch around the adapter |
+
+Target deletion condition:
+
+```text
+partition.py contains no per-program scientific strategy subclasses
+partition.py contains no scientific-model feature gate
+partition.py does not construct a resolver
+all sep programs enter the same adapter
+```
+
+### Responsibility migration
+
 ```mermaid
 flowchart LR
-    subgraph Legacy["legacy scientific decisions inside runtime.material"]
+    subgraph Legacy["remove from runtime.material.partition"]
         OldClass["PartitionClass + content mapping"]
         OldFate["strategy ratios + resolve_content_fate"]
         OldState["relationship/output-state rules"]
@@ -406,23 +556,25 @@ flowchart LR
 | `runtime/material/partition.py::SepPartitionStrategy*` | ratios + output classes | `scientific_model/material/rulebook.py` |
 | `runtime/material/separation_fate.py` | operation/relationship decisions | contracts + Rulebook + coordinator |
 | `runtime/material/contents_state.py` relationship refresh | post-separation state decisions | apply validated Table 3 transitions only |
-| `runtime/material/partition.py::partition_sep_material` | decision + quantity projection + mutation | runtime adapter: snapshots, decision application, candidate construction |
+| `runtime/material/scientific_model_adapter.py::ScientificModelPartitionAdapter` | immutable snapshots + provider decision resolution | stable Runtime/model boundary |
+| `runtime/material/partition.py::partition_sep_material` | decision application + one quantity projection | candidate construction only |
 | `runtime/steps.py::apply_material_step` | global material-compute facade | session-owned `MaterialCompute` |
 | `pipeline/program_registry.py` | program syntax/fields/result slots | unchanged |
 | `runtime/material/ledger.py` | authoritative quantities | unchanged |
 
 ## 11. Implementation Slices
 
-| Slice | Change | Exit condition |
-| ---: | --- | --- |
-| 1 | Add package, contracts, resolver, registry, built-in provider shell, and dependency wiring through `run → session → MaterialCompute` | isolated and Runtime injection tests pass |
-| 2 | Implement built-in provider Table 1 classification | canonical classification conformance passes |
-| 3 | Implement built-in centrifuge Table 2 fate and Table 3 transitions | exact fractions and output relationships pass conformance |
-| 4 | Convert `partition.py` to adapter/applier and resolve both capabilities before candidate construction | Case 00 and Case 09 pass |
-| 5 | Remove legacy centrifuge decision lookup | built-in default and third-party replacement both drive validated candidates through the same port |
-| 6 | Migrate filtration, centrifugal filtration, precipitation, magnetic | existing separation regressions pass |
-| 7 | Route phase partition, field, generic sep, disrupt through coordinator | every registered `sep` program has controlled outcome |
-| 8 | Remove compatibility-only strategy logic | full suite and architecture checks pass |
+| Slice | Status | Change | Exit condition |
+| ---: | --- | --- | --- |
+| 1 | Done | Add contracts, resolver, registry, provider shell, and `run → session → MaterialCompute` wiring | injection tests pass |
+| 2 | Done | Implement built-in provider Table 1 classification | classification conformance passes |
+| 3 | Done | Implement centrifuge Table 2 fate and Table 3 transitions | exact `100/0` fates and relationships pass |
+| 4 | Done | Introduce `ResolvedMaterialEffect`, pure projection, candidate validation, and commit | one typed effect crosses into Runtime |
+| 5 | Done | Inject one adapter through ordinary `sep` and `source.partition` paths | no nested resolver construction or custom-provider bypass |
+| 6 | Done | Remove legacy centrifuge strategy and duplicate slot ownership | centrifuge uses Tables 1–3; Program Registry owns output roles |
+| 7 | Rules ready; adapter pending | Migrate filtration, centrifugal filtration, precipitation, magnetic | typed guards replace legacy guesses |
+| 8 | Pending | Route phase partition, field, generic `sep`, disrupt through coordinator | every registered `sep` has controlled outcome |
+| 9 | Pending | Remove compatibility-only classifier and strategy registry | no Runtime scientific dispatcher or `program_kind` feature gate |
 
 ## 12. Phase 1 Invariants
 

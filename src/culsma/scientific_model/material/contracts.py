@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Mapping
 from dataclasses import dataclass, field
+from enum import StrEnum
 from types import MappingProxyType
 
 from ..contracts import ProviderProvenance, freeze_mapping
@@ -14,7 +15,20 @@ MATERIAL_STATE_TRANSITION = "material.state_transition"
 MATERIAL_CONTRACT_VERSION = "1.0"
 
 
-def _empty_mapping() -> Mapping[str, object]:
+class MaterialRelation(StrEnum):
+    FREE = "free"
+    CONTAINER_SURFACE = "container_surface"
+    PELLET = "pellet"
+    PRECIPITATE = "precipitate"
+    DISRUPTED = "disrupted"
+    BEAD_BOUND = "bead_bound"
+    MEMBRANE_BOUND = "membrane_bound"
+    CELL_BOUND = "cell_bound"
+    FIELD_RETAINED = "field_retained"
+    UNRESOLVED = "unresolved"
+
+
+def empty_material_mapping() -> Mapping[str, object]:
     return MappingProxyType({})
 
 
@@ -29,7 +43,7 @@ class OperationSnapshot:
     program_kind: str
     effect_kind: str
     output_roles: tuple[OutputRoleSnapshot, ...]
-    program_args: Mapping[str, object] = field(default_factory=_empty_mapping)
+    program_args: Mapping[str, object] = field(default_factory=empty_material_mapping)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "output_roles", tuple(self.output_roles))
@@ -64,7 +78,7 @@ class ComponentSnapshot:
 class MaterialModelPayload:
     operation: OperationSnapshot
     components: tuple[ComponentSnapshot, ...]
-    context: Mapping[str, object] = field(default_factory=_empty_mapping)
+    context: Mapping[str, object] = field(default_factory=empty_material_mapping)
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "components", tuple(self.components))

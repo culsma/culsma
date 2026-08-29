@@ -24,6 +24,9 @@ from culsma.runtime.material.ledger import (
 from culsma.runtime.material.refs import initialize_bindings
 from culsma.runtime.material.movements import derive_material_movements, material_quantities_changed
 from culsma.runtime.material.result import MaterialUpdateResult
+from culsma.runtime.material.scientific_model_adapter import (
+    ScientificModelPartitionAdapter,
+)
 from culsma.runtime.material.state import MaterialStateManager
 
 
@@ -33,13 +36,18 @@ class MaterialCompute:
         state_manager: MaterialStateManager | None = None,
         scientific_model: ScientificModelResolver | None = None,
     ) -> None:
-        self.state_manager = state_manager or MaterialStateManager()
         self.scientific_model = (
             scientific_model
             if scientific_model is not None
             else create_default_scientific_model_resolver()
         )
         self.sep_effect_coordinator = SepEffectCoordinator(self.scientific_model)
+        self.material_effect_adapter = ScientificModelPartitionAdapter(
+            self.sep_effect_coordinator
+        )
+        self.state_manager = state_manager or MaterialStateManager(
+            material_effect_adapter=self.material_effect_adapter
+        )
 
     def apply_step(self, step: PlanStep, material_state: dict[str, Any]) -> MaterialUpdateResult:
         """Apply deterministic material update for one runtime step."""

@@ -35,6 +35,10 @@ from culsma.runtime.material.refs import (
     resolve_target_ref,
 )
 from culsma.runtime.material.result import MaterialUpdateResult
+from culsma.runtime.material.scientific_model_adapter import (
+    ResolvedMaterialEffect,
+    ScientificModelPartitionAdapter,
+)
 from culsma.runtime.material.separation_fate import (
     ExplicitContentFate,
     parse_explicit_content_fates,
@@ -196,6 +200,12 @@ def mark_contents_state_mixed(state: dict[str, Any], container_id: str, *, step_
 
 
 class MaterialIndexedPartsStateManager:
+    def __init__(
+        self,
+        material_effect_adapter: ScientificModelPartitionAdapter | None = None,
+    ) -> None:
+        self.material_effect_adapter = material_effect_adapter
+
     def apply_partition_or_index_change(
         self,
         transition_plan: ContentsStateTransitionPlan,
@@ -299,16 +309,33 @@ class MaterialIndexedPartsStateManager:
             )
         slot0 = ensure_container(working, slot0_id)
         slot1 = ensure_container(working, slot1_id)
-        partition = partition_sep_material(
+        partition_result = partition_sep_material(
             state=working,
             source=source,
             slot0=slot0,
             slot1=slot1,
             program=program,
             explicit_fates=explicit_fates,
+            material_effect_adapter=self.material_effect_adapter,
+            request_id=step.step_id,
+            source_id=source_id,
         )
-        _refresh_separation_relationships(
-            working, source_id, slot0_id, slot1_id, program_kind, partition
+        if partition_result.failure is not None:
+            return diagnostic_result(
+                step,
+                state,
+                partition_result.failure.code,
+                partition_result.failure.message,
+            )
+        partition = partition_result.record
+        refresh_separation_relationships(
+            working,
+            source_id,
+            slot0_id,
+            slot1_id,
+            program_kind,
+            partition,
+            effect=partition_result.effect,
         )
         diagnostics = _partition_fallback_diagnostics(step, partition)
         binding_events = bind_indexed_group(
@@ -506,6 +533,7 @@ class MaterialIndexedPartsStateManager:
                         target_id=target_id,
                         source_expr=source_expr,
                         source_ordinal=source_ordinal,
+                        material_effect_adapter=self.material_effect_adapter,
                     )
                 )
             else:
@@ -709,16 +737,33 @@ class MaterialIndexedPartsStateManager:
 
         slot0 = ensure_container(state, slot0_id)
         slot1 = ensure_container(state, slot1_id)
-        partition = partition_sep_material(
+        partition_result = partition_sep_material(
             state=state,
             source=source,
             slot0=slot0,
             slot1=slot1,
             program=program,
             explicit_fates=explicit_fates,
+            material_effect_adapter=self.material_effect_adapter,
+            request_id=step.step_id,
+            source_id=source_id,
         )
-        _refresh_separation_relationships(
-            state, source_id, slot0_id, slot1_id, program_kind, partition
+        if partition_result.failure is not None:
+            return diagnostic_result(
+                step,
+                state,
+                partition_result.failure.code,
+                partition_result.failure.message,
+            )
+        partition = partition_result.record
+        refresh_separation_relationships(
+            state,
+            source_id,
+            slot0_id,
+            slot1_id,
+            program_kind,
+            partition,
+            effect=partition_result.effect,
         )
         contents_state = record_partitioned_contents_state(
             state=state,
@@ -1295,31 +1340,127 @@ def _clamp_near_zero(value: float) -> float:
     return 0.0 if abs(value) <= 1e-12 else value
 
 
-def _refresh_separation_relationships(
+def refresh_separation_relationships(
     state: dict[str, Any],
     source_id: str,
     slot0_id: str,
     slot1_id: str,
     program_kind: str,
     partition: dict[str, Any],
+    *,
+    effect: ResolvedMaterialEffect | None,
 ) -> None:
     slot0 = container(state, slot0_id)
     slot1 = container(state, slot1_id)
+    source = container(state, source_id)
+    refresh_scientific_model_relationships(
+        source,
+        source_id,
+        slot="source",
+        effect=None,
+    )
     refresh_cell_suspension_relationship(state, source_id)
     refresh_cell_suspension_relationship(
         state,
         slot0_id,
         forced_state=separation_cell_material_state(
-            program_kind, slot="0", partition=partition, output=slot0
+            program_kind,
+            slot="0",
+            partition=partition,
+            output=slot0,
+            effect=effect,
         ),
     )
     refresh_cell_suspension_relationship(
         state,
         slot1_id,
         forced_state=separation_cell_material_state(
-            program_kind, slot="1", partition=partition, output=slot1
+            program_kind,
+            slot="1",
+            partition=partition,
+            output=slot1,
+            effect=effect,
         ),
     )
+    refresh_scientific_model_relationships(
+        slot0,
+        slot0_id,
+        slot="0",
+        effect=effect,
+    )
+    refresh_scientific_model_relationships(
+        slot1,
+        slot1_id,
+        slot="1",
+        effect=effect,
+    )
+
+
+def refresh_scientific_model_relationships(
+    output: dict[str, Any] | None,
+    output_id: str,
+    *,
+    slot: str,
+    effect: ResolvedMaterialEffect | None,
+) -> None:
+    if not isinstance(output, dict):
+        return
+    relationships = output.setdefault("material_relationships", [])
+    if not isinstance(relationships, list):
+        relationships = []
+        output["material_relationships"] = relationships
+    relationships[:] = [
+        relationship
+        for relationship in relationships
+        if not (
+            isinstance(relationship, dict)
+            and relationship.get("subtype") == "scientific_model_relation"
+        )
+    ]
+    if effect is None:
+        return
+    components = output.get("components")
+    if not isinstance(components, dict):
+        return
+    effects_by_component = {
+        component.source_component_id: component
+        for component in effect.component_effects
+    }
+    for component_id, amount in components.items():
+        if not isinstance(amount, (int, float)) or abs(float(amount)) <= 1e-12:
+            continue
+        component_effect = effects_by_component.get(component_id)
+        transition = next(
+            (
+                component_output
+                for component_output in component_effect.outputs
+                if component_output.part_id == slot
+            ),
+            None,
+        ) if component_effect is not None else None
+        next_relation = transition.next_relation if transition is not None else None
+        if not isinstance(next_relation, str) or next_relation == "free":
+            continue
+        relationship = {
+            "kind": "association",
+            "subtype": "scientific_model_relation",
+            "dispersed_component_ids": [component_id],
+            "material_state": next_relation,
+            "material_state_source": "scientific_model_provider",
+            "associated_with": output_id,
+        }
+        if transition is not None and transition.next_label is not None:
+            relationship["label"] = transition.next_label
+        if transition is not None and transition.transition_provenance is not None:
+            provenance = transition.transition_provenance
+            relationship["provenance"] = {
+                "provider_id": provenance.provider_id,
+                "provider_version": provenance.provider_version,
+                "model_id": provenance.model_id,
+                "model_version": provenance.model_version,
+                "configuration": dict(provenance.configuration),
+            }
+        relationships.append(relationship)
 
 
 def _partition_fallback_diagnostics(step: PlanStep, partition: dict[str, Any]) -> list[Diagnostic]:

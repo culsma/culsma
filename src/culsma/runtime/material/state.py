@@ -22,6 +22,9 @@ from culsma.runtime.material.diagnostics import diagnostic_result
 from culsma.runtime.material.mutation import apply_mutation
 from culsma.runtime.material.refs import is_serialized_pair, resolve_structured_ref, resolve_target_ref
 from culsma.runtime.material.result import MaterialUpdateResult
+from culsma.runtime.material.scientific_model_adapter import (
+    ScientificModelPartitionAdapter,
+)
 
 
 @dataclass(frozen=True)
@@ -32,8 +35,15 @@ class MaterialStateChangePlan:
 
 
 class MaterialStateManager:
-    def __init__(self, indexed_parts_state_manager: MaterialIndexedPartsStateManager | None = None) -> None:
-        self.indexed_parts_state_manager = indexed_parts_state_manager or MaterialIndexedPartsStateManager()
+    def __init__(
+        self,
+        indexed_parts_state_manager: MaterialIndexedPartsStateManager | None = None,
+        material_effect_adapter: ScientificModelPartitionAdapter | None = None,
+    ) -> None:
+        self.material_effect_adapter = material_effect_adapter
+        self.indexed_parts_state_manager = indexed_parts_state_manager or MaterialIndexedPartsStateManager(
+            material_effect_adapter=material_effect_adapter
+        )
 
     def plan_material_state_change(
         self,
@@ -77,7 +87,11 @@ class MaterialStateManager:
         if change_plan.kind == "container_record":
             return self._apply_container_record(step, state)
         if change_plan.kind == "quantity_or_composition":
-            return apply_mutation(step, state)
+            return apply_mutation(
+                step,
+                state,
+                material_effect_adapter=self.material_effect_adapter,
+            )
         if change_plan.kind == "partition_or_index":
             contents_plan = change_plan.payload.get("contents_plan")
             if not isinstance(contents_plan, ContentsStateTransitionPlan):

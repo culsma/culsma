@@ -3,8 +3,16 @@
 from .builtin import (
     BUILTIN_MATERIAL_RULEBOOK_PROVIDER_ID,
     BuiltinMaterialRulebookProvider,
+    context_predicate,
 )
-from .classification import CalculationGroup
+from .classification import (
+    CLASSIFICATION_RULES,
+    CalculationGroup,
+    ClassificationMatch,
+    ClassificationRule,
+    classify_canonical_content,
+    classify_component,
+)
 from .contracts import (
     MATERIAL_CONTRACT_VERSION,
     MATERIAL_SEPARATION_FATE,
@@ -12,6 +20,7 @@ from .contracts import (
     ComponentFate,
     ComponentSnapshot,
     MaterialDecision,
+    MaterialRelation,
     MaterialModelPayload,
     OperationSnapshot,
     OutputRoleSnapshot,
@@ -20,12 +29,23 @@ from .contracts import (
     RelationshipTransition,
     SeparationDecision,
     StateTransitionDecision,
+    empty_material_mapping,
 )
 from .coordinator import CoordinatedDecision, CoordinationStatus, SepEffectCoordinator
-from .rulebook import RulebookOutcome
+from .rulebook import (
+    RelationshipTransitionMatch,
+    RulebookOutcome,
+    SeparationFateMatch,
+    resolve_relationship_transition_rule,
+    resolve_separation_fate_rule,
+    output_label,
+)
 from .validation import (
     MaterialValidationIssue,
     MaterialValidationResult,
+    proposal_type_issue,
+    validate_separation_decision,
+    validate_state_transition_decision,
     validate_material_result,
 )
 
@@ -35,12 +55,16 @@ __all__ = [
     "MATERIAL_SEPARATION_FATE",
     "MATERIAL_STATE_TRANSITION",
     "BuiltinMaterialRulebookProvider",
+    "CLASSIFICATION_RULES",
     "CalculationGroup",
+    "ClassificationMatch",
+    "ClassificationRule",
     "ComponentFate",
     "ComponentSnapshot",
     "CoordinatedDecision",
     "CoordinationStatus",
     "MaterialDecision",
+    "MaterialRelation",
     "MaterialModelPayload",
     "MaterialValidationIssue",
     "MaterialValidationResult",
@@ -49,9 +73,21 @@ __all__ = [
     "QuantitySnapshot",
     "RelationshipSnapshot",
     "RelationshipTransition",
+    "RelationshipTransitionMatch",
     "RulebookOutcome",
+    "SeparationFateMatch",
     "SepEffectCoordinator",
     "SeparationDecision",
     "StateTransitionDecision",
+    "classify_canonical_content",
+    "classify_component",
+    "context_predicate",
+    "empty_material_mapping",
+    "output_label",
+    "proposal_type_issue",
+    "resolve_relationship_transition_rule",
+    "resolve_separation_fate_rule",
     "validate_material_result",
+    "validate_separation_decision",
+    "validate_state_transition_decision",
 ]

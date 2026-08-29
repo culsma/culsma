@@ -253,7 +253,7 @@ def test_resolver_rejects_provider_result_with_false_provenance() -> None:
     ]
 
 
-def test_default_resolver_binds_builtin_provider_without_guessing() -> None:
+def test_default_resolver_binds_builtin_provider_and_resolves_covered_rule() -> None:
     resolver = create_default_scientific_model_resolver()
 
     result = resolver.resolve(_request(_material_payload()))
@@ -262,12 +262,11 @@ def test_default_resolver_binds_builtin_provider_without_guessing() -> None:
         "material.separation_fate",
         "material.state_transition",
     }
-    assert result.status is ModelStatus.NOT_APPLICABLE
+    assert result.status is ModelStatus.RESOLVED
     assert result.provenance is not None
     assert result.provenance.provider_id == BUILTIN_MATERIAL_RULEBOOK_PROVIDER_ID
-    assert [diagnostic.code for diagnostic in result.diagnostics] == [
-        "MATERIAL_RULEBOOK_UNRESOLVED"
-    ]
+    assert isinstance(result.proposal, SeparationDecision)
+    assert dict(result.proposal.component_fates[0].fractions) == {"0": 0.0, "1": 1.0}
 
 
 def test_run_passes_custom_resolver_to_session_owned_material_compute(monkeypatch) -> None:

@@ -41,6 +41,9 @@ from culsma.runtime.material.refs import (
     resolve_target_ref,
 )
 from culsma.runtime.material.result import MaterialUpdateResult
+from culsma.runtime.material.scientific_model_adapter import (
+    ScientificModelPartitionAdapter,
+)
 from culsma.runtime.material.suspension import (
     merged_cell_material_state,
     refresh_cell_suspension_relationship,
@@ -57,6 +60,7 @@ class MutationSourceContext:
     target_id: str
     source_expr: Any
     source_ordinal: int
+    material_effect_adapter: ScientificModelPartitionAdapter | None
 
 
 class MutationSourceHandler(ABC):
@@ -102,6 +106,7 @@ class QuantifiedSourcePartitionHandler(MutationSourceHandler):
             partition_ref=pair.get("left"),
             qty=qty,
             source_ordinal=ctx.source_ordinal,
+            material_effect_adapter=ctx.material_effect_adapter,
         )
         if not transfer.ok:
             return transfer
@@ -214,6 +219,7 @@ class SourcePartitionHandler(MutationSourceHandler):
             partition_ref=ctx.source_expr,
             qty=None,
             source_ordinal=ctx.source_ordinal,
+            material_effect_adapter=ctx.material_effect_adapter,
         )
         if not transfer.ok:
             return transfer
@@ -313,7 +319,12 @@ class MutationSourceDispatcher:
         return diagnostic_result(ctx.step, ctx.state, "MAT_BINDING_NOT_FOUND", "Mutation source is unsupported")
 
 
-def apply_mutation(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
+def apply_mutation(
+    step: PlanStep,
+    state: dict[str, Any],
+    *,
+    material_effect_adapter: ScientificModelPartitionAdapter | None = None,
+) -> MaterialUpdateResult:
     target_expr = step.args.get("target")
     source_exprs = step.args.get("sources")
     if not isinstance(source_exprs, list):
@@ -340,6 +351,7 @@ def apply_mutation(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResul
                 target_id=target_id,
                 source_expr=source_expr,
                 source_ordinal=source_ordinal,
+                material_effect_adapter=material_effect_adapter,
             )
         )
         if not result.ok:
@@ -371,6 +383,7 @@ def apply_source_partition_transfer(
     partition_ref: dict[str, Any],
     qty: dict[str, Any] | None,
     source_ordinal: int,
+    material_effect_adapter: ScientificModelPartitionAdapter | None,
 ) -> MaterialUpdateResult:
     program = arg_call(partition_ref.get("program"))
     if program is None:
@@ -398,25 +411,44 @@ def apply_source_partition_transfer(
     slot0 = ensure_container(state, slot0_id)
     slot1 = ensure_container(state, slot1_id)
 
-    partition = partition_sep_material(
+    partition_result = partition_sep_material(
         state=state,
         source=source,
         slot0=slot0,
         slot1=slot1,
         program=program,
+        material_effect_adapter=material_effect_adapter,
+        request_id=f"{step.step_id}:source_partition:{source_ordinal}",
+        source_id=source_id,
     )
+    if partition_result.failure is not None:
+        return diagnostic_result(
+            step,
+            state,
+            partition_result.failure.code,
+            partition_result.failure.message,
+        )
+    partition = partition_result.record
     refresh_cell_suspension_relationship(
         state,
         slot0_id,
         forced_state=separation_cell_material_state(
-            program_kind, slot="0", partition=partition, output=slot0
+            program_kind,
+            slot="0",
+            partition=partition,
+            output=slot0,
+            effect=partition_result.effect,
         ),
     )
     refresh_cell_suspension_relationship(
         state,
         slot1_id,
         forced_state=separation_cell_material_state(
-            program_kind, slot="1", partition=partition, output=slot1
+            program_kind,
+            slot="1",
+            partition=partition,
+            output=slot1,
+            effect=partition_result.effect,
         ),
     )
     diagnostics = _partition_fallback_diagnostics(step, partition)

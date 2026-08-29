@@ -9,21 +9,21 @@ from types import MappingProxyType
 from typing import Protocol, runtime_checkable
 
 
-def _empty_mapping() -> Mapping[str, object]:
+def empty_mapping() -> Mapping[str, object]:
     return MappingProxyType({})
 
 
-def _freeze_value(value: object) -> object:
+def freeze_value(value: object) -> object:
     if isinstance(value, Mapping):
-        return MappingProxyType({key: _freeze_value(item) for key, item in value.items()})
+        return MappingProxyType({key: freeze_value(item) for key, item in value.items()})
     if isinstance(value, tuple):
-        return tuple(_freeze_value(item) for item in value)
+        return tuple(freeze_value(item) for item in value)
     if isinstance(value, list):
-        return tuple(_freeze_value(item) for item in value)
+        return tuple(freeze_value(item) for item in value)
     if isinstance(value, frozenset):
-        return frozenset(_freeze_value(item) for item in value)
+        return frozenset(freeze_value(item) for item in value)
     if isinstance(value, set):
-        return frozenset(_freeze_value(item) for item in value)
+        return frozenset(freeze_value(item) for item in value)
     return value
 
 
@@ -32,10 +32,10 @@ def freeze_mapping(value: Mapping[str, object]) -> Mapping[str, object]:
 
     if any(not isinstance(key, str) for key in value):
         raise TypeError("scientific-model record keys must be strings")
-    return MappingProxyType({key: _freeze_value(item) for key, item in value.items()})
+    return MappingProxyType({key: freeze_value(item) for key, item in value.items()})
 
 
-def _require_token(value: str, field_name: str) -> None:
+def require_token(value: str, field_name: str) -> None:
     if not isinstance(value, str) or not value.strip():
         raise ValueError(f"{field_name} must be a non-empty string")
 
@@ -55,9 +55,9 @@ class CapabilityDescriptor:
     lifecycle: str = "runtime_precommit"
 
     def __post_init__(self) -> None:
-        _require_token(self.capability, "capability")
-        _require_token(self.contract_version, "contract_version")
-        _require_token(self.lifecycle, "lifecycle")
+        require_token(self.capability, "capability")
+        require_token(self.contract_version, "contract_version")
+        require_token(self.lifecycle, "lifecycle")
 
     @property
     def key(self) -> tuple[str, str]:
@@ -72,8 +72,8 @@ class ProviderDescriptor:
     deterministic: bool = True
 
     def __post_init__(self) -> None:
-        _require_token(self.provider_id, "provider_id")
-        _require_token(self.provider_version, "provider_version")
+        require_token(self.provider_id, "provider_id")
+        require_token(self.provider_version, "provider_version")
         capabilities = tuple(self.capabilities)
         if not capabilities:
             raise ValueError("provider must declare at least one capability")
@@ -95,11 +95,11 @@ class ProviderProvenance:
     provider_version: str
     model_id: str | None = None
     model_version: str | None = None
-    configuration: Mapping[str, object] = field(default_factory=_empty_mapping)
+    configuration: Mapping[str, object] = field(default_factory=empty_mapping)
 
     def __post_init__(self) -> None:
-        _require_token(self.provider_id, "provider_id")
-        _require_token(self.provider_version, "provider_version")
+        require_token(self.provider_id, "provider_id")
+        require_token(self.provider_version, "provider_version")
         object.__setattr__(self, "configuration", freeze_mapping(self.configuration))
 
     @classmethod
@@ -117,8 +117,8 @@ class ModelDiagnostic:
     severity: str = "error"
 
     def __post_init__(self) -> None:
-        _require_token(self.code, "diagnostic code")
-        _require_token(self.message, "diagnostic message")
+        require_token(self.code, "diagnostic code")
+        require_token(self.message, "diagnostic message")
 
 
 @dataclass(frozen=True)
@@ -131,11 +131,11 @@ class ModelRequest:
     seed: int | None = None
 
     def __post_init__(self) -> None:
-        _require_token(self.request_id, "request_id")
-        _require_token(self.capability, "capability")
-        _require_token(self.contract_version, "contract_version")
-        _require_token(self.lifecycle, "lifecycle")
-        object.__setattr__(self, "payload", _freeze_value(self.payload))
+        require_token(self.request_id, "request_id")
+        require_token(self.capability, "capability")
+        require_token(self.contract_version, "contract_version")
+        require_token(self.lifecycle, "lifecycle")
+        object.__setattr__(self, "payload", freeze_value(self.payload))
 
     @property
     def capability_key(self) -> tuple[str, str]:
@@ -147,7 +147,7 @@ class ModelResult:
     status: ModelStatus
     proposal: object | None = None
     provenance: ProviderProvenance | None = None
-    assumptions: Mapping[str, object] = field(default_factory=_empty_mapping)
+    assumptions: Mapping[str, object] = field(default_factory=empty_mapping)
     uncertainty: object | None = None
     diagnostics: tuple[ModelDiagnostic, ...] = ()
 
@@ -161,9 +161,9 @@ class ModelResult:
         if status is not ModelStatus.RESOLVED and self.proposal is not None:
             raise ValueError("non-resolved scientific-model result cannot carry a proposal")
         object.__setattr__(self, "status", status)
-        object.__setattr__(self, "proposal", _freeze_value(self.proposal))
+        object.__setattr__(self, "proposal", freeze_value(self.proposal))
         object.__setattr__(self, "assumptions", freeze_mapping(self.assumptions))
-        object.__setattr__(self, "uncertainty", _freeze_value(self.uncertainty))
+        object.__setattr__(self, "uncertainty", freeze_value(self.uncertainty))
         object.__setattr__(self, "diagnostics", diagnostics)
 
     @classmethod
@@ -180,7 +180,7 @@ class ModelResult:
             status=ModelStatus.RESOLVED,
             proposal=proposal,
             provenance=provenance,
-            assumptions=assumptions or _empty_mapping(),
+            assumptions=assumptions or empty_mapping(),
             uncertainty=uncertainty,
             diagnostics=tuple(diagnostics),
         )
@@ -196,7 +196,7 @@ class ModelResult:
         return cls(
             status=ModelStatus.NOT_APPLICABLE,
             provenance=provenance,
-            assumptions=assumptions or _empty_mapping(),
+            assumptions=assumptions or empty_mapping(),
             diagnostics=tuple(diagnostics),
         )
 

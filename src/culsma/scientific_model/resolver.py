@@ -15,7 +15,7 @@ from .contracts import (
 from .registry import ScientificModelRegistry
 
 
-def _provenance(descriptor: ProviderDescriptor) -> ProviderProvenance:
+def provider_provenance(descriptor: ProviderDescriptor) -> ProviderProvenance:
     return ProviderProvenance.from_descriptor(descriptor)
 
 
@@ -54,7 +54,7 @@ class RegistryScientificModelResolver:
             return NoScientificModelResolver().resolve(request)
 
         descriptor = provider.descriptor
-        provenance = _provenance(descriptor)
+        provenance = provider_provenance(descriptor)
         try:
             result = provider.resolve(request)
         except Exception as error:  # Provider failures must not cross the runtime boundary.

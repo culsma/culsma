@@ -507,8 +507,8 @@ flowchart TB
 ## Material Compute `sep` Detail Flowchart
 
 This flowchart expands the `runtime/material_compute.py::apply_step` boundary
-for `sep` operations. It documents the current responsibility split and the
-program-specific material partition behavior.
+for `sep` operations. It documents the Runtime/model handoff and the current
+staged migration boundary.
 
 ```mermaid
 flowchart TB
@@ -519,7 +519,10 @@ flowchart TB
     Program["Read program kind:<br/>centrifuge, filtration, centrifugal filtration,<br/>phase partition, precipitation, magnetic, disrupt, field"]
     Slots["Determine output slot contract:<br/>group[0] / group[1] semantic names"]
     Identity["Apply identity policy:<br/>centrifuge keep_source may reuse source container"]
-    Partition["Compute material partition:<br/>bulk volume/mass, component fate"]
+    Gate{"scientific-model path migrated?"}
+    ResolveEffect["Resolve typed material effect:<br/>built-in or replacement scientific provider"]
+    Legacy["temporary compatibility strategy:<br/>not-yet-migrated programs"]
+    Partition["Runtime projects candidate:<br/>quantities, state, conservation"]
     Bind["Bind indexed group:<br/>bind[0] and bind[1] to output container ids"]
     Delta["Return MaterialUpdateResult:<br/>updated material_state, diagnostics, delta"]
 
@@ -529,7 +532,11 @@ flowchart TB
     Resolve --> Program
     Program --> Slots
     Slots --> Identity
-    Identity --> Partition
+    Identity --> Gate
+    Gate -->|centrifuge| ResolveEffect
+    Gate -->|not yet| Legacy
+    ResolveEffect --> Partition
+    Legacy --> Partition
     Partition --> Bind
     Bind --> Delta
 ```
@@ -541,8 +548,11 @@ Current implementation note:
    program kind whose slot contract remains filtrate / retentate.
 3. `Identity` handles `centrifuge_program(..., keep_source=...)` source-container
    reuse.
-4. `Partition` uses a strategy selected by `program_kind`.
-5. Component fate uses program-specific ratios. Legacy volume/mass-only state
+4. Centrifuge enters the injected scientific-model adapter and returns one
+   immutable `ResolvedMaterialEffect`; Runtime projects and commits it.
+5. Other `sep` programs temporarily retain the legacy strategy registry until
+   their authoritative typed operation facts and Rulebook rules are complete.
+6. Legacy volume/mass-only state
    retains conservative bulk accounting. When dimensioned cell-count content is
    present, volume-bearing component quantities determine bulk volume while
    count-bearing quantities remain outside capacity accounting. Without an
@@ -553,21 +563,23 @@ Current implementation note:
    volume and mass remain conserved. The partition delta records the selected
    bulk-quantity policy.
 
-## Implemented `sep` Partition Strategy
+## Current `sep` Migration Boundary
 
-The current runtime architecture already prefers dispatcher/handler ownership
-over large conditional blocks. `sep` material partitioning follows the same
-pattern. A compact strategy registry keeps `material_compute.apply_step`
-responsible for orchestration while
-letting each separation program own its own partition contract.
+Centrifuge no longer has a Runtime strategy. Its scientific decision crosses one
+typed boundary; Runtime retains only projection, validation, and commit. The
+remaining strategy registry is compatibility-only and is deleted after the
+corresponding programs have authoritative provider rules.
 
 ```mermaid
 flowchart TB
     Apply["apply_step"]
     Sep["_apply_sep orchestration"]
-    Registry["SepPartitionStrategy registry"]
+    Gate{"centrifuge?"}
+    Adapter["ScientificModelPartitionAdapter"]
+    Effect["ResolvedMaterialEffect"]
+    Project["generic Runtime projection<br/>+ validation + commit"]
+    Registry["compatibility-only<br/>SepPartitionStrategy registry"]
     Default["SepPartitionStrategy<br/>unknown fallback"]
-    Centrifuge["CentrifugePartitionStrategy<br/>supernatant / pellet"]
     Phase["PhasePartitionStrategy<br/>target_phase / other_phase"]
     Precip["PrecipitationPartitionStrategy<br/>precipitate / supernatant"]
     Filter["FiltrationPartitionStrategy<br/>filtrate / retentate"]
@@ -578,9 +590,11 @@ flowchart TB
     Result["SepPartitionResult:<br/>slot containers, component deltas,<br/>cellular output state, diagnostics,<br/>binding metadata"]
 
     Apply --> Sep
-    Sep --> Registry
+    Sep --> Gate
+    Gate -->|yes| Adapter
+    Adapter --> Effect --> Project --> Result
+    Gate -->|not yet migrated| Registry
     Registry -->|unknown or unsupported| Default
-    Registry -->|centrifuge_program| Centrifuge
     Registry -->|phase_partition_program| Phase
     Registry -->|precipitation_program| Precip
     Registry -->|filtration_program| Filter
@@ -589,7 +603,6 @@ flowchart TB
     Registry -->|disrupt_program| Disrupt
     Registry -->|field_program| Field
     Default --> Result
-    Centrifuge --> Result
     Phase --> Result
     Precip --> Result
     Filter --> Result
@@ -600,17 +613,14 @@ flowchart TB
     Result --> Sep
 ```
 
-Design judgment:
+Migration rule:
 
-1. Program-specific component fate is not implemented as a growing conditional
-   ladder because each program has a different slot contract,
-   residual/carryover rules, and diagnostics.
-2. A strategy registry preserves the runtime boundary: the runtime executes
-   explicit program semantics; it does not infer biological intent from labels
-   or hard-coded component names.
-3. The same strategy owns each slot's cellular material state. This keeps
-   ordinary `sep`, tracked contents, and `source.partition` transferability
-   consistent.
+1. New scientific behavior enters only through the resolver/adapter port.
+2. Program Registry is the sole owner of output-slot roles.
+3. Legacy ratios are not copied into the built-in Rulebook without an accepted
+   scientific rule.
+4. The final state contains no Runtime scientific strategy registry and no
+   program-kind feature gate.
 
 ## Report Data Structure
 

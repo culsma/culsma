@@ -18,6 +18,7 @@ from culsma.runtime.material.partition import separation_slot_contract
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 MATERIAL_DIR = PROJECT_ROOT / "src" / "culsma" / "runtime" / "material"
+SCIENTIFIC_MODEL_DIR = PROJECT_ROOT / "src" / "culsma" / "scientific_model"
 
 
 def _material_modules() -> list[Path]:
@@ -167,6 +168,70 @@ def test_material_modules_do_not_import_private_sibling_helpers() -> None:
                 offenders.append((path.name, node.module, private_names))
 
     assert offenders == []
+
+
+def test_scientific_model_core_logic_has_no_private_functions() -> None:
+    paths = sorted(SCIENTIFIC_MODEL_DIR.rglob("*.py")) + [
+        MATERIAL_DIR / "partition.py",
+        MATERIAL_DIR / "scientific_model_adapter.py",
+    ]
+    offenders: list[tuple[str, str]] = []
+    for path in paths:
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in ast.walk(tree):
+            if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                continue
+            if node.name.startswith("_") and not node.name.startswith("__"):
+                offenders.append((str(path.relative_to(PROJECT_ROOT)), node.name))
+
+    assert offenders == []
+
+
+def test_partition_does_not_construct_scientific_model_dependencies() -> None:
+    path = MATERIAL_DIR / "partition.py"
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    constructed_names = {
+        node.func.id
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+    }
+
+    assert "create_default_scientific_model_resolver" not in constructed_names
+    assert "ScientificModelPartitionAdapter" not in constructed_names
+
+
+def test_partition_does_not_duplicate_program_slot_contracts() -> None:
+    path = MATERIAL_DIR / "partition.py"
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    duplicate_slot_contracts = []
+    for class_node in (
+        node for node in tree.body if isinstance(node, ast.ClassDef)
+    ):
+        for assignment in class_node.body:
+            if not isinstance(assignment, (ast.Assign, ast.AnnAssign)):
+                continue
+            targets = (
+                assignment.targets
+                if isinstance(assignment, ast.Assign)
+                else [assignment.target]
+            )
+            if any(
+                isinstance(target, ast.Name) and target.id == "slot_contract"
+                for target in targets
+            ):
+                duplicate_slot_contracts.append(assignment.lineno)
+
+    assert duplicate_slot_contracts == []
+
+
+def test_migrated_centrifuge_has_no_runtime_strategy_class() -> None:
+    path = MATERIAL_DIR / "partition.py"
+    tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+    class_names = {
+        node.name for node in tree.body if isinstance(node, ast.ClassDef)
+    }
+
+    assert "CentrifugePartitionStrategy" not in class_names
 
 
 def test_material_compute_routes_material_changes_through_state_manager() -> None:
