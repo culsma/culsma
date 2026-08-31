@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "culsma"
-version = "1.0.6rc5"
+version = "1.0.6rc6"
 description = "Public execution-kernel release boundary for the current Culsma reference implementation"
 readme = "README.md"
 requires-python = ">=3.11"

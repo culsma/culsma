@@ -1,5 +1,79 @@
 # Changelog
 
+## Internal 1.0.6rc6
+
+### Scope
+
+This internal GitHub prerelease moves material-state decisions behind the
+pluggable Scientific Model boundary while keeping validation and atomic state
+commit inside the runtime kernel.
+
+It includes:
+
+- a stable resolver/provider contract with capability, lifecycle, version, and
+  provenance validation
+- the built-in Material Rulebook provider for classification, separation fate,
+  and relationship-state transitions
+- one centralized separation application path used by `sep`, `frac`, and the
+  compatibility `partition` entry point
+- authoritative component-entry identity across repeated mixing, movement,
+  separation, and recompression
+- typed association targets that distinguish container identity from related
+  component-entry identity
+- correct release of container-local adherent state on cross-container movement
+  and preservation of unaffected material relationships
+- operation-level free-phase routing for adherent-cell-surface aspiration:
+  every `free` entry follows the aspirated phase while surface-associated cells
+  remain in the retained part
+- inventory reconciliation as a post-result advisory calculation without
+  synthetic top-up or mutation of runtime material state
+- synchronized architecture diagrams and regression coverage for provider
+  selection, proposal validation, state transitions, entry identity, repeated
+  separations, and mixed free-phase aspiration
+
+### Compatibility
+
+- The published `internal-1.0.6rc5` tag and release remain unchanged.
+- The built-in Material Rulebook is configured by default, so ordinary runtime
+  construction continues to resolve supported material operations without an
+  external provider.
+- Existing `sep`, `frac`, `partition`, and `inventory_check` language/API
+  surfaces remain available in this prerelease.
+- External scientific-model providers may replace the built-in provider only
+  through the same versioned resolver contract; invalid or incomplete
+  proposals are rejected before runtime state mutation.
+- Unsupported scientific cases return an explicit unresolved diagnostic rather
+  than a guessed split or synthetic material.
+
+### Install
+
+After the GitHub prerelease assets are published:
+
+```bash
+python -m pip install https://github.com/culsma/culsma/releases/download/internal-1.0.6rc6/culsma-1.0.6rc6-py3-none-any.whl
+```
+
+Source tag install:
+
+```bash
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@internal-1.0.6rc6"
+```
+
+### Verified
+
+- `python -m pytest -q`
+  - result: `976 passed`
+- Case 09 mixed adherent-cell aspiration regression
+  - result: surface-associated HEK293T retained; free medium, DNA, and PEI
+    routed completely to the aspirated phase
+- source CLI and isolated installed-wheel CLI smoke checks passed
+- `python -m build`
+  - result: `culsma-1.0.6rc6.tar.gz` and
+    `culsma-1.0.6rc6-py3-none-any.whl` built
+- `python -m twine check`
+  - result: passed for both distributions
+- isolated wheel install reports `culsma.__version__ == "1.0.6rc6"`
+
 ## Internal 1.0.6rc5
 
 ### Scope
