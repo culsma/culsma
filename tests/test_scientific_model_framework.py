@@ -215,6 +215,27 @@ def test_resolver_dispatches_to_only_the_selected_provider() -> None:
     assert len(second.calls) == 1
 
 
+def test_resolver_rejects_lifecycle_mismatch_without_calling_provider() -> None:
+    provider = StaticProvider("test.precommit")
+    registry = ScientificModelRegistry()
+    registry.register_and_bind(provider)
+    request = ModelRequest(
+        request_id="run-1:postcommit",
+        capability=MATERIAL_SEPARATION_FATE,
+        contract_version=MATERIAL_CONTRACT_VERSION,
+        lifecycle="postcommit",
+        payload=_material_payload(),
+    )
+
+    result = RegistryScientificModelResolver(registry).resolve(request)
+
+    assert result.status is ModelStatus.FAILED
+    assert [diagnostic.code for diagnostic in result.diagnostics] == [
+        "SCIENTIFIC_MODEL_LIFECYCLE_MISMATCH"
+    ]
+    assert provider.calls == []
+
+
 def test_resolver_contains_provider_exception_as_failed_result() -> None:
     provider = StaticProvider("test.failing", error=RuntimeError("model unavailable"))
     registry = ScientificModelRegistry()
@@ -340,6 +361,30 @@ def test_coordinator_validates_provider_fraction_proposal() -> None:
     ]
 
 
+def test_coordinator_rejects_decision_provenance_mismatch() -> None:
+    provider = StaticProvider("test.selected")
+    selected_provenance = ProviderProvenance.from_descriptor(provider.descriptor)
+    spoofed_provenance = ProviderProvenance(
+        provider_id="test.spoofed",
+        provider_version="9.0",
+    )
+    provider.result = ModelResult.resolved(
+        proposal=_separation_decision(spoofed_provenance),
+        provenance=selected_provenance,
+    )
+    registry = ScientificModelRegistry()
+    registry.register_and_bind(provider)
+
+    result = SepEffectCoordinator(RegistryScientificModelResolver(registry)).resolve(
+        _request(_material_payload())
+    )
+
+    assert result.status is CoordinationStatus.REJECTED
+    assert [issue.code for issue in result.validation_issues] == [
+        "MATERIAL_MODEL_PROVENANCE_MISMATCH"
+    ]
+
+
 def test_coordinator_accepts_complete_valid_provider_proposal() -> None:
     provider = StaticProvider("test.material")
     provenance = ProviderProvenance.from_descriptor(provider.descriptor)
@@ -355,6 +400,7 @@ def test_coordinator_accepts_complete_valid_provider_proposal() -> None:
     assert result.status is CoordinationStatus.RESOLVED
     assert result.source == "provider"
     assert result.decision == decision
+    assert result.provenance == provenance
 
 
 def test_coordinator_uses_validated_author_decision_before_provider() -> None:
@@ -374,4 +420,5 @@ def test_coordinator_uses_validated_author_decision_before_provider() -> None:
     assert result.status is CoordinationStatus.RESOLVED
     assert result.source == "author"
     assert result.decision is author_decision
+    assert result.provenance == author_decision.provenance
     assert provider.calls == []

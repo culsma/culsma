@@ -20,7 +20,6 @@ class SeparationOperationContract:
     slot_contract: dict[str, str]
     preserved_association_slots: dict[str, str]
     released_associations: frozenset[str]
-    free_phase_passes: bool = False
     preservation_contract: dict[str, Any] | None = None
 
     def to_dict(self) -> dict[str, Any]:
@@ -31,7 +30,6 @@ class SeparationOperationContract:
             "slot_contract": dict(self.slot_contract),
             "preserved_association_slots": dict(self.preserved_association_slots),
             "released_associations": sorted(self.released_associations),
-            "free_phase_passes": self.free_phase_passes,
             "preservation_contract": (
                 dict(self.preservation_contract)
                 if self.preservation_contract is not None
@@ -97,7 +95,6 @@ def resolve_separation_operation_contract(
     preserved: dict[str, str] = {}
     released: set[str] = set()
     preservation_contract: dict[str, Any] | None = None
-    free_phase_passes = False
 
     if program_kind == "centrifuge_program":
         preserved["pellet"] = "1"
@@ -107,7 +104,6 @@ def resolve_separation_operation_contract(
         drive = _normalized_token(call_arg_string(program, "drive"))
         if membrane == "adherent_cell_surface" and drive == "aspiration":
             preserved["container_surface"] = "1"
-            free_phase_passes = True
     elif program_kind == "magnetic_program":
         preserved["bead"] = "0"
         preservation_contract = {
@@ -128,7 +124,6 @@ def resolve_separation_operation_contract(
         slot_contract=dict(slot_contract),
         preserved_association_slots=preserved,
         released_associations=frozenset(released),
-        free_phase_passes=free_phase_passes,
         preservation_contract=preservation_contract,
     )
 

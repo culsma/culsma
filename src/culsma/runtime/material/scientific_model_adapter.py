@@ -207,10 +207,6 @@ class ScientificModelMaterialAdapter:
                     ),
                     components=provider_components,
                     context={
-                        "free_phase_passes": {
-                            component.entry_id: operation_contract.free_phase_passes
-                            for component in provider_components
-                        },
                         "filter_retains": {
                             component.entry_id: self.component_context_flag(
                                 state,
@@ -258,7 +254,7 @@ class ScientificModelMaterialAdapter:
                 component_id = component_fate.component_entry_id
                 fractions_by_component[component_id] = (ratio0, ratio1)
                 fate_source_by_component[component_id] = "scientific_model_provider"
-                fate_provenance_by_component[component_id] = decision.provenance
+                fate_provenance_by_component[component_id] = coordinated.provenance
 
         resolved_component_effects: list[ResolvedComponentEffect] = []
         for component in components.values():
@@ -382,7 +378,7 @@ class ScientificModelMaterialAdapter:
                         replacement_quantity=transition.replacement_quantity,
                         decision_source=fate_source_by_component[component.entry_id],
                         fate_provenance=fate_provenance_by_component[component.entry_id],
-                        transition_provenance=decision.provenance,
+                        transition_provenance=coordinated.provenance,
                     )
                 )
             resolved_component_effects.append(
@@ -529,7 +525,7 @@ class ScientificModelMaterialAdapter:
                     source_entry_id=entry_id,
                     next_relation=transition.next_relation,
                     next_label=transition.next_label,
-                    provenance=decision.provenance,
+                    provenance=coordinated.provenance,
                     next_association_target=(
                         transition.next_association_target
                         or (

@@ -55,6 +55,32 @@ class RegistryScientificModelResolver:
 
         descriptor = provider.descriptor
         provenance = provider_provenance(descriptor)
+        capability = next(
+            (
+                declared
+                for declared in descriptor.capabilities
+                if declared.key == request.capability_key
+            ),
+            None,
+        )
+        if capability is None or capability.lifecycle != request.lifecycle:
+            declared_lifecycle = (
+                capability.lifecycle if capability is not None else "unavailable"
+            )
+            return ModelResult.failed(
+                provenance=provenance,
+                diagnostics=(
+                    ModelDiagnostic(
+                        code="SCIENTIFIC_MODEL_LIFECYCLE_MISMATCH",
+                        message=(
+                            f"provider '{descriptor.provider_id}' declares lifecycle "
+                            f"'{declared_lifecycle}' for capability '{request.capability}' "
+                            f"version '{request.contract_version}', but request lifecycle is "
+                            f"'{request.lifecycle}'"
+                        ),
+                    ),
+                ),
+            )
         try:
             result = provider.resolve(request)
         except Exception as error:  # Provider failures must not cross the runtime boundary.

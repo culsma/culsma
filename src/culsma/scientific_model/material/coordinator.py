@@ -5,7 +5,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import StrEnum
 
-from ..contracts import ModelRequest, ModelResult, ModelStatus, ScientificModelResolver
+from ..contracts import (
+    ModelRequest,
+    ModelResult,
+    ModelStatus,
+    ProviderProvenance,
+    ScientificModelResolver,
+)
 from .contracts import MaterialDecision
 from .validation import MaterialValidationIssue, validate_material_result
 
@@ -24,6 +30,16 @@ class CoordinatedDecision:
     source: str
     model_result: ModelResult | None = None
     validation_issues: tuple[MaterialValidationIssue, ...] = ()
+
+    @property
+    def provenance(self) -> ProviderProvenance | None:
+        """Return the validated envelope provenance for provider decisions."""
+
+        if self.model_result is not None:
+            return self.model_result.provenance
+        if self.decision is not None:
+            return self.decision.provenance
+        return None
 
 
 @dataclass(frozen=True)

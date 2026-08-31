@@ -53,6 +53,9 @@ def validate_material_result(
     if request.capability == MATERIAL_SEPARATION_FATE:
         if not isinstance(result.proposal, SeparationDecision):
             return proposal_type_issue("SeparationDecision")
+        provenance_validation = validate_decision_provenance(result.proposal, result)
+        if not provenance_validation.valid:
+            return provenance_validation
         return validate_separation_decision(
             request.payload,
             result.proposal,
@@ -61,6 +64,9 @@ def validate_material_result(
     if request.capability == MATERIAL_STATE_TRANSITION:
         if not isinstance(result.proposal, StateTransitionDecision):
             return proposal_type_issue("StateTransitionDecision")
+        provenance_validation = validate_decision_provenance(result.proposal, result)
+        if not provenance_validation.valid:
+            return provenance_validation
         return validate_state_transition_decision(request.payload, result.proposal)
     return MaterialValidationResult(
         issues=(
@@ -78,6 +84,27 @@ def proposal_type_issue(expected: str) -> MaterialValidationResult:
             MaterialValidationIssue(
                 code="MATERIAL_MODEL_PROPOSAL_TYPE_INVALID",
                 message=f"resolved provider proposal must be {expected}",
+            ),
+        )
+    )
+
+
+def validate_decision_provenance(
+    decision: SeparationDecision | StateTransitionDecision,
+    result: ModelResult,
+) -> MaterialValidationResult:
+    """Require the typed decision to repeat the validated result provenance exactly."""
+
+    if decision.provenance == result.provenance:
+        return MaterialValidationResult()
+    return MaterialValidationResult(
+        issues=(
+            MaterialValidationIssue(
+                code="MATERIAL_MODEL_PROVENANCE_MISMATCH",
+                message=(
+                    "material decision provenance must match the selected provider "
+                    "provenance in ModelResult"
+                ),
             ),
         )
     )
