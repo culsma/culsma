@@ -1123,6 +1123,70 @@ def test_sep_aspiration_routes_free_cells_with_the_declared_free_phase():
     ]["value"] == 0.0
 
 
+def test_sep_aspiration_routes_a_mixed_free_phase_while_retaining_surface_cells():
+    state = _partition_state(
+        components={
+            "HEK293T": 200000.0,
+            "MEDIUM": 1000.0,
+            "RAB7DNA": 1.0,
+            "PEI": 3.0,
+        },
+        component_quantities={
+            "HEK293T": {
+                "dimension": "count",
+                "unit": "cells",
+                "value": 200000.0,
+            },
+            "MEDIUM": {"dimension": "volume", "unit": "uL", "value": 1000.0},
+            "RAB7DNA": {"dimension": "volume", "unit": "uL", "value": 1.0},
+            "PEI": {"dimension": "volume", "unit": "uL", "value": 3.0},
+        },
+        registry={
+            "HEK293T": ("bio_cellular", "cell_line"),
+            "MEDIUM": ("formulation", "medium"),
+            "RAB7DNA": ("bio_molecule_or_virus", "dna"),
+            "PEI": ("chemical", "other_chemical"),
+        },
+    )
+    state["containers"]["lysate"]["volume_uL"] = 1004.0
+    state["containers"]["lysate"]["mass_mg"] = 1004.0
+    state["content_registry"]["HEK293T"]["content_attrs"] = {"state": "adherent"}
+
+    result = apply_step(
+        step=_sep_step(
+            program_name="filtration_program",
+            program_args_override=[
+                _ir_arg("membrane", _ir_string("adherent_cell_surface")),
+                _ir_arg("drive", _ir_string("aspiration")),
+            ],
+        ),
+        material_state=state,
+    )
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    slots = result.material_state["indexed_bindings"]["sep_group"]
+    filtrate = result.material_state["containers"][slots["0"]]
+    retentate = result.material_state["containers"][slots["1"]]
+    assert {
+        component: filtrate["component_quantities"][component]["value"]
+        for component in ("HEK293T", "MEDIUM", "RAB7DNA", "PEI")
+    } == {
+        "HEK293T": 0.0,
+        "MEDIUM": 1000.0,
+        "RAB7DNA": 1.0,
+        "PEI": 3.0,
+    }
+    assert {
+        component: retentate["component_quantities"][component]["value"]
+        for component in ("HEK293T", "MEDIUM", "RAB7DNA", "PEI")
+    } == {
+        "HEK293T": 200000.0,
+        "MEDIUM": 0.0,
+        "RAB7DNA": 0.0,
+        "PEI": 0.0,
+    }
+
+
 def test_sep_centrifugal_filtration_uses_filtrate_and_retentate_slots():
     state = _partition_state(
         components={"DNA": 100.0, "WASH": 100.0},
