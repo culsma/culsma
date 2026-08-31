@@ -3,18 +3,35 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from dataclasses import dataclass
 from math import isfinite
 from typing import Any
 
 from culsma.pipeline.content_vocab import ContainerKind
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.material.args import arg_quantity
+from culsma.runtime.material.component_entries import (
+    ComponentEntryRelationError,
+    container_component_entries,
+    relocate_component_entries,
+    normalize_component_entries,
+    project_component_entries,
+    quantities_compatible,
+    replace_component_entries,
+    retain_component_entry_ratio,
+)
 from culsma.runtime.material.diagnostics import diagnostic_result
 from culsma.runtime.material.result import MaterialUpdateResult
 from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_UL
 
 
 CONSERVATION_ABS_EPS = 1e-12
+
+
+@dataclass(frozen=True)
+class MaterialLedgerValidationFailure:
+    code: str
+    message: str
 
 DEFAULT_CONTAINER_CAPACITY_UL: dict[str, float] = {
     "container": 1000.0,
@@ -122,6 +139,19 @@ def set_container_material(
             }
         else:
             metadata.pop("component_partition_classes", None)
+    relationships = container.get("material_relationships")
+    if isinstance(relationships, list):
+        container["material_relationships"] = [
+            relationship
+            for relationship in relationships
+            if not (
+                isinstance(relationship, dict)
+                and relationship.get("subtype")
+                in {"scientific_model_relation", "cell_suspension"}
+            )
+        ]
+    container.pop("component_entries", None)
+    replace_component_entries(container, container_component_entries(container))
     refresh_container_aggregates(container)
 
 
@@ -147,123 +177,51 @@ def move_explicit(
     *,
     destination_id: str | None = None,
 ) -> None:
-    src_comp = src.setdefault("components", {})
-    dst_comp = dst.setdefault("components", {})
-    src_quantities = container_component_quantities(src)
-    dst_quantities = container_component_quantities(dst, create=bool(src_quantities))
-    src_classes = container_component_classes(src)
-    dst_classes = container_component_classes(dst, create=True)
-    moved_component_ids: set[str] = set()
-    for name, amount in list(src_comp.items()):
-        moved = component_ratio * float(amount)
-        src_comp[name] = float(amount) - moved
-        dst_comp[name] = float(dst_comp.get(name, 0.0)) + moved
-        if isinstance(src_quantities, dict) and isinstance(src_quantities.get(name), dict):
-            source_quantity = src_quantities[name]
-            moved_quantity_value = component_ratio * float(source_quantity.get("value", amount))
-            source_quantity["value"] = float(source_quantity.get("value", amount)) - moved_quantity_value
-            if isinstance(dst_quantities, dict):
-                target_quantity = dst_quantities.get(name)
-                if not isinstance(target_quantity, dict):
-                    target_quantity = deepcopy(source_quantity)
-                    target_quantity["value"] = 0.0
-                    dst_quantities[name] = target_quantity
-                if (
-                    target_quantity.get("dimension") == source_quantity.get("dimension")
-                    and target_quantity.get("unit") == source_quantity.get("unit")
-                ):
-                    target_quantity["value"] = float(target_quantity.get("value", 0.0)) + moved_quantity_value
-        if moved > CONSERVATION_ABS_EPS:
-            moved_component_ids.add(str(name))
-        if moved > CONSERVATION_ABS_EPS and isinstance(dst_classes, dict):
-            src_class = src_classes.get(name) if isinstance(src_classes, dict) else None
-            if isinstance(src_class, str) and src_class:
-                dst_classes[name] = src_class
-        if abs(float(src_comp[name])) <= CONSERVATION_ABS_EPS:
-            src_comp[name] = 0.0
-            if isinstance(src_quantities, dict) and isinstance(src_quantities.get(name), dict):
-                src_quantities[name]["value"] = 0.0
-            if isinstance(src_classes, dict):
-                src_classes.pop(name, None)
-    if destination_id is not None:
-        transfer_scientific_model_relationships(
-            source=src,
-            target=dst,
-            target_id=destination_id,
-            moved_component_ids=moved_component_ids,
-        )
+    """Compatibility wrapper for an already-resolved entry relocation."""
+
+    relocate_material(
+        src=src,
+        dst=dst,
+        component_ratio=component_ratio,
+        destination_id=destination_id,
+    )
+
+
+def relocate_material(
+    src: dict[str, Any],
+    dst: dict[str, Any],
+    component_ratio: float,
+    *,
+    destination_id: str | None = None,
+) -> None:
+    """Relocate pre-resolved entries for snapshots or container aliasing."""
+
+    relocate_component_entries(
+        src,
+        dst,
+        ratio=component_ratio,
+        destination_id=destination_id,
+    )
     refresh_container_aggregates(src)
     refresh_container_aggregates(dst)
-
-
-def transfer_scientific_model_relationships(
-    *,
-    source: dict[str, Any],
-    target: dict[str, Any],
-    target_id: str,
-    moved_component_ids: set[str],
-) -> None:
-    """Carry provider-produced component relations with moved material."""
-
-    source_relationships = source.get("material_relationships")
-    if not isinstance(source_relationships, list) or not moved_component_ids:
-        return
-    target_relationships = target.setdefault("material_relationships", [])
-    if not isinstance(target_relationships, list):
-        target_relationships = []
-        target["material_relationships"] = target_relationships
-    for relationship in source_relationships:
-        if not isinstance(relationship, dict):
-            continue
-        if relationship.get("subtype") != "scientific_model_relation":
-            continue
-        if relationship.get("material_state") not in {"pellet", "precipitate"}:
-            continue
-        raw_component_ids = relationship.get("dispersed_component_ids")
-        if not isinstance(raw_component_ids, list):
-            continue
-        carried_ids = [
-            component_id
-            for component_id in raw_component_ids
-            if isinstance(component_id, str) and component_id in moved_component_ids
-        ]
-        if not carried_ids:
-            continue
-        carried = deepcopy(relationship)
-        carried["dispersed_component_ids"] = carried_ids
-        carried["associated_with"] = target_id
-        target_relationships[:] = [
-            existing
-            for existing in target_relationships
-            if not (
-                isinstance(existing, dict)
-                and existing.get("subtype") == "scientific_model_relation"
-                and isinstance(existing.get("dispersed_component_ids"), list)
-                and any(
-                    component_id in carried_ids
-                    for component_id in existing["dispersed_component_ids"]
-                )
-            )
-        ]
-        target_relationships.append(carried)
 
 
 def component_quantity_merge_conflict(src: dict[str, Any], dst: dict[str, Any]) -> str | None:
     """Return the first component whose source and destination axes cannot merge."""
 
-    src_quantities = container_component_quantities(src)
-    dst_quantities = container_component_quantities(dst)
-    if not isinstance(src_quantities, dict) or not isinstance(dst_quantities, dict):
-        return None
-    for name, source_quantity in src_quantities.items():
-        target_quantity = dst_quantities.get(name)
-        if not isinstance(source_quantity, dict) or not isinstance(target_quantity, dict):
-            continue
-        if (
-            source_quantity.get("dimension") != target_quantity.get("dimension")
-            or source_quantity.get("unit") != target_quantity.get("unit")
-        ):
-            return str(name)
+    source_entries = container_component_entries(src)
+    target_entries = container_component_entries(dst)
+    for source_entry in source_entries:
+        content_ref = str(source_entry.get("content_ref", ""))
+        for target_entry in target_entries:
+            if target_entry.get("content_ref") != content_ref:
+                continue
+            if not quantities_compatible(
+                source_entry.get("quantity"),
+                target_entry.get("quantity"),
+            ):
+                return content_ref
+
     return None
 
 
@@ -369,7 +327,9 @@ def refresh_container_aggregates(container: Any) -> None:
     container["mass_mg"] = mass_mg
 
 
-def normalize_material_state_detail_ledger(state: dict[str, Any]) -> str | None:
+def normalize_material_state_detail_ledger(
+    state: dict[str, Any],
+) -> MaterialLedgerValidationFailure | None:
     """Normalize compatibility-only API input into component quantity detail."""
 
     containers = state.get("containers")
@@ -380,10 +340,38 @@ def normalize_material_state_detail_ledger(state: dict[str, Any]) -> str | None:
             continue
         error = _component_quantity_validation_error(str(container_id), raw_container)
         if error is not None:
-            return error
+            return MaterialLedgerValidationFailure(
+                code="MAT_INVALID_COMPONENT_QUANTITY",
+                message=error,
+            )
     for container_id, raw_container in containers.items():
         if isinstance(raw_container, dict):
-            _normalize_container_detail_ledger(str(container_id), raw_container)
+            try:
+                if isinstance(raw_container.get("component_entries"), list):
+                    replace_component_entries(
+                        raw_container,
+                        normalize_component_entries(
+                            raw_container,
+                            state=state,
+                            container_id=str(container_id),
+                        ),
+                    )
+                    refresh_container_aggregates(raw_container)
+                else:
+                    _normalize_container_detail_ledger(str(container_id), raw_container)
+                    replace_component_entries(
+                        raw_container,
+                        normalize_component_entries(
+                            raw_container,
+                            state=state,
+                            container_id=str(container_id),
+                        ),
+                    )
+            except ComponentEntryRelationError as exc:
+                return MaterialLedgerValidationFailure(
+                    code="MAT_STATE_INVARIANT_VIOLATION",
+                    message=f"Container '{container_id}' {exc}",
+                )
     return None
 
 
@@ -524,14 +512,7 @@ def _compatibility_residual_id(
 
 
 def remove_ratio(source: dict[str, Any], ratio: float) -> None:
-    comp = source.setdefault("components", {})
-    for name, amount in list(comp.items()):
-        comp[name] = float(amount) * (1.0 - ratio)
-    quantities = container_component_quantities(source)
-    if isinstance(quantities, dict):
-        for quantity in quantities.values():
-            if isinstance(quantity, dict):
-                quantity["value"] = float(quantity.get("value", 0.0)) * (1.0 - ratio)
+    retain_component_entry_ratio(source, 1.0 - ratio)
     refresh_container_aggregates(source)
 
 

@@ -23,7 +23,7 @@ from culsma.runtime.material.mutation import apply_mutation
 from culsma.runtime.material.refs import is_serialized_pair, resolve_structured_ref, resolve_target_ref
 from culsma.runtime.material.result import MaterialUpdateResult
 from culsma.runtime.material.scientific_model_adapter import (
-    ScientificModelPartitionAdapter,
+    ScientificModelMaterialAdapter,
 )
 
 
@@ -38,7 +38,7 @@ class MaterialStateManager:
     def __init__(
         self,
         indexed_parts_state_manager: MaterialIndexedPartsStateManager | None = None,
-        material_effect_adapter: ScientificModelPartitionAdapter | None = None,
+        material_effect_adapter: ScientificModelMaterialAdapter | None = None,
     ) -> None:
         self.material_effect_adapter = material_effect_adapter
         self.indexed_parts_state_manager = indexed_parts_state_manager or MaterialIndexedPartsStateManager(

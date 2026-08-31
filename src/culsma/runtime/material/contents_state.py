@@ -9,19 +9,22 @@ from typing import Any
 from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.material.args import arg_call, arg_quantity, arg_string, call_arg_int, call_arg_string
+from culsma.runtime.material.component_entries import (
+    container_component_entries,
+    project_component_entries,
+    replace_component_entries,
+    subtract_component_entries,
+)
 from culsma.runtime.material.diagnostics import diagnostic_result
 from culsma.runtime.material.ledger import (
     check_capacity_guard,
     container,
-    container_component_classes,
-    container_component_quantities,
     container_count_cells,
     normalize_material_state_detail_ledger,
     component_quantity_merge_conflict,
     ensure_container,
-    move_explicit,
+    relocate_material,
     refresh_container_aggregates,
-    transfer_scientific_model_relationships,
 )
 from culsma.runtime.material.separation import (
     apply_separation_material,
@@ -36,9 +39,14 @@ from culsma.runtime.material.refs import (
     resolve_target_ref,
 )
 from culsma.runtime.material.result import MaterialUpdateResult
+from culsma.runtime.material.movement import (
+    MaterialMovementApplicationResult,
+    apply_material_movement,
+    moved_component_entries,
+)
 from culsma.runtime.material.scientific_model_adapter import (
     ResolvedMaterialEffect,
-    ScientificModelPartitionAdapter,
+    ScientificModelMaterialAdapter,
 )
 from culsma.runtime.material.separation_fate import (
     ExplicitContentFate,
@@ -131,7 +139,7 @@ def apply_target_addition_impact(
         if not isinstance(moved, dict):
             return {"action": "stale", "reason": "missing_material_snapshot"}
         part = impact.get("part")
-        move_explicit(
+        relocate_material(
             moved,
             part,
             component_ratio=1.0,
@@ -180,7 +188,7 @@ def moved_snapshot_from_explicit(
 ) -> dict[str, Any]:
     snapshot = {"volume_uL": 0.0, "mass_mg": 0.0, "components": {}, "metadata": {}}
     source_copy = deepcopy(source_before)
-    move_explicit(source_copy, snapshot, component_ratio=ratio)
+    relocate_material(source_copy, snapshot, component_ratio=ratio)
     return snapshot
 
 
@@ -203,7 +211,7 @@ def mark_contents_state_mixed(state: dict[str, Any], container_id: str, *, step_
 class MaterialIndexedPartsStateManager:
     def __init__(
         self,
-        material_effect_adapter: ScientificModelPartitionAdapter | None = None,
+        material_effect_adapter: ScientificModelMaterialAdapter | None = None,
     ) -> None:
         self.material_effect_adapter = material_effect_adapter
 
@@ -320,6 +328,7 @@ class MaterialIndexedPartsStateManager:
             material_effect_adapter=self.material_effect_adapter,
             request_id=step.step_id,
             source_id=source_id,
+            output_ids_by_part={"0": slot0_id, "1": slot1_id},
         )
         if separation_result.failure is not None:
             return diagnostic_result(
@@ -434,7 +443,23 @@ class MaterialIndexedPartsStateManager:
                     else (source_cells * split_ratio / current_cells if current_cells > 0 else 0.0)
                 )
             )
-            move_explicit(source, slot, component_ratio=component_ratio)
+            movement = apply_material_movement(
+                state=working,
+                source=source,
+                target=slot,
+                source_id=source_id,
+                destination_id=slot_id,
+                ratio=component_ratio,
+                material_effect_adapter=self.material_effect_adapter,
+                request_id=f"{step.step_id}:fraction:{i}",
+            )
+            if movement.failure is not None:
+                return diagnostic_result(
+                    step,
+                    working,
+                    movement.failure.code,
+                    movement.failure.message,
+                )
             refresh_cell_suspension_relationship(working, slot_id, forced_state="suspension")
             slot_bindings[str(i)] = slot_id
 
@@ -442,7 +467,23 @@ class MaterialIndexedPartsStateManager:
         last_slot = ensure_container(working, last_slot_id)
         residual_volume = float(source.get("volume_uL", 0.0))
         residual_mass = float(source.get("mass_mg", 0.0))
-        move_explicit(source, last_slot, component_ratio=1.0)
+        movement = apply_material_movement(
+            state=working,
+            source=source,
+            target=last_slot,
+            source_id=source_id,
+            destination_id=last_slot_id,
+            ratio=1.0,
+            material_effect_adapter=self.material_effect_adapter,
+            request_id=f"{step.step_id}:fraction:last",
+        )
+        if movement.failure is not None:
+            return diagnostic_result(
+                step,
+                working,
+                movement.failure.code,
+                movement.failure.message,
+            )
         refresh_cell_suspension_relationship(working, last_slot_id, forced_state="suspension")
         refresh_cell_suspension_relationship(working, source_id)
         slot_bindings[str(bins - 1)] = last_slot_id
@@ -654,13 +695,24 @@ class MaterialIndexedPartsStateManager:
         selected_cell_state = cell_material_state(selection.part)
         incoming_cell_state = transferred_cell_material_state(part_before, moved_cells=moved_cells)
         target_cell_state = merged_cell_material_state(target, incoming_cell_state)
-        _move_contents_part_material(
+        movement = move_contents_part_material(
+            state=state,
             part=selection.part,
             source=source,
+            source_id=selection.source_id,
             target=target,
             target_id=target_id,
             ratio=ratio,
+            material_effect_adapter=self.material_effect_adapter,
+            request_id=f"{step.step_id}:contents:{selection.slot}",
         )
+        if movement.failure is not None:
+            return diagnostic_result(
+                step,
+                state,
+                movement.failure.code,
+                movement.failure.message,
+            )
         refresh_cell_suspension_relationship_record(
             state,
             selection.part,
@@ -715,7 +767,12 @@ class MaterialIndexedPartsStateManager:
     ) -> ContentsPartitionTransition | MaterialUpdateResult:
         detail_error = normalize_material_state_detail_ledger(state)
         if detail_error is not None:
-            return diagnostic_result(step, state, "MAT_INVALID_COMPONENT_QUANTITY", detail_error)
+            return diagnostic_result(
+                step,
+                state,
+                detail_error.code,
+                detail_error.message,
+            )
         source = container(state, source_id)
         if source is None:
             return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", f"Unknown sep sample '{source_id}'")
@@ -749,6 +806,7 @@ class MaterialIndexedPartsStateManager:
             material_effect_adapter=self.material_effect_adapter,
             request_id=step.step_id,
             source_id=source_id,
+            output_ids_by_part={"0": slot0_id, "1": slot1_id},
         )
         if separation_result.failure is not None:
             return diagnostic_result(
@@ -797,7 +855,12 @@ class MaterialIndexedPartsStateManager:
     ) -> ContentsPartitionTransition | MaterialUpdateResult:
         detail_error = normalize_material_state_detail_ledger(state)
         if detail_error is not None:
-            return diagnostic_result(step, state, "MAT_INVALID_COMPONENT_QUANTITY", detail_error)
+            return diagnostic_result(
+                step,
+                state,
+                detail_error.code,
+                detail_error.message,
+            )
         source = container(state, source_id)
         if source is None:
             return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", f"Unknown frac sample '{source_id}'")
@@ -825,7 +888,23 @@ class MaterialIndexedPartsStateManager:
                     else (source_cells * split_ratio / current_cells if current_cells > 0 else 0.0)
                 )
             )
-            move_explicit(source, slot, component_ratio=component_ratio)
+            movement = apply_material_movement(
+                state=state,
+                source=source,
+                target=slot,
+                source_id=source_id,
+                destination_id=slot_id,
+                ratio=component_ratio,
+                material_effect_adapter=self.material_effect_adapter,
+                request_id=f"{step.step_id}:fraction:{i}",
+            )
+            if movement.failure is not None:
+                return diagnostic_result(
+                    step,
+                    state,
+                    movement.failure.code,
+                    movement.failure.message,
+                )
             refresh_cell_suspension_relationship(state, slot_id, forced_state="suspension")
             slot_bindings[str(i)] = slot_id
 
@@ -833,7 +912,23 @@ class MaterialIndexedPartsStateManager:
         last_slot = ensure_container(state, last_slot_id)
         residual_volume = float(source.get("volume_uL", 0.0))
         residual_mass = float(source.get("mass_mg", 0.0))
-        move_explicit(source, last_slot, component_ratio=1.0)
+        movement = apply_material_movement(
+            state=state,
+            source=source,
+            target=last_slot,
+            source_id=source_id,
+            destination_id=last_slot_id,
+            ratio=1.0,
+            material_effect_adapter=self.material_effect_adapter,
+            request_id=f"{step.step_id}:fraction:last",
+        )
+        if movement.failure is not None:
+            return diagnostic_result(
+                step,
+                state,
+                movement.failure.code,
+                movement.failure.message,
+            )
         refresh_cell_suspension_relationship(state, last_slot_id, forced_state="suspension")
         refresh_cell_suspension_relationship(state, source_id)
         slot_bindings[str(bins - 1)] = last_slot_id
@@ -1025,7 +1120,12 @@ def record_partitioned_contents_state(
         residual_uL = float(slot_part.get("volume_uL", 0.0))
         residual_mg = float(slot_part.get("mass_mg", 0.0))
         if residual_uL or residual_mg or container_count_cells(slot_part):
-            move_explicit(slot_part, source, component_ratio=1.0)
+            relocate_material(
+                slot_part,
+                source,
+                component_ratio=1.0,
+                destination_id=source_id,
+            )
     contract = slot_contract if isinstance(slot_contract, dict) else {slot: f"slot_{slot}" for slot in copied_parts}
     record = {
         "kind": kind,
@@ -1279,76 +1379,46 @@ def _contents_transfer_amount(
     return diagnostic_result(step, state, "MAT_UNSUPPORTED_UNIT", f"Unsupported transfer unit '{unit}'")
 
 
-def _move_contents_part_material(
+def move_contents_part_material(
     *,
+    state: dict[str, Any],
     part: dict[str, Any],
     source: dict[str, Any],
+    source_id: str,
     target: dict[str, Any],
     target_id: str,
     ratio: float,
-) -> None:
-    part_components = part.setdefault("components", {})
-    source_components = source.setdefault("components", {})
-    target_components = target.setdefault("components", {})
-    if not isinstance(part_components, dict):
-        part["components"] = {}
-        return
-    if not isinstance(source_components, dict):
-        source["components"] = {}
-        source_components = source["components"]
-    if not isinstance(target_components, dict):
-        target["components"] = {}
-        target_components = target["components"]
-
-    part_classes = container_component_classes(part)
-    target_classes = container_component_classes(target, create=True)
-    source_classes = container_component_classes(source)
-    part_quantities = container_component_quantities(part)
-    source_quantities = container_component_quantities(source)
-    target_quantities = container_component_quantities(target, create=bool(part_quantities))
-    moved_component_ids: set[str] = set()
-    for name, amount in list(part_components.items()):
-        moved = float(amount) * ratio
-        part_components[name] = _clamp_near_zero(float(amount) - moved)
-        source_components[name] = _clamp_near_zero(float(source_components.get(name, 0.0)) - moved)
-        target_components[name] = float(target_components.get(name, 0.0)) + moved
-        part_quantity = part_quantities.get(name) if isinstance(part_quantities, dict) else None
-        if isinstance(part_quantity, dict):
-            moved_quantity = float(part_quantity.get("value", amount)) * ratio
-            part_quantity["value"] = _clamp_near_zero(float(part_quantity.get("value", amount)) - moved_quantity)
-            if isinstance(source_quantities, dict) and isinstance(source_quantities.get(name), dict):
-                source_quantities[name]["value"] = _clamp_near_zero(
-                    float(source_quantities[name].get("value", 0.0)) - moved_quantity
-                )
-            if isinstance(target_quantities, dict):
-                target_quantity = target_quantities.get(name)
-                if not isinstance(target_quantity, dict):
-                    target_quantity = deepcopy(part_quantity)
-                    target_quantity["value"] = 0.0
-                    target_quantities[name] = target_quantity
-                target_quantity["value"] = float(target_quantity.get("value", 0.0)) + moved_quantity
-        if moved > 1e-12:
-            moved_component_ids.add(str(name))
-            part_class = part_classes.get(name) if isinstance(part_classes, dict) else None
-            if isinstance(part_class, str) and isinstance(target_classes, dict):
-                target_classes[name] = part_class
-        if part_components.get(name) == 0.0 and isinstance(part_classes, dict):
-            part_classes.pop(name, None)
-        if source_components.get(name) == 0.0 and isinstance(source_classes, dict):
-            source_classes.pop(name, None)
-    transfer_scientific_model_relationships(
+    material_effect_adapter: ScientificModelMaterialAdapter | None,
+    request_id: str,
+) -> MaterialMovementApplicationResult:
+    source_removed_entries = moved_component_entries(
+        part,
+        state=state,
+        source_id=source_id,
+        ratio=ratio,
+    )
+    movement = apply_material_movement(
+        state=state,
         source=part,
         target=target,
-        target_id=target_id,
-        moved_component_ids=moved_component_ids,
+        source_id=source_id,
+        destination_id=target_id,
+        ratio=ratio,
+        material_effect_adapter=material_effect_adapter,
+        request_id=request_id,
     )
+    if movement.failure is not None or movement.transfer is None:
+        return movement
+    if source is not part:
+        subtract_component_entries(
+            source,
+            source_removed_entries,
+            preserve_zero_entries=True,
+        )
     refresh_container_aggregates(part)
     refresh_container_aggregates(source)
     refresh_container_aggregates(target)
-
-
-def _clamp_near_zero(value: float) -> float:
-    return 0.0 if abs(value) <= 1e-12 else value
+    return movement
 
 
 def refresh_separation_relationships(
@@ -1414,64 +1484,10 @@ def refresh_scientific_model_relationships(
     slot: str,
     effect: ResolvedMaterialEffect | None,
 ) -> None:
-    if not isinstance(output, dict):
-        return
-    relationships = output.setdefault("material_relationships", [])
-    if not isinstance(relationships, list):
-        relationships = []
-        output["material_relationships"] = relationships
-    relationships[:] = [
-        relationship
-        for relationship in relationships
-        if not (
-            isinstance(relationship, dict)
-            and relationship.get("subtype") == "scientific_model_relation"
-        )
-    ]
-    if effect is None:
-        return
-    components = output.get("components")
-    if not isinstance(components, dict):
-        return
-    effects_by_component = {
-        component.source_component_id: component
-        for component in effect.component_effects
-    }
-    for component_id, amount in components.items():
-        if not isinstance(amount, (int, float)) or abs(float(amount)) <= 1e-12:
-            continue
-        component_effect = effects_by_component.get(component_id)
-        transition = next(
-            (
-                component_output
-                for component_output in component_effect.outputs
-                if component_output.part_id == slot
-            ),
-            None,
-        ) if component_effect is not None else None
-        next_relation = transition.next_relation if transition is not None else None
-        if not isinstance(next_relation, str) or next_relation == "free":
-            continue
-        relationship = {
-            "kind": "association",
-            "subtype": "scientific_model_relation",
-            "dispersed_component_ids": [component_id],
-            "material_state": next_relation,
-            "material_state_source": "scientific_model_provider",
-            "associated_with": output_id,
-        }
-        if transition is not None and transition.next_label is not None:
-            relationship["label"] = transition.next_label
-        if transition is not None and transition.transition_provenance is not None:
-            provenance = transition.transition_provenance
-            relationship["provenance"] = {
-                "provider_id": provenance.provider_id,
-                "provider_version": provenance.provider_version,
-                "model_id": provenance.model_id,
-                "model_version": provenance.model_version,
-                "configuration": dict(provenance.configuration),
-            }
-        relationships.append(relationship)
+    """Refresh the 1.x relationship view without changing authoritative entries."""
+
+    if isinstance(output, dict):
+        project_component_entries(output)
 
 
 def _partition_fallback_diagnostics(step: PlanStep, partition: dict[str, Any]) -> list[Diagnostic]:

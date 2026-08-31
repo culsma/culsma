@@ -10,6 +10,11 @@ from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.material.args import arg_string
 from culsma.runtime.material.diagnostics import diagnostic_result
+from culsma.runtime.material.component_entries import (
+    append_free_component_quantity,
+    component_entry_has_quantity,
+    container_component_entries,
+)
 from culsma.runtime.material.ledger import check_capacity_guard, ensure_container, refresh_container_aggregates
 from culsma.runtime.material.refs import resolve_or_create_container_ref
 from culsma.runtime.material.result import MaterialUpdateResult
@@ -28,6 +33,15 @@ _CELL_MATERIAL_STATE_ALIASES = {
     "pelleted": "pellet",
     "washed_pellet": "pellet",
     "precipitated": "precipitate",
+}
+
+_ENTRY_RELATION_CELL_MATERIAL_STATE = {
+    "free": "suspension",
+    "container_surface": "adherent",
+    "pellet": "pellet",
+    "precipitate": "precipitate",
+    "disrupted": "lysate",
+    "field_retained": "retained",
 }
 
 
@@ -227,8 +241,17 @@ def refresh_cell_suspension_relationship_record(
         material_state, state_source = _inferred_cell_state_details(
             state, count_ids, policy.unspecified_state
         )
-    if material_state in {"suspension", "mixed"} and state_source == "runtime_transition":
-        _refresh_mobile_cell_partition_classes(container, count_ids)
+    entry_material_state = component_entry_cell_material_state(container, count_ids)
+    if entry_material_state is not None and entry_material_state != material_state:
+        material_state = entry_material_state
+        state_source = "component_entries"
+    elif entry_material_state is not None and state_source is None:
+        material_state = entry_material_state
+        state_source = "component_entries"
+    relationships = container.setdefault("material_relationships", [])
+    if not isinstance(relationships, list):
+        container["material_relationships"] = []
+        relationships = container["material_relationships"]
     carrier_volume_uL = _carrier_volume_from_ids(container, carrier_ids)
     transferable = material_state == "suspension" and carrier_volume_uL > 0
     concentration = _total_count_cells(container) / carrier_volume_uL if transferable else None
@@ -501,6 +524,27 @@ def normalize_cell_material_state(value: Any) -> str | None:
     return _CELL_MATERIAL_STATE_ALIASES.get(token, token)
 
 
+def component_entry_cell_material_state(
+    container: dict[str, Any],
+    count_ids: list[str],
+) -> str | None:
+    """Return the aggregate cell state without overwriting distinct entries."""
+
+    states = {
+        _ENTRY_RELATION_CELL_MATERIAL_STATE.get(
+            str(entry.get("relation", "free")),
+            str(entry.get("relation", "free")),
+        )
+        for entry in container_component_entries(container)
+        if entry.get("content_ref") in count_ids and component_entry_has_quantity(entry)
+    }
+    if not states:
+        return None
+    if len(states) == 1:
+        return next(iter(states))
+    return "mixed"
+
+
 def cell_material_state(container: Any) -> str | None:
     relationship = cell_suspension_relationship(container)
     material_state = relationship.get("material_state") if isinstance(relationship, dict) else None
@@ -526,21 +570,6 @@ def merged_cell_material_state(target: Any, incoming_state: str | None) -> str |
     return "mixed"
 
 
-def _refresh_mobile_cell_partition_classes(container: dict[str, Any], count_ids: list[str]) -> None:
-    """Discard stale separation-output classes after cells become mobile."""
-
-    metadata = container.setdefault("metadata", {})
-    if not isinstance(metadata, dict):
-        container["metadata"] = {}
-        metadata = container["metadata"]
-    overrides = metadata.setdefault("component_partition_classes", {})
-    if not isinstance(overrides, dict):
-        metadata["component_partition_classes"] = {}
-        overrides = metadata["component_partition_classes"]
-    for component_id in count_ids:
-        overrides[component_id] = "pelletable_cells"
-
-
 def _add_implicit_carrier(
     state: dict[str, Any],
     container_id: str,
@@ -560,12 +589,12 @@ def _add_implicit_carrier(
                 "provenance": "default_cell_suspension_concentration",
             },
         }
-    components = container.setdefault("components", {})
-    if isinstance(components, dict):
-        components[carrier_id] = float(components.get(carrier_id, 0.0)) + volume_uL
-    quantities = container.setdefault("component_quantities", {})
-    if isinstance(quantities, dict):
-        quantities[carrier_id] = {"dimension": "volume", "unit": "uL", "value": volume_uL}
+    append_free_component_quantity(
+        container,
+        content_ref=carrier_id,
+        amount=volume_uL,
+        quantity={"dimension": "volume", "unit": "uL", "value": volume_uL},
+    )
     refresh_container_aggregates(container)
     index = state.setdefault("container_content_index", {})
     if isinstance(index, dict):

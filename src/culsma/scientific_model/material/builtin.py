@@ -17,6 +17,8 @@ from .contracts import (
     MATERIAL_CONTRACT_VERSION,
     MATERIAL_SEPARATION_FATE,
     MATERIAL_STATE_TRANSITION,
+    AssociationTarget,
+    AssociationTargetKind,
     ComponentFate,
     MaterialModelPayload,
     RelationshipTransition,
@@ -96,6 +98,9 @@ class BuiltinMaterialRulebookProvider:
                 program_kind=payload.operation.program_kind,
                 group=classification.group,
                 current_relation=component.relationship.relation,
+                free_phase_passes=context_predicate(
+                    payload.context, "free_phase_passes", component.entry_id
+                ),
                 filter_retains=context_predicate(
                     payload.context, "filter_retains", component.entry_id
                 ),
@@ -212,11 +217,30 @@ class BuiltinMaterialRulebookProvider:
                         f"'{component.relationship.relation}'"
                     ),
                 )
+            next_association_target = resolve_transition_association_target(
+                payload.context,
+                component,
+                transition.next_relation.value,
+                output_part_id=payload.operation.output_roles[0].part_id,
+            )
+            if (
+                transition.next_relation.value != "free"
+                and next_association_target is None
+            ):
+                return self.unresolved(
+                    provenance,
+                    (
+                        f"Table 3 did not receive an association target for component "
+                        f"'{component.entry_id}' next relation "
+                        f"'{transition.next_relation.value}'"
+                    ),
+                )
             transitions.append(
                 RelationshipTransition(
                     component_entry_id=component.entry_id,
                     next_relation=transition.next_relation.value,
                     next_label=transition.next_label,
+                    next_association_target=next_association_target,
                     retire_quantity=transition.retire_quantity,
                 )
             )
@@ -259,3 +283,63 @@ def context_predicate(
         component_value = value.get(component_entry_id, default)
         return component_value if isinstance(component_value, bool) else default
     return default
+
+
+def context_association_target(
+    context: Mapping[str, object],
+    component_entry_id: str,
+) -> AssociationTarget | None:
+    value = context.get("association_target")
+    if (
+        isinstance(value, Mapping)
+        and not {"kind", "id"}.issubset(value)
+    ):
+        value = value.get(component_entry_id)
+    if isinstance(value, AssociationTarget):
+        return value
+    if not isinstance(value, Mapping):
+        return None
+    raw_kind = value.get("kind")
+    raw_id = value.get("id")
+    try:
+        kind = AssociationTargetKind(str(raw_kind))
+    except ValueError:
+        return None
+    if not isinstance(raw_id, str) or not raw_id:
+        return None
+    return AssociationTarget(kind=kind, id=raw_id)
+
+
+def resolve_transition_association_target(
+    context: Mapping[str, object],
+    component: ComponentSnapshot,
+    next_relation: str,
+    *,
+    output_part_id: str | None = None,
+) -> AssociationTarget | None:
+    if next_relation == "free":
+        return None
+    contextual = context_association_target(context, component.entry_id)
+    if contextual is not None:
+        return contextual
+    current = component.relationship.association_target
+    if current is not None and component.relationship.relation == next_relation:
+        return current
+    associated_with = component.relationship.associated_with
+    if not isinstance(associated_with, str) or not associated_with:
+        if (
+            next_relation not in {"bead_bound", "membrane_bound", "cell_bound"}
+            and isinstance(output_part_id, str)
+            and output_part_id
+        ):
+            return AssociationTarget(
+                kind=AssociationTargetKind.CONTAINER,
+                id=output_part_id,
+            )
+        return None
+    target_kind = (
+        AssociationTargetKind.COMPONENT_ENTRY
+        if next_relation in {"bead_bound", "membrane_bound", "cell_bound"}
+        else AssociationTargetKind.CONTAINER
+    )
+    return AssociationTarget(kind=target_kind, id=associated_with)

@@ -4,7 +4,10 @@ import ast
 from pathlib import Path
 
 from culsma.pipeline.plan_nodes import PlanStep
-from culsma.pipeline.program_registry import SEPARATION_SLOT_CONTRACTS
+from culsma.pipeline.program_registry import (
+    SEPARATION_SLOT_CONTRACTS,
+    get_material_effect_kind,
+)
 from culsma.runtime.material.compute import MaterialCompute
 from culsma.runtime.material.contents_state import (
     ContentsPartitionTransition,
@@ -177,6 +180,7 @@ def test_material_modules_do_not_import_private_sibling_helpers() -> None:
 
 def test_scientific_model_core_logic_has_no_private_functions() -> None:
     paths = sorted(SCIENTIFIC_MODEL_DIR.rglob("*.py")) + [
+        MATERIAL_DIR / "component_entries.py",
         MATERIAL_DIR / "partition.py",
         MATERIAL_DIR / "separation.py",
         MATERIAL_DIR / "scientific_model_adapter.py",
@@ -228,6 +232,158 @@ def test_separation_owns_the_scientific_model_application_boundary() -> None:
         "project_resolved_material_effect",
         "commit_separation_candidate",
     }.issubset(function_names)
+
+
+def test_component_entries_own_runtime_transfer_and_compatibility_projection() -> None:
+    entry_source = (MATERIAL_DIR / "component_entries.py").read_text(encoding="utf-8")
+    ledger_source = (MATERIAL_DIR / "ledger.py").read_text(encoding="utf-8")
+    contents_source = (MATERIAL_DIR / "contents_state.py").read_text(encoding="utf-8")
+
+    assert "def plan_component_entry_transfer(" in entry_source
+    assert "def commit_component_entry_transfer(" in entry_source
+    assert "def normalize_component_entries(" in entry_source
+    assert "def project_component_entries(" in entry_source
+    assert "relocate_component_entries(" in ledger_source
+    assert "apply_material_movement(" in (MATERIAL_DIR / "movement.py").read_text(
+        encoding="utf-8"
+    )
+    assert "transfer_scientific_model_relationships" not in ledger_source
+    assert "target_components" not in contents_source
+
+
+def test_relationship_refreshes_do_not_rewrite_authoritative_entries() -> None:
+    suspension_source = (MATERIAL_DIR / "suspension.py").read_text(encoding="utf-8")
+    contents_tree = ast.parse(
+        (MATERIAL_DIR / "contents_state.py").read_text(encoding="utf-8")
+    )
+    refresh = next(
+        node
+        for node in contents_tree.body
+        if isinstance(node, ast.FunctionDef)
+        and node.name == "refresh_scientific_model_relationships"
+    )
+    refresh_calls = {
+        node.func.id
+        for node in ast.walk(refresh)
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+    }
+
+    assert "set_component_entry_relations" not in suspension_source
+    assert "replace_component_entries" not in refresh_calls
+    assert refresh_calls == {"isinstance", "project_component_entries"}
+
+
+def test_separation_candidate_receives_output_container_identity_before_commit() -> None:
+    separation_tree = ast.parse(
+        (MATERIAL_DIR / "separation.py").read_text(encoding="utf-8")
+    )
+    projector = next(
+        node
+        for node in separation_tree.body
+        if isinstance(node, ast.FunctionDef)
+        and node.name == "project_resolved_material_effect"
+    )
+    commit = next(
+        node
+        for node in separation_tree.body
+        if isinstance(node, ast.FunctionDef)
+        and node.name == "commit_separation_candidate"
+    )
+    commit_calls = {
+        node.func.id
+        for node in ast.walk(commit)
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+    }
+
+    assert any(
+        argument.arg == "output_ids_by_part"
+        for argument in projector.args.kwonlyargs
+    )
+    assert "validate_separation_candidate" in commit_calls
+
+
+def test_generic_entry_movement_does_not_own_material_classification() -> None:
+    tree = ast.parse(
+        (MATERIAL_DIR / "component_entries.py").read_text(encoding="utf-8")
+    )
+    transition = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef)
+        and node.name == "transition_entry_for_move"
+    )
+    string_literals = {
+        node.value
+        for node in ast.walk(transition)
+        if isinstance(node, ast.Constant) and isinstance(node.value, str)
+    }
+
+    assert "pelletable_cells" not in string_literals
+
+
+def test_runtime_movement_resolves_state_before_entry_commit() -> None:
+    movement_tree = ast.parse(
+        (MATERIAL_DIR / "movement.py").read_text(encoding="utf-8")
+    )
+    projector = next(
+        node
+        for node in movement_tree.body
+        if isinstance(node, ast.FunctionDef)
+        and node.name == "project_material_movement"
+    )
+    calls = [
+        (
+            node.func.attr
+            if isinstance(node.func, ast.Attribute)
+            else node.func.id
+            if isinstance(node.func, ast.Name)
+            else ""
+        )
+        for node in ast.walk(projector)
+        if isinstance(node, ast.Call)
+    ]
+
+    assert "resolve_movement" in calls
+    assert "plan_component_entry_transfer" in calls
+    assert calls.index("resolve_movement") < calls.index("plan_component_entry_transfer")
+
+
+def test_mutation_does_not_bypass_the_scientific_movement_boundary() -> None:
+    mutation_source = (MATERIAL_DIR / "mutation.py").read_text(encoding="utf-8")
+
+    assert "apply_material_movement(" in mutation_source
+    assert "move_explicit(" not in mutation_source
+    assert "move_ratio(" not in mutation_source
+
+
+def test_runtime_operations_do_not_call_the_legacy_move_wrappers() -> None:
+    offenders = [
+        path.name
+        for path in _material_modules()
+        if path.name != "ledger.py"
+        and (
+            "move_explicit(" in path.read_text(encoding="utf-8")
+            or "move_ratio(" in path.read_text(encoding="utf-8")
+        )
+    ]
+
+    assert offenders == []
+
+
+def test_entry_normalization_enforces_the_closed_relation_contract() -> None:
+    entry_source = (MATERIAL_DIR / "component_entries.py").read_text(encoding="utf-8")
+
+    assert "for candidate in MaterialRelation" in entry_source
+    assert "ComponentEntryRelationError" in entry_source
+
+
+def test_program_registry_declares_material_effect_kind() -> None:
+    assert get_material_effect_kind("disrupt_program") == "disrupt"
+    for program_kind in SEPARATION_SLOT_CONTRACTS:
+        if program_kind == "sep_program":
+            continue
+        expected = "disrupt" if program_kind == "disrupt_program" else "separation_fate"
+        assert get_material_effect_kind(program_kind) == expected
 
 
 def test_runtime_separation_callers_do_not_bypass_separation_module() -> None:
@@ -408,7 +564,7 @@ def test_material_state_manager_plans_partition_changes_before_contents_manager(
 
 def test_indexed_parts_state_manager_resolves_indexed_part_without_material_mutation() -> None:
     state = _partitioned_state()
-    manager = MaterialIndexedPartsStateManager()
+    manager = MaterialCompute().state_manager.indexed_parts_state_manager
 
     result = manager.resolve_indexed_part(step=_step(), state=state, contents_ref=_contents_ref(slot=1))
 
@@ -422,7 +578,7 @@ def test_indexed_parts_state_manager_resolves_indexed_part_without_material_muta
 
 def test_indexed_parts_state_manager_reports_stale_state_as_diagnostic() -> None:
     state = _partitioned_state(valid=False)
-    manager = MaterialIndexedPartsStateManager()
+    manager = MaterialCompute().state_manager.indexed_parts_state_manager
 
     result = manager.resolve_indexed_part(step=_step(), state=state, contents_ref=_contents_ref(slot=1))
 
@@ -515,7 +671,7 @@ def test_indexed_parts_state_manager_records_frac_transition() -> None:
             }
         },
     }
-    manager = MaterialIndexedPartsStateManager()
+    manager = MaterialCompute().state_manager.indexed_parts_state_manager
 
     result = manager.record_frac_transition(
         step=_material_step("frac"),

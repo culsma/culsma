@@ -3108,6 +3108,41 @@ protocol T {
     assert supernatant["metadata"]["component_partition_classes"]["RPE1"] == "pelletable_cells"
 
 
+def test_runtime_repeated_aspiration_ignores_zero_fate_entries_from_the_prior_split():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let culture = well(label = "Culture", capacity = 500uL, load = [
+    content(kind = bio_cellular, type = cell_line, code = "RPE1", attrs = { state: adherent }):100000cells,
+    content(kind = formulation, type = medium, code = "OLD_MEDIUM"):200uL
+  ]);
+  let fresh_medium = tube(label = "FreshMedium", capacity = 200uL, load = [
+    content(kind = formulation, type = medium, code = "FRESH_MEDIUM"):200uL
+  ]);
+  let aspiration = filtration_program(membrane = "adherent_cell_surface", drive = "aspiration");
+  sep(sample = culture, program = aspiration);
+  culture << [fresh_medium:200uL];
+  sep(sample = culture, program = aspiration);
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    entries = result.state.artifacts["material_state"]["containers"]["Culture"][
+        "component_entries"
+    ]
+    positive_entries = [entry for entry in entries if entry["amount"] > 0.0]
+    positive_cells = [
+        entry for entry in positive_entries if entry["content_ref"] == "RPE1"
+    ]
+    assert [
+        (entry["amount"], entry["relation"])
+        for entry in positive_cells
+    ] == [(100000.0, "container_surface")]
+
+
 def test_runtime_rejects_ambiguous_count_transfer_with_multiple_cell_populations():
     plan = _build_plan_from_source(
         """
@@ -3518,8 +3553,9 @@ def test_runtime_volume_transfer_uses_bulk_projected_from_author_component_fate(
     plan = _build_plan_from_source(
         """
 protocol T returns (supernatant) {
-  let source = tube(label = "Source", capacity = 100uL, load = [
-    content(kind = bio_molecule_or_virus, type = dna, code = "AMPLIFIED_CDNA"):100uL
+  let source = tube(label = "Source", capacity = 101uL, load = [
+    content(kind = bio_molecule_or_virus, type = dna, code = "AMPLIFIED_CDNA"):100uL,
+    content(kind = particulate, type = beads, code = "BEADS", attrs = { bead_property: magnetic }):1uL
   ]);
   let supernatant = tube(label = "Supernatant", capacity = 100uL);
   let parts = sep(

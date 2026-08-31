@@ -17,6 +17,8 @@ from .contracts import (
     MATERIAL_CONTRACT_VERSION,
     MATERIAL_SEPARATION_FATE,
     MATERIAL_STATE_TRANSITION,
+    AssociationTarget,
+    AssociationTargetKind,
     ComponentFate,
     ComponentSnapshot,
     MaterialDecision,
@@ -31,7 +33,12 @@ from .contracts import (
     StateTransitionDecision,
     empty_material_mapping,
 )
-from .coordinator import CoordinatedDecision, CoordinationStatus, SepEffectCoordinator
+from .coordinator import (
+    CoordinatedDecision,
+    CoordinationStatus,
+    MaterialEffectCoordinator,
+    SepEffectCoordinator,
+)
 from .rulebook import (
     RelationshipTransitionMatch,
     RulebookOutcome,
@@ -54,6 +61,8 @@ __all__ = [
     "MATERIAL_CONTRACT_VERSION",
     "MATERIAL_SEPARATION_FATE",
     "MATERIAL_STATE_TRANSITION",
+    "AssociationTarget",
+    "AssociationTargetKind",
     "BuiltinMaterialRulebookProvider",
     "CLASSIFICATION_RULES",
     "CalculationGroup",
@@ -64,6 +73,7 @@ __all__ = [
     "CoordinatedDecision",
     "CoordinationStatus",
     "MaterialDecision",
+    "MaterialEffectCoordinator",
     "MaterialRelation",
     "MaterialModelPayload",
     "MaterialValidationIssue",

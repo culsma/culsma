@@ -28,6 +28,17 @@ class MaterialRelation(StrEnum):
     UNRESOLVED = "unresolved"
 
 
+class AssociationTargetKind(StrEnum):
+    CONTAINER = "container"
+    COMPONENT_ENTRY = "component_entry"
+
+
+@dataclass(frozen=True)
+class AssociationTarget:
+    kind: AssociationTargetKind
+    id: str
+
+
 def empty_material_mapping() -> Mapping[str, object]:
     return MappingProxyType({})
 
@@ -60,6 +71,7 @@ class QuantitySnapshot:
 class RelationshipSnapshot:
     relation: str
     associated_with: str | None = None
+    association_target: AssociationTarget | None = None
     preservation: str | None = None
     label: str | None = None
 
@@ -109,6 +121,7 @@ class RelationshipTransition:
     component_entry_id: str
     next_relation: str
     next_label: str | None = None
+    next_association_target: AssociationTarget | None = None
     retire_quantity: bool = False
     replacement_quantity: QuantitySnapshot | None = None
 

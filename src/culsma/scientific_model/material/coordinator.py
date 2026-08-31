@@ -27,7 +27,7 @@ class CoordinatedDecision:
 
 
 @dataclass(frozen=True)
-class SepEffectCoordinator:
+class MaterialEffectCoordinator:
     resolver: ScientificModelResolver
 
     def resolve(
@@ -77,3 +77,7 @@ class SepEffectCoordinator:
             source="provider",
             model_result=result,
         )
+
+
+# 1.x compatibility name. New Runtime code uses the capability-neutral name.
+SepEffectCoordinator = MaterialEffectCoordinator

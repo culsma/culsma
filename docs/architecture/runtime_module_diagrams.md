@@ -585,7 +585,7 @@ flowchart TB
     Sep["_apply_sep orchestration"]
     Separation["material.separation<br/>apply_separation_material"]
     Gate{"registered program?"}
-    Adapter["ScientificModelPartitionAdapter"]
+    Adapter["ScientificModelMaterialAdapter"]
     Effect["ResolvedMaterialEffect"]
     Project["generic Runtime projection<br/>+ validation + commit"]
     Legacy["material.partition<br/>compatibility only"]

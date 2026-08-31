@@ -9,6 +9,8 @@ from ..contracts import ModelRequest, ModelResult, ModelStatus
 from .contracts import (
     MATERIAL_SEPARATION_FATE,
     MATERIAL_STATE_TRANSITION,
+    AssociationTarget,
+    AssociationTargetKind,
     MaterialRelation,
     MaterialModelPayload,
     SeparationDecision,
@@ -160,7 +162,8 @@ def validate_state_transition_decision(
     decision: StateTransitionDecision,
 ) -> MaterialValidationResult:
     issues: list[MaterialValidationIssue] = []
-    component_ids = {component.entry_id for component in payload.components}
+    components_by_id = {component.entry_id: component for component in payload.components}
+    component_ids = set(components_by_id)
     allowed_relations = {
         relation.value
         for relation in MaterialRelation
@@ -196,6 +199,84 @@ def validate_state_transition_decision(
                     ),
                 )
             )
+            continue
+        target = transition.next_association_target
+        if target is not None and (
+            not isinstance(target, AssociationTarget)
+            or not isinstance(target.kind, AssociationTargetKind)
+            or not isinstance(target.id, str)
+            or not target.id
+        ):
+            issues.append(
+                MaterialValidationIssue(
+                    code="MATERIAL_MODEL_ASSOCIATION_TARGET_INVALID",
+                    message=(
+                        f"component '{transition.component_entry_id}' has an invalid "
+                        "next association target"
+                    ),
+                )
+            )
+            continue
+        if transition.next_relation == MaterialRelation.FREE and target is not None:
+            issues.append(
+                MaterialValidationIssue(
+                    code="MATERIAL_MODEL_ASSOCIATION_TARGET_FORBIDDEN",
+                    message=(
+                        f"free component '{transition.component_entry_id}' cannot "
+                        "have a next association target"
+                    ),
+                )
+            )
+            continue
+        component = components_by_id.get(transition.component_entry_id)
+        material_bound_relations = {
+            MaterialRelation.BEAD_BOUND,
+            MaterialRelation.MEMBRANE_BOUND,
+            MaterialRelation.CELL_BOUND,
+        }
+        if transition.next_relation in material_bound_relations:
+            current_target_exists = bool(
+                component is not None
+                and (
+                    component.relationship.association_target is not None
+                    or component.relationship.associated_with is not None
+                )
+            )
+            if target is None and not (
+                component is not None
+                and component.relationship.relation == transition.next_relation
+                and current_target_exists
+            ):
+                issues.append(
+                    MaterialValidationIssue(
+                        code="MATERIAL_MODEL_ASSOCIATION_TARGET_MISSING",
+                        message=(
+                            f"component '{transition.component_entry_id}' requires a "
+                            "component-entry association target"
+                        ),
+                    )
+                )
+            elif target is not None and target.kind is not AssociationTargetKind.COMPONENT_ENTRY:
+                issues.append(
+                    MaterialValidationIssue(
+                        code="MATERIAL_MODEL_ASSOCIATION_TARGET_KIND_INVALID",
+                        message=(
+                            f"component '{transition.component_entry_id}' requires a "
+                            "component-entry association target"
+                        ),
+                    )
+                )
+        elif transition.next_relation != MaterialRelation.FREE and target is not None:
+            if target.kind is not AssociationTargetKind.CONTAINER:
+                issues.append(
+                    MaterialValidationIssue(
+                        code="MATERIAL_MODEL_ASSOCIATION_TARGET_KIND_INVALID",
+                        message=(
+                            f"component '{transition.component_entry_id}' requires a "
+                            "container association target"
+                        ),
+                    )
+                )
 
     missing = sorted(component_ids - seen_components)
     if missing:

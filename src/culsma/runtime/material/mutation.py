@@ -24,8 +24,6 @@ from culsma.runtime.material.ledger import (
     container_component_quantity_total,
     density_mg_per_uL,
     ensure_container,
-    move_explicit,
-    move_ratio,
     container_count_cells,
     component_quantity_merge_conflict,
 )
@@ -41,8 +39,9 @@ from culsma.runtime.material.refs import (
     resolve_target_ref,
 )
 from culsma.runtime.material.result import MaterialUpdateResult
+from culsma.runtime.material.movement import apply_material_movement
 from culsma.runtime.material.scientific_model_adapter import (
-    ScientificModelPartitionAdapter,
+    ScientificModelMaterialAdapter,
 )
 from culsma.runtime.material.suspension import (
     merged_cell_material_state,
@@ -60,7 +59,7 @@ class MutationSourceContext:
     target_id: str
     source_expr: Any
     source_ordinal: int
-    material_effect_adapter: ScientificModelPartitionAdapter | None
+    material_effect_adapter: ScientificModelMaterialAdapter | None
 
 
 class MutationSourceHandler(ABC):
@@ -147,7 +146,14 @@ class QuantifiedContainerSourceHandler(MutationSourceHandler):
                 delta={"mode": "quantified_self_noop", "source": source_id, "target": ctx.target_id, "qty": qty},
             )
         source_before = deepcopy(container(ctx.state, source_id))
-        transfer = apply_transfer_by_qty(step=ctx.step, state=ctx.state, src_id=source_id, dst_id=ctx.target_id, qty=qty)
+        transfer = apply_transfer_by_qty(
+            step=ctx.step,
+            state=ctx.state,
+            src_id=source_id,
+            dst_id=ctx.target_id,
+            qty=qty,
+            material_effect_adapter=ctx.material_effect_adapter,
+        )
         if not transfer.ok:
             return transfer
         invalidate_contents_state(transfer.material_state, source_id, reason="whole_container_transfer")
@@ -268,12 +274,23 @@ class FullContainerSourceHandler(MutationSourceHandler):
             return conflict
         source_before = deepcopy(source)
         moved_cell_state = transferred_cell_material_state(source, moved_cells=moved_cells)
-        move_explicit(
-            source,
-            target,
-            component_ratio=1.0,
+        movement = apply_material_movement(
+            state=ctx.state,
+            source=source,
+            target=target,
+            source_id=source_id,
             destination_id=ctx.target_id,
+            ratio=1.0,
+            material_effect_adapter=ctx.material_effect_adapter,
+            request_id=f"{ctx.step.step_id}:source:{ctx.source_ordinal}",
         )
+        if movement.failure is not None:
+            return diagnostic_result(
+                ctx.step,
+                ctx.state,
+                movement.failure.code,
+                movement.failure.message,
+            )
         refresh_cell_suspension_relationship(ctx.state, source_id)
         refresh_cell_suspension_relationship(
             ctx.state,
@@ -328,7 +345,7 @@ def apply_mutation(
     step: PlanStep,
     state: dict[str, Any],
     *,
-    material_effect_adapter: ScientificModelPartitionAdapter | None = None,
+    material_effect_adapter: ScientificModelMaterialAdapter | None = None,
 ) -> MaterialUpdateResult:
     target_expr = step.args.get("target")
     source_exprs = step.args.get("sources")
@@ -388,7 +405,7 @@ def apply_source_partition_transfer(
     partition_ref: dict[str, Any],
     qty: dict[str, Any] | None,
     source_ordinal: int,
-    material_effect_adapter: ScientificModelPartitionAdapter | None,
+    material_effect_adapter: ScientificModelMaterialAdapter | None,
 ) -> MaterialUpdateResult:
     program = arg_call(partition_ref.get("program"))
     if program is None:
@@ -425,6 +442,7 @@ def apply_source_partition_transfer(
         material_effect_adapter=material_effect_adapter,
         request_id=f"{step.step_id}:source_partition:{source_ordinal}",
         source_id=source_id,
+        output_ids_by_part={"0": slot0_id, "1": slot1_id},
     )
     if separation_result.failure is not None:
         return diagnostic_result(
@@ -474,12 +492,23 @@ def apply_source_partition_transfer(
         conflict = _quantity_axis_conflict(step, state, selected, target, selected_id, target_id)
         if conflict is not None:
             return conflict
-        move_explicit(
-            selected,
-            target,
-            component_ratio=1.0,
+        movement = apply_material_movement(
+            state=state,
+            source=selected,
+            target=target,
+            source_id=selected_id,
             destination_id=target_id,
+            ratio=1.0,
+            material_effect_adapter=material_effect_adapter,
+            request_id=f"{step.step_id}:selected_partition_move",
         )
+        if movement.failure is not None:
+            return diagnostic_result(
+                step,
+                state,
+                movement.failure.code,
+                movement.failure.message,
+            )
         moved_snapshot = moved_snapshot_from_explicit(
             selected_before,
             ratio=1.0,
@@ -495,7 +524,14 @@ def apply_source_partition_transfer(
             "moved_cells": moved_cells,
         }
     else:
-        transfer = apply_transfer_by_qty(step=step, state=state, src_id=selected_id, dst_id=target_id, qty=qty)
+        transfer = apply_transfer_by_qty(
+            step=step,
+            state=state,
+            src_id=selected_id,
+            dst_id=target_id,
+            qty=qty,
+            material_effect_adapter=material_effect_adapter,
+        )
         if not transfer.ok:
             return transfer
         state = transfer.material_state
@@ -517,12 +553,23 @@ def apply_source_partition_transfer(
             conflict = _quantity_axis_conflict(step, state, residual, source_after, residual_id, source_id)
             if conflict is not None:
                 return conflict
-            move_explicit(
-                residual,
-                source_after,
-                component_ratio=1.0,
+            movement = apply_material_movement(
+                state=state,
+                source=residual,
+                target=source_after,
+                source_id=residual_id,
                 destination_id=source_id,
+                ratio=1.0,
+                material_effect_adapter=material_effect_adapter,
+                request_id=f"{step.step_id}:restore_partition:{residual_id}",
             )
+            if movement.failure is not None:
+                return diagnostic_result(
+                    step,
+                    state,
+                    movement.failure.code,
+                    movement.failure.message,
+                )
     containers = state.setdefault("containers", {})
     if isinstance(containers, dict):
         containers.pop(slot0_id, None)
@@ -569,18 +616,40 @@ def apply_transfer_by_qty(
     src_id: str,
     dst_id: str,
     qty: dict[str, Any],
+    material_effect_adapter: ScientificModelMaterialAdapter | None = None,
 ) -> MaterialUpdateResult:
     unit = str(qty["unit"])
     value = float(qty["value"])
     if unit in VOLUME_TO_UL:
         requested_uL = value * VOLUME_TO_UL[unit]
-        return _apply_transfer_volume(step, state, src_id, dst_id, requested_uL)
+        return _apply_transfer_volume(
+            step,
+            state,
+            src_id,
+            dst_id,
+            requested_uL,
+            material_effect_adapter,
+        )
     if unit in MASS_TO_MG:
         requested_mg = value * MASS_TO_MG[unit]
-        return _apply_transfer_mass(step, state, src_id, dst_id, requested_mg)
+        return _apply_transfer_mass(
+            step,
+            state,
+            src_id,
+            dst_id,
+            requested_mg,
+            material_effect_adapter,
+        )
     if unit in COUNT_TO_CELLS:
         requested_cells = value * COUNT_TO_CELLS[unit]
-        return _apply_transfer_count(step, state, src_id, dst_id, requested_cells)
+        return _apply_transfer_count(
+            step,
+            state,
+            src_id,
+            dst_id,
+            requested_cells,
+            material_effect_adapter,
+        )
     return diagnostic_result(
         step=step,
         state=state,
@@ -637,6 +706,7 @@ def _apply_transfer_volume(
     src_id: str,
     dst_id: str,
     requested_uL: float,
+    material_effect_adapter: ScientificModelMaterialAdapter | None,
 ) -> MaterialUpdateResult:
     src = state["containers"][src_id]
     dst = state["containers"][dst_id]
@@ -655,7 +725,23 @@ def _apply_transfer_volume(
         conflict = _quantity_axis_conflict(step, state, src, dst, src_id, dst_id)
         if conflict is not None:
             return conflict
-        move_ratio(src, dst, ratio, destination_id=dst_id)
+        movement = apply_material_movement(
+            state=state,
+            source=src,
+            target=dst,
+            source_id=src_id,
+            destination_id=dst_id,
+            ratio=ratio,
+            material_effect_adapter=material_effect_adapter,
+            request_id=f"{step.step_id}:volume_move",
+        )
+        if movement.failure is not None:
+            return diagnostic_result(
+                step,
+                state,
+                movement.failure.code,
+                movement.failure.message,
+            )
         refresh_cell_suspension_relationship(state, src_id)
         refresh_cell_suspension_relationship(
             state, dst_id, forced_state=merged_cell_material_state(dst, moved_cell_state)
@@ -695,12 +781,23 @@ def _apply_transfer_volume(
     conflict = _quantity_axis_conflict(step, state, src, dst, src_id, dst_id)
     if conflict is not None:
         return conflict
-    move_explicit(
-        src=src,
-        dst=dst,
-        component_ratio=component_ratio,
+    movement = apply_material_movement(
+        state=state,
+        source=src,
+        target=dst,
+        source_id=src_id,
         destination_id=dst_id,
+        ratio=component_ratio,
+        material_effect_adapter=material_effect_adapter,
+        request_id=f"{step.step_id}:volume_mass_bridge",
     )
+    if movement.failure is not None:
+        return diagnostic_result(
+            step,
+            state,
+            movement.failure.code,
+            movement.failure.message,
+        )
     refresh_cell_suspension_relationship(state, src_id)
     refresh_cell_suspension_relationship(
         state, dst_id, forced_state=merged_cell_material_state(dst, moved_cell_state)
@@ -727,6 +824,7 @@ def _apply_transfer_mass(
     src_id: str,
     dst_id: str,
     requested_mg: float,
+    material_effect_adapter: ScientificModelMaterialAdapter | None,
 ) -> MaterialUpdateResult:
     src = state["containers"][src_id]
     dst = state["containers"][dst_id]
@@ -746,7 +844,23 @@ def _apply_transfer_mass(
         conflict = _quantity_axis_conflict(step, state, src, dst, src_id, dst_id)
         if conflict is not None:
             return conflict
-        move_ratio(src, dst, ratio, destination_id=dst_id)
+        movement = apply_material_movement(
+            state=state,
+            source=src,
+            target=dst,
+            source_id=src_id,
+            destination_id=dst_id,
+            ratio=ratio,
+            material_effect_adapter=material_effect_adapter,
+            request_id=f"{step.step_id}:mass_move",
+        )
+        if movement.failure is not None:
+            return diagnostic_result(
+                step,
+                state,
+                movement.failure.code,
+                movement.failure.message,
+            )
         refresh_cell_suspension_relationship(state, src_id)
         refresh_cell_suspension_relationship(
             state, dst_id, forced_state=merged_cell_material_state(dst, moved_cell_state)
@@ -789,12 +903,23 @@ def _apply_transfer_mass(
     conflict = _quantity_axis_conflict(step, state, src, dst, src_id, dst_id)
     if conflict is not None:
         return conflict
-    move_explicit(
-        src=src,
-        dst=dst,
-        component_ratio=component_ratio,
+    movement = apply_material_movement(
+        state=state,
+        source=src,
+        target=dst,
+        source_id=src_id,
         destination_id=dst_id,
+        ratio=component_ratio,
+        material_effect_adapter=material_effect_adapter,
+        request_id=f"{step.step_id}:mass_volume_bridge",
     )
+    if movement.failure is not None:
+        return diagnostic_result(
+            step,
+            state,
+            movement.failure.code,
+            movement.failure.message,
+        )
     refresh_cell_suspension_relationship(state, src_id)
     refresh_cell_suspension_relationship(
         state, dst_id, forced_state=merged_cell_material_state(dst, moved_cell_state)
@@ -821,6 +946,7 @@ def _apply_transfer_count(
     src_id: str,
     dst_id: str,
     requested_cells: float,
+    material_effect_adapter: ScientificModelMaterialAdapter | None,
 ) -> MaterialUpdateResult:
     src = state["containers"][src_id]
     dst = state["containers"][dst_id]
@@ -883,12 +1009,23 @@ def _apply_transfer_count(
         isinstance(quantity, dict) and abs(float(quantity.get("value", 0.0))) > 1e-12
         for quantity in target_quantities.values()
     )
-    move_ratio(
-        src,
-        dst,
-        resolution.component_ratio,
+    movement = apply_material_movement(
+        state=state,
+        source=src,
+        target=dst,
+        source_id=src_id,
         destination_id=dst_id,
+        ratio=resolution.component_ratio,
+        material_effect_adapter=material_effect_adapter,
+        request_id=f"{step.step_id}:count_move",
     )
+    if movement.failure is not None:
+        return diagnostic_result(
+            step,
+            state,
+            movement.failure.code,
+            movement.failure.message,
+        )
     refresh_cell_suspension_relationship(state, src_id)
     target_relationship = refresh_cell_suspension_relationship(
         state,

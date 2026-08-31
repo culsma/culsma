@@ -6,8 +6,16 @@ from dataclasses import dataclass
 from typing import Any
 
 from culsma.pipeline.program_registry import get_separation_slot_contract
-from culsma.scientific_model import ProviderProvenance
-from culsma.runtime.material.ledger import refresh_container_aggregates, set_container_material
+from culsma.scientific_model.material import AssociationTarget, AssociationTargetKind
+from culsma.runtime.material.component_entries import (
+    ComponentEntryRelationError,
+    container_component_entries,
+    merge_transferred_entries,
+    normalize_component_entries,
+    replace_component_entries,
+    validate_component_entry_set,
+)
+from culsma.runtime.material.ledger import refresh_container_aggregates
 from culsma.runtime.material.partition import (
     apply_legacy_partition_material,
     component_partition_ratios,
@@ -18,12 +26,13 @@ from culsma.runtime.material.scientific_model_adapter import (
     ResolvedComponentEffect,
     ResolvedMaterialEffect,
     RuntimePartitionComponent,
-    ScientificModelPartitionAdapter,
+    ScientificModelMaterialAdapter,
+    provider_provenance_record,
 )
 from culsma.runtime.material.separation_fate import (
+    ContentPhysicalState,
     ExplicitContentFate,
     SeparationOperationContract,
-    resolve_content_physical_state,
     resolve_separation_operation_contract,
 )
 
@@ -58,6 +67,7 @@ CELL_MATERIAL_STATE_BY_RELATION = {
 @dataclass(frozen=True)
 class MaterialSeparationCandidate:
     effect: ResolvedMaterialEffect
+    entries_by_part: dict[str, list[dict[str, Any]]]
     components_by_part: dict[str, dict[str, float]]
     quantities_by_part: dict[str, dict[str, dict[str, Any]]]
     classes_by_part: dict[str, dict[str, str]]
@@ -71,25 +81,64 @@ class SeparationApplicationResult:
     failure: MaterialEffectFailure | None = None
 
 
+@dataclass(frozen=True)
+class MaterialCandidateValidationError(ValueError):
+    reason: str
+
+    def __str__(self) -> str:
+        return self.reason
+
+
+def validate_separation_candidate(candidate: MaterialSeparationCandidate) -> None:
+    """Enforce the Stage 3 contract before any Runtime material commit."""
+
+    expected_parts = {output.part_id for output in candidate.effect.outputs}
+    if set(candidate.entries_by_part) != expected_parts:
+        raise MaterialCandidateValidationError(
+            "Candidate parts do not match the resolved output contract"
+        )
+    for part_id, entries in candidate.entries_by_part.items():
+        try:
+            validate_component_entry_set(
+                entries,
+                owner=f"Candidate part '{part_id}'",
+            )
+        except (ComponentEntryRelationError, ValueError) as exc:
+            raise MaterialCandidateValidationError(str(exc)) from exc
+
+
 def project_resolved_material_effect(
     effect: ResolvedMaterialEffect,
     *,
     source_quantities: dict[str, Any],
     source_classes: dict[str, str],
+    source_entries: list[dict[str, Any]] | None = None,
+    output_ids_by_part: dict[str, str] | None = None,
 ) -> MaterialSeparationCandidate:
     """Project one resolved effect without mutating Runtime material state."""
 
-    components_by_part = {output.part_id: {} for output in effect.outputs}
-    quantities_by_part = {output.part_id: {} for output in effect.outputs}
-    classes_by_part = {output.part_id: {} for output in effect.outputs}
+    entries_by_part = {output.part_id: [] for output in effect.outputs}
     retired_quantities: dict[str, dict[str, Any]] = {}
+    entries_by_id = {
+        str(entry.get("entry_id")): entry
+        for entry in (source_entries or [])
+        if isinstance(entry, dict) and isinstance(entry.get("entry_id"), str)
+    }
     for component in effect.component_effects:
-        source_quantity = source_quantities.get(component.source_component_id)
-        source_class = source_classes.get(component.source_component_id)
+        source_entry = entries_by_id.get(component.source_entry_id, {})
+        content_ref = component.source_content_ref or str(
+            source_entry.get("content_ref", component.source_entry_id)
+        )
+        source_quantity = source_entry.get("quantity")
+        if not isinstance(source_quantity, dict):
+            source_quantity = source_quantities.get(content_ref)
+        source_class = source_entry.get("partition_class")
+        if not isinstance(source_class, str):
+            source_class = source_classes.get(content_ref)
         for output in component.outputs:
             if output.retire_quantity:
                 retired = retired_quantities.setdefault(
-                    component.source_component_id,
+                    component.source_entry_id,
                     {
                         "component_amount": 0.0,
                         "dimension": (
@@ -113,31 +162,109 @@ def project_resolved_material_effect(
                         source_quantity.get("value", component.source_amount)
                     ) * output.fraction
                 continue
-            output_components = components_by_part[output.part_id]
-            output_components[component.source_component_id] = (
-                output_components.get(component.source_component_id, 0.0)
-                + component.source_amount * output.fraction
-            )
-            if isinstance(source_quantity, dict):
-                projected_quantity = dict(source_quantity)
-                projected_quantity["value"] = (
-                    float(source_quantity.get("value", component.source_amount))
-                    * output.fraction
+            entries_by_part[output.part_id].append(
+                resolved_output_component_entry(
+                    component,
+                    output,
+                    content_ref=content_ref,
+                    source_quantity=source_quantity,
+                    source_class=source_class,
+                    source_entry=source_entry,
+                    output_id=(output_ids_by_part or {}).get(output.part_id),
                 )
-                quantities_by_part[output.part_id][
-                    component.source_component_id
-                ] = projected_quantity
-            if source_class is not None:
-                classes_by_part[output.part_id][
-                    component.source_component_id
-                ] = source_class
-    return MaterialSeparationCandidate(
+            )
+
+    components_by_part: dict[str, dict[str, float]] = {}
+    quantities_by_part: dict[str, dict[str, dict[str, Any]]] = {}
+    classes_by_part: dict[str, dict[str, str]] = {}
+    for part_id, entries in entries_by_part.items():
+        compressed_entries: list[dict[str, Any]] = []
+        merge_transferred_entries(compressed_entries, entries)
+        entries_by_part[part_id] = compressed_entries
+        projected: dict[str, Any] = {"metadata": {}}
+        replace_component_entries(projected, compressed_entries)
+        components_by_part[part_id] = dict(projected.get("components", {}))
+        quantities_by_part[part_id] = dict(projected.get("component_quantities", {}))
+        metadata = projected.get("metadata")
+        classes = (
+            metadata.get("component_partition_classes")
+            if isinstance(metadata, dict)
+            else None
+        )
+        classes_by_part[part_id] = dict(classes) if isinstance(classes, dict) else {}
+    candidate = MaterialSeparationCandidate(
         effect=effect,
+        entries_by_part=entries_by_part,
         components_by_part=components_by_part,
         quantities_by_part=quantities_by_part,
         classes_by_part=classes_by_part,
         retired_quantities=retired_quantities,
     )
+    validate_separation_candidate(candidate)
+    return candidate
+
+
+def resolved_output_component_entry(
+    component: ResolvedComponentEffect,
+    output: Any,
+    *,
+    content_ref: str,
+    source_quantity: Any,
+    source_class: str | None,
+    source_entry: dict[str, Any],
+    output_id: str | None = None,
+) -> dict[str, Any]:
+    projected_quantity = None
+    if isinstance(source_quantity, dict):
+        projected_quantity = dict(source_quantity)
+        projected_quantity["value"] = (
+            float(source_quantity.get("value", component.source_amount))
+            * output.fraction
+        )
+    provenance = provider_provenance_record(output.transition_provenance)
+    next_relation = (
+        "free"
+        if output.next_relation is None and output.fraction <= 1e-12
+        else output.next_relation or component.source_relation
+    )
+    association_target = output.next_association_target
+    if (
+        association_target is None
+        and next_relation != "free"
+        and next_relation not in {"bead_bound", "membrane_bound", "cell_bound"}
+        and isinstance(output_id, str)
+        and output_id
+    ):
+        association_target = AssociationTarget(
+            kind=AssociationTargetKind.CONTAINER,
+            id=output_id,
+        )
+    entry: dict[str, Any] = {
+        "entry_id": component.source_entry_id,
+        "content_ref": content_ref,
+        "amount": component.source_amount * output.fraction,
+        "quantity": projected_quantity,
+        "relation": next_relation,
+        "associated_with": (
+            association_target.id
+            if association_target is not None
+            else None
+        ),
+        "association_target_kind": (
+            association_target.kind.value
+            if association_target is not None
+            else None
+        ),
+        "preservation": source_entry.get("preservation") or component.source_preservation,
+        "label": output.next_label,
+        "relationship_source": "scientific_model",
+        "material_state_source": "scientific_model_provider",
+    }
+    if source_class is not None:
+        entry["partition_class"] = source_class
+    if provenance is not None:
+        entry["provenance"] = provenance
+    return entry
 
 
 def commit_separation_candidate(
@@ -148,37 +275,19 @@ def commit_separation_candidate(
 ) -> dict[str, str]:
     """Commit an already-resolved separation candidate to Runtime containers."""
 
+    validate_separation_candidate(candidate)
     expected_parts = {output.part_id for output in candidate.effect.outputs}
     if set(outputs_by_part) != expected_parts:
         raise ValueError(
             "Separation output containers do not match the resolved effect contract"
         )
     for part_id, output_container in outputs_by_part.items():
-        set_container_material(
-            output_container,
-            components=candidate.components_by_part[part_id],
-            component_classes=candidate.classes_by_part[part_id],
-            component_quantities=candidate.quantities_by_part[part_id],
-        )
+        replace_component_entries(output_container, candidate.entries_by_part[part_id])
     refresh_container_aggregates(outputs_by_part["0"])
     refresh_container_aggregates(outputs_by_part["1"])
     if all(source is not output for output in outputs_by_part.values()):
-        set_container_material(source, components={}, component_quantities={})
+        replace_component_entries(source, [])
     return {"volume": "detail_ledger_projection", "mass": "detail_ledger_projection"}
-
-
-def provider_provenance_record(
-    provenance: ProviderProvenance | None,
-) -> dict[str, Any] | None:
-    if provenance is None:
-        return None
-    return {
-        "provider_id": provenance.provider_id,
-        "provider_version": provenance.provider_version,
-        "model_id": provenance.model_id,
-        "model_version": provenance.model_version,
-        "configuration": dict(provenance.configuration),
-    }
 
 
 def resolved_component_fate_record(
@@ -209,6 +318,14 @@ def resolved_component_transition_records(
         records[output.part_id] = {
             "next_relation": output.next_relation,
             "next_label": output.next_label,
+            "next_association_target": (
+                {
+                    "kind": output.next_association_target.kind.value,
+                    "id": output.next_association_target.id,
+                }
+                if output.next_association_target is not None
+                else None
+            ),
             "retire_quantity": output.retire_quantity,
             "replacement_quantity": (
                 {
@@ -261,14 +378,16 @@ def resolved_effect_separation_record(
     for component in candidate.effect.component_effects:
         outputs = {output.part_id: output for output in component.outputs}
         ratios = {"0": outputs["0"].fraction, "1": outputs["1"].fraction}
-        ratios_by_component[component.source_component_id] = ratios
-        fates_by_component[component.source_component_id] = (
+        ratios_by_component[component.source_entry_id] = ratios
+        fates_by_component[component.source_entry_id] = (
             resolved_component_fate_record(component)
         )
-        transitions_by_component[component.source_component_id] = (
+        transitions_by_component[component.source_entry_id] = (
             resolved_component_transition_records(component)
         )
-        class_name = source_classes.get(component.source_component_id)
+        class_name = source_classes.get(
+            component.source_content_ref or component.source_entry_id
+        )
         if class_name is not None:
             class_counts[class_name] = class_counts.get(class_name, 0) + 1
             ratios_by_class[class_name] = ratios
@@ -307,9 +426,10 @@ def apply_separation_material(
     slot1: dict[str, Any],
     program: dict[str, Any],
     explicit_fates: dict[str, ExplicitContentFate] | None = None,
-    material_effect_adapter: ScientificModelPartitionAdapter | None = None,
+    material_effect_adapter: ScientificModelMaterialAdapter | None = None,
     request_id: str = "material-separation",
     source_id: str | None = None,
+    output_ids_by_part: dict[str, str] | None = None,
 ) -> SeparationApplicationResult:
     """Resolve and apply one separation through the primary Runtime boundary."""
 
@@ -335,33 +455,71 @@ def apply_separation_material(
         program,
         slot_contract=slot_contract,
     )
-    source_components = source.setdefault("components", {})
     source_quantities = source.get("component_quantities")
     source_quantities = (
         source_quantities if isinstance(source_quantities, dict) else {}
     )
-    if not isinstance(source_components, dict):
-        source_components = {}
     author_fates = explicit_fates or {}
+    source_entries = normalize_component_entries(
+        source,
+        state=state,
+        container_id=source_id,
+    )
     components: dict[str, RuntimePartitionComponent] = {}
-    for name, amount in list(source_components.items()):
-        component_id = str(name)
-        explicit_fate = author_fates.get(component_id)
+    for entry in source_entries:
+        component_id = str(entry.get("entry_id"))
+        content_ref = str(entry.get("content_ref"))
+        amount = float(entry.get("amount", 0.0))
+        explicit_fate = author_fates.get(content_ref)
         if explicit_fate is None:
-            legacy_ratios = component_partition_ratios(source, component_id)
+            legacy_ratios = component_partition_ratios(source, content_ref)
             if legacy_ratios is not None:
                 explicit_fate = ExplicitContentFate(
-                    component_id=component_id,
+                    component_id=content_ref,
                     ratios=legacy_ratios,
                     declared_slots=("0", "1"),
                     source="source_metadata_override",
                 )
+        physical_state = ContentPhysicalState(
+            association=str(entry.get("relation", "free")),
+            accessibility=(
+                "accessible"
+                if entry.get("relation", "free") == "free"
+                else "immobilized"
+            ),
+            preservation_state=str(entry.get("preservation") or "derived"),
+            source="component_entry",
+        )
         components[component_id] = RuntimePartitionComponent(
             component_id=component_id,
             amount=float(amount),
             explicit_fate=explicit_fate,
-            physical_state=resolve_content_physical_state(
-                state, source, component_id
+            physical_state=physical_state,
+            content_ref=content_ref,
+            quantity=(
+                dict(entry["quantity"])
+                if isinstance(entry.get("quantity"), dict)
+                else None
+            ),
+            associated_with=(
+                str(entry["associated_with"])
+                if isinstance(entry.get("associated_with"), str)
+                else None
+            ),
+            association_target_kind=(
+                str(entry["association_target_kind"])
+                if isinstance(entry.get("association_target_kind"), str)
+                else None
+            ),
+            preservation=(
+                str(entry["preservation"])
+                if isinstance(entry.get("preservation"), str)
+                else None
+            ),
+            label=(
+                str(entry["label"])
+                if isinstance(entry.get("label"), str)
+                else None
             ),
         )
 
@@ -385,6 +543,7 @@ def apply_separation_material(
         operation_contract=operation_contract,
         request_id=request_id,
         source_id=source_id,
+        output_ids_by_part=output_ids_by_part,
     )
     if isinstance(resolution, MaterialEffectFailure):
         return SeparationApplicationResult(
@@ -393,11 +552,25 @@ def apply_separation_material(
             ),
             failure=resolution,
         )
-    candidate = project_resolved_material_effect(
-        resolution,
-        source_quantities=source_quantities,
-        source_classes=source_component_classes(source),
-    )
+    try:
+        candidate = project_resolved_material_effect(
+            resolution,
+            source_quantities=source_quantities,
+            source_classes=source_component_classes(source),
+            source_entries=source_entries,
+            output_ids_by_part=output_ids_by_part,
+        )
+    except MaterialCandidateValidationError as exc:
+        failure = MaterialEffectFailure(
+            code="MAT_STATE_INVARIANT_VIOLATION",
+            message=str(exc),
+        )
+        return SeparationApplicationResult(
+            record=unresolved_separation_record(
+                program_kind, slot_contract, operation_contract, failure
+            ),
+            failure=failure,
+        )
     bulk_quantity_policy = commit_separation_candidate(
         candidate,
         source=source,
@@ -456,19 +629,31 @@ def separation_cell_material_state(
         return default_state
     effects_by_component = (
         {
-            component.source_component_id: component
+            component.source_entry_id: component
             for component in effect.component_effects
         }
         if effect is not None
         else {}
     )
     states: set[str] = set()
-    for component_id, quantity in quantities.items():
+    entry_rows = (
+        [
+            (
+                str(entry.get("entry_id", "")),
+                str(entry.get("content_ref", "")),
+                entry.get("quantity"),
+            )
+            for entry in container_component_entries(output)
+        ]
+        if effect is not None
+        else [(str(component_id), str(component_id), quantity) for component_id, quantity in quantities.items()]
+    )
+    for entry_id, content_ref, quantity in entry_rows:
         if not isinstance(quantity, dict) or quantity.get("dimension") != "count":
             continue
         if abs(float(quantity.get("value", 0.0))) <= 1e-12:
             continue
-        component_effect = effects_by_component.get(component_id)
+        component_effect = effects_by_component.get(entry_id)
         slot_effect = (
             next(
                 (
@@ -486,7 +671,9 @@ def separation_cell_material_state(
         if resolved_state is not None:
             states.add(resolved_state)
             continue
-        fate = fates.get(component_id) if isinstance(fates, dict) else None
+        fate = fates.get(entry_id) if isinstance(fates, dict) else None
+        if fate is None and isinstance(fates, dict):
+            fate = fates.get(content_ref)
         if (
             isinstance(fate, dict)
             and fate.get("association") == "container_surface"

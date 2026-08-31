@@ -7,6 +7,8 @@ from culsma.scientific_model.material import (
     MATERIAL_CONTRACT_VERSION,
     MATERIAL_SEPARATION_FATE,
     MATERIAL_STATE_TRANSITION,
+    AssociationTarget,
+    AssociationTargetKind,
     ComponentSnapshot,
     MaterialModelPayload,
     OperationSnapshot,
@@ -187,6 +189,17 @@ def test_table_2_returns_unresolved_for_composite_group_instead_of_guessing() ->
             "filtration_program",
             ("filtrate", "retentate"),
             _component(
+                entry_id="FREE_DNA:0",
+                kind="bio_molecule_or_virus",
+                content_type="dna",
+            ),
+            {"free_phase_passes": {"FREE_DNA:0": True}},
+            {"0": 1.0, "1": 0.0},
+        ),
+        (
+            "filtration_program",
+            ("filtrate", "retentate"),
+            _component(
                 entry_id="ADHERENT:0",
                 kind="bio_cellular",
                 content_type="cell_line",
@@ -350,6 +363,18 @@ def test_table_3_centrifuge_output_relationships(
     transition = result.proposal.transitions[0]
     assert transition.next_relation == expected_relation
     assert transition.next_label == expected_label
+    if expected_relation == "free":
+        assert transition.next_association_target is None
+    elif expected_relation == "bead_bound":
+        assert transition.next_association_target == AssociationTarget(
+            kind=AssociationTargetKind.COMPONENT_ENTRY,
+            id="BEADS:0",
+        )
+    else:
+        assert transition.next_association_target == AssociationTarget(
+            kind=AssociationTargetKind.CONTAINER,
+            id="selected",
+        )
 
 
 def test_table_3_returns_unresolved_for_unlisted_relationship() -> None:
@@ -409,7 +434,15 @@ def test_table_3_returns_unresolved_for_unlisted_relationship() -> None:
             ),
             "separate",
             "bound",
-            {"binding_established": True},
+            {
+                "binding_established": True,
+                "association_target": {
+                    "DNA:0": AssociationTarget(
+                        kind=AssociationTargetKind.COMPONENT_ENTRY,
+                        id="BEADS:0",
+                    )
+                },
+            },
             "bead_bound",
             "bound_output",
         ),
@@ -476,6 +509,180 @@ def test_table_3_registered_relationship_transitions(
     transition = result.proposal.transitions[0]
     assert transition.next_relation == expected_relation
     assert transition.next_label == expected_label
+
+
+@pytest.mark.parametrize(
+    ("component", "context", "expected_relation"),
+    [
+        (
+            _component(entry_id="PBS:0", kind="formulation", content_type="buffer"),
+            {"cross_container": True},
+            "free",
+        ),
+        (
+            _component(
+                entry_id="CELLS:0",
+                kind="bio_cellular",
+                content_type="cell_line",
+                relation="container_surface",
+                quantity_value=100.0,
+                quantity_unit="cells",
+            ),
+            {"cross_container": True, "release_declared": True},
+            "free",
+        ),
+        (
+            _component(
+                entry_id="PELLET:0",
+                kind="bio_cellular",
+                content_type="cell_line",
+                relation="pellet",
+            ),
+            {"cross_container": True},
+            "pellet",
+        ),
+        (
+            _component(
+                entry_id="LYSATE:0",
+                kind="bio_cellular",
+                content_type="cell_line",
+                relation="disrupted",
+            ),
+            {"cross_container": True},
+            "disrupted",
+        ),
+        (
+            _component(
+                entry_id="PRECIPITATE:0",
+                kind="bio_molecule_or_virus",
+                content_type="dna",
+                relation="precipitate",
+            ),
+            {"cross_container": True},
+            "precipitate",
+        ),
+        (
+            _component(
+                entry_id="BEADS:0",
+                kind="particulate",
+                content_type="beads",
+                relation="bead_bound",
+            ),
+            {
+                "cross_container": True,
+                "binding_preserved": True,
+                "association_target": {
+                    "BEADS:0": AssociationTarget(
+                        kind=AssociationTargetKind.COMPONENT_ENTRY,
+                        id="BEAD_SUPPORT:0",
+                    )
+                },
+            },
+            "bead_bound",
+        ),
+        (
+            _component(
+                entry_id="MEMBRANE:0",
+                kind="bio_subcellular",
+                content_type="membrane",
+                relation="membrane_bound",
+            ),
+            {
+                "cross_container": True,
+                "membrane_preserved": True,
+                "association_target": {
+                    "MEMBRANE:0": AssociationTarget(
+                        kind=AssociationTargetKind.COMPONENT_ENTRY,
+                        id="MEMBRANE_SUPPORT:0",
+                    )
+                },
+            },
+            "membrane_bound",
+        ),
+        (
+            _component(
+                entry_id="TARGET:0",
+                kind="bio_molecule_or_virus",
+                content_type="protein",
+                relation="cell_bound",
+            ),
+            {
+                "cross_container": True,
+                "cell_integrity_preserved": True,
+                "association_target": {
+                    "TARGET:0": AssociationTarget(
+                        kind=AssociationTargetKind.COMPONENT_ENTRY,
+                        id="CELL_SUPPORT:0",
+                    )
+                },
+            },
+            "cell_bound",
+        ),
+        (
+            _component(
+                entry_id="FIELD:0",
+                kind="particulate",
+                content_type="beads",
+                relation="field_retained",
+            ),
+            {"cross_container": True, "field_preserved": False},
+            "free",
+        ),
+    ],
+)
+def test_table_3_cross_container_move_matrix(
+    component: ComponentSnapshot,
+    context: dict[str, object],
+    expected_relation: str,
+) -> None:
+    payload = MaterialModelPayload(
+        operation=OperationSnapshot(
+            program_kind="material_move",
+            effect_kind="move",
+            output_roles=(
+                OutputRoleSnapshot(part_id="tube", semantic_role="destination"),
+            ),
+        ),
+        components=(component,),
+        context={**context, "label_has_persistent_relation": False},
+    )
+
+    result = create_default_scientific_model_resolver().resolve(
+        _request(MATERIAL_STATE_TRANSITION, payload)
+    )
+
+    assert result.status is ModelStatus.RESOLVED
+    assert isinstance(result.proposal, StateTransitionDecision)
+    assert result.proposal.transitions[0].next_relation == expected_relation
+    assert result.proposal.transitions[0].next_label is None
+
+
+def test_table_3_rejects_surface_move_without_a_release_fact() -> None:
+    payload = MaterialModelPayload(
+        operation=OperationSnapshot(
+            program_kind="material_move",
+            effect_kind="move",
+            output_roles=(
+                OutputRoleSnapshot(part_id="tube", semantic_role="destination"),
+            ),
+        ),
+        components=(
+            _component(
+                entry_id="COATING:0",
+                kind="chemical",
+                content_type="other",
+                relation="container_surface",
+            ),
+        ),
+        context={"cross_container": True, "release_declared": False},
+    )
+
+    result = create_default_scientific_model_resolver().resolve(
+        _request(MATERIAL_STATE_TRANSITION, payload)
+    )
+
+    assert result.status is ModelStatus.NOT_APPLICABLE
+    assert result.diagnostics[0].code == "MATERIAL_RULEBOOK_UNRESOLVED"
 
 
 def test_table_3_disrupt_retires_intact_cell_count() -> None:

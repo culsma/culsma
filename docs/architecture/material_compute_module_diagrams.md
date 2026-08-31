@@ -160,8 +160,9 @@ Design judgment:
 7. `suspension.py` owns the runtime policy, implicit-carrier provenance,
    dispersion relationships, and relationship refresh after movement or
    partitioning. It does not add a new content kind.
-8. Cross-container movement releases only container-local cell-surface
-   association in the moved fraction. Relationship refresh also replaces any
+8. Cross-container movement resolves every moved entry through the injected
+   scientific-model state-transition port. The built-in provider releases only
+   container-local counted-cell surface association in the moved fraction. Relationship refresh also replaces any
    stale separation-output class for those newly suspended cells; residual
    source cells and unrelated pellet, precipitate, bead, membrane, or
    cell-bound states retain their existing physical state.
@@ -558,6 +559,8 @@ sequenceDiagram
     participant StateManager as "material.state.MaterialStateManager"
     participant ContainerContent as "material.container_content"
     participant Ledger as "material.ledger"
+    participant EntryTransaction as "material.component_entries"
+    participant Movement as "material.movement"
     participant Mutation as "material.mutation"
     participant PartsManager as "material.contents_state.MaterialIndexedPartsStateManager"
 
@@ -576,7 +579,10 @@ sequenceDiagram
     else change_plan.kind == "quantity_or_composition"
         StateManager->>Mutation: apply_mutation(step, state)
         Mutation->>Mutation: apply_transfer_by_qty(step, state, qty)
-        Mutation->>Ledger: move_explicit(src, dst, volume_uL, mass_mg, component_ratio)
+        Mutation->>Movement: apply_material_movement(state, source, target, ratio, adapter)
+        Movement->>EntryTransaction: project and validate source + target candidates
+        EntryTransaction-->>Movement: accepted component-entry transaction
+        Movement->>EntryTransaction: commit candidate atomically
     else change_plan.kind == "partition_or_index"
         StateManager->>StateManager: contents_plan = change_plan.payload["contents_plan"]
         StateManager->>PartsManager: apply_partition_or_index_change(contents_plan, state)
@@ -597,6 +603,8 @@ sequenceDiagram
     participant PartsState as "material.contents_state"
     participant Separation as "material.separation"
     participant Ledger as "material.ledger"
+    participant EntryTransaction as "material.component_entries"
+    participant Movement as "material.movement"
 
     PartsManager->>PartsManager: apply_partition_or_index_change(transition_plan, state)
 
@@ -609,7 +617,7 @@ sequenceDiagram
     else step.op == "frac"
         PartsManager->>PartsManager: apply_frac(step, state)
         PartsManager->>PartsManager: record_frac_transition(step=step, state=working, source_id=source_id, bins=bins, program_kind=program_kind)
-        PartsManager->>Ledger: move_explicit(source, slot, moved_volume, moved_mass, component_ratio=component_ratio)
+        PartsManager->>Movement: apply_material_movement(state, source, slot, ratio, adapter)
         PartsManager->>PartsState: record_partitioned_contents_state(state=state, source_id=source_id, source=source, parts=concrete_parts, kind="fractionated", producer_op="frac", program_kind=program_kind, slot_contract={slot: f"fraction_{slot}" for slot in slot_bindings}, preservation_contract=None, step_id=step.step_id)
         PartsManager->>PartsState: remove_transient_containers(state, list(slot_bindings.values()), preserve=source_id)
     else step.op == "Mutation" and is_contents_index_ref(source_ref)
@@ -645,34 +653,43 @@ that kind of material-state change.
 sequenceDiagram
     participant PartsManager as "material.contents_state.MaterialIndexedPartsStateManager"
     participant Separation as "material.separation"
-    participant Adapter as "material.scientific_model_adapter.ScientificModelPartitionAdapter"
-    participant Model as "scientific-model public port"
-    participant Legacy as "material.partition (unknown-input compatibility only)"
     participant Fate as "material.separation_fate"
+    participant Adapter as "material.scientific_model_adapter.ScientificModelMaterialAdapter"
+    participant Coordinator as "scientific_model.material.coordinator.MaterialEffectCoordinator"
+    participant Resolver as "scientific_model.resolver.RegistryScientificModelResolver"
+    participant Provider as "scientific_model.material.builtin.BuiltinMaterialRulebookProvider"
+    participant Legacy as "material.partition (unknown-input compatibility only)"
     participant Ledger as "material.ledger"
 
     PartsManager->>Separation: apply_separation_material(state, source, slot0, slot1, program, explicit_fates)
-    Separation->>Fate: resolve operation contract from complete program and slot meanings
-    Fate-->>Separation: movement, retention, release, and preservation rules
+    Separation->>Fate: resolve_separation_operation_contract(program, slot_contract)
 
     alt registered separation program
-        Separation->>Adapter: resolve(immutable operation + component snapshots)
-        Adapter->>Model: Table 2 fate request, then Table 3 transition requests
-        Model-->>Adapter: validated typed decisions
-        Adapter-->>Separation: ResolvedMaterialEffect; no mutation
+        Separation->>Adapter: ScientificModelMaterialAdapter.resolve(...)
+        Adapter->>Coordinator: MaterialEffectCoordinator.resolve(request)
+        Coordinator->>Resolver: RegistryScientificModelResolver.resolve(request)
+        Resolver->>Provider: BuiltinMaterialRulebookProvider.resolve(request)
+        Provider->>Provider: resolve_separation_fate(payload, provenance)
+        Provider->>Provider: resolve_state_transition(payload, provenance)
+        Adapter-->>Separation: ScientificModelMaterialAdapter.resolve(...)
         Separation->>Separation: project_resolved_material_effect(effect)
-        Separation->>Separation: validate candidate quantities and conservation
-        Separation->>Ledger: commit_separation_candidate(candidate)
+        Separation->>Separation: validate_separation_candidate(candidate)
+        Separation->>Separation: commit_separation_candidate(candidate, outputs_by_part)
     else unknown compatibility input
         Separation->>Legacy: apply_legacy_partition_material(...)
-        Legacy->>Ledger: commit compatibility result
-        Legacy-->>Separation: compatibility record
+        Legacy->>Ledger: set_container_material(...)
+        Legacy->>Legacy: project_partition_slot_aggregates(slot0, slot1)
+        Legacy-->>Separation: apply_legacy_partition_material(...)
     end
 
-    Separation-->>PartsManager: SeparationApplicationResult(record, effect, failure)
+    Separation-->>PartsManager: apply_separation_material(...)
 ```
 
-`ScientificModelPartitionAdapter` resolves decisions only. The Runtime projector
+`component_entries` is the Runtime source of truth. `components`,
+`component_quantities`, and relationship lists remain 1.x-compatible projections;
+operation modules must not merge or copy their values independently.
+
+`ScientificModelMaterialAdapter` resolves decisions only. The Runtime projector
 converts one immutable `ResolvedMaterialEffect` into a candidate; the committer
 applies that candidate. Indexed contents consume the same typed effect and do
 not rerun either decision or projection.
@@ -796,10 +813,17 @@ classDiagram
     class MaterialLedger {
         +container(state, container_id)
         +ensure_container(state, container_id)
-        +move_explicit(src, dst, volume, mass, component_ratio)
-        +set_container_material(container, volume, mass, components, classes)
+        +move_explicit(src, dst, component_ratio, destination_id)
+        +set_container_material(container, components, classes, quantities)
         +remove_ratio(source, ratio)
         +collect_unit_into_container(...)
+    }
+
+    class ComponentEntryTransaction {
+        +plan_component_entry_transfer(...) ComponentEntryTransfer
+        +commit_component_entry_transfer(...)
+        +replace_component_entries(container, entries)
+        +project_component_entries(container)
     }
 
     class MaterialRefResolver {
@@ -816,8 +840,15 @@ classDiagram
         +classify(state, container, component_id) PartitionClass
     }
 
-    class ScientificModelPartitionAdapter {
+    class ScientificModelMaterialAdapter {
         +resolve(...) ResolvedMaterialEffect | MaterialEffectFailure
+        +resolve_movement(...) ResolvedMaterialTransition | MaterialEffectFailure
+    }
+
+    class MaterialMovementApplication {
+        +apply_material_movement(...) MaterialMovementApplicationResult
+        +project_material_movement(...) MaterialMovementCandidate
+        +commit_material_movement(candidate) ComponentEntryTransfer
     }
 
     class SeparationApplication {
@@ -854,7 +885,8 @@ classDiagram
     MaterialCompute --> MaterialUpdateResult
     MaterialCompute --> MaterialStateManager
     MaterialCompute --> MaterialConservation
-    MaterialCompute --> ScientificModelPartitionAdapter
+    MaterialCompute --> ScientificModelMaterialAdapter
+    MaterialStateManager --> MaterialMovementApplication
     MaterialStateManager --> MaterialStateChangePlan
     MaterialStateManager --> ContainerContent
     MaterialStateManager --> MutationTransform
@@ -863,11 +895,14 @@ classDiagram
     MutationTransform --> MutationSourceDispatcher
     MutationTransform --> MaterialLedger
     MaterialIndexedPartsStateManager --> MaterialLedger
+    MaterialLedger --> ComponentEntryTransaction
     MaterialIndexedPartsStateManager --> SeparationApplication
-    SeparationApplication --> ScientificModelPartitionAdapter
-    ScientificModelPartitionAdapter --> ResolvedMaterialEffect
+    SeparationApplication --> ScientificModelMaterialAdapter
+    MaterialMovementApplication --> ScientificModelMaterialAdapter
+    MaterialMovementApplication --> ComponentEntryTransaction
+    ScientificModelMaterialAdapter --> ResolvedMaterialEffect
     ResolvedMaterialEffect --> MaterialSeparationCandidate
-    MaterialSeparationCandidate --> MaterialLedger
+    MaterialSeparationCandidate --> ComponentEntryTransaction
     SeparationApplication --> SepPartitionStrategyRegistry : unknown-input compatibility only
     MaterialIndexedPartsStateManager --> ContentsStateTransitionPlan
     MaterialIndexedPartsStateManager --> ContentsPartitionTransition
@@ -895,17 +930,20 @@ The material compute refactor is in a transitional state:
 6. Every `sep` and compatibility `source.partition(...)` path enters
    `material.separation.apply_separation_material(...)` first.
 7. Every registered separation program uses one injected
-   `ScientificModelPartitionAdapter`; each
+   `ScientificModelMaterialAdapter`; each
    `ResolvedMaterialEffect` is projected and committed inside
    `material.separation`.
-8. `material.partition` classes and registry remain for direct Python
+8. Every physical cross-container material move uses the same injected adapter's
+   state-transition capability before `material.movement` validates and commits
+   the source/target candidate.
+9. `material.partition` classes and registry remain for direct Python
    compatibility. Registered Runtime separation does not dispatch through them;
    the application boundary reaches the shell only for unknown compatibility
    input.
-9. Argument reading, reference resolution, ledger mutation, diagnostics, and
+10. Argument reading, reference resolution, ledger mutation, diagnostics, and
    conservation now live behind public service modules instead of cross-module
    imports from `support.py`.
-10. `runtime/material_compute.py` remains as a compatibility facade.
+11. `runtime/material_compute.py` remains as a compatibility facade.
 
 Conformance rule: every stage should keep the existing material tests passing,
 especially the separation program tests and DNA cleanup regression.

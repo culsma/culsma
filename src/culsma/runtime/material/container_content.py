@@ -8,6 +8,11 @@ from culsma.pipeline.content_vocab import ContainerKind, normalize_content_class
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.material.args import arg_bool, arg_quantity, arg_string
 from culsma.runtime.material.contents_state import invalidate_contents_state
+from culsma.runtime.material.component_entries import (
+    append_component_quantity,
+    content_registry_partition_class,
+    content_registry_relationship,
+)
 from culsma.runtime.material.diagnostics import diagnostic_result
 from culsma.runtime.material.ledger import (
     check_capacity_guard,
@@ -237,16 +242,31 @@ def apply_load_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateR
     slot["mass_mg"] = float(slot.get("mass_mg", 0.0)) + moved_mg
     slot["count_cells"] = float(slot.get("count_cells", 0.0)) + moved_cells
 
-    comps = container.setdefault("components", {})
-    if isinstance(comps, dict):
-        comps[content_id] = float(comps.get(content_id, 0.0)) + canonical_value
-    component_quantities = container.setdefault("component_quantities", {})
-    if isinstance(component_quantities, dict):
-        existing_quantity = component_quantities.get(content_id)
-        if not isinstance(existing_quantity, dict):
-            existing_quantity = {"dimension": axis, "unit": canonical_unit, "value": 0.0}
-            component_quantities[content_id] = existing_quantity
-        existing_quantity["value"] = float(existing_quantity.get("value", 0.0)) + canonical_value
+    declared_relationship = (
+        content_registry_relationship(state, content_id)
+        if axis == "count" and content.get("content_kind") == "bio_cellular"
+        else {"relation": "free"}
+    )
+    append_component_quantity(
+        container,
+        content_ref=content_id,
+        amount=canonical_value,
+        quantity={"dimension": axis, "unit": canonical_unit, "value": canonical_value},
+        relation=str(declared_relationship.get("relation", "free")),
+        associated_with=container_id,
+        preservation=(
+            str(declared_relationship["preservation"])
+            if isinstance(declared_relationship.get("preservation"), str)
+            else None
+        ),
+        relationship_source=(
+            str(declared_relationship["relationship_source"])
+            if isinstance(declared_relationship.get("relationship_source"), str)
+            else None
+        ),
+        material_state_source="content_registry",
+        partition_class=content_registry_partition_class(state, content_id),
+    )
     refresh_container_aggregates(container)
     invalidate_contents_state(state, container_id, reason="content_load")
 

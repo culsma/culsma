@@ -809,7 +809,7 @@ def test_sep_volume_only_bulk_is_projected_from_component_fates():
     assert result.delta["partition"]["bulk_quantity_policy"]["volume"] == "detail_ledger_projection"
 
 
-def test_sep_magnetic_volume_only_bulk_follows_the_same_component_fate():
+def test_sep_magnetic_bound_fate_requires_a_support_component_entry():
     state = _partition_state(
         components={"AMPLIFIED_CDNA": 100.0},
         component_quantities={
@@ -827,14 +827,9 @@ def test_sep_magnetic_volume_only_bulk_follows_the_same_component_fate():
         material_state=state,
     )
 
-    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
-    slots = result.material_state["indexed_bindings"]["sep_group"]
-    bound = result.material_state["containers"][slots["0"]]
-    flowthrough = result.material_state["containers"][slots["1"]]
-    assert bound["component_quantities"]["AMPLIFIED_CDNA"]["value"] == 100.0
-    assert flowthrough["component_quantities"]["AMPLIFIED_CDNA"]["value"] == 0.0
-    assert (bound["volume_uL"], flowthrough["volume_uL"]) == (100.0, 0.0)
-    assert result.delta["partition"]["bulk_quantity_policy"]["volume"] == "detail_ledger_projection"
+    assert not result.ok
+    assert result.diagnostics[0].code == "MAT_SCIENTIFIC_MODEL_UNRESOLVED"
+    assert "association target" in result.diagnostics[0].message
 
 
 def test_material_compute_rejects_invalid_component_quantity_before_projection():
@@ -1100,7 +1095,7 @@ def test_sep_aspiration_preserves_surface_associated_content_on_its_native_count
     }
 
 
-def test_sep_aspiration_requires_a_retention_fact_for_free_cells():
+def test_sep_aspiration_routes_free_cells_with_the_declared_free_phase():
     result = apply_step(
         step=_sep_step(
             program_name="filtration_program",
@@ -1118,10 +1113,14 @@ def test_sep_aspiration_requires_a_retention_fact_for_free_cells():
         ),
     )
 
-    assert not result.ok
-    assert [diagnostic.code for diagnostic in result.diagnostics] == [
-        "MAT_SCIENTIFIC_MODEL_UNRESOLVED"
-    ]
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    slots = result.material_state["indexed_bindings"]["sep_group"]
+    assert result.material_state["containers"][slots["0"]]["component_quantities"][
+        "RPE1"
+    ]["value"] == 100000.0
+    assert result.material_state["containers"][slots["1"]]["component_quantities"][
+        "RPE1"
+    ]["value"] == 0.0
 
 
 def test_sep_centrifugal_filtration_uses_filtrate_and_retentate_slots():
@@ -1195,6 +1194,46 @@ def test_sep_magnetic_sends_target_and_beads_to_bound_fraction():
     assert result.delta["partition"]["transitions_by_component"]["BEADS"]["0"][
         "next_relation"
     ] == "field_retained"
+    bound_entries = result.material_state["containers"][slots["0"]][
+        "component_entries"
+    ]
+    dna_entry = next(
+        entry for entry in bound_entries if entry["content_ref"] == "DNA"
+    )
+    bead_entry = next(
+        entry for entry in bound_entries if entry["content_ref"] == "BEADS"
+    )
+    assert dna_entry["associated_with"] == bead_entry["entry_id"]
+    assert dna_entry["association_target_kind"] == "component_entry"
+
+
+def test_sep_magnetic_rejects_an_ambiguous_support_target() -> None:
+    state = _partition_state(
+        components={"DNA": 100.0, "BEADS_A": 50.0, "BEADS_B": 50.0},
+        registry={
+            "DNA": ("bio_molecule_or_virus", "dna"),
+            "BEADS_A": ("particulate", "beads"),
+            "BEADS_B": ("particulate", "beads"),
+        },
+    )
+    state["content_registry"]["BEADS_A"]["content_attrs"] = {
+        "bead_property": "magnetic"
+    }
+    state["content_registry"]["BEADS_B"]["content_attrs"] = {
+        "bead_property": "magnetic"
+    }
+
+    result = apply_step(
+        step=_sep_step(
+            program_name="magnetic_program",
+            component_fates={"DNA": {"bound": 1.0, "flowthrough": 0.0}},
+        ),
+        material_state=state,
+    )
+
+    assert not result.ok
+    assert result.diagnostics[0].code == "MAT_SCIENTIFIC_MODEL_UNRESOLVED"
+    assert "association target" in result.diagnostics[0].message
 
 
 def test_sep_disrupt_is_state_transition_without_guessed_debris_fraction():

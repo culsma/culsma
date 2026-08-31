@@ -49,6 +49,7 @@ def resolve_separation_fate_rule(
     program_kind: str,
     group: CalculationGroup,
     current_relation: str,
+    free_phase_passes: bool = False,
     filter_retains: bool = False,
     is_magnetic_support: bool = False,
     surface_preserved: bool = False,
@@ -82,6 +83,8 @@ def resolve_separation_fate_rule(
             return SeparationFateMatch("F_FIL_PRESERVE", (0.0, 1.0))
         if current_relation != MaterialRelation.FREE:
             return None
+        if free_phase_passes:
+            return SeparationFateMatch("F_FIL_FREE_PHASE", (1.0, 0.0))
         if group is CalculationGroup.MOBILE_PHASE:
             return SeparationFateMatch("F_FIL_MOBILE", (1.0, 0.0))
         if filter_retains and group in {
@@ -224,13 +227,21 @@ def resolve_relationship_transition_rule(
         )
     if (
         current_relation == MaterialRelation.CONTAINER_SURFACE
-        and effect_kind == "release_move"
+        and effect_kind in {"move", "release_move"}
         and output_role == "destination"
         and group is CalculationGroup.SEDIMENTABLE_MATERIAL
         and cross_container
         and release_declared
     ):
         return RelationshipTransitionMatch("T_SURFACE_RELEASE", MaterialRelation.FREE, None)
+
+    if (
+        current_relation == MaterialRelation.FREE
+        and effect_kind == "move"
+        and output_role == "destination"
+        and cross_container
+    ):
+        return RelationshipTransitionMatch("T_FREE_MOVE", MaterialRelation.FREE, None)
 
     if (
         effect_kind == "separate"
@@ -287,7 +298,7 @@ def resolve_relationship_transition_rule(
         return RelationshipTransitionMatch(
             rule_id="T_FREE_OUTPUT",
             next_relation=MaterialRelation.FREE,
-            next_label=output_label(output_role),
+            next_label=transition_output_label(effect_kind, output_role),
         )
     if (
         current_relation == MaterialRelation.PELLET
@@ -297,7 +308,7 @@ def resolve_relationship_transition_rule(
         return RelationshipTransitionMatch(
             rule_id="T_PRESERVE_PELLET",
             next_relation=MaterialRelation.PELLET,
-            next_label=output_label(output_role),
+            next_label=transition_output_label(effect_kind, output_role),
         )
     if (
         current_relation == MaterialRelation.PRECIPITATE
@@ -307,7 +318,17 @@ def resolve_relationship_transition_rule(
         return RelationshipTransitionMatch(
             "T_PRESERVE_PRECIPITATE",
             MaterialRelation.PRECIPITATE,
-            output_label(output_role),
+            transition_output_label(effect_kind, output_role),
+        )
+    if (
+        current_relation == MaterialRelation.DISRUPTED
+        and effect_kind == "move"
+        and output_role == "destination"
+    ):
+        return RelationshipTransitionMatch(
+            "T_PRESERVE_DISRUPTED",
+            MaterialRelation.DISRUPTED,
+            None,
         )
     if (
         current_relation == MaterialRelation.BEAD_BOUND
@@ -317,7 +338,7 @@ def resolve_relationship_transition_rule(
         return RelationshipTransitionMatch(
             "T_PRESERVE_BEAD_BOUND",
             MaterialRelation.BEAD_BOUND,
-            output_label(output_role),
+            transition_output_label(effect_kind, output_role),
         )
     if (
         current_relation == MaterialRelation.MEMBRANE_BOUND
@@ -327,7 +348,7 @@ def resolve_relationship_transition_rule(
         return RelationshipTransitionMatch(
             "T_PRESERVE_MEMBRANE_BOUND",
             MaterialRelation.MEMBRANE_BOUND,
-            output_label(output_role),
+            transition_output_label(effect_kind, output_role),
         )
     if (
         current_relation == MaterialRelation.CELL_BOUND
@@ -337,7 +358,7 @@ def resolve_relationship_transition_rule(
         return RelationshipTransitionMatch(
             "T_PRESERVE_CELL_BOUND",
             MaterialRelation.CELL_BOUND,
-            output_label(output_role),
+            transition_output_label(effect_kind, output_role),
         )
     if (
         current_relation == MaterialRelation.FIELD_RETAINED
@@ -370,3 +391,7 @@ def resolve_relationship_transition_rule(
 
 def output_label(output_role: str) -> str:
     return output_role if output_role.endswith("_output") else f"{output_role}_output"
+
+
+def transition_output_label(effect_kind: str, output_role: str) -> str | None:
+    return None if effect_kind == "move" else output_label(output_role)

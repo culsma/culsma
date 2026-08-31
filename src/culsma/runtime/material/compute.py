@@ -10,7 +10,7 @@ from culsma.scientific_model import (
     ScientificModelResolver,
     create_default_scientific_model_resolver,
 )
-from culsma.scientific_model.material import SepEffectCoordinator
+from culsma.scientific_model.material import MaterialEffectCoordinator
 from culsma.runtime.material.conservation import (
     CONSERVATION_OPS,
     declared_quantity_retirements,
@@ -26,7 +26,7 @@ from culsma.runtime.material.refs import initialize_bindings
 from culsma.runtime.material.movements import derive_material_movements, material_quantities_changed
 from culsma.runtime.material.result import MaterialUpdateResult
 from culsma.runtime.material.scientific_model_adapter import (
-    ScientificModelPartitionAdapter,
+    ScientificModelMaterialAdapter,
 )
 from culsma.runtime.material.state import MaterialStateManager
 
@@ -42,9 +42,11 @@ class MaterialCompute:
             if scientific_model is not None
             else create_default_scientific_model_resolver()
         )
-        self.sep_effect_coordinator = SepEffectCoordinator(self.scientific_model)
-        self.material_effect_adapter = ScientificModelPartitionAdapter(
-            self.sep_effect_coordinator
+        self.material_effect_coordinator = MaterialEffectCoordinator(
+            self.scientific_model
+        )
+        self.material_effect_adapter = ScientificModelMaterialAdapter(
+            self.material_effect_coordinator
         )
         self.state_manager = state_manager or MaterialStateManager(
             material_effect_adapter=self.material_effect_adapter
@@ -59,8 +61,8 @@ class MaterialCompute:
             return diagnostic_result(
                 step=step,
                 state=state,
-                code="MAT_INVALID_COMPONENT_QUANTITY",
-                message=detail_error,
+                code=detail_error.code,
+                message=detail_error.message,
             )
         initialize_bindings(state)
         before_totals = state_totals(state)

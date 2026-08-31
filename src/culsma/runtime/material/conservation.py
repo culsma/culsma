@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from culsma.runtime.material.ledger import CONSERVATION_ABS_EPS, container_count_cells, density_mg_per_uL
-from culsma.runtime.material.units import COUNT_TO_CELLS
+from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_UL
 
 
 CONSERVATION_REL_EPS = 1e-9
@@ -50,7 +50,14 @@ def state_totals(state: dict[str, Any]) -> dict[str, float]:
             total_mass += mass_mg
         comp = obj.get("components", {})
         if isinstance(comp, dict):
-            total_components += sum(float(v) for v in comp.values())
+            quantities = obj.get("component_quantities")
+            total_components += sum(
+                canonical_component_amount(
+                    quantities.get(component_id) if isinstance(quantities, dict) else None,
+                    fallback=float(amount),
+                )
+                for component_id, amount in comp.items()
+            )
         total_cells += container_count_cells(obj)
     return {
         "volume_uL": total_volume,
@@ -58,6 +65,21 @@ def state_totals(state: dict[str, Any]) -> dict[str, float]:
         "count_cells": total_cells,
         "components": total_components,
     }
+
+
+def canonical_component_amount(quantity: Any, *, fallback: float) -> float:
+    if not isinstance(quantity, dict):
+        return fallback
+    value = float(quantity.get("value", fallback))
+    unit = str(quantity.get("unit", ""))
+    dimension = quantity.get("dimension")
+    if dimension == "volume" and unit in VOLUME_TO_UL:
+        return value * VOLUME_TO_UL[unit]
+    if dimension == "mass" and unit in MASS_TO_MG:
+        return value * MASS_TO_MG[unit]
+    if dimension == "count" and unit in COUNT_TO_CELLS:
+        return value * COUNT_TO_CELLS[unit]
+    return fallback
 
 
 def totals_conserved(before: dict[str, float], after: dict[str, float]) -> bool:

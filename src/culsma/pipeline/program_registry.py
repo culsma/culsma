@@ -23,6 +23,7 @@ class ProgramSpec:
     required_fields: tuple[str, ...]
     allowed_source_styles: tuple[str, ...] | None = None
     result_contract_key: str | None = None
+    material_effect_kind: str | None = None
     legacy_aliases: tuple[str, ...] = ()
 
 
@@ -51,6 +52,7 @@ def _spec(
     fields: tuple[ProgramFieldSpec, ...],
     allowed_source_styles: tuple[str, ...] | None = None,
     result_contract_key: str | None = None,
+    material_effect_kind: str | None = None,
     legacy_aliases: tuple[str, ...] = (),
 ) -> ProgramSpec:
     required_fields = tuple(field.name for field in fields if field.required)
@@ -62,6 +64,7 @@ def _spec(
         required_fields=required_fields,
         allowed_source_styles=allowed_source_styles,
         result_contract_key=result_contract_key,
+        material_effect_kind=material_effect_kind,
         legacy_aliases=legacy_aliases,
     )
 
@@ -91,6 +94,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
             _field("keep_source", value_kind="text_enum", enum_values=KEEP_SOURCE_VALUES),
         ),
         result_contract_key="sep_container_group",
+        material_effect_kind="separation_fate",
     ),
     "magnetic_program": _spec(
         "magnetic_program",
@@ -101,6 +105,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
             _field("device", value_kind="text"),
         ),
         result_contract_key="sep_container_group",
+        material_effect_kind="separation_fate",
     ),
     "disrupt_program": _spec(
         "disrupt_program",
@@ -108,6 +113,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         owners=("sep", "partition"),
         fields=(_field("duration", value_kind="quantity", dimension="time"),),
         result_contract_key="sep_container_group",
+        material_effect_kind="disrupt",
     ),
     "field_program": _spec(
         "field_program",
@@ -118,6 +124,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
             _field("duration", value_kind="quantity", dimension="time"),
         ),
         result_contract_key="sep_container_group",
+        material_effect_kind="separation_fate",
     ),
     "filtration_program": _spec(
         "filtration_program",
@@ -128,6 +135,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
             _field("drive", required=True, value_kind="text"),
         ),
         result_contract_key="sep_container_group",
+        material_effect_kind="separation_fate",
     ),
     "centrifugal_filtration_program": _spec(
         "centrifugal_filtration_program",
@@ -139,6 +147,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
             _field("duration", value_kind="quantity", dimension="time"),
         ),
         result_contract_key="sep_container_group",
+        material_effect_kind="separation_fate",
     ),
     "phase_partition_program": _spec(
         "phase_partition_program",
@@ -146,6 +155,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         owners=("sep", "partition"),
         fields=(_field("solvent", required=True, value_kind="text"),),
         result_contract_key="sep_container_group",
+        material_effect_kind="separation_fate",
     ),
     "precipitation_program": _spec(
         "precipitation_program",
@@ -156,6 +166,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
             _field("duration", value_kind="quantity", dimension="time"),
         ),
         result_contract_key="sep_container_group",
+        material_effect_kind="separation_fate",
     ),
     "density_gradient_program": _spec(
         "density_gradient_program",
@@ -210,6 +221,11 @@ def get_program_spec(kind: str) -> ProgramSpec | None:
 def get_separation_slot_contract(kind: str) -> dict[str, str] | None:
     contract = SEPARATION_SLOT_CONTRACTS.get(kind)
     return dict(contract) if contract is not None else None
+
+
+def get_material_effect_kind(kind: str) -> str | None:
+    spec = get_program_spec(kind)
+    return spec.material_effect_kind if spec is not None else None
 
 
 def is_known_program_kind(kind: str) -> bool:
