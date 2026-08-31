@@ -420,6 +420,7 @@ class AssignHandler(BaseStatementHandler):
                 strict_mode=ctx.enforce_binding,
                 span=stmt.span,
                 node_id=stmt.id,
+                treat_string_literal_as_name_ref=False,
             ),
         )
 

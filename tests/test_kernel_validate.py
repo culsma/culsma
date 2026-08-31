@@ -376,6 +376,31 @@ def test_validate_member_assignment_root_requires_binding():
         _compile_source(src)
 
 
+def test_validate_result_field_string_values_are_data_not_material_names():
+    src = """
+protocol T {
+  let schema = data_schema(label = "WesternBlot", fields = [loading_mass_ug, channel_nm, antibody_target]);
+  let readout = data_ref(kind = custom, schema_ref = schema);
+  readout.result.loading_mass_ug = "30";
+  readout.result.channel_nm = "680";
+  readout.result.antibody_target = "alpha_tubulin";
+}
+"""
+    result = validate(_compile_source(src), enforce_binding=True)
+    assert "SEM_UNBOUND_NAME_REFERENCE" not in _codes(result)
+
+
+def test_validate_assignment_call_still_checks_material_references():
+    src = """
+protocol T {
+  let readout = data_ref(kind = custom);
+  readout.result.followup = img(sample = missing_sample, quantity = fluorescence);
+}
+"""
+    result = validate(_compile_source(src), enforce_binding=True)
+    assert "SEM_UNBOUND_NAME_REFERENCE" in _codes(result)
+
+
 def test_validate_legacy_lyse_alias_is_no_longer_implicitly_defined():
     src = """
 protocol T {
