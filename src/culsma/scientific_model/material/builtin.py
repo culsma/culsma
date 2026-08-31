@@ -98,6 +98,9 @@ class BuiltinMaterialRulebookProvider:
                 program_kind=payload.operation.program_kind,
                 group=classification.group,
                 current_relation=component.relationship.relation,
+                free_phase_passes=context_predicate(
+                    payload.context, "free_phase_passes", component.entry_id
+                ),
                 filter_retains=context_predicate(
                     payload.context, "filter_retains", component.entry_id
                 ),

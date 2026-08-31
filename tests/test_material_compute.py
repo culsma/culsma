@@ -1095,7 +1095,7 @@ def test_sep_aspiration_preserves_surface_associated_content_on_its_native_count
     }
 
 
-def test_sep_aspiration_requires_a_retention_fact_for_free_cells():
+def test_sep_aspiration_routes_free_cells_with_the_declared_free_phase():
     result = apply_step(
         step=_sep_step(
             program_name="filtration_program",
@@ -1113,10 +1113,14 @@ def test_sep_aspiration_requires_a_retention_fact_for_free_cells():
         ),
     )
 
-    assert not result.ok
-    assert [diagnostic.code for diagnostic in result.diagnostics] == [
-        "MAT_SCIENTIFIC_MODEL_UNRESOLVED"
-    ]
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    slots = result.material_state["indexed_bindings"]["sep_group"]
+    assert result.material_state["containers"][slots["0"]]["component_quantities"][
+        "RPE1"
+    ]["value"] == 100000.0
+    assert result.material_state["containers"][slots["1"]]["component_quantities"][
+        "RPE1"
+    ]["value"] == 0.0
 
 
 def test_sep_centrifugal_filtration_uses_filtrate_and_retentate_slots():

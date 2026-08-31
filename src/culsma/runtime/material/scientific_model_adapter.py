@@ -207,6 +207,10 @@ class ScientificModelMaterialAdapter:
                     ),
                     components=provider_components,
                     context={
+                        "free_phase_passes": {
+                            component.entry_id: operation_contract.free_phase_passes
+                            for component in provider_components
+                        },
                         "filter_retains": {
                             component.entry_id: self.component_context_flag(
                                 state,

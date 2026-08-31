@@ -189,6 +189,17 @@ def test_table_2_returns_unresolved_for_composite_group_instead_of_guessing() ->
             "filtration_program",
             ("filtrate", "retentate"),
             _component(
+                entry_id="FREE_DNA:0",
+                kind="bio_molecule_or_virus",
+                content_type="dna",
+            ),
+            {"free_phase_passes": {"FREE_DNA:0": True}},
+            {"0": 1.0, "1": 0.0},
+        ),
+        (
+            "filtration_program",
+            ("filtrate", "retentate"),
+            _component(
                 entry_id="ADHERENT:0",
                 kind="bio_cellular",
                 content_type="cell_line",

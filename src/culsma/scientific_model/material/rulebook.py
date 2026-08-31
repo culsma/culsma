@@ -49,6 +49,7 @@ def resolve_separation_fate_rule(
     program_kind: str,
     group: CalculationGroup,
     current_relation: str,
+    free_phase_passes: bool = False,
     filter_retains: bool = False,
     is_magnetic_support: bool = False,
     surface_preserved: bool = False,
@@ -82,6 +83,8 @@ def resolve_separation_fate_rule(
             return SeparationFateMatch("F_FIL_PRESERVE", (0.0, 1.0))
         if current_relation != MaterialRelation.FREE:
             return None
+        if free_phase_passes:
+            return SeparationFateMatch("F_FIL_FREE_PHASE", (1.0, 0.0))
         if group is CalculationGroup.MOBILE_PHASE:
             return SeparationFateMatch("F_FIL_MOBILE", (1.0, 0.0))
         if filter_retains and group in {
