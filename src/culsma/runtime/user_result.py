@@ -171,7 +171,7 @@ def _build_report(
     input_inventory = _input_inventory(material_accounting)
     content_registry = final_material_state.get("content_registry", {})
     content_registry = content_registry if isinstance(content_registry, dict) else {}
-    final_products = _final_products(
+    final_products, final_product_ids = _final_products(
         container_stats=container_stats,
         roles=roles,
         measurements=measurements,
@@ -180,7 +180,7 @@ def _build_report(
     intermediate_materials = _intermediate_materials(
         container_stats=container_stats,
         roles=roles,
-        final_products=final_products,
+        final_product_ids=final_product_ids,
         content_registry=content_registry,
     )
     reagent_consumption = _reagent_consumption(material_accounting, roles=roles)
@@ -346,40 +346,42 @@ def _final_products(
     roles: dict[str, set[str]],
     measurements: list[Any],
     content_registry: dict[str, Any],
-) -> list[FinalProductRow]:
+) -> tuple[list[FinalProductRow], set[str]]:
     measured_names = {
         str(m.get("sample"))
         for m in measurements
         if isinstance(m, dict) and isinstance(m.get("sample"), str)
     }
     rows: list[FinalProductRow] = []
-    for name, data in container_stats.items():
+    final_product_ids: set[str] = set()
+    for container_id, data in container_stats.items():
         after = data["after"]
         delta = data["delta"]
         if after["volume_uL"] <= 1e-9 and after["mass_mg"] <= 1e-9 and after["count_cells"] <= 1e-9:
             continue
-        if "::" in name:
+        if "::" in container_id:
             continue
-        name_roles = roles.get(name, set())
+        name_roles = roles.get(container_id, set())
         is_reagent_only = "source" in name_roles and not (name_roles & {"dest", "mix_target", "sample"})
-        if is_reagent_only and name not in measured_names:
+        if is_reagent_only and container_id not in measured_names:
             continue
         if not (
             delta["volume_uL"] > 1e-9
             or delta["mass_mg"] > 1e-9
             or delta["count_cells"] > 1e-9
-            or name in measured_names
+            or container_id in measured_names
         ):
             continue
-        if not (name_roles & {"dest", "mix_target", "sample"} or name in measured_names):
+        if not (name_roles & {"dest", "mix_target", "sample"} or container_id in measured_names):
             continue
+        display_name = _container_display_name(container_id, data.get("final_raw"))
         mass_mg, primary_component = _derived_container_state(
             data.get("final_raw"),
             content_registry=content_registry,
         )
         rows.append(
             FinalProductRow(
-                name=name,
+                name=display_name,
                 volume_uL=round(after["volume_uL"], 3),
                 volume_mL=round(after["volume_uL"] / 1000.0, 6),
                 mass_mg=mass_mg,
@@ -387,8 +389,9 @@ def _final_products(
                 count_cells=round(after["count_cells"], 3),
             )
         )
+        final_product_ids.add(container_id)
     rows.sort(key=lambda x: x.volume_uL, reverse=True)
-    return rows
+    return rows, final_product_ids
 
 
 def _input_inventory(accounting: MaterialAccounting) -> list[InputInventoryRow]:
@@ -418,19 +421,19 @@ def _intermediate_materials(
     *,
     container_stats: dict[str, dict[str, Any]],
     roles: dict[str, set[str]],
-    final_products: list[FinalProductRow],
+    final_product_ids: set[str],
     content_registry: dict[str, Any],
 ) -> list[IntermediateMaterialRow]:
-    final_names = {x.name for x in final_products}
     rows: list[IntermediateMaterialRow] = []
-    for name, data in container_stats.items():
-        if name in final_names or "::" in name:
+    for container_id, data in container_stats.items():
+        display_name = _container_display_name(container_id, data.get("final_raw"))
+        if container_id in final_product_ids or "::" in container_id:
             continue
         after = data["after"]
         if after["volume_uL"] <= 1e-9 and after["count_cells"] <= 1e-9:
             continue
-        name_roles = roles.get(name, set())
-        is_process_container = bool(name_roles & {"dest", "mix_target"}) and not _is_user_output_name(name)
+        name_roles = roles.get(container_id, set())
+        is_process_container = bool(name_roles & {"dest", "mix_target"}) and not _is_user_output_name(display_name)
         if not is_process_container:
             continue
         mass_mg, primary_component = _derived_container_state(
@@ -439,7 +442,7 @@ def _intermediate_materials(
         )
         rows.append(
             IntermediateMaterialRow(
-                name=name,
+                name=display_name,
                 final_uL=round(after["volume_uL"], 3),
                 final_mL=round(after["volume_uL"] / 1000.0, 6),
                 mass_mg=mass_mg,
@@ -602,7 +605,11 @@ def _container_usage_summary(*, plan: Any, final_material_state: dict[str, Any] 
     if isinstance(final_material_state, dict):
         containers = final_material_state.get("containers", {})
         if isinstance(containers, dict):
-            touched_names = sorted(name for name in containers.keys() if "::" not in name)
+            touched_names = sorted(
+                _container_display_name(container_id, raw)
+                for container_id, raw in containers.items()
+                if "::" not in container_id
+            )
 
     return ContainerResourceSummary(
         allocated_count=allocated,
@@ -613,6 +620,19 @@ def _container_usage_summary(*, plan: Any, final_material_state: dict[str, Any] 
         ],
         touched_names=touched_names,
     )
+
+
+def _container_display_name(container_id: str, raw: Any) -> str:
+    if isinstance(raw, dict):
+        metadata = raw.get("metadata")
+        if isinstance(metadata, dict):
+            label = metadata.get("label")
+            if isinstance(label, str) and label:
+                return label
+            allocation_name = metadata.get("allocation_name")
+            if isinstance(allocation_name, str) and allocation_name:
+                return allocation_name
+    return container_id
 
 
 def _instrument_usage_summary(*, plan: Any) -> InstrumentSummary:

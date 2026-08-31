@@ -20,6 +20,10 @@ def _ir_identifier(name: str) -> dict[str, object]:
     return {"kind": "IRIdentifier", "name": name, "span": None}
 
 
+def _alloc_identity(name: str) -> dict[str, str]:
+    return {"container_namespace": "tests.MaterialCompute", "container_name": name}
+
+
 def _ir_index(base: str, slot: int) -> dict[str, object]:
     return {"kind": "IRIndex", "base": _ir_identifier(base), "index": _ir_quantity(float(slot), None), "span": None}
 
@@ -219,6 +223,7 @@ def test_alloc_container_preserves_open_metadata():
         step_id="p0.s0",
         op="AllocContainer",
         args={
+            **_alloc_identity("tube_open"),
             "kind": _ir_identifier("tube"),
             "label": _ir_string("Tube_Open"),
             "open": {"kind": "IRBoolean", "value": True, "span": None},
@@ -233,7 +238,7 @@ def test_alloc_container_preserves_open_metadata():
     result = apply_step(step=step, material_state=state)
 
     assert result.ok
-    metadata = result.material_state["containers"]["Tube_Open"]["metadata"]
+    metadata = result.material_state["containers"][result.delta["container_id"]]["metadata"]
     assert metadata["open"] is True
     assert metadata["label"] == "Tube_Open"
 
@@ -243,6 +248,7 @@ def test_alloc_container_injects_default_capacity_for_generic_container():
         step_id="p0.s0",
         op="AllocContainer",
         args={
+            **_alloc_identity("generic"),
             "kind": _ir_identifier("container"),
             "label": _ir_string("Generic"),
             "bind": "generic",
@@ -255,7 +261,7 @@ def test_alloc_container_injects_default_capacity_for_generic_container():
     result = apply_step(step=step, material_state={"containers": {}})
 
     assert result.ok
-    metadata = result.material_state["containers"]["Generic"]["metadata"]
+    metadata = result.material_state["containers"][result.delta["container_id"]]["metadata"]
     assert metadata["capacity_uL"] == 1000.0
 
 
@@ -264,6 +270,7 @@ def test_alloc_container_injects_default_capacity_for_omitted_generic_surface():
         step_id="p0.s0",
         op="AllocContainer",
         args={
+            **_alloc_identity("generic"),
             "label": _ir_string("Generic"),
             "bind": "generic",
         },
@@ -275,7 +282,7 @@ def test_alloc_container_injects_default_capacity_for_omitted_generic_surface():
     result = apply_step(step=step, material_state={"containers": {}})
 
     assert result.ok
-    metadata = result.material_state["containers"]["Generic"]["metadata"]
+    metadata = result.material_state["containers"][result.delta["container_id"]]["metadata"]
     assert metadata["capacity_uL"] == 1000.0
 
 
@@ -284,6 +291,7 @@ def test_alloc_container_injects_default_capacity_for_tube():
         step_id="p0.s0",
         op="AllocContainer",
         args={
+            **_alloc_identity("tube1"),
             "kind": _ir_identifier("tube"),
             "label": _ir_string("Tube1"),
             "bind": "tube1",
@@ -296,7 +304,7 @@ def test_alloc_container_injects_default_capacity_for_tube():
     result = apply_step(step=step, material_state={"containers": {}})
 
     assert result.ok
-    metadata = result.material_state["containers"]["Tube1"]["metadata"]
+    metadata = result.material_state["containers"][result.delta["container_id"]]["metadata"]
     assert metadata["capacity_uL"] == 1500.0
 
 
@@ -305,6 +313,7 @@ def test_alloc_container_injects_default_capacity_for_well():
         step_id="p0.s0",
         op="AllocContainer",
         args={
+            **_alloc_identity("a1"),
             "kind": _ir_identifier("well"),
             "label": _ir_string("A1"),
             "bind": "a1",
@@ -317,7 +326,7 @@ def test_alloc_container_injects_default_capacity_for_well():
     result = apply_step(step=step, material_state={"containers": {}})
 
     assert result.ok
-    metadata = result.material_state["containers"]["A1"]["metadata"]
+    metadata = result.material_state["containers"][result.delta["container_id"]]["metadata"]
     assert metadata["capacity_uL"] == 200.0
 
 
@@ -326,6 +335,7 @@ def test_alloc_container_injects_default_capacity_for_chamber():
         step_id="p0.s0",
         op="AllocContainer",
         args={
+            **_alloc_identity("read_chamber"),
             "kind": _ir_identifier("chamber"),
             "label": _ir_string("ReadChamber"),
             "bind": "read_chamber",
@@ -338,7 +348,7 @@ def test_alloc_container_injects_default_capacity_for_chamber():
     result = apply_step(step=step, material_state={"containers": {}})
 
     assert result.ok
-    metadata = result.material_state["containers"]["ReadChamber"]["metadata"]
+    metadata = result.material_state["containers"][result.delta["container_id"]]["metadata"]
     assert metadata["capacity_uL"] == 1000.0
 
 
@@ -347,6 +357,7 @@ def test_alloc_container_surface_does_not_inject_volume_capacity():
         step_id="p0.s0",
         op="AllocContainer",
         args={
+            **_alloc_identity("detector_surface"),
             "kind": _ir_identifier("surface"),
             "label": _ir_string("DetectorSurface"),
             "bind": "detector_surface",
@@ -359,7 +370,7 @@ def test_alloc_container_surface_does_not_inject_volume_capacity():
     result = apply_step(step=step, material_state={"containers": {}})
 
     assert result.ok
-    metadata = result.material_state["containers"]["DetectorSurface"]["metadata"]
+    metadata = result.material_state["containers"][result.delta["container_id"]]["metadata"]
     assert "capacity_uL" not in metadata
 
 
@@ -368,6 +379,7 @@ def test_alloc_container_surface_rejects_explicit_capacity():
         step_id="p0.s0",
         op="AllocContainer",
         args={
+            **_alloc_identity("detector_surface"),
             "kind": _ir_identifier("surface"),
             "label": _ir_string("DetectorSurface"),
             "capacity": _ir_quantity(50.0, "uL"),
@@ -389,6 +401,7 @@ def test_alloc_container_explicit_capacity_overrides_default():
         step_id="p0.s0",
         op="AllocContainer",
         args={
+            **_alloc_identity("tube1"),
             "kind": _ir_identifier("tube"),
             "label": _ir_string("Tube1"),
             "capacity": _ir_quantity(250.0, "uL"),
@@ -402,7 +415,7 @@ def test_alloc_container_explicit_capacity_overrides_default():
     result = apply_step(step=step, material_state={"containers": {}})
 
     assert result.ok
-    metadata = result.material_state["containers"]["Tube1"]["metadata"]
+    metadata = result.material_state["containers"][result.delta["container_id"]]["metadata"]
     assert metadata["capacity_uL"] == 250.0
 
 

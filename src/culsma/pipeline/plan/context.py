@@ -19,6 +19,7 @@ class PlanLoweringContext:
     protocol_name: str
     caller_stack: list[str]
     gate_base: dict[str, Any] | None
+    protocol_namespace: str = ""
     scope_query: ScopeQueryService | None = None
     statement_lowerer: Any = None
     serializer: Any = None
@@ -33,6 +34,7 @@ class PlanLoweringContext:
         local_env: dict[str, Any] | None = None,
         protected_names: set[str] | None = None,
         protocol_name: str | None = None,
+        protocol_namespace: str | None = None,
         caller_stack: list[str] | None = None,
         gate_base: dict[str, Any] | None = None,
         scope_query: ScopeQueryService | None = None,
@@ -46,6 +48,9 @@ class PlanLoweringContext:
             local_env=self.local_env if local_env is None else local_env,
             protected_names=self.protected_names if protected_names is None else protected_names,
             protocol_name=self.protocol_name if protocol_name is None else protocol_name,
+            protocol_namespace=(
+                self.protocol_namespace if protocol_namespace is None else protocol_namespace
+            ),
             caller_stack=list(self.caller_stack if caller_stack is None else caller_stack),
             gate_base=self.gate_base if gate_base is None else gate_base,
             scope_query=self.scope_query if scope_query is None else scope_query,

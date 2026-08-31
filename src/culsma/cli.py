@@ -95,9 +95,6 @@ def _format_container_state(value: dict[str, Any], *, indent: str = "  ") -> lis
     label = value.get("label") or value.get("id") or "container"
     container_kind = value.get("container_kind") or value.get("kind") or "container"
     lines = [f"{indent}{label} ({container_kind})"]
-    container_id = value.get("id")
-    if isinstance(container_id, str) and container_id != label:
-        lines.append(f"{indent}  id: {container_id}")
     if "volume_uL" in value:
         lines.append(f"{indent}  volume: {_format_number(value.get('volume_uL'))} uL")
     if "mass_mg" in value:

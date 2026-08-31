@@ -239,7 +239,12 @@ class LetPlanHandler(BasePlanStatementHandler):
             PlanStep(
                 step_id=f"{ctx.step_id_prefix}{stmt.id}::alloc",
                 op="AllocContainer",
-                args={**alloc_args, "bind": stmt.name},
+                args={
+                    **alloc_args,
+                    "bind": stmt.name,
+                    "container_namespace": ctx.protocol_namespace or ctx.protocol_name,
+                    "container_name": stmt.name,
+                },
                 deps=[],
                 gate=merge_gate(ctx.gate_base),
                 span=stmt.span,

@@ -25,6 +25,18 @@ def _write_smoke_source(tmp_path: Path) -> Path:
     return source
 
 
+def _container_by_label(containers: dict, label: str) -> dict:
+    matches = [
+        raw
+        for raw in containers.values()
+        if isinstance(raw, dict)
+        and isinstance(raw.get("metadata"), dict)
+        and raw["metadata"].get("label") == label
+    ]
+    assert len(matches) == 1
+    return matches[0]
+
+
 def test_cli_run_prints_human_summary_to_stdout_by_default(tmp_path, monkeypatch, capsys):
     source = _write_smoke_source(tmp_path)
     monkeypatch.setattr(sys, "argv", ["culsma", "run", "--input", str(source)])
@@ -49,7 +61,9 @@ def test_cli_run_prints_machine_output_json_when_requested(tmp_path, monkeypatch
     payload = json.loads(captured.out)
     assert payload["schema"] == "culsma_run_output_v1"
     assert payload["report"]["schema"] == "lab_report_v1"
-    assert payload["returns"]["CliSmoke"]["value"]["id"] == "AcquisitionSample"
+    returned = payload["returns"]["CliSmoke"]["value"]
+    assert returned["id"] == "container/cli_smoke.CliSmoke/p0.s0%3A%3Aalloc/sample"
+    assert returned["label"] == "AcquisitionSample"
     assert captured.err == ""
 
 
@@ -102,8 +116,8 @@ protocol InsufficientSource returns (target) {
         diagnostic["code"] for diagnostic in bundle["run"]["diagnostics"]
     ]
     containers = bundle["run"]["state"]["artifacts"]["material_state"]["containers"]
-    assert containers["VolumeSource"]["volume_uL"] == 10.0
-    assert containers["VolumeTarget"]["volume_uL"] == 0.0
+    assert _container_by_label(containers, "VolumeSource")["volume_uL"] == 10.0
+    assert _container_by_label(containers, "VolumeTarget")["volume_uL"] == 0.0
 
 
 def test_cli_adds_external_inventory_shortage_to_final_result_without_failing_runtime(
@@ -226,7 +240,14 @@ def test_cli_multi_input_runs_as_independent_batch(tmp_path, monkeypatch, capsys
     assert payload["schema"] == "culsma_batch_run_output_v1"
     assert payload["ok"]
     assert [Path(item["input"]).name for item in payload["runs"]] == ["first.culs", "second.culs"]
-    assert [item["output"]["returns"]["entry"]["value"]["id"] for item in payload["runs"]] == ["FIRST", "SECOND"]
+    assert [item["output"]["returns"]["entry"]["value"]["id"] for item in payload["runs"]] == [
+        "container/entry/entry.s0%3A%3Aalloc/sample",
+        "container/entry/entry.s0%3A%3Aalloc/sample",
+    ]
+    assert [item["output"]["returns"]["entry"]["value"]["label"] for item in payload["runs"]] == [
+        "FIRST",
+        "SECOND",
+    ]
     assert [
         item["output"]["report"]["resource_summary"]["containers"]["touched_names"] for item in payload["runs"]
     ] == [["FIRST"], ["SECOND"]]
@@ -332,7 +353,7 @@ return sample;
     assert output["ok"]
     assert list(output["returns"]) == ["entry"]
     assert output["returns"]["entry"]["entry_kind"] == "script"
-    assert returned_values == ["RUN_SAMPLE"]
+    assert returned_values == ["container/entry/entry.s0%3A%3Aalloc/sample"]
     assert touched_names == ["RUN_SAMPLE"]
     assert "LIB_DEMO" not in json.dumps(output)
     assert "__script__" not in json.dumps(output)
@@ -471,7 +492,8 @@ protocol GroupReturn returns (wells) {
     group = payload["returns"]["GroupReturn"]["bindings"]["wells"]
     assert group["kind"] == "container_group_ref"
     assert group["member_count"] == 2
-    assert [member["id"] for member in group["members"]] == ["A1", "A2"]
+    assert [member["label"] for member in group["members"]] == ["A1", "A2"]
+    assert all(member["id"].startswith("container/group_return.GroupReturn/") for member in group["members"])
     assert [member["container_kind"] for member in group["members"]] == ["well", "well"]
     assert [member["volume_uL"] for member in group["members"]] == [20, 20]
     assert payload["report"]["schema"] == "lab_report_v1"
@@ -500,7 +522,8 @@ protocol SelectorReturn returns (wells) {
     group = payload["returns"]["SelectorReturn"]["bindings"]["wells"]
     assert group["kind"] == "container_group_ref"
     assert group["member_count"] == 2
-    assert [member["id"] for member in group["members"]] == ["QPCR96_A1", "QPCR96_A2"]
+    assert [member["label"] for member in group["members"]] == ["QPCR96_A1", "QPCR96_A2"]
+    assert all(member["id"].startswith("container/plate_selector_return.SelectorReturn/") for member in group["members"])
     assert [member["container_kind"] for member in group["members"]] == ["well", "well"]
     assert [member["volume_uL"] for member in group["members"]] == [10, 10]
     assert captured.err == ""
@@ -577,7 +600,9 @@ def test_cli_run_writes_debug_artifacts_only_when_requested(tmp_path, monkeypatc
     payload = json.loads(captured.out)
     assert payload["schema"] == "culsma_run_output_v1"
     assert payload["report"]["schema"] == "lab_report_v1"
-    assert payload["returns"]["CliSmoke"]["value"]["id"] == "AcquisitionSample"
+    assert payload["returns"]["CliSmoke"]["value"]["id"] == (
+        "container/cli_smoke.CliSmoke/p0.s0%3A%3Aalloc/sample"
+    )
     assert captured.err == ""
     expected = {
         "summary.json",

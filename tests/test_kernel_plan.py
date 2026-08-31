@@ -888,7 +888,61 @@ def test_plan_materializes_let_bound_container_constructor():
     assert len(steps) == 1
     assert steps[0].op == "AllocContainer"
     assert steps[0].args["bind"] == "tube_a"
+    assert steps[0].args["container_namespace"] == "T"
+    assert steps[0].args["container_name"] == "tube_a"
     assert steps[0].args["label"]["value"] == "Tube_A"
+
+
+def test_plan_qualifies_container_definition_namespace_with_module():
+    ast = parse('protocol Prepare { let buffer = tube(label = "PBS"); }')
+    ast.protocols[0].module = "Bio"
+
+    plan = lower_ir_to_plan(compile_to_ir(ast))
+
+    alloc = plan.plans[0].steps[0]
+    assert alloc.args["container_namespace"] == "Bio.Prepare"
+    assert alloc.args["container_name"] == "buffer"
+
+
+def test_plan_reused_protocol_keeps_definition_namespace_and_distinct_invocations():
+    src = """
+protocol Prepare {
+  let buffer = tube(label = "PBS");
+}
+protocol Root {
+  include Prepare;
+  include Prepare;
+}
+"""
+    ast = parse(src)
+    ast.protocols[0].module = "Bio"
+    ast.protocols[1].module = "Workflow"
+
+    plan = lower_ir_to_plan(compile_to_ir(ast))
+
+    allocations = [step for step in plan.plans[0].steps if step.op == "AllocContainer"]
+    assert len(allocations) == 2
+    assert {step.args["container_namespace"] for step in allocations} == {"Bio.Prepare"}
+    assert {step.args["container_name"] for step in allocations} == {"buffer"}
+    assert allocations[0].step_id != allocations[1].step_id
+
+
+def test_plan_repeat_allocations_keep_scoped_name_and_distinct_iteration_paths():
+    src = """
+protocol T {
+  repeat cycle in schedule(start = 1, end = 2, step = 1) {
+    let buffer = tube(label = "PBS");
+  }
+}
+"""
+
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)))
+
+    allocations = [step for step in plan.plans[0].steps if step.op == "AllocContainer"]
+    assert len(allocations) == 2
+    assert {step.args["container_namespace"] for step in allocations} == {"T"}
+    assert {step.args["container_name"] for step in allocations} == {"buffer"}
+    assert allocations[0].step_id != allocations[1].step_id
 
 
 def test_plan_materializes_constructor_load_into_init_sequence():

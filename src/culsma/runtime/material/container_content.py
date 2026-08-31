@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
+from urllib.parse import quote
 
 from culsma.pipeline.content_vocab import ContainerKind, normalize_content_classification
 from culsma.pipeline.plan_nodes import PlanStep
@@ -35,8 +36,21 @@ def apply_alloc_container(step: PlanStep, state: dict[str, Any]) -> MaterialUpda
     label = arg_string(step.args.get("label"))
     barcode = arg_string(step.args.get("barcode"))
     bind_ref = arg_string(step.args.get("bind"))
+    container_namespace = arg_string(step.args.get("container_namespace"))
+    container_name = arg_string(step.args.get("container_name"))
     open_flag = arg_bool(step.args.get("open"))
-    container_id = label or barcode or step.step_id
+    if container_namespace is None or container_name is None:
+        return diagnostic_result(
+            step,
+            state,
+            "MAT_CONTAINER_IDENTITY_MISSING",
+            "Container allocation requires a definition namespace and scoped declaration name",
+        )
+    container_id = allocation_container_id(
+        namespace=container_namespace,
+        invocation_id=step.step_id,
+        name=container_name,
+    )
     container = ensure_container(state, container_id)
     metadata = container.setdefault("metadata", {})
     if isinstance(metadata, dict):
@@ -46,6 +60,9 @@ def apply_alloc_container(step: PlanStep, state: dict[str, Any]) -> MaterialUpda
             metadata["label"] = label
         if barcode is not None:
             metadata["barcode"] = barcode
+        metadata["allocation_namespace"] = container_namespace
+        metadata["allocation_name"] = container_name
+        metadata["allocation_step_id"] = step.step_id
         if open_flag is not None:
             metadata["open"] = open_flag
         raw_capacity = step.args.get("capacity")
@@ -68,8 +85,6 @@ def apply_alloc_container(step: PlanStep, state: dict[str, Any]) -> MaterialUpda
                 metadata["capacity_uL"] = default_capacity_uL
     if kind is not None:
         bind_name(state, kind + "::" + container_id, container_id, step.step_id)
-    if label is not None:
-        bind_name(state, label, container_id, step.step_id)
     if bind_ref is not None:
         bind_name(state, bind_ref, container_id, step.step_id)
     return MaterialUpdateResult(
@@ -77,6 +92,22 @@ def apply_alloc_container(step: PlanStep, state: dict[str, Any]) -> MaterialUpda
         diagnostics=[],
         delta={"op": "AllocContainer", "container_id": container_id, "kind": kind, "bind": bind_ref},
     )
+
+
+def allocation_container_id(*, namespace: str, invocation_id: str, name: str) -> str:
+    """Return a deterministic, namespace-safe ID for one allocation instance."""
+    return "/".join(
+        (
+            "container",
+            _container_id_segment(namespace),
+            _container_id_segment(invocation_id),
+            _container_id_segment(name),
+        )
+    )
+
+
+def _container_id_segment(value: str) -> str:
+    return quote(value, safe="._-")
 
 
 def apply_define_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:

@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import pytest
+
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.material_compute import apply_step
+from culsma.runtime.material.container_content import allocation_container_id
 
 
 def _ir_string(value: str) -> dict[str, object]:
@@ -10,6 +13,209 @@ def _ir_string(value: str) -> dict[str, object]:
 
 def _ir_quantity(value: float, unit: str) -> dict[str, object]:
     return {"kind": "IRQuantity", "value": value, "unit": unit, "span": None}
+
+
+def test_alloc_container_qualifies_scoped_name_by_invocation_namespace() -> None:
+    first = PlanStep(
+        step_id="root.s0::prepare.s0::alloc",
+        op="AllocContainer",
+        args={
+            "label": _ir_string("PBS"),
+            "bind": "buffer",
+            "container_namespace": "Bio.Prepare",
+            "container_name": "buffer",
+        },
+    )
+    second = PlanStep(
+        step_id="root.s1::prepare.s0::alloc",
+        op="AllocContainer",
+        args={
+            "label": _ir_string("PBS"),
+            "bind": "buffer",
+            "container_namespace": "Bio.Prepare",
+            "container_name": "buffer",
+        },
+    )
+
+    first_result = apply_step(step=first, material_state={"containers": {}})
+    second_result = apply_step(step=second, material_state=first_result.material_state)
+
+    first_id = first_result.delta["container_id"]
+    second_id = second_result.delta["container_id"]
+    assert first_id == "container/Bio.Prepare/root.s0%3A%3Aprepare.s0%3A%3Aalloc/buffer"
+    assert second_id == "container/Bio.Prepare/root.s1%3A%3Aprepare.s0%3A%3Aalloc/buffer"
+    assert first_id != second_id
+    assert "::" not in first_id
+    assert second_result.material_state["containers"][first_id]["metadata"]["label"] == "PBS"
+    assert second_result.material_state["containers"][second_id]["metadata"]["label"] == "PBS"
+
+
+@pytest.mark.parametrize(
+    ("first_namespace", "first_invocation", "first_name", "second_namespace", "second_invocation", "second_name"),
+    [
+        pytest.param(
+            "Workspace.Bio.Prepare",
+            "root.s0::prepare.s0::alloc",
+            "buffer",
+            "Workspace.Bio.Prepare",
+            "root.s1::prepare.s0::alloc",
+            "buffer",
+            id="same-protocol-called-twice",
+        ),
+        pytest.param(
+            "Workspace.Bio.Leaf",
+            "root.s0::middle.s0::leaf.s0::alloc",
+            "buffer",
+            "Workspace.Bio.Leaf",
+            "root.s1::middle.s0::leaf.s0::alloc",
+            "buffer",
+            id="nested-protocol-called-through-different-parents",
+        ),
+        pytest.param(
+            "Workspace.Bio.Prepare",
+            "root.repeat.i0::prepare.s0::alloc",
+            "buffer",
+            "Workspace.Bio.Prepare",
+            "root.repeat.i1::prepare.s0::alloc",
+            "buffer",
+            id="different-repeat-iterations",
+        ),
+        pytest.param(
+            "Workspace.LibraryA.Prepare",
+            "root.s0::prepare.s0::alloc",
+            "buffer",
+            "Workspace.LibraryB.Prepare",
+            "root.s0::prepare.s0::alloc",
+            "buffer",
+            id="same-local-name-in-different-libraries",
+        ),
+        pytest.param(
+            "Workspace.Bio.Prepare",
+            "root.s0::prepare.s0::alloc",
+            "wash_buffer",
+            "Workspace.Bio.Prepare",
+            "root.s0::prepare.s0::alloc",
+            "elution_buffer",
+            id="different-scoped-names-in-one-invocation",
+        ),
+    ],
+)
+def test_allocation_container_id_distinguishes_namespace_invocation_and_scoped_name(
+    first_namespace: str,
+    first_invocation: str,
+    first_name: str,
+    second_namespace: str,
+    second_invocation: str,
+    second_name: str,
+) -> None:
+    first_id = allocation_container_id(
+        namespace=first_namespace,
+        invocation_id=first_invocation,
+        name=first_name,
+    )
+    second_id = allocation_container_id(
+        namespace=second_namespace,
+        invocation_id=second_invocation,
+        name=second_name,
+    )
+
+    assert first_id != second_id
+    assert first_id.startswith("container/")
+    assert second_id.startswith("container/")
+    assert "::" not in first_id
+    assert "::" not in second_id
+
+
+def test_allocation_container_id_is_deterministic_and_encodes_reserved_delimiters() -> None:
+    identity = {
+        "namespace": "Workspace/Library::Prepare",
+        "invocation_id": "root.s0::prepare.s0::alloc",
+        "name": "buffer/stock",
+    }
+
+    first_id = allocation_container_id(**identity)
+    second_id = allocation_container_id(**identity)
+
+    assert first_id == second_id
+    assert first_id == (
+        "container/Workspace%2FLibrary%3A%3APrepare/"
+        "root.s0%3A%3Aprepare.s0%3A%3Aalloc/buffer%2Fstock"
+    )
+    assert "::" not in first_id
+
+
+def test_alloc_container_identity_does_not_depend_on_label_or_barcode() -> None:
+    identity_args = {
+        "bind": "buffer",
+        "container_namespace": "Workspace.Bio.Prepare",
+        "container_name": "buffer",
+    }
+    first = PlanStep(
+        step_id="root.s0::prepare.s0::alloc",
+        op="AllocContainer",
+        args={**identity_args, "label": _ir_string("PBS"), "barcode": _ir_string("BC-001")},
+    )
+    second = PlanStep(
+        step_id=first.step_id,
+        op="AllocContainer",
+        args={**identity_args, "label": _ir_string("Phosphate Buffer"), "barcode": _ir_string("BC-999")},
+    )
+
+    first_result = apply_step(step=first, material_state={"containers": {}})
+    second_result = apply_step(step=second, material_state={"containers": {}})
+
+    assert first_result.delta["container_id"] == second_result.delta["container_id"]
+    assert next(iter(first_result.material_state["containers"].values()))["metadata"]["label"] == "PBS"
+    assert next(iter(second_result.material_state["containers"].values()))["metadata"]["label"] == "Phosphate Buffer"
+
+
+def test_alloc_container_identity_is_driven_by_scoped_declaration_name() -> None:
+    shared_args = {
+        "label": _ir_string("PBS"),
+        "barcode": _ir_string("BC-001"),
+        "container_namespace": "Workspace.Bio.Prepare",
+    }
+    wash = PlanStep(
+        step_id="root.s0::prepare.s0::alloc",
+        op="AllocContainer",
+        args={**shared_args, "bind": "wash_buffer", "container_name": "wash_buffer"},
+    )
+    elution = PlanStep(
+        step_id=wash.step_id,
+        op="AllocContainer",
+        args={**shared_args, "bind": "elution_buffer", "container_name": "elution_buffer"},
+    )
+
+    wash_result = apply_step(step=wash, material_state={"containers": {}})
+    elution_result = apply_step(step=elution, material_state={"containers": {}})
+
+    wash_id = wash_result.delta["container_id"]
+    elution_id = elution_result.delta["container_id"]
+    assert wash_id == (
+        "container/Workspace.Bio.Prepare/"
+        "root.s0%3A%3Aprepare.s0%3A%3Aalloc/wash_buffer"
+    )
+    assert elution_id == (
+        "container/Workspace.Bio.Prepare/"
+        "root.s0%3A%3Aprepare.s0%3A%3Aalloc/elution_buffer"
+    )
+    assert wash_id != elution_id
+
+
+def test_alloc_container_rejects_missing_canonical_identity_inputs() -> None:
+    step = PlanStep(
+        step_id="p0.s0::alloc",
+        op="AllocContainer",
+        args={"label": _ir_string("PBS"), "barcode": _ir_string("BC-001"), "bind": "buffer"},
+    )
+
+    result = apply_step(step=step, material_state={"containers": {}})
+
+    assert not result.ok
+    assert [diagnostic.code for diagnostic in result.diagnostics] == [
+        "MAT_CONTAINER_IDENTITY_MISSING"
+    ]
+    assert result.material_state["containers"] == {}
 
 
 def _count_only_loaded_state() -> dict[str, object]:

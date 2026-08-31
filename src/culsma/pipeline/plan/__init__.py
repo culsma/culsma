@@ -116,6 +116,7 @@ def lower_script_entry_to_plan(
         local_env=env,
         protected_names=set(),
         protocol_name="entry",
+        protocol_namespace="entry",
         caller_stack=[],
         gate_base={"entry_kind": "script", "entry_name": "entry"},
         scope_query=scope_query,
@@ -169,6 +170,7 @@ def lower_protocol_entry_to_plan(
         local_env=env,
         protected_names={param.name for param in protocol.params},
         protocol_name=protocol.name,
+        protocol_namespace=_protocol_definition_namespace(protocol),
         caller_stack=[protocol.name],
         gate_base={"protocol_name": protocol.name},
         scope_query=scope_query,
@@ -193,6 +195,10 @@ def lower_protocol_entry_to_plan(
         steps=serializer.linearize_steps(ordered_steps),
         span=protocol.span,
     )
+
+
+def _protocol_definition_namespace(protocol: IRProtocol) -> str:
+    return f"{protocol.module}.{protocol.name}" if protocol.module else protocol.name
 
 
 __all__ = [

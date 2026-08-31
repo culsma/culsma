@@ -177,6 +177,11 @@ class PlanReferenceResolver:
             local_env=local_env,
             protected_names={param.name for param in ref_protocol.params},
             protocol_name=caller_protocol_name or ref_name,
+            protocol_namespace=(
+                f"{ref_protocol.module}.{ref_protocol.name}"
+                if ref_protocol.module
+                else ref_protocol.name
+            ),
             caller_stack=ctx.caller_stack + [ref_name],
             gate_base=merge_gate(
                 ctx.gate_base,

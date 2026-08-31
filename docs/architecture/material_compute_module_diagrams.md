@@ -1,6 +1,6 @@
 # Material Compute Module Diagrams
 
-Last updated: 2026-08-24
+Last updated: 2026-08-31
 
 Related runtime document:
 
@@ -22,13 +22,15 @@ Current responsibilities include:
 1. dispatching material operations;
 2. allocating containers, defining/loading content, and finalizing container
    material relationships;
-3. resolving container, content, and indexed-group references;
-4. resolving count-addressed cell-suspension aliquots from eligible carrier
+3. assigning each container allocation a stable logical identity independently
+   of display labels and physical aliases;
+4. resolving container, content, and indexed-group references;
+5. resolving count-addressed cell-suspension aliquots from eligible carrier
    volume and moving volume, mass, components, and internal metadata;
-5. applying `sep` and `frac` material transforms;
-6. classifying content for separation partitioning;
-7. checking conservation invariants;
-8. distinguishing physical volume used for capacity and driver execution from
+6. applying `sep` and `frac` material transforms;
+7. classifying content for separation partitioning;
+8. checking conservation invariants;
+9. distinguishing physical volume used for capacity and driver execution from
    cross-axis bulk compatibility proxies.
 
 ## Material Operation Responsibility Flowchart
@@ -37,12 +39,14 @@ This top-level flowchart shows the target lifecycle for one material runtime
 step. It shows how the runtime decides what material state, if any, changes for
 that step.
 
-Read the three diagrams as nested views:
+Read the diagrams as nested views:
 
 1. Material operation responsibility is the top-level apply-step lifecycle.
 2. Material state change expands how a step changes material records,
    quantities, components, or indexed parts.
-3. The separation outcome activity diagram expands how `sep` derives and
+3. Container ID decision expands canonical-ID selection inside the
+   `container record` / `create a container` route.
+4. The separation outcome activity diagram expands how `sep` derives and
    records indexed container contents.
 
 ```mermaid
@@ -94,7 +98,11 @@ flowchart TB
     Step(["Apply the material state change"])
     Action{"What kind of material<br/>state changes?"}
 
-    ContainerRecord["Container or content record:<br/>create a container, define content,<br/>load material, finalize relationships,<br/>or add annotations"]
+    ContainerRecord["Container or content record operation"]
+    ContainerRecordAction{"What kind of container/content<br/>record operation is this?"}
+    CreateContainer["Create a container"]
+    DecideContainerId["Combine the definition namespace,<br/>invocation namespace, and scoped name<br/>into the canonical Container ID<br/><br/>(expanded in Container ID Decision)"]
+    OtherContainerRecord["Define content, load material,<br/>finalize relationships, or add annotations"]
     ContainerApply["Write container/content records;<br/>FinalizeContainerContents may derive<br/>a cell-suspension carrier + relation"]
 
     QuantityComposition["Quantity or composition:<br/>resolve volume, mass, or cells;<br/>move components and metadata"]
@@ -117,7 +125,12 @@ flowchart TB
     Step --> Action
 
     Action -->|container/content record| ContainerRecord
-    ContainerRecord --> ContainerApply
+    ContainerRecord --> ContainerRecordAction
+    ContainerRecordAction -->|create a container| CreateContainer
+    ContainerRecordAction -->|other record operation| OtherContainerRecord
+    CreateContainer --> DecideContainerId
+    DecideContainerId --> ContainerApply
+    OtherContainerRecord --> ContainerApply
     ContainerApply --> Return
 
     Action -->|volume, mass, or components| QuantityComposition
@@ -166,6 +179,97 @@ Design judgment:
    stale separation-output class for those newly suspended cells; residual
    source cells and unrelated pellet, precipitate, bead, membrane, or
    cell-bound states retain their existing physical state.
+
+## Container ID Decision UML Activity
+
+This activity expands only the canonical-ID decision marked inside `create a
+container` in the parent material-state change diagram. It uses domain language
+only; the following sequence and class diagrams map the decision to the current
+implementation boundary.
+
+```mermaid
+stateDiagram-v2
+    direction TB
+
+    [*] --> ResolveDefinitionNamespace
+    state "Resolve the namespace that defines the container name" as ResolveDefinitionNamespace
+    state "Resolve this particular invocation of that namespace" as ResolveInvocationNamespace
+    state "Read the container's unique scoped name" as ReadScopedName
+    state "Combine both namespaces and the scoped name into one canonical Container ID" as SelectCanonicalId
+    state "Return the canonical Container ID to container creation" as ReturnContainerId
+
+    ResolveDefinitionNamespace --> ResolveInvocationNamespace
+    ResolveInvocationNamespace --> ReadScopedName
+    ReadScopedName --> SelectCanonicalId
+    SelectCanonicalId --> ReturnContainerId
+    ReturnContainerId --> [*]
+```
+
+The definition namespace distinguishes workspace, Library, and Protocol
+ownership. The invocation namespace distinguishes separate calls and repeat
+iterations of the same Protocol. The scoped declaration name is unique inside
+that invocation. `label` and `barcode` are never consulted by this composition.
+
+## Container ID Decision Sequence
+
+This local sequence maps the activity to the target Runtime implementation.
+Names in calls are concrete modules and methods implemented by the
+container-identity correction.
+
+```mermaid
+sequenceDiagram
+    participant StateManager as runtime.material.state.MaterialStateManager
+    participant ContainerContent as runtime.material.container_content
+    participant Step as pipeline.plan_nodes.PlanStep
+    participant Ledger as runtime.material.ledger.MaterialLedger
+
+    StateManager->>StateManager: _apply_container_record(step, state)
+    StateManager->>ContainerContent: apply_alloc_container(step, state)
+    ContainerContent->>Step: read args.container_namespace, step_id, args.container_name
+    Step-->>ContainerContent: definition namespace, invocation identity, scoped name
+    ContainerContent->>ContainerContent: allocation_container_id(namespace, invocation_id, name)
+    ContainerContent->>Ledger: ensure_container(state, container_id)
+    Ledger-->>ContainerContent: independently keyed container record
+```
+
+Metadata writes, name binding, content loading, and capacity validation are
+intentionally outside this detail. They consume the chosen ID but do not decide
+it.
+
+## Container ID Decision Class Mapping
+
+```mermaid
+classDiagram
+    class PlanStep {
+        +str step_id
+        +str op
+        +dict args
+    }
+
+    class MaterialStateManager {
+        -_apply_container_record(step, state) MaterialUpdateResult
+    }
+
+    class ContainerContentModule {
+        <<module>>
+        +apply_alloc_container(step, state) MaterialUpdateResult
+        +allocation_container_id(namespace, invocation_id, name) str
+    }
+
+    class MaterialLedger {
+        +ensure_container(state, container_id) dict
+    }
+
+    PlanStep --> MaterialStateManager : allocation input
+    MaterialStateManager --> ContainerContentModule : dispatches
+    ContainerContentModule --> PlanStep : reads identity inputs
+    ContainerContentModule --> MaterialLedger : creates record
+```
+
+`container_content.apply_alloc_container(...)` owns this composition.
+`allocation_container_id(...)` encodes the three identity inputs without the
+reserved `::` delimiter; `ledger.ensure_container(...)` only consumes the
+selected ID and creates or returns the corresponding record.
 
 ## Separation Outcome UML Activity Overview
 
@@ -703,7 +807,7 @@ as helper functions embedded in operation modules:
 | --- | --- | --- |
 | `compute.py` | `MaterialCompute`, apply-step frame setup, conservation gating, result return | operation-specific material behavior |
 | `state.py` | `MaterialStateManager`, `MaterialStateChangePlan`, material-state change planning, state-change dispatch | ledger primitives, partition strategy internals, runtime driver dispatch |
-| `container_content.py` | container/content record updates | material-state change planning |
+| `container_content.py` | container/content record orchestration, allocation ID selection, and allocation metadata | reference resolution, material-state change planning |
 | `mutation.py` | mutation transform and mutation source dispatch | top-level material-state change planning |
 | `scientific_model_adapter.py` | public Runtime/model translation and typed decision resolution | quantity projection, ledger mutation, built-in rules |
 | `separation.py` | single separation entry, typed-effect projection, candidate commit, unknown-input compatibility delegation | provider rules, resolver construction |
@@ -711,7 +815,7 @@ as helper functions embedded in operation modules:
 | `contents_state.py` | `MaterialIndexedPartsStateManager`, indexed part records, selection, sep/frac partition/index application, narrow preservation impact, invalidation, and mixed-state impact | top-level material-state change planning, full runtime step dispatch, broad protocol semantics |
 | `ledger.py` | volume, mass, component, and metadata mutation primitives | source-expression interpretation |
 | `diagnostics.py` | material diagnostic result construction | material state mutation |
-| `refs.py` | material reference resolution and binding | transfer policy |
+| `refs.py` | material reference resolution and binding | allocation ID selection, ledger mutation, capacity validation, transfer policy |
 | `args.py` | operation argument extraction and normalization | semantic operation behavior |
 | `conservation.py` | material total snapshots and conservation checks | operation dispatch |
 
@@ -892,6 +996,7 @@ classDiagram
     MaterialStateManager --> MutationTransform
     MaterialStateManager --> MaterialIndexedPartsStateManager
     ContainerContent --> MaterialLedger
+    ContainerContent --> MaterialRefResolver
     MutationTransform --> MutationSourceDispatcher
     MutationTransform --> MaterialLedger
     MaterialIndexedPartsStateManager --> MaterialLedger

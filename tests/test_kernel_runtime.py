@@ -57,6 +57,22 @@ def _runtime_state_with_source(plan, *, source: str = "A", volume_uL: float = 10
     return state
 
 
+def _container_id_by_label(containers: dict, label: str) -> str:
+    matches = [
+        container_id
+        for container_id, raw in containers.items()
+        if isinstance(raw, dict)
+        and isinstance(raw.get("metadata"), dict)
+        and raw["metadata"].get("label") == label
+    ]
+    assert len(matches) == 1, f"Expected one container labeled {label!r}, found {len(matches)}"
+    return matches[0]
+
+
+def _container_by_label(containers: dict, label: str) -> dict:
+    return containers[_container_id_by_label(containers, label)]
+
+
 def test_content_attrs_record_literal_reaches_material_registry():
     plan = _build_plan_from_source(
         '''
@@ -1272,10 +1288,10 @@ protocol T {
     result = run(plan=plan, driver=StubDriver())
     assert result.ok
     containers = result.state.artifacts["material_state"]["containers"]
-    assert containers["Drug"]["volume_uL"] == 165.0
-    assert containers["T1"]["volume_uL"] == 5.0
-    assert containers["T2"]["volume_uL"] == 10.0
-    assert containers["T3"]["volume_uL"] == 20.0
+    assert _container_by_label(containers, "Drug")["volume_uL"] == 165.0
+    assert _container_by_label(containers, "T1")["volume_uL"] == 5.0
+    assert _container_by_label(containers, "T2")["volume_uL"] == 10.0
+    assert _container_by_label(containers, "T3")["volume_uL"] == 20.0
 
 
 def test_runtime_statement_extract_dna_precipitation_executes_expanded_primitive_path():
@@ -1386,15 +1402,16 @@ protocol T() returns (plasmid_dna) {
 
     assert result.ok
     returned = result.state.artifacts["protocol_outputs"]["T"]["value"]
+    plasmid_id = "container/T/p0.s8%3A%3Aalloc/plasmid_dna"
     assert returned == {
         "kind": "container_ref",
-        "id": "Plasmid DNA",
+        "id": plasmid_id,
         "volume_uL": 50,
         "mass_mg": 50,
         "container_kind": "tube",
         "label": "Plasmid DNA",
     }
-    components = result.state.artifacts["material_state"]["containers"]["Plasmid DNA"]["components"]
+    components = result.state.artifacts["material_state"]["containers"][plasmid_id]["components"]
     assert {key: round(float(value), 6) for key, value in sorted(components.items())} == {
         "AQ": 0.0,
         "DNA_EXT": 33.333333,
@@ -1460,8 +1477,8 @@ protocol T {
     assert result.ok
     material_state = result.state.artifacts["material_state"]
     assert "indexed_bindings" not in material_state or "mag_sep" not in material_state["indexed_bindings"]
-    bead_components = material_state["containers"]["BeadTube"]["components"]
-    waste_components = material_state["containers"]["Waste"]["components"]
+    bead_components = _container_by_label(material_state["containers"], "BeadTube")["components"]
+    waste_components = _container_by_label(material_state["containers"], "Waste")["components"]
     assert round(float(bead_components["BEADS"]), 6) == 20.0
     assert round(float(bead_components["WASH"]), 6) == 0.0
     assert round(float(waste_components["BEADS"]), 6) == 0.0
@@ -1490,11 +1507,12 @@ protocol T {
 
     assert result.ok
     material_state = result.state.artifacts["material_state"]
-    contents_state = material_state["contents_states"]["BeadTube"]
+    bead_id = _container_id_by_label(material_state["containers"], "BeadTube")
+    contents_state = material_state["contents_states"][bead_id]
     assert contents_state["kind"] == "partitioned"
     assert contents_state["slot_contract"] == {"0": "bound", "1": "flowthrough"}
-    bead_components = material_state["containers"]["BeadTube"]["components"]
-    waste_components = material_state["containers"]["Waste"]["components"]
+    bead_components = material_state["containers"][bead_id]["components"]
+    waste_components = _container_by_label(material_state["containers"], "Waste")["components"]
     assert round(float(bead_components["BEADS"]), 6) == 20.0
     assert round(float(bead_components["WASH"]), 6) == 0.0
     assert round(float(waste_components["BEADS"]), 6) == 0.0
@@ -1544,11 +1562,12 @@ protocol T {
 
     assert result.ok
     material_state = result.state.artifacts["material_state"]
-    contents_state = material_state["contents_states"]["SampleTube"]
+    sample_id = _container_id_by_label(material_state["containers"], "SampleTube")
+    contents_state = material_state["contents_states"][sample_id]
     assert contents_state["kind"] == "fractionated"
     assert contents_state["slot_contract"] == {"0": "fraction_0", "1": "fraction_1", "2": "fraction_2"}
-    sample_components = material_state["containers"]["SampleTube"]["components"]
-    fraction_components = material_state["containers"]["FractionTube"]["components"]
+    sample_components = material_state["containers"][sample_id]["components"]
+    fraction_components = _container_by_label(material_state["containers"], "FractionTube")["components"]
     assert round(float(sample_components["S1"]), 6) == 80.0
     assert round(float(fraction_components["S1"]), 6) == 40.0
 
@@ -1624,7 +1643,8 @@ protocol T {
 
     assert result.ok
     material_state = result.state.artifacts["material_state"]
-    contents_state = material_state["contents_states"]["BeadTube"]
+    bead_id = _container_id_by_label(material_state["containers"], "BeadTube")
+    contents_state = material_state["contents_states"][bead_id]
     assert contents_state["valid"] is True
     assert contents_state["preservation_contract"] == {
         "kind": "field_retention",
@@ -1632,8 +1652,8 @@ protocol T {
         "retained_slot": "0",
         "default_incoming_slot": "1",
     }
-    bead_components = material_state["containers"]["BeadTube"]["components"]
-    waste_components = material_state["containers"]["Waste"]["components"]
+    bead_components = material_state["containers"][bead_id]["components"]
+    waste_components = _container_by_label(material_state["containers"], "Waste")["components"]
     assert round(float(bead_components["BEADS"]), 6) == 20.0
     assert round(float(bead_components["BIND"]), 6) == 0.0
     assert round(float(waste_components["BEADS"]), 6) == 0.0
@@ -1668,9 +1688,10 @@ protocol T {
 
     assert result.ok
     material_state = result.state.artifacts["material_state"]
-    contents_state = material_state["contents_states"]["BeadTube"]
+    bead_id = _container_id_by_label(material_state["containers"], "BeadTube")
+    contents_state = material_state["contents_states"][bead_id]
     assert contents_state["valid"] is True
-    waste_components = material_state["containers"]["Waste"]["components"]
+    waste_components = _container_by_label(material_state["containers"], "Waste")["components"]
     assert round(float(waste_components["BEADS"]), 6) == 0.0
     assert round(float(waste_components["BIND"]), 6) == 180.0
     assert round(float(waste_components["DON"]), 6) == 50.0
@@ -1704,9 +1725,10 @@ protocol T {
 
     assert result.ok
     material_state = result.state.artifacts["material_state"]
-    contents_state = material_state["contents_states"]["BeadTube"]
+    bead_id = _container_id_by_label(material_state["containers"], "BeadTube")
+    contents_state = material_state["contents_states"][bead_id]
     assert contents_state["valid"] is True
-    waste_components = material_state["containers"]["Waste"]["components"]
+    waste_components = _container_by_label(material_state["containers"], "Waste")["components"]
     assert round(float(waste_components["BEADS"]), 6) == 0.0
     assert round(float(waste_components["BIND"]), 6) == 180.0
     assert round(float(waste_components["ETOH"]), 6) == 200.0
@@ -1736,7 +1758,9 @@ protocol T {
 
     assert not result.ok
     assert any(d.code == "MAT_CONTENTS_STATE_NOT_INDEXED" for d in result.diagnostics)
-    contents_state = result.state.artifacts["material_state"]["contents_states"]["BeadTube"]
+    material_state = result.state.artifacts["material_state"]
+    bead_id = _container_id_by_label(material_state["containers"], "BeadTube")
+    contents_state = material_state["contents_states"][bead_id]
     assert contents_state["valid"] is False
     assert contents_state["invalid_reason"] == "whole_container_transfer"
 
@@ -1762,7 +1786,9 @@ protocol T {
 
     assert not result.ok
     assert any(d.code == "MAT_CONTENTS_STATE_NOT_INDEXED" for d in result.diagnostics)
-    contents_state = result.state.artifacts["material_state"]["contents_states"]["BeadTube"]
+    material_state = result.state.artifacts["material_state"]
+    bead_id = _container_id_by_label(material_state["containers"], "BeadTube")
+    contents_state = material_state["contents_states"][bead_id]
     assert contents_state["valid"] is False
     assert contents_state["kind"] == "mixed"
     assert contents_state["invalid_reason"] == "explicit_mixing"
@@ -1791,13 +1817,16 @@ protocol T {
     result = run(plan=plan, driver=StubDriver())
 
     assert result.ok
-    contents_states = result.state.artifacts["material_state"]["contents_states"]
-    assert contents_states["Tube1"]["valid"] is False
-    assert contents_states["Tube1"]["kind"] == "mixed"
-    assert contents_states["Tube1"]["invalid_reason"] == "explicit_mixing"
-    assert contents_states["Tube2"]["valid"] is False
-    assert contents_states["Tube2"]["kind"] == "mixed"
-    assert contents_states["Tube2"]["invalid_reason"] == "explicit_mixing"
+    material_state = result.state.artifacts["material_state"]
+    contents_states = material_state["contents_states"]
+    tube1_state = contents_states[_container_id_by_label(material_state["containers"], "Tube1")]
+    tube2_state = contents_states[_container_id_by_label(material_state["containers"], "Tube2")]
+    assert tube1_state["valid"] is False
+    assert tube1_state["kind"] == "mixed"
+    assert tube1_state["invalid_reason"] == "explicit_mixing"
+    assert tube2_state["valid"] is False
+    assert tube2_state["kind"] == "mixed"
+    assert tube2_state["invalid_reason"] == "explicit_mixing"
 
 
 def test_runtime_agit_applies_to_each_let_bound_group_sample():
@@ -1824,11 +1853,14 @@ protocol T {
     result = run(plan=plan, driver=StubDriver())
 
     assert result.ok
-    contents_states = result.state.artifacts["material_state"]["contents_states"]
-    assert contents_states["Tube1"]["valid"] is False
-    assert contents_states["Tube1"]["kind"] == "mixed"
-    assert contents_states["Tube2"]["valid"] is False
-    assert contents_states["Tube2"]["kind"] == "mixed"
+    material_state = result.state.artifacts["material_state"]
+    contents_states = material_state["contents_states"]
+    tube1_state = contents_states[_container_id_by_label(material_state["containers"], "Tube1")]
+    tube2_state = contents_states[_container_id_by_label(material_state["containers"], "Tube2")]
+    assert tube1_state["valid"] is False
+    assert tube1_state["kind"] == "mixed"
+    assert tube2_state["valid"] is False
+    assert tube2_state["kind"] == "mixed"
 
 
 def test_runtime_contents_self_transfer_invalidates_contents_state_without_material_move():
@@ -1852,10 +1884,11 @@ protocol T {
 
     assert result.ok
     material_state = result.state.artifacts["material_state"]
-    bead_tube = material_state["containers"]["BeadTube"]
+    bead_id = _container_id_by_label(material_state["containers"], "BeadTube")
+    bead_tube = material_state["containers"][bead_id]
     assert round(float(bead_tube["volume_uL"]), 6) == 200.0
     assert {k: round(float(v), 6) for k, v in bead_tube["components"].items()} == {"BEADS": 20.0, "WASH": 180.0}
-    contents_state = material_state["contents_states"]["BeadTube"]
+    contents_state = material_state["contents_states"][bead_id]
     assert contents_state["valid"] is False
     assert contents_state["invalid_reason"] == "contents_self_transfer"
 
@@ -2393,8 +2426,9 @@ protocol T {
     assert first_obs["export_refs"]["driver_profile"]["kind"] == "img"
     assert first_obs["export_refs"]["driver_profile"]["artifact_id"] == first_obs["raw_artifact"]["artifact_id"]
     assert first_obs["binding"] is None
-    assert first_obs["resolved_sample"] == "T1"
-    assert second_obs["resolved_sample"] == "T2"
+    material = result.state.artifacts["material_state"]
+    assert first_obs["resolved_sample"] == material["bindings"]["t1"]
+    assert second_obs["resolved_sample"] == material["bindings"]["t2"]
     completed = [e for e in result.events if e.kind == "STEP_COMPLETED"][-1]
     assert completed.payload["observation_delta"]["binding"] == "img_group"
     assert completed.payload["observation_delta"]["observation_ids"] == group_record["observation_ids"]
@@ -2425,8 +2459,9 @@ protocol T {
     assert len(group_record["item_ids"]) == 2
     first = result.state.artifacts["data_objects"][group_record["item_ids"][0]]
     second = result.state.artifacts["data_objects"][group_record["item_ids"][1]]
-    assert first["resolved_sample"] == "T1"
-    assert second["resolved_sample"] == "T2"
+    material = result.state.artifacts["material_state"]
+    assert first["resolved_sample"] == material["bindings"]["t1"]
+    assert second["resolved_sample"] == material["bindings"]["t2"]
 
 
 def test_runtime_records_grouped_img_from_plate_selector_in_row_major_order():
@@ -2442,7 +2477,8 @@ protocol T {
     assert result.ok
     group_id = result.state.artifacts["data_group_bindings"]["img_group"]
     group_record = result.state.artifacts["data_groups"][group_id]
-    assert group_record["resolved_samples"] == [
+    containers = result.state.artifacts["material_state"]["containers"]
+    assert [containers[container_id]["metadata"]["label"] for container_id in group_record["resolved_samples"]] == [
         "Assay_A1",
         "Assay_A2",
         "Assay_B1",
@@ -2469,7 +2505,8 @@ protocol T {
     result = run(plan=plan, driver=StubDriver())
 
     assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
-    well = result.state.artifacts["material_state"]["containers"]["Editing_A1"]
+    containers = result.state.artifacts["material_state"]["containers"]
+    well = _container_by_label(containers, "Editing_A1")
     assert well["metadata"]["capacity_uL"] == 3000.0
     assert well["volume_uL"] == 1000.0
 
@@ -2498,7 +2535,7 @@ protocol T {
 
     assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
     material = result.state.artifacts["material_state"]
-    assert material["containers"]["Clones_A3"]["components"]["CLONE_A"] == 100.0
+    assert _container_by_label(material["containers"], "Clones_A3")["components"]["CLONE_A"] == 100.0
 
 
 def test_runtime_observation_if_executes_then_branch_when_predicate_true():
@@ -2647,10 +2684,43 @@ protocol T {
     result = run(plan=plan, driver=StubDriver())
     assert result.ok
     material = result.state.artifacts["material_state"]
-    assert material["bindings"]["src"] == "SRC"
-    assert material["bindings"]["dst"] == "DST"
-    assert material["containers"]["SRC"]["volume_uL"] == 75.0
-    assert material["containers"]["DST"]["volume_uL"] == 25.0
+    assert material["bindings"]["src"] == _container_id_by_label(material["containers"], "SRC")
+    assert material["bindings"]["dst"] == _container_id_by_label(material["containers"], "DST")
+    assert _container_by_label(material["containers"], "SRC")["volume_uL"] == 75.0
+    assert _container_by_label(material["containers"], "DST")["volume_uL"] == 25.0
+
+
+def test_runtime_reused_protocol_allocations_with_same_label_remain_independent():
+    plan = _build_plan_from_source(
+        """
+protocol Prepare {
+  let buffer = tube(
+    label = "PBS",
+    capacity = 100uL,
+    load = [buffer(code = "PBS", type = "buffer"):60uL]
+  );
+}
+protocol Root {
+  include Prepare;
+  include Prepare;
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    containers = result.state.artifacts["material_state"]["containers"]
+    pbs_containers = [
+        (container_id, raw)
+        for container_id, raw in containers.items()
+        if raw.get("metadata", {}).get("label") == "PBS"
+    ]
+    assert len(pbs_containers) == 2
+    assert pbs_containers[0][0] != pbs_containers[1][0]
+    assert [raw["volume_uL"] for _, raw in pbs_containers] == [60.0, 60.0]
+    assert all(container_id.startswith("container/Prepare/") for container_id, _ in pbs_containers)
+    assert "PBS" not in result.state.artifacts["material_state"]["bindings"]
 
 
 def test_runtime_allows_self_transfer_mutation_without_material_change():
@@ -2665,10 +2735,11 @@ protocol T {
     result = run(plan=plan, driver=StubDriver())
     assert result.ok
     material = result.state.artifacts["material_state"]
-    assert material["bindings"]["tube_a"] == "TubeA"
-    assert material["containers"]["TubeA"]["volume_uL"] == 100.0
-    assert material["containers"]["TubeA"]["mass_mg"] == 100.0
-    assert material["containers"]["TubeA"]["components"]["S1"] == 100.0
+    tube_a_id = _container_id_by_label(material["containers"], "TubeA")
+    assert material["bindings"]["tube_a"] == tube_a_id
+    assert material["containers"][tube_a_id]["volume_uL"] == 100.0
+    assert material["containers"][tube_a_id]["mass_mg"] == 100.0
+    assert material["containers"][tube_a_id]["components"]["S1"] == 100.0
 
 
 def test_runtime_executes_constructor_load_before_core_sep():
@@ -2683,7 +2754,7 @@ protocol T {
     result = run(plan=plan, driver=StubDriver())
     assert result.ok
     material = result.state.artifacts["material_state"]
-    assert material["bindings"]["sample_tube"] == "SampleTube"
+    assert material["bindings"]["sample_tube"] == _container_id_by_label(material["containers"], "SampleTube")
     slots = material["indexed_bindings"]["sep_group"]
     assert set(slots.keys()) == {"0", "1"}
     assert material["containers"][slots["0"]]["volume_uL"] == 100.0
@@ -2709,10 +2780,12 @@ protocol T {
 
     assert result.ok, [d.to_dict() for d in result.diagnostics]
     containers = result.state.artifacts["material_state"]["containers"]
-    assert containers["Source"]["volume_uL"] == 200.0
-    assert containers["Target"]["volume_uL"] == 100.0
-    assert round(containers["Source"]["component_quantities"]["RPE1"]["value"], 6) == 66666.666667
-    assert round(containers["Target"]["component_quantities"]["RPE1"]["value"], 6) == 33333.333333
+    source = _container_by_label(containers, "Source")
+    target = _container_by_label(containers, "Target")
+    assert source["volume_uL"] == 200.0
+    assert target["volume_uL"] == 100.0
+    assert round(source["component_quantities"]["RPE1"]["value"], 6) == 66666.666667
+    assert round(target["component_quantities"]["RPE1"]["value"], 6) == 33333.333333
     returned = result.state.artifacts["protocol_outputs"]["T"]["value"]
     assert returned["count_cells"] == 33333.333333
     assert returned["component_quantities"]["RPE1"] == {
@@ -2743,8 +2816,8 @@ protocol T {
 
     assert result.ok, [d.to_dict() for d in result.diagnostics]
     containers = result.state.artifacts["material_state"]["containers"]
-    source = containers["Source"]
-    target = containers["Target"]
+    source = _container_by_label(containers, "Source")
+    target = _container_by_label(containers, "Target")
 
     assert source["volume_uL"] == 200.0
     assert target["volume_uL"] == 150.0
@@ -2787,12 +2860,14 @@ protocol T {
 
     assert result.ok, [d.to_dict() for d in result.diagnostics]
     containers = result.state.artifacts["material_state"]["containers"]
-    assert containers["Source"]["volume_uL"] == 75.0
-    assert containers["Target"]["volume_uL"] == 25.0
-    assert containers["Source"]["component_quantities"]["RPE1"]["value"] == 75000.0
-    assert containers["Target"]["component_quantities"]["RPE1"]["value"] == 25000.0
-    assert containers["Target"]["material_relationships"][0]["concentration"]["value"] == 1000.0
-    assert containers["Target"]["material_relationships"][0]["concentration"]["source"] == "default"
+    source = _container_by_label(containers, "Source")
+    target = _container_by_label(containers, "Target")
+    assert source["volume_uL"] == 75.0
+    assert target["volume_uL"] == 25.0
+    assert source["component_quantities"]["RPE1"]["value"] == 75000.0
+    assert target["component_quantities"]["RPE1"]["value"] == 25000.0
+    assert target["material_relationships"][0]["concentration"]["value"] == 1000.0
+    assert target["material_relationships"][0]["concentration"]["source"] == "default"
     assert "ASSUMED_CELL_SUSPENSION_CONCENTRATION" in [d.code for d in result.diagnostics]
 
 
@@ -2814,7 +2889,8 @@ protocol T {
     result = run(plan=plan, driver=StubDriver())
 
     assert result.ok, [d.to_dict() for d in result.diagnostics]
-    relationship = result.state.artifacts["material_state"]["containers"]["Target"]["material_relationships"][0]
+    containers = result.state.artifacts["material_state"]["containers"]
+    relationship = _container_by_label(containers, "Target")["material_relationships"][0]
     assert relationship["carrier_volume_uL"] == 75.0
     assert relationship["concentration"]["value"] == pytest.approx(25000.0 / 75.0)
     assert relationship["concentration"]["source"] == "derived"
@@ -2836,9 +2912,11 @@ protocol T {
     result = run(plan=plan, driver=StubDriver())
 
     assert result.ok, [d.to_dict() for d in result.diagnostics]
-    source = result.state.artifacts["material_state"]["containers"]["Source"]
+    containers = result.state.artifacts["material_state"]["containers"]
+    source_id = _container_id_by_label(containers, "Source")
+    source = containers[source_id]
     relationship = source["material_relationships"][0]
-    assert relationship["carrier_component_ids"] == ["__implicit_cell_carrier__::Source"]
+    assert relationship["carrier_component_ids"] == [f"__implicit_cell_carrier__::{source_id}"]
     assert relationship["carrier_volume_uL"] == 100.0
     assert relationship["concentration"]["value"] == 1000.0
     assert source["volume_uL"] == 150.0
@@ -2862,11 +2940,13 @@ protocol T {
 
     assert result.ok, [d.to_dict() for d in result.diagnostics]
     containers = result.state.artifacts["material_state"]["containers"]
-    assert containers["Source"]["volume_uL"] == 150.0
-    assert containers["Target"]["volume_uL"] == 50.0
-    assert containers["Target"]["component_quantities"]["RPE1"]["value"] == 25000.0
-    assert containers["Target"]["component_quantities"]["MEDIUM"]["value"] == 50.0
-    relationship = containers["Target"]["material_relationships"][0]
+    source = _container_by_label(containers, "Source")
+    target = _container_by_label(containers, "Target")
+    assert source["volume_uL"] == 150.0
+    assert target["volume_uL"] == 50.0
+    assert target["component_quantities"]["RPE1"]["value"] == 25000.0
+    assert target["component_quantities"]["MEDIUM"]["value"] == 50.0
+    relationship = target["material_relationships"][0]
     assert relationship["concentration"]["value"] == 500.0
     assert relationship["concentration"]["source"] == "derived"
 
@@ -2889,7 +2969,7 @@ protocol T {
     result = run(plan=plan, driver=StubDriver())
 
     assert result.ok, [d.to_dict() for d in result.diagnostics]
-    target = result.state.artifacts["material_state"]["containers"]["Target"]
+    target = _container_by_label(result.state.artifacts["material_state"]["containers"], "Target")
     assert target["volume_uL"] == 77.5
     assert target["component_quantities"]["MEDIUM"]["value"] == 75.0
     assert target["component_quantities"]["SALT"]["value"] == 2.5
@@ -2928,7 +3008,7 @@ protocol T {
     result = run(plan=plan, driver=StubDriver())
 
     assert result.ok, [d.to_dict() for d in result.diagnostics]
-    target = result.state.artifacts["material_state"]["containers"]["Target"]
+    target = _container_by_label(result.state.artifacts["material_state"]["containers"], "Target")
     assert target["component_quantities"]["MEDIUM"]["value"] == 75.0
     assert target["volume_uL"] == 77.5
 
@@ -3036,7 +3116,7 @@ protocol T {
 
     assert not result.ok
     assert "MAT_COUNT_TRANSFER_SOURCE_NOT_SUSPENSION" in [d.code for d in result.diagnostics]
-    source = result.state.artifacts["material_state"]["containers"]["Culture"]
+    source = _container_by_label(result.state.artifacts["material_state"]["containers"], "Culture")
     assert source["volume_uL"] == 0.0
     assert source["material_relationships"][0]["material_state"] == "adherent"
 
@@ -3061,7 +3141,7 @@ protocol T {{
 
     assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
     material = result.state.artifacts["material_state"]
-    source = material["containers"]["Culture"]
+    source = _container_by_label(material["containers"], "Culture")
     slots = material["indexed_bindings"]["separated"]
     supernatant = material["containers"][slots["0"]]
     pellet = material["containers"][slots["1"]]
@@ -3130,7 +3210,7 @@ protocol T {
     result = run(plan=plan, driver=StubDriver())
 
     assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
-    entries = result.state.artifacts["material_state"]["containers"]["Culture"][
+    entries = _container_by_label(result.state.artifacts["material_state"]["containers"], "Culture")[
         "component_entries"
     ]
     positive_entries = [entry for entry in entries if entry["amount"] > 0.0]
@@ -3254,7 +3334,8 @@ protocol T {
     result = run(plan=plan, driver=StubDriver())
 
     assert result.ok, [d.to_dict() for d in result.diagnostics]
-    target = result.state.artifacts["material_state"]["containers"]["Target"]
+    material_state = result.state.artifacts["material_state"]
+    target = _container_by_label(material_state["containers"], "Target")
     assert target["component_quantities"]["RPE1"]["value"] == 500.0
     assert target["component_quantities"]["MEDIUM"]["value"] == 150.0
 
@@ -3272,7 +3353,8 @@ protocol T {
     assert transfer_delta["concentration_cells_per_uL"] == pytest.approx(1000.0 / 300.0)
     assert transfer_delta["concentration_source"] == "derived"
     assert transfer_delta["policy_id"] == "explicit_carrier_volume"
-    contents_part = result.state.artifacts["material_state"]["contents_states"]["Source"]["parts"]["0"]
+    source_id = _container_id_by_label(material_state["containers"], "Source")
+    contents_part = material_state["contents_states"][source_id]["parts"]["0"]
     assert contents_part["component_quantities"]["RPE1"]["value"] == 500.0
     assert contents_part["component_quantities"]["MEDIUM"]["value"] == 150.0
     assert contents_part["material_relationships"][0]["carrier_volume_uL"] == 150.0
@@ -3303,7 +3385,7 @@ protocol T {
     material = result.state.artifacts["material_state"]
     slots = material["indexed_bindings"]["separated"]
     supernatant = material["containers"][slots["0"]]
-    pellet = material["containers"]["Pellet"]
+    pellet = _container_by_label(material["containers"], "Pellet")
 
     assert supernatant["volume_uL"] == 300.0
     assert pellet["volume_uL"] == 0.0
@@ -3409,7 +3491,7 @@ protocol T {{
     result = run(plan=plan, driver=StubDriver())
 
     assert result.ok, [d.to_dict() for d in result.diagnostics]
-    target = result.state.artifacts["material_state"]["containers"]["Target"]
+    target = _container_by_label(result.state.artifacts["material_state"]["containers"], "Target")
     assert target["volume_uL"] == 0.0
     assert target.get("component_quantities", {}) == {}
 
@@ -3499,14 +3581,16 @@ protocol T {
 
     assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
     containers = result.state.artifacts["material_state"]["containers"]
-    assert containers["Removed"]["component_quantities"]["RPE1"]["value"] == 0.0
-    assert containers["Retained"]["component_quantities"]["RPE1"]["value"] == 100000.0
-    assert containers["Removed"]["component_quantities"]["MEDIUM"]["value"] == 300.0
-    assert containers["Retained"]["component_quantities"]["MEDIUM"]["value"] == 0.0
-    assert containers["Retained"]["material_relationships"][0]["material_state"] == "suspension"
+    removed = _container_by_label(containers, "Removed")
+    retained = _container_by_label(containers, "Retained")
+    assert removed["component_quantities"]["RPE1"]["value"] == 0.0
+    assert retained["component_quantities"]["RPE1"]["value"] == 100000.0
+    assert removed["component_quantities"]["MEDIUM"]["value"] == 300.0
+    assert retained["component_quantities"]["MEDIUM"]["value"] == 0.0
+    assert retained["material_relationships"][0]["material_state"] == "suspension"
     assert (
-        containers["Removed"]["component_quantities"]["RPE1"]["value"]
-        + containers["Retained"]["component_quantities"]["RPE1"]["value"]
+        removed["component_quantities"]["RPE1"]["value"]
+        + retained["component_quantities"]["RPE1"]["value"]
         == 100000.0
     )
 
@@ -3674,8 +3758,8 @@ protocol T {
 
     assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
     containers = result.state.artifacts["material_state"]["containers"]
-    source = containers["Source"]
-    target = containers["Target"]
+    source = _container_by_label(containers, "Source")
+    target = _container_by_label(containers, "Target")
     assert source["volume_uL"] + target["volume_uL"] == 310.0
     assert source["mass_mg"] + target["mass_mg"] == 310.0
     for component_id, expected in {"RPE1": 100000.0, "MEDIUM": 300.0, "SALT": 10.0}.items():
@@ -3704,7 +3788,7 @@ protocol T {
     result = run(plan=plan, driver=StubDriver())
 
     assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
-    target = result.state.artifacts["material_state"]["containers"]["Target"]
+    target = _container_by_label(result.state.artifacts["material_state"]["containers"], "Target")
     assert target["component_quantities"]["RPE1"]["value"] == pytest.approx(500.0)
     assert target["component_quantities"]["MEDIUM"]["value"] == pytest.approx(1.5)
     assert target["material_relationships"][0]["carrier_volume_uL"] == pytest.approx(1.5)
@@ -4100,20 +4184,21 @@ protocol T() returns (prepared_out) {
 
     assert result.ok
     outputs = result.state.artifacts["protocol_outputs"]["T"]
+    prepared_id = "container/T/p0.s1%3A%3Aalloc/prepared"
     assert outputs == {
         "protocol_id": "p0",
         "protocol_name": "T",
         "returns": ["prepared_out"],
         "value": {
             "kind": "container_ref",
-            "id": "Prepared",
+            "id": prepared_id,
             "volume_uL": 40,
             "mass_mg": 40,
             "container_kind": "tube",
             "label": "Prepared",
         },
     }
-    assert result.state.artifacts["material_state"]["containers"]["Prepared"]["components"]["DNA001"] == 40.0
+    assert result.state.artifacts["material_state"]["containers"][prepared_id]["components"]["DNA001"] == 40.0
 
 
 def test_runtime_captures_named_protocol_output_container_ref():
@@ -4133,6 +4218,7 @@ protocol T() returns (prepared_out, seq_out) {
 
     assert result.ok
     outputs = result.state.artifacts["protocol_outputs"]["T"]
+    prepared_id = "container/T/p0.s1%3A%3Aalloc/prepared"
     assert outputs == {
         "protocol_id": "p0",
         "protocol_name": "T",
@@ -4140,7 +4226,7 @@ protocol T() returns (prepared_out, seq_out) {
         "bindings": {
             "prepared_out": {
                 "kind": "container_ref",
-                "id": "Prepared",
+                "id": prepared_id,
                 "volume_uL": 25,
                 "mass_mg": 25,
                 "container_kind": "tube",
@@ -4155,7 +4241,7 @@ protocol T() returns (prepared_out, seq_out) {
             },
         },
     }
-    assert result.state.artifacts["material_state"]["containers"]["Prepared"]["components"]["DNA001"] == 25.0
+    assert result.state.artifacts["material_state"]["containers"][prepared_id]["components"]["DNA001"] == 25.0
 
 
 def test_runtime_captures_indexed_container_return_as_container_ref():
@@ -4207,7 +4293,8 @@ protocol T() returns (wells_out) {
     group = result.state.artifacts["protocol_outputs"]["T"]["bindings"]["wells_out"]
     assert group["kind"] == "container_group_ref"
     assert group["member_count"] == 2
-    assert [member["id"] for member in group["members"]] == ["A1", "A2"]
+    assert [member["label"] for member in group["members"]] == ["A1", "A2"]
+    assert all(member["id"].startswith("container/T/") for member in group["members"])
     assert [member["container_kind"] for member in group["members"]] == ["well", "well"]
     assert [member["volume_uL"] for member in group["members"]] == [20, 20]
 
@@ -4233,7 +4320,8 @@ protocol T() returns (wells_out) {
     group = result.state.artifacts["protocol_outputs"]["T"]["bindings"]["wells_out"]
     assert group["kind"] == "container_group_ref"
     assert group["member_count"] == 2
-    assert [member["id"] for member in group["members"]] == ["A1", "A2"]
+    assert [member["label"] for member in group["members"]] == ["A1", "A2"]
+    assert all(member["id"].startswith("container/T/") for member in group["members"])
     assert [member["volume_uL"] for member in group["members"]] == [10, 15]
 
 
@@ -4298,7 +4386,8 @@ protocol T() returns (wells_out) {
     group = result.state.artifacts["protocol_outputs"]["T"]["bindings"]["wells_out"]
     assert group["kind"] == "container_group_ref"
     assert group["member_count"] == 2
-    assert [member["id"] for member in group["members"]] == ["QPCR96_A1", "QPCR96_A2"]
+    assert [member["label"] for member in group["members"]] == ["QPCR96_A1", "QPCR96_A2"]
+    assert all(member["id"].startswith("container/T/") for member in group["members"])
     assert [member["container_kind"] for member in group["members"]] == ["well", "well"]
     assert [member["volume_uL"] for member in group["members"]] == [10, 10]
 
@@ -4321,7 +4410,8 @@ protocol T() returns (wells_out) {
     group = result.state.artifacts["protocol_outputs"]["T"]["bindings"]["wells_out"]
     assert group["kind"] == "container_group_ref"
     assert group["member_count"] == 2
-    assert [member["id"] for member in group["members"]] == ["QPCR96_A1", "QPCR96_A2"]
+    assert [member["label"] for member in group["members"]] == ["QPCR96_A1", "QPCR96_A2"]
+    assert all(member["id"].startswith("container/T/") for member in group["members"])
     assert [member["container_kind"] for member in group["members"]] == ["well", "well"]
     assert [member["volume_uL"] for member in group["members"]] == [10, 10]
 
