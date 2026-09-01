@@ -18,6 +18,7 @@ from culsma.scientific_model.material import (
     MATERIAL_SEPARATION_FATE,
     MATERIAL_STATE_TRANSITION,
     ComponentFate,
+    MaterialRelation,
     SepEffectCoordinator,
     SeparationDecision,
     StateTransitionDecision,
@@ -149,7 +150,7 @@ class RuntimeMaterialProvider:
                 transitions=tuple(
                     RelationshipTransition(
                         component_entry_id=component.entry_id,
-                        next_relation="pellet",
+                        next_relation=MaterialRelation.PELLET,
                         next_label="custom_pellet_output",
                     )
                     for component in payload.components

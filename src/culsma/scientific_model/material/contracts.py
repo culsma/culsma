@@ -28,6 +28,21 @@ class MaterialRelation(StrEnum):
     UNRESOLVED = "unresolved"
 
 
+AUTHOR_SETTABLE_MATERIAL_RELATIONS = frozenset(
+    relation
+    for relation in MaterialRelation
+    if relation is not MaterialRelation.UNRESOLVED
+)
+
+COMPONENT_BOUND_MATERIAL_RELATIONS = frozenset(
+    {
+        MaterialRelation.BEAD_BOUND,
+        MaterialRelation.MEMBRANE_BOUND,
+        MaterialRelation.CELL_BOUND,
+    }
+)
+
+
 class AssociationTargetKind(StrEnum):
     CONTAINER = "container"
     COMPONENT_ENTRY = "component_entry"
@@ -119,11 +134,15 @@ class SeparationDecision:
 @dataclass(frozen=True)
 class RelationshipTransition:
     component_entry_id: str
-    next_relation: str
+    next_relation: MaterialRelation
     next_label: str | None = None
     next_association_target: AssociationTarget | None = None
     retire_quantity: bool = False
     replacement_quantity: QuantitySnapshot | None = None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.next_relation, MaterialRelation):
+            raise TypeError("next_relation must be a MaterialRelation")
 
 
 @dataclass(frozen=True)

@@ -3,8 +3,9 @@
 This module is the operation-neutral core for PM #99.  It resolves the
 frontend ``tube.materials[index]`` selector against the authoritative ordered
 component-entry list, derives the source relationship from that entry, and
-builds an immutable author decision for the one currently supported transition:
-``CONTAINER_SURFACE -> FREE``.
+builds an immutable author decision whose target is a closed
+``MaterialRelation`` enum value.  The state vocabulary is closed; the directed
+transition graph is not restricted by a pair whitelist.
 """
 
 from __future__ import annotations
@@ -21,17 +22,15 @@ from culsma.runtime.material.component_entries import (
     entry_association_target,
     normalize_entry_relation,
 )
+from culsma.runtime.material.refs import ref_display
 from culsma.scientific_model.material import (
+    AUTHOR_SETTABLE_MATERIAL_RELATIONS,
+    COMPONENT_BOUND_MATERIAL_RELATIONS,
     AssociationTarget,
     AssociationTargetKind,
     MaterialRelation,
     RelationshipTransition,
     StateTransitionDecision,
-)
-
-
-ALLOWED_AUTHOR_TRANSITIONS = frozenset(
-    {(MaterialRelation.CONTAINER_SURFACE, MaterialRelation.FREE)}
 )
 
 
@@ -107,7 +106,7 @@ class MaterialEntryResolution:
 
 
 @dataclass(frozen=True)
-class AuthorTransitionPairValidation:
+class AuthorTransitionStateValidation:
     issues: tuple[AuthorTransitionIssue, ...] = ()
 
     @property
@@ -120,6 +119,7 @@ class ExplicitMaterialTransition:
     subject: MaterialEntryIndexSelector
     output_key: str
     next_relation: MaterialRelation
+    next_association_selector: MaterialEntryIndexSelector | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.subject, MaterialEntryIndexSelector):
@@ -127,6 +127,13 @@ class ExplicitMaterialTransition:
         _require_non_empty("output_key", self.output_key)
         if not isinstance(self.next_relation, MaterialRelation):
             raise TypeError("next_relation must be a MaterialRelation")
+        if self.next_association_selector is not None and not isinstance(
+            self.next_association_selector,
+            MaterialEntryIndexSelector,
+        ):
+            raise TypeError(
+                "next_association_selector must be a MaterialEntryIndexSelector"
+            )
 
 
 @dataclass(frozen=True)
@@ -136,6 +143,7 @@ class ResolvedExplicitMaterialTransition:
     current_relation: MaterialRelation
     current_association_target: AssociationTarget | None
     next_relation: MaterialRelation
+    next_association_target: AssociationTarget | None
 
 
 @dataclass(frozen=True)
@@ -224,10 +232,16 @@ def parse_explicit_material_transitions(
     parsed: list[ExplicitMaterialTransition] = []
     for raw_rule in elements:
         args = _serialized_call_args(raw_rule, "transition")
-        if args is None or set(args) != {"subject", "output", "to"}:
+        required_args = {"subject", "output", "to"}
+        allowed_args = required_args | {"associated_with"}
+        if (
+            args is None
+            or not required_args.issubset(args)
+            or not set(args).issubset(allowed_args)
+        ):
             return _parse_failure(
                 "MAT_MATERIAL_TRANSITION_SHAPE_INVALID",
-                "each transitions item must be transition(subject = ..., output = ..., to = ...)",
+                "each transitions item requires subject, output, and to, with optional associated_with",
             )
         selector = _parse_material_selector(args["subject"])
         if selector is None:
@@ -263,11 +277,51 @@ def parse_explicit_material_transitions(
                 "MAT_MATERIAL_TRANSITION_TARGET_INVALID",
                 "transition to must be a MaterialRelation enum identifier",
             )
+        if next_relation not in AUTHOR_SETTABLE_MATERIAL_RELATIONS:
+            return _parse_failure(
+                "MAT_MATERIAL_TRANSITION_TARGET_INVALID",
+                "transition to cannot use the internal MaterialRelation.UNRESOLVED sentinel",
+            )
+
+        association_selector = None
+        if "associated_with" in args:
+            association_selector = _parse_material_selector(args["associated_with"])
+            if association_selector is None:
+                return _parse_failure(
+                    "MAT_MATERIAL_TRANSITION_ASSOCIATION_INVALID",
+                    "transition associated_with must be sample.materials[index]",
+                )
+            if (
+                declared_source_ref is not None
+                and association_selector.container_ref != declared_source_ref
+            ):
+                return _parse_failure(
+                    "MAT_MATERIAL_SELECTOR_CONTAINER_MISMATCH",
+                    "transition associated_with container must be the same binding as sep sample",
+                )
+            if source_id is not None:
+                association_selector = MaterialEntryIndexSelector(
+                    container_ref=source_id,
+                    index=association_selector.index,
+                )
+
+        if next_relation in COMPONENT_BOUND_MATERIAL_RELATIONS:
+            if association_selector is None:
+                return _parse_failure(
+                    "MAT_MATERIAL_TRANSITION_ASSOCIATION_REQUIRED",
+                    f"transition to {next_relation.value} requires associated_with = sample.materials[index]",
+                )
+        elif association_selector is not None:
+            return _parse_failure(
+                "MAT_MATERIAL_TRANSITION_ASSOCIATION_FORBIDDEN",
+                "associated_with is only valid for component-bound target relations",
+            )
         parsed.append(
             ExplicitMaterialTransition(
                 subject=selector,
                 output_key=output_key,
                 next_relation=next_relation,
+                next_association_selector=association_selector,
             )
         )
     return ExplicitMaterialTransitionParseResult(transitions=tuple(parsed))
@@ -343,6 +397,27 @@ def resolve_explicit_material_transitions(
         )
         if not fraction_validation.is_valid:
             return AuthorTransitionResolution(issues=fraction_validation.issues)
+        association_target = result.transition.next_association_target
+        if association_target is not None:
+            target_fraction_validation = validate_positive_output_fraction(
+                source_entry_id=association_target.id,
+                output_key=result.transition.output_key,
+                output_bindings=output_bindings,
+                fractions_by_component=fractions_by_component,
+            )
+            if not target_fraction_validation.is_valid:
+                return AuthorTransitionResolution(
+                    issues=(
+                        AuthorTransitionIssue(
+                            code="MAT_MATERIAL_TRANSITION_ASSOCIATION_OUTPUT_EMPTY",
+                            message=(
+                                f"Association target '{association_target.id}' has no "
+                                f"positive quantity in output "
+                                f"'{result.transition.output_key}'"
+                            ),
+                        ),
+                    )
+                )
         key = (result.transition.source_entry_id, result.transition.output_key)
         if key in index:
             return AuthorTransitionResolution(
@@ -458,19 +533,18 @@ def resolve_material_entry(
     )
 
 
-def validate_author_transition_pair(
+def validate_author_transition_state(
     *,
     current_relation: MaterialRelation,
-    current_target: AssociationTarget | None,
-    source_id: str,
     next_relation: MaterialRelation,
-) -> AuthorTransitionPairValidation:
-    """Validate the closed #99 relationship transition and its source target."""
+    next_association_target: AssociationTarget | None,
+) -> AuthorTransitionStateValidation:
+    """Validate enum membership and the target relationship's structural shape."""
 
     if not isinstance(current_relation, MaterialRelation) or not isinstance(
         next_relation, MaterialRelation
     ):
-        return AuthorTransitionPairValidation(
+        return AuthorTransitionStateValidation(
             issues=(
                 AuthorTransitionIssue(
                     code="MAT_AUTHOR_TRANSITION_RELATION_INVALID",
@@ -479,48 +553,84 @@ def validate_author_transition_pair(
             )
         )
 
-    if (current_relation, next_relation) not in ALLOWED_AUTHOR_TRANSITIONS:
-        return AuthorTransitionPairValidation(
+    if current_relation is MaterialRelation.UNRESOLVED:
+        return AuthorTransitionStateValidation(
             issues=(
                 AuthorTransitionIssue(
-                    code="MAT_AUTHOR_TRANSITION_NOT_ALLOWED",
+                    code="MAT_AUTHOR_TRANSITION_SOURCE_UNRESOLVED",
+                    message="Author transition source relation cannot be unresolved",
+                ),
+            )
+        )
+    if next_relation not in AUTHOR_SETTABLE_MATERIAL_RELATIONS:
+        return AuthorTransitionStateValidation(
+            issues=(
+                AuthorTransitionIssue(
+                    code="MAT_MATERIAL_TRANSITION_TARGET_INVALID",
+                    message="Author transition target must be an author-settable MaterialRelation",
+                ),
+            )
+        )
+    if next_relation in COMPONENT_BOUND_MATERIAL_RELATIONS:
+        if next_association_target is None:
+            return AuthorTransitionStateValidation(
+                issues=(
+                    AuthorTransitionIssue(
+                        code="MAT_MATERIAL_TRANSITION_ASSOCIATION_REQUIRED",
+                        message=(
+                            f"Author transition to '{next_relation.value}' requires "
+                            "a component-entry association target"
+                        ),
+                    ),
+                )
+            )
+        if next_association_target.kind is not AssociationTargetKind.COMPONENT_ENTRY:
+            return AuthorTransitionStateValidation(
+                issues=(
+                    AuthorTransitionIssue(
+                        code="MAT_MATERIAL_TRANSITION_ASSOCIATION_KIND_INVALID",
+                        message=(
+                            f"Author transition to '{next_relation.value}' requires "
+                            "a component-entry association target"
+                        ),
+                    ),
+                )
+            )
+    elif next_association_target is not None:
+        return AuthorTransitionStateValidation(
+            issues=(
+                AuthorTransitionIssue(
+                    code="MAT_MATERIAL_TRANSITION_ASSOCIATION_FORBIDDEN",
                     message=(
-                        f"Author transition '{current_relation.value}' to "
-                        f"'{next_relation.value}' is not allowed"
+                        f"Author transition to '{next_relation.value}' cannot use "
+                        "a component-entry association target"
                     ),
                 ),
             )
         )
-
-    expected_target = AssociationTarget(AssociationTargetKind.CONTAINER, source_id)
-    if current_target != expected_target:
-        return AuthorTransitionPairValidation(
-            issues=(
-                AuthorTransitionIssue(
-                    code="MAT_AUTHOR_TRANSITION_SOURCE_TARGET_MISMATCH",
-                    message=(
-                        "CONTAINER_SURFACE source state must be associated with "
-                        f"container '{source_id}'"
-                    ),
-                ),
-            )
-        )
-    return AuthorTransitionPairValidation()
+    return AuthorTransitionStateValidation()
 
 
 def project_component_relationship(
     *,
     source_entry: MaterialEntryRef,
     next_relation: MaterialRelation,
+    next_association_target: AssociationTarget | None,
 ) -> ComponentRelationshipProjection:
     """Project the validated relationship without mutating the source entry."""
 
-    if next_relation is not MaterialRelation.FREE:
-        raise ValueError("PM #99 only projects MaterialRelation.FREE")
     return ComponentRelationshipProjection(
-        relation=MaterialRelation.FREE,
-        associated_with=None,
-        association_target_kind=None,
+        relation=next_relation,
+        associated_with=(
+            next_association_target.id
+            if next_association_target is not None
+            else None
+        ),
+        association_target_kind=(
+            next_association_target.kind
+            if next_association_target is not None
+            else None
+        ),
         preservation=None,
         label=None,
     )
@@ -530,16 +640,27 @@ def build_author_state_transition_decision(
     *,
     projected_entry_id: str,
     transition: ResolvedExplicitMaterialTransition,
+    output_id: str,
 ) -> StateTransitionDecision:
     """Build the typed scientific-model decision accepted by the coordinator."""
 
     _require_non_empty("projected_entry_id", projected_entry_id)
+    _require_non_empty("output_id", output_id)
+    next_association_target = transition.next_association_target
+    if (
+        transition.next_relation is not MaterialRelation.FREE
+        and transition.next_relation not in COMPONENT_BOUND_MATERIAL_RELATIONS
+    ):
+        next_association_target = AssociationTarget(
+            kind=AssociationTargetKind.CONTAINER,
+            id=output_id,
+        )
     return StateTransitionDecision(
         transitions=(
             RelationshipTransition(
                 component_entry_id=projected_entry_id,
-                next_relation=transition.next_relation.value,
-                next_association_target=None,
+                next_relation=transition.next_relation,
+                next_association_target=next_association_target,
                 next_label=None,
             ),
         ),
@@ -564,11 +685,24 @@ def apply_explicit_material_transition(
         return ExplicitMaterialTransitionResult(issues=resolution.issues)
 
     source_entry = resolution.entry
-    validation = validate_author_transition_pair(
+    next_association_target = None
+    if transition.next_association_selector is not None:
+        association_resolution = resolve_material_entry(
+            selector=transition.next_association_selector,
+            source_id=source_id,
+            entries=source_entries,
+        )
+        if not association_resolution.resolved or association_resolution.entry is None:
+            return ExplicitMaterialTransitionResult(issues=association_resolution.issues)
+        next_association_target = AssociationTarget(
+            kind=AssociationTargetKind.COMPONENT_ENTRY,
+            id=association_resolution.entry.entry_id,
+        )
+
+    validation = validate_author_transition_state(
         current_relation=source_entry.relation,
-        current_target=source_entry.association_target,
-        source_id=source_id,
         next_relation=transition.next_relation,
+        next_association_target=next_association_target,
     )
     if not validation.is_valid:
         return ExplicitMaterialTransitionResult(
@@ -582,14 +716,17 @@ def apply_explicit_material_transition(
         current_relation=source_entry.relation,
         current_association_target=source_entry.association_target,
         next_relation=transition.next_relation,
+        next_association_target=next_association_target,
     )
     projection = project_component_relationship(
         source_entry=source_entry,
         next_relation=transition.next_relation,
+        next_association_target=next_association_target,
     )
     decision = build_author_state_transition_decision(
         projected_entry_id=f"{source_entry.entry_id}@{transition.output_key}",
         transition=resolved_transition,
+        output_id=transition.output_key,
     )
     return ExplicitMaterialTransitionResult(
         source_entry=source_entry,
@@ -641,9 +778,9 @@ def _parse_material_selector(value: Any) -> MaterialEntryIndexSelector | None:
         or receiver.get("member") != "materials"
     ):
         return None
-    container_ref = _serialized_identifier(receiver.get("base"))
+    container_ref = ref_display(receiver.get("base"))
     index = _serialized_nonnegative_index(value.get("index"))
-    if container_ref is None or index is None:
+    if container_ref.startswith("<") or index is None:
         return None
     return MaterialEntryIndexSelector(
         container_ref=container_ref,

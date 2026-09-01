@@ -5,13 +5,20 @@ from copy import deepcopy
 import pytest
 
 from culsma.runtime.material.author_transition import (
-    ALLOWED_AUTHOR_TRANSITIONS,
     ExplicitMaterialTransition,
     MaterialEntryIndexSelector,
     apply_explicit_material_transition,
     resolve_material_entry,
+    validate_author_transition_state,
 )
-from culsma.scientific_model.material import MaterialRelation
+from culsma.scientific_model.material import (
+    AUTHOR_SETTABLE_MATERIAL_RELATIONS,
+    COMPONENT_BOUND_MATERIAL_RELATIONS,
+    AssociationTarget,
+    AssociationTargetKind,
+    MaterialRelation,
+    RelationshipTransition,
+)
 
 
 def _entry(
@@ -40,14 +47,24 @@ def _entry(
     }
 
 
-def _transition(index: int = 0) -> ExplicitMaterialTransition:
+def _transition(
+    index: int = 0,
+    *,
+    to: MaterialRelation = MaterialRelation.FREE,
+    associated_index: int | None = None,
+) -> ExplicitMaterialTransition:
     return ExplicitMaterialTransition(
         subject=MaterialEntryIndexSelector(
             container_ref="source",
             index=index,
         ),
         output_key="1",
-        next_relation=MaterialRelation.FREE,
+        next_relation=to,
+        next_association_selector=(
+            MaterialEntryIndexSelector("source", associated_index)
+            if associated_index is not None
+            else None
+        ),
     )
 
 
@@ -88,7 +105,7 @@ def test_apply_explicit_material_transition_releases_unique_surface_entry() -> N
     assert len(result.decision.transitions) == 1
     decision = result.decision.transitions[0]
     assert decision.component_entry_id == "RPE1@1"
-    assert decision.next_relation == "free"
+    assert decision.next_relation is MaterialRelation.FREE
     assert decision.next_association_target is None
     assert entries == original
 
@@ -190,7 +207,7 @@ def test_transition_rejects_subject_from_another_container() -> None:
     ]
 
 
-def test_transition_derives_and_rejects_wrong_current_relation() -> None:
+def test_transition_graph_accepts_free_to_free_without_pair_whitelist() -> None:
     free_entry = _entry(
         relation="free",
         associated_with=None,
@@ -203,24 +220,28 @@ def test_transition_derives_and_rejects_wrong_current_relation() -> None:
         source_entries=[free_entry],
     )
 
-    assert not result.applied
+    assert result.applied
     assert result.source_entry is not None
     assert result.source_entry.relation is MaterialRelation.FREE
-    assert [issue.code for issue in result.issues] == [
-        "MAT_AUTHOR_TRANSITION_NOT_ALLOWED"
-    ]
+    assert result.issues == ()
 
 
-def test_transition_rejects_surface_associated_with_another_container() -> None:
+def test_transition_rejects_unresolved_source_relation() -> None:
     result = apply_explicit_material_transition(
         transition=_transition(),
         source_id="source",
-        source_entries=[_entry(associated_with="other")],
+        source_entries=[
+            _entry(
+                relation="unresolved",
+                associated_with=None,
+                association_target_kind=None,
+            )
+        ],
     )
 
     assert not result.applied
     assert [issue.code for issue in result.issues] == [
-        "MAT_AUTHOR_TRANSITION_SOURCE_TARGET_MISMATCH"
+        "MAT_MATERIAL_RELATION_INVALID"
     ]
 
 
@@ -232,10 +253,104 @@ def test_transition_target_must_be_material_relation_enum() -> None:
             next_relation="free",
         )
 
+    with pytest.raises(TypeError):
+        RelationshipTransition(
+            component_entry_id="RPE1",
+            next_relation="free",
+        )
 
-def test_allowed_author_transition_is_only_surface_to_free() -> None:
-    assert ALLOWED_AUTHOR_TRANSITIONS == frozenset(
-        {(MaterialRelation.CONTAINER_SURFACE, MaterialRelation.FREE)}
+
+def test_author_target_domain_is_closed_and_excludes_unresolved() -> None:
+    assert AUTHOR_SETTABLE_MATERIAL_RELATIONS == frozenset(MaterialRelation) - {
+        MaterialRelation.UNRESOLVED
+    }
+
+
+@pytest.mark.parametrize("current_relation", AUTHOR_SETTABLE_MATERIAL_RELATIONS)
+@pytest.mark.parametrize("next_relation", AUTHOR_SETTABLE_MATERIAL_RELATIONS)
+def test_every_defined_author_state_pair_is_accepted(
+    current_relation: MaterialRelation,
+    next_relation: MaterialRelation,
+) -> None:
+    target = (
+        AssociationTarget(AssociationTargetKind.COMPONENT_ENTRY, "support")
+        if next_relation in COMPONENT_BOUND_MATERIAL_RELATIONS
+        else None
+    )
+
+    result = validate_author_transition_state(
+        current_relation=current_relation,
+        next_relation=next_relation,
+        next_association_target=target,
+    )
+
+    assert result.is_valid, result.issues
+
+
+def test_bead_bound_to_free_clears_component_entry_association() -> None:
+    result = apply_explicit_material_transition(
+        transition=_transition(),
+        source_id="source",
+        source_entries=[
+            _entry(
+                entry_id="GFP_TARGET_PROTEIN",
+                content_ref="GFP_TARGET_PROTEIN",
+                relation="bead_bound",
+                associated_with="PROTEIN_G_MAGNETIC_BEADS",
+                association_target_kind="component_entry",
+            ),
+            _entry(
+                entry_id="PROTEIN_G_MAGNETIC_BEADS",
+                content_ref="PROTEIN_G_MAGNETIC_BEADS",
+                relation="free",
+                associated_with=None,
+                association_target_kind=None,
+            ),
+        ],
+    )
+
+    assert result.applied, result.issues
+    assert result.source_entry is not None
+    assert result.source_entry.relation is MaterialRelation.BEAD_BOUND
+    assert result.projection is not None
+    assert result.projection.relation is MaterialRelation.FREE
+    assert result.projection.associated_with is None
+    assert result.projection.association_target_kind is None
+
+
+def test_component_bound_target_requires_typed_association_selector() -> None:
+    missing = apply_explicit_material_transition(
+        transition=_transition(to=MaterialRelation.BEAD_BOUND),
+        source_id="source",
+        source_entries=[_entry()],
+    )
+    accepted = apply_explicit_material_transition(
+        transition=_transition(
+            to=MaterialRelation.BEAD_BOUND,
+            associated_index=1,
+        ),
+        source_id="source",
+        source_entries=[
+            _entry(),
+            _entry(
+                entry_id="BEADS",
+                content_ref="BEADS",
+                relation="free",
+                associated_with=None,
+                association_target_kind=None,
+            ),
+        ],
+    )
+
+    assert [issue.code for issue in missing.issues] == [
+        "MAT_MATERIAL_TRANSITION_ASSOCIATION_REQUIRED"
+    ]
+    assert accepted.applied, accepted.issues
+    assert accepted.projection is not None
+    assert accepted.projection.associated_with == "BEADS"
+    assert (
+        accepted.projection.association_target_kind
+        is AssociationTargetKind.COMPONENT_ENTRY
     )
 
 

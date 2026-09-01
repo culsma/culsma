@@ -8,6 +8,11 @@ from culsma.common.diagnostics import Diagnostic
 from culsma.common.source import Span
 from culsma.pipeline.container_views import resolve_materials_index
 from culsma.pipeline.ir_nodes import IRArg, IRCall, IRIdentifier, IRList, IRString
+from culsma.scientific_model.material import (
+    AUTHOR_SETTABLE_MATERIAL_RELATIONS,
+    COMPONENT_BOUND_MATERIAL_RELATIONS,
+    MaterialRelation,
+)
 
 from .resolution import ExprResolver
 
@@ -44,7 +49,7 @@ def validate_material_transitions_contract(
             diagnostics.append(
                 _issue(
                     "SEM_MATERIAL_TRANSITION_SHAPE_INVALID",
-                    "each transitions item must be transition(subject = ..., output = ..., to = ...)",
+                    "each transitions item must be a transition(...) call",
                     getattr(rule, "span", None) or transition_arg.span or span,
                     node_id,
                 )
@@ -53,11 +58,17 @@ def validate_material_transitions_contract(
 
         named = {arg.name: arg for arg in rule.args}
         names = [arg.name for arg in rule.args]
-        if set(names) != {"subject", "output", "to"} or len(names) != 3:
+        required_names = {"subject", "output", "to"}
+        allowed_names = required_names | {"associated_with"}
+        if (
+            not required_names.issubset(names)
+            or not set(names).issubset(allowed_names)
+            or len(names) != len(set(names))
+        ):
             diagnostics.append(
                 _issue(
                     "SEM_MATERIAL_TRANSITION_ARGS_INVALID",
-                    "transition requires exactly subject, output, and to",
+                    "transition requires subject, output, and to, with optional associated_with",
                     rule.span or transition_arg.span or span,
                     node_id,
                 )
@@ -115,19 +126,68 @@ def validate_material_transitions_contract(
             )
 
         target_expr = named["to"].value
-        if (
-            not isinstance(target_expr, IRIdentifier)
-            or target_expr.name != "free"
-            or target_expr.name in expr_bindings
-        ):
+        target_relation: MaterialRelation | None = None
+        if isinstance(target_expr, IRIdentifier) and target_expr.name not in expr_bindings:
+            try:
+                target_relation = MaterialRelation(target_expr.name)
+            except ValueError:
+                target_relation = None
+        if target_relation not in AUTHOR_SETTABLE_MATERIAL_RELATIONS:
             diagnostics.append(
                 _issue(
                     "SEM_MATERIAL_TRANSITION_TARGET_INVALID",
-                    "transition to must be the MaterialRelation enum identifier free",
+                    "transition to must be an author-settable MaterialRelation enum identifier",
                     named["to"].span or rule.span or span,
                     node_id,
                 )
             )
+
+        association_arg = named.get("associated_with")
+        if target_relation in COMPONENT_BOUND_MATERIAL_RELATIONS:
+            if association_arg is None:
+                diagnostics.append(
+                    _issue(
+                        "SEM_MATERIAL_TRANSITION_ASSOCIATION_REQUIRED",
+                        f"transition to {target_relation.value} requires associated_with = sample.materials[index]",
+                        rule.span or transition_arg.span or span,
+                        node_id,
+                    )
+                )
+        elif association_arg is not None:
+            diagnostics.append(
+                _issue(
+                    "SEM_MATERIAL_TRANSITION_ASSOCIATION_FORBIDDEN",
+                    "associated_with is only valid for component-bound target relations",
+                    association_arg.span or rule.span or span,
+                    node_id,
+                )
+            )
+
+        if association_arg is not None:
+            association_selector = resolve_materials_index(
+                association_arg.value,
+                expr_bindings=expr_bindings,
+            )
+            if association_selector is None:
+                diagnostics.append(
+                    _issue(
+                        "SEM_MATERIAL_TRANSITION_ASSOCIATION_INVALID",
+                        "associated_with must be sample.materials[index]",
+                        association_arg.span or rule.span or span,
+                        node_id,
+                    )
+                )
+            else:
+                association_sample = _identifier_name(association_selector.container)
+                if sample_name is None or association_sample != sample_name:
+                    diagnostics.append(
+                        _issue(
+                            "SEM_MATERIAL_SELECTOR_CONTAINER_MISMATCH",
+                            "associated_with container must be the same binding as sep sample",
+                            association_arg.span or rule.span or span,
+                            node_id,
+                        )
+                    )
     return diagnostics
 
 

@@ -14,6 +14,8 @@ from .classification import (
     classify_component,
 )
 from .contracts import (
+    AUTHOR_SETTABLE_MATERIAL_RELATIONS,
+    COMPONENT_BOUND_MATERIAL_RELATIONS,
     MATERIAL_CONTRACT_VERSION,
     MATERIAL_SEPARATION_FATE,
     MATERIAL_STATE_TRANSITION,
@@ -58,6 +60,7 @@ from .validation import (
 )
 
 __all__ = [
+    "AUTHOR_SETTABLE_MATERIAL_RELATIONS",
     "BUILTIN_MATERIAL_RULEBOOK_PROVIDER_ID",
     "MATERIAL_CONTRACT_VERSION",
     "MATERIAL_SEPARATION_FATE",
@@ -71,6 +74,7 @@ __all__ = [
     "ClassificationRule",
     "ComponentFate",
     "ComponentSnapshot",
+    "COMPONENT_BOUND_MATERIAL_RELATIONS",
     "CoordinatedDecision",
     "CoordinationStatus",
     "MaterialDecision",

@@ -238,7 +238,7 @@ class BuiltinMaterialRulebookProvider:
             transitions.append(
                 RelationshipTransition(
                     component_entry_id=component.entry_id,
-                    next_relation=transition.next_relation.value,
+                    next_relation=transition.next_relation,
                     next_label=transition.next_label,
                     next_association_target=next_association_target,
                     retire_quantity=transition.retire_quantity,

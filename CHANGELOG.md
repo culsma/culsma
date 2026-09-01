@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- replaced the rc7 `container_surface -> free` pair whitelist with a closed,
+  enum-backed `MaterialRelation` target domain and an open transition graph
+- rejected free-text, unknown, and internal `unresolved` transition targets at
+  the semantic and runtime contract boundaries
+- added typed `associated_with = sample.materials[index]` targets for
+  `bead_bound`, `membrane_bound`, and `cell_bound` output relationships
+- added the actual PM #99 magnetic capture/elution regression proving that a
+  `bead_bound` target reaches flowthrough as `free` without a stale bead
+  association
+
 ## Internal 1.0.6rc7
 
 ### Scope

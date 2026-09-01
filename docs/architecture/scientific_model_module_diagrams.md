@@ -20,12 +20,12 @@ stateDiagram-v2
     state "Normalize the current material into canonical component entries" as NormalizeEntries
     state "Classify each entry from canonical identity and current relationship state" as ClassifyEntries
     state OperationKind <<choice>>
-    state "PM99-A: validate transitions and resolve each source.materials[index] expression" as ValidateAuthorContract
+    state "PM99-A: validate target MaterialRelation enums and resolve material selectors" as ValidateAuthorContract
     state "Resolve one conserved quantity split for every source entry" as ResolveFates
-    state "PM99-B: uniquely select each MaterialEntry and read its current relation and association target" as ResolveAuthorSubjects
+    state "PM99-B: resolve each subject and optional component-entry association target" as ResolveAuthorSubjects
     state "For every positive separation output, prepare one relationship-state request" as PrepareSeparationTransitions
     state "PM99-C: use the accepted author transition for the selected entry and output; otherwise use the provider" as ResolveSeparationTransitions
-    state "PM99-D: project the released relationship into the complete separation candidate" as ProjectSeparationCandidate
+    state "PM99-D: project the typed target relationship into the complete separation candidate" as ProjectSeparationCandidate
     state "Project the positive quantity moving from source to destination" as ProjectMovement
     state "Resolve the relationship state for every positive moved entry" as ResolveMovementTransitions
     state "Build one complete candidate keyed by source entry identity" as BuildCandidate
@@ -119,6 +119,18 @@ let result = sep(
 );
 ```
 
+A component-bound target uses the same ordered material view for its typed
+association target:
+
+```culsma
+transition(
+  subject = source.materials[1],
+  output = bound,
+  to = bead_bound,
+  associated_with = source.materials[0]
+)
+```
+
 ```mermaid
 classDiagram
     direction LR
@@ -157,31 +169,34 @@ classDiagram
 
 ## 3. #99 Core Activity
 
-The frontend supplies only the subject, output, and target enum. The current
+Every transition supplies the subject, output, and target enum. The current
 relation and association target are read from the selected `MaterialEntry`; the
-author does not repeat a `from` precondition.
+author does not repeat a `from` precondition. A component-bound target relation
+also supplies `associated_with = sample.materials[index]`; non-bound target
+relations infer their output-container target or clear it for `free`.
 
 ```mermaid
 stateDiagram-v2
     direction TB
 
     state "Receive sep with optional transitions" as Receive
-    state "Validate transition(subject, output, to) and MaterialRelation enum values" as ValidateContract
+    state "Validate transition(subject, output, to, associated_with?) and MaterialRelation enum values" as ValidateContract
     state ContractValid <<choice>>
     state "Normalize sample into the authoritative list of MaterialEntry records" as NormalizeSource
     state "Evaluate subject as sample.materials[index]" as EvaluateIndex
     state "Filter zero-quantity compatibility entries while preserving authoritative order" as BuildLiveList
     state IndexInRange <<choice>>
-    state "Freeze the selected entry_id and read relation and association target" as ReadCurrentState
-    state "Validate CONTAINER_SURFACE associated with sample to FREE" as ValidatePair
-    state PairAllowed <<choice>>
+    state "Freeze the selected entry_id and read its current MaterialRelation" as ReadCurrentState
+    state "Resolve the optional associated_with material selector" as ResolveAssociation
+    state "Validate target enum membership and association-target shape" as ValidateTargetState
+    state TargetStateValid <<choice>>
     state "Resolve output to one operation-neutral output key" as ResolveOutput
     state OutputValid <<choice>>
     state "Verify that the selected entry has a positive routed fraction in that output" as ValidateFraction
     state PositiveFraction <<choice>>
     state "Index the rule by source entry identity and output key" as IndexRule
     state "Resolve every other positive component output through the selected provider" as ResolveFallbacks
-    state "Project FREE and clear the old container association on the selected output entry" as ProjectReleasedEntry
+    state "Project the target MaterialRelation and typed association target" as ProjectTargetEntry
     state "Validate the complete separation candidate and conservation" as ValidateCandidate
     state CandidateValid <<choice>>
     state "Commit all output entries atomically" as CommitCandidate
@@ -197,10 +212,11 @@ stateDiagram-v2
     BuildLiveList --> IndexInRange
     IndexInRange --> Reject : index is out of range
     IndexInRange --> ReadCurrentState : index is in range
-    ReadCurrentState --> ValidatePair
-    ValidatePair --> PairAllowed
-    PairAllowed --> Reject : current relation or target is incompatible
-    PairAllowed --> ResolveOutput : allowed
+    ReadCurrentState --> ResolveAssociation
+    ResolveAssociation --> ValidateTargetState
+    ValidateTargetState --> TargetStateValid
+    TargetStateValid --> Reject : undefined enum or invalid target shape
+    TargetStateValid --> ResolveOutput : valid target state
     ResolveOutput --> OutputValid
     OutputValid --> Reject : unknown output
     OutputValid --> ValidateFraction : resolved output key
@@ -208,8 +224,8 @@ stateDiagram-v2
     PositiveFraction --> Reject : zero routed quantity
     PositiveFraction --> IndexRule : positive routed quantity
     IndexRule --> ResolveFallbacks
-    ResolveFallbacks --> ProjectReleasedEntry
-    ProjectReleasedEntry --> ValidateCandidate
+    ResolveFallbacks --> ProjectTargetEntry
+    ProjectTargetEntry --> ValidateCandidate
     ValidateCandidate --> CandidateValid
     CandidateValid --> Reject : invalid candidate
     CandidateValid --> CommitCandidate : valid candidate
@@ -219,31 +235,49 @@ stateDiagram-v2
 
 ## 4. #99 Relationship State Machine
 
-This state machine is deliberately limited to the one #99 author transition.
-Both values are members of `MaterialRelation`; neither is free text. Other
-provider-owned transitions remain unchanged.
+The state vocabulary is closed by `MaterialRelation`; the transition graph is
+open between every author-settable member. `UNRESOLVED` is an internal sentinel
+and cannot be authored. No source string is converted into a new state.
 
 ```mermaid
 stateDiagram-v2
     direction LR
 
-    state "MaterialRelation.CONTAINER_SURFACE" as ContainerSurface
-    state "MaterialRelation.FREE" as Free
+    state "resolve_material_entry()" as ResolveCurrentRelation
+    state "next_relation : MaterialRelation" as NextRelation
     state "AUTHOR_TRANSITION_REJECTED" as Rejected
     state IndexInRange <<choice>>
-    state AllowedPair <<choice>>
+    state CurrentEnumDefined <<choice>>
+    state TargetEnumDefined <<choice>>
+    state TargetShapeValid <<choice>>
 
-    [*] --> ContainerSurface
-    ContainerSurface --> IndexInRange : resolve_material_entry()
+    [*] --> ResolveCurrentRelation
+    ResolveCurrentRelation --> IndexInRange
     IndexInRange --> Rejected : selector.index >= live_entry_count
-    IndexInRange --> AllowedPair : selector.index < live_entry_count
-    AllowedPair --> Rejected : !validate_author_transition_pair()
-    AllowedPair --> Free : validate_author_transition_pair() / build_author_state_transition_decision()
-    Free --> [*]
+    IndexInRange --> CurrentEnumDefined : selector.index < live_entry_count
+    CurrentEnumDefined --> Rejected : current_relation not in AUTHOR_SETTABLE_MATERIAL_RELATIONS
+    CurrentEnumDefined --> TargetEnumDefined : current_relation in AUTHOR_SETTABLE_MATERIAL_RELATIONS
+    TargetEnumDefined --> Rejected : next_relation == MaterialRelation.UNRESOLVED
+    TargetEnumDefined --> TargetShapeValid : next_relation in AUTHOR_SETTABLE_MATERIAL_RELATIONS
+    TargetShapeValid --> Rejected : !validate_author_transition_state()
+    TargetShapeValid --> NextRelation : validate_author_transition_state() / build_author_state_transition_decision()
+    NextRelation --> [*]
     Rejected --> [*]
 
+    note right of NextRelation
+        FREE
+        CONTAINER_SURFACE
+        PELLET
+        PRECIPITATE
+        DISRUPTED
+        BEAD_BOUND
+        MEMBRANE_BOUND
+        CELL_BOUND
+        FIELD_RETAINED
+    end note
+
     classDef pm99 fill:#fff4d6,stroke:#b36b00,stroke-width:2px,color:#4a2b00
-    class Free,Rejected pm99
+    class NextRelation,Rejected pm99
 ```
 
 ## 5. #99 Dedicated Runtime Sequence
@@ -282,9 +316,17 @@ sequenceDiagram
 
         rect rgb(255, 244, 214)
             Adapter->>Author: resolve_explicit_material_transitions(transitions=explicit_transitions, source_id=source_id, source_entries=source_entries, output_bindings=resolved_outputs, fractions_by_component=fractions_by_component)
+            Author->>Author: apply_explicit_material_transition(transition=transition, source_id=source_id, source_entries=source_entries)
             Author->>Author: resolve_material_entry(selector=transition.subject, source_id=source_id, entries=source_entries)
-            Author->>Author: validate_author_transition_pair(current_relation=source_entry.relation, current_target=source_entry.association_target, source_id=source_id, next_relation=transition.next_relation)
-            Author->>Author: validate_positive_output_fraction(source_entry_id=source_entry.entry_id, output_key=output_key, output_bindings=output_bindings, fractions_by_component=fractions_by_component)
+            opt transition.next_association_selector is not None
+                Author->>Author: resolve_material_entry(selector=transition.next_association_selector, source_id=source_id, entries=source_entries)
+            end
+            Author->>Author: validate_author_transition_state(current_relation=source_entry.relation, next_relation=transition.next_relation, next_association_target=next_association_target)
+            Author-->>Author: ExplicitMaterialTransitionResult
+            Author->>Author: validate_positive_output_fraction(source_entry_id=result.transition.source_entry_id, output_key=result.transition.output_key, output_bindings=output_bindings, fractions_by_component=fractions_by_component)
+            opt result.transition.next_association_target is not None
+                Author->>Author: validate_positive_output_fraction(source_entry_id=result.transition.next_association_target.id, output_key=result.transition.output_key, output_bindings=output_bindings, fractions_by_component=fractions_by_component)
+            end
             Author-->>Adapter: AuthorTransitionResolution
         end
 
@@ -296,7 +338,7 @@ sequenceDiagram
                     Adapter->>Adapter: output_key = output.part_id
                     alt (component.entry_id, output_key) in transition_resolution.transitions_by_output
                         rect rgb(255, 244, 214)
-                            Adapter->>Author: build_author_state_transition_decision(projected_entry_id=projected_snapshot.entry_id, transition=transition_resolution.transitions_by_output[(component.entry_id, output_key)])
+                            Adapter->>Author: build_author_state_transition_decision(projected_entry_id=projected_snapshot.entry_id, transition=transition_resolution.transitions_by_output[(component.entry_id, output_key)], output_id=(output_ids_by_part or {}).get(output.part_id, output.part_id))
                             Author-->>Adapter: StateTransitionDecision
                             Adapter->>Validation: validate_state_transition_decision(transition_request.payload, author_decision)
                             Validation-->>Adapter: MaterialValidationResult
@@ -364,7 +406,7 @@ sequenceDiagram
         loop component in components.values()
             loop (output, fraction) in zip(output_roles, component_fractions)
                 alt (component.entry_id, output.part_id) in transition_resolution.transitions_by_output
-                    Adapter->>Author: build_author_state_transition_decision(projected_entry_id=projected_snapshot.entry_id, transition=transition_resolution.transitions_by_output[(component.entry_id, output.part_id)])
+                    Adapter->>Author: build_author_state_transition_decision(projected_entry_id=projected_snapshot.entry_id, transition=transition_resolution.transitions_by_output[(component.entry_id, output.part_id)], output_id=(output_ids_by_part or {}).get(output.part_id, output.part_id))
                     Adapter->>Validation: validate_state_transition_decision(transition_request.payload, author_decision)
                     Adapter->>Coordinator: MaterialEffectCoordinator.resolve(transition_request, validated_author_decision=author_decision)
                 else (component.entry_id, output.part_id) not in transition_resolution.transitions_by_output
@@ -415,7 +457,8 @@ The class diagram expresses the same design as the activity and sequence
 diagrams. Runtime material entries are an ordered list; `MaterialsIndexExpression`
 is the frontend pattern and `MaterialEntryIndexSelector` is its typed Runtime
 form. There is no dictionary key and no author-supplied `from_precondition`. Every
-named class and method below now exists in the program.
+named class and method below now exists in the program. `next_relation` remains
+typed as `MaterialRelation` through the Scientific Model decision boundary.
 
 ```mermaid
 classDiagram
@@ -440,11 +483,10 @@ classDiagram
     namespace Runtime {
         class AuthorTransitionCoreModule["runtime.material.author_transition"] {
             <<IMPLEMENTED PM99 CORE>>
-            +ALLOWED_AUTHOR_TRANSITIONS : frozenset~tuple[MaterialRelation, MaterialRelation]~
             +resolve_material_entry(selector, source_id, entries) MaterialEntryResolution
-            +validate_author_transition_pair(current_relation, current_target, source_id, next_relation) AuthorTransitionPairValidation
-            +project_component_relationship(source_entry, next_relation) ComponentRelationshipProjection
-            +build_author_state_transition_decision(projected_entry_id, transition) StateTransitionDecision
+            +validate_author_transition_state(current_relation, next_relation, next_association_target) AuthorTransitionStateValidation
+            +project_component_relationship(source_entry, next_relation, next_association_target) ComponentRelationshipProjection
+            +build_author_state_transition_decision(projected_entry_id, transition, output_id) StateTransitionDecision
             +apply_explicit_material_transition(transition, source_id, source_entries) ExplicitMaterialTransitionResult
         }
         class AuthorTransitionIntegrationModule["runtime.material.author_transition"] {
@@ -474,6 +516,7 @@ classDiagram
             +subject : MaterialEntryIndexSelector
             +output_key : string
             +next_relation : MaterialRelation
+            +next_association_selector : MaterialEntryIndexSelector?
         }
         class ResolvedExplicitMaterialTransition {
             <<IMPLEMENTED runtime value>>
@@ -482,6 +525,7 @@ classDiagram
             +current_relation : MaterialRelation
             +current_association_target : AssociationTarget?
             +next_relation : MaterialRelation
+            +next_association_target : AssociationTarget?
         }
         class ExplicitMaterialTransitionResult {
             <<IMPLEMENTED result>>
@@ -505,7 +549,7 @@ classDiagram
             +issues : tuple~AuthorTransitionIssue~
             +resolved : bool
         }
-        class AuthorTransitionPairValidation {
+        class AuthorTransitionStateValidation {
             <<IMPLEMENTED PM99 CORE>>
             +issues : tuple~AuthorTransitionIssue~
             +is_valid : bool
@@ -560,6 +604,10 @@ classDiagram
             FIELD_RETAINED
             UNRESOLVED
         }
+        class MaterialRelationDomain {
+            +AUTHOR_SETTABLE_MATERIAL_RELATIONS : frozenset~MaterialRelation~
+            +COMPONENT_BOUND_MATERIAL_RELATIONS : frozenset~MaterialRelation~
+        }
         class AssociationTargetKind {
             <<enumeration>>
             CONTAINER
@@ -575,7 +623,7 @@ classDiagram
         }
         class RelationshipTransition {
             +component_entry_id : string
-            +next_relation : string
+            +next_relation : MaterialRelation
             +next_association_target : AssociationTarget?
             +next_label
         }
@@ -585,12 +633,13 @@ classDiagram
     MaterialsIndexExpression --> MaterialEntryIndexSelector : serializes to
     MaterialTransitionContractModule --> ExplicitMaterialTransition : validates
     ExplicitMaterialTransition --> MaterialEntryIndexSelector : subject
+    ExplicitMaterialTransition --> MaterialEntryIndexSelector : next_association_selector
     ExplicitMaterialTransition --> MaterialRelation : next_relation
     AuthorTransitionIntegrationModule --> ExplicitMaterialTransitionParseResult : parses
     AuthorTransitionIntegrationModule --> OutputFractionValidation : validates
     AuthorTransitionCoreModule --> MaterialEntryResolution : resolve_material_entry()
     MaterialEntryResolution --> MaterialEntryRef : entry
-    AuthorTransitionCoreModule --> AuthorTransitionPairValidation : validate_author_transition_pair()
+    AuthorTransitionCoreModule --> AuthorTransitionStateValidation : validate_author_transition_state()
     AuthorTransitionCoreModule --> ResolvedExplicitMaterialTransition : resolves
     AuthorTransitionCoreModule --> ExplicitMaterialTransitionResult : apply_explicit_material_transition()
     ExplicitMaterialTransitionResult --> ComponentRelationshipProjection : projection
@@ -605,7 +654,7 @@ classDiagram
     ScientificModelMaterialAdapter --> MaterialSeparationCandidate : resolves
     RuntimeSeparationModule --> MaterialSeparationCandidate : validates and commits
 
-    note for AuthorTransitionCoreModule "ALLOWED_AUTHOR_TRANSITIONS = frozenset({(MaterialRelation.CONTAINER_SURFACE, MaterialRelation.FREE)})"
+    MaterialRelationDomain --> MaterialRelation : excludes UNRESOLVED from author targets
 
     style ContainerViewsModule fill:#fff4d6,stroke:#b36b00,stroke-width:2px,stroke-dasharray:6 4
     style MaterialTransitionContractModule fill:#fff4d6,stroke:#b36b00,stroke-width:2px,stroke-dasharray:6 4
@@ -623,7 +672,7 @@ classDiagram
     style ResolvedExplicitMaterialTransition fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
     style ExplicitMaterialTransitionResult fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
     style MaterialEntryResolution fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
-    style AuthorTransitionPairValidation fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style AuthorTransitionStateValidation fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
     style ComponentRelationshipProjection fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
 ```
 
@@ -632,6 +681,6 @@ classDiagram
 | Marker | Exact insertion locations |
 | --- | --- |
 | `PM99-A` | implemented `pipeline.container_views.resolve_materials_index()`, `pipeline.validate.material_transition.validate_material_transitions_contract()`, and `runtime.material.author_transition.parse_explicit_material_transitions()` |
-| `PM99-B` | implemented `runtime.material.author_transition.resolve_material_entry()`, `validate_author_transition_pair()`, `resolve_explicit_material_transitions()`, and `validate_positive_output_fraction()` |
+| `PM99-B` | implemented `runtime.material.author_transition.resolve_material_entry()`, `validate_author_transition_state()`, `resolve_explicit_material_transitions()`, and `validate_positive_output_fraction()` |
 | `PM99-C` | implemented `runtime.material.author_transition.build_author_state_transition_decision()` and the adapter calls to `scientific_model.material.validation.validate_state_transition_decision()` and `scientific_model.material.coordinator.MaterialEffectCoordinator.resolve(validated_author_decision=...)` |
-| `PM99-D` | implemented output projection through `runtime.material.separation.project_resolved_material_effect()`, `resolved_output_component_entry()`, `validate_separation_candidate()`, and `commit_separation_candidate()`; the author transition clears the old association and is recorded as `author_transition` |
+| `PM99-D` | implemented output projection through `runtime.material.separation.project_resolved_material_effect()`, `resolved_output_component_entry()`, `validate_separation_candidate()`, and `commit_separation_candidate()`; `free` clears association, container relations target the concrete output container, component-bound relations retain the typed selected target, and every author result is recorded as `author_transition` |

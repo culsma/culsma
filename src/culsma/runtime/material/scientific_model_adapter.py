@@ -379,6 +379,10 @@ class ScientificModelMaterialAdapter:
                     build_author_state_transition_decision(
                         projected_entry_id=projected_snapshot.entry_id,
                         transition=author_transition,
+                        output_id=(output_ids_by_part or {}).get(
+                            output.part_id,
+                            output.part_id,
+                        ),
                     )
                     if author_transition is not None
                     else None
@@ -408,15 +412,16 @@ class ScientificModelMaterialAdapter:
                         "State-transition capability did not return StateTransitionDecision",
                     )
                 transition = decision.transitions[0]
+                next_relation = transition.next_relation.value
                 resolved_component_outputs.append(
                     ResolvedComponentOutput(
                         part_id=output.part_id,
                         semantic_role=output.semantic_role,
                         fraction=fraction,
-                        next_relation=transition.next_relation,
+                        next_relation=next_relation,
                         next_label=transition.next_label,
                         next_association_target=self.resolved_association_target(
-                            transition.next_relation,
+                            next_relation,
                             transition.next_association_target,
                             transition_context,
                             projected_snapshot.entry_id,
@@ -568,17 +573,18 @@ class ScientificModelMaterialAdapter:
                     "Movement transition did not return StateTransitionDecision",
                 )
             transition = decision.transitions[0]
+            next_relation = transition.next_relation.value
             resolved.append(
                 ResolvedComponentTransition(
                     source_entry_id=entry_id,
-                    next_relation=transition.next_relation,
+                    next_relation=next_relation,
                     next_label=transition.next_label,
                     provenance=coordinated.provenance,
                     next_association_target=(
                         transition.next_association_target
                         or (
                             None
-                            if transition.next_relation == "free"
+                            if next_relation == "free"
                             else movement_target
                         )
                     ),

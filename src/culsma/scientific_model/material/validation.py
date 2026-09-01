@@ -7,6 +7,8 @@ from math import isfinite
 
 from ..contracts import ModelRequest, ModelResult, ModelStatus
 from .contracts import (
+    AUTHOR_SETTABLE_MATERIAL_RELATIONS,
+    COMPONENT_BOUND_MATERIAL_RELATIONS,
     MATERIAL_SEPARATION_FATE,
     MATERIAL_STATE_TRANSITION,
     AssociationTarget,
@@ -191,11 +193,6 @@ def validate_state_transition_decision(
     issues: list[MaterialValidationIssue] = []
     components_by_id = {component.entry_id: component for component in payload.components}
     component_ids = set(components_by_id)
-    allowed_relations = {
-        relation.value
-        for relation in MaterialRelation
-        if relation is not MaterialRelation.UNRESOLVED
-    }
     seen_components: set[str] = set()
     for transition in decision.transitions:
         if transition.component_entry_id not in component_ids:
@@ -216,7 +213,10 @@ def validate_state_transition_decision(
                 )
             )
         seen_components.add(transition.component_entry_id)
-        if transition.next_relation not in allowed_relations:
+        if (
+            not isinstance(transition.next_relation, MaterialRelation)
+            or transition.next_relation not in AUTHOR_SETTABLE_MATERIAL_RELATIONS
+        ):
             issues.append(
                 MaterialValidationIssue(
                     code="MATERIAL_MODEL_RELATION_INVALID",
@@ -256,12 +256,7 @@ def validate_state_transition_decision(
             )
             continue
         component = components_by_id.get(transition.component_entry_id)
-        material_bound_relations = {
-            MaterialRelation.BEAD_BOUND,
-            MaterialRelation.MEMBRANE_BOUND,
-            MaterialRelation.CELL_BOUND,
-        }
-        if transition.next_relation in material_bound_relations:
+        if transition.next_relation in COMPONENT_BOUND_MATERIAL_RELATIONS:
             current_target_exists = bool(
                 component is not None
                 and (

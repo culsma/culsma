@@ -240,6 +240,7 @@ The shortest ownership test is:
 | Project aggregate volume from routed component detail | Core | Accounting projection from the single authoritative ledger |
 | Preserve explicitly surface-associated cells during declared aspiration | Core | Deterministic consequence of declared association and operation contract |
 | Apply author-declared `component_fates` | Core | Execute an explicit source rule; no inference is required |
+| Apply an author-declared transition between `MaterialRelation` enum members | Core | Execute a typed author decision; the enum domain and association invariants remain kernel-validated |
 | Predict DNA recovery, pellet carryover, filtration retention, or magnetic capture efficiency | Scientific model | Depends on material, device, conditions, calibration, or empirical assumptions |
 | Predict binding, lysis products, PCR yield, viability, degradation, or signal intensity | Scientific model | Natural-process outcome is not implied by workflow syntax |
 | Select a robot command and report whether it executed | Driver | Hardware realization and execution receipt |
