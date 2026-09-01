@@ -1,5 +1,75 @@
 # Changelog
 
+## Internal 1.0.6rc7
+
+### Scope
+
+This internal GitHub prerelease adds an explicit, author-controlled material
+state transition to the existing separation surface. It lets a protocol select
+one authoritative material entry by its ordered `source.materials[index]`
+position and declare the accepted relationship state of that entry in a named
+separation output.
+
+It includes:
+
+- zero-based `container.materials[index]` selectors backed by the authoritative
+  ordered component-entry list rather than content codes or labels
+- an optional `transitions` tuple on the existing separation statement, with no
+  new separation operation or program
+- enum-backed relationship targets and typed source/output validation
+- exact resolution of the selected source entry, its current relationship, and
+  its association target before the transition is accepted
+- deterministic projection of an accepted transition into the requested output
+  while leaving unrelated material entries under the Scientific Model result
+- rejection of invalid indices, duplicate subjects, incompatible preconditions,
+  unavailable outputs, and zero-fraction output transitions
+- corrected assignment-string validation and corrected identity allocation for
+  newly created containers
+- synchronized PM #99 architecture diagrams plus unit, integration, runtime,
+  validation, planning, material-ledger, and CLI regression coverage
+
+### Compatibility
+
+- The published `internal-1.0.6rc6` tag and release remain unchanged.
+- Existing separation statements without `transitions` continue to use the
+  configured Scientific Model provider exactly as before.
+- This prerelease does not introduce a trypsinization program or another
+  built-in separation mode; the new contract is optional author-supplied state.
+- Material selectors use list position deliberately, so repeated materials with
+  the same code remain independently addressable.
+- Unsupported or contradictory declarations fail before runtime material state
+  is committed.
+
+### Install
+
+After the GitHub prerelease assets are published:
+
+```bash
+python -m pip install https://github.com/culsma/culsma/releases/download/internal-1.0.6rc7/culsma-1.0.6rc7-py3-none-any.whl
+```
+
+Source tag install:
+
+```bash
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@internal-1.0.6rc7"
+```
+
+### Verified
+
+- `python -m pytest -q`
+  - result: `1014 passed`
+- PM #99 integration cases cover indexed adherent-cell release, multiple
+  transitions, duplicate material codes, invalid selectors, and rejected
+  preconditions
+- all seven Mermaid architecture diagrams render successfully
+- source CLI and isolated installed-wheel CLI smoke checks passed
+- `python -m build`
+  - result: `culsma-1.0.6rc7.tar.gz` and
+    `culsma-1.0.6rc7-py3-none-any.whl` built
+- `python -m twine check`
+  - result: passed for both distributions
+- isolated wheel install reports `culsma.__version__ == "1.0.6rc7"`
+
 ## Internal 1.0.6rc6
 
 ### Scope
