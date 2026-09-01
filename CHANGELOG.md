@@ -1,18 +1,78 @@
 # Changelog
 
-## Unreleased
+## Internal 1.0.6rc8
 
-### Fixed
+### Scope
 
-- replaced the rc7 `container_surface -> free` pair whitelist with a closed,
-  enum-backed `MaterialRelation` target domain and an open transition graph
-- rejected free-text, unknown, and internal `unresolved` transition targets at
-  the semantic and runtime contract boundaries
-- added typed `associated_with = sample.materials[index]` targets for
-  `bead_bound`, `membrane_bound`, and `cell_bound` output relationships
-- added the actual PM #99 magnetic capture/elution regression proving that a
-  `bead_bound` target reaches flowthrough as `free` without a stale bead
-  association
+This internal GitHub prerelease corrects and generalizes the PM #99
+author-controlled material relationship transition introduced in rc7. The
+state vocabulary remains closed and enum-backed, while the directed transition
+graph is open between every author-settable `MaterialRelation` member.
+
+It includes:
+
+- removal of the rc7 `container_surface -> free` relation-pair whitelist
+- one authoritative `MaterialRelation` target domain shared by frontend,
+  Runtime, and Scientific Model validation
+- rejection of quoted free text, unknown identifiers, and the internal
+  `unresolved` sentinel at the semantic and runtime contract boundaries
+- typed `associated_with = sample.materials[index]` targets for `bead_bound`,
+  `membrane_bound`, and `cell_bound` output relationships
+- output-container association for other non-`free` target relations and
+  deterministic association clearing for `free`
+- validation that both a transitioned material and its component-entry
+  association target have positive quantity in the selected output
+- support for multiple independently indexed material transitions in one
+  separation statement
+- synchronized PM #99 activity, state, sequence, and class diagrams plus the
+  promoted reference-language contract
+
+### Compatibility
+
+- The published `internal-1.0.6rc7` tag and release remain unchanged.
+- Existing separation statements without `transitions` continue to use the
+  configured Scientific Model provider exactly as before.
+- This prerelease adds no separation operation, program, trypsinization model,
+  or implicit chemical-state inference.
+- `container.materials[index]` remains the zero-based, ordered material selector;
+  codes and labels are not selector keys.
+- Every author-settable enum relation may transition to every other
+  author-settable enum relation, subject to target association and output
+  invariants.
+
+### Install
+
+After the GitHub prerelease assets are published:
+
+```bash
+python -m pip install https://github.com/culsma/culsma/releases/download/internal-1.0.6rc8/culsma-1.0.6rc8-py3-none-any.whl
+```
+
+Source tag install:
+
+```bash
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@internal-1.0.6rc8"
+```
+
+### Verified
+
+- `python -m pytest -q`
+  - result: `1116 passed`
+- PM #99 unit and integration selection
+  - result: `124 passed`
+- transition coverage includes all 9 x 9 author-settable state pairs, five
+  container-associated targets, all three component-bound targets, multiple
+  transitions in one separation, and the real `bead_bound -> free` elution case
+- negative coverage rejects free text, unknown identifiers, `unresolved`,
+  invalid association shapes, and zero-quantity subject or association outputs
+- all seven Mermaid architecture diagrams render successfully
+- source CLI and isolated installed-wheel CLI smoke checks passed
+- `python -m build`
+  - result: `culsma-1.0.6rc8.tar.gz` and
+    `culsma-1.0.6rc8-py3-none-any.whl` built
+- `python -m twine check`
+  - result: passed for both distributions
+- isolated wheel install reports `culsma.__version__ == "1.0.6rc8"`
 
 ## Internal 1.0.6rc7
 
