@@ -21,11 +21,13 @@ from culsma.pipeline.ir_nodes import (
     IRWithEnv,
 )
 from culsma.pipeline.operation_specs import OperationSpec
+from culsma.pipeline.program_registry import get_separation_slot_contract
 
 from .binding import BindingValidator
 from .constructors import ConstructorValidator
 from .context import _GroupBinding
 from .expression_contracts import validate_expr_contracts
+from .material_transition import validate_material_transitions_contract
 from .operations import OperationContractValidator
 from .resolution import ExprResolver
 from .separation import validate_component_fates_contract
@@ -556,6 +558,25 @@ def validate_let_call_contract(
                 validate_component_fates_contract(
                     value.args,
                     expr_bindings=expr_bindings,
+                    node_id=stmt.id,
+                    span=value.span,
+                )
+            )
+            program_arg = _find_arg_by_name(value.args, "program")
+            program = (
+                ExprResolver.resolve_call_expr(program_arg.value, expr_bindings)
+                if program_arg is not None
+                else None
+            )
+            diagnostics.extend(
+                validate_material_transitions_contract(
+                    value.args,
+                    expr_bindings=expr_bindings,
+                    output_contract=(
+                        get_separation_slot_contract(program.name)
+                        if isinstance(program, IRCall)
+                        else None
+                    ),
                     node_id=stmt.id,
                     span=value.span,
                 )

@@ -22,9 +22,15 @@ from culsma.scientific_model.material import (
     RelationshipSnapshot,
     SeparationDecision,
     StateTransitionDecision,
+    validate_state_transition_decision,
 )
 from culsma.runtime.material.component_entries import ENTRY_EPSILON
 
+from .author_transition import (
+    ExplicitMaterialTransition,
+    build_author_state_transition_decision,
+    resolve_explicit_material_transitions,
+)
 from .separation_fate import (
     ContentPhysicalState,
     ExplicitContentFate,
@@ -74,6 +80,7 @@ class ResolvedComponentOutput:
     decision_source: str
     fate_provenance: ProviderProvenance | None
     transition_provenance: ProviderProvenance | None
+    transition_source: str = "provider"
     next_association_target: AssociationTarget | None = None
 
 
@@ -133,6 +140,8 @@ class ScientificModelMaterialAdapter:
         request_id: str,
         source_id: str | None,
         output_ids_by_part: dict[str, str] | None = None,
+        source_entries: list[dict[str, Any]] | None = None,
+        explicit_transitions: tuple[ExplicitMaterialTransition, ...] = (),
     ) -> ResolvedMaterialEffect | MaterialEffectFailure:
         output_roles = tuple(
             OutputRoleSnapshot(part_id=slot, semantic_role=role)
@@ -260,6 +269,17 @@ class ScientificModelMaterialAdapter:
                 fate_source_by_component[component_id] = "scientific_model_provider"
                 fate_provenance_by_component[component_id] = coordinated.provenance
 
+        author_transition_resolution = resolve_explicit_material_transitions(
+            transitions=explicit_transitions,
+            source_id=source_id or "",
+            source_entries=source_entries or (),
+            output_bindings=resolved_outputs,
+            fractions_by_component=fractions_by_component,
+        )
+        if author_transition_resolution.issues:
+            issue = author_transition_resolution.issues[0]
+            return MaterialEffectFailure(issue.code, issue.message)
+
         resolved_component_effects: list[ResolvedComponentEffect] = []
         for component in components.values():
             component_fractions = fractions_by_component.get(component.entry_id)
@@ -291,6 +311,7 @@ class ScientificModelMaterialAdapter:
                             decision_source=fate_source_by_component[component.entry_id],
                             fate_provenance=fate_provenance_by_component[component.entry_id],
                             transition_provenance=None,
+                            transition_source="none",
                         )
                     )
                     continue
@@ -351,7 +372,29 @@ class ScientificModelMaterialAdapter:
                         context=transition_context,
                     ),
                 )
-                coordinated = self.coordinator.resolve(transition_request)
+                author_transition = author_transition_resolution.transitions_by_output.get(
+                    (component.entry_id, output.part_id)
+                )
+                author_decision = (
+                    build_author_state_transition_decision(
+                        projected_entry_id=projected_snapshot.entry_id,
+                        transition=author_transition,
+                    )
+                    if author_transition is not None
+                    else None
+                )
+                if author_decision is not None:
+                    validation = validate_state_transition_decision(
+                        transition_request.payload,
+                        author_decision,
+                    )
+                    if not validation.valid:
+                        issue = validation.issues[0]
+                        return MaterialEffectFailure(issue.code, issue.message)
+                coordinated = self.coordinator.resolve(
+                    transition_request,
+                    validated_author_decision=author_decision,
+                )
                 failure = self.coordination_failure(
                     coordinated,
                     capability=MATERIAL_STATE_TRANSITION,
@@ -383,6 +426,7 @@ class ScientificModelMaterialAdapter:
                         decision_source=fate_source_by_component[component.entry_id],
                         fate_provenance=fate_provenance_by_component[component.entry_id],
                         transition_provenance=coordinated.provenance,
+                        transition_source=coordinated.source,
                     )
                 )
             resolved_component_effects.append(

@@ -7,6 +7,7 @@ from typing import Any
 
 from culsma.pipeline.program_registry import get_separation_slot_contract
 from culsma.scientific_model.material import AssociationTarget, AssociationTargetKind
+from culsma.runtime.material.author_transition import ExplicitMaterialTransition
 from culsma.runtime.material.component_entries import (
     ComponentEntryRelationError,
     container_component_entries,
@@ -255,10 +256,22 @@ def resolved_output_component_entry(
             if association_target is not None
             else None
         ),
-        "preservation": source_entry.get("preservation") or component.source_preservation,
+        "preservation": (
+            None
+            if output.transition_source == "author"
+            else source_entry.get("preservation") or component.source_preservation
+        ),
         "label": output.next_label,
-        "relationship_source": "scientific_model",
-        "material_state_source": "scientific_model_provider",
+        "relationship_source": (
+            "author_transition"
+            if output.transition_source == "author"
+            else "scientific_model"
+        ),
+        "material_state_source": (
+            "author_transition"
+            if output.transition_source == "author"
+            else "scientific_model_provider"
+        ),
     }
     if source_class is not None:
         entry["partition_class"] = source_class
@@ -335,7 +348,11 @@ def resolved_component_transition_records(
                 if output.replacement_quantity is not None
                 else None
             ),
-            "source": "scientific_model_provider",
+            "source": (
+                "author_transition"
+                if output.transition_source == "author"
+                else "scientific_model_provider"
+            ),
             "provenance": provider_provenance_record(
                 output.transition_provenance
             ),
@@ -426,6 +443,7 @@ def apply_separation_material(
     slot1: dict[str, Any],
     program: dict[str, Any],
     explicit_fates: dict[str, ExplicitContentFate] | None = None,
+    explicit_transitions: tuple[ExplicitMaterialTransition, ...] = (),
     material_effect_adapter: ScientificModelMaterialAdapter | None = None,
     request_id: str = "material-separation",
     source_id: str | None = None,
@@ -539,11 +557,13 @@ def apply_separation_material(
         state=state,
         source=source,
         source_quantities=source_quantities,
+        source_entries=source_entries,
         components=components,
         operation_contract=operation_contract,
         request_id=request_id,
         source_id=source_id,
         output_ids_by_part=output_ids_by_part,
+        explicit_transitions=explicit_transitions,
     )
     if isinstance(resolution, MaterialEffectFailure):
         return SeparationApplicationResult(

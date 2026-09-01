@@ -9,6 +9,7 @@ from typing import Any
 from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.material.args import arg_call, arg_quantity, arg_string, call_arg_int, call_arg_string
+from culsma.runtime.material.author_transition import parse_explicit_material_transitions
 from culsma.runtime.material.component_entries import (
     container_component_entries,
     project_component_entries,
@@ -271,6 +272,15 @@ class MaterialIndexedPartsStateManager:
         if fate_issues:
             issue = fate_issues[0]
             return diagnostic_result(step, state, issue.code, issue.message)
+        transition_parse = parse_explicit_material_transitions(
+            step.args.get("transitions"),
+            output_contract=separation_slot_contract(program_kind),
+            declared_source_ref=ref_display(sample_arg),
+            source_id=source_id,
+        )
+        if transition_parse.issues:
+            issue = transition_parse.issues[0]
+            return diagnostic_result(step, state, issue.code, issue.message)
 
         working = deepcopy(state)
 
@@ -325,6 +335,7 @@ class MaterialIndexedPartsStateManager:
             slot1=slot1,
             program=program,
             explicit_fates=explicit_fates,
+            explicit_transitions=transition_parse.transitions,
             material_effect_adapter=self.material_effect_adapter,
             request_id=step.step_id,
             source_id=source_id,

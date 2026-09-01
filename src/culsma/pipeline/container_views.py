@@ -5,8 +5,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from culsma.pipeline.ir_nodes import IRIdentifier, IRIndex, IRMember
+
 CONTAINER_CONTENTS_MEMBER = "contents"
 CONTAINER_STRUCTURE_MEMBER = "structure"
+CONTAINER_MATERIALS_MEMBER = "materials"
 CONTAINER_STRUCTURE_FACETS = frozenset({"top", "bottom", "sidewall"})
 
 
@@ -16,6 +19,48 @@ class ContainerTargetView:
     members: tuple[str, ...]
     kind: str
     facet: str | None = None
+
+
+@dataclass(frozen=True)
+class MaterialsIndexExpression:
+    """Static shape of ``container.materials[index]``."""
+
+    container: Any
+    index: Any
+
+
+def resolve_materials_index(
+    expr: Any,
+    *,
+    expr_bindings: dict[str, Any],
+) -> MaterialsIndexExpression | None:
+    """Resolve the closed frontend selector shape without reading Runtime state."""
+
+    seen: set[str] = set()
+    while (
+        isinstance(expr, IRIdentifier)
+        and expr.name in expr_bindings
+        and expr.name not in seen
+    ):
+        seen.add(expr.name)
+        expr = expr_bindings[expr.name]
+    if not isinstance(expr, IRIndex):
+        return None
+    receiver = expr.base
+    if (
+        not isinstance(receiver, IRMember)
+        or receiver.member != CONTAINER_MATERIALS_MEMBER
+    ):
+        return None
+    return MaterialsIndexExpression(container=receiver.base, index=expr.index)
+
+
+def is_container_materials_index(expr: Any) -> bool:
+    return (
+        isinstance(expr, IRIndex)
+        and isinstance(expr.base, IRMember)
+        and expr.base.member == CONTAINER_MATERIALS_MEMBER
+    )
 
 
 def split_member_path(expr: Any) -> tuple[Any, tuple[str, ...]] | None:

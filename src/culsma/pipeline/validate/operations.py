@@ -18,7 +18,7 @@ _LET_CALL_CONTRACTS: dict[str, tuple[set[str], set[str]]] = {
     "data_schema": ({"label", "fields"}, {"label", "fields"}),
     "data_ref": ({"kind"}, {"kind", "subject_ref", "context_ref", "schema_ref"}),
     "data_group_ref": ({"kind"}, {"kind"}),
-    "sep": ({"sample", "program"}, {"sample", "program", "component_fates"}),
+    "sep": ({"sample", "program"}, {"sample", "program", "component_fates", "transitions"}),
     "frac": ({"sample", "program"}, {"sample", "program"}),
 }
 

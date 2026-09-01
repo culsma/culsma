@@ -5,7 +5,12 @@ from __future__ import annotations
 from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
-from culsma.pipeline.container_views import classify_container_target_view, container_view_path_error, container_view_root
+from culsma.pipeline.container_views import (
+    classify_container_target_view,
+    container_view_path_error,
+    container_view_root,
+    is_container_materials_index,
+)
 from culsma.pipeline.ir_nodes import (
     IRBinary,
     IRCall,
@@ -43,6 +48,54 @@ def validate_expr_contracts(
     diagnostics: list[Diagnostic] = []
 
     if isinstance(expr, IRIndex):
+        if is_container_materials_index(expr):
+            index_value, reason = ExprResolver.resolve_static_index_value(
+                expr.index,
+                literal_bindings=literal_bindings,
+                expr_bindings=expr_bindings,
+            )
+            if reason == "not_static":
+                diagnostics.append(
+                    Diagnostic(
+                        code="SEM_MATERIAL_INDEX_NOT_STATIC_INTEGER",
+                        message="container.materials index must be a compile-time decidable non-negative integer",
+                        span=expr.index.span or expr.span,
+                        node_id=node_id,
+                    )
+                )
+            elif reason == "not_nonnegative_integer":
+                diagnostics.append(
+                    Diagnostic(
+                        code="SEM_MATERIAL_INDEX_NOT_NONNEGATIVE_INTEGER",
+                        message="container.materials index must be a non-negative integer",
+                        span=expr.index.span or expr.span,
+                        node_id=node_id,
+                    )
+                )
+            diagnostics.extend(
+                validate_expr_contracts(
+                    expr.base,
+                    literal_bindings=literal_bindings,
+                    expr_bindings=expr_bindings,
+                    group_bindings=group_bindings,
+                    node_id=node_id,
+                    content_whitelist_mode=content_whitelist_mode,
+                    content_type_policy=content_type_policy,
+                )
+            )
+            if index_value is None:
+                diagnostics.extend(
+                    validate_expr_contracts(
+                        expr.index,
+                        literal_bindings=literal_bindings,
+                        expr_bindings=expr_bindings,
+                        group_bindings=group_bindings,
+                        node_id=node_id,
+                        content_whitelist_mode=content_whitelist_mode,
+                        content_type_policy=content_type_policy,
+                    )
+                )
+            return diagnostics
         if _is_container_contents_index(expr):
             if not allow_source_partition:
                 diagnostics.append(
