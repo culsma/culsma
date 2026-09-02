@@ -274,7 +274,7 @@ class MaterialIndexedPartsStateManager:
             return diagnostic_result(step, state, issue.code, issue.message)
         transition_parse = parse_explicit_material_transitions(
             step.args.get("transitions"),
-            output_contract=separation_slot_contract(program_kind),
+            program_kind=program_kind,
             declared_source_ref=ref_display(sample_arg),
             source_id=source_id,
         )

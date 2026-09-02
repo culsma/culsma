@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from culsma.pipeline.program_registry import get_separation_slot_contract
+from culsma.pipeline.program_registry import SepProgramOutput, get_program_outputs
 from culsma.scientific_model.material import AssociationTarget, AssociationTargetKind
 from culsma.runtime.material.author_transition import ExplicitMaterialTransition
 from culsma.runtime.material.component_entries import (
@@ -468,10 +468,28 @@ def apply_separation_material(
             )
         )
 
-    slot_contract = separation_slot_contract(program_kind)
+    outputs = get_program_outputs(program_kind)
+    slot_contract = {
+        output.part_id: output.semantic_role
+        for output in outputs
+    }
+    if not outputs:
+        failure = MaterialEffectFailure(
+            code="MAT_PROGRAM_OUTPUT_CONTRACT_MISSING",
+            message=f"Program '{program_kind}' does not declare separation outputs",
+        )
+        return SeparationApplicationResult(
+            record=unresolved_separation_record(
+                program_kind,
+                slot_contract,
+                None,
+                failure,
+            ),
+            failure=failure,
+        )
     operation_contract = resolve_separation_operation_contract(
         program,
-        slot_contract=slot_contract,
+        outputs=outputs,
     )
     source_quantities = source.get("component_quantities")
     source_quantities = (
@@ -609,7 +627,7 @@ def apply_separation_material(
 def unresolved_separation_record(
     program_kind: str,
     slot_contract: dict[str, str],
-    operation_contract: SeparationOperationContract,
+    operation_contract: SeparationOperationContract | None,
     failure: MaterialEffectFailure,
 ) -> dict[str, Any]:
     return {
@@ -620,7 +638,11 @@ def unresolved_separation_record(
             "code": failure.code,
             "message": failure.message,
         },
-        "operation_contract": operation_contract.to_dict(),
+        "operation_contract": (
+            operation_contract.to_dict()
+            if operation_contract is not None
+            else None
+        ),
     }
 
 
@@ -712,7 +734,8 @@ def separation_cell_material_state(
 def separation_slot_contract(program_kind: str) -> dict[str, str]:
     """Return semantic output names for one separation program."""
 
-    return get_separation_slot_contract(program_kind) or {
-        "0": "fraction_0",
-        "1": "fraction_1",
+    outputs = get_program_outputs(program_kind) or tuple(SepProgramOutput)
+    return {
+        output.part_id: output.semantic_role
+        for output in outputs
     }

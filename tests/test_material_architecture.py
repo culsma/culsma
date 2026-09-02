@@ -3,10 +3,24 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+import pytest
+
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.pipeline.program_registry import (
+    CentrifugeProgramOutput,
+    CentrifugalFiltrationProgramOutput,
+    DisruptProgramOutput,
+    FieldProgramOutput,
+    FiltrationProgramOutput,
+    MagneticProgramOutput,
+    PhasePartitionProgramOutput,
+    PrecipitationProgramOutput,
     SEPARATION_SLOT_CONTRACTS,
+    SepProgramOutput,
     get_material_effect_kind,
+    get_program_outputs,
+    get_program_spec,
+    resolve_program_output,
 )
 from culsma.runtime.material.compute import MaterialCompute
 from culsma.runtime.material.contents_state import (
@@ -61,6 +75,69 @@ def test_pipeline_and_runtime_share_separation_output_meanings() -> None:
         program_kind: separation_slot_contract(program_kind)
         for program_kind in SEPARATION_SLOT_CONTRACTS
     } == SEPARATION_SLOT_CONTRACTS
+
+
+def test_each_separation_program_owns_one_closed_output_enum() -> None:
+    expected = {
+        "sep_program": SepProgramOutput,
+        "centrifuge_program": CentrifugeProgramOutput,
+        "magnetic_program": MagneticProgramOutput,
+        "disrupt_program": DisruptProgramOutput,
+        "field_program": FieldProgramOutput,
+        "filtration_program": FiltrationProgramOutput,
+        "centrifugal_filtration_program": CentrifugalFiltrationProgramOutput,
+        "phase_partition_program": PhasePartitionProgramOutput,
+        "precipitation_program": PrecipitationProgramOutput,
+    }
+
+    for program_kind, output_type in expected.items():
+        outputs = get_program_outputs(program_kind)
+        assert outputs == tuple(output_type)
+        assert {output.part_id for output in outputs} == {"0", "1"}
+        assert SEPARATION_SLOT_CONTRACTS[program_kind] == {
+            output.part_id: output.semantic_role
+            for output in outputs
+        }
+        spec = get_program_spec(program_kind)
+        if spec is not None:
+            assert spec.output_type is output_type
+
+
+def test_program_output_resolution_rejects_cross_program_enum_members() -> None:
+    accepted = resolve_program_output(
+        "filtration_program",
+        "FiltrationProgramOutput",
+        "RETENTATE",
+    )
+    rejected = resolve_program_output(
+        "filtration_program",
+        "MagneticProgramOutput",
+        "BOUND",
+    )
+
+    assert accepted.output is FiltrationProgramOutput.RETENTATE
+    assert accepted.code is None
+    assert rejected.output is None
+    assert rejected.code == "PROGRAM_OUTPUT_ENUM_TYPE_MISMATCH"
+
+
+def test_program_output_metadata_is_immutable() -> None:
+    output = FiltrationProgramOutput.RETENTATE
+
+    with pytest.raises(AttributeError):
+        output.part_id = "9"
+    with pytest.raises(AttributeError):
+        output.semantic_role = "other"
+
+    assert output.part_id == "1"
+    assert output.semantic_role == "retentate"
+
+
+def test_generic_sep_output_preserves_legacy_serialized_roles() -> None:
+    assert SEPARATION_SLOT_CONTRACTS["sep_program"] == {
+        "0": "fraction_0",
+        "1": "fraction_1",
+    }
 
 
 def test_material_compute_rejects_quantity_change_without_movement_contract():

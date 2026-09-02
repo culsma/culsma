@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
-from typing import Any, Mapping
+from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
 from culsma.common.source import Span
 from culsma.pipeline.container_views import resolve_materials_index
-from culsma.pipeline.ir_nodes import IRArg, IRCall, IRIdentifier, IRList, IRString
+from culsma.pipeline.ir_nodes import IRArg, IRCall, IRIdentifier, IRList, IRMember
+from culsma.pipeline.program_registry import resolve_program_output
 from culsma.scientific_model.material import (
     AUTHOR_SETTABLE_MATERIAL_RELATIONS,
     COMPONENT_BOUND_MATERIAL_RELATIONS,
@@ -21,7 +22,7 @@ def validate_material_transitions_contract(
     args: list[IRArg],
     *,
     expr_bindings: dict[str, Any],
-    output_contract: Mapping[str, str] | None,
+    program_kind: str | None,
     node_id: str | None,
     span: Span | None,
 ) -> list[Diagnostic]:
@@ -42,7 +43,6 @@ def validate_material_transitions_contract(
 
     sample_arg = next((arg for arg in args if arg.name == "sample"), None)
     sample_name = _identifier_name(sample_arg.value) if sample_arg is not None else None
-    output_aliases = _output_aliases(output_contract)
     diagnostics: list[Diagnostic] = []
     for rule in rules.elements:
         if not isinstance(rule, IRCall) or rule.name != "transition":
@@ -100,37 +100,39 @@ def validate_material_transitions_contract(
                     )
                 )
 
-        output_expr = named["output"].value
-        output_name = output_expr.name if isinstance(output_expr, IRIdentifier) else None
-        if (
-            isinstance(output_expr, IRString)
-            or output_name is None
-            or output_name in expr_bindings
-        ):
+        output_member = _enum_member(named["output"].value)
+        if output_member is None or program_kind is None:
             diagnostics.append(
                 _issue(
                     "SEM_MATERIAL_TRANSITION_OUTPUT_INVALID",
-                    "transition output must be a declared output enum identifier",
+                    "transition output must be a member of the selected program's output enum",
                     named["output"].span or rule.span or span,
                     node_id,
                 )
             )
-        elif output_contract is not None and output_name not in output_aliases:
-            diagnostics.append(
-                _issue(
-                    "SEM_MATERIAL_TRANSITION_OUTPUT_INVALID",
-                    f"transition output '{output_name}' is not declared by the separation program",
-                    named["output"].span or rule.span or span,
-                    node_id,
-                )
+        else:
+            output_resolution = resolve_program_output(
+                program_kind,
+                output_member[0],
+                output_member[1],
             )
+            if output_resolution.output is None:
+                diagnostics.append(
+                    _issue(
+                        "SEM_MATERIAL_TRANSITION_OUTPUT_INVALID",
+                        output_resolution.message
+                        or "transition output is not declared by the separation program",
+                        named["output"].span or rule.span or span,
+                        node_id,
+                    )
+                )
 
-        target_expr = named["to"].value
         target_relation: MaterialRelation | None = None
-        if isinstance(target_expr, IRIdentifier) and target_expr.name not in expr_bindings:
+        target_member = _enum_member(named["to"].value)
+        if target_member is not None and target_member[0] == "MaterialRelation":
             try:
-                target_relation = MaterialRelation(target_expr.name)
-            except ValueError:
+                target_relation = MaterialRelation[target_member[1]]
+            except KeyError:
                 target_relation = None
         if target_relation not in AUTHOR_SETTABLE_MATERIAL_RELATIONS:
             diagnostics.append(
@@ -191,10 +193,10 @@ def validate_material_transitions_contract(
     return diagnostics
 
 
-def _output_aliases(output_contract: Mapping[str, str] | None) -> set[str]:
-    if output_contract is None:
-        return set()
-    return set(output_contract) | set(output_contract.values())
+def _enum_member(expr: Any) -> tuple[str, str] | None:
+    if not isinstance(expr, IRMember) or not isinstance(expr.base, IRIdentifier):
+        return None
+    return expr.base.name, expr.member
 
 
 def _identifier_name(expr: Any) -> str | None:

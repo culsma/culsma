@@ -1,6 +1,7 @@
 """Author-supplied material relationship transitions.
 
-This module is the operation-neutral core for PM #99.  It resolves the
+This module is the operation-neutral core for author-controlled material
+transitions. It resolves the
 frontend ``tube.materials[index]`` selector against the authoritative ordered
 component-entry list, derives the source relationship from that entry, and
 builds an immutable author decision whose target is a closed
@@ -16,6 +17,7 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Any
 
+from culsma.pipeline.program_registry import ProgramOutput, resolve_program_output
 from culsma.runtime.material.component_entries import (
     ComponentEntryRelationError,
     component_entry_has_quantity,
@@ -117,14 +119,15 @@ class AuthorTransitionStateValidation:
 @dataclass(frozen=True)
 class ExplicitMaterialTransition:
     subject: MaterialEntryIndexSelector
-    output_key: str
+    output: ProgramOutput
     next_relation: MaterialRelation
     next_association_selector: MaterialEntryIndexSelector | None = None
 
     def __post_init__(self) -> None:
         if not isinstance(self.subject, MaterialEntryIndexSelector):
             raise TypeError("subject must be a MaterialEntryIndexSelector")
-        _require_non_empty("output_key", self.output_key)
+        if not isinstance(self.output, ProgramOutput):
+            raise TypeError("output must be a ProgramOutput")
         if not isinstance(self.next_relation, MaterialRelation):
             raise TypeError("next_relation must be a MaterialRelation")
         if self.next_association_selector is not None and not isinstance(
@@ -135,16 +138,14 @@ class ExplicitMaterialTransition:
                 "next_association_selector must be a MaterialEntryIndexSelector"
             )
 
-
 @dataclass(frozen=True)
 class ResolvedExplicitMaterialTransition:
     source_entry_id: str
-    output_key: str
+    output: ProgramOutput
     current_relation: MaterialRelation
     current_association_target: AssociationTarget | None
     next_relation: MaterialRelation
     next_association_target: AssociationTarget | None
-
 
 @dataclass(frozen=True)
 class ComponentRelationshipProjection:
@@ -207,7 +208,7 @@ class AuthorTransitionResolution:
 def parse_explicit_material_transitions(
     raw_rules: Any,
     *,
-    output_contract: Mapping[str, str],
+    program_kind: str,
     declared_source_ref: str | None = None,
     source_id: str | None = None,
 ) -> ExplicitMaterialTransitionParseResult:
@@ -227,8 +228,6 @@ def parse_explicit_material_transitions(
             "sep transitions must contain serialized transition calls",
         )
 
-    output_aliases = {slot: slot for slot in output_contract}
-    output_aliases.update({name: slot for slot, name in output_contract.items()})
     parsed: list[ExplicitMaterialTransition] = []
     for raw_rule in elements:
         args = _serialized_call_args(raw_rule, "transition")
@@ -262,20 +261,35 @@ def parse_explicit_material_transitions(
                 container_ref=source_id,
                 index=selector.index,
             )
-        raw_output = _serialized_identifier(args["output"])
-        output_key = output_aliases.get(raw_output or "")
-        if output_key is None:
+        output_member = _serialized_enum_member(args["output"])
+        if output_member is None:
             return _parse_failure(
                 "MAT_MATERIAL_TRANSITION_OUTPUT_INVALID",
-                f"transition output '{raw_output or '<invalid>'}' is not declared by the separation program",
+                "transition output must be a member of the selected program's output enum",
             )
-        raw_relation = _serialized_identifier(args["to"])
-        try:
-            next_relation = MaterialRelation(raw_relation)
-        except (TypeError, ValueError):
+        output_resolution = resolve_program_output(
+            program_kind,
+            output_member[0],
+            output_member[1],
+        )
+        if output_resolution.output is None:
+            return _parse_failure(
+                "MAT_MATERIAL_TRANSITION_OUTPUT_INVALID",
+                output_resolution.message
+                or "transition output is not declared by the separation program",
+            )
+        relation_member = _serialized_enum_member(args["to"])
+        if relation_member is None or relation_member[0] != "MaterialRelation":
             return _parse_failure(
                 "MAT_MATERIAL_TRANSITION_TARGET_INVALID",
-                "transition to must be a MaterialRelation enum identifier",
+                "transition to must be a MaterialRelation enum member",
+            )
+        try:
+            next_relation = MaterialRelation[relation_member[1]]
+        except KeyError:
+            return _parse_failure(
+                "MAT_MATERIAL_TRANSITION_TARGET_INVALID",
+                "transition to must be a MaterialRelation enum member",
             )
         if next_relation not in AUTHOR_SETTABLE_MATERIAL_RELATIONS:
             return _parse_failure(
@@ -319,7 +333,7 @@ def parse_explicit_material_transitions(
         parsed.append(
             ExplicitMaterialTransition(
                 subject=selector,
-                output_key=output_key,
+                output=output_resolution.output,
                 next_relation=next_relation,
                 next_association_selector=association_selector,
             )
@@ -330,7 +344,7 @@ def parse_explicit_material_transitions(
 def validate_positive_output_fraction(
     *,
     source_entry_id: str,
-    output_key: str,
+    output_part_id: str,
     output_bindings: Sequence[Any],
     fractions_by_component: Mapping[str, tuple[float, float]],
 ) -> OutputFractionValidation:
@@ -338,7 +352,7 @@ def validate_positive_output_fraction(
         (
             index
             for index, output in enumerate(output_bindings)
-            if getattr(output, "part_id", None) == output_key
+            if getattr(output, "part_id", None) == output_part_id
         ),
         None,
     )
@@ -349,7 +363,7 @@ def validate_positive_output_fraction(
                 AuthorTransitionIssue(
                     code="MAT_MATERIAL_TRANSITION_OUTPUT_UNRESOLVED",
                     message=(
-                        f"Cannot resolve output '{output_key}' for material entry "
+                        f"Cannot resolve output '{output_part_id}' for material entry "
                         f"'{source_entry_id}'"
                     ),
                 ),
@@ -362,7 +376,7 @@ def validate_positive_output_fraction(
                     code="MAT_MATERIAL_TRANSITION_OUTPUT_EMPTY",
                     message=(
                         f"Material entry '{source_entry_id}' has no positive quantity "
-                        f"in output '{output_key}'"
+                        f"in output '{output_part_id}'"
                     ),
                 ),
             )
@@ -391,7 +405,7 @@ def resolve_explicit_material_transitions(
             return AuthorTransitionResolution(issues=result.issues)
         fraction_validation = validate_positive_output_fraction(
             source_entry_id=result.transition.source_entry_id,
-            output_key=result.transition.output_key,
+            output_part_id=result.transition.output.part_id,
             output_bindings=output_bindings,
             fractions_by_component=fractions_by_component,
         )
@@ -401,7 +415,7 @@ def resolve_explicit_material_transitions(
         if association_target is not None:
             target_fraction_validation = validate_positive_output_fraction(
                 source_entry_id=association_target.id,
-                output_key=result.transition.output_key,
+                output_part_id=result.transition.output.part_id,
                 output_bindings=output_bindings,
                 fractions_by_component=fractions_by_component,
             )
@@ -413,12 +427,12 @@ def resolve_explicit_material_transitions(
                             message=(
                                 f"Association target '{association_target.id}' has no "
                                 f"positive quantity in output "
-                                f"'{result.transition.output_key}'"
+                                f"'{result.transition.output.part_id}'"
                             ),
                         ),
                     )
                 )
-        key = (result.transition.source_entry_id, result.transition.output_key)
+        key = (result.transition.source_entry_id, result.transition.output.part_id)
         if key in index:
             return AuthorTransitionResolution(
                 issues=(
@@ -674,7 +688,7 @@ def apply_explicit_material_transition(
     source_id: str,
     source_entries: Sequence[dict[str, Any]],
 ) -> ExplicitMaterialTransitionResult:
-    """Resolve, validate, and project one #99 author transition."""
+    """Resolve, validate, and project one author-controlled transition."""
 
     resolution = resolve_material_entry(
         selector=transition.subject,
@@ -712,7 +726,7 @@ def apply_explicit_material_transition(
 
     resolved_transition = ResolvedExplicitMaterialTransition(
         source_entry_id=source_entry.entry_id,
-        output_key=transition.output_key,
+        output=transition.output,
         current_relation=source_entry.relation,
         current_association_target=source_entry.association_target,
         next_relation=transition.next_relation,
@@ -724,9 +738,9 @@ def apply_explicit_material_transition(
         next_association_target=next_association_target,
     )
     decision = build_author_state_transition_decision(
-        projected_entry_id=f"{source_entry.entry_id}@{transition.output_key}",
+        projected_entry_id=f"{source_entry.entry_id}@{transition.output.part_id}",
         transition=resolved_transition,
-        output_id=transition.output_key,
+        output_id=transition.output.part_id,
     )
     return ExplicitMaterialTransitionResult(
         source_entry=source_entry,
@@ -788,11 +802,19 @@ def _parse_material_selector(value: Any) -> MaterialEntryIndexSelector | None:
     )
 
 
-def _serialized_identifier(value: Any) -> str | None:
-    if not isinstance(value, dict) or value.get("kind") != "IRIdentifier":
+def _serialized_enum_member(value: Any) -> tuple[str, str] | None:
+    if not isinstance(value, dict) or value.get("kind") != "IRMember":
         return None
-    name = value.get("name")
-    return name if isinstance(name, str) and name else None
+    base = value.get("base")
+    if not isinstance(base, dict) or base.get("kind") != "IRIdentifier":
+        return None
+    enum_type_name = base.get("name")
+    member_name = value.get("member")
+    if not isinstance(enum_type_name, str) or not isinstance(member_name, str):
+        return None
+    if not enum_type_name or not member_name:
+        return None
+    return enum_type_name, member_name
 
 
 def _serialized_nonnegative_index(value: Any) -> int | None:

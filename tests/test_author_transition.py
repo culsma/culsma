@@ -4,6 +4,7 @@ from copy import deepcopy
 
 import pytest
 
+from culsma.pipeline.program_registry import FiltrationProgramOutput
 from culsma.runtime.material.author_transition import (
     ExplicitMaterialTransition,
     MaterialEntryIndexSelector,
@@ -58,7 +59,7 @@ def _transition(
             container_ref="source",
             index=index,
         ),
-        output_key="1",
+        output=FiltrationProgramOutput.RETENTATE,
         next_relation=to,
         next_association_selector=(
             MaterialEntryIndexSelector("source", associated_index)
@@ -191,7 +192,7 @@ def test_resolve_material_entry_ignores_zero_quantity_compatibility_entry() -> N
 def test_transition_rejects_subject_from_another_container() -> None:
     transition = ExplicitMaterialTransition(
         subject=MaterialEntryIndexSelector("other", 0),
-        output_key="1",
+        output=FiltrationProgramOutput.RETENTATE,
         next_relation=MaterialRelation.FREE,
     )
 
@@ -249,7 +250,7 @@ def test_transition_target_must_be_material_relation_enum() -> None:
     with pytest.raises(TypeError):
         ExplicitMaterialTransition(
             subject=MaterialEntryIndexSelector("source", 0),
-            output_key="1",
+            output=FiltrationProgramOutput.RETENTATE,
             next_relation="free",
         )
 

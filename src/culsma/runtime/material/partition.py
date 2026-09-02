@@ -13,7 +13,7 @@ from culsma.pipeline.content_vocab import (
     parse_content_kind,
     parse_content_type,
 )
-from culsma.pipeline.program_registry import get_separation_slot_contract
+from culsma.pipeline.program_registry import SepProgramOutput, get_program_outputs
 from culsma.runtime.material.ledger import refresh_container_aggregates, set_container_material
 from culsma.runtime.material.separation_fate import (
     ExplicitContentFate,
@@ -198,13 +198,14 @@ def apply_legacy_partition_material(
     explicit_fates: dict[str, ExplicitContentFate] | None = None,
 ) -> dict[str, Any]:
     program_kind = str(program.get("name")) if isinstance(program.get("name"), str) else "sep_program"
-    slot_contract = get_separation_slot_contract(program_kind) or {
-        "0": "fraction_0",
-        "1": "fraction_1",
+    outputs = get_program_outputs(program_kind) or tuple(SepProgramOutput)
+    slot_contract = {
+        output.part_id: output.semantic_role
+        for output in outputs
     }
     operation_contract = resolve_separation_operation_contract(
         program,
-        slot_contract=slot_contract,
+        outputs=outputs,
     )
     author_fates = explicit_fates or {}
     source_components = source.setdefault("components", {})

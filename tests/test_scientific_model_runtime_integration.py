@@ -2,6 +2,10 @@ from __future__ import annotations
 
 import pytest
 
+from culsma.pipeline.program_registry import (
+    CentrifugeProgramOutput,
+    MagneticProgramOutput,
+)
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.scientific_model import (
     CapabilityDescriptor,
@@ -19,6 +23,7 @@ from culsma.scientific_model.material import (
     MATERIAL_STATE_TRANSITION,
     ComponentFate,
     MaterialRelation,
+    OutputRoleSnapshot,
     SepEffectCoordinator,
     SeparationDecision,
     StateTransitionDecision,
@@ -47,6 +52,7 @@ from culsma.runtime.material.separation import (
     project_resolved_material_effect,
 )
 from culsma.runtime.material.scientific_model_adapter import (
+    MaterialEffectFailure,
     ResolvedComponentEffect,
     ResolvedComponentOutput,
     ResolvedMaterialEffect,
@@ -206,8 +212,13 @@ def test_public_partition_adapter_resolves_decisions_without_material_projection
     )
     operation_contract = resolve_separation_operation_contract(
         _sep_step().args["program"],
-        slot_contract={"0": "supernatant", "1": "pellet"},
+        outputs=tuple(CentrifugeProgramOutput),
     )
+    assert operation_contract.outputs == tuple(CentrifugeProgramOutput)
+    assert operation_contract.slot_contract == {
+        "0": "supernatant",
+        "1": "pellet",
+    }
 
     snapshot = adapter.build_component_snapshot(
         state=state,
@@ -240,6 +251,34 @@ def test_public_partition_adapter_resolves_decisions_without_material_projection
     assert component_effect.outputs[1].next_relation == "pellet"
     assert source["components"] == {"MEDIUM": 100.0}
     assert "indexed_bindings" not in state
+
+
+def test_operation_contract_rejects_cross_program_output_enum() -> None:
+    with pytest.raises(
+        ValueError,
+        match="centrifuge_program.*CentrifugeProgramOutput",
+    ):
+        resolve_separation_operation_contract(
+            _sep_step().args["program"],
+            outputs=tuple(MagneticProgramOutput),
+        )
+
+
+def test_program_output_binding_rejects_reordered_snapshots() -> None:
+    operation_contract = resolve_separation_operation_contract(
+        _sep_step().args["program"],
+        outputs=tuple(CentrifugeProgramOutput),
+    )
+    failure = ScientificModelPartitionAdapter.bind_program_outputs(
+        (
+            OutputRoleSnapshot(part_id="1", semantic_role="pellet"),
+            OutputRoleSnapshot(part_id="0", semantic_role="supernatant"),
+        ),
+        operation_contract,
+    )
+
+    assert isinstance(failure, MaterialEffectFailure)
+    assert failure.code == "MAT_PROGRAM_OUTPUT_CONTRACT_MISMATCH"
 
 
 def test_public_partition_entry_uses_injected_builtin_model_adapter() -> None:
@@ -276,8 +315,8 @@ def test_public_projector_consumes_one_resolved_effect_without_scientific_lookup
         operation_id="projector-direct",
         program_kind="centrifuge_program",
         outputs=(
-            ResolvedOutput("0", "supernatant"),
-            ResolvedOutput("1", "pellet"),
+            ResolvedOutput(CentrifugeProgramOutput.SUPERNATANT),
+            ResolvedOutput(CentrifugeProgramOutput.PELLET),
         ),
         component_effects=(
             ResolvedComponentEffect(
@@ -288,8 +327,7 @@ def test_public_projector_consumes_one_resolved_effect_without_scientific_lookup
                 source_preservation="declared",
                 outputs=(
                     ResolvedComponentOutput(
-                        part_id="0",
-                        semantic_role="supernatant",
+                        output=CentrifugeProgramOutput.SUPERNATANT,
                         fraction=0.0,
                         next_relation=None,
                         next_label=None,
@@ -300,8 +338,7 @@ def test_public_projector_consumes_one_resolved_effect_without_scientific_lookup
                         transition_provenance=None,
                     ),
                     ResolvedComponentOutput(
-                        part_id="1",
-                        semantic_role="pellet",
+                        output=CentrifugeProgramOutput.PELLET,
                         fraction=1.0,
                         next_relation="pellet",
                         next_label="pellet_output",
@@ -498,7 +535,7 @@ def test_public_relationship_refresh_only_projects_committed_entries() -> None:
     effect = ResolvedMaterialEffect(
         operation_id="relationship-refresh",
         program_kind="centrifuge_program",
-        outputs=(ResolvedOutput("1", "pellet"),),
+        outputs=(ResolvedOutput(CentrifugeProgramOutput.PELLET),),
         component_effects=(
             ResolvedComponentEffect(
                 source_component_id="BEADS",
@@ -508,8 +545,7 @@ def test_public_relationship_refresh_only_projects_committed_entries() -> None:
                 source_preservation="declared",
                 outputs=(
                     ResolvedComponentOutput(
-                        part_id="1",
-                        semantic_role="pellet",
+                        output=CentrifugeProgramOutput.PELLET,
                         fraction=1.0,
                         next_relation="pellet",
                         next_label="pellet_output",
@@ -529,8 +565,7 @@ def test_public_relationship_refresh_only_projects_committed_entries() -> None:
                 source_preservation="declared",
                 outputs=(
                     ResolvedComponentOutput(
-                        part_id="1",
-                        semantic_role="pellet",
+                        output=CentrifugeProgramOutput.PELLET,
                         fraction=1.0,
                         next_relation="free",
                         next_label=None,

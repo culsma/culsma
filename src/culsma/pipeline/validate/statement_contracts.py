@@ -21,7 +21,6 @@ from culsma.pipeline.ir_nodes import (
     IRWithEnv,
 )
 from culsma.pipeline.operation_specs import OperationSpec
-from culsma.pipeline.program_registry import get_separation_slot_contract
 
 from .binding import BindingValidator
 from .constructors import ConstructorValidator
@@ -572,11 +571,7 @@ def validate_let_call_contract(
                 validate_material_transitions_contract(
                     value.args,
                     expr_bindings=expr_bindings,
-                    output_contract=(
-                        get_separation_slot_contract(program.name)
-                        if isinstance(program, IRCall)
-                        else None
-                    ),
+                    program_kind=(program.name if isinstance(program, IRCall) else None),
                     node_id=stmt.id,
                     span=value.span,
                 )

@@ -517,7 +517,7 @@ flowchart TB
     Other["Dispatch to other material op handler:<br/>AllocContainer, DefineContent, LoadContent,<br/>Mutation, frac, or no-op"]
     Resolve["Resolve sep args:<br/>sample, bind name, program call"]
     Program["Read program kind:<br/>centrifuge, filtration, centrifugal filtration,<br/>phase partition, precipitation, magnetic, disrupt, field"]
-    Slots["Determine output slot contract:<br/>group[0] / group[1] semantic names"]
+    Slots["Resolve ProgramSpec.output_type<br/>and derive group part IDs and semantic roles<br/>from the program-owned output enum"]
     Identity["Apply identity policy:<br/>centrifuge keep_source may reuse source container"]
     Separation["material.separation<br/>single application boundary"]
     Gate{"registered separation program?"}
@@ -541,13 +541,16 @@ flowchart TB
     Legacy --> Bind
     Project --> Bind
     Bind --> Delta
+
 ```
 
 Current implementation note:
 
 1. `Program` reads `program_kind`.
-2. `centrifugal_filtration_program(..., drive=..., duration=...)` is a distinct
-   program kind whose slot contract remains filtrate / retentate.
+2. `ProgramSpec.output_type` defines the ordered `ProgramOutput` members; their
+   `part_id` and `semantic_role` values derive the compatibility slot contract;
+   `centrifugal_filtration_program(..., drive=..., duration=...)` remains a
+   distinct program kind with its own output enum.
 3. `Identity` handles `centrifuge_program(..., keep_source=...)` source-container
    reuse.
 4. `material.separation.apply_separation_material(...)` is the only application

@@ -3,6 +3,84 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
+
+
+class ProgramOutput(Enum):
+    """Closed, program-owned identity for one ordered separation output."""
+
+    def __new__(cls, part_id: str, semantic_role: str) -> ProgramOutput:
+        member = object.__new__(cls)
+        member._value_ = (part_id, semantic_role)
+        return member
+
+    @property
+    def part_id(self) -> str:
+        return self.value[0]
+
+    @property
+    def semantic_role(self) -> str:
+        return self.value[1]
+
+
+class SepProgramOutput(ProgramOutput):
+    FRACTION_A = ("0", "fraction_0")
+    FRACTION_B = ("1", "fraction_1")
+
+
+class CentrifugeProgramOutput(ProgramOutput):
+    SUPERNATANT = ("0", "supernatant")
+    PELLET = ("1", "pellet")
+
+
+class MagneticProgramOutput(ProgramOutput):
+    BOUND = ("0", "bound")
+    FLOWTHROUGH = ("1", "flowthrough")
+
+
+class DisruptProgramOutput(ProgramOutput):
+    LYSATE = ("0", "lysate")
+    DEBRIS_OR_RESIDUE = ("1", "debris_or_residue")
+
+
+class FieldProgramOutput(ProgramOutput):
+    TARGET_BAND_FRACTION = ("0", "target_band_fraction")
+    NON_TARGET_FRACTION = ("1", "non_target_fraction")
+
+
+class FiltrationProgramOutput(ProgramOutput):
+    FILTRATE = ("0", "filtrate")
+    RETENTATE = ("1", "retentate")
+
+
+class CentrifugalFiltrationProgramOutput(ProgramOutput):
+    FILTRATE = ("0", "filtrate")
+    RETENTATE = ("1", "retentate")
+
+
+class PhasePartitionProgramOutput(ProgramOutput):
+    TARGET_PHASE = ("0", "target_phase")
+    OTHER_PHASE = ("1", "other_phase")
+
+
+class PrecipitationProgramOutput(ProgramOutput):
+    PRECIPITATE = ("0", "precipitate")
+    SUPERNATANT = ("1", "supernatant")
+
+
+@dataclass(frozen=True)
+class ProgramOutputResolution:
+    output: ProgramOutput | None = None
+    code: str | None = None
+    message: str | None = None
+
+    def __post_init__(self) -> None:
+        resolved = self.output is not None
+        failed = self.code is not None and self.message is not None
+        if resolved == failed:
+            raise ValueError(
+                "ProgramOutputResolution must contain either output or code/message"
+            )
 
 
 @dataclass(frozen=True)
@@ -24,6 +102,7 @@ class ProgramSpec:
     allowed_source_styles: tuple[str, ...] | None = None
     result_contract_key: str | None = None
     material_effect_kind: str | None = None
+    output_type: type[ProgramOutput] | None = None
     legacy_aliases: tuple[str, ...] = ()
 
 
@@ -53,6 +132,7 @@ def _spec(
     allowed_source_styles: tuple[str, ...] | None = None,
     result_contract_key: str | None = None,
     material_effect_kind: str | None = None,
+    output_type: type[ProgramOutput] | None = None,
     legacy_aliases: tuple[str, ...] = (),
 ) -> ProgramSpec:
     required_fields = tuple(field.name for field in fields if field.required)
@@ -65,22 +145,30 @@ def _spec(
         allowed_source_styles=allowed_source_styles,
         result_contract_key=result_contract_key,
         material_effect_kind=material_effect_kind,
+        output_type=output_type,
         legacy_aliases=legacy_aliases,
     )
 
 
 KEEP_SOURCE_VALUES = ("supernatant", "pellet")
 
-SEPARATION_SLOT_CONTRACTS: dict[str, dict[str, str]] = {
-    "sep_program": {"0": "fraction_0", "1": "fraction_1"},
-    "centrifuge_program": {"0": "supernatant", "1": "pellet"},
-    "magnetic_program": {"0": "bound", "1": "flowthrough"},
-    "disrupt_program": {"0": "lysate", "1": "debris_or_residue"},
-    "field_program": {"0": "target_band_fraction", "1": "non_target_fraction"},
-    "filtration_program": {"0": "filtrate", "1": "retentate"},
-    "centrifugal_filtration_program": {"0": "filtrate", "1": "retentate"},
-    "phase_partition_program": {"0": "target_phase", "1": "other_phase"},
-    "precipitation_program": {"0": "precipitate", "1": "supernatant"},
+PROGRAM_OUTPUT_TYPES: dict[str, type[ProgramOutput]] = {
+    output_type.__name__: output_type
+    for output_type in (
+        SepProgramOutput,
+        CentrifugeProgramOutput,
+        MagneticProgramOutput,
+        DisruptProgramOutput,
+        FieldProgramOutput,
+        FiltrationProgramOutput,
+        CentrifugalFiltrationProgramOutput,
+        PhasePartitionProgramOutput,
+        PrecipitationProgramOutput,
+    )
+}
+
+_LEGACY_PROGRAM_OUTPUT_TYPES: dict[str, type[ProgramOutput]] = {
+    "sep_program": SepProgramOutput,
 }
 
 
@@ -95,6 +183,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         ),
         result_contract_key="sep_container_group",
         material_effect_kind="separation_fate",
+        output_type=CentrifugeProgramOutput,
     ),
     "magnetic_program": _spec(
         "magnetic_program",
@@ -106,6 +195,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         ),
         result_contract_key="sep_container_group",
         material_effect_kind="separation_fate",
+        output_type=MagneticProgramOutput,
     ),
     "disrupt_program": _spec(
         "disrupt_program",
@@ -114,6 +204,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         fields=(_field("duration", value_kind="quantity", dimension="time"),),
         result_contract_key="sep_container_group",
         material_effect_kind="disrupt",
+        output_type=DisruptProgramOutput,
     ),
     "field_program": _spec(
         "field_program",
@@ -125,6 +216,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         ),
         result_contract_key="sep_container_group",
         material_effect_kind="separation_fate",
+        output_type=FieldProgramOutput,
     ),
     "filtration_program": _spec(
         "filtration_program",
@@ -136,6 +228,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         ),
         result_contract_key="sep_container_group",
         material_effect_kind="separation_fate",
+        output_type=FiltrationProgramOutput,
     ),
     "centrifugal_filtration_program": _spec(
         "centrifugal_filtration_program",
@@ -148,6 +241,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         ),
         result_contract_key="sep_container_group",
         material_effect_kind="separation_fate",
+        output_type=CentrifugalFiltrationProgramOutput,
     ),
     "phase_partition_program": _spec(
         "phase_partition_program",
@@ -156,6 +250,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         fields=(_field("solvent", required=True, value_kind="text"),),
         result_contract_key="sep_container_group",
         material_effect_kind="separation_fate",
+        output_type=PhasePartitionProgramOutput,
     ),
     "precipitation_program": _spec(
         "precipitation_program",
@@ -167,6 +262,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         ),
         result_contract_key="sep_container_group",
         material_effect_kind="separation_fate",
+        output_type=PrecipitationProgramOutput,
     ),
     "density_gradient_program": _spec(
         "density_gradient_program",
@@ -218,9 +314,72 @@ def get_program_spec(kind: str) -> ProgramSpec | None:
     return PROGRAM_REGISTRY.get(kind)
 
 
+def get_program_outputs(kind: str) -> tuple[ProgramOutput, ...]:
+    spec = get_program_spec(kind)
+    output_type = (
+        spec.output_type
+        if spec is not None
+        else _LEGACY_PROGRAM_OUTPUT_TYPES.get(kind)
+    )
+    return tuple(output_type) if output_type is not None else ()
+
+
+# Compatibility/serialization view only. ProgramSpec.output_type is authoritative
+# for registered programs; this table is derived after registry construction.
+SEPARATION_SLOT_CONTRACTS: dict[str, dict[str, str]] = {
+    kind: {
+        output.part_id: output.semantic_role
+        for output in get_program_outputs(kind)
+    }
+    for kind in (
+        *_LEGACY_PROGRAM_OUTPUT_TYPES,
+        *(
+            program_kind
+            for program_kind, spec in PROGRAM_REGISTRY.items()
+            if spec.output_type is not None
+        ),
+    )
+}
+
+
+def resolve_program_output(
+    program_kind: str,
+    enum_type_name: str,
+    member_name: str,
+) -> ProgramOutputResolution:
+    expected_outputs = get_program_outputs(program_kind)
+    if not expected_outputs:
+        return ProgramOutputResolution(
+            code="PROGRAM_OUTPUT_PROGRAM_UNKNOWN",
+            message=f"Program '{program_kind}' does not declare separation outputs",
+        )
+    expected_type = type(expected_outputs[0])
+    requested_type = PROGRAM_OUTPUT_TYPES.get(enum_type_name)
+    if requested_type is not expected_type:
+        return ProgramOutputResolution(
+            code="PROGRAM_OUTPUT_ENUM_TYPE_MISMATCH",
+            message=(
+                f"Program '{program_kind}' requires {expected_type.__name__}, "
+                f"not '{enum_type_name}'"
+            ),
+        )
+    try:
+        output = requested_type[member_name]
+    except KeyError:
+        return ProgramOutputResolution(
+            code="PROGRAM_OUTPUT_MEMBER_UNKNOWN",
+            message=(
+                f"{enum_type_name} has no member '{member_name}'"
+            ),
+        )
+    return ProgramOutputResolution(output=output)
+
+
 def get_separation_slot_contract(kind: str) -> dict[str, str] | None:
-    contract = SEPARATION_SLOT_CONTRACTS.get(kind)
-    return dict(contract) if contract is not None else None
+    outputs = get_program_outputs(kind)
+    if not outputs:
+        return None
+    return {output.part_id: output.semantic_role for output in outputs}
 
 
 def get_material_effect_kind(kind: str) -> str | None:

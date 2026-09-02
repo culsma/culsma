@@ -1,6 +1,6 @@
 # Material Compute Module Diagrams
 
-Last updated: 2026-08-31
+Last updated: 2026-09-01
 
 Related runtime document:
 
@@ -32,6 +32,8 @@ Current responsibilities include:
 8. checking conservation invariants;
 9. distinguishing physical volume used for capacity and driver execution from
    cross-axis bulk compatibility proxies.
+
+Program-owned output enums are part of the current Runtime architecture.
 
 ## Material Operation Responsibility Flowchart
 
@@ -337,13 +339,18 @@ stateDiagram-v2
 
     state DescriptionChoice <<choice>>
     ValidateDescription --> DescriptionChoice
-    DescriptionChoice --> DefineParts : [description is supported]
+    DescriptionChoice --> ResolveProgramOutputs : [description is supported]
     DescriptionChoice --> FailureMerge : [required information is invalid]
 
+    state "Resolve the concrete program's closed output enum" as ResolveProgramOutputs
+    state "Require every enum member to define one unique part identity and semantic role" as ValidateProgramOutputs
     state "Define each resulting part's<br/>physical and semantic meaning" as DefineParts
     state "Identify transport mechanisms:<br/>phase movement, size, affinity,<br/>field, density, or disruption" as IdentifyTransport
     state "Identify retention mechanisms:<br/>surface, support, boundary,<br/>pellet, membrane, or field" as IdentifyRetention
     state "Identify conditions that must remain true<br/>for a retained state to stay valid" as IdentifyPreservation
+    ResolveProgramOutputs --> ValidateProgramOutputs
+    ValidateProgramOutputs --> DefineParts
+    ValidateProgramOutputs --> FailureMerge : [the output contract is incomplete or duplicated]
     DefineParts --> IdentifyTransport
     IdentifyTransport --> IdentifyRetention
     IdentifyRetention --> IdentifyPreservation
@@ -362,6 +369,7 @@ stateDiagram-v2
     CompleteContract --> [*]
     ConservativeContract --> [*]
     Reject --> [*]
+
 ```
 
 ### Detail B: Per-Content Physical Fate
@@ -455,6 +463,10 @@ let parts = sep(
   }
 );
 ```
+
+The current `component_fates` record-key syntax remains a compatibility
+projection: its accepted keys are derived from the selected program enum's
+`semantic_role` values. It does not define an independent output vocabulary.
 
 | Fate source precedence | Meaning |
 | --- | --- |
@@ -757,6 +769,7 @@ that kind of material-state change.
 sequenceDiagram
     participant PartsManager as "material.contents_state.MaterialIndexedPartsStateManager"
     participant Separation as "material.separation"
+    participant Registry as "pipeline.program_registry"
     participant Fate as "material.separation_fate"
     participant Adapter as "material.scientific_model_adapter.ScientificModelMaterialAdapter"
     participant Coordinator as "scientific_model.material.coordinator.MaterialEffectCoordinator"
@@ -766,9 +779,10 @@ sequenceDiagram
     participant Ledger as "material.ledger"
 
     PartsManager->>Separation: apply_separation_material(state, source, slot0, slot1, program, explicit_fates)
-    Separation->>Fate: resolve_separation_operation_contract(program, slot_contract)
 
     alt registered separation program
+        Separation->>Registry: get_program_outputs(program_kind)
+        Separation->>Fate: resolve_separation_operation_contract(program, outputs=outputs)
         Separation->>Adapter: ScientificModelMaterialAdapter.resolve(...)
         Adapter->>Coordinator: MaterialEffectCoordinator.resolve(request)
         Coordinator->>Resolver: RegistryScientificModelResolver.resolve(request)
@@ -798,6 +812,205 @@ converts one immutable `ResolvedMaterialEffect` into a candidate; the committer
 applies that candidate. Indexed contents consume the same typed effect and do
 not rerun either decision or projection.
 
+## Program-Owned Separation Outputs
+
+The program-owned enum is the authoritative separation output contract. String
+slot maps remain serialization and compatibility projections only; they are
+derived from the accepted enum members and never define a second contract.
+
+### Separation Output Activity
+
+```mermaid
+stateDiagram-v2
+    direction TB
+
+    state "Receive a registered separation program and its source material" as Receive
+    state "Resolve the concrete ProgramSpec" as ResolveProgram
+    state "Materialize the ordered members of ProgramSpec.output_type" as ResolveOutputs
+    state OutputContractValid <<choice>>
+    state "Build one SeparationOperationContract carrying the typed ProgramOutput members" as BuildContract
+    state "Project typed outputs to OutputRoleSnapshot values at the scientific-model boundary" as BuildSnapshots
+    state "Resolve quantity fates and relationship decisions" as ResolveDecision
+    state "Bind every projected OutputRoleSnapshot back to the original ProgramOutput member" as BindOutputs
+    state BindingValid <<choice>>
+    state "Project ResolvedOutput and ResolvedComponentOutput values into one candidate" as ProjectCandidate
+    state "Validate output membership, material state, and conservation" as ValidateCandidate
+    state CandidateValid <<choice>>
+    state "Commit output containers by ProgramOutput.part_id" as CommitCandidate
+    state "Serialize part_id and semantic_role for indexed contents and reports" as SerializeRecord
+    state "Return one diagnostic without committing partial material state" as Reject
+
+    [*] --> Receive
+    Receive --> ResolveProgram
+    ResolveProgram --> ResolveOutputs
+    ResolveOutputs --> OutputContractValid
+    OutputContractValid --> Reject : missing program, empty enum, or duplicate part_id
+    OutputContractValid --> BuildContract : closed output enum accepted
+    BuildContract --> BuildSnapshots
+    BuildSnapshots --> ResolveDecision
+    ResolveDecision --> BindOutputs
+    BindOutputs --> BindingValid
+    BindingValid --> Reject : boundary output is not declared by the program enum
+    BindingValid --> ProjectCandidate : every returned output is rebound
+    ProjectCandidate --> ValidateCandidate
+    ValidateCandidate --> CandidateValid
+    CandidateValid --> Reject : invalid candidate
+    CandidateValid --> CommitCandidate : valid candidate
+    CommitCandidate --> SerializeRecord
+    SerializeRecord --> [*]
+    Reject --> [*]
+
+```
+
+### Separation Output Sequence
+
+Every message below is an exact implemented method or field name;
+there are no descriptive prose calls.
+
+```mermaid
+sequenceDiagram
+    participant PartsManager as runtime.material.contents_state<br/>MaterialIndexedPartsStateManager.apply_sep()
+    participant Separation as runtime.material.separation
+    participant Registry as pipeline.program_registry
+    participant Fate as runtime.material.separation_fate
+    participant Adapter as runtime.material.scientific_model_adapter<br/>ScientificModelMaterialAdapter
+    participant Coordinator as scientific_model.material.coordinator<br/>MaterialEffectCoordinator
+    participant Entries as runtime.material.component_entries
+
+    PartsManager->>Separation: apply_separation_material(state=working, source=source, slot0=slot0, slot1=slot1, program=program, explicit_fates=explicit_fates, explicit_transitions=explicit_transitions, material_effect_adapter=self.material_effect_adapter, request_id=step.step_id, source_id=source_id, output_ids_by_part=output_ids_by_part)
+
+    rect rgb(255, 244, 214)
+        Separation->>Registry: get_program_outputs(program_kind)
+        Registry->>Registry: get_program_spec(program_kind)
+        Registry-->>Separation: tuple[ProgramOutput]
+        Separation->>Fate: resolve_separation_operation_contract(program, outputs=outputs)
+        Fate-->>Separation: SeparationOperationContract
+    end
+
+    Separation->>Adapter: ScientificModelMaterialAdapter.resolve(state=state, source=source, source_quantities=source_quantities, source_entries=source_entries, components=components, operation_contract=operation_contract, request_id=request_id, source_id=source_id, output_ids_by_part=output_ids_by_part, explicit_transitions=explicit_transitions)
+    opt provider_components
+        Adapter->>Coordinator: MaterialEffectCoordinator.resolve(fate_request)
+        Coordinator-->>Adapter: CoordinatedDecision
+    end
+
+    rect rgb(255, 244, 214)
+        Adapter->>Adapter: bind_program_outputs(output_roles, operation_contract)
+        Adapter-->>Separation: ResolvedMaterialEffect
+        Separation->>Separation: project_resolved_material_effect(effect, source_quantities=source_quantities, source_classes=source_component_classes(source), source_entries=source_entries, output_ids_by_part=output_ids_by_part)
+        Separation->>Separation: validate_separation_candidate(candidate)
+        Separation->>Separation: commit_separation_candidate(candidate, source=source, outputs_by_part={"0": slot0, "1": slot1})
+        Separation->>Entries: replace_component_entries(output_container, candidate.entries_by_part[output.part_id])
+        Separation->>Separation: resolved_effect_separation_record(candidate, operation_contract=operation_contract, bulk_quantity_policy=bulk_quantity_policy)
+    end
+
+    Separation-->>PartsManager: SeparationApplicationResult
+```
+
+### Separation Output Class Diagram
+
+```mermaid
+classDiagram
+    direction LR
+
+    namespace PipelineProgramRegistry {
+        class ProgramRegistryModule["pipeline.program_registry"] {
+            +get_program_spec(kind) ProgramSpec?
+            +get_program_outputs(kind) tuple~ProgramOutput~
+        }
+        class ProgramSpec {
+            +kind : string
+            +output_type : type~ProgramOutput~
+        }
+        class ProgramOutput {
+            <<abstract enumeration base>>
+            +part_id : string
+            +semantic_role : string
+        }
+        class CentrifugeProgramOutput {
+            <<enumeration>>
+            SUPERNATANT
+            PELLET
+        }
+        class MagneticProgramOutput {
+            <<enumeration>>
+            BOUND
+            FLOWTHROUGH
+        }
+        class FiltrationProgramOutput {
+            <<enumeration>>
+            FILTRATE
+            RETENTATE
+        }
+    }
+
+    namespace RuntimeSeparation {
+        class SeparationOperationContract {
+            +program_kind : string
+            +outputs : tuple~ProgramOutput~
+            +slot_contract : Mapping
+        }
+        class ScientificModelMaterialAdapter {
+            +resolve(...) ResolvedMaterialEffect | MaterialEffectFailure
+            +bind_program_outputs(outputs, operation_contract) tuple~ProgramOutput~ | MaterialEffectFailure
+        }
+        class ResolvedOutput {
+            +output : ProgramOutput
+            +part_id : string
+            +semantic_role : string
+        }
+        class ResolvedComponentOutput {
+            +output : ProgramOutput
+            +fraction : float
+            +next_relation : string?
+        }
+        class ResolvedMaterialEffect {
+            +program_kind : string
+            +outputs : tuple~ResolvedOutput~
+            +component_effects : tuple~ResolvedComponentEffect~
+        }
+        class ResolvedComponentEffect {
+            +outputs : tuple~ResolvedComponentOutput~
+        }
+        class SeparationApplication["runtime.material.separation"] {
+            +apply_separation_material(...) SeparationApplicationResult
+            +project_resolved_material_effect(...) MaterialSeparationCandidate
+            +validate_separation_candidate(candidate) None
+            +commit_separation_candidate(candidate, source, outputs_by_part) dict
+        }
+        class MaterialSeparationCandidate {
+            +effect : ResolvedMaterialEffect
+            +entries_by_part : Mapping
+        }
+    }
+
+    namespace ScientificModelBoundary {
+        class OutputRoleSnapshot {
+            +part_id : string
+            +semantic_role : string
+        }
+    }
+
+    ProgramRegistryModule --> ProgramSpec : get_program_spec()
+    ProgramRegistryModule --> ProgramOutput : get_program_outputs()
+    ProgramSpec --> ProgramOutput : output_type
+    ProgramOutput <|-- CentrifugeProgramOutput
+    ProgramOutput <|-- MagneticProgramOutput
+    ProgramOutput <|-- FiltrationProgramOutput
+    SeparationOperationContract *-- ProgramOutput : outputs
+    SeparationOperationContract --> OutputRoleSnapshot : boundary projection
+    ScientificModelMaterialAdapter --> SeparationOperationContract
+    ScientificModelMaterialAdapter --> OutputRoleSnapshot
+    ScientificModelMaterialAdapter --> ProgramOutput : bind_program_outputs()
+    ResolvedMaterialEffect *-- ResolvedOutput
+    ResolvedMaterialEffect *-- ResolvedComponentEffect
+    ResolvedComponentEffect *-- ResolvedComponentOutput
+    ResolvedOutput --> ProgramOutput : output
+    ResolvedComponentOutput --> ProgramOutput : output
+    SeparationApplication --> MaterialSeparationCandidate : project_resolved_material_effect()
+    MaterialSeparationCandidate --> ResolvedMaterialEffect : effect
+
+```
+
 ## Target Module Boundaries
 
 The target structure should keep material state management as a real module, not
@@ -805,12 +1018,14 @@ as helper functions embedded in operation modules:
 
 | Module | Owns | Must not own |
 | --- | --- | --- |
+| `pipeline/program_registry.py` | `ProgramOutput`, one concrete output enum per program, `ProgramSpec.output_type`, program-output lookup, and compatibility slot projections derived from enum members | Runtime material projection, provider decisions, duplicate frontend-only output vocabularies |
 | `compute.py` | `MaterialCompute`, apply-step frame setup, conservation gating, result return | operation-specific material behavior |
 | `state.py` | `MaterialStateManager`, `MaterialStateChangePlan`, material-state change planning, state-change dispatch | ledger primitives, partition strategy internals, runtime driver dispatch |
 | `container_content.py` | container/content record orchestration, allocation ID selection, and allocation metadata | reference resolution, material-state change planning |
 | `mutation.py` | mutation transform and mutation source dispatch | top-level material-state change planning |
-| `scientific_model_adapter.py` | public Runtime/model translation and typed decision resolution | quantity projection, ledger mutation, built-in rules |
-| `separation.py` | single separation entry, typed-effect projection, candidate commit, unknown-input compatibility delegation | provider rules, resolver construction |
+| `scientific_model_adapter.py` | public Runtime/model translation, `OutputRoleSnapshot` projection, provider-output rebinding to the operation contract's `ProgramOutput` members, and typed decision resolution | defining program outputs, quantity projection, ledger mutation, built-in rules |
+| `separation_fate.py` | `SeparationOperationContract`, program output membership, physical retention/release rules, and derived compatibility `slot_contract` serialization | defining concrete program output enums, ledger mutation, candidate commit |
+| `separation.py` | single separation entry, retrieval of the selected program's typed outputs, typed-effect projection, candidate validation and commit, unknown-input compatibility delegation | defining output enums, provider rules, resolver construction |
 | `partition.py` | unknown-input compatibility shell plus preexisting direct Python symbols | provider calls, typed-effect projection, authoritative registered separation behavior |
 | `contents_state.py` | `MaterialIndexedPartsStateManager`, indexed part records, selection, sep/frac partition/index application, narrow preservation impact, invalidation, and mixed-state impact | top-level material-state change planning, full runtime step dispatch, broad protocol semantics |
 | `ledger.py` | volume, mass, component, and metadata mutation primitives | source-expression interpretation |

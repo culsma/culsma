@@ -5,7 +5,16 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from culsma.pipeline.program_registry import get_material_effect_kind
+from culsma.pipeline.program_registry import (
+    CentrifugeProgramOutput,
+    CentrifugalFiltrationProgramOutput,
+    FiltrationProgramOutput,
+    MagneticProgramOutput,
+    PrecipitationProgramOutput,
+    ProgramOutput,
+    get_material_effect_kind,
+    get_program_outputs,
+)
 from culsma.runtime.material.args import arg_string, call_arg_string
 
 
@@ -17,11 +26,18 @@ class SeparationOperationContract:
     program_kind: str
     effect_kind: str
     program_args: dict[str, Any]
-    slot_contract: dict[str, str]
+    outputs: tuple[ProgramOutput, ...]
     preserved_association_slots: dict[str, str]
     released_associations: frozenset[str]
     free_phase_passes: bool = False
     preservation_contract: dict[str, Any] | None = None
+
+    @property
+    def slot_contract(self) -> dict[str, str]:
+        return {
+            output.part_id: output.semantic_role
+            for output in self.outputs
+        }
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -90,7 +106,7 @@ class SeparationRuleIssue:
 def resolve_separation_operation_contract(
     program: dict[str, Any],
     *,
-    slot_contract: dict[str, str],
+    outputs: tuple[ProgramOutput, ...],
 ) -> SeparationOperationContract:
     program_kind = str(program.get("name")) if isinstance(program.get("name"), str) else "sep_program"
     program_args = _serialized_program_args(program)
@@ -99,25 +115,43 @@ def resolve_separation_operation_contract(
     preservation_contract: dict[str, Any] | None = None
     free_phase_passes = False
 
+    if (
+        len(outputs) != 2
+        or not all(isinstance(output, ProgramOutput) for output in outputs)
+        or len({output.part_id for output in outputs}) != 2
+        or len({output.semantic_role for output in outputs}) != 2
+    ):
+        raise ValueError("separation programs must declare exactly two unique outputs")
+    expected_outputs = get_program_outputs(program_kind)
+    if expected_outputs and outputs != expected_outputs:
+        raise ValueError(
+            f"program '{program_kind}' requires {type(expected_outputs[0]).__name__}"
+        )
+
     if program_kind == "centrifuge_program":
-        preserved["pellet"] = "1"
-    elif program_kind in {"filtration_program", "centrifugal_filtration_program"}:
-        preserved["membrane"] = "1"
+        preserved["pellet"] = CentrifugeProgramOutput.PELLET.part_id
+    elif program_kind == "filtration_program":
+        retained_part_id = FiltrationProgramOutput.RETENTATE.part_id
+        preserved["membrane"] = retained_part_id
         membrane = _normalized_token(call_arg_string(program, "membrane"))
         drive = _normalized_token(call_arg_string(program, "drive"))
         if membrane == "adherent_cell_surface" and drive == "aspiration":
-            preserved["container_surface"] = "1"
+            preserved["container_surface"] = retained_part_id
             free_phase_passes = True
+    elif program_kind == "centrifugal_filtration_program":
+        preserved["membrane"] = CentrifugalFiltrationProgramOutput.RETENTATE.part_id
     elif program_kind == "magnetic_program":
-        preserved["bead"] = "0"
+        retained_part_id = MagneticProgramOutput.BOUND.part_id
+        flowthrough_part_id = MagneticProgramOutput.FLOWTHROUGH.part_id
+        preserved["bead"] = retained_part_id
         preservation_contract = {
             "kind": "field_retention",
             "field": "magnetic_rack",
-            "retained_slot": "0",
-            "default_incoming_slot": "1",
+            "retained_slot": retained_part_id,
+            "default_incoming_slot": flowthrough_part_id,
         }
     elif program_kind == "precipitation_program":
-        preserved["precipitate"] = "0"
+        preserved["precipitate"] = PrecipitationProgramOutput.PRECIPITATE.part_id
     elif program_kind == "disrupt_program":
         released.update({"cell", "container_surface"})
 
@@ -125,7 +159,7 @@ def resolve_separation_operation_contract(
         program_kind=program_kind,
         effect_kind=get_material_effect_kind(program_kind) or "separation_fate",
         program_args=program_args,
-        slot_contract=dict(slot_contract),
+        outputs=tuple(outputs),
         preserved_association_slots=preserved,
         released_associations=frozenset(released),
         free_phase_passes=free_phase_passes,

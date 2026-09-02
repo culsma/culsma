@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from culsma.pipeline.program_registry import ProgramOutput
 from culsma.scientific_model import ModelRequest, ProviderProvenance
 from culsma.scientific_model.material import (
     MATERIAL_CONTRACT_VERSION,
@@ -64,14 +65,20 @@ class MaterialEffectFailure:
 
 @dataclass(frozen=True)
 class ResolvedOutput:
-    part_id: str
-    semantic_role: str
+    output: ProgramOutput
+
+    @property
+    def part_id(self) -> str:
+        return self.output.part_id
+
+    @property
+    def semantic_role(self) -> str:
+        return self.output.semantic_role
 
 
 @dataclass(frozen=True)
 class ResolvedComponentOutput:
-    part_id: str
-    semantic_role: str
+    output: ProgramOutput
     fraction: float
     next_relation: str | None
     next_label: str | None
@@ -82,6 +89,14 @@ class ResolvedComponentOutput:
     transition_provenance: ProviderProvenance | None
     transition_source: str = "provider"
     next_association_target: AssociationTarget | None = None
+
+    @property
+    def part_id(self) -> str:
+        return self.output.part_id
+
+    @property
+    def semantic_role(self) -> str:
+        return self.output.semantic_role
 
 
 @dataclass(frozen=True)
@@ -144,15 +159,11 @@ class ScientificModelMaterialAdapter:
         explicit_transitions: tuple[ExplicitMaterialTransition, ...] = (),
     ) -> ResolvedMaterialEffect | MaterialEffectFailure:
         output_roles = tuple(
-            OutputRoleSnapshot(part_id=slot, semantic_role=role)
-            for slot, role in operation_contract.slot_contract.items()
-        )
-        resolved_outputs = tuple(
-            ResolvedOutput(
+            OutputRoleSnapshot(
                 part_id=output.part_id,
                 semantic_role=output.semantic_role,
             )
-            for output in output_roles
+            for output in operation_contract.outputs
         )
         state_transition_only = operation_contract.effect_kind != "separation_fate"
         provider_components = (
@@ -269,6 +280,17 @@ class ScientificModelMaterialAdapter:
                 fate_source_by_component[component_id] = "scientific_model_provider"
                 fate_provenance_by_component[component_id] = coordinated.provenance
 
+        bound_outputs = self.bind_program_outputs(
+            output_roles,
+            operation_contract,
+        )
+        if isinstance(bound_outputs, MaterialEffectFailure):
+            return bound_outputs
+        resolved_outputs = tuple(
+            ResolvedOutput(output=output)
+            for output in bound_outputs
+        )
+
         author_transition_resolution = resolve_explicit_material_transitions(
             transitions=explicit_transitions,
             source_id=source_id or "",
@@ -297,12 +319,11 @@ class ScientificModelMaterialAdapter:
             )
             resolved_component_outputs: list[ResolvedComponentOutput] = []
             for slot_index, fraction in enumerate(component_fractions):
-                output = output_roles[slot_index]
+                output = bound_outputs[slot_index]
                 if fraction <= 0.0 or component.amount <= ENTRY_EPSILON:
                     resolved_component_outputs.append(
                         ResolvedComponentOutput(
-                            part_id=output.part_id,
-                            semantic_role=output.semantic_role,
+                            output=output,
                             fraction=fraction,
                             next_relation=None,
                             next_label=None,
@@ -337,7 +358,10 @@ class ScientificModelMaterialAdapter:
                         semantic_role="result_material",
                     )
                     if transition_effect_kind == "disrupt"
-                    else output
+                    else OutputRoleSnapshot(
+                        part_id=output.part_id,
+                        semantic_role=output.semantic_role,
+                    )
                 )
                 transition_context = self.build_transition_context(
                     state=state,
@@ -415,8 +439,7 @@ class ScientificModelMaterialAdapter:
                 next_relation = transition.next_relation.value
                 resolved_component_outputs.append(
                     ResolvedComponentOutput(
-                        part_id=output.part_id,
-                        semantic_role=output.semantic_role,
+                        output=output,
                         fraction=fraction,
                         next_relation=next_relation,
                         next_label=transition.next_label,
@@ -457,6 +480,28 @@ class ScientificModelMaterialAdapter:
             outputs=resolved_outputs,
             component_effects=tuple(resolved_component_effects),
         )
+
+    @staticmethod
+    def bind_program_outputs(
+        outputs: tuple[OutputRoleSnapshot, ...],
+        operation_contract: SeparationOperationContract,
+    ) -> tuple[ProgramOutput, ...] | MaterialEffectFailure:
+        expected = tuple(
+            OutputRoleSnapshot(
+                part_id=output.part_id,
+                semantic_role=output.semantic_role,
+            )
+            for output in operation_contract.outputs
+        )
+        if outputs != expected:
+            return MaterialEffectFailure(
+                "MAT_PROGRAM_OUTPUT_CONTRACT_MISMATCH",
+                (
+                    f"Program '{operation_contract.program_kind}' output roles do not "
+                    "match its declared ordered output enum"
+                ),
+            )
+        return operation_contract.outputs
 
     def resolve_movement(
         self,

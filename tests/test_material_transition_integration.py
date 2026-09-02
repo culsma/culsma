@@ -21,8 +21,8 @@ def _source(
     *,
     state: str = "adherent",
     material_index: str = "0",
-    output: str = "retentate",
-    to: str = "free",
+    output: str = "FiltrationProgramOutput.RETENTATE",
+    to: str = "MaterialRelation.FREE",
     associated_with: str | None = None,
     program: str = (
         "filtration_program(membrane = adherent_cell_surface, drive = aspiration)"
@@ -97,6 +97,14 @@ def test_frontend_lowers_inline_content_load_and_materials_index_selector() -> N
     assert subject["kind"] == "IRIndex"
     assert subject["base"]["member"] == "materials"
     assert subject["index"]["value"] == 0.0
+    output = next(
+        arg["value"]
+        for arg in transition["args"]
+        if arg["name"] == "output"
+    )
+    assert output["kind"] == "IRMember"
+    assert output["base"]["name"] == "FiltrationProgramOutput"
+    assert output["member"] == "RETENTATE"
 
 
 def test_runtime_applies_container_surface_to_free_author_transition() -> None:
@@ -130,7 +138,7 @@ def test_runtime_applies_each_container_associated_target_relation(
     target_relation: MaterialRelation,
 ) -> None:
     result = run(
-        plan=_plan(_source(to=target_relation.value)),
+        plan=_plan(_source(to=f"MaterialRelation.{target_relation.name}")),
         driver=StubDriver(),
     )
 
@@ -144,7 +152,7 @@ def test_runtime_applies_each_container_associated_target_relation(
     assert retained[0]["relationship_source"] == "author_transition"
 
 
-def test_pm99_runtime_releases_bead_bound_target_into_flowthrough() -> None:
+def test_runtime_releases_bead_bound_target_into_flowthrough() -> None:
     source = '''protocol T {
   let source = tube(
     label = "IP beads",
@@ -187,8 +195,8 @@ def test_pm99_runtime_releases_bead_bound_target_into_flowthrough() -> None:
     transitions = [
       transition(
         subject = bead_fraction.materials[1],
-        output = flowthrough,
-        to = free
+        output = MagneticProgramOutput.FLOWTHROUGH,
+        to = MaterialRelation.FREE
       )
     ]
   );
@@ -255,13 +263,13 @@ def test_runtime_applies_each_component_bound_target_with_typed_material_selecto
     transitions = [
       transition(
         subject = source.materials[1],
-        output = bound,
-        to = TARGET_RELATION,
+        output = MagneticProgramOutput.BOUND,
+        to = MaterialRelation.TARGET_RELATION,
         associated_with = source.materials[0]
       )
     ]
   );
-}'''.replace("TARGET_RELATION", target_relation.value)
+    }'''.replace("TARGET_RELATION", target_relation.name)
 
     result = run(plan=_plan(source), driver=StubDriver())
 
@@ -308,13 +316,13 @@ def test_runtime_applies_multiple_different_transitions_in_one_separation() -> N
     transitions = [
       transition(
         subject = source.materials[0],
-        output = retentate,
-        to = free
+        output = FiltrationProgramOutput.RETENTATE,
+        to = MaterialRelation.FREE
       ),
       transition(
         subject = source.materials[1],
-        output = retentate,
-        to = precipitate
+        output = FiltrationProgramOutput.RETENTATE,
+        to = MaterialRelation.PRECIPITATE
       )
     ]
   );
@@ -365,8 +373,8 @@ def test_runtime_rejects_component_association_target_absent_from_selected_outpu
     transitions = [
       transition(
         subject = source.materials[1],
-        output = bound,
-        to = bead_bound,
+        output = MagneticProgramOutput.BOUND,
+        to = MaterialRelation.BEAD_BOUND,
         associated_with = source.materials[0]
       )
     ]
@@ -383,7 +391,12 @@ def test_runtime_rejects_component_association_target_absent_from_selected_outpu
 
 def test_runtime_accepts_free_to_free_without_a_pair_whitelist() -> None:
     result = run(
-        plan=_plan(_source(state="suspension", output="filtrate")),
+        plan=_plan(
+            _source(
+                state="suspension",
+                output="FiltrationProgramOutput.FILTRATE",
+            )
+        ),
         driver=StubDriver(),
     )
 
@@ -435,8 +448,8 @@ def test_author_transition_selects_cells_from_mixed_tube_materials() -> None:
     transitions = [
       transition(
         subject = source.materials[1],
-        output = retentate,
-        to = free
+        output = FiltrationProgramOutput.RETENTATE,
+        to = MaterialRelation.FREE
       )
     ]
   );
@@ -462,7 +475,7 @@ def test_author_transition_selects_cells_from_mixed_tube_materials() -> None:
 
 def test_runtime_rejects_author_transition_for_zero_quantity_output() -> None:
     result = run(
-        plan=_plan(_source(output="filtrate")),
+        plan=_plan(_source(output="FiltrationProgramOutput.FILTRATE")),
         driver=StubDriver(),
     )
 
@@ -484,6 +497,28 @@ def test_frontend_rejects_free_text_relation_and_unknown_output() -> None:
     }
 
 
+def test_frontend_rejects_bare_and_cross_program_enum_members() -> None:
+    _, bare_output = _compile(_source(output="retentate"))
+    _, bare_relation = _compile(_source(to="free"))
+    _, wrong_output_type = _compile(
+        _source(output="MagneticProgramOutput.BOUND")
+    )
+
+    assert "SEM_MATERIAL_TRANSITION_OUTPUT_INVALID" in {
+        diagnostic.code for diagnostic in bare_output.diagnostics
+    }
+    assert "SEM_MATERIAL_TRANSITION_TARGET_INVALID" in {
+        diagnostic.code for diagnostic in bare_relation.diagnostics
+    }
+    assert "SEM_MATERIAL_TRANSITION_OUTPUT_INVALID" in {
+        diagnostic.code for diagnostic in wrong_output_type.diagnostics
+    }
+    assert any(
+        "requires FiltrationProgramOutput" in diagnostic.message
+        for diagnostic in wrong_output_type.diagnostics
+    )
+
+
 def test_frontend_accepts_every_author_settable_relation_enum() -> None:
     for relation in AUTHOR_SETTABLE_MATERIAL_RELATIONS:
         associated_with = (
@@ -491,7 +526,7 @@ def test_frontend_accepts_every_author_settable_relation_enum() -> None:
         )
         _, semantic = _compile(
             _source(
-                to=relation.value,
+                to=f"MaterialRelation.{relation.name}",
                 associated_with=associated_with,
             )
         )
@@ -503,7 +538,7 @@ def test_frontend_accepts_every_author_settable_relation_enum() -> None:
 
 def test_frontend_rejects_unknown_and_internal_relation_identifiers() -> None:
     _, unknown = _compile(_source(to="custom_state"))
-    _, unresolved = _compile(_source(to=MaterialRelation.UNRESOLVED.value))
+    _, unresolved = _compile(_source(to="MaterialRelation.UNRESOLVED"))
 
     assert "SEM_MATERIAL_TRANSITION_TARGET_INVALID" in {
         diagnostic.code for diagnostic in unknown.diagnostics
@@ -524,7 +559,7 @@ def test_frontend_rejects_unknown_and_internal_relation_identifiers() -> None:
 def test_frontend_requires_association_for_each_component_bound_target(
     target_relation: MaterialRelation,
 ) -> None:
-    _, semantic = _compile(_source(to=target_relation.value))
+    _, semantic = _compile(_source(to=f"MaterialRelation.{target_relation.name}"))
 
     assert "SEM_MATERIAL_TRANSITION_ASSOCIATION_REQUIRED" in {
         diagnostic.code for diagnostic in semantic.diagnostics
@@ -543,7 +578,10 @@ def test_frontend_forbids_component_association_for_non_bound_targets(
     target_relation: MaterialRelation,
 ) -> None:
     _, semantic = _compile(
-        _source(to=target_relation.value, associated_with="0")
+        _source(
+            to=f"MaterialRelation.{target_relation.name}",
+            associated_with="0",
+        )
     )
 
     assert "SEM_MATERIAL_TRANSITION_ASSOCIATION_FORBIDDEN" in {
