@@ -5,6 +5,7 @@ Last updated: 2026-09-01
 Related runtime document:
 
 1. [runtime_module_diagrams.md](./runtime_module_diagrams.md)
+2. [Component Entry Identity](./material_compute/component_entry_identity.md)
 
 ## Scope
 
@@ -32,6 +33,8 @@ Current responsibilities include:
 8. checking conservation invariants;
 9. distinguishing physical volume used for capacity and driver execution from
    cross-axis bulk compatibility proxies.
+10. owning authoritative component-entry identity, compatibility compression,
+    collision-free ID allocation, and compatibility projections.
 
 Program-owned output enums are part of the current Runtime architecture.
 

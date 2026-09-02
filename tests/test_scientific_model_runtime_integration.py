@@ -34,6 +34,7 @@ from culsma.runtime.material.conservation import state_totals
 from culsma.runtime.material.component_entries import (
     append_free_component_quantity,
     container_component_entries,
+    next_component_entry_id,
     plan_component_entry_transfer,
     replace_component_entries,
 )
@@ -76,6 +77,17 @@ def _ir_quantity(value: float, unit: str | None) -> dict[str, object]:
 
 def _ir_arg(name: str, value: dict[str, object]) -> dict[str, object]:
     return {"kind": "IRArg", "name": name, "value": value, "span": None}
+
+
+def test_component_entry_id_collision_suffix_is_container_local_and_stable() -> None:
+    entries = [
+        {"entry_id": "DNA"},
+        {"entry_id": "DNA::1"},
+        {"entry_id": "DNA_1"},
+    ]
+
+    assert next_component_entry_id(entries, "DNA") == "DNA_2"
+    assert next_component_entry_id(entries, "RNA") == "RNA"
 
 
 def _sep_step() -> PlanStep:
@@ -717,7 +729,7 @@ def test_move_keeps_same_content_with_incompatible_states_as_distinct_entries() 
     assert target["components"] == {"DNA": 150.0}
     assert [(entry["entry_id"], entry["relation"], entry["amount"]) for entry in entries] == [
         ("DNA", "free", 50.0),
-        ("DNA::1", "precipitate", 100.0),
+        ("DNA_1", "precipitate", 100.0),
     ]
     assert source["component_entries"] == []
     assert source["material_relationships"] == []
@@ -899,7 +911,7 @@ def test_safe_compression_keeps_distinct_entry_labels() -> None:
     entries = container_component_entries(container)
     assert [(entry["entry_id"], entry["label"]) for entry in entries] == [
         ("DNA", "pellet_output"),
-        ("DNA::1", "retentate_output"),
+        ("DNA_1", "retentate_output"),
     ]
     assert container["components"] == {"DNA": 20.0}
 
@@ -1026,7 +1038,7 @@ def test_existing_duplicate_entry_ids_are_canonicalized() -> None:
     entries = container_component_entries(state["containers"]["tube"])
     assert [(entry["entry_id"], entry["relation"]) for entry in entries] == [
         ("DNA", "free"),
-        ("DNA::1", "precipitate"),
+        ("DNA_1", "precipitate"),
     ]
 
 

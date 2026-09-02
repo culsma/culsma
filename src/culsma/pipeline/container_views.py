@@ -5,7 +5,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from culsma.pipeline.ir_nodes import IRIdentifier, IRIndex, IRMember
+from culsma.pipeline.ir_nodes import (
+    IRCall,
+    IRIdentifier,
+    IRIndex,
+    IRMember,
+    IRString,
+)
 
 CONTAINER_CONTENTS_MEMBER = "contents"
 CONTAINER_STRUCTURE_MEMBER = "structure"
@@ -29,6 +35,14 @@ class MaterialsIndexExpression:
     index: Any
 
 
+@dataclass(frozen=True)
+class MaterialsGetExpression:
+    """Static shape of ``container.materials.get(entry_id)``."""
+
+    container: Any
+    entry_id: str
+
+
 def resolve_materials_index(
     expr: Any,
     *,
@@ -36,14 +50,7 @@ def resolve_materials_index(
 ) -> MaterialsIndexExpression | None:
     """Resolve the closed frontend selector shape without reading Runtime state."""
 
-    seen: set[str] = set()
-    while (
-        isinstance(expr, IRIdentifier)
-        and expr.name in expr_bindings
-        and expr.name not in seen
-    ):
-        seen.add(expr.name)
-        expr = expr_bindings[expr.name]
+    expr = _resolve_expr_binding(expr, expr_bindings)
     if not isinstance(expr, IRIndex):
         return None
     receiver = expr.base
@@ -55,12 +62,52 @@ def resolve_materials_index(
     return MaterialsIndexExpression(container=receiver.base, index=expr.index)
 
 
+def resolve_materials_get(
+    expr: Any,
+    *,
+    expr_bindings: dict[str, Any],
+) -> MaterialsGetExpression | None:
+    """Resolve an exact entry-id selector without reading Runtime state."""
+
+    expr = _resolve_expr_binding(expr, expr_bindings)
+    if not isinstance(expr, IRCall) or expr.name != "get":
+        return None
+    args = {arg.name: arg.value for arg in expr.args}
+    if len(args) != len(expr.args) or set(args) != {"self", "arg0"}:
+        return None
+    receiver = args["self"]
+    if (
+        not isinstance(receiver, IRMember)
+        or receiver.member != CONTAINER_MATERIALS_MEMBER
+    ):
+        return None
+    entry_id = _resolve_expr_binding(args["arg0"], expr_bindings)
+    if not isinstance(entry_id, IRString) or not entry_id.value:
+        return None
+    return MaterialsGetExpression(
+        container=receiver.base,
+        entry_id=entry_id.value,
+    )
+
+
 def is_container_materials_index(expr: Any) -> bool:
     return (
         isinstance(expr, IRIndex)
         and isinstance(expr.base, IRMember)
         and expr.base.member == CONTAINER_MATERIALS_MEMBER
     )
+
+
+def _resolve_expr_binding(expr: Any, expr_bindings: dict[str, Any]) -> Any:
+    seen: set[str] = set()
+    while (
+        isinstance(expr, IRIdentifier)
+        and expr.name in expr_bindings
+        and expr.name not in seen
+    ):
+        seen.add(expr.name)
+        expr = expr_bindings[expr.name]
+    return expr
 
 
 def split_member_path(expr: Any) -> tuple[Any, tuple[str, ...]] | None:

@@ -2,9 +2,9 @@
 
 This module is the operation-neutral core for author-controlled material
 transitions. It resolves the
-frontend ``tube.materials[index]`` selector against the authoritative ordered
-component-entry list, derives the source relationship from that entry, and
-builds an immutable author decision whose target is a closed
+frontend ``tube.materials[index]`` or ``tube.materials.get(entry_id)`` selector
+against the authoritative component-entry list, derives the source relationship
+from that entry, and builds an immutable author decision whose target is a closed
 ``MaterialRelation`` enum value.  The state vocabulary is closed; the directed
 transition graph is not restricted by a pair whitelist.
 """
@@ -57,6 +57,21 @@ class MaterialEntryIndexSelector:
             or self.index < 0
         ):
             raise ValueError("index must be a non-negative integer")
+
+
+@dataclass(frozen=True)
+class MaterialEntryIdSelector:
+    """Compiled form of ``container.materials.get(entry_id)``."""
+
+    container_ref: str
+    entry_id: str
+
+    def __post_init__(self) -> None:
+        _require_non_empty("container_ref", self.container_ref)
+        _require_non_empty("entry_id", self.entry_id)
+
+
+MaterialEntrySelector = MaterialEntryIndexSelector | MaterialEntryIdSelector
 
 
 @dataclass(frozen=True)
@@ -118,25 +133,27 @@ class AuthorTransitionStateValidation:
 
 @dataclass(frozen=True)
 class ExplicitMaterialTransition:
-    subject: MaterialEntryIndexSelector
+    subject: MaterialEntrySelector
     output: ProgramOutput
     next_relation: MaterialRelation
-    next_association_selector: MaterialEntryIndexSelector | None = None
+    next_association_selector: MaterialEntrySelector | None = None
 
     def __post_init__(self) -> None:
-        if not isinstance(self.subject, MaterialEntryIndexSelector):
-            raise TypeError("subject must be a MaterialEntryIndexSelector")
+        if not isinstance(
+            self.subject,
+            (MaterialEntryIndexSelector, MaterialEntryIdSelector),
+        ):
+            raise TypeError("subject must be a MaterialEntrySelector")
         if not isinstance(self.output, ProgramOutput):
             raise TypeError("output must be a ProgramOutput")
         if not isinstance(self.next_relation, MaterialRelation):
             raise TypeError("next_relation must be a MaterialRelation")
         if self.next_association_selector is not None and not isinstance(
             self.next_association_selector,
-            MaterialEntryIndexSelector,
+            (MaterialEntryIndexSelector, MaterialEntryIdSelector),
         ):
-            raise TypeError(
-                "next_association_selector must be a MaterialEntryIndexSelector"
-            )
+            raise TypeError("next_association_selector must be a MaterialEntrySelector")
+
 
 @dataclass(frozen=True)
 class ResolvedExplicitMaterialTransition:
@@ -246,7 +263,8 @@ def parse_explicit_material_transitions(
         if selector is None:
             return _parse_failure(
                 "MAT_MATERIAL_SELECTOR_INVALID",
-                "transition subject must be sample.materials[index]",
+                "transition subject must be sample.materials[index] or "
+                "sample.materials.get(entry_id)",
             )
         if (
             declared_source_ref is not None
@@ -257,10 +275,7 @@ def parse_explicit_material_transitions(
                 "transition subject container must be the same binding as sep sample",
             )
         if source_id is not None:
-            selector = MaterialEntryIndexSelector(
-                container_ref=source_id,
-                index=selector.index,
-            )
+            selector = _selector_with_container_ref(selector, source_id)
         output_member = _serialized_enum_member(args["output"])
         if output_member is None:
             return _parse_failure(
@@ -303,7 +318,8 @@ def parse_explicit_material_transitions(
             if association_selector is None:
                 return _parse_failure(
                     "MAT_MATERIAL_TRANSITION_ASSOCIATION_INVALID",
-                    "transition associated_with must be sample.materials[index]",
+                    "transition associated_with must be sample.materials[index] or "
+                    "sample.materials.get(entry_id)",
                 )
             if (
                 declared_source_ref is not None
@@ -314,16 +330,18 @@ def parse_explicit_material_transitions(
                     "transition associated_with container must be the same binding as sep sample",
                 )
             if source_id is not None:
-                association_selector = MaterialEntryIndexSelector(
-                    container_ref=source_id,
-                    index=association_selector.index,
+                association_selector = _selector_with_container_ref(
+                    association_selector,
+                    source_id,
                 )
 
         if next_relation in COMPONENT_BOUND_MATERIAL_RELATIONS:
             if association_selector is None:
                 return _parse_failure(
                     "MAT_MATERIAL_TRANSITION_ASSOCIATION_REQUIRED",
-                    f"transition to {next_relation.value} requires associated_with = sample.materials[index]",
+                    f"transition to {next_relation.value} requires "
+                    "associated_with = sample.materials[index] or "
+                    "sample.materials.get(entry_id)",
                 )
         elif association_selector is not None:
             return _parse_failure(
@@ -451,11 +469,11 @@ def resolve_explicit_material_transitions(
 
 def resolve_material_entry(
     *,
-    selector: MaterialEntryIndexSelector,
+    selector: MaterialEntrySelector,
     source_id: str,
     entries: Sequence[dict[str, Any]],
 ) -> MaterialEntryResolution:
-    """Resolve one live entry by its position in the ordered materials list."""
+    """Resolve one live entry by ordered index or exact stable entry ID."""
 
     if selector.container_ref != source_id:
         return MaterialEntryResolution(
@@ -476,22 +494,57 @@ def resolve_material_entry(
         if isinstance(entry, dict)
         and component_entry_has_quantity(entry)
     ]
-    if selector.index >= len(live_entries):
-        return MaterialEntryResolution(
-            index=selector.index,
-            live_entry_count=len(live_entries),
-            issues=(
-                AuthorTransitionIssue(
-                    code="MAT_MATERIAL_INDEX_OUT_OF_RANGE",
-                    message=(
-                        f"Container '{source_id}' has {len(live_entries)} live material "
-                        f"entries; index {selector.index} is out of range"
+    if isinstance(selector, MaterialEntryIndexSelector):
+        resolved_index = selector.index
+        if resolved_index >= len(live_entries):
+            return MaterialEntryResolution(
+                index=resolved_index,
+                live_entry_count=len(live_entries),
+                issues=(
+                    AuthorTransitionIssue(
+                        code="MAT_MATERIAL_INDEX_OUT_OF_RANGE",
+                        message=(
+                            f"Container '{source_id}' has {len(live_entries)} live material "
+                            f"entries; index {resolved_index} is out of range"
+                        ),
                     ),
                 ),
-            ),
-        )
+            )
+    else:
+        matching_indexes = [
+            index
+            for index, candidate in enumerate(live_entries)
+            if candidate.get("entry_id") == selector.entry_id
+        ]
+        if not matching_indexes:
+            return MaterialEntryResolution(
+                live_entry_count=len(live_entries),
+                issues=(
+                    AuthorTransitionIssue(
+                        code="MAT_MATERIAL_ENTRY_ID_NOT_FOUND",
+                        message=(
+                            f"Container '{source_id}' has no live material entry with "
+                            f"entry_id '{selector.entry_id}'"
+                        ),
+                    ),
+                ),
+            )
+        if len(matching_indexes) > 1:
+            return MaterialEntryResolution(
+                live_entry_count=len(live_entries),
+                issues=(
+                    AuthorTransitionIssue(
+                        code="MAT_MATERIAL_ENTRY_ID_AMBIGUOUS",
+                        message=(
+                            f"Container '{source_id}' has duplicate live material entries "
+                            f"with entry_id '{selector.entry_id}'"
+                        ),
+                    ),
+                ),
+            )
+        resolved_index = matching_indexes[0]
 
-    entry = live_entries[selector.index]
+    entry = live_entries[resolved_index]
     entry_id = entry.get("entry_id")
     content_ref = entry.get("content_ref")
     if (
@@ -501,7 +554,7 @@ def resolve_material_entry(
         or not content_ref
     ):
         return MaterialEntryResolution(
-            index=selector.index,
+            index=resolved_index,
             live_entry_count=len(live_entries),
             issues=(
                 AuthorTransitionIssue(
@@ -515,7 +568,7 @@ def resolve_material_entry(
         relation = MaterialRelation(normalize_entry_relation(entry.get("relation")))
     except (ComponentEntryRelationError, ValueError) as exc:
         return MaterialEntryResolution(
-            index=selector.index,
+            index=resolved_index,
             live_entry_count=len(live_entries),
             issues=(
                 AuthorTransitionIssue(
@@ -542,7 +595,7 @@ def resolve_material_entry(
     )
     return MaterialEntryResolution(
         entry=resolved,
-        index=selector.index,
+        index=resolved_index,
         live_entry_count=len(live_entries),
     )
 
@@ -782,24 +835,58 @@ def _serialized_call_args(value: Any, name: str) -> dict[str, Any] | None:
     return args
 
 
-def _parse_material_selector(value: Any) -> MaterialEntryIndexSelector | None:
-    if not isinstance(value, dict) or value.get("kind") != "IRIndex":
+def _parse_material_selector(value: Any) -> MaterialEntrySelector | None:
+    if isinstance(value, dict) and value.get("kind") == "IRIndex":
+        receiver = value.get("base")
+        if not _is_serialized_materials_member(receiver):
+            return None
+        container_ref = ref_display(receiver.get("base"))
+        index = _serialized_nonnegative_index(value.get("index"))
+        if container_ref.startswith("<") or index is None:
+            return None
+        return MaterialEntryIndexSelector(
+            container_ref=container_ref,
+            index=index,
+        )
+
+    args = _serialized_call_args(value, "get")
+    if args is None or set(args) != {"self", "arg0"}:
         return None
-    receiver = value.get("base")
-    if (
-        not isinstance(receiver, dict)
-        or receiver.get("kind") != "IRMember"
-        or receiver.get("member") != "materials"
-    ):
+    receiver = args["self"]
+    if not _is_serialized_materials_member(receiver):
         return None
     container_ref = ref_display(receiver.get("base"))
-    index = _serialized_nonnegative_index(value.get("index"))
-    if container_ref.startswith("<") or index is None:
+    entry_id = _serialized_non_empty_string(args["arg0"])
+    if container_ref.startswith("<") or entry_id is None:
         return None
-    return MaterialEntryIndexSelector(
+    return MaterialEntryIdSelector(
         container_ref=container_ref,
-        index=index,
+        entry_id=entry_id,
     )
+
+
+def _is_serialized_materials_member(value: Any) -> bool:
+    return (
+        isinstance(value, dict)
+        and value.get("kind") == "IRMember"
+        and value.get("member") == "materials"
+    )
+
+
+def _serialized_non_empty_string(value: Any) -> str | None:
+    if not isinstance(value, dict) or value.get("kind") != "IRString":
+        return None
+    text = value.get("value")
+    return text if isinstance(text, str) and text else None
+
+
+def _selector_with_container_ref(
+    selector: MaterialEntrySelector,
+    container_ref: str,
+) -> MaterialEntrySelector:
+    if isinstance(selector, MaterialEntryIndexSelector):
+        return MaterialEntryIndexSelector(container_ref, selector.index)
+    return MaterialEntryIdSelector(container_ref, selector.entry_id)
 
 
 def _serialized_enum_member(value: Any) -> tuple[str, str] | None:

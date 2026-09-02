@@ -6,7 +6,10 @@ from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
 from culsma.common.source import Span
-from culsma.pipeline.container_views import resolve_materials_index
+from culsma.pipeline.container_views import (
+    resolve_materials_get,
+    resolve_materials_index,
+)
 from culsma.pipeline.ir_nodes import IRArg, IRCall, IRIdentifier, IRList, IRMember
 from culsma.pipeline.program_registry import resolve_program_output
 from culsma.scientific_model.material import (
@@ -78,12 +81,16 @@ def validate_material_transitions_contract(
         selector = resolve_materials_index(
             named["subject"].value,
             expr_bindings=expr_bindings,
+        ) or resolve_materials_get(
+            named["subject"].value,
+            expr_bindings=expr_bindings,
         )
         if selector is None:
             diagnostics.append(
                 _issue(
                     "SEM_MATERIAL_SELECTOR_INVALID",
-                    "transition subject must be sample.materials[index]",
+                    "transition subject must be sample.materials[index] or "
+                    "sample.materials.get(entry_id)",
                     named["subject"].span or rule.span or span,
                     node_id,
                 )
@@ -150,7 +157,9 @@ def validate_material_transitions_contract(
                 diagnostics.append(
                     _issue(
                         "SEM_MATERIAL_TRANSITION_ASSOCIATION_REQUIRED",
-                        f"transition to {target_relation.value} requires associated_with = sample.materials[index]",
+                        f"transition to {target_relation.value} requires "
+                        "associated_with = sample.materials[index] or "
+                        "sample.materials.get(entry_id)",
                         rule.span or transition_arg.span or span,
                         node_id,
                     )
@@ -169,12 +178,16 @@ def validate_material_transitions_contract(
             association_selector = resolve_materials_index(
                 association_arg.value,
                 expr_bindings=expr_bindings,
+            ) or resolve_materials_get(
+                association_arg.value,
+                expr_bindings=expr_bindings,
             )
             if association_selector is None:
                 diagnostics.append(
                     _issue(
                         "SEM_MATERIAL_TRANSITION_ASSOCIATION_INVALID",
-                        "associated_with must be sample.materials[index]",
+                        "associated_with must be sample.materials[index] or "
+                        "sample.materials.get(entry_id)",
                         association_arg.span or rule.span or span,
                         node_id,
                     )

@@ -21,6 +21,7 @@ def _source(
     *,
     state: str = "adherent",
     material_index: str = "0",
+    material_entry_id: str | None = None,
     output: str = "FiltrationProgramOutput.RETENTATE",
     to: str = "MaterialRelation.FREE",
     associated_with: str | None = None,
@@ -28,6 +29,11 @@ def _source(
         "filtration_program(membrane = adherent_cell_surface, drive = aspiration)"
     ),
 ) -> str:
+    subject = (
+        f'source.materials.get("{material_entry_id}")'
+        if material_entry_id is not None
+        else f"source.materials[{material_index}]"
+    )
     association_arg = (
         f",\n        associated_with = source.materials[{associated_with}]"
         if associated_with is not None
@@ -50,7 +56,7 @@ def _source(
     program = {program},
     transitions = [
       transition(
-        subject = source.materials[{material_index}],
+        subject = {subject},
         output = {output},
         to = {to}{association_arg}
       )
@@ -105,6 +111,118 @@ def test_frontend_lowers_inline_content_load_and_materials_index_selector() -> N
     assert output["kind"] == "IRMember"
     assert output["base"]["name"] == "FiltrationProgramOutput"
     assert output["member"] == "RETENTATE"
+
+
+def test_frontend_and_runtime_select_material_by_exact_entry_id() -> None:
+    source = _source(material_entry_id="RPE1")
+    plan = _plan(source)
+    transition = plan.plans[0].steps[-1].args["transitions"]["elements"][0]
+    subject = next(
+        arg["value"]
+        for arg in transition["args"]
+        if arg["name"] == "subject"
+    )
+
+    assert subject["kind"] == "IRCall"
+    assert subject["name"] == "get"
+    assert [arg["name"] for arg in subject["args"]] == ["self", "arg0"]
+    assert subject["args"][1]["value"]["value"] == "RPE1"
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    material_state = result.state.artifacts["material_state"]
+    retained_id = material_state["indexed_bindings"]["result"]["1"]
+    retained = material_state["containers"][retained_id]["component_entries"]
+    assert retained[0]["entry_id"] == "RPE1"
+    assert retained[0]["relation"] == "free"
+    assert retained[0]["relationship_source"] == "author_transition"
+
+
+def test_exact_entry_id_selector_resolves_key_and_selector_aliases() -> None:
+    source = _source(material_entry_id="RPE1")
+    source = source.replace(
+        "  let source = tube(",
+        '  let entry_key = "RPE1";\n  let source = tube(',
+    )
+    source = source.replace(
+        "  let result = sep(",
+        "  let selected = source.materials.get(entry_key);\n  let result = sep(",
+    )
+    source = source.replace(
+        'subject = source.materials.get("RPE1")',
+        "subject = selected",
+    )
+
+    plan = _plan(source)
+    transition = plan.plans[0].steps[-1].args["transitions"]["elements"][0]
+    subject = next(
+        arg["value"] for arg in transition["args"] if arg["name"] == "subject"
+    )
+
+    assert subject["kind"] == "IRCall"
+    assert subject["args"][1]["value"]["value"] == "RPE1"
+    result = run(plan=plan, driver=StubDriver())
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+
+
+def test_runtime_reports_missing_exact_entry_id() -> None:
+    result = run(
+        plan=_plan(_source(material_entry_id="MISSING_ENTRY")),
+        driver=StubDriver(),
+    )
+
+    assert not result.ok
+    assert "MAT_MATERIAL_ENTRY_ID_NOT_FOUND" in {
+        diagnostic.code for diagnostic in result.diagnostics
+    }
+    material_state = result.state.artifacts["material_state"]
+    source_id = material_state["bindings"]["source"]
+    source_entries = material_state["containers"][source_id]["component_entries"]
+    assert [
+        (entry["entry_id"], entry["relation"], entry["amount"])
+        for entry in source_entries
+    ] == [("RPE1", "container_surface", 100000.0)]
+
+
+@pytest.mark.parametrize(
+    "selector",
+    [
+        'source.materials.get(0)',
+        'source.materials.get("")',
+        'source.materials.get("RPE1", "extra")',
+    ],
+)
+def test_frontend_rejects_invalid_exact_entry_id_selector_shape(
+    selector: str,
+) -> None:
+    source = _source(material_entry_id="RPE1").replace(
+        'source.materials.get("RPE1")',
+        selector,
+    )
+
+    _, semantic = _compile(source)
+
+    assert "SEM_MATERIAL_SELECTOR_INVALID" in {
+        diagnostic.code for diagnostic in semantic.diagnostics
+    }
+
+
+def test_frontend_rejects_exact_id_selector_from_another_container() -> None:
+    source = _source(material_entry_id="RPE1").replace(
+        "  let result = sep(",
+        '  let other = tube(label = "Other");\n  let result = sep(',
+    )
+    source = source.replace(
+        'subject = source.materials.get("RPE1")',
+        'subject = other.materials.get("RPE1")',
+    )
+
+    _, semantic = _compile(source)
+
+    assert "SEM_MATERIAL_SELECTOR_CONTAINER_MISMATCH" in {
+        diagnostic.code for diagnostic in semantic.diagnostics
+    }
 
 
 def test_runtime_applies_container_surface_to_free_author_transition() -> None:
@@ -233,7 +351,7 @@ def test_runtime_releases_bead_bound_target_into_flowthrough() -> None:
         MaterialRelation.CELL_BOUND,
     ],
 )
-def test_runtime_applies_each_component_bound_target_with_typed_material_selector(
+def test_runtime_applies_component_bound_target_with_exact_id_selectors(
     target_relation: MaterialRelation,
 ) -> None:
     source = '''protocol T {
@@ -262,10 +380,10 @@ def test_runtime_applies_each_component_bound_target_with_typed_material_selecto
     },
     transitions = [
       transition(
-        subject = source.materials[1],
+        subject = source.materials.get("TARGET_PROTEIN"),
         output = MagneticProgramOutput.BOUND,
         to = MaterialRelation.TARGET_RELATION,
-        associated_with = source.materials[0]
+        associated_with = source.materials.get("MAGNETIC_BEADS")
       )
     ]
   );

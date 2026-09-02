@@ -7,6 +7,7 @@ import pytest
 from culsma.pipeline.program_registry import FiltrationProgramOutput
 from culsma.runtime.material.author_transition import (
     ExplicitMaterialTransition,
+    MaterialEntryIdSelector,
     MaterialEntryIndexSelector,
     apply_explicit_material_transition,
     resolve_material_entry,
@@ -170,6 +171,70 @@ def test_resolve_material_entry_indexes_duplicate_content_refs_independently() -
     assert second.resolved and second.entry is not None
     assert first.entry.entry_id == "RPE1@surface"
     assert second.entry.entry_id == "RPE1@free"
+
+
+def test_resolve_material_entry_selects_exact_id_across_duplicate_content_refs() -> None:
+    entries = [
+        _entry(entry_id="RPE1_surface"),
+        _entry(
+            entry_id="RPE1_free",
+            relation="free",
+            associated_with=None,
+            association_target_kind=None,
+        ),
+    ]
+
+    resolution = resolve_material_entry(
+        selector=MaterialEntryIdSelector("source", "RPE1_free"),
+        source_id="source",
+        entries=entries,
+    )
+
+    assert resolution.resolved
+    assert resolution.index == 1
+    assert resolution.entry is not None
+    assert resolution.entry.entry_id == "RPE1_free"
+    assert resolution.entry.relation is MaterialRelation.FREE
+
+
+def test_resolve_material_entry_reports_missing_exact_id() -> None:
+    resolution = resolve_material_entry(
+        selector=MaterialEntryIdSelector("source", "missing"),
+        source_id="source",
+        entries=[_entry()],
+    )
+
+    assert not resolution.resolved
+    assert [issue.code for issue in resolution.issues] == [
+        "MAT_MATERIAL_ENTRY_ID_NOT_FOUND"
+    ]
+
+
+def test_resolve_material_entry_omits_zero_quantity_exact_id() -> None:
+    resolution = resolve_material_entry(
+        selector=MaterialEntryIdSelector("source", "RPE1_empty"),
+        source_id="source",
+        entries=[_entry(entry_id="RPE1_empty", amount=0.0)],
+    )
+
+    assert not resolution.resolved
+    assert resolution.live_entry_count == 0
+    assert [issue.code for issue in resolution.issues] == [
+        "MAT_MATERIAL_ENTRY_ID_NOT_FOUND"
+    ]
+
+
+def test_resolve_material_entry_rejects_ambiguous_exact_id_defensively() -> None:
+    resolution = resolve_material_entry(
+        selector=MaterialEntryIdSelector("source", "RPE1"),
+        source_id="source",
+        entries=[_entry(), _entry()],
+    )
+
+    assert not resolution.resolved
+    assert [issue.code for issue in resolution.issues] == [
+        "MAT_MATERIAL_ENTRY_ID_AMBIGUOUS"
+    ]
 
 
 def test_resolve_material_entry_ignores_zero_quantity_compatibility_entry() -> None:
@@ -359,3 +424,11 @@ def test_component_bound_target_requires_typed_association_selector() -> None:
 def test_material_entry_index_selector_requires_nonnegative_integer(index: object) -> None:
     with pytest.raises(ValueError):
         MaterialEntryIndexSelector("source", index)
+
+
+@pytest.mark.parametrize("entry_id", ["", None])
+def test_material_entry_id_selector_requires_nonempty_string(
+    entry_id: object,
+) -> None:
+    with pytest.raises(ValueError):
+        MaterialEntryIdSelector("source", entry_id)

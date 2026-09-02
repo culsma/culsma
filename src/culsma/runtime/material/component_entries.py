@@ -345,9 +345,9 @@ def next_component_entry_id(entries: list[dict[str, Any]], content_ref: str) -> 
     if content_ref not in used:
         return content_ref
     ordinal = 1
-    while f"{content_ref}::{ordinal}" in used:
+    while f"{content_ref}_{ordinal}" in used:
         ordinal += 1
-    return f"{content_ref}::{ordinal}"
+    return f"{content_ref}_{ordinal}"
 
 
 def available_component_entry_id(
