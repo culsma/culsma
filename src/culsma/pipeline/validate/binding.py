@@ -39,10 +39,9 @@ class BindingValidator:
         strict_mode: bool,
         span: Span | None,
         node_id: str | None,
-        treat_string_literal_as_name_ref: bool = True,
     ) -> list[Diagnostic]:
         resolved = ExprResolver.resolve_bound_expr(expr, expr_bindings)
-        if isinstance(resolved, IRString) and not treat_string_literal_as_name_ref:
+        if isinstance(resolved, IRString):
             reads = {}
         elif isinstance(resolved, IRCall):
             reads = _surface_reads_from_current_call(

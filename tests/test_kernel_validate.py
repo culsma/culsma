@@ -390,6 +390,34 @@ protocol T {
     assert "SEM_UNBOUND_NAME_REFERENCE" not in _codes(result)
 
 
+def test_validate_protocol_call_string_arguments_are_data_not_material_names():
+    src = """
+protocol PrepareGel(
+  gel_id = "AgaroseGel",
+  ladder_position = "L1",
+  ladder_code = "DNA_100BP_SIZE_LADDER"
+) {
+  let prepared_gel = chamber(
+    label = gel_id,
+    carrier_position = ladder_position,
+    capacity = 100mL
+  );
+  return prepared_gel;
+}
+
+protocol Main {
+  let gel_setup = PrepareGel(
+    gel_id = "InsertPCRQualityGel",
+    ladder_position = "A2"
+  );
+}
+
+Main();
+"""
+    result = validate(_compile_source(src), enforce_binding=True)
+    assert "SEM_UNBOUND_NAME_REFERENCE" not in _codes(result)
+
+
 def test_validate_assignment_call_still_checks_material_references():
     src = """
 protocol T {
