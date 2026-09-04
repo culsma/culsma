@@ -212,6 +212,51 @@ def test_validate_current_program_constructors_can_be_let_bound_as_descriptors(p
     assert result.ok, [d.to_dict() for d in result.diagnostics]
 
 
+@pytest.mark.parametrize(
+    "args",
+    [
+        "voltage = 100V",
+        "current = 200mA",
+        "field = 100V",
+    ],
+)
+def test_validate_field_program_accepts_one_electrical_control_mode(args: str):
+    result = validate(_compile_source(f"protocol T {{ let p = field_program({args}); }}"))
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+
+
+def test_validate_field_program_field_alias_warns():
+    result = validate(
+        _compile_source("protocol T { let p = field_program(field = 100V); }")
+    )
+    warnings = [
+        d
+        for d in result.diagnostics
+        if d.code == "SEM_FIELD_PROGRAM_FIELD_ALIAS"
+    ]
+    assert len(warnings) == 1
+    assert warnings[0].severity == "warning"
+    assert "use 'voltage'" in warnings[0].message
+
+
+def test_validate_field_program_requires_an_electrical_control_mode():
+    result = validate(_compile_source("protocol T { let p = field_program(duration = 4h); }"))
+    assert "SEM_MISSING_REQUIRED_ARG" in _codes(result)
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        "voltage = 100V, current = 200mA",
+        "voltage = 100V, field = 100V",
+        "current = 200mA, field = 100V",
+    ],
+)
+def test_validate_field_program_rejects_conflicting_control_modes(args: str):
+    result = validate(_compile_source(f"protocol T {{ let p = field_program({args}); }}"))
+    assert "SEM_PROGRAM_ARG_CONFLICT" in _codes(result)
+
+
 def test_validate_owner_program_arg_accepts_let_bound_program_descriptor_alias():
     src = """
 protocol T {
@@ -553,7 +598,7 @@ protocol T {
     sample = gel_lane,
     gel_type = "agarose",
     stain = stain_tube,
-    field = 100V,
+    voltage = 100V,
     duration = 30min,
     readout_schema = gel_obs_schema
   );

@@ -43,6 +43,34 @@ class ProgramContractValidator:
                 )
             )
 
+        for field_group in spec.required_one_of:
+            present = [name for name in field_group if name in arg_name_set]
+            if not present:
+                choices = ", ".join(f"'{name}'" for name in field_group)
+                diagnostics.append(
+                    Diagnostic(
+                        code="SEM_MISSING_REQUIRED_ARG",
+                        message=(
+                            f"Program '{call.name}' requires exactly one of: {choices}"
+                        ),
+                        span=call.span,
+                        node_id=node_id,
+                    )
+                )
+            elif len(present) > 1:
+                conflicts = ", ".join(f"'{name}'" for name in present)
+                diagnostics.append(
+                    Diagnostic(
+                        code="SEM_PROGRAM_ARG_CONFLICT",
+                        message=(
+                            f"Program '{call.name}' accepts only one of these args: "
+                            f"{conflicts}"
+                        ),
+                        span=call.span,
+                        node_id=node_id,
+                    )
+                )
+
         for arg in call.args:
             if arg.name not in allowed_fields:
                 diagnostics.append(
@@ -75,7 +103,9 @@ class ProgramContractValidator:
         field_specs = {field.name: field for field in spec.fields}
         for arg in call.args:
             field_spec = field_specs.get(arg.name)
-            if field_spec is None or field_spec.enum_values is None:
+            if field_spec is None:
+                continue
+            if field_spec.enum_values is None:
                 continue
             value = ExprResolver.to_text_token(arg.value, literal_bindings)
             if value is None or value not in set(field_spec.enum_values):
@@ -90,6 +120,23 @@ class ProgramContractValidator:
                         node_id=node_id,
                     )
                 )
+
+        for alias in spec.argument_aliases:
+            alias_arg = _find_arg_by_name(call.args, alias.name)
+            if alias_arg is None:
+                continue
+            diagnostics.append(
+                Diagnostic(
+                    code=alias.warning_code,
+                    message=(
+                        f"Program arg '{alias.name}' in '{call.name}' is an alias; "
+                        f"use '{alias.canonical_name}' to avoid this warning"
+                    ),
+                    span=alias_arg.span or call.span,
+                    node_id=node_id,
+                    severity="warning",
+                )
+            )
         return diagnostics
 
     @staticmethod

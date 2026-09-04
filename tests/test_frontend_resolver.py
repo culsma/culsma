@@ -17,7 +17,7 @@ protocol T {
     sample = gel_lane,
     gel_type = "Agarose_1.5pct",
     stain = stain_input,
-    field = 100V,
+    voltage = 100V,
     duration = 30min,
     readout_schema = gel_obs_schema
   );
@@ -88,7 +88,7 @@ def test_resolve_files_returns_canonical_entry_sources(tmp_path: Path):
 def test_resolve_program_can_disable_bundled_stdlib_injection():
     src = """
 protocol T {
-  let gel_obs = Electrophoresis(sample = gel_lane, gel_type = "Agarose_1.5pct", stain = stain_input, field = 100V, duration = 30min);
+  let gel_obs = Electrophoresis(sample = gel_lane, gel_type = "Agarose_1.5pct", stain = stain_input, voltage = 100V, duration = 30min);
 }
 """
     bundle = resolve_program(parse(src), include_bundled_stdlib=False)

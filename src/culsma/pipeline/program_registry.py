@@ -93,12 +93,21 @@ class ProgramFieldSpec:
 
 
 @dataclass(frozen=True)
+class ProgramArgAliasSpec:
+    name: str
+    canonical_name: str
+    warning_code: str
+
+
+@dataclass(frozen=True)
 class ProgramSpec:
     kind: str
     family: str
     owners: tuple[str, ...]
     fields: tuple[ProgramFieldSpec, ...]
     required_fields: tuple[str, ...]
+    required_one_of: tuple[tuple[str, ...], ...] = ()
+    argument_aliases: tuple[ProgramArgAliasSpec, ...] = ()
     allowed_source_styles: tuple[str, ...] | None = None
     result_contract_key: str | None = None
     material_effect_kind: str | None = None
@@ -129,6 +138,8 @@ def _spec(
     family: str,
     owners: tuple[str, ...],
     fields: tuple[ProgramFieldSpec, ...],
+    required_one_of: tuple[tuple[str, ...], ...] = (),
+    argument_aliases: tuple[ProgramArgAliasSpec, ...] = (),
     allowed_source_styles: tuple[str, ...] | None = None,
     result_contract_key: str | None = None,
     material_effect_kind: str | None = None,
@@ -142,6 +153,8 @@ def _spec(
         owners=owners,
         fields=fields,
         required_fields=required_fields,
+        required_one_of=required_one_of,
+        argument_aliases=argument_aliases,
         allowed_source_styles=allowed_source_styles,
         result_contract_key=result_contract_key,
         material_effect_kind=material_effect_kind,
@@ -225,8 +238,18 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         family="sep",
         owners=("sep", "partition"),
         fields=(
-            _field("field", required=True, value_kind="quantity", dimension="electric_potential"),
+            _field("voltage", value_kind="quantity", dimension="electric_potential"),
+            _field("current", value_kind="quantity", dimension="electric_current"),
+            _field("field", value_kind="quantity", dimension="electric_potential"),
             _field("duration", value_kind="quantity", dimension="time"),
+        ),
+        required_one_of=(("voltage", "current", "field"),),
+        argument_aliases=(
+            ProgramArgAliasSpec(
+                name="field",
+                canonical_name="voltage",
+                warning_code="SEM_FIELD_PROGRAM_FIELD_ALIAS",
+            ),
         ),
         result_contract_key="sep_container_group",
         material_effect_kind="separation_fate",
@@ -326,6 +349,16 @@ LEGACY_GENERIC_PROGRAMS = frozenset(
 
 def get_program_spec(kind: str) -> ProgramSpec | None:
     return PROGRAM_REGISTRY.get(kind)
+
+
+def canonical_program_arg_name(program_kind: str, arg_name: str) -> str:
+    spec = get_program_spec(program_kind)
+    if spec is None:
+        return arg_name
+    for alias in spec.argument_aliases:
+        if alias.name == arg_name:
+            return alias.canonical_name
+    return arg_name
 
 
 def get_program_outputs(kind: str) -> tuple[ProgramOutput, ...]:

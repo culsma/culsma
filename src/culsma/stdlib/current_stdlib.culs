@@ -87,10 +87,10 @@ protocol PCR(sample, primers, cycles, annealing_temp) {
   return sample;
 }
 
-protocol Electrophoresis(sample, gel_type, stain, field, duration, readout_schema) {
+protocol Electrophoresis(sample, gel_type, stain, voltage, duration, readout_schema) {
   let run_group = sep(
     sample = sample,
-    program = field_program(field = field, duration = duration)
+    program = field_program(voltage = voltage, duration = duration)
   );
   run_group[0] << [stain];
   let obs = img(sample = run_group[0], quantity = customized, schema_ref = readout_schema, save_raw = true);

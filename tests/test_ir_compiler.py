@@ -485,7 +485,7 @@ def test_compile_continuous_schedule_requires_explicit_mode():
 def test_component_expander_does_not_load_bundled_stdlib_implicitly():
     src = """
 protocol T {
-  let gel_obs = Electrophoresis(sample = gel_lane, gel_type = "Agarose_1.5pct", stain = stain_input, field = 100V, duration = 30min);
+  let gel_obs = Electrophoresis(sample = gel_lane, gel_type = "Agarose_1.5pct", stain = stain_input, voltage = 100V, duration = 30min);
 }
 """
     expanded = expand_component_calls(parse(src))
@@ -503,7 +503,7 @@ protocol T {
     sample = gel_lane,
     gel_type = "Agarose_1.5pct",
     stain = stain_input,
-    field = 100V,
+    voltage = 100V,
     duration = 30min,
     readout_schema = gel_obs_schema
   );
@@ -526,7 +526,7 @@ protocol T {
     sample = gel_lane,
     gel_type = "Agarose_1.5pct",
     stain = stain_input,
-    field = 100V,
+    voltage = 100V,
     duration = 30min,
     readout_schema = gel_obs_schema
   );
@@ -551,7 +551,7 @@ protocol T {
     sample = gel_lane,
     gel_type = "Agarose_1.5pct",
     stain = stain_input,
-    field = 100V,
+    voltage = 100V,
     duration = 30min,
     readout_schema = gel_obs_schema
   );

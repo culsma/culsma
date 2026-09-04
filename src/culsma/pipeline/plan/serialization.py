@@ -19,6 +19,7 @@ from culsma.pipeline.ir_nodes import (
     IRWithEnv,
 )
 from culsma.pipeline.plan_nodes import PlanStep
+from culsma.pipeline.program_registry import canonical_program_arg_name
 
 
 class PlanExpressionSerializer:
@@ -93,6 +94,19 @@ class PlanExpressionSerializer:
         """Serialize IR expression dataclass into JSON-friendly structure."""
         if isinstance(value, IRIdentifier) and env is not None and value.name in env:
             return env[value.name]
+        if isinstance(value, IRCall):
+            value = IRCall(
+                name=value.name,
+                args=[
+                    IRArg(
+                        name=canonical_program_arg_name(value.name, arg.name),
+                        value=arg.value,
+                        span=arg.span,
+                    )
+                    for arg in value.args
+                ],
+                span=value.span,
+            )
         if isinstance(value, IRIndex) and env is not None:
             base = self.serialize_expr(value.base, env)
             index = self.serialize_expr(value.index, env)

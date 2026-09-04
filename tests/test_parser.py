@@ -1081,14 +1081,20 @@ class TestCallAndIndexExpressions:
         assert pair_item.right.value == 100000.0
         assert pair_item.right.unit == "cells"
 
-    def test_quantity_units_cover_percent_volt_millivolt_and_ms(self):
-        ast = parse('protocol T { let a = 5%; let b = 100V; let c = 200ms; let d = 50mV; }')
-        a_stmt, b_stmt, c_stmt, d_stmt = ast.protocols[0].statements
+    def test_quantity_units_cover_percent_electrical_and_ms(self):
+        ast = parse(
+            'protocol T { let a = 5%; let b = 100V; let c = 200ms; '
+            'let d = 50mV; let e = 2A; let f = 200mA; let g = 50uA; }'
+        )
+        a_stmt, b_stmt, c_stmt, d_stmt, e_stmt, f_stmt, g_stmt = ast.protocols[0].statements
         assert isinstance(a_stmt.value, Quantity)
         assert a_stmt.value.unit == "%"
         assert b_stmt.value.unit == "V"
         assert c_stmt.value.unit == "ms"
         assert d_stmt.value.unit == "mV"
+        assert e_stmt.value.unit == "A"
+        assert f_stmt.value.unit == "mA"
+        assert g_stmt.value.unit == "uA"
 
 
 # ============================================================

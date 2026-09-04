@@ -1952,7 +1952,7 @@ protocol T {
     sample = gel_lane,
     gel_type = "Agarose_1.5pct",
     stain = stain_input,
-    field = 100V,
+    voltage = 100V,
     duration = 30min,
     readout_schema = gel_obs_schema
   );

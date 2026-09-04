@@ -54,6 +54,9 @@ _UNIT_TO_DIMENSION: dict[str, str] = {
     "cells": "count",
     "V": "electric_potential",
     "mV": "electric_potential",
+    "A": "electric_current",
+    "mA": "electric_current",
+    "uA": "electric_current",
     "rpm": "rotation_rate",
 }
 

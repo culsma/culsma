@@ -865,7 +865,7 @@ protocol T {
     sample = gel_lane,
     gel_type = "Agarose_1.5pct",
     stain = stain_input,
-    field = 100V,
+    voltage = 100V,
     duration = 30min,
     readout_schema = gel_obs_schema
   );
@@ -876,9 +876,49 @@ protocol T {
     ops = [step.op for step in steps]
     assert "Electrophoresis" not in ops
     assert ops == ["assign_local", "sep", "Mutation", "img"]
+    program_arg_names = [arg["name"] for arg in steps[1].args["program"]["args"]]
+    assert "voltage" in program_arg_names
+    assert "field" not in program_arg_names
     assert steps[-1].args["bind"] == "gel_obs"
     assert steps[-1].args["quantity"]["name"] == "customized"
     assert steps[-1].args["schema_ref"]["kind"] == "IRIdentifier"
+
+
+@pytest.mark.parametrize(
+    ("source_arg", "canonical_arg"),
+    [
+        ("field = 100V", "voltage"),
+        ("voltage = 100V", "voltage"),
+        ("current = 200mA", "current"),
+    ],
+)
+def test_plan_canonicalizes_field_program_control_args(
+    source_arg: str, canonical_arg: str
+):
+    src = f"""
+protocol T {{
+  let run = sep(
+    sample = lane,
+    program = field_program({source_arg}, duration = 30min)
+  );
+}}
+"""
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)))
+    program = plan.plans[0].steps[0].args["program"]
+    arg_names = [arg["name"] for arg in program["args"]]
+    assert arg_names == [canonical_arg, "duration"]
+
+
+def test_plan_canonicalizes_let_bound_field_program_alias():
+    src = """
+protocol T {
+  let program = field_program(field = 100V, duration = 30min);
+  let run = sep(sample = lane, program = program);
+}
+"""
+    plan = lower_ir_to_plan(compile_to_ir(parse(src)))
+    program = plan.plans[0].steps[0].args["program"]
+    assert [arg["name"] for arg in program["args"]] == ["voltage", "duration"]
 
 
 def test_plan_materializes_let_bound_container_constructor():

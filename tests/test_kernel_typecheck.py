@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import pytest
+
 from culsma.frontend.resolver import resolve_program
 from culsma.pipeline.analysis import build_compile_analysis
 from culsma.pipeline.compile import compile_ast as _compile_ast
@@ -274,6 +276,32 @@ protocol T {
 """
     ir = _compile_source(src)
     result = typecheck(ir)
+    assert "TYPE_PROGRAM_FIELD_DIMENSION_MISMATCH" in _codes(result)
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        "voltage = 100V",
+        "current = 200mA",
+        "field = 100V",
+    ],
+)
+def test_typecheck_field_program_accepts_typed_electrical_control_modes(args: str):
+    result = typecheck(_compile_source(f"protocol T {{ let p = field_program({args}); }}"))
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        "voltage = 200mA",
+        "current = 100V",
+        "field = 200mA",
+    ],
+)
+def test_typecheck_field_program_rejects_wrong_control_dimensions(args: str):
+    result = typecheck(_compile_source(f"protocol T {{ let p = field_program({args}); }}"))
     assert "TYPE_PROGRAM_FIELD_DIMENSION_MISMATCH" in _codes(result)
 
 
