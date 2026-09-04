@@ -151,6 +151,13 @@ def _spec(
 
 
 KEEP_SOURCE_VALUES = ("supernatant", "pellet")
+DISRUPTION_METHOD_VALUES = (
+    "mechanical",
+    "sonication",
+    "shear_homogenization",
+    "high_pressure_disruption",
+    "bead_impact",
+)
 
 PROGRAM_OUTPUT_TYPES: dict[str, type[ProgramOutput]] = {
     output_type.__name__: output_type
@@ -201,7 +208,14 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         "disrupt_program",
         family="sep",
         owners=("sep", "partition"),
-        fields=(_field("duration", value_kind="quantity", dimension="time"),),
+        fields=(
+            _field(
+                "method",
+                value_kind="text_enum",
+                enum_values=DISRUPTION_METHOD_VALUES,
+            ),
+            _field("duration", value_kind="quantity", dimension="time"),
+        ),
         result_contract_key="sep_container_group",
         material_effect_kind="disrupt",
         output_type=DisruptProgramOutput,

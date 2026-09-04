@@ -1345,6 +1345,28 @@ def test_sep_disrupt_is_state_transition_without_guessed_debris_fraction():
     )
 
 
+def test_sep_disrupt_preserves_method_in_device_independent_operation_contract():
+    result = apply_step(
+        step=_sep_step(
+            program_name="disrupt_program",
+            program_args_override=[
+                _ir_arg("method", _ir_identifier("sonication")),
+                _ir_arg("duration", _ir_quantity(10.0, "s")),
+            ],
+        ),
+        material_state=_partition_state(
+            components={"CELLS": 100.0},
+            registry={"CELLS": ("bio_cellular", "cell_population")},
+        ),
+    )
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    assert result.delta["partition"]["operation_contract"]["program_args"] == {
+        "method": "sonication",
+        "duration": {"kind": "IRQuantity", "value": 10.0, "unit": "s", "span": None},
+    }
+
+
 def test_sep_disrupt_retires_intact_cell_count_without_inventing_debris() -> None:
     state = _partition_state(
         components={"CELLS": 100000.0, "MEDIUM": 300.0},

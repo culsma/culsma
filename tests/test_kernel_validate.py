@@ -929,6 +929,51 @@ protocol T {
     assert result.ok, [d.to_dict() for d in result.diagnostics]
 
 
+@pytest.mark.parametrize(
+    "method",
+    [
+        "mechanical",
+        "sonication",
+        "shear_homogenization",
+        "high_pressure_disruption",
+        "bead_impact",
+    ],
+)
+def test_validate_disrupt_program_accepts_device_independent_methods(method: str):
+    src = f"""
+protocol T {{
+  let g = sep(sample = cells, program = disrupt_program(method = {method}, duration = 10s));
+}}
+"""
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+
+
+def test_validate_disrupt_program_rejects_unknown_method():
+    src = """
+protocol T {
+  let g = sep(sample = cells, program = disrupt_program(method = probe_device));
+}
+"""
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert "SEM_INVALID_PROGRAM_ARG_VALUE" in _codes(result)
+    assert any("method" in d.message for d in result.diagnostics)
+
+
+def test_validate_disrupt_program_rejects_device_binding():
+    src = """
+protocol T {
+  let g = sep(sample = cells, program = disrupt_program(device = "probe_sonicator"));
+}
+"""
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert "SEM_UNKNOWN_ARG" in _codes(result)
+    assert any("device" in d.message for d in result.diagnostics)
+
+
 def test_validate_precipitation_program_accepts_current_optional_duration():
     src = """
 protocol T {
