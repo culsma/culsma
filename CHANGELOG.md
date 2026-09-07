@@ -1,5 +1,71 @@
 # Changelog
 
+## 1.0.6 — 2026-09-07
+
+This release consolidates the 1.0.6 internal prereleases and subsequent
+development changes since 1.0.5. The historical prerelease records below
+retain their original scope.
+
+### Added
+
+- `centrifugal_filtration_program(...)` with centrifugal `drive` in `g` or
+  `rpm`, required `membrane`, optional `duration`, and filtrate/retentate
+  outputs distinct from centrifugal sedimentation.
+- Independent cellular quantities in `cells`, with count-aware construction,
+  transfer, separation, conservation, inventory accounting, and reports.
+- Explicit `component_fates` for per-content allocation and a normalized
+  component ledger from which aggregate volume and mass are projected.
+- A pluggable Scientific Model resolver with versioned capabilities,
+  provider provenance, validated proposals, explicit unresolved results, and
+  a built-in Material Rulebook provider.
+- Typed `sep.transitions` declarations using `transition(...)`, program-owned
+  output enums, `MaterialRelation` members, and component-entry associations.
+- Live-material selection by ordered `materials[index]` or exact
+  `materials.get(entry_id)`, including static selector aliases.
+- Device-independent disruption methods: `mechanical`, `sonication`,
+  `shear_homogenization`, `high_pressure_disruption`, and `bead_impact`.
+- Typed constant-voltage and constant-current field-program controls, with
+  mutually exclusive `voltage` and `current` parameters.
+
+### Fixed
+
+- Plate selectors inherit declared per-well capacity, preserve original well
+  identity through group indexing, and reject statically known index overflow.
+- Runtime container allocation and material-entry identity remain distinct
+  across repeated calls, mixing, movement, and separation.
+- Separation derives aggregate quantities from routed component detail,
+  avoiding disagreement between the material ledger and container totals.
+- Adherent-cell movement, free-phase aspiration, and unrelated relationship
+  preservation follow the accepted material-state contracts.
+- Assignment and protocol string arguments are treated as data at validation.
+- Inventory reconciliation compares external stock after execution without
+  creating material or changing runtime results.
+- Onboarding and separation documentation now use explicit entry execution,
+  authored filtration fate, and current scientific-model diagnostics.
+
+### Compatibility and Migration
+
+- The built-in Material Rulebook no longer guesses a 50/50 split when it lacks
+  the facts needed to resolve an allocation. Supply an applicable provider
+  decision or explicit `component_fates`; unresolved operations fail before
+  material-state commit.
+- `component_fates` controls quantity allocation; `transitions` controls
+  relationship state in an output. Neither bypasses the other's validation.
+- Transition declarations use a list of typed `transition(...)` calls with
+  namespaced output and relation enum members. Earlier prerelease bare-token
+  or string forms must be migrated to this final authoring contract.
+- `materials.get(entry_id)` matches an exact container-local entry ID, with
+  no content-code, label, or prefix fallback. Ordered selectors address live,
+  positive-quantity entries.
+- Free count-only cellular constructors can materialize an auditable implicit
+  carrier from configured concentration. Adherent material does not gain an
+  implicit carrier, and direct count aliquots require a homogeneous suspension.
+- `field_program(field=...)` remains a compatibility alias for `voltage` and
+  emits `SEM_FIELD_PROGRAM_FIELD_ALIAS`; it accepts voltage units only.
+- Existing `sep`, `frac`, source-local `partition`, and optional
+  `inventory_check` entry points remain available. Published internal tags and
+  assets retain their original contents.
+
 ## Internal 1.0.6rc8
 
 ### Scope
