@@ -46,6 +46,15 @@ Release notes are in [CHANGELOG.md](CHANGELOG.md).
 The public language reference is maintained in the companion
 `culsma-reference` repository/worktree.
 
+## VS Code Support
+
+Install [Culsma Language Support from the Visual Studio Code
+Marketplace](https://marketplace.visualstudio.com/items?itemName=culsma.culsma)
+for syntax highlighting and editor language configuration. The extension binds
+canonical `.culs` files and retains `.lw` association during the transition
+from LabWord naming. Its source and VSIX releases are maintained in the
+[culsma-vscode repository](https://github.com/culsma/culsma-vscode).
+
 ## Repository Layout
 
 ```text
