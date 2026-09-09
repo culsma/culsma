@@ -1,0 +1,19 @@
+{
+  "protocol_id": "14",
+  "title": "Magnetic Bead Immunoprecipitation with Western Blot Readout",
+  "source_class": "canonical_stress_workflow",
+  "source_file": "source.md",
+  "steps": [
+    { "id": "S1", "section": "Prepare Antibody-Conjugated Magnetic Beads", "source_text": "Prepare the input fraction and antibody-conjugated magnetic beads, including bead washing and antibody binding." },
+    { "id": "S2", "section": "Immunoprecipitate the Target Protein", "source_text": "Add the remaining clarified lysate and binding buffer to the antibody-conjugated beads." },
+    { "id": "S3", "section": "Immunoprecipitate the Target Protein", "source_text": "Rotate the immunoprecipitation reaction for 2 h at 4 C." },
+    { "id": "S4", "section": "Immunoprecipitate the Target Protein", "source_text": "Magnetically separate the reaction and collect the flowthrough while retaining the beads." },
+    { "id": "S5", "section": "Wash and Elute the Bead-Bound Protein", "source_text": "Wash the bead-bound target three times and discard each wash supernatant." },
+    { "id": "S6", "section": "Wash and Elute the Bead-Bound Protein", "source_text": "Denature and elute the bead-bound protein, then magnetically separate the eluate from spent beads." },
+    { "id": "S7", "section": "Prepare Input, Flowthrough, and Eluate Samples", "source_text": "Prepare the input, flowthrough, and eluate samples for electrophoresis." },
+    { "id": "S8", "section": "SDS-PAGE", "source_text": "Load the three samples into assigned lanes and run electrophoresis." },
+    { "id": "S9", "section": "Transfer Proteins to PVDF Membrane", "source_text": "Activate and equilibrate the PVDF membrane, assemble the transfer stack, and transfer proteins." },
+    { "id": "S10", "section": "Block, Probe, Wash, and Image the Membrane", "source_text": "Block, probe, and wash the membrane under the stated conditions." },
+    { "id": "S11", "section": "Block, Probe, Wash, and Image the Membrane", "source_text": "Acquire the fluorescence signals and return a structured Western blot readout." }
+  ]
+}

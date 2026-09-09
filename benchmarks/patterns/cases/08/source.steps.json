@@ -1,0 +1,16 @@
+{
+  "protocol_id": "PIO-96916",
+  "source_url": "https://www.protocols.io/view/cell-culture-transfection-immunocytochemistry-and-davu2e6w.pdf",
+  "source_license": "Creative Commons Attribution",
+  "source_file": "source.md",
+  "steps": [
+    {"id": "S1", "section": "Fixed-cell imaging workflow", "source_text": "Seed the representative RPE1 imaging well and incubate the cells in complete medium."},
+    {"id": "S2", "section": "Fixed-cell imaging workflow", "source_text": "Prepare and apply the Lipofectamine/plasmid transfection mixture, then culture the transfected cells."},
+    {"id": "S3", "section": "Fixed-cell imaging workflow", "source_text": "Aspirate the culture medium while retaining adherent cells, add serum-free medium, and serum-starve the cells."},
+    {"id": "S4", "section": "Fixed-cell imaging workflow", "source_text": "Fix the cells with paraformaldehyde and wash the retained adherent cells three times with PBS."},
+    {"id": "S5", "section": "Fixed-cell imaging workflow", "source_text": "Permeabilize, quench, and block the fixed cells while retaining the adherent material state."},
+    {"id": "S6", "section": "Fixed-cell imaging workflow", "source_text": "Incubate with primary antibody and wash the retained cells three times with PBS."},
+    {"id": "S7", "section": "Fixed-cell imaging workflow", "source_text": "Incubate with Alexa Fluor secondary antibody and wash the retained cells three times with PBS."},
+    {"id": "S8", "section": "Fixed-cell imaging workflow", "source_text": "Stain nuclei with DAPI, wash, mount the chamber, and acquire a structured confocal image."}
+  ]
+}

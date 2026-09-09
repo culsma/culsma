@@ -1,0 +1,275 @@
+protocol RNAtoQPCRGeneExpression(treated_cells, reference_cells) returns (qpcr_result_group) {
+  let rna_group = PurifyRNAGroup(treated_cells = treated_cells, reference_cells = reference_cells);
+  let treated_rna = rna_group[0];
+  let reference_rna = rna_group[1];
+  let cdna_group = ReverseTranscribeRNAGroup(treated_rna = treated_rna, reference_rna = reference_rna);
+  let treated_cdna = cdna_group[0];
+  let reference_cdna = cdna_group[1];
+  let qpcr_result_group = RunQPCRPlate(treated_cdna = treated_cdna, reference_cdna = reference_cdna);
+
+  return qpcr_result_group;
+}
+
+protocol PurifyRNAGroup(treated_cells, reference_cells) returns (rna_group) {
+  let treated_rna = ColumnPurifyRNA(input_cells = treated_cells);
+  let reference_rna = ColumnPurifyRNA(input_cells = reference_cells);
+
+  let rna_group = group([treated_rna, reference_rna]);
+  return rna_group;
+}
+
+protocol ColumnPurifyRNA(input_cells) returns (purified_rna) {
+
+  // Source step S1: Accept one adherent-cell well prepared by the caller.
+  let pbs = tube(label = "PBS", capacity = 5000uL, load = [buffer(code = "PBS", type = "phosphate_buffer"):4000uL]);
+  let lysis_buffer = tube(label = "RnaLysisBuffer", capacity = 5000uL, load = [buffer(code = "RLB", type = "lysis_buffer"):3000uL]);
+  let binding_buffer = tube(label = "RnaBindingBuffer", capacity = 5000uL, load = [buffer(code = "RBB", type = "binding_buffer"):3000uL]);
+  let wash_buffer = tube(label = "RnaWashBuffer", capacity = 8000uL, load = [buffer(code = "RWB", type = "wash_buffer"):6000uL]);
+  let dnase = tube(label = "DNase", capacity = 500uL, load = [reagent(code = "DNASE", type = "custom_dnase_i"):200uL]);
+  let dnase_buffer = tube(label = "DNaseReactionBuffer", capacity = 1000uL, load = [buffer(code = "DNB", type = "reaction_buffer"):1000uL]);
+  let nuclease_free_water = tube(label = "NucleaseFreeWater", capacity = 2000uL, load = [buffer(code = "NFW", type = "water"):1500uL]);
+  let waste = tube(label = "LiquidWaste", capacity = 15000uL);
+
+  // Source step S2: Wash cells with phosphate-buffered saline, lyse the cells, and collect lysates.
+  sep(
+    sample = input_cells,
+    program = filtration_program(membrane = "adherent_cell_surface", drive = "aspiration"),
+    component_fates = {
+      MAMMALIAN_CELLS: { filtrate: 0%, retentate: 100% },
+      COMPLETE_CULTURE_MEDIUM: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  with constraint(gentle) {
+    waste << [input_cells.contents[0]];
+  }
+
+  repeat fresh_pbs_wash_cycle in schedule(start = 1, end = 2, step = 1) {
+    // Each wash cycle uses fresh PBS, then removes that wash liquid by aspiration.
+    input_cells << [pbs:1mL];
+    sep(
+      sample = input_cells,
+      program = filtration_program(membrane = "adherent_cell_surface", drive = "aspiration"),
+      component_fates = {
+        MAMMALIAN_CELLS: { filtrate: 0%, retentate: 100% },
+        PBS: { filtrate: 100%, retentate: 0% }
+      }
+    );
+    with constraint(gentle) {
+      waste << [input_cells.contents[0]];
+    }
+  }
+
+  input_cells << [lysis_buffer:600uL];
+  with env(thermal = 25C, duration = 5min) {
+    hold(sample = input_cells);
+  }
+
+  let lysate = tube(label = "Lysate", capacity = 2000uL, load = [
+    content(kind = bio_molecule_or_virus, type = rna, code = "TOTAL_RNA", attrs = { role: target, estimate_basis: "1e6_cells_at_20_pg_total_rna_per_cell" }):20ug
+  ]);
+  lysate << [input_cells:600uL] with constraint(low_carryover);
+
+  // Source step S3: Load each lysate with binding buffer onto silica-column cleanup devices.
+  let column = tube(label = "SilicaColumn", capacity = 2000uL);
+  lysate << [binding_buffer:600uL];
+  repeat binding_mix in schedule(start = 1, end = 5, step = 1) {
+    lysate << [lysate:960uL];
+  }
+  column << [lysate:1200uL];
+  sep(
+    sample = column,
+    program = centrifugal_filtration_program(membrane = "silica", drive = 8000g, duration = 1min),
+    component_fates = {
+      TOTAL_RNA: { filtrate: 0%, retentate: 100% },
+      MAMMALIAN_CELLS: { filtrate: 100%, retentate: 0% },
+      RLB: { filtrate: 100%, retentate: 0% },
+      RBB: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  waste << [column.contents[0]];
+
+  // Source step S4: Wash columns, perform on-column DNase digestion, wash again, and collect eluates.
+  column << [wash_buffer:500uL];
+  sep(
+    sample = column,
+    program = centrifugal_filtration_program(membrane = "silica", drive = 8000g, duration = 1min),
+    component_fates = {
+      TOTAL_RNA: { filtrate: 0%, retentate: 100% },
+      RWB: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  waste << [column.contents[0]];
+
+  let dnase_mix = tube(label = "DNaseMix", capacity = 500uL);
+  dnase_mix << [dnase:40uL, dnase_buffer:160uL];
+  repeat dnase_mix_by_pipette in schedule(start = 1, end = 5, step = 1) {
+    dnase_mix << [dnase_mix:160uL];
+  }
+  column << [dnase_mix:80uL];
+  with env(thermal = 25C, duration = 15min) {
+    hold(sample = column);
+  }
+
+  repeat post_dnase_column_wash_cycle in schedule(start = 1, end = 2, step = 1) {
+    column << [wash_buffer:600uL];
+    sep(
+      sample = column,
+      program = centrifugal_filtration_program(membrane = "silica", drive = 8000g, duration = 2min),
+      component_fates = {
+        TOTAL_RNA: { filtrate: 0%, retentate: 100% },
+        DNASE: { filtrate: 100%, retentate: 0% },
+        DNB: { filtrate: 100%, retentate: 0% },
+        RWB: { filtrate: 100%, retentate: 0% }
+      }
+    );
+    waste << [column.contents[0]];
+  }
+
+  // Source step S5: Record RNA quantity and purity readouts for each collected eluate.
+  column << [nuclease_free_water:40uL];
+  sep(
+    sample = column,
+    program = centrifugal_filtration_program(membrane = "silica", drive = 8000g, duration = 1min),
+    component_fates = {
+      TOTAL_RNA: { filtrate: 100%, retentate: 0% },
+      NFW: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  let purified_rna = tube(label = "PurifiedRNA", capacity = 1000uL);
+  purified_rna << [column.contents[0]];
+
+  let rna_qc_schema = data_schema(
+    label = "RNAQualityReadout",
+    fields = [sample_id, rna_concentration_ng_uL, a260_a280, a260_a230]
+  );
+  let rna_qc = phy(
+    sample = purified_rna,
+    quantity = customized,
+    schema_ref = rna_qc_schema,
+    save_raw = true
+  );
+
+  return purified_rna;
+}
+
+protocol ReverseTranscribeRNAGroup(treated_rna, reference_rna) returns (cdna_group) {
+  let treated_cdna = ReverseTranscribeRNA(input_rna = treated_rna);
+  let reference_cdna = ReverseTranscribeRNA(input_rna = reference_rna);
+
+  let cdna_group = group([treated_cdna, reference_cdna]);
+  return cdna_group;
+}
+
+protocol ReverseTranscribeRNA(input_rna) returns (cdna_rxn) {
+  // Source step S6: Build a reverse-transcription reaction for one RNA sample.
+  let nuclease_free_water = tube(label = "NucleaseFreeWaterRt", capacity = 2000uL, load = [buffer(code = "NFW_RT", type = "water"):1500uL]);
+  let rt_mix = tube(label = "ReverseTranscriptionMix", capacity = 500uL, load = [reagent(code = "RTMIX", type = "custom_reverse_transcription_mix"):300uL]);
+  let cdna_rxn = tube(label = "CdnaReaction", capacity = 100uL);
+  cdna_rxn << [input_rna:8uL, nuclease_free_water:12uL, rt_mix:10uL];
+  // Source step S7: Incubate reverse-transcription reactions through staged thermal holds.
+  with env(thermal = 25C, duration = 10min) {
+    hold(sample = cdna_rxn);
+  }
+  with env(thermal = 42C, duration = 45min) {
+    hold(sample = cdna_rxn);
+  }
+  with env(thermal = 85C, duration = 5min) {
+    hold(sample = cdna_rxn);
+  }
+  with env(thermal = 4C, duration = 5min) {
+    hold(sample = cdna_rxn);
+  }
+
+  return cdna_rxn;
+}
+
+protocol RunQPCRPlate(treated_cdna, reference_cdna) returns (qpcr_result_group) {
+  // Source step S8: Declare a qPCR plate layout with sample, gene, replicate, and control groups.
+  let qpcr_plate = plate(label = "QPCR96", format = "96well", carrier_id = "QPCR96");
+  let treated_target_wells = qpcr_plate[A1:A3];
+  let treated_housekeeping_wells = qpcr_plate[B1:B3];
+  let reference_target_wells = qpcr_plate[C1:C3];
+  let reference_housekeeping_wells = qpcr_plate[D1:D3];
+  let ntc_target_wells = qpcr_plate[E1:E2];
+  let ntc_housekeeping_wells = qpcr_plate[F1:F2];
+  let all_qpcr_wells = qpcr_plate[A1:A3, B1:B3, C1:C3, D1:D3, E1:E2, F1:F2];
+
+  let nuclease_free_water = tube(label = "NucleaseFreeWaterQpcr", capacity = 2000uL, load = [buffer(code = "NFW_QPCR", type = "water"):1500uL]);
+  let qpcr_master_mix = tube(label = "QpcrMasterMix", capacity = 2000uL, load = [reagent(code = "QPCRMIX", type = "custom_qpcr_master_mix"):1500uL]);
+  let target_primer_mix = tube(label = "TargetPrimerMix", capacity = 500uL, load = [reagent(code = "TARGET_PRIMERS", type = "custom_primers"):400uL]);
+  let housekeeping_primer_mix = tube(label = "HousekeepingPrimerMix", capacity = 500uL, load = [reagent(code = "HOUSEKEEPING_PRIMERS", type = "custom_primers"):400uL]);
+
+  // Source step S9: Load cDNA, no-template water, primers, and master mix into qPCR well groups.
+  treated_target_wells << [treated_cdna:2uL, target_primer_mix:1uL, qpcr_master_mix:10uL, nuclease_free_water:7uL] with constraint(high_precision, low_carryover);
+  treated_housekeeping_wells << [treated_cdna:2uL, housekeeping_primer_mix:1uL, qpcr_master_mix:10uL, nuclease_free_water:7uL] with constraint(high_precision, low_carryover);
+  reference_target_wells << [reference_cdna:2uL, target_primer_mix:1uL, qpcr_master_mix:10uL, nuclease_free_water:7uL] with constraint(high_precision, low_carryover);
+  reference_housekeeping_wells << [reference_cdna:2uL, housekeeping_primer_mix:1uL, qpcr_master_mix:10uL, nuclease_free_water:7uL] with constraint(high_precision, low_carryover);
+  ntc_target_wells << [target_primer_mix:1uL, qpcr_master_mix:10uL, nuclease_free_water:9uL] with constraint(high_precision, low_carryover);
+  ntc_housekeeping_wells << [housekeeping_primer_mix:1uL, qpcr_master_mix:10uL, nuclease_free_water:9uL] with constraint(high_precision, low_carryover);
+
+  // Source step S10: Run qPCR activation and repeated cycles while collecting fluorescence.
+  with env(thermal = 95C, duration = 2min) {
+    hold(sample = all_qpcr_wells);
+  }
+  repeat cycle in schedule(start = 1, end = 40, step = 1) {
+    with env(thermal = 95C, duration = 15s) {
+      hold(sample = all_qpcr_wells);
+    }
+    with env(thermal = 60C, duration = 30s) {
+      hold(sample = all_qpcr_wells);
+    }
+    let cycle_fluorescence = img(sample = all_qpcr_wells, quantity = fluorescence, save_raw = true);
+  }
+  // Source step S11: Run a melt-curve ramp and record structured qPCR result fields.
+  let melt_curve_program = thermal_program(from = 65C, to = 95C, duration = 5min);
+  with env(thermal = melt_curve_program) {
+    hold(sample = all_qpcr_wells);
+  }
+
+  // Source step S12: Record qPCR readout fields; normalization and fold-change analysis are downstream.
+  let qpcr_schema = data_schema(
+    label = "GeneExpressionQPCRReadout",
+    fields = [
+      well_id,
+      sample_id,
+      gene_id,
+      replicate_id,
+      ct_value,
+      melt_peak_temperature,
+      ntc_detected,
+      replicate_cv,
+      qc_pass
+    ]
+  );
+  let qpcr_result_group = img(
+    sample = all_qpcr_wells,
+    quantity = customized,
+    schema_ref = qpcr_schema,
+    save_raw = true
+  );
+
+  return qpcr_result_group;
+}
+
+// Deterministic benchmark inputs for the two adherent-cell conditions accepted
+// by the source workflow.
+let treated_cells_input = well(
+  label = "TreatedAdherentCells",
+  capacity = 2000uL,
+  load = [
+    content(kind = bio_cellular, type = cell_line, code = "MAMMALIAN_CELLS", attrs = { state: adherent, experimental_group: treated }):100000cells,
+    content(kind = formulation, type = medium, code = "COMPLETE_CULTURE_MEDIUM", attrs = { role: culture, experimental_group: treated }):1000uL
+  ]
+);
+let reference_cells_input = well(
+  label = "ReferenceAdherentCells",
+  capacity = 2000uL,
+  load = [
+    content(kind = bio_cellular, type = cell_line, code = "MAMMALIAN_CELLS", attrs = { state: adherent, experimental_group: reference }):100000cells,
+    content(kind = formulation, type = medium, code = "COMPLETE_CULTURE_MEDIUM", attrs = { role: culture, experimental_group: reference }):1000uL
+  ]
+);
+RNAtoQPCRGeneExpression(
+  treated_cells = treated_cells_input,
+  reference_cells = reference_cells_input
+);

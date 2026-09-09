@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "case_id": "12",
+  "derivation": "reviewed_identifier_reuse_with_source_context_inputs",
+  "tracked_object_count": 4,
+  "reuse_link_count": 12,
+  "rows": [
+    {
+      "object": "template_switched_cdna",
+      "introduced_at": "S1",
+      "used_in": [
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6",
+        "S7",
+        "S8",
+        "S9",
+        "S11"
+      ],
+      "culsma_evidence": "let template_switched_cdna = tube(...); reused through magnetic separation, wash routing, amplification-master-mix resuspension, thermocycling, and return"
+    },
+    {
+      "object": "pre_amplification_split",
+      "introduced_at": "S2",
+      "used_in": [
+        "S3"
+      ],
+      "culsma_evidence": "let pre_amplification_split = sep(sample = template_switched_cdna, ...); retained material returns to template_switched_cdna and supernatant routes to waste"
+    },
+    {
+      "object": "wash3_split",
+      "introduced_at": "S5",
+      "used_in": [
+        "S6"
+      ],
+      "culsma_evidence": "let wash3_split = sep(sample = template_switched_cdna, ...); retained material returns to template_switched_cdna and wash waste routes to waste"
+    },
+    {
+      "object": "waste",
+      "introduced_at": "S3",
+      "used_in": [
+        "S6"
+      ],
+      "culsma_evidence": "let waste = tube(...); waste receives pre_amplification_split[1] and later wash3_split[1]"
+    }
+  ],
+  "display_name": "Object Reuse",
+  "description": "Tracked experimental objects include source-context input objects that are introduced before the first source-step anchor and then reused across reviewed source steps."
+}

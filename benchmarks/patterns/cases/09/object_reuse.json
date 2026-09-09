@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "case_id": "09",
+  "derivation": "migrated_from_reviewed_case_page",
+  "tracked_object_count": 5,
+  "reuse_link_count": 6,
+  "rows": [
+    {
+      "object": "hek293t_cells",
+      "introduced_at": "S1",
+      "used_in": [
+        "S2",
+        "S3"
+      ],
+      "culsma_evidence": "let hek293t_cells = well(... 200000cells ...); the same adherent-cell well is transfected, washed, lysed, and transferred into lysate"
+    },
+    {
+      "object": "clarified_lysate",
+      "introduced_at": "S3",
+      "used_in": [
+        "S4"
+      ],
+      "culsma_evidence": "let clarified_lysate = tube(...); clarified_lysate << [clarified_group[0]:300uL]; prepared_sample << [clarified_lysate:65uL, ...]"
+    },
+    {
+      "object": "prepared_sample",
+      "introduced_at": "S4",
+      "used_in": [
+        "S5"
+      ],
+      "culsma_evidence": "let prepared_sample = tube(...); prepared_sample << [clarified_lysate:65uL, reducing_agent:10uL, lds_buffer:25uL]; gel_lane << [prepared_sample:25uL]"
+    },
+    {
+      "object": "gel_group[0]",
+      "introduced_at": "S5",
+      "used_in": [
+        "S6"
+      ],
+      "culsma_evidence": "let gel_group = sep(sample = gel_lane, program = field_program(...)); separated_gel << [gel_group[0]]; transfer_stack << [separated_gel, ...]"
+    },
+    {
+      "object": "transferred_membrane_tank",
+      "introduced_at": "S6",
+      "used_in": [
+        "S7"
+      ],
+      "culsma_evidence": "let transferred_membrane_tank = chamber(...); it is blocked, incubated with primary and secondary antibodies, washed, and passed to img(...)"
+    }
+  ],
+  "display_name": "Object Reuse",
+  "description": "Named program objects are listed when they are introduced in one source step and referenced in later source steps on the completed runtime path."
+}

@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "case_id": "10",
+  "derivation": "derived_from_local_protocol_identifier_reuse",
+  "tracked_object_count": 10,
+  "reuse_link_count": 74,
+  "rows": [
+    {
+      "object": "lysate",
+      "introduced_at": "S1",
+      "used_in": [
+        "S2",
+        "S3",
+        "S4",
+        "S6",
+        "S7",
+        "S8",
+        "S9",
+        "S10",
+        "S11",
+        "S12",
+        "S13",
+        "S20",
+        "S21",
+        "S22",
+        "S23",
+        "S24",
+        "S25",
+        "S26",
+        "S27",
+        "S28",
+        "S29",
+        "S30",
+        "S31",
+        "S32",
+        "S33",
+        "S34",
+        "S35",
+        "S36",
+        "S37",
+        "S38",
+        "S39",
+        "S40",
+        "S41",
+        "S42"
+      ],
+      "culsma_evidence": "let lysate = ...; later referenced in S2, S3, S4, S6, S7, S8, S9, S10, S11, S12, S13, S20, S21, S22, S23, S24, S25, S26, S27, S28, S29, S30, S31, S32, S33, S34, S35, S36, S37, S38, S39, S40, S41, S42"
+    },
+    {
+      "object": "capture_enhancer",
+      "introduced_at": "S1",
+      "used_in": [
+        "S5",
+        "S6"
+      ],
+      "culsma_evidence": "let capture_enhancer = ...; later referenced in S5, S6"
+    },
+    {
+      "object": "streptavidin_beads",
+      "introduced_at": "S1",
+      "used_in": [
+        "S12",
+        "S13",
+        "S14",
+        "S15",
+        "S20",
+        "S21",
+        "S22"
+      ],
+      "culsma_evidence": "let streptavidin_beads = ...; later referenced in S12, S13, S14, S15, S20, S21, S22"
+    },
+    {
+      "object": "binding_buffer",
+      "introduced_at": "S1",
+      "used_in": [
+        "S20",
+        "S21"
+      ],
+      "culsma_evidence": "let binding_buffer = ...; later referenced in S20, S21"
+    },
+    {
+      "object": "wash_buffer_1",
+      "introduced_at": "S1",
+      "used_in": [
+        "S33",
+        "S34",
+        "S35",
+        "S36",
+        "S37",
+        "S38"
+      ],
+      "culsma_evidence": "let wash_buffer_1 = ...; later referenced in S33, S34, S35, S36, S37, S38"
+    },
+    {
+      "object": "wash_buffer_2",
+      "introduced_at": "S1",
+      "used_in": [
+        "S39",
+        "S40",
+        "S41",
+        "S42"
+      ],
+      "culsma_evidence": "let wash_buffer_2 = ...; later referenced in S39, S40, S41, S42"
+    },
+    {
+      "object": "waste",
+      "introduced_at": "S1",
+      "used_in": [
+        "S14",
+        "S15",
+        "S30",
+        "S31",
+        "S32",
+        "S33",
+        "S34",
+        "S35",
+        "S36",
+        "S37",
+        "S38"
+      ],
+      "culsma_evidence": "let waste = ...; later referenced in S14, S15, S30, S31, S32, S33, S34, S35, S36, S37, S38"
+    },
+    {
+      "object": "bead_initial_split",
+      "introduced_at": "S14",
+      "used_in": [
+        "S15"
+      ],
+      "culsma_evidence": "let bead_initial_split = ...; later referenced in S15"
+    },
+    {
+      "object": "capture_split",
+      "introduced_at": "S30",
+      "used_in": [
+        "S31",
+        "S32"
+      ],
+      "culsma_evidence": "let capture_split = ...; later referenced in S31, S32"
+    },
+    {
+      "object": "wash1_split",
+      "introduced_at": "S33",
+      "used_in": [
+        "S34",
+        "S35",
+        "S36",
+        "S37",
+        "S38"
+      ],
+      "culsma_evidence": "let wash1_split = ...; later referenced in S34, S35, S36, S37, S38"
+    }
+  ],
+  "display_name": "Object Reuse",
+  "description": "Tracked experimental objects are listed by introduction step and later use when identifier reuse is visible in step-anchored Culsma code."
+}

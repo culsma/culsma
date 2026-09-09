@@ -1,0 +1,144 @@
+{
+  "protocol_id": "13",
+  "title": "Magnetic-Bead Post-Amplification cDNA Purification",
+  "source_class": "anonymized_vendor_protocol_excerpt",
+  "review_revision": "2026-06-14",
+  "source_file": "source.md",
+  "steps": [
+    {
+      "id": "S1",
+      "section": "Purification Procedure",
+      "source_text": "For each tube of amplified cDNA, gather 400 uL of freshly prepared 85% ethanol."
+    },
+    {
+      "id": "S2",
+      "section": "Purification Procedure",
+      "source_text": "Gather room-temperature SPRI beads, 80 uL per tube of amplified cDNA. Ensure the SPRI beads have been equilibrated to room temperature for at least 30 minutes."
+    },
+    {
+      "id": "S3",
+      "section": "Purification Procedure",
+      "source_text": "Place each tube of amplified cDNA input material on the high position of the magnetic rack."
+    },
+    {
+      "id": "S4",
+      "section": "Purification Procedure",
+      "source_text": "Incubate until the solution clears, about 2 minutes. If beads remain in solution after 2-3 minutes, pipette 3x in the bottom of the PCR tube with a P200 set to 40 uL, then return to the magnet and incubate until the solution clears."
+    },
+    {
+      "id": "S5",
+      "section": "Purification Procedure",
+      "source_text": "While still on the magnetic rack, transfer 90 uL of the supernatant containing the cDNA into a new 0.2 mL tube. Store at room temperature."
+    },
+    {
+      "id": "S6",
+      "section": "Purification Procedure",
+      "source_text": "Vortex the SPRI beads until fully mixed."
+    },
+    {
+      "id": "S7",
+      "section": "Purification Procedure",
+      "source_text": "Add 72 uL of SPRI beads to each tube with amplified cDNA. This is a 0.8x SPRI bead cleanup."
+    },
+    {
+      "id": "S8",
+      "section": "Purification Procedure",
+      "source_text": "Vortex the tube(s) for 5 seconds."
+    },
+    {
+      "id": "S9",
+      "section": "Purification Procedure",
+      "source_text": "Briefly centrifuge."
+    },
+    {
+      "id": "S10",
+      "section": "Purification Procedure",
+      "source_text": "Incubate for 5 minutes at room temperature."
+    },
+    {
+      "id": "S11",
+      "section": "Purification Procedure",
+      "source_text": "Place the tube(s) on the high position of the magnetic rack."
+    },
+    {
+      "id": "S12",
+      "section": "Purification Procedure",
+      "source_text": "Incubate until the solution clears, about 2 minutes."
+    },
+    {
+      "id": "S13",
+      "section": "Purification Procedure",
+      "source_text": "While still on the magnetic rack, remove and discard the supernatant."
+    },
+    {
+      "id": "S14",
+      "section": "Purification Procedure",
+      "source_text": "While still on the magnetic rack, add 180 uL of 85% ethanol to each tube."
+    },
+    {
+      "id": "S15",
+      "section": "Purification Procedure",
+      "source_text": "Incubate for 1 minute at room temperature."
+    },
+    {
+      "id": "S16",
+      "section": "Purification Procedure",
+      "source_text": "While still on the magnetic rack, remove and discard the supernatant."
+    },
+    {
+      "id": "S17",
+      "section": "Purification Procedure",
+      "source_text": "Repeat the ethanol wash once more for a total of 2 washes."
+    },
+    {
+      "id": "S18",
+      "section": "Purification Procedure",
+      "source_text": "Remove any residual ethanol with a P20."
+    },
+    {
+      "id": "S19",
+      "section": "Purification Procedure",
+      "source_text": "While still on the magnetic rack, air dry the SPRI beads for about 2 minutes. Do not over-dry the beads. Cracking of the beads is a sign of over-drying."
+    },
+    {
+      "id": "S20",
+      "section": "Purification Procedure",
+      "source_text": "Remove the tube(s) from the magnetic rack."
+    },
+    {
+      "id": "S21",
+      "section": "Purification Procedure",
+      "source_text": "Fully resuspend each bead pellet with 25 uL of nuclease-free water."
+    },
+    {
+      "id": "S22",
+      "section": "Purification Procedure",
+      "source_text": "Incubate for 10 minutes at 37C in a thermocycler."
+    },
+    {
+      "id": "S23",
+      "section": "Purification Procedure",
+      "source_text": "Place the tube(s) on the low magnet position of the magnetic rack, so the magnet is closer to the bottom of the 0.2 mL tubes."
+    },
+    {
+      "id": "S24",
+      "section": "Purification Procedure",
+      "source_text": "Incubate until the solution clears, about 2 minutes."
+    },
+    {
+      "id": "S25",
+      "section": "Purification Procedure",
+      "source_text": "While still on the magnetic rack, transfer 25 uL of the supernatant containing the purified cDNA into new 0.2 mL tube(s)."
+    },
+    {
+      "id": "S26",
+      "section": "Purification Procedure",
+      "source_text": "Store on ice."
+    },
+    {
+      "id": "S27",
+      "section": "Purification Procedure",
+      "source_text": "Purified amplified cDNA can be stored at 4C for up to 48 hours or at -20C for up to 3 months. Otherwise, proceed immediately to the downstream quantification or analysis module."
+    }
+  ]
+}

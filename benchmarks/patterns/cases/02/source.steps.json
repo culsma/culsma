@@ -1,0 +1,68 @@
+{
+  "protocol_id": "02",
+  "title": "RNA-to-qPCR Gene-Expression Workflow",
+  "source_class": "canonical_textbook_style",
+  "source_file": "source.md",
+  "steps": [
+    {
+      "id": "S1",
+      "section": "Canonical Workflow",
+      "source_text": "Accept one treated adherent-cell well and one reference adherent-cell well."
+    },
+    {
+      "id": "S2",
+      "section": "Canonical Workflow",
+      "source_text": "Remove culture medium, wash each adherent-cell well twice with phosphate-buffered saline, lyse the cells, and collect each lysate."
+    },
+    {
+      "id": "S3",
+      "section": "Canonical Workflow",
+      "source_text": "Add binding buffer, mix each lysate, load it onto a silica column, and retain the column-bound material after centrifugation."
+    },
+    {
+      "id": "S4",
+      "section": "Canonical Workflow",
+      "source_text": "Wash each column, perform on-column DNase digestion, wash again, and elute purified RNA."
+    },
+    {
+      "id": "S5",
+      "section": "Canonical Workflow",
+      "source_text": "Record RNA quantity and purity readouts for each purified RNA sample."
+    },
+    {
+      "id": "S6",
+      "section": "Canonical Workflow",
+      "source_text": "Build reverse-transcription reactions for treated and reference RNA."
+    },
+    {
+      "id": "S7",
+      "section": "Canonical Workflow",
+      "source_text": "Incubate reverse-transcription reactions through priming, cDNA synthesis, enzyme inactivation, and hold steps."
+    },
+    {
+      "id": "S8",
+      "section": "Canonical Workflow",
+      "source_text": "Declare a qPCR plate layout with treated/reference, target/housekeeping, technical-replicate, and no-template-control wells."
+    },
+    {
+      "id": "S9",
+      "section": "Canonical Workflow",
+      "source_text": "Load cDNA, no-template water, target primers, housekeeping primers, and qPCR master mix into the assigned well groups."
+    },
+    {
+      "id": "S10",
+      "section": "Canonical Workflow",
+      "source_text": "Run qPCR activation and repeated denaturation/annealing-extension cycles while collecting fluorescence."
+    },
+    {
+      "id": "S11",
+      "section": "Canonical Workflow",
+      "source_text": "Run a melt-curve ramp over all assay wells."
+    },
+    {
+      "id": "S12",
+      "section": "Canonical Workflow",
+      "source_text": "Record a structured qPCR readout with well, sample, gene, replicate, Ct, melt-peak, control, variability, and QC fields; quantitative normalization remains downstream analysis."
+    }
+  ]
+}

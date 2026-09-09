@@ -1,0 +1,161 @@
+{
+  "case_id": "01",
+  "title": "PCR Amplification, Restriction Cloning into pUC19, Transformation into E. coli DH5alpha, and Screening of Recombinant Colonies",
+  "schema_version": 1,
+  "source_steps": [
+    {
+      "source_step_id": "S1",
+      "phase": "",
+      "summary": "Assemble insert PCR",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S2",
+      "phase": "",
+      "summary": "Amplify insert",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S3",
+      "phase": "",
+      "summary": "Check PCR product by agarose gel electrophoresis",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S4",
+      "phase": "",
+      "summary": "Purify the insert by PCR cleanup or image-guided gel extraction",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S5",
+      "phase": "",
+      "summary": "Digest insert and pUC19 vector with EcoRI and HindIII",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S6",
+      "phase": "",
+      "summary": "Resolve digests by preparative agarose gel electrophoresis",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S7",
+      "phase": "",
+      "summary": "Select target insert and vector bands",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S8",
+      "phase": "",
+      "summary": "Extract DNA from gel and assemble ligation reactions and controls",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S9",
+      "phase": "",
+      "summary": "Transform chemically competent DH5alpha cells",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S10",
+      "phase": "",
+      "summary": "Recover and plate transformed cells on selective blue-white screening agar",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S11",
+      "phase": "",
+      "summary": "Select eight white candidate colonies",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S12",
+      "phase": "",
+      "summary": "Prepare and run colony PCR",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S13",
+      "phase": "",
+      "summary": "Resolve colony PCR products by agarose gel electrophoresis",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S14",
+      "phase": "",
+      "summary": "Record candidate-positive colony PCR results",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S15",
+      "phase": "",
+      "summary": "Culture candidate-positive clones",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S16",
+      "phase": "",
+      "summary": "Purify plasmid DNA by miniprep",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S17",
+      "phase": "",
+      "summary": "Perform EcoRI-HindIII diagnostic digest and gel readout",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S18",
+      "phase": "",
+      "summary": "Submit bidirectional Sanger sequencing and record clone-confirmation fields",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    }
+  ],
+  "semantic_boundaries": [],
+  "known_warnings": [],
+  "paper_safe_claims": [
+    "The case is represented as public-safe structured benchmark evidence.",
+    "The wet-lab execution shape is separated from downstream scientific or image-analysis interpretation."
+  ],
+  "avoid_claiming": [
+    "Do not claim analysis results that are only represented as readout fields.",
+    "Do not claim source-material release beyond the case release mode."
+  ]
+}

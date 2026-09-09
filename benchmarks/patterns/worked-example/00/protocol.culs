@@ -1,0 +1,80 @@
+protocol GfpLysateClarification(
+  cell_suspension_volume = 80uL,
+  cell_count = 100000cells,
+  lysis_buffer_volume = 80uL,
+  clarified_volume = 100uL
+) {
+  // Prepare a washed GFP-expressing microbial-cell suspension
+  // in a lysis-compatible resuspension buffer.
+  let cell_suspension = tube(
+    label = "GfpCellSuspension",
+    capacity = 1.5mL,
+    load = [
+      content(
+        kind = bio_cellular,
+        type = microbial_cells,
+        code = "GFP_EXPRESSING_MICROBIAL_CELLS",
+        attrs = { state: suspension, carrier: "lysis_compatible_resuspension_buffer" }
+      ):cell_count,
+      content(
+        kind = formulation,
+        type = buffer,
+        code = "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER"
+      ):cell_suspension_volume
+    ]
+  );
+
+  let lysis_buffer_2x = tube(
+    label = "LysisBuffer2x",
+    capacity = 1.5mL,
+    load = [
+      content(
+        kind = formulation,
+        type = buffer,
+        code = "LYSIS_BUFFER_2X",
+        attrs = { role: lysis }
+      ):lysis_buffer_volume
+    ]
+  );
+
+  let lysis_tube = tube(label = "LysisTube", capacity = 1.5mL);
+  let clarified_lysate = tube(label = "ClarifiedLysate", capacity = 1mL);
+  let debris_waste = tube(label = "DebrisWaste", capacity = 1mL);
+
+  // Source step S1: Combine equal volumes of cell suspension and 2x lysis
+  // buffer to produce a 1x final lysis condition.
+  lysis_tube << [
+    cell_suspension:cell_suspension_volume,
+    lysis_buffer_2x:lysis_buffer_volume
+  ];
+
+  // Source step S2: Pipette mix 10 times using 80% of the 160 uL mixture.
+  repeat lysis_pipette_mix in schedule(start = 1, end = 10, step = 1) {
+    lysis_tube << [lysis_tube:128uL];
+  }
+
+  // Source step S3: Incubate at 37 C for 30 min.
+  with env(thermal = 37C, duration = 30min) {
+    hold(sample = lysis_tube);
+  }
+
+  // Source steps S4–S6: Clarify at 12000 x g and 22 C for 10 min,
+  // retain 100 uL supernatant, and route the debris-pellet fraction to waste.
+  with env(thermal = 22C, duration = 10min) {
+    sep(
+      sample = lysis_tube,
+      program = centrifuge_program(drive = 12000g)
+    );
+  }
+  clarified_lysate << [lysis_tube.contents[0]:clarified_volume];
+  debris_waste << [lysis_tube.contents[1]];
+
+  // Source step S7: Record fluorescence from the clarified lysate.
+  let lysate_readout = img(
+    sample = clarified_lysate,
+    quantity = fluorescence,
+    save_raw = true
+  );
+}
+
+GfpLysateClarification();

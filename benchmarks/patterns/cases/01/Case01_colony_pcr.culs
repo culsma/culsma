@@ -1,0 +1,17 @@
+protocol PrepareOneColonyPCRSample(
+  candidate,
+  sample,
+  screening_primers,
+  colony_pcr_master_mix,
+  nuclease_free_water
+) {
+  // One selected colony is mapped into one PCR well. After this mapping, the
+  // PCR well is the sample carried through the colony-PCR workflow.
+  sample << [
+    candidate:1uL,
+    screening_primers:1uL,
+    colony_pcr_master_mix:10uL,
+    nuclease_free_water:8uL
+  ] with constraint(high_precision, low_carryover);
+  return sample;
+}

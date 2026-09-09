@@ -1,0 +1,1009 @@
+protocol PCRCloningTransformationAndScreening(
+  insert_pcr_qc_size_bp,
+  insert_pcr_qc_band_count
+) {
+  // Source: canonical PCR-to-cloning workflow. Observed biological
+  // outcomes are recorded as structured readouts; they are not inferred.
+
+  // Source step S1: Assemble the source-defined 50 uL high-fidelity insert PCR.
+  let template_dna = tube(label = "InsertTemplateDNA", capacity = 200uL, load = [
+    content(kind = bio_molecule_or_virus, type = dna, code = "INSERT_TEMPLATE", attrs = { role: template }):20uL
+  ]);
+  let forward_primer = tube(label = "InsertForwardPrimer", capacity = 200uL, load = [
+    content(kind = bio_molecule_or_virus, type = dna, code = "INSERT_FORWARD_PRIMER", attrs = { role: primer }):100uL
+  ]);
+  let reverse_primer = tube(label = "InsertReversePrimer", capacity = 200uL, load = [
+    content(kind = bio_molecule_or_virus, type = dna, code = "INSERT_REVERSE_PRIMER", attrs = { role: primer }):100uL
+  ]);
+  let high_fidelity_master_mix = tube(label = "HighFidelityPCRMasterMix2x", capacity = 500uL, load = [
+    content(kind = formulation, type = master_mix, code = "HIGH_FIDELITY_PCR_MASTER_MIX_2X", attrs = { role: reaction_mix }):400uL
+  ]);
+  let nuclease_free_water = tube(label = "NucleaseFreeWater", capacity = 2000uL, load = [
+    content(kind = formulation, type = buffer, code = "NFW", attrs = { role: reaction_environment }):1500uL
+  ]);
+  let insert_pcr = tube(label = "InsertPCR", capacity = 200uL);
+  insert_pcr << [
+    template_dna:1uL,
+    forward_primer:2.5uL,
+    reverse_primer:2.5uL,
+    high_fidelity_master_mix:25uL,
+    nuclease_free_water:19uL
+  ] with constraint(high_precision, low_carryover);
+
+  // Source step S2: Amplify the insert.
+  with env(thermal = 98C, duration = 30s) {
+    hold(sample = insert_pcr);
+  }
+  repeat insert_amplification_cycle in schedule(start = 1, end = 30, step = 1) {
+    with env(thermal = 98C, duration = 10s) {
+      hold(sample = insert_pcr);
+    }
+    // The source gives an annealing range of 55-65 C; 60 C is the explicit
+    // benchmark instantiation and must be reviewed against primer Tm.
+    with env(thermal = 60C, duration = 20s) {
+      hold(sample = insert_pcr);
+    }
+    with env(thermal = 72C, duration = 30s) {
+      hold(sample = insert_pcr);
+    }
+  }
+  with env(thermal = 72C, duration = 5min) {
+    hold(sample = insert_pcr);
+  }
+  // The source specifies an indefinite 4 C hold. Current Culsma requires a
+  // finite duration, so this benchmark records a 10 min execution window.
+  with env(thermal = 4C, duration = 10min) {
+    hold(sample = insert_pcr);
+  }
+
+  // Source step S3: Load 5 uL PCR product onto an open lane of a 1% agarose gel,
+  // run electrophoresis, and record the band image.
+  // PM #100 executable bridge: until lane-resolved gel output is available,
+  // slot 0 carries the complete lane state; its current public name does not
+  // assert that every carried component is a biologically identified target.
+  let insert_pcr_qc_gel_setup = PrepareOnePercentAgaroseGel(gel_id = "InsertPCRQualityGel", ladder_position = "A2");
+  let insert_pcr_qc_lane = well(
+    label = "InsertPCRQualityLane",
+    spec = "cast_1_percent_agarose_in_1x_tbe",
+    carrier_kind = "agarose_gel",
+    carrier_id = "InsertPCRQualityGel",
+    carrier_position = "A1",
+    capacity = 50uL,
+    open = true
+  );
+  insert_pcr_qc_lane << [insert_pcr:5uL, insert_pcr_qc_gel_setup[1]:1uL];
+  let insert_pcr_qc_gel_run = sep(
+    sample = insert_pcr_qc_lane,
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      INSERT_TEMPLATE: { target_band_fraction: 100%, non_target_fraction: 0% },
+      INSERT_FORWARD_PRIMER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      INSERT_REVERSE_PRIMER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      HIGH_FIDELITY_PCR_MASTER_MIX_2X: { target_band_fraction: 100%, non_target_fraction: 0% },
+      NFW: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let insert_pcr_qc_ladder_run = sep(
+    sample = insert_pcr_qc_gel_setup[2],
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      DNA_100BP_SIZE_LADDER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let insert_pcr_qc_schema = data_schema(
+    label = "InsertPCRBandCheck",
+    fields = [size_bp, count]
+  );
+  let insert_pcr_qc = img(
+    sample = group([insert_pcr_qc_gel_run[0], insert_pcr_qc_ladder_run[0]]),
+    quantity = customized,
+    schema_ref = insert_pcr_qc_schema,
+    save_raw = true
+  );
+  // Bind the externally supplied gel interpretation to the image readout.
+  // The fixture below supplies the deterministic paper scenario; an execution
+  // may instead use values supplied by image analysis or an operator.
+  insert_pcr_qc.result.size_bp = insert_pcr_qc_size_bp;
+  insert_pcr_qc.result.count = insert_pcr_qc_band_count;
+  // Source step S4: If the QC image reports exactly one 800 bp band, purify the remaining
+  // PCR product directly. Otherwise, run the remaining sample on a fresh open
+  // 1% agarose gel, select the 800 bp band, and use gel extraction.
+  let pcr_cleanup_binding_buffer = tube(label = "PCRCleanupBindingBuffer", capacity = 1000uL, load = [
+    content(kind = formulation, type = buffer, code = "PCR_CLEANUP_BINDING_BUFFER", attrs = { role: binding }):500uL
+  ]);
+  let pcr_cleanup_wash_buffer = tube(label = "PCRCleanupWashBuffer", capacity = 1000uL, load = [
+    content(kind = formulation, type = buffer, code = "PCR_CLEANUP_WASH_BUFFER", attrs = { role: wash }):500uL
+  ]);
+  let pcr_cleanup_waste = tube(label = "PCRCleanupWaste", capacity = 5000uL);
+  let purified_pcr_insert = tube(label = "Purified800bpPCRInsert", capacity = 2000uL);
+  if insert_pcr_qc.result.size_bp == 800 and insert_pcr_qc.result.count == 1 {
+    let pcr_cleanup_column = chamber(label = "PCRCleanupSilicaColumn", capacity = 2000uL, open = true);
+    pcr_cleanup_column << [insert_pcr:45uL, pcr_cleanup_binding_buffer:225uL];
+    let pcr_cleanup_bind_split = sep(
+      sample = pcr_cleanup_column,
+      program = filtration_program(membrane = "silica", drive = "centrifuge"),
+      component_fates = {
+        INSERT_TEMPLATE: { filtrate: 0%, retentate: 100% },
+        INSERT_FORWARD_PRIMER: { filtrate: 100%, retentate: 0% },
+        INSERT_REVERSE_PRIMER: { filtrate: 100%, retentate: 0% }
+      }
+    );
+    pcr_cleanup_waste << [pcr_cleanup_bind_split[0]];
+    pcr_cleanup_column << [pcr_cleanup_bind_split[1]];
+    pcr_cleanup_column << [pcr_cleanup_wash_buffer:500uL];
+    let pcr_cleanup_wash_split = sep(
+      sample = pcr_cleanup_column,
+      program = filtration_program(membrane = "silica", drive = "centrifuge"),
+      component_fates = {
+        INSERT_TEMPLATE: { filtrate: 0%, retentate: 100% }
+      }
+    );
+    pcr_cleanup_waste << [pcr_cleanup_wash_split[0]];
+    pcr_cleanup_column << [pcr_cleanup_wash_split[1]];
+    pcr_cleanup_column << [nuclease_free_water:30uL];
+    let pcr_cleanup_elution_split = sep(
+      sample = pcr_cleanup_column,
+      program = filtration_program(membrane = "silica", drive = "centrifuge"),
+      component_fates = {
+        INSERT_TEMPLATE: { filtrate: 100%, retentate: 0% }
+      }
+    );
+    purified_pcr_insert << [pcr_cleanup_elution_split[0]];
+  } else {
+    let remaining_pcr_gel_setup = PrepareOnePercentAgaroseGel(gel_id = "RemainingPCRPreparativeGel", ladder_position = "A2");
+    let remaining_pcr_gel_lane = well(
+      label = "RemainingPCRPreparativeLane",
+      spec = "cast_1_percent_agarose_in_1x_tbe",
+      carrier_kind = "agarose_gel",
+      carrier_id = "RemainingPCRPreparativeGel",
+      carrier_position = "A1",
+      capacity = 100uL,
+      open = true
+    );
+    remaining_pcr_gel_lane << [insert_pcr:45uL, remaining_pcr_gel_setup[1]:9uL];
+    let remaining_pcr_gel_run = sep(
+      sample = remaining_pcr_gel_lane,
+      program = field_program(field = 120V, duration = 45min),
+      component_fates = {
+        INSERT_TEMPLATE: { target_band_fraction: 100%, non_target_fraction: 0% },
+        INSERT_FORWARD_PRIMER: { target_band_fraction: 100%, non_target_fraction: 0% },
+        INSERT_REVERSE_PRIMER: { target_band_fraction: 100%, non_target_fraction: 0% },
+        HIGH_FIDELITY_PCR_MASTER_MIX_2X: { target_band_fraction: 100%, non_target_fraction: 0% },
+        NFW: { target_band_fraction: 100%, non_target_fraction: 0% },
+        DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+      }
+    );
+    let remaining_pcr_ladder_run = sep(
+      sample = remaining_pcr_gel_setup[2],
+      program = field_program(field = 120V, duration = 45min),
+      component_fates = {
+        DNA_100BP_SIZE_LADDER: { target_band_fraction: 100%, non_target_fraction: 0% },
+        DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+      }
+    );
+    let remaining_pcr_gel_schema = data_schema(
+      label = "Select800bpInsertBand",
+      fields = [selected_band_size_bp, selected_band_region]
+    );
+    let remaining_pcr_gel_image = img(
+      sample = group([remaining_pcr_gel_run[0], remaining_pcr_ladder_run[0]]),
+      quantity = customized,
+      schema_ref = remaining_pcr_gel_schema,
+      save_raw = true
+    );
+    // Band selection is a reviewed image-guided action. The selected material
+    // is routed from the declared 800 bp band region into gel extraction.
+    let selected_800bp_band = tube(label = "Selected800bpInsertBand", capacity = 2000uL);
+    selected_800bp_band << [remaining_pcr_gel_run[0]];
+    selected_800bp_band << [pcr_cleanup_binding_buffer:225uL];
+    let fallback_gel_extraction_column = chamber(label = "FallbackGelExtractionSilicaColumn", capacity = 2000uL, open = true);
+    fallback_gel_extraction_column << [selected_800bp_band];
+    let fallback_bind_split = sep(
+      sample = fallback_gel_extraction_column,
+      program = filtration_program(membrane = "silica", drive = "centrifuge"),
+      component_fates = {
+        INSERT_TEMPLATE: { filtrate: 0%, retentate: 100% },
+        INSERT_FORWARD_PRIMER: { filtrate: 100%, retentate: 0% },
+        INSERT_REVERSE_PRIMER: { filtrate: 100%, retentate: 0% },
+        HIGH_FIDELITY_PCR_MASTER_MIX_2X: { filtrate: 100%, retentate: 0% },
+        NFW: { filtrate: 100%, retentate: 0% },
+        DNA_LOADING_DYE_6X: { filtrate: 100%, retentate: 0% }
+      }
+    );
+    pcr_cleanup_waste << [fallback_bind_split[0]];
+    fallback_gel_extraction_column << [fallback_bind_split[1]];
+    fallback_gel_extraction_column << [pcr_cleanup_wash_buffer:500uL];
+    let fallback_wash_split = sep(
+      sample = fallback_gel_extraction_column,
+      program = filtration_program(membrane = "silica", drive = "centrifuge"),
+      component_fates = {
+        INSERT_TEMPLATE: { filtrate: 0%, retentate: 100% }
+      }
+    );
+    pcr_cleanup_waste << [fallback_wash_split[0]];
+    fallback_gel_extraction_column << [fallback_wash_split[1]];
+    fallback_gel_extraction_column << [nuclease_free_water:30uL];
+    let fallback_elution_split = sep(
+      sample = fallback_gel_extraction_column,
+      program = filtration_program(membrane = "silica", drive = "centrifuge"),
+      component_fates = {
+        INSERT_TEMPLATE: { filtrate: 100%, retentate: 0% }
+      }
+    );
+    purified_pcr_insert << [fallback_elution_split[0]];
+  }
+
+  // Source step S5: Digest purified insert and pUC19 vector with EcoRI and HindIII.
+  let plasmid_vector = tube(label = "PlasmidVector", capacity = 200uL, load = [
+    content(kind = bio_molecule_or_virus, type = dna, code = "PUC19_500_NG_PER_UL", attrs = { role: vector, size_bp: 2686 }):50uL
+  ]);
+  let ecori = tube(label = "EcoRI", capacity = 100uL, load = [
+    content(kind = bio_molecule_or_virus, type = protein, code = "ECORI", attrs = { role: enzyme }):50uL
+  ]);
+  let hindiii = tube(label = "HindIII", capacity = 100uL, load = [
+    content(kind = bio_molecule_or_virus, type = protein, code = "HINDIII", attrs = { role: enzyme }):50uL
+  ]);
+  let digest_buffer = tube(label = "RestrictionDigestBuffer", capacity = 500uL, load = [
+    content(kind = formulation, type = buffer, code = "DIGEST_BUFFER", attrs = { role: reaction_environment }):400uL
+  ]);
+  let insert_digest = tube(label = "InsertDigest", capacity = 200uL);
+  let vector_digest = tube(label = "VectorDigest", capacity = 200uL);
+  insert_digest << [purified_pcr_insert:20uL,  digest_buffer:5uL, ecori:1uL, hindiii:1uL, nuclease_free_water:23uL]
+    with constraint(high_precision, low_carryover);
+  vector_digest << [plasmid_vector:2uL, digest_buffer:5uL, ecori:1uL, hindiii:1uL, nuclease_free_water:41uL]
+    with constraint(high_precision, low_carryover);
+  with env(thermal = 37C, duration = 60min) {
+    hold(sample = group([insert_digest, vector_digest]));
+  }
+
+  // Source step S6: Resolve digested insert and vector in separate agarose-gel lanes.
+  let preparative_gel_setup = PrepareOnePercentAgaroseGel(gel_id = "PreparativeAgaroseGel", ladder_position = "A3");
+  let insert_gel_lane = well(label = "DigestedInsertLane", spec = "cast_1_percent_agarose_in_1x_tbe", carrier_kind = "agarose_gel", capacity = 50uL, carrier_id = "PreparativeAgaroseGel", carrier_position = "A1", open = true);
+  let vector_gel_lane = well(label = "LinearizedVectorLane", spec = "cast_1_percent_agarose_in_1x_tbe", carrier_kind = "agarose_gel", capacity = 50uL, carrier_id = "PreparativeAgaroseGel", carrier_position = "A2", open = true);
+  insert_gel_lane << [insert_digest:40uL, preparative_gel_setup[1]:8uL];
+  vector_gel_lane << [vector_digest:40uL, preparative_gel_setup[1]:8uL];
+  let insert_gel_split = sep(
+    sample = insert_gel_lane,
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      INSERT_TEMPLATE: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DIGEST_BUFFER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      ECORI: { target_band_fraction: 100%, non_target_fraction: 0% },
+      HINDIII: { target_band_fraction: 100%, non_target_fraction: 0% },
+      NFW: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let vector_gel_split = sep(
+    sample = vector_gel_lane,
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      PUC19_500_NG_PER_UL: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DIGEST_BUFFER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      ECORI: { target_band_fraction: 100%, non_target_fraction: 0% },
+      HINDIII: { target_band_fraction: 100%, non_target_fraction: 0% },
+      NFW: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let preparative_ladder_split = sep(
+    sample = preparative_gel_setup[2],
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      DNA_100BP_SIZE_LADDER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let preparative_gel_schema = data_schema(
+    label = "PreparativeGelReadout",
+    fields = [lane_id, expected_band_size_bp, observed_band_size_bp, selected_band_region, qc_pass]
+  );
+  let preparative_gel_image = img(
+    sample = group([insert_gel_split[0], vector_gel_split[0], preparative_ladder_split[0]]),
+    quantity = customized,
+    schema_ref = preparative_gel_schema,
+    save_raw = true
+  );
+
+  // Source step S7: Carry forward the gel regions selected from the recorded image. The
+  // slot-0 handoff above is a whole-lane execution bridge, not an inferred
+  // claim about band identity, mobility, or recovery efficiency.
+  let insert_band = tube(label = "ExcisedInsertBand", capacity = 1000uL);
+  let vector_band = tube(label = "ExcisedVectorBand", capacity = 1000uL);
+  insert_band << [insert_gel_split[0]];
+  vector_band << [vector_gel_split[0]];
+
+  // Continued implementation for S7: solubilize gel bands and collect purified
+  // insert/vector eluates.
+  let gel_solubilization_buffer = tube(label = "GelSolubilizationBuffer", capacity = 5000uL, load = [
+    content(kind = formulation, type = buffer, code = "GEL_SOL", attrs = { role: binding }):4000uL
+  ]);
+  let gel_wash_buffer = tube(label = "GelExtractionWashBuffer", capacity = 5000uL, load = [
+    content(kind = formulation, type = buffer, code = "GEL_WASH", attrs = { role: wash }):4000uL
+  ]);
+  insert_band << [gel_solubilization_buffer:600uL];
+  vector_band << [gel_solubilization_buffer:600uL];
+  with env(thermal = 50C, duration = 10min) {
+    hold(sample = group([insert_band, vector_band]));
+  }
+  let insert_column = chamber(label = "InsertSilicaColumn", capacity = 2000uL);
+  let vector_column = chamber(label = "VectorSilicaColumn", capacity = 2000uL);
+  let liquid_waste = tube(label = "LiquidWaste", capacity = 30000uL);
+  insert_column << [insert_band];
+  vector_column << [vector_band];
+  let insert_bind_split = sep(
+    sample = insert_column,
+    program = filtration_program(membrane = "silica", drive = "centrifuge"),
+    component_fates = {
+      INSERT_TEMPLATE: { filtrate: 0%, retentate: 100% },
+      DIGEST_BUFFER: { filtrate: 100%, retentate: 0% },
+      ECORI: { filtrate: 100%, retentate: 0% },
+      HINDIII: { filtrate: 100%, retentate: 0% },
+      NFW: { filtrate: 100%, retentate: 0% },
+      DNA_LOADING_DYE_6X: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  let vector_bind_split = sep(
+    sample = vector_column,
+    program = filtration_program(membrane = "silica", drive = "centrifuge"),
+    component_fates = {
+      PUC19_500_NG_PER_UL: { filtrate: 0%, retentate: 100% },
+      DIGEST_BUFFER: { filtrate: 100%, retentate: 0% },
+      ECORI: { filtrate: 100%, retentate: 0% },
+      HINDIII: { filtrate: 100%, retentate: 0% },
+      NFW: { filtrate: 100%, retentate: 0% },
+      DNA_LOADING_DYE_6X: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  liquid_waste << [insert_bind_split[0], vector_bind_split[0]];
+  insert_column << [insert_bind_split[1]];
+  vector_column << [vector_bind_split[1]];
+  repeat gel_extraction_wash in schedule(start = 1, end = 2, step = 1) {
+    insert_column << [gel_wash_buffer:500uL];
+    vector_column << [gel_wash_buffer:500uL];
+    let insert_wash_split = sep(
+      sample = insert_column,
+      program = filtration_program(membrane = "silica", drive = "centrifuge"),
+      component_fates = {
+        INSERT_TEMPLATE: { filtrate: 0%, retentate: 100% }
+      }
+    );
+    let vector_wash_split = sep(
+      sample = vector_column,
+      program = filtration_program(membrane = "silica", drive = "centrifuge"),
+      component_fates = {
+        PUC19_500_NG_PER_UL: { filtrate: 0%, retentate: 100% }
+      }
+    );
+    liquid_waste << [insert_wash_split[0], vector_wash_split[0]];
+    insert_column << [insert_wash_split[1]];
+    vector_column << [vector_wash_split[1]];
+  }
+  insert_column << [nuclease_free_water:30uL];
+  vector_column << [nuclease_free_water:30uL];
+  let insert_elution_split = sep(
+    sample = insert_column,
+    program = filtration_program(membrane = "silica", drive = "centrifuge"),
+    component_fates = {
+      INSERT_TEMPLATE: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  let vector_elution_split = sep(
+    sample = vector_column,
+    program = filtration_program(membrane = "silica", drive = "centrifuge"),
+    component_fates = {
+      PUC19_500_NG_PER_UL: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  // Collection tubes accommodate the current runtime's conservative bulk split.
+  // This is not a claim about gel-extraction recovery volume or efficiency.
+  let purified_insert = tube(label = "PurifiedDigestedInsert", capacity = 2000uL);
+  let purified_vector = tube(label = "PurifiedLinearizedVector", capacity = 2000uL);
+  purified_insert << [insert_elution_split[0]];
+  purified_vector << [vector_elution_split[0]];
+
+  // Source step S8: Assemble the source-defined recombinant ligation and controls.
+  // The 2.5 uL vector and 3 uL insert volumes encode the stated 50 ng vector,
+  // approximately 45 ng insert, and 3:1 insert-to-vector molar ratio.
+  let t4_dna_ligase = tube(label = "T4DNALigase", capacity = 100uL, load = [
+    content(kind = bio_molecule_or_virus, type = protein, code = "T4_DNA_LIGASE", attrs = { role: enzyme }):50uL
+  ]);
+  let t4_ligase_buffer = tube(label = "T4LigaseBuffer10x", capacity = 200uL, load = [
+    content(kind = formulation, type = buffer, code = "T4_LIGASE_BUFFER_10X", attrs = { role: reaction_environment }):150uL
+  ]);
+  let ligation_reaction = tube(label = "InsertVectorLigation", capacity = 100uL);
+  ligation_reaction << [purified_vector:2.5uL, purified_insert:3uL, t4_ligase_buffer:1uL, t4_dna_ligase:0.5uL, nuclease_free_water:3uL]
+    with constraint(high_precision, low_carryover);
+  let vector_only_ligation = tube(label = "VectorOnlyLigationControl", capacity = 100uL);
+  vector_only_ligation << [purified_vector:2.5uL, t4_ligase_buffer:1uL, t4_dna_ligase:0.5uL, nuclease_free_water:6uL]
+    with constraint(high_precision, low_carryover);
+  let no_ligase_vector = tube(label = "NoLigaseVectorControl", capacity = 100uL);
+  no_ligase_vector << [purified_vector:2.5uL, t4_ligase_buffer:1uL, nuclease_free_water:6.5uL]
+    with constraint(high_precision, low_carryover);
+  with env(thermal = 16C, duration = 16h) {
+    hold(sample = group([ligation_reaction, vector_only_ligation, no_ligase_vector]));
+  }
+
+  // Source step S9: Transform the recombinant ligation and four source-defined controls.
+  let competent_cells = tube(label = "RecombinantTransformation", capacity = 1000uL, load = [
+    content(kind = bio_cellular, type = microbial_cells, code = "DH5A_RECOMBINANT", attrs = { state: competent }):50uL
+  ]);
+  let vector_only_cells = tube(label = "VectorOnlyTransformation", capacity = 1000uL, load = [
+    content(kind = bio_cellular, type = microbial_cells, code = "DH5A_VECTOR_ONLY", attrs = { state: competent }):50uL
+  ]);
+  let no_ligase_cells = tube(label = "NoLigaseTransformation", capacity = 1000uL, load = [
+    content(kind = bio_cellular, type = microbial_cells, code = "DH5A_NO_LIGASE", attrs = { state: competent }):50uL
+  ]);
+  let positive_control_cells = tube(label = "PositiveTransformationControl", capacity = 1000uL, load = [
+    content(kind = bio_cellular, type = microbial_cells, code = "DH5A_POSITIVE_CONTROL", attrs = { state: competent }):50uL
+  ]);
+  let no_dna_cells = tube(label = "NoDNAControl", capacity = 1000uL, load = [
+    content(kind = bio_cellular, type = microbial_cells, code = "DH5A_NO_DNA", attrs = { state: competent }):50uL
+  ]);
+  competent_cells << [ligation_reaction:2uL] with constraint(high_precision, low_carryover);
+  vector_only_cells << [vector_only_ligation:2uL] with constraint(high_precision, low_carryover);
+  no_ligase_cells << [no_ligase_vector:2uL] with constraint(high_precision, low_carryover);
+  positive_control_cells << [plasmid_vector:1uL] with constraint(high_precision, low_carryover);
+  with env(thermal = 0C, duration = 30min) {
+    hold(sample = group([competent_cells, vector_only_cells, no_ligase_cells, positive_control_cells, no_dna_cells]));
+  }
+  with env(thermal = 42C, duration = 45s) {
+    hold(sample = group([competent_cells, vector_only_cells, no_ligase_cells, positive_control_cells, no_dna_cells]));
+  }
+  with env(thermal = 0C, duration = 2min) {
+    hold(sample = group([competent_cells, vector_only_cells, no_ligase_cells, positive_control_cells, no_dna_cells]));
+  }
+
+  // Source step S10: Recover transformed cells and apply each condition to selective agar.
+  let recovery_medium = tube(label = "RecoveryMedium", capacity = 3000uL, load = [
+    content(kind = formulation, type = medium, code = "RECOVERY_MEDIUM", attrs = { role: culture }):2500uL
+  ]);
+  competent_cells << [recovery_medium:450uL];
+  vector_only_cells << [recovery_medium:450uL];
+  no_ligase_cells << [recovery_medium:450uL];
+  positive_control_cells << [recovery_medium:450uL];
+  no_dna_cells << [recovery_medium:450uL];
+  with env(thermal = 37C, duration = 60min) {
+    agit(sample = group([competent_cells, vector_only_cells, no_ligase_cells, positive_control_cells, no_dna_cells]), mode = "shake", duration = 60min);
+  }
+  let selective_agar_plate = surface(label = "RecombinantAmpXgalIPTGPlate", carrier_id = "RecombinantAmpXgalIPTGPlate");
+  let vector_only_plate = surface(label = "VectorOnlyAmpXgalIPTGPlate", carrier_id = "VectorOnlyAmpXgalIPTGPlate");
+  let no_ligase_plate = surface(label = "NoLigaseAmpXgalIPTGPlate", carrier_id = "NoLigaseAmpXgalIPTGPlate");
+  let positive_control_plate = surface(label = "PositiveControlAmpXgalIPTGPlate", carrier_id = "PositiveControlAmpXgalIPTGPlate");
+  let no_dna_plate = surface(label = "NoDNAAmpXgalIPTGPlate", carrier_id = "NoDNAAmpXgalIPTGPlate");
+  selective_agar_plate << [competent_cells:100uL];
+  vector_only_plate << [vector_only_cells:100uL];
+  no_ligase_plate << [no_ligase_cells:100uL];
+  positive_control_plate << [positive_control_cells:100uL];
+  no_dna_plate << [no_dna_cells:100uL];
+  with env(thermal = 37C, duration = 16h) {
+    hold(sample = group([selective_agar_plate, vector_only_plate, no_ligase_plate, positive_control_plate, no_dna_plate]));
+  }
+  let colony_plate_schema = data_schema(
+    label = "SelectivePlateColonyReadout",
+    fields = [plate_id, condition, colony_count, white_colony_count, blue_colony_count, isolated_white_colony_positions, expected_result, qc_pass]
+  );
+  let colony_plate_images = img(
+    sample = group([selective_agar_plate, vector_only_plate, no_ligase_plate, positive_control_plate, no_dna_plate]),
+    quantity = customized,
+    schema_ref = colony_plate_schema,
+    save_raw = true
+  );
+
+  // Source step S11: Establish eight candidate-colony cultures.
+  // Boundary: current Culsma cannot convert image-selected colony positions
+  // into material handles. These candidate cultures are declared after manual
+  // colony selection and retain candidate identity for downstream screening.
+  let candidate_1 = tube(label = "CandidateColony1", capacity = 2000uL, load = [content(kind = bio_cellular, type = microbial_cells, code = "CANDIDATE_1", attrs = { state: suspension }):1000uL]);
+  let candidate_2 = tube(label = "CandidateColony2", capacity = 2000uL, load = [content(kind = bio_cellular, type = microbial_cells, code = "CANDIDATE_2", attrs = { state: suspension }):1000uL]);
+  let candidate_3 = tube(label = "CandidateColony3", capacity = 2000uL, load = [content(kind = bio_cellular, type = microbial_cells, code = "CANDIDATE_3", attrs = { state: suspension }):1000uL]);
+  let candidate_4 = tube(label = "CandidateColony4", capacity = 2000uL, load = [content(kind = bio_cellular, type = microbial_cells, code = "CANDIDATE_4", attrs = { state: suspension }):1000uL]);
+  let candidate_5 = tube(label = "CandidateColony5", capacity = 2000uL, load = [content(kind = bio_cellular, type = microbial_cells, code = "CANDIDATE_5", attrs = { state: suspension }):1000uL]);
+  let candidate_6 = tube(label = "CandidateColony6", capacity = 2000uL, load = [content(kind = bio_cellular, type = microbial_cells, code = "CANDIDATE_6", attrs = { state: suspension }):1000uL]);
+  let candidate_7 = tube(label = "CandidateColony7", capacity = 2000uL, load = [content(kind = bio_cellular, type = microbial_cells, code = "CANDIDATE_7", attrs = { state: suspension }):1000uL]);
+  let candidate_8 = tube(label = "CandidateColony8", capacity = 2000uL, load = [content(kind = bio_cellular, type = microbial_cells, code = "CANDIDATE_8", attrs = { state: suspension }):1000uL]);
+  let candidate_cultures = group([candidate_1, candidate_2, candidate_3, candidate_4, candidate_5, candidate_6, candidate_7, candidate_8]);
+
+  // Source step S12: Prepare and run colony-PCR screening reactions.
+  let screening_primers = tube(label = "VectorFlankingScreeningPrimers", capacity = 500uL, load = [
+    content(kind = bio_molecule_or_virus, type = dna, code = "SCREEN_PRIMERS", attrs = { role: primer }):400uL
+  ]);
+  let colony_pcr_master_mix = tube(label = "ColonyPCRMasterMix2x", capacity = 500uL, load = [
+    content(kind = formulation, type = master_mix, code = "COLONY_PCR_MASTER_MIX_2X", attrs = { role: reaction_mix }):400uL
+  ]);
+  // Explicit one-to-one candidate-to-well assignment is required because the
+  // current runtime does not map an ordered source group onto a well group.
+  let colony_pcr_well_1 = well(label = "Candidate1PCR", capacity = 50uL, carrier_id = "ColonyPCRPlate", carrier_position = "A1");
+  let colony_pcr_well_2 = well(label = "Candidate2PCR", capacity = 50uL, carrier_id = "ColonyPCRPlate", carrier_position = "A2");
+  let colony_pcr_well_3 = well(label = "Candidate3PCR", capacity = 50uL, carrier_id = "ColonyPCRPlate", carrier_position = "A3");
+  let colony_pcr_well_4 = well(label = "Candidate4PCR", capacity = 50uL, carrier_id = "ColonyPCRPlate", carrier_position = "A4");
+  let colony_pcr_well_5 = well(label = "Candidate5PCR", capacity = 50uL, carrier_id = "ColonyPCRPlate", carrier_position = "A5");
+  let colony_pcr_well_6 = well(label = "Candidate6PCR", capacity = 50uL, carrier_id = "ColonyPCRPlate", carrier_position = "A6");
+  let colony_pcr_well_7 = well(label = "Candidate7PCR", capacity = 50uL, carrier_id = "ColonyPCRPlate", carrier_position = "A7");
+  let colony_pcr_well_8 = well(label = "Candidate8PCR", capacity = 50uL, carrier_id = "ColonyPCRPlate", carrier_position = "A8");
+  colony_pcr_well_1 << [candidate_1:1uL, screening_primers:1uL, colony_pcr_master_mix:10uL, nuclease_free_water:8uL] with constraint(high_precision, low_carryover);
+  colony_pcr_well_2 << [candidate_2:1uL, screening_primers:1uL, colony_pcr_master_mix:10uL, nuclease_free_water:8uL] with constraint(high_precision, low_carryover);
+  colony_pcr_well_3 << [candidate_3:1uL, screening_primers:1uL, colony_pcr_master_mix:10uL, nuclease_free_water:8uL] with constraint(high_precision, low_carryover);
+  colony_pcr_well_4 << [candidate_4:1uL, screening_primers:1uL, colony_pcr_master_mix:10uL, nuclease_free_water:8uL] with constraint(high_precision, low_carryover);
+  colony_pcr_well_5 << [candidate_5:1uL, screening_primers:1uL, colony_pcr_master_mix:10uL, nuclease_free_water:8uL] with constraint(high_precision, low_carryover);
+  colony_pcr_well_6 << [candidate_6:1uL, screening_primers:1uL, colony_pcr_master_mix:10uL, nuclease_free_water:8uL] with constraint(high_precision, low_carryover);
+  colony_pcr_well_7 << [candidate_7:1uL, screening_primers:1uL, colony_pcr_master_mix:10uL, nuclease_free_water:8uL] with constraint(high_precision, low_carryover);
+  colony_pcr_well_8 << [candidate_8:1uL, screening_primers:1uL, colony_pcr_master_mix:10uL, nuclease_free_water:8uL] with constraint(high_precision, low_carryover);
+  let colony_pcr_wells = group([
+    colony_pcr_well_1,
+    colony_pcr_well_2,
+    colony_pcr_well_3,
+    colony_pcr_well_4,
+    colony_pcr_well_5,
+    colony_pcr_well_6,
+    colony_pcr_well_7,
+    colony_pcr_well_8
+  ]);
+  with env(thermal = 95C, duration = 2min) {
+    hold(sample = colony_pcr_wells);
+  }
+  repeat colony_pcr_cycle in schedule(start = 1, end = 30, step = 1) {
+    with env(thermal = 95C, duration = 15s) {
+      hold(sample = colony_pcr_wells);
+    }
+    with env(thermal = 60C, duration = 20s) {
+      hold(sample = colony_pcr_wells);
+    }
+    with env(thermal = 72C, duration = 30s) {
+      hold(sample = colony_pcr_wells);
+    }
+  }
+  with env(thermal = 72C, duration = 5min) {
+    hold(sample = colony_pcr_wells);
+  }
+
+  // Source steps S13–S14: Resolve colony-PCR products and record screening fields.
+  // Current sep execution is single-container; run each candidate lane
+  // explicitly, then present the distinct whole-lane slots together for imaging.
+  let colony_screen_gel_setup = PrepareOnePercentAgaroseGel(gel_id = "ColonyPCRScreenGel", ladder_position = "A9");
+  colony_pcr_well_1 << [colony_screen_gel_setup[1]:4uL];
+  colony_pcr_well_2 << [colony_screen_gel_setup[1]:4uL];
+  colony_pcr_well_3 << [colony_screen_gel_setup[1]:4uL];
+  colony_pcr_well_4 << [colony_screen_gel_setup[1]:4uL];
+  colony_pcr_well_5 << [colony_screen_gel_setup[1]:4uL];
+  colony_pcr_well_6 << [colony_screen_gel_setup[1]:4uL];
+  colony_pcr_well_7 << [colony_screen_gel_setup[1]:4uL];
+  colony_pcr_well_8 << [colony_screen_gel_setup[1]:4uL];
+  let colony_screen_split_1 = sep(
+    sample = colony_pcr_well_1,
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      CANDIDATE_1: { target_band_fraction: 100%, non_target_fraction: 0% },
+      SCREEN_PRIMERS: { target_band_fraction: 100%, non_target_fraction: 0% },
+      COLONY_PCR_MASTER_MIX_2X: { target_band_fraction: 100%, non_target_fraction: 0% },
+      NFW: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let colony_screen_split_2 = sep(
+    sample = colony_pcr_well_2,
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      CANDIDATE_2: { target_band_fraction: 100%, non_target_fraction: 0% },
+      SCREEN_PRIMERS: { target_band_fraction: 100%, non_target_fraction: 0% },
+      COLONY_PCR_MASTER_MIX_2X: { target_band_fraction: 100%, non_target_fraction: 0% },
+      NFW: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let colony_screen_split_3 = sep(
+    sample = colony_pcr_well_3,
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      CANDIDATE_3: { target_band_fraction: 100%, non_target_fraction: 0% },
+      SCREEN_PRIMERS: { target_band_fraction: 100%, non_target_fraction: 0% },
+      COLONY_PCR_MASTER_MIX_2X: { target_band_fraction: 100%, non_target_fraction: 0% },
+      NFW: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let colony_screen_split_4 = sep(
+    sample = colony_pcr_well_4,
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      CANDIDATE_4: { target_band_fraction: 100%, non_target_fraction: 0% },
+      SCREEN_PRIMERS: { target_band_fraction: 100%, non_target_fraction: 0% },
+      COLONY_PCR_MASTER_MIX_2X: { target_band_fraction: 100%, non_target_fraction: 0% },
+      NFW: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let colony_screen_split_5 = sep(
+    sample = colony_pcr_well_5,
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      CANDIDATE_5: { target_band_fraction: 100%, non_target_fraction: 0% },
+      SCREEN_PRIMERS: { target_band_fraction: 100%, non_target_fraction: 0% },
+      COLONY_PCR_MASTER_MIX_2X: { target_band_fraction: 100%, non_target_fraction: 0% },
+      NFW: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let colony_screen_split_6 = sep(
+    sample = colony_pcr_well_6,
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      CANDIDATE_6: { target_band_fraction: 100%, non_target_fraction: 0% },
+      SCREEN_PRIMERS: { target_band_fraction: 100%, non_target_fraction: 0% },
+      COLONY_PCR_MASTER_MIX_2X: { target_band_fraction: 100%, non_target_fraction: 0% },
+      NFW: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let colony_screen_split_7 = sep(
+    sample = colony_pcr_well_7,
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      CANDIDATE_7: { target_band_fraction: 100%, non_target_fraction: 0% },
+      SCREEN_PRIMERS: { target_band_fraction: 100%, non_target_fraction: 0% },
+      COLONY_PCR_MASTER_MIX_2X: { target_band_fraction: 100%, non_target_fraction: 0% },
+      NFW: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let colony_screen_split_8 = sep(
+    sample = colony_pcr_well_8,
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      CANDIDATE_8: { target_band_fraction: 100%, non_target_fraction: 0% },
+      SCREEN_PRIMERS: { target_band_fraction: 100%, non_target_fraction: 0% },
+      COLONY_PCR_MASTER_MIX_2X: { target_band_fraction: 100%, non_target_fraction: 0% },
+      NFW: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let colony_screen_ladder_split = sep(
+    sample = colony_screen_gel_setup[2],
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      DNA_100BP_SIZE_LADDER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let colony_screen_schema = data_schema(
+    label = "ColonyPCRScreenReadout",
+    fields = [candidate_id, expected_band_size_bp, observed_band_size_bp, band_pattern, candidate_positive, confirmation_required]
+  );
+  let colony_screen_image = img(
+    sample = group([
+      colony_screen_split_1[0],
+      colony_screen_split_2[0],
+      colony_screen_split_3[0],
+      colony_screen_split_4[0],
+      colony_screen_split_5[0],
+      colony_screen_split_6[0],
+      colony_screen_split_7[0],
+      colony_screen_split_8[0],
+      colony_screen_ladder_split[0]
+    ]),
+    quantity = customized,
+    schema_ref = colony_screen_schema,
+    save_raw = true
+  );
+
+  // Source step S15: Four candidate-positive clones are instantiated after manual review
+  // of the colony-PCR image. Culsma cannot select them from data at runtime.
+  let lb_amp_medium = tube(label = "LBAmpicillinBroth", capacity = 25000uL, load = [
+    content(kind = formulation, type = medium, code = "LB_AMPICILLIN", attrs = { role: culture }):20000uL
+  ]);
+  let positive_clone_culture_1 = tube(label = "PositiveCloneCulture1", capacity = 6000uL);
+  let positive_clone_culture_2 = tube(label = "PositiveCloneCulture2", capacity = 6000uL);
+  let positive_clone_culture_3 = tube(label = "PositiveCloneCulture3", capacity = 6000uL);
+  let positive_clone_culture_4 = tube(label = "PositiveCloneCulture4", capacity = 6000uL);
+  positive_clone_culture_1 << [candidate_1:1uL, lb_amp_medium:3999uL];
+  positive_clone_culture_2 << [candidate_2:1uL, lb_amp_medium:3999uL];
+  positive_clone_culture_3 << [candidate_3:1uL, lb_amp_medium:3999uL];
+  positive_clone_culture_4 << [candidate_4:1uL, lb_amp_medium:3999uL];
+  with env(thermal = 37C, duration = 16h) {
+    agit(sample = group([positive_clone_culture_1, positive_clone_culture_2, positive_clone_culture_3, positive_clone_culture_4]), mode = "shake", duration = 16h);
+  }
+
+  // Source step S16: Represent kit-based miniprep as declared silica retention, wash, and
+  // elution routing. Buffer identities are kit-generic because the source does
+  // not specify a vendor formulation.
+  let miniprep_processing_buffer = tube(label = "MiniprepProcessingBuffer", capacity = 20000uL, load = [
+    content(kind = formulation, type = buffer, code = "MINIPREP_PROCESSING_BUFFER", attrs = { role: lysis }):16000uL
+  ]);
+  let miniprep_wash_buffer = tube(label = "MiniprepWashBuffer", capacity = 10000uL, load = [
+    content(kind = formulation, type = buffer, code = "MINIPREP_WASH_BUFFER", attrs = { role: wash }):8000uL
+  ]);
+  let miniprep_1 = chamber(label = "MiniprepSilicaColumn1", capacity = 10000uL);
+  let miniprep_2 = chamber(label = "MiniprepSilicaColumn2", capacity = 10000uL);
+  let miniprep_3 = chamber(label = "MiniprepSilicaColumn3", capacity = 10000uL);
+  let miniprep_4 = chamber(label = "MiniprepSilicaColumn4", capacity = 10000uL);
+  miniprep_1 << [positive_clone_culture_1:4000uL, miniprep_processing_buffer:1000uL];
+  miniprep_2 << [positive_clone_culture_2:4000uL, miniprep_processing_buffer:1000uL];
+  miniprep_3 << [positive_clone_culture_3:4000uL, miniprep_processing_buffer:1000uL];
+  miniprep_4 << [positive_clone_culture_4:4000uL, miniprep_processing_buffer:1000uL];
+  let miniprep_bind_1 = sep(
+    sample = miniprep_1,
+    program = filtration_program(membrane = "silica", drive = "centrifuge"),
+    component_fates = {
+      CANDIDATE_1: { filtrate: 0%, retentate: 100% }
+    }
+  );
+  let miniprep_bind_2 = sep(
+    sample = miniprep_2,
+    program = filtration_program(membrane = "silica", drive = "centrifuge"),
+    component_fates = {
+      CANDIDATE_2: { filtrate: 0%, retentate: 100% }
+    }
+  );
+  let miniprep_bind_3 = sep(
+    sample = miniprep_3,
+    program = filtration_program(membrane = "silica", drive = "centrifuge"),
+    component_fates = {
+      CANDIDATE_3: { filtrate: 0%, retentate: 100% }
+    }
+  );
+  let miniprep_bind_4 = sep(
+    sample = miniprep_4,
+    program = filtration_program(membrane = "silica", drive = "centrifuge"),
+    component_fates = {
+      CANDIDATE_4: { filtrate: 0%, retentate: 100% }
+    }
+  );
+  liquid_waste << [miniprep_bind_1[0], miniprep_bind_2[0], miniprep_bind_3[0], miniprep_bind_4[0]];
+  miniprep_1 << [miniprep_bind_1[1]];
+  miniprep_2 << [miniprep_bind_2[1]];
+  miniprep_3 << [miniprep_bind_3[1]];
+  miniprep_4 << [miniprep_bind_4[1]];
+  miniprep_1 << [miniprep_wash_buffer:500uL];
+  miniprep_2 << [miniprep_wash_buffer:500uL];
+  miniprep_3 << [miniprep_wash_buffer:500uL];
+  miniprep_4 << [miniprep_wash_buffer:500uL];
+  let miniprep_wash_1 = sep(
+    sample = miniprep_1,
+    program = filtration_program(membrane = "silica", drive = "centrifuge"),
+    component_fates = {
+      CANDIDATE_1: { filtrate: 0%, retentate: 100% }
+    }
+  );
+  let miniprep_wash_2 = sep(
+    sample = miniprep_2,
+    program = filtration_program(membrane = "silica", drive = "centrifuge"),
+    component_fates = {
+      CANDIDATE_2: { filtrate: 0%, retentate: 100% }
+    }
+  );
+  let miniprep_wash_3 = sep(
+    sample = miniprep_3,
+    program = filtration_program(membrane = "silica", drive = "centrifuge"),
+    component_fates = {
+      CANDIDATE_3: { filtrate: 0%, retentate: 100% }
+    }
+  );
+  let miniprep_wash_4 = sep(
+    sample = miniprep_4,
+    program = filtration_program(membrane = "silica", drive = "centrifuge"),
+    component_fates = {
+      CANDIDATE_4: { filtrate: 0%, retentate: 100% }
+    }
+  );
+  liquid_waste << [miniprep_wash_1[0], miniprep_wash_2[0], miniprep_wash_3[0], miniprep_wash_4[0]];
+  miniprep_1 << [miniprep_wash_1[1]];
+  miniprep_2 << [miniprep_wash_2[1]];
+  miniprep_3 << [miniprep_wash_3[1]];
+  miniprep_4 << [miniprep_wash_4[1]];
+  miniprep_1 << [nuclease_free_water:50uL];
+  miniprep_2 << [nuclease_free_water:50uL];
+  miniprep_3 << [nuclease_free_water:50uL];
+  miniprep_4 << [nuclease_free_water:50uL];
+  let miniprep_elute_1 = sep(
+    sample = miniprep_1,
+    program = filtration_program(membrane = "silica", drive = "centrifuge"),
+    component_fates = {
+      CANDIDATE_1: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  let miniprep_elute_2 = sep(
+    sample = miniprep_2,
+    program = filtration_program(membrane = "silica", drive = "centrifuge"),
+    component_fates = {
+      CANDIDATE_2: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  let miniprep_elute_3 = sep(
+    sample = miniprep_3,
+    program = filtration_program(membrane = "silica", drive = "centrifuge"),
+    component_fates = {
+      CANDIDATE_3: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  let miniprep_elute_4 = sep(
+    sample = miniprep_4,
+    program = filtration_program(membrane = "silica", drive = "centrifuge"),
+    component_fates = {
+      CANDIDATE_4: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  let plasmid_1 = tube(label = "MiniprepPlasmid1", capacity = 2000uL);
+  let plasmid_2 = tube(label = "MiniprepPlasmid2", capacity = 2000uL);
+  let plasmid_3 = tube(label = "MiniprepPlasmid3", capacity = 2000uL);
+  let plasmid_4 = tube(label = "MiniprepPlasmid4", capacity = 2000uL);
+  plasmid_1 << [miniprep_elute_1[0]];
+  plasmid_2 << [miniprep_elute_2[0]];
+  plasmid_3 << [miniprep_elute_3[0]];
+  plasmid_4 << [miniprep_elute_4[0]];
+
+  // Source step S17: EcoRI/HindIII diagnostic digests and agarose-gel readout.
+  let diagnostic_digest_1 = tube(label = "DiagnosticDigest1", capacity = 100uL);
+  let diagnostic_digest_2 = tube(label = "DiagnosticDigest2", capacity = 100uL);
+  let diagnostic_digest_3 = tube(label = "DiagnosticDigest3", capacity = 100uL);
+  let diagnostic_digest_4 = tube(label = "DiagnosticDigest4", capacity = 100uL);
+  diagnostic_digest_1 << [plasmid_1:10uL, digest_buffer:2uL, ecori:1uL, hindiii:1uL, nuclease_free_water:6uL];
+  diagnostic_digest_2 << [plasmid_2:10uL, digest_buffer:2uL, ecori:1uL, hindiii:1uL, nuclease_free_water:6uL];
+  diagnostic_digest_3 << [plasmid_3:10uL, digest_buffer:2uL, ecori:1uL, hindiii:1uL, nuclease_free_water:6uL];
+  diagnostic_digest_4 << [plasmid_4:10uL, digest_buffer:2uL, ecori:1uL, hindiii:1uL, nuclease_free_water:6uL];
+  with env(thermal = 37C, duration = 60min) {
+    hold(sample = group([diagnostic_digest_1, diagnostic_digest_2, diagnostic_digest_3, diagnostic_digest_4]));
+  }
+  let diagnostic_gel_setup = PrepareOnePercentAgaroseGel(gel_id = "DiagnosticDigestGel", ladder_position = "A5");
+  diagnostic_digest_1 << [diagnostic_gel_setup[1]:4uL];
+  diagnostic_digest_2 << [diagnostic_gel_setup[1]:4uL];
+  diagnostic_digest_3 << [diagnostic_gel_setup[1]:4uL];
+  diagnostic_digest_4 << [diagnostic_gel_setup[1]:4uL];
+  let diagnostic_split_1 = sep(
+    sample = diagnostic_digest_1,
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      CANDIDATE_1: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DIGEST_BUFFER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      ECORI: { target_band_fraction: 100%, non_target_fraction: 0% },
+      HINDIII: { target_band_fraction: 100%, non_target_fraction: 0% },
+      NFW: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let diagnostic_split_2 = sep(
+    sample = diagnostic_digest_2,
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      CANDIDATE_2: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DIGEST_BUFFER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      ECORI: { target_band_fraction: 100%, non_target_fraction: 0% },
+      HINDIII: { target_band_fraction: 100%, non_target_fraction: 0% },
+      NFW: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let diagnostic_split_3 = sep(
+    sample = diagnostic_digest_3,
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      CANDIDATE_3: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DIGEST_BUFFER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      ECORI: { target_band_fraction: 100%, non_target_fraction: 0% },
+      HINDIII: { target_band_fraction: 100%, non_target_fraction: 0% },
+      NFW: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let diagnostic_split_4 = sep(
+    sample = diagnostic_digest_4,
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      CANDIDATE_4: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DIGEST_BUFFER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      ECORI: { target_band_fraction: 100%, non_target_fraction: 0% },
+      HINDIII: { target_band_fraction: 100%, non_target_fraction: 0% },
+      NFW: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let diagnostic_ladder_split = sep(
+    sample = diagnostic_gel_setup[2],
+    program = field_program(field = 120V, duration = 45min),
+    component_fates = {
+      DNA_100BP_SIZE_LADDER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let diagnostic_schema = data_schema(
+    label = "DiagnosticDigestReadout",
+    fields = [candidate_id, expected_vector_band_bp, expected_insert_band_bp, observed_bands_bp, diagnostic_digest_pass]
+  );
+  let diagnostic_image = img(
+    sample = group([
+      diagnostic_split_1[0],
+      diagnostic_split_2[0],
+      diagnostic_split_3[0],
+      diagnostic_split_4[0],
+      diagnostic_ladder_split[0]
+    ]),
+    quantity = customized,
+    schema_ref = diagnostic_schema,
+    save_raw = true
+  );
+
+  // Source step S18: Sanger sequencing is an external analytical service. Culsma records
+  // submitted samples and the required confirmation fields, but sequence
+  // alignment and clone acceptance remain downstream analysis.
+  let sequencing_submission = chamber(label = "BidirectionalSangerSubmission", capacity = 1000uL);
+  sequencing_submission << [plasmid_1:10uL, plasmid_2:10uL, plasmid_3:10uL, plasmid_4:10uL, screening_primers:8uL];
+  let sanger_schema = data_schema(
+    label = "SangerCloneConfirmation",
+    fields = [candidate_id, insert_present, orientation_correct, ecori_junction_correct, hindiii_junction_correct, mutation_free, rearrangement_absent, reading_frame_correct, final_clone_confirmed]
+  );
+  let sanger_confirmation = phy(sample = sequencing_submission, quantity = customized, schema_ref = sanger_schema, save_raw = true);
+
+  return plasmid_1;
+}
+
+protocol PrepareOnePercentAgaroseGel(
+  gel_id = "AgaroseGel",
+  ladder_position = "L1",
+  ladder_code = "DNA_100BP_SIZE_LADDER"
+) {
+  // Prepare 100 mL of a 1% (w/v) agarose gel in 1x TBE.
+  let agarose_powder = tube(label = "AgarosePowder", capacity = 10mL, load = [
+    content(kind = particulate, type = particle, code = "MOLECULAR_BIOLOGY_AGAROSE", attrs = { role: matrix_component }):1g
+  ]);
+  let tbe_1x = tube(label = "TBE1xRunningBuffer", capacity = 200mL, load = [
+    content(kind = formulation, type = buffer, code = "TBE_1X", attrs = { role: reaction_environment }):100mL
+  ]);
+  let fluorescent_dna_stain = tube(label = "FluorescentDNAStain", capacity = 5000uL, load = [
+    content(kind = chemical, type = dye, code = "DNA_FLUORESCENT_STAIN_10000X", attrs = { role: stain }):100uL
+  ]);
+  let prepared_loading_dye = tube(label = "PreparedDNALoadingDye", capacity = 10000uL, load = [
+    content(kind = chemical, type = dye, code = "DNA_LOADING_DYE_6X", attrs = { role: tracking }):800uL
+  ]);
+  let selected_dna_ladder = tube(label = "SelectedDNA100bpSizeLadder", capacity = 10000uL, load = [
+    content(kind = bio_molecule_or_virus, type = dna, code = ladder_code, attrs = { role: standard }):800uL
+  ]);
+  let molten_agarose = chamber(label = "MoltenOnePercentAgarose", capacity = 150mL, open = true);
+  molten_agarose << [agarose_powder:1g, tbe_1x:100mL];
+  with env(thermal = 95C, duration = 5min) {
+    hold(sample = molten_agarose);
+  }
+  with env(thermal = 60C, duration = 10min) {
+    hold(sample = molten_agarose);
+  }
+  molten_agarose << [fluorescent_dna_stain:5uL];
+
+  // NOTE: Before pouring, install the gel comb in the casting tray at the
+  // required lane position and depth. Pour the stained molten agarose around
+  // the installed comb without introducing bubbles. After the gel solidifies,
+  // carefully remove the comb to form open sample-loading wells.
+  // Current Culsma has no structured comb-placement, well-formation, or
+  // comb-removal operation, so these required actions remain explicit notes.
+  // Tray/comb geometry is execution-layer setup; the gel identity and material
+  // transition are retained here.
+  let prepared_agarose_gel = chamber(
+    label = gel_id,
+    spec = "cast_1_percent_agarose_in_1x_tbe_with_fluorescent_dna_stain",
+    carrier_kind = "agarose_gel_casting_tray",
+    carrier_id = gel_id,
+    capacity = 150mL,
+    open = true
+  );
+  prepared_agarose_gel << [molten_agarose];
+  with env(thermal = 25C, duration = 30min) {
+    hold(sample = prepared_agarose_gel);
+  }
+
+  let prepared_gel_ladder_lane = well(
+    label = "PreparedGelLadderLane",
+    spec = "cast_1_percent_agarose_in_1x_tbe",
+    carrier_kind = "agarose_gel",
+    carrier_id = gel_id,
+    carrier_position = ladder_position,
+    capacity = 50uL,
+    open = true
+  );
+  prepared_gel_ladder_lane << [selected_dna_ladder:5uL, prepared_loading_dye:1uL];
+  return group([prepared_agarose_gel, prepared_loading_dye, prepared_gel_ladder_lane]);
+}
+
+// Deterministic benchmark fixture.
+PCRCloningTransformationAndScreening(
+  insert_pcr_qc_size_bp = 800,
+  insert_pcr_qc_band_count = 1
+);

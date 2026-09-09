@@ -1,0 +1,395 @@
+{
+  "schema_version": 1,
+  "case_id": "10",
+  "derivation": "derived_from_local_protocol_step_anchors",
+  "descriptor_item_count": 133,
+  "rows": [
+    {
+      "step": "S1",
+      "source": "Remove the desired tube(s) of barcoded lysate input material from the thermocycler if continuing directly from lysate preparation, or from storage at -80C.",
+      "descriptors": [
+        "lysate",
+        "capture_enhancer",
+        "streptavidin_beads",
+        "bead_wash_buffer",
+        "binding_buffer",
+        "wash_buffer_1",
+        "wash_buffer_2",
+        "waste",
+        "tube(...)",
+        "content(...)"
+      ]
+    },
+    {
+      "step": "S2",
+      "source": "If previously frozen, incubate the tube(s) in a water bath or thermocycler at 37C for 5 minutes.",
+      "descriptors": [
+        "env(...)",
+        "hold(...)"
+      ]
+    },
+    {
+      "step": "S3",
+      "source": "Ensure there is no precipitation before proceeding. If precipitation remains, incubate for an additional 5 minutes at 37C.",
+      "descriptors": [
+        "env(...)",
+        "hold(...)"
+      ]
+    },
+    {
+      "step": "S4",
+      "source": "Briefly centrifuge and store at room temperature.",
+      "descriptors": [
+        "env(...)",
+        "hold(...)"
+      ]
+    },
+    {
+      "step": "S5",
+      "source": "Briefly centrifuge Capture Enhancer and gently mix by pipetting 2x with a P20 set to 15 uL.",
+      "descriptors": [
+        "capture_enhancer",
+        "schedule(...)"
+      ]
+    },
+    {
+      "step": "S6",
+      "source": "Add 2.5 uL of Capture Enhancer to each tube of lysate.",
+      "descriptors": [
+        "lysate"
+      ]
+    },
+    {
+      "step": "S7",
+      "source": "Place the tube(s) into a 96-well PCR tube rack, press to secure, ensure the caps are secured tightly, and place the lid on the rack.",
+      "descriptors": [
+        "agit(...)"
+      ]
+    },
+    {
+      "step": "S8",
+      "source": "Place the rack onto a vortex mixer with a plate adapter. Push to secure.",
+      "descriptors": [
+        "agit(...)"
+      ]
+    },
+    {
+      "step": "S9",
+      "source": "Vortex the plastic holder on 100% power for 1 minute.",
+      "descriptors": [
+        "agit(...)"
+      ]
+    },
+    {
+      "step": "S10",
+      "source": "Remove the tube(s) from the vortex mixer and briefly centrifuge.",
+      "descriptors": [
+        "agit(...)"
+      ]
+    },
+    {
+      "step": "S11",
+      "source": "Incubate for 10 minutes at room temperature. This incubation can be extended by 5 additional minutes, up to a total of 15 minutes, without negatively impacting performance.",
+      "descriptors": [
+        "env(...)",
+        "hold(...)"
+      ]
+    },
+    {
+      "step": "S12",
+      "source": "Vortex Streptavidin Beads until fully mixed.",
+      "descriptors": [
+        "agit(...)"
+      ]
+    },
+    {
+      "step": "S13",
+      "source": "Add the appropriate volume of Streptavidin Beads to a new 1.5 mL tube:",
+      "descriptors": [
+        "agit(...)"
+      ]
+    },
+    {
+      "step": "S14",
+      "source": "Place the tube on the magnetic rack for 1.5 mL tubes until the solution clears, about 2 minutes.",
+      "descriptors": [
+        "bead_initial_split",
+        "streptavidin_beads",
+        "waste",
+        "sep(...)",
+        "magnetic_program(...)"
+      ]
+    },
+    {
+      "step": "S15",
+      "source": "Remove and discard the supernatant.",
+      "descriptors": [
+        "bead_initial_split",
+        "streptavidin_beads",
+        "waste",
+        "sep(...)",
+        "magnetic_program(...)"
+      ]
+    },
+    {
+      "step": "S16",
+      "source": "Remove the tube from the magnetic rack and fully resuspend the bead pellet in the appropriate volume of Bead Wash Buffer. Ensure no beads are stuck to the sides of the 1.5 mL tube.",
+      "descriptors": [
+        "schedule(...)"
+      ]
+    },
+    {
+      "step": "S17",
+      "source": "Place the tube on the magnetic rack for 1.5 mL tubes until the solution clears, about 2 minutes.",
+      "descriptors": [
+        "schedule(...)"
+      ]
+    },
+    {
+      "step": "S18",
+      "source": "Remove and discard the supernatant.",
+      "descriptors": [
+        "schedule(...)"
+      ]
+    },
+    {
+      "step": "S19",
+      "source": "Repeat the bead wash twice more for a total of 3 washes.",
+      "descriptors": [
+        "schedule(...)"
+      ]
+    },
+    {
+      "step": "S20",
+      "source": "Remove the tube from the magnetic rack.",
+      "descriptors": [
+        "streptavidin_beads",
+        "schedule(...)"
+      ]
+    },
+    {
+      "step": "S21",
+      "source": "Fully resuspend the pellet in the appropriate volume of Binding Buffer and store at room temperature.",
+      "descriptors": [
+        "streptavidin_beads",
+        "schedule(...)"
+      ]
+    },
+    {
+      "step": "S22",
+      "source": "Add 50 uL of Streptavidin Beads in Binding Buffer to each tube of lysate.",
+      "descriptors": [
+        "lysate"
+      ]
+    },
+    {
+      "step": "S23",
+      "source": "Place the tube(s) into a 96-well PCR tube rack, press to secure, ensure the caps are secured tightly, and place the lid on the rack.",
+      "descriptors": [
+        "agit(...)"
+      ]
+    },
+    {
+      "step": "S24",
+      "source": "Place the rack onto a vortex mixer with a plate adapter. Push to secure.",
+      "descriptors": [
+        "agit(...)"
+      ]
+    },
+    {
+      "step": "S25",
+      "source": "Vortex the plastic holder on 100% power for 1 minute.",
+      "descriptors": [
+        "agit(...)"
+      ]
+    },
+    {
+      "step": "S26",
+      "source": "Vortex on 20% power, about 800-1000 RPM, for 30 minutes at room temperature. Check 10 minutes into incubation that the beads are in solution. If settled, increase vortex speed to keep beads in solution.",
+      "descriptors": [
+        "env(...)",
+        "agit(...)"
+      ]
+    },
+    {
+      "step": "S27",
+      "source": "Remove the tube(s) from the vortex mixer.",
+      "descriptors": [
+        "agit(...)"
+      ]
+    },
+    {
+      "step": "S28",
+      "source": "Briefly vortex the tube(s) on a standard vortex adapter.",
+      "descriptors": [
+        "agit(...)"
+      ]
+    },
+    {
+      "step": "S29",
+      "source": "Briefly centrifuge without letting beads collect at the bottom of the tube(s).",
+      "descriptors": [
+        "agit(...)"
+      ]
+    },
+    {
+      "step": "S30",
+      "source": "Place the tube(s) on the high position of the magnetic rack, so the magnet is closer to the top of the 0.2 mL tubes. Incubate until the solution clears, about 2 minutes.",
+      "descriptors": [
+        "capture_split",
+        "lysate",
+        "waste",
+        "sep(...)",
+        "magnetic_program(...)"
+      ]
+    },
+    {
+      "step": "S31",
+      "source": "Ensure the supernatant is completely clear before proceeding. Discarding beads in the supernatant can reduce transcripts and genes detected per cell.",
+      "descriptors": [
+        "capture_split",
+        "lysate",
+        "waste",
+        "sep(...)",
+        "magnetic_program(...)"
+      ]
+    },
+    {
+      "step": "S32",
+      "source": "While still on the magnetic rack, remove and discard the supernatant.",
+      "descriptors": [
+        "capture_split",
+        "lysate",
+        "waste",
+        "sep(...)",
+        "magnetic_program(...)"
+      ]
+    },
+    {
+      "step": "S33",
+      "source": "Remove the tube(s) from the magnetic rack.",
+      "descriptors": [
+        "wash1_split",
+        "lysate",
+        "waste",
+        "schedule(...)",
+        "env(...)",
+        "hold(...)",
+        "sep(...)",
+        "magnetic_program(...)"
+      ]
+    },
+    {
+      "step": "S34",
+      "source": "Fully resuspend each bead pellet with 125 uL Wash Buffer 1.",
+      "descriptors": [
+        "wash1_split",
+        "lysate",
+        "waste",
+        "schedule(...)",
+        "env(...)",
+        "hold(...)",
+        "sep(...)",
+        "magnetic_program(...)"
+      ]
+    },
+    {
+      "step": "S35",
+      "source": "Incubate for 1 minute at room temperature.",
+      "descriptors": [
+        "wash1_split",
+        "lysate",
+        "waste",
+        "schedule(...)",
+        "env(...)",
+        "hold(...)",
+        "sep(...)",
+        "magnetic_program(...)"
+      ]
+    },
+    {
+      "step": "S36",
+      "source": "Return the tube(s) to the high position of the magnetic rack and incubate until the solution clears, about 2 minutes.",
+      "descriptors": [
+        "wash1_split",
+        "lysate",
+        "waste",
+        "schedule(...)",
+        "env(...)",
+        "hold(...)",
+        "sep(...)",
+        "magnetic_program(...)"
+      ]
+    },
+    {
+      "step": "S37",
+      "source": "While still on the magnetic rack, remove and discard the supernatant.",
+      "descriptors": [
+        "wash1_split",
+        "lysate",
+        "waste",
+        "schedule(...)",
+        "env(...)",
+        "hold(...)",
+        "sep(...)",
+        "magnetic_program(...)"
+      ]
+    },
+    {
+      "step": "S38",
+      "source": "Repeat the Wash Buffer 1 wash once more for a total of 2 washes.",
+      "descriptors": [
+        "wash1_split",
+        "lysate",
+        "waste",
+        "schedule(...)",
+        "env(...)",
+        "hold(...)",
+        "sep(...)",
+        "magnetic_program(...)"
+      ]
+    },
+    {
+      "step": "S39",
+      "source": "Remove the tube(s) from the magnetic rack.",
+      "descriptors": [
+        "lysate",
+        "schedule(...)",
+        "env(...)",
+        "hold(...)"
+      ]
+    },
+    {
+      "step": "S40",
+      "source": "Fully resuspend each bead pellet with 125 uL Wash Buffer 2. Save Wash Buffer 2 for optional storage before cDNA amplification.",
+      "descriptors": [
+        "lysate",
+        "schedule(...)",
+        "env(...)",
+        "hold(...)"
+      ]
+    },
+    {
+      "step": "S41",
+      "source": "Incubate for 1 minute at room temperature.",
+      "descriptors": [
+        "lysate",
+        "schedule(...)",
+        "env(...)",
+        "hold(...)"
+      ]
+    },
+    {
+      "step": "S42",
+      "source": "Continue immediately to the template-switch reaction module.",
+      "descriptors": [
+        "lysate",
+        "schedule(...)",
+        "env(...)",
+        "hold(...)"
+      ]
+    }
+  ],
+  "display_name": "Structured Experimental-Detail Capture",
+  "description": "Each reviewed source step is paired with Culsma variables or modules visible in the local protocol block for that step."
+}

@@ -1,0 +1,190 @@
+{
+  "case_id": "02",
+  "title": "RNA-to-qPCR Gene-Expression Workflow",
+  "schema_version": 1,
+  "source_steps": [
+    {
+      "source_step_id": "S1",
+      "phase": "Canonical Workflow",
+      "summary": "Accept one treated adherent-cell well and one reference adherent-cell well.",
+      "culsma_representation": [
+        "well",
+        "content constructors",
+        "carrier positions"
+      ],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S2",
+      "phase": "Canonical Workflow",
+      "summary": "Remove culture medium, wash each adherent-cell well twice with phosphate-buffered saline, lyse the cells, and collect each lysate.",
+      "culsma_representation": [
+        "sep",
+        "filtration_program",
+        "repeat schedule",
+        "material transfer",
+        "with env",
+        "hold"
+      ],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S3",
+      "phase": "Canonical Workflow",
+      "summary": "Add binding buffer, mix each lysate, load it onto a silica column, and retain the column-bound material after centrifugation.",
+      "culsma_representation": [
+        "material transfer",
+        "repeat schedule",
+        "sep",
+        "centrifugal_filtration_program",
+        "explicit filtrate/retained routing"
+      ],
+      "coverage": "current",
+      "boundary_notes": [
+        "Runtime records declared routing; it does not infer selective silica binding."
+      ]
+    },
+    {
+      "source_step_id": "S4",
+      "phase": "Canonical Workflow",
+      "summary": "Wash each column, perform on-column DNase digestion, wash again, and elute purified RNA.",
+      "culsma_representation": [
+        "material transfer",
+        "repeat schedule",
+        "with env",
+        "hold",
+        "sep"
+      ],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S5",
+      "phase": "Canonical Workflow",
+      "summary": "Record RNA quantity and purity readouts for each purified RNA sample.",
+      "culsma_representation": [
+        "sep",
+        "phy",
+        "data_schema"
+      ],
+      "coverage": "bridge",
+      "boundary_notes": [
+        "RNA QC values are represented as structured observations, not computed by the execution kernel."
+      ]
+    },
+    {
+      "source_step_id": "S6",
+      "phase": "Canonical Workflow",
+      "summary": "Build reverse-transcription reactions for treated and reference RNA.",
+      "culsma_representation": [
+        "tube",
+        "material transfer"
+      ],
+      "coverage": "current",
+      "boundary_notes": [
+        "Reverse-transcription success is not predicted by runtime material accounting."
+      ]
+    },
+    {
+      "source_step_id": "S7",
+      "phase": "Canonical Workflow",
+      "summary": "Incubate reverse-transcription reactions through priming, cDNA synthesis, enzyme inactivation, and hold steps.",
+      "culsma_representation": [
+        "with env",
+        "hold"
+      ],
+      "coverage": "current",
+      "boundary_notes": [
+        "Replicate relationships are represented through well groups and schema fields."
+      ]
+    },
+    {
+      "source_step_id": "S8",
+      "phase": "Canonical Workflow",
+      "summary": "Declare a qPCR plate layout with treated/reference, target/housekeeping, technical-replicate, and no-template-control wells.",
+      "culsma_representation": [
+        "plate",
+        "plate selectors",
+        "well groups"
+      ],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S9",
+      "phase": "Canonical Workflow",
+      "summary": "Load cDNA, no-template water, target primers, housekeeping primers, and qPCR master mix into the assigned well groups.",
+      "culsma_representation": [
+        "grouped material transfer",
+        "high_precision",
+        "low_carryover"
+      ],
+      "coverage": "current",
+      "boundary_notes": [
+        "Amplification efficiency is not simulated by the runtime."
+      ]
+    },
+    {
+      "source_step_id": "S10",
+      "phase": "Canonical Workflow",
+      "summary": "Run qPCR activation and repeated denaturation/annealing-extension cycles while collecting fluorescence.",
+      "culsma_representation": [
+        "with env",
+        "repeat schedule",
+        "img fluorescence"
+      ],
+      "coverage": "current",
+      "boundary_notes": [
+        "Ct calling and expression normalization are downstream analysis fields."
+      ]
+    },
+    {
+      "source_step_id": "S11",
+      "phase": "Canonical Workflow",
+      "summary": "Run a melt-curve ramp over all assay wells.",
+      "culsma_representation": [
+        "thermal_program",
+        "with env",
+        "hold"
+      ],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S12",
+      "phase": "Canonical Workflow",
+      "summary": "Record a structured qPCR readout with well, sample, gene, replicate, Ct, melt-peak, control, variability, and QC fields; quantitative normalization remains downstream analysis.",
+      "culsma_representation": [
+        "data_schema",
+        "img structured readout"
+      ],
+      "coverage": "bridge",
+      "boundary_notes": []
+    }
+  ],
+  "semantic_boundaries": [
+    {
+      "kind": "metadata_gap",
+      "label": "Replicate layout metadata",
+      "paper_wording": "Replicate relationships are represented by well groups and readout schema fields; a first-class assay-design layer is left as a benchmark-derived extension point."
+    },
+    {
+      "kind": "analysis_boundary",
+      "label": "qPCR quantitative analysis",
+      "paper_wording": "Ct calling and expression normalization are represented as structured result fields rather than computed by the wet-lab execution kernel."
+    }
+  ],
+  "known_warnings": [],
+  "paper_safe_claims": [
+    "The case exercises a multi-stage workflow from sample preparation to structured qPCR readout.",
+    "Material state remains trackable across lysis, column cleanup, reverse transcription, plate loading, and qPCR setup.",
+    "The represented workflow completes all 344 generated active steps with zero diagnostics."
+  ],
+  "avoid_claiming": [
+    "Do not claim that the kernel computes Ct values or fold changes.",
+    "Do not claim that the runtime predicts silica binding, reverse-transcription success, or amplification efficiency.",
+    "Do not claim first-class replicate semantics beyond declared well groups and schema fields."
+  ]
+}

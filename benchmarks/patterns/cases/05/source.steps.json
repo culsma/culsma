@@ -1,0 +1,19 @@
+{
+  "protocol_id": "05",
+  "title": "Flow-Cytometry Immunophenotyping Workflow",
+  "source_class": "canonical_textbook_style",
+  "source_file": "source.md",
+  "steps": [
+    { "id": "S1", "section": "Sample and Control Assignment", "source_text": "Assign the fully stained sample, unstained control, isotype control, and five single-antibody compensation controls." },
+    { "id": "S2", "section": "Sample and Control Assignment", "source_text": "Aliquot 100 uL PBMC suspension, corresponding to 1 x 10^6 cells, into each assigned tube." },
+    { "id": "S3", "section": "Initial Wash and Fc Receptor Blocking", "source_text": "Wash all assigned tubes at 300 x g for 5 min at 4 C and retain each cell pellet." },
+    { "id": "S4", "section": "Initial Wash and Fc Receptor Blocking", "source_text": "Resuspend each pellet, add Fc receptor blocking reagent, mix, and incubate on ice." },
+    { "id": "S5", "section": "Staining Reagent Assignment", "source_text": "Prepare the full antibody and viability staining panel." },
+    { "id": "S6", "section": "Staining Reagent Assignment", "source_text": "Prepare the isotype, five single-antibody, and unstained-control reagents." },
+    { "id": "S7", "section": "Sample and Control Staining", "source_text": "Apply each staining reagent to its assigned tube, mix, and incubate on ice protected from light." },
+    { "id": "S8", "section": "Post-Staining Wash", "source_text": "Wash every stained or control tube twice and retain the cell pellet after each centrifugation." },
+    { "id": "S9", "section": "Fixation and Acquisition Preparation", "source_text": "Fix each retained cell pellet, mix, and incubate at room temperature protected from light." },
+    { "id": "S10", "section": "Fixation and Acquisition Preparation", "source_text": "Wash the fixed cells, resuspend them in acquisition buffer, and hold them cold and protected from light." },
+    { "id": "S11", "section": "Acquisition", "source_text": "Acquire and return eight separately identified event streams with raw signals, control roles, acquisition metadata, and quality fields." }
+  ]
+}

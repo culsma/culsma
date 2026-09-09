@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "case_id": "06",
+  "display_name": "Structured Experimental-Detail Capture",
+  "description": "Each reviewed source step is paired with the Culsma variables or modules that make its action descriptors explicit.",
+  "descriptor_item_count": 57,
+  "rows": [
+    {
+      "step": "S1",
+      "source": "CRISPR-Cas9 RNP editing: Seed editing groups, assemble RNP formulations, combine each RNP with lipid delivery mix, and culture edited cells.",
+      "descriptors": [
+        "wt_cells",
+        "nt_cells",
+        "deletion_cells",
+        "deletion_rnp",
+        "nt_rnp",
+        "deletion_delivery_mix",
+        "nt_delivery_mix",
+        "env(37C, 5% CO2, 72h)"
+      ]
+    },
+    {
+      "step": "S2",
+      "source": "Isolation of candidate clones: Prepare the limiting-dilution suspension, seed the 96-well plate, review colony outgrowth, and pick selected candidate clones.",
+      "descriptors": [
+        "edited_pool_count",
+        "counted_edited_bulk_pool",
+        "limiting_dilution_suspension",
+        "limiting_dilution_wells",
+        "colony_outgrowth",
+        "selected_clone_a_well",
+        "clone_a",
+        "clone_b",
+        "clone_c"
+      ]
+    },
+    {
+      "step": "S3",
+      "source": "Genomic DNA input from candidate clones: Extract and purify genomic DNA from controls and candidate clones using the reusable gDNA module.",
+      "descriptors": [
+        "wt_gdna",
+        "nt_gdna",
+        "clone_a_gdna",
+        "clone_b_gdna",
+        "clone_c_gdna",
+        "ExtractAndPurifyGenomicDNA"
+      ]
+    },
+    {
+      "step": "S4",
+      "source": "PCR screening of the target locus: Assemble locus PCR reactions, run thermal cycling, load gel lanes, and collect band readouts.",
+      "descriptors": [
+        "wt_pcr",
+        "nt_pcr",
+        "clone_a_pcr",
+        "clone_b_pcr",
+        "clone_c_pcr",
+        "PrepareTwoPercentAgaroseGel",
+        "field_program(120V, 35min)",
+        "img(band_readout)"
+      ]
+    },
+    {
+      "step": "S5",
+      "source": "Initial PCR readout: Record predefined benchmark PCR-band outputs for controls and candidate clones.",
+      "descriptors": [
+        "wt_band_readout",
+        "nt_band_readout",
+        "clone_a_band_readout",
+        "clone_b_band_readout",
+        "clone_c_band_readout"
+      ]
+    },
+    {
+      "step": "S6",
+      "source": "Genotype readout and clone classification: Classify candidate clones using structured genotype readout and route heterozygous or unedited clones.",
+      "descriptors": [
+        "genotype_schema",
+        "clone_b_archive",
+        "clone_c_discard",
+        "validated_clone_a",
+        "inconclusive_clone_a",
+        "if genotype/readout routes"
+      ]
+    },
+    {
+      "step": "S7",
+      "source": "Protein-level validation of genotype-qualified clone: Acquire protein-level flow-cytometry evidence for genotype-qualified Clone A.",
+      "descriptors": [
+        "gene_x_panel",
+        "stream(single_cell)",
+        "clone_a_events",
+        "clone_a_protein",
+        "protein_negative"
+      ]
+    },
+    {
+      "step": "S8",
+      "source": "Functional validation of protein-negative clone: Run functional stimulation readout and route Clone A into the validated knockout output when controls pass.",
+      "descriptors": [
+        "wt_stimulation",
+        "nt_stimulation",
+        "clone_a_stimulation",
+        "function_schema",
+        "clone_a_function",
+        "validated_clone_a"
+      ]
+    },
+    {
+      "step": "S9",
+      "source": "Record final clone status: Record the final classifications of the candidate clones and return the validated knockout material.",
+      "descriptors": [
+        "validated_clone_a",
+        "clone_b_archive",
+        "clone_c_discard",
+        "return validated_clone_a"
+      ]
+    }
+  ]
+}

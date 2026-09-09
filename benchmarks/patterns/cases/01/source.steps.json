@@ -1,0 +1,111 @@
+{
+  "case_id": "01",
+  "steps": [
+    {
+      "id": "S1",
+      "title": "Assemble insert PCR",
+      "input": [
+        "template DNA",
+        "EcoRI-tailed forward primer",
+        "HindIII-tailed reverse primer",
+        "high-fidelity PCR master mix"
+      ],
+      "output": "insert PCR reaction"
+    },
+    {
+      "id": "S2",
+      "title": "Amplify insert",
+      "output": "amplified 800 bp insert"
+    },
+    {
+      "id": "S3",
+      "title": "Check PCR product by agarose gel electrophoresis",
+      "output": "insert PCR band image"
+    },
+    {
+      "id": "S4",
+      "title": "Purify the insert by PCR cleanup or image-guided gel extraction",
+      "output": "purified 800 bp PCR insert"
+    },
+    {
+      "id": "S5",
+      "title": "Digest insert and pUC19 vector with EcoRI and HindIII",
+      "output": [
+        "digested insert",
+        "linearized vector"
+      ]
+    },
+    {
+      "id": "S6",
+      "title": "Resolve digests by preparative agarose gel electrophoresis",
+      "output": "preparative gel image"
+    },
+    {
+      "id": "S7",
+      "title": "Select target insert and vector bands",
+      "output": [
+        "selected insert band",
+        "selected vector band"
+      ]
+    },
+    {
+      "id": "S8",
+      "title": "Extract DNA from gel and assemble ligation reactions and controls",
+      "output": [
+        "recombinant ligation",
+        "vector-only control",
+        "no-ligase control"
+      ]
+    },
+    {
+      "id": "S9",
+      "title": "Transform chemically competent DH5alpha cells",
+      "output": "transformed cell conditions"
+    },
+    {
+      "id": "S10",
+      "title": "Recover and plate transformed cells on selective blue-white screening agar",
+      "output": "selective plate colony images"
+    },
+    {
+      "id": "S11",
+      "title": "Select eight white candidate colonies",
+      "output": "candidate colony cultures"
+    },
+    {
+      "id": "S12",
+      "title": "Prepare and run colony PCR",
+      "output": "colony PCR reactions"
+    },
+    {
+      "id": "S13",
+      "title": "Resolve colony PCR products by agarose gel electrophoresis",
+      "output": "colony PCR screening image"
+    },
+    {
+      "id": "S14",
+      "title": "Record candidate-positive colony PCR results",
+      "output": "candidate screening readout"
+    },
+    {
+      "id": "S15",
+      "title": "Culture candidate-positive clones",
+      "output": "overnight positive-clone cultures"
+    },
+    {
+      "id": "S16",
+      "title": "Purify plasmid DNA by miniprep",
+      "output": "candidate plasmid DNA"
+    },
+    {
+      "id": "S17",
+      "title": "Perform EcoRI-HindIII diagnostic digest and gel readout",
+      "output": "diagnostic digest readout"
+    },
+    {
+      "id": "S18",
+      "title": "Submit bidirectional Sanger sequencing and record clone-confirmation fields",
+      "output": "sequence-confirmation readout"
+    }
+  ]
+}

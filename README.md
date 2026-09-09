@@ -15,7 +15,7 @@
 Culsma is the public reference implementation of the current Culsma language and execution stack.
 The public release is distributed as a Python-based CLI.
 
-This repository intentionally contains only the executable core:
+The executable core is organized in:
 
 - `src/culsma/parser/`
 - `src/culsma/pipeline/`
@@ -24,7 +24,12 @@ This repository intentionally contains only the executable core:
 - `src/culsma/stdlib/`
 - `tests/`
 
-It intentionally leaves out manuscript sources, MCP tooling, editor
+The repository also contains self-contained paper reproduction materials under
+[`benchmarks/patterns/`](benchmarks/patterns/README.md), separate from the language
+implementation and its PyPI package. This benchmark is a submission candidate;
+its own archived release identifier is pending.
+
+It intentionally leaves out full manuscript sources, MCP tooling, editor
 integrations, and internal design-workspace documents.
 
 ## Install
@@ -64,6 +69,7 @@ src/culsma/runtime/   execution state, events, and material compute
 src/culsma/driver/    backend boundary and concrete drivers
 src/culsma/stdlib/    bundled standard-library source
 tests/                regression and runtime tests
+benchmarks/patterns/   fixed paper benchmark, expected results and reproduction tools
 ```
 
 ## Quick Run

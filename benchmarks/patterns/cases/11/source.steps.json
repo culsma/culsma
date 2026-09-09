@@ -1,0 +1,99 @@
+{
+  "protocol_id": "11",
+  "title": "Magnetic-Bead cDNA Template Switch Reaction",
+  "source_class": "anonymized_vendor_protocol_excerpt",
+  "review_revision": "2026-06-13",
+  "source_file": "source.md",
+  "steps": [
+    {
+      "id": "S1",
+      "section": "Template Switch Procedure",
+      "source_text": "Place each tube of bead-bound captured cDNA input material on the high position of the magnetic rack."
+    },
+    {
+      "id": "S2",
+      "section": "Template Switch Procedure",
+      "source_text": "Incubate until the solution clears, about 2 minutes."
+    },
+    {
+      "id": "S3",
+      "section": "Template Switch Procedure",
+      "source_text": "While still on the magnetic rack, remove and discard the supernatant."
+    },
+    {
+      "id": "S4",
+      "section": "Template Switch Procedure",
+      "source_text": "While still on the magnetic rack, add 125 uL of Wash Buffer 3 to each tube. Do not discard the Wash Buffer 3 until directed, because it is used in another step."
+    },
+    {
+      "id": "S5",
+      "section": "Template Switch Procedure",
+      "source_text": "Incubate for 1 minute at room temperature."
+    },
+    {
+      "id": "S6",
+      "section": "Template Switch Procedure",
+      "source_text": "While still on the magnetic rack, remove and discard Wash Buffer 3."
+    },
+    {
+      "id": "S7",
+      "section": "Template Switch Procedure",
+      "source_text": "Remove the tube(s) from the magnetic rack."
+    },
+    {
+      "id": "S8",
+      "section": "Template Switch Procedure",
+      "source_text": "Fully resuspend each bead pellet with 100 uL of the Template Switch Master Mix. Because the mix is viscous, full resuspension may take time."
+    },
+    {
+      "id": "S9",
+      "section": "Template Switch Procedure",
+      "source_text": "Briefly centrifuge without letting beads collect at the bottom of the tube(s)."
+    },
+    {
+      "id": "S10",
+      "section": "Template Switch Procedure",
+      "source_text": "Incubate for 30 minutes at room temperature."
+    },
+    {
+      "id": "S11",
+      "section": "Template Switch Procedure",
+      "source_text": "Fully resuspend each bead pellet by mixing 5x with a P200 set to 75 uL."
+    },
+    {
+      "id": "S12",
+      "section": "Template Switch Procedure",
+      "source_text": "Place the tube(s) into a thermocycler and run the Template Switch program."
+    },
+    {
+      "id": "S13",
+      "section": "Template Switch Procedure",
+      "source_text": "Continue immediately to the cDNA amplification module, or proceed to the storage steps below before cDNA amplification."
+    },
+    {
+      "id": "S14",
+      "section": "Template Switch Procedure",
+      "source_text": "For optional storage, place the tube(s) on the high position of the magnetic rack and incubate until the solution clears, about 2 minutes. Beads may need to be resuspended if settled."
+    },
+    {
+      "id": "S15",
+      "section": "Template Switch Procedure",
+      "source_text": "While still on the magnetic rack, remove and discard the supernatant."
+    },
+    {
+      "id": "S16",
+      "section": "Template Switch Procedure",
+      "source_text": "Remove the tube(s) from the magnetic rack."
+    },
+    {
+      "id": "S17",
+      "section": "Template Switch Procedure",
+      "source_text": "Fully resuspend each bead pellet with 125 uL Wash Buffer 2."
+    },
+    {
+      "id": "S18",
+      "section": "Template Switch Procedure",
+      "source_text": "Template-switched cDNA can be stored at 4C for up to 18 hours. Do not freeze."
+    }
+  ]
+}

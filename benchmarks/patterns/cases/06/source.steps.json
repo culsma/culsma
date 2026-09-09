@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "case_id": "06",
+  "source_class": "canonical_textbook",
+  "steps": [
+    {
+      "id": "S1",
+      "title": "CRISPR-Cas9 RNP editing",
+      "text": "Seed editing groups, assemble RNP formulations, combine each RNP with lipid delivery mix, and culture edited cells."
+    },
+    {
+      "id": "S2",
+      "title": "Isolation of candidate clones",
+      "text": "Prepare the limiting-dilution suspension, seed the 96-well plate, review colony outgrowth, and pick selected candidate clones."
+    },
+    {
+      "id": "S3",
+      "title": "Genomic DNA input from candidate clones",
+      "text": "Extract and purify genomic DNA from controls and candidate clones using the reusable gDNA module."
+    },
+    {
+      "id": "S4",
+      "title": "PCR screening of the target locus",
+      "text": "Assemble locus PCR reactions, run thermal cycling, load gel lanes, and collect band readouts."
+    },
+    {
+      "id": "S5",
+      "title": "Initial PCR readout",
+      "text": "Record predefined benchmark PCR-band outputs for controls and candidate clones."
+    },
+    {
+      "id": "S6",
+      "title": "Genotype readout and clone classification",
+      "text": "Classify candidate clones using structured genotype readout and route heterozygous or unedited clones."
+    },
+    {
+      "id": "S7",
+      "title": "Protein-level validation of genotype-qualified clone",
+      "text": "Acquire protein-level flow-cytometry evidence for genotype-qualified Clone A."
+    },
+    {
+      "id": "S8",
+      "title": "Functional validation of protein-negative clone",
+      "text": "Run functional stimulation readout and route Clone A into the validated knockout output when controls pass."
+    },
+    {
+      "id": "S9",
+      "title": "Record final clone status",
+      "text": "Record the final classifications of the candidate clones and return the validated knockout material."
+    }
+  ]
+}

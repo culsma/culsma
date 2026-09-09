@@ -1,0 +1,18 @@
+{
+  "protocol_id": "07",
+  "title": "Recombinant Protein Affinity Purification With SDS-PAGE QC",
+  "source_class": "canonical_textbook_style",
+  "source_file": "source.md",
+  "steps": [
+    { "id": "S1", "phase": "cell_lysis", "summary": "Resuspend the bacterial pellet, mechanically lyse it, clarify the lysate, and retain an input QC aliquot." },
+    { "id": "S2", "phase": "column_equilibration", "summary": "Equilibrate the nickel resin bed and discard the equilibration flowthrough." },
+    { "id": "S3", "phase": "binding", "summary": "Apply the remaining clarified lysate to the resin, bind the target, and collect flowthrough." },
+    { "id": "S4", "phase": "wash", "summary": "Wash the loaded resin three times, pool the washes, and retain a wash QC aliquot." },
+    { "id": "S5", "phase": "elution", "summary": "Elute the target protein into two imidazole fractions and retain QC aliquots." },
+    { "id": "S6", "phase": "sample_prep", "summary": "Prepare input, flowthrough, wash, and elution fractions with reducing loading dye." },
+    { "id": "S7", "phase": "denaturation", "summary": "Heat and briefly centrifuge the prepared QC samples." },
+    { "id": "S8", "phase": "gel_loading", "summary": "Load the prepared fractions and molecular-weight ladder into assigned SDS-PAGE lanes." },
+    { "id": "S9", "phase": "electrophoresis_and_staining", "summary": "Run electrophoresis, rinse, stain, destain, and image the gel." },
+    { "id": "S10", "phase": "gel_qc", "summary": "Record lane-level QC and return the purified fractions with the gel readout." }
+  ]
+}

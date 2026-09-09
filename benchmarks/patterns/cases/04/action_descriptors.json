@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "case_id": "04",
+  "derivation": "derived_from_local_protocol_step_anchors",
+  "descriptor_item_count": 68,
+  "rows": [
+    {
+      "step": "S1",
+      "source": "Declare an ELISA plate and select standard, unknown, blank, and control wells with plate selectors.",
+      "descriptors": [
+        "elisa_plate",
+        "assay_wells",
+        "standard_wells",
+        "unknown_wells",
+        "positive_control_well",
+        "negative_control_well",
+        "blank_qc_well",
+        "blank_backup_well",
+        "capture_antibody",
+        "blocking_buffer"
+      ]
+    },
+    {
+      "step": "S2",
+      "source": "Add capture antibody to assay wells under high_precision and low_carryover requirements, then incubate overnight.",
+      "descriptors": [
+        "assay_wells",
+        "env(...)",
+        "hold(...)"
+      ]
+    },
+    {
+      "step": "S3",
+      "source": "Wash wells by adding wash buffer, agitating, separating aspirated wash liquid from retained assay state, and routing filtrate to waste.",
+      "descriptors": [
+        "coating_wash_group",
+        "assay_wells",
+        "waste",
+        "schedule(...)",
+        "agit(...)",
+        "sep(...)"
+      ]
+    },
+    {
+      "step": "S4",
+      "source": "Add blocking buffer under high_precision and low_carryover requirements, incubate, and wash.",
+      "descriptors": [
+        "blocking_wash_group",
+        "assay_wells",
+        "waste",
+        "env(...)",
+        "hold(...)",
+        "schedule(...)",
+        "agit(...)",
+        "sep(...)"
+      ]
+    },
+    {
+      "step": "S5",
+      "source": "Load standard curve wells, unknown sample wells, positive and negative controls, and blank wells under registered precision/carryover constraints.",
+      "descriptors": [
+        "standard_wells",
+        "positive_control_well",
+        "negative_control_well",
+        "blank_qc_well",
+        "blank_backup_well"
+      ]
+    },
+    {
+      "step": "S6",
+      "source": "Incubate loaded wells and wash.",
+      "descriptors": [
+        "sample_wash_group",
+        "assay_wells",
+        "waste",
+        "env(...)",
+        "hold(...)",
+        "schedule(...)",
+        "agit(...)",
+        "sep(...)"
+      ]
+    },
+    {
+      "step": "S7",
+      "source": "Add detection antibody under high_precision and low_carryover requirements, incubate, and wash.",
+      "descriptors": [
+        "detection_wash_group",
+        "assay_wells",
+        "waste",
+        "env(...)",
+        "hold(...)",
+        "schedule(...)",
+        "agit(...)",
+        "sep(...)"
+      ]
+    },
+    {
+      "step": "S8",
+      "source": "Add enzyme conjugate under high_precision and low_carryover requirements, incubate, and wash.",
+      "descriptors": [
+        "enzyme_wash_group",
+        "assay_wells",
+        "waste",
+        "env(...)",
+        "hold(...)",
+        "schedule(...)",
+        "agit(...)",
+        "sep(...)"
+      ]
+    },
+    {
+      "step": "S9",
+      "source": "Add substrate under high_precision, low_carryover, and dark_protected requirements, incubate under dark_protected, and stop reaction.",
+      "descriptors": [
+        "assay_wells",
+        "env(...)",
+        "hold(...)"
+      ]
+    },
+    {
+      "step": "S10",
+      "source": "Read absorbance and record simple blank, positive-control, and negative-control QC flags through data_schema, data_ref.result fields, and if branches.",
+      "descriptors": [
+        "absorbance_schema",
+        "plate_absorbance",
+        "standards_absorbance",
+        "unknown_absorbance",
+        "blank_absorbance",
+        "positive_control_absorbance",
+        "negative_control_absorbance",
+        "data_schema(...)",
+        "img(...)"
+      ]
+    }
+  ],
+  "display_name": "Structured Experimental-Detail Capture",
+  "description": "Each reviewed source step is paired with Culsma variables or modules visible in the local protocol block for that step."
+}

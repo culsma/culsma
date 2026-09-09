@@ -1,0 +1,76 @@
+{
+  "protocol_id": "03",
+  "title": "Full Western blot workflow",
+  "steps": [
+    {
+      "id": "S1",
+      "phase": "cell_input",
+      "summary": "Accept cultured adherent mammalian cells at the protein-harvest point."
+    },
+    {
+      "id": "S2",
+      "phase": "lysis",
+      "summary": "Remove culture medium, wash the monolayer, lyse on plate in cold inhibitor-containing RIPA buffer, and collect crude lysate."
+    },
+    {
+      "id": "S3",
+      "phase": "clarification",
+      "summary": "Clarify the crude lysate at 12,000 x g and retain the soluble protein-containing fraction."
+    },
+    {
+      "id": "S4",
+      "phase": "protein_quantification",
+      "summary": "Prepare BCA working reagent and standards, assay duplicate sample and standard wells, and record the loading-volume criterion for 30 ug protein."
+    },
+    {
+      "id": "S5",
+      "phase": "sample_preparation",
+      "summary": "Prepare, mix, heat-denature, and briefly spin down a reducing SDS-PAGE sample."
+    },
+    {
+      "id": "S6",
+      "phase": "gel_loading",
+      "summary": "Prepare the Bis-Tris gel and electrophoresis tank, then load the prepared sample and prestained marker lanes."
+    },
+    {
+      "id": "S7",
+      "phase": "electrophoresis",
+      "summary": "Run stacking and separation voltage stages and collect the separated gel-lane outputs."
+    },
+    {
+      "id": "S8",
+      "phase": "transfer",
+      "summary": "Activate and equilibrate a PVDF membrane, assemble the transfer stack, and transfer proteins at 100 V for 90 min at 4 C."
+    },
+    {
+      "id": "S9",
+      "phase": "blocking",
+      "summary": "Rinse, block, and wash the transferred PVDF membrane before antibody incubation."
+    },
+    {
+      "id": "S10",
+      "phase": "primary_antibody",
+      "summary": "Incubate the membrane with mouse anti-alpha-tubulin primary antibody and remove the antibody solution."
+    },
+    {
+      "id": "S11",
+      "phase": "wash",
+      "summary": "Wash the primary-antibody-treated membrane three times with TBST."
+    },
+    {
+      "id": "S12",
+      "phase": "secondary_antibody",
+      "summary": "Incubate the membrane with Alexa Fluor 680 secondary antibody under dark protection and remove the antibody solution."
+    },
+    {
+      "id": "S13",
+      "phase": "wash",
+      "summary": "Wash the fluorescently stained membrane three times with TBST under dark protection."
+    },
+    {
+      "id": "S14",
+      "phase": "readout",
+      "summary": "Acquire a structured 680-nm Western blot image readout and retain the stained membrane as the protocol output."
+    }
+  ]
+}

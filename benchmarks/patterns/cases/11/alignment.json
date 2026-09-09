@@ -1,0 +1,188 @@
+{
+  "case_id": "11",
+  "title": "Magnetic-Bead cDNA Template Switch Reaction",
+  "schema_version": 1,
+  "source_steps": [
+    {
+      "source_step_id": "S1",
+      "phase": "Template Switch Procedure",
+      "summary": "Place each tube of bead-bound captured cDNA input material on the high position of the magnetic rack.",
+      "culsma_representation": [
+        "env(field = magnetic_rack)",
+        "sep(magnetic_program)",
+        "transfer"
+      ],
+      "coverage": "current",
+      "boundary_notes": [
+        "Until-clear endpoint is represented by nominal magnetic durations."
+      ]
+    },
+    {
+      "source_step_id": "S2",
+      "phase": "Template Switch Procedure",
+      "summary": "Incubate until the solution clears, about 2 minutes.",
+      "culsma_representation": [
+        "constraint(cold_chain)",
+        "transfer",
+        "repeat"
+      ],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S3",
+      "phase": "Template Switch Procedure",
+      "summary": "While still on the magnetic rack, remove and discard the supernatant.",
+      "culsma_representation": [
+        "transfer",
+        "repeat",
+        "env(thermal)"
+      ],
+      "coverage": "current",
+      "boundary_notes": [
+        "Under-specified resuspension uses the reviewed 80% volume x 10 convention."
+      ]
+    },
+    {
+      "source_step_id": "S4",
+      "phase": "Template Switch Procedure",
+      "summary": "While still on the magnetic rack, add 125 uL of Wash Buffer 3 to each tube. Do not discard the Wash Buffer 3 until directed, because it is used in another step.",
+      "culsma_representation": [
+        "if/else",
+        "env(thermal)",
+        "sep"
+      ],
+      "coverage": "current",
+      "boundary_notes": [
+        "The default public artifact executes the immediate-continuation branch."
+      ]
+    },
+    {
+      "source_step_id": "S5",
+      "phase": "Template Switch Procedure",
+      "summary": "Incubate for 1 minute at room temperature.",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S6",
+      "phase": "Template Switch Procedure",
+      "summary": "While still on the magnetic rack, remove and discard Wash Buffer 3.",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S7",
+      "phase": "Template Switch Procedure",
+      "summary": "Remove the tube(s) from the magnetic rack.",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S8",
+      "phase": "Template Switch Procedure",
+      "summary": "Fully resuspend each bead pellet with 100 uL of the Template Switch Master Mix. Because the mix is viscous, full resuspension may take time.",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S9",
+      "phase": "Template Switch Procedure",
+      "summary": "Briefly centrifuge without letting beads collect at the bottom of the tube(s).",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S10",
+      "phase": "Template Switch Procedure",
+      "summary": "Incubate for 30 minutes at room temperature.",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S11",
+      "phase": "Template Switch Procedure",
+      "summary": "Fully resuspend each bead pellet by mixing 5x with a P200 set to 75 uL.",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S12",
+      "phase": "Template Switch Procedure",
+      "summary": "Place the tube(s) into a thermocycler and run the Template Switch program.",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S13",
+      "phase": "Template Switch Procedure",
+      "summary": "Continue immediately to the cDNA amplification module, or proceed to the storage steps below before cDNA amplification.",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S14",
+      "phase": "Template Switch Procedure",
+      "summary": "For optional storage, place the tube(s) on the high position of the magnetic rack and incubate until the solution clears, about 2 minutes. Beads may need to be resuspended if settled.",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S15",
+      "phase": "Template Switch Procedure",
+      "summary": "While still on the magnetic rack, remove and discard the supernatant.",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S16",
+      "phase": "Template Switch Procedure",
+      "summary": "Remove the tube(s) from the magnetic rack.",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S17",
+      "phase": "Template Switch Procedure",
+      "summary": "Fully resuspend each bead pellet with 125 uL Wash Buffer 2.",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S18",
+      "phase": "Template Switch Procedure",
+      "summary": "Template-switched cDNA can be stored at 4C for up to 18 hours. Do not freeze.",
+      "culsma_representation": [],
+      "coverage": "current",
+      "boundary_notes": []
+    }
+  ],
+  "semantic_boundaries": [
+    {
+      "kind": "semantic_boundary",
+      "label": "Brief centrifuge",
+      "paper_wording": "Brief non-fractionating centrifuge handling is not represented as a material separation."
+    },
+    {
+      "kind": "semantic_boundary",
+      "label": "Magnet position",
+      "paper_wording": "Magnet rack position is execution-layer mapping; Culsma represents persistent rack context and timed magnetic separation."
+    }
+  ],
+  "known_warnings": [],
+  "paper_safe_claims": [],
+  "avoid_claiming": []
+}

@@ -1,0 +1,325 @@
+{
+  "snapshot_id": "patterns-benchmark-2026-09-09",
+  "status": "local submission candidate; not yet archived",
+  "hosting_repository": "culsma/culsma",
+  "hosting_path": "benchmarks/patterns",
+  "hosting_status": "prepared locally; repository push and benchmark release pending",
+  "environment": {
+    "python": "3.12.8",
+    "culsma": "1.0.6",
+    "lark": "1.3.1"
+  },
+  "implementation_commit": "0a5393c33151663566fe3d81d4fe01f29f98e274",
+  "wheel_source_files_verified": 145,
+  "docs_commit": "2d79ffabe118094f9d7b87efed3aa9314cd40a41",
+  "input_policy": "Exact working-tree artifact copies; checksums identify the actual inputs",
+  "driver": "StubDriver",
+  "inventory_reconciliation": false,
+  "case_ids": [
+    "00",
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14"
+  ],
+  "formal_case_ids": [
+    "01",
+    "02",
+    "03",
+    "04",
+    "05",
+    "06",
+    "07",
+    "08",
+    "09",
+    "10",
+    "11",
+    "12",
+    "13",
+    "14"
+  ],
+  "cases": {
+    "00": {
+      "title": "GFP Lysate Clarification Fluorescence Readout",
+      "source_class": "independently_authored_teaching_example",
+      "provider": "canonical_textbook",
+      "boundaries": [
+        {
+          "kind": "analysis_boundary",
+          "label": "Fluorescence interpretation",
+          "paper_wording": "Fluorescence intensity interpretation, normalization, and pass/fail thresholds are downstream analysis or data-validation concerns, not inferred by the wet-lab execution kernel."
+        }
+      ],
+      "upstream_path": "docs/public/papers/patterns-benchmark/artifacts/cases/00",
+      "protocol_repository_path": "protocols/teaching-demo/00-gfp-lysate-clarification-fluorescence-readout/protocol.culs",
+      "protocol_repository_sha256": "911f4862a468e8ec4147feaf76fa243bfa1ff9e0225e978d834bd6cd43f0072e",
+      "program_byte_identical_to_protocol_repository": true,
+      "source_byte_identical_to_protocol_repository": true
+    },
+    "01": {
+      "title": "PCR Amplification, Restriction Cloning into pUC19, Transformation into E. coli DH5alpha, and Screening of Recombinant Colonies",
+      "source_class": "independently_authored",
+      "provider": "canonical_textbook",
+      "boundaries": [],
+      "upstream_path": "docs/public/papers/patterns-benchmark/artifacts/cases/01",
+      "protocol_repository_path": "protocols/canonical-textbook/tb01-tb-01-pcr-amplification-restriction-cloning-into-puc19-transformation-into-e-coli-dh5alpha-and-screening-of-recombinant-colonies/protocol.culs",
+      "protocol_repository_sha256": "0222970dd2dcf72bc2923a47ca57953c9b9045a10ca35251e9b4785e07e60378",
+      "program_byte_identical_to_protocol_repository": true,
+      "source_byte_identical_to_protocol_repository": true
+    },
+    "02": {
+      "title": "RNA-to-qPCR Gene-Expression Workflow",
+      "source_class": "independently_authored",
+      "provider": "canonical_textbook",
+      "boundaries": [
+        {
+          "kind": "metadata_gap",
+          "label": "Replicate layout metadata",
+          "paper_wording": "Replicate relationships are represented by well groups and readout schema fields; a first-class assay-design layer is left as a benchmark-derived extension point."
+        },
+        {
+          "kind": "analysis_boundary",
+          "label": "qPCR quantitative analysis",
+          "paper_wording": "Ct calling and expression normalization are represented as structured result fields rather than computed by the wet-lab execution kernel."
+        }
+      ],
+      "upstream_path": "docs/public/papers/patterns-benchmark/artifacts/cases/02",
+      "protocol_repository_path": "protocols/canonical-textbook/02-rna-to-qpcr-gene-expression-workflow/protocol.culs",
+      "protocol_repository_sha256": "24d0a82fe12765567a862a8d025ad43138e5d42ab515e409ae8a34dff268b5b5",
+      "program_byte_identical_to_protocol_repository": true,
+      "source_byte_identical_to_protocol_repository": true
+    },
+    "03": {
+      "title": "Full Western blot workflow",
+      "source_class": "independently_authored",
+      "provider": "canonical_textbook",
+      "boundaries": [
+        {
+          "kind": "semantic_boundary",
+          "label": "Protein target and antibody specificity",
+          "paper_wording": "The alpha-tubulin target, antibody specificity, dilution, and imaging channel are represented through content attributes and structured readout fields rather than a dedicated Western-blot assay object."
+        },
+        {
+          "kind": "analysis_boundary",
+          "label": "Band quantification and interpretation",
+          "paper_wording": "Band identification, densitometry, transfer-efficiency assessment, and biological conclusions remain downstream analysis over the recorded image readout."
+        }
+      ],
+      "upstream_path": "docs/public/papers/patterns-benchmark/artifacts/cases/03",
+      "protocol_repository_path": "protocols/canonical-textbook/03-full-western-blot-workflow/protocol.culs",
+      "protocol_repository_sha256": "38800898ce84038e815e0455f1caa61d9b585327ad22ff72764b54ed5ed0a0ed",
+      "program_byte_identical_to_protocol_repository": true,
+      "source_byte_identical_to_protocol_repository": true
+    },
+    "04": {
+      "title": "Sandwich ELISA with Standard Curve",
+      "source_class": "independently_authored",
+      "provider": "canonical_textbook",
+      "boundaries": [
+        {
+          "kind": "metadata_gap",
+          "label": "Replicate/assay layout metadata",
+          "paper_wording": "Replicate groups and assay layout roles are represented through explicit well assignments and field names, not first-class assay-design metadata."
+        },
+        {
+          "kind": "analysis_boundary",
+          "label": "Standard-curve analysis",
+          "paper_wording": "Curve fitting, concentration interpolation, and complex plate QC remain downstream analysis concerns."
+        }
+      ],
+      "upstream_path": "docs/public/papers/patterns-benchmark/artifacts/cases/04",
+      "protocol_repository_path": "protocols/canonical-textbook/tb04-tb-04-sandwich-elisa-with-standard-curve/protocol.culs",
+      "protocol_repository_sha256": "df7c2663b5323c3074d269e6172e76cb87136b336f257bef3bd57ea3f8e352c6",
+      "program_byte_identical_to_protocol_repository": true,
+      "source_byte_identical_to_protocol_repository": true
+    },
+    "05": {
+      "title": "Flow-Cytometry Immunophenotyping Workflow",
+      "source_class": "independently_authored",
+      "provider": "canonical_textbook",
+      "boundaries": [
+        {
+          "kind": "analysis_boundary",
+          "label": "Flow-cytometry analysis",
+          "paper_wording": "Compensation, singlet selection, live/dead thresholding, gating, subset calling, and percentages are downstream analysis over observed events."
+        }
+      ],
+      "upstream_path": "docs/public/papers/patterns-benchmark/artifacts/cases/05",
+      "protocol_repository_path": "protocols/canonical-textbook/05-flow-cytometry-immunophenotyping-workflow/protocol.culs",
+      "protocol_repository_sha256": "77b4a765869ebaef585dc64ef8c4970cad6938c3d15778b4be31480bdad926bc",
+      "program_byte_identical_to_protocol_repository": false,
+      "source_byte_identical_to_protocol_repository": true
+    },
+    "06": {
+      "title": "CRISPR Knockout Validation Workflow",
+      "source_class": "canonical_textbook",
+      "provider": "canonical_textbook",
+      "boundaries": [
+        {
+          "kind": "analysis_boundary",
+          "label": "CRISPR validation interpretation",
+          "paper_wording": "Sequencing interpretation, flow-cytometry gating, and functional pass/fail interpretation are represented as structured benchmark readouts rather than inferred from raw data."
+        }
+      ],
+      "upstream_path": "docs/public/papers/patterns-benchmark/artifacts/cases/06",
+      "protocol_repository_path": "protocols/canonical-textbook/06-crispr-knockout-validation-workflow/protocol.culs",
+      "protocol_repository_sha256": "38c3dcd65d4be9c6f68764ddcefb361122107ff00cda5ad99000f62fae0c8cbd",
+      "program_byte_identical_to_protocol_repository": true,
+      "source_byte_identical_to_protocol_repository": true
+    },
+    "07": {
+      "title": "Recombinant Protein Affinity Purification With SDS-PAGE QC",
+      "source_class": "independently_authored",
+      "provider": "canonical_textbook",
+      "boundaries": [
+        {
+          "kind": "analysis_boundary",
+          "label": "Protein purification interpretation",
+          "paper_wording": "Purity scoring, target-band identification, and contaminant interpretation are recorded as observations, not computed by the execution kernel."
+        }
+      ],
+      "upstream_path": "docs/public/papers/patterns-benchmark/artifacts/cases/07",
+      "protocol_repository_path": "protocols/canonical-textbook/07-recombinant-protein-affinity-purification-with-sds-page-qc/protocol.culs",
+      "protocol_repository_sha256": "61b6c34ba1fd3cd70343cd1c91bf107ab4aa44a23c7ebd8e1282c8361492b548",
+      "program_byte_identical_to_protocol_repository": true,
+      "source_byte_identical_to_protocol_repository": true
+    },
+    "08": {
+      "title": "Cell culture, transfection, immunocytochemistry, and imaging",
+      "source_class": "public_protocol_link",
+      "provider": "protocols.io",
+      "boundaries": [
+        {
+          "kind": "semantic_boundary",
+          "label": "Cell biology state",
+          "paper_wording": "Cell confluency, CO2/humidity, transfection state, fixation state, and staining specificity are represented operationally rather than as complete biological state transitions."
+        },
+        {
+          "kind": "semantic_boundary",
+          "label": "Microscopy acquisition",
+          "paper_wording": "Confocal hardware settings and deconvolution are retained as readout/schema metadata rather than executed instrument semantics."
+        }
+      ],
+      "upstream_path": "docs/public/papers/patterns-benchmark/artifacts/cases/08",
+      "protocol_repository_path": "protocols/protocols-io/08-cell-culture-transfection-immunocytochemistry-and-imaging/protocol.culs",
+      "protocol_repository_sha256": "bd176fdb5b2f0868df5dca38483bea10f5e409b5dd026e61004c75c80480db35",
+      "program_byte_identical_to_protocol_repository": true,
+      "source_byte_identical_to_protocol_repository": true
+    },
+    "09": {
+      "title": "Cell culture and Western blot",
+      "source_class": "public_protocol_link",
+      "provider": "protocols.io",
+      "boundaries": [
+        {
+          "kind": "semantic_boundary",
+          "label": "Immunoblot target semantics",
+          "paper_wording": "Protein targets, phosphorylation state, antibody specificity, and loading controls are represented as labels/schema fields rather than first-class semantic objects."
+        },
+        {
+          "kind": "semantic_boundary",
+          "label": "Membrane transfer",
+          "paper_wording": "PVDF electrotransfer is represented with generic field separation/material transfer and timed holds, not a dedicated blot-transfer primitive."
+        }
+      ],
+      "upstream_path": "docs/public/papers/patterns-benchmark/artifacts/cases/09",
+      "protocol_repository_path": "protocols/protocols-io/09-cell-culture-and-western-blot/protocol.culs",
+      "protocol_repository_sha256": "6fced6bbe672f6e55717db9236fc655a750fe774c16cb3deb32c9dcb5fff4b50",
+      "program_byte_identical_to_protocol_repository": true,
+      "source_byte_identical_to_protocol_repository": true
+    },
+    "10": {
+      "title": "Magnetic-Bead cDNA Capture from Barcoded Lysate",
+      "source_class": "vendor_anonymized",
+      "provider": "vendor_manual_anonymized",
+      "boundaries": [],
+      "upstream_path": "docs/public/papers/patterns-benchmark/artifacts/cases/10",
+      "protocol_repository_path": "protocols/vendor-manual-anonymized/10-magnetic-bead-cdna-capture-from-barcoded-lysate/protocol.culs",
+      "protocol_repository_sha256": "6c815a526ce6190f3a764f70b3923b80989217f4d0177994b43b6b2f38fc4809",
+      "program_byte_identical_to_protocol_repository": true,
+      "source_byte_identical_to_protocol_repository": true
+    },
+    "11": {
+      "title": "Magnetic-Bead cDNA Template Switch Reaction",
+      "source_class": "vendor_anonymized",
+      "provider": "vendor_manual_anonymized",
+      "boundaries": [
+        {
+          "kind": "semantic_boundary",
+          "label": "Brief centrifuge",
+          "paper_wording": "Brief non-fractionating centrifuge handling is not represented as a material separation."
+        },
+        {
+          "kind": "semantic_boundary",
+          "label": "Magnet position",
+          "paper_wording": "Magnet rack position is execution-layer mapping; Culsma represents persistent rack context and timed magnetic separation."
+        }
+      ],
+      "upstream_path": "docs/public/papers/patterns-benchmark/artifacts/cases/11",
+      "protocol_repository_path": "protocols/vendor-manual-anonymized/rv02-rv-02-magnetic-bead-cdna-template-switch-reaction/protocol.culs",
+      "protocol_repository_sha256": "209b456ca8817b21126e888243a9ac6be40e8ecf4070356539022d2863a521f2",
+      "program_byte_identical_to_protocol_repository": true,
+      "source_byte_identical_to_protocol_repository": true
+    },
+    "12": {
+      "title": "Magnetic-Bead cDNA Amplification",
+      "source_class": "vendor_anonymized",
+      "provider": "vendor_manual_anonymized",
+      "boundaries": [],
+      "upstream_path": "docs/public/papers/patterns-benchmark/artifacts/cases/12",
+      "protocol_repository_path": "protocols/vendor-manual-anonymized/rv03-rv-03-magnetic-bead-cdna-amplification/protocol.culs",
+      "protocol_repository_sha256": "6204120b5cfe7e1cf4f79f085ee656f0a93deeba0306d717531775ae274f9c27",
+      "program_byte_identical_to_protocol_repository": true,
+      "source_byte_identical_to_protocol_repository": true
+    },
+    "13": {
+      "title": "Magnetic-Bead Post-Amplification cDNA Purification",
+      "source_class": "vendor_anonymized",
+      "provider": "vendor_manual_anonymized",
+      "boundaries": [],
+      "upstream_path": "docs/public/papers/patterns-benchmark/artifacts/cases/13",
+      "protocol_repository_path": "protocols/vendor-manual-anonymized/13-magnetic-bead-post-amplification-cdna-purification/protocol.culs",
+      "protocol_repository_sha256": "045f81f4b29c8009f1df8ff952ce6ef1e257cd127fcc43bac391050b7da66146",
+      "program_byte_identical_to_protocol_repository": true,
+      "source_byte_identical_to_protocol_repository": true
+    },
+    "14": {
+      "title": "Magnetic Bead Immunoprecipitation with Western Blot Readout",
+      "source_class": "independently_authored_stress_case",
+      "provider": "canonical_stress",
+      "boundaries": [
+        {
+          "kind": "analysis_boundary",
+          "label": "Western blot interpretation",
+          "paper_wording": "Band identity, enrichment ratio, transfer efficiency, and QC interpretation are structured observations or downstream analysis fields."
+        }
+      ],
+      "upstream_path": "docs/public/papers/patterns-benchmark/artifacts/cases/14",
+      "protocol_repository_path": "protocols/canonical-stress/14-magnetic-bead-immunoprecipitation-with-western-blot-readout/protocol.culs",
+      "protocol_repository_sha256": "005c8a86476f29aca6f2edeb69d5428496a0a42177dc8f9c4a40d169ac2d32e4",
+      "program_byte_identical_to_protocol_repository": true,
+      "source_byte_identical_to_protocol_repository": true
+    }
+  },
+  "manuscript_section_sha256": "c919411acc725fa1be47b4f51d21e215adf18f2a2c73a7b94ceefdb14b2bc9da",
+  "protocols_commit": "d80132803d58e59fb47367e1502ac5286c9247ef",
+  "supported_python_series": [
+    "3.11",
+    "3.12",
+    "3.13"
+  ],
+  "recommended_python_series": "3.13",
+  "implementation_release_url": "https://github.com/culsma/culsma/releases/tag/v1.0.6",
+  "implementation_release_status": "published stable release (2026-09-07)",
+  "environment_note": "Original baseline environment; Python patch version is recorded, not an exact runtime requirement. Package versions remain pinned."
+}

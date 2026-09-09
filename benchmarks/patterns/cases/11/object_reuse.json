@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "case_id": "11",
+  "derivation": "derived_from_local_protocol_identifier_reuse",
+  "tracked_object_count": 3,
+  "reuse_link_count": 11,
+  "rows": [
+    {
+      "object": "pre_wash_split",
+      "introduced_at": "S1",
+      "used_in": [
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6"
+      ],
+      "culsma_evidence": "let pre_wash_split = ...; later referenced in S2, S3, S4, S5, S6"
+    },
+    {
+      "object": "wash3_split",
+      "introduced_at": "S1",
+      "used_in": [
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6"
+      ],
+      "culsma_evidence": "let wash3_split = ...; later referenced in S2, S3, S4, S5, S6"
+    },
+    {
+      "object": "wash_buffer_2",
+      "introduced_at": "S13",
+      "used_in": [
+        "S17"
+      ],
+      "culsma_evidence": "let wash_buffer_2 = ...; later referenced in S17"
+    }
+  ],
+  "display_name": "Object Reuse",
+  "description": "Tracked experimental objects are listed by introduction step and later use when identifier reuse is visible in step-anchored Culsma code."
+}

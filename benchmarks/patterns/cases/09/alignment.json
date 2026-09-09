@@ -1,0 +1,116 @@
+{
+  "case_id": "09",
+  "title": "Cell culture and Western blot",
+  "schema_version": 1,
+  "source_steps": [
+    {
+      "source_step_id": "S1",
+      "phase": "Cell culture and transfection",
+      "summary": "Split 293T cells in 6-well dishes 24 h before transfection at 200K cells per well in 2 mL DMEM.",
+      "culsma_representation": [
+        "well",
+        "content",
+        "transfer",
+        "env/hold"
+      ],
+      "coverage": "current",
+      "boundary_notes": [
+        "Cell count and confluency are not first-class state variables."
+      ]
+    },
+    {
+      "source_step_id": "S2",
+      "phase": "Cell culture and transfection",
+      "summary": "Warm PEI and Opti-MEM, mix GFP-Rab7 and LRRK1 DNA in Opti-MEM, add PEI, incubate 15 min, replace media, and add mixture dropwise.",
+      "culsma_representation": [
+        "tube",
+        "transfer",
+        "env/hold"
+      ],
+      "coverage": "bridge",
+      "boundary_notes": [
+        "PEI-mediated biological transfection is represented as material exposure."
+      ]
+    },
+    {
+      "source_step_id": "S3",
+      "phase": "Cell lysis",
+      "summary": "After 36 h, wash on ice with cold PBS, add 300 uL RIPA buffer with inhibitors, lift cells, shake lysate 15 min in cold room, and centrifuge 15 min at 4 C.",
+      "culsma_representation": [
+        "transfer",
+        "env/hold",
+        "sep"
+      ],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S4",
+      "phase": "Cell lysis",
+      "summary": "Prepare sample by boiling lysate with reducing agent and LDS sample buffer at 95 C for 10 min.",
+      "culsma_representation": [
+        "transfer",
+        "env/hold"
+      ],
+      "coverage": "current",
+      "boundary_notes": []
+    },
+    {
+      "source_step_id": "S5",
+      "phase": "Western blot",
+      "summary": "Load 25 uL prepared lysate on a 4-12 percent Bis-Tris gel and run at 180 V for about 50 min.",
+      "culsma_representation": [
+        "well",
+        "sep(field_program)"
+      ],
+      "coverage": "bridge",
+      "boundary_notes": [
+        "SDS-PAGE gel chemistry is represented as generic field separation."
+      ]
+    },
+    {
+      "source_step_id": "S6",
+      "phase": "Western blot",
+      "summary": "Activate PVDF membrane, transfer proteins in Tris/Glycine buffer with 20 percent methanol at 200 mA for 4 h at 4 C, then rinse and dry membrane.",
+    "culsma_representation": [
+      "chamber",
+      "sep(field_program)",
+      "component_fates",
+      "env"
+      ],
+      "coverage": "bridge",
+      "boundary_notes": [
+      "The source's 200 mA current is explicitly represented by field_program(current = 200mA, duration = 4h). Membrane transfer uses general field-separation operations; the runtime does not predict biological transfer efficiency."
+      ]
+    },
+    {
+      "source_step_id": "S7",
+      "phase": "Western blot",
+      "summary": "Block membrane, incubate overnight at 4 C with primary antibodies, wash, incubate 1 h with LiCor secondary antibodies, wash, and image on LiCor Odyssey CLx.",
+      "culsma_representation": [
+        "transfer",
+        "repeat",
+        "img"
+      ],
+      "coverage": "bridge",
+      "boundary_notes": [
+        "Antibody binding, target identity, and instrument-specific LiCor acquisition are generic readout semantics."
+      ]
+    }
+  ],
+  "semantic_boundaries": [
+    {
+      "kind": "semantic_boundary",
+      "label": "Immunoblot target semantics",
+      "paper_wording": "Protein targets, phosphorylation state, antibody specificity, and loading controls are represented as labels/schema fields rather than first-class semantic objects."
+    },
+    {
+      "kind": "semantic_boundary",
+      "label": "Membrane transfer",
+      "paper_wording": "PVDF electrotransfer is represented with generic field separation/material transfer and timed holds, not a dedicated blot-transfer primitive."
+    }
+  ],
+  "known_warnings": [],
+  "paper_safe_claims": [],
+  "avoid_claiming": []
+}

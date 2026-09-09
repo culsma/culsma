@@ -1,0 +1,56 @@
+{
+  "protocol_id": "04",
+  "title": "Sandwich ELISA with Standard Curve",
+  "steps": [
+    {
+      "id": "S1",
+      "phase": "plate_setup",
+      "summary": "Declare an ELISA plate and select standard, unknown, blank, and control wells with plate selectors."
+    },
+    {
+      "id": "S2",
+      "phase": "coating",
+      "summary": "Add capture antibody to assay wells under high_precision and low_carryover requirements, then incubate overnight."
+    },
+    {
+      "id": "S3",
+      "phase": "wash",
+      "summary": "Wash wells by adding wash buffer, agitating, separating aspirated wash liquid from retained assay state, and routing filtrate to waste."
+    },
+    {
+      "id": "S4",
+      "phase": "blocking",
+      "summary": "Add blocking buffer under high_precision and low_carryover requirements, incubate, and wash."
+    },
+    {
+      "id": "S5",
+      "phase": "sample_loading",
+      "summary": "Load standard curve wells, unknown sample wells, positive and negative controls, and blank wells under registered precision/carryover constraints."
+    },
+    {
+      "id": "S6",
+      "phase": "binding",
+      "summary": "Incubate loaded wells and wash."
+    },
+    {
+      "id": "S7",
+      "phase": "detection",
+      "summary": "Add detection antibody under high_precision and low_carryover requirements, incubate, and wash."
+    },
+    {
+      "id": "S8",
+      "phase": "enzyme",
+      "summary": "Add enzyme conjugate under high_precision and low_carryover requirements, incubate, and wash."
+    },
+    {
+      "id": "S9",
+      "phase": "development",
+      "summary": "Add substrate under high_precision, low_carryover, and dark_protected requirements, incubate under dark_protected, and stop reaction."
+    },
+    {
+      "id": "S10",
+      "phase": "readout_qc",
+      "summary": "Read absorbance and record simple blank, positive-control, and negative-control QC flags through data_schema, data_ref.result fields, and if branches."
+    }
+  ]
+}

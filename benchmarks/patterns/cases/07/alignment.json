@@ -1,0 +1,23 @@
+{
+  "case_id": "07",
+  "title": "Recombinant Protein Affinity Purification With SDS-PAGE QC",
+  "schema_version": 1,
+  "source_steps": [
+    { "source_step_id": "S1", "phase": "cell_lysis", "summary": "Lyse the bacterial pellet, clarify the lysate, and retain input QC material.", "culsma_representation": ["sep", "centrifuge_program", "component_fates"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S2", "phase": "column_equilibration", "summary": "Equilibrate the nickel resin and discard the flowthrough.", "culsma_representation": ["chamber", "filtration_program"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S3", "phase": "binding", "summary": "Bind the clarified lysate to the resin and collect flowthrough.", "culsma_representation": ["transition", "sep", "filtration_program"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S4", "phase": "wash", "summary": "Wash the resin three times and pool the washes.", "culsma_representation": ["schedule", "sep"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S5", "phase": "elution", "summary": "Elute two target-protein fractions.", "culsma_representation": ["transition", "sep", "filtration_program"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S6", "phase": "sample_prep", "summary": "Prepare five fraction samples for SDS-PAGE.", "culsma_representation": ["tube", "schedule"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S7", "phase": "denaturation", "summary": "Heat and briefly centrifuge the prepared samples.", "culsma_representation": ["env", "hold", "sep"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S8", "phase": "gel_loading", "summary": "Load samples and ladder into assigned lanes.", "culsma_representation": ["well", "RunSdsPageLaneGroup"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S9", "phase": "electrophoresis_and_staining", "summary": "Separate, stain, destain, and image the gel.", "culsma_representation": ["field_program", "chamber", "img"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S10", "phase": "gel_qc", "summary": "Record lane-level QC and return the fractions and readout.", "culsma_representation": ["data_schema", "img", "return"], "coverage": "current", "boundary_notes": [] }
+  ],
+  "semantic_boundaries": [
+    { "kind": "analysis_boundary", "label": "Protein-purification interpretation", "paper_wording": "Purity scoring, band identity, and contaminant interpretation are recorded observations rather than inferred outcomes." }
+  ],
+  "known_warnings": [],
+  "paper_safe_claims": ["The current program completed all 135 generated steps without diagnostics.", "Affinity capture and release are represented with explicit material fates and transitions."],
+  "avoid_claiming": ["Do not claim biological purity or band identity beyond the recorded readout fields."]
+}

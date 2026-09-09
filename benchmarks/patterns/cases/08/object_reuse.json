@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "case_id": "08",
+  "derivation": "reviewed_against_current_protocol_and_source",
+  "tracked_object_count": 4,
+  "reuse_link_count": 20,
+  "rows": [
+    {"object": "rpe1_cells", "introduced_at": "S1", "used_in": ["S2", "S3", "S4", "S5", "S6", "S7", "S8"], "culsma_evidence": "let rpe1_cells = well(...); the same adherent-cell well is transfected, serum-starved, fixed, stained, and imaged"},
+    {"object": "aspiration", "introduced_at": "S3", "used_in": ["S4", "S5", "S6", "S7", "S8"], "culsma_evidence": "let aspiration = filtration_program(...); repeated sep(sample = rpe1_cells, program = aspiration) operations retain the adherent cells"},
+    {"object": "waste", "introduced_at": "S3", "used_in": ["S4", "S5", "S6", "S7", "S8"], "culsma_evidence": "waste << [rpe1_cells.contents[0]] after each aspiration"},
+    {"object": "pbs", "introduced_at": "S4", "used_in": ["S6", "S7", "S8"], "culsma_evidence": "let pbs = tube(...); PBS is reused for fixation, antibody, and final staining washes"}
+  ],
+  "display_name": "Material-State Continuity",
+  "description": "Named experimental objects are tracked from their introduction to later source sections where the same material state is used again."
+}

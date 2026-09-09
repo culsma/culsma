@@ -1,0 +1,175 @@
+protocol CDNATemplateSwitch(bead_mass, cdna_mass, proceed_immediately) returns (captured_cdna) {
+  // Source setup: Template Switch reagents are thawed, inverted, briefly
+  // centrifuged where specified, and checked for precipitate before use.
+  // This case begins at Section 2.2. The bead-bound cDNA from the preceding
+  // capture workflow is therefore a declared benchmark input rather than a
+  // replay of Section 2.1. The masses below are benchmark assumptions, not
+  // measurements or yields reported by the vendor manual.
+  let bead_bound_cdna_input = tube(
+    label = "BeadBoundCapturedCDNAInput",
+    capacity = 250uL,
+    load = [
+      content(kind = particulate, type = beads, code = "STREPTAVIDIN_BEADS", attrs = {bead_property: "magnetic"}):bead_mass,
+      content(kind = bio_molecule_or_virus, type = dna, code = "CAPTURED_CDNA"):cdna_mass,
+      content(kind = formulation, type = buffer, code = "WB2"):125uL
+    ]
+  );
+  let wash_buffer_2 = tube(label = "WashBuffer2", capacity = 500uL, load = [
+    content(kind = formulation, type = buffer, code = "WB2"):250uL
+  ]);
+  let wash_buffer_3 = tube(
+    label = "WashBuffer3",
+    capacity = 500uL,
+    load = [content(kind = formulation, type = buffer, code = "WB3", attrs = {role: wash}):300uL]
+  );
+  let template_switch_buffer = tube(
+    label = "TemplateSwitchBuffer",
+    capacity = 500uL,
+    load = [content(kind = formulation, type = buffer, code = "TSB", attrs = {role: reaction_environment}):150uL]
+  );
+  let template_switch_primer = tube(
+    label = "TemplateSwitchPrimer",
+    capacity = 50uL,
+    load = [content(kind = bio_molecule_or_virus, type = dna, code = "TSP", attrs = {role: primer}):10uL]
+  );
+  let template_switch_enzyme = tube(
+    label = "TemplateSwitchEnzyme",
+    capacity = 50uL,
+    load = [content(kind = bio_molecule_or_virus, type = protein, code = "TSE", attrs = {role: enzyme}):10uL]
+  );
+  let template_switch_master_mix = tube(label = "TemplateSwitchMasterMix", capacity = 2000uL);
+  let waste = tube(label = "Section2_2Waste", capacity = 2000uL);
+
+  // Source preparation: reagent handling by source-defined inversion. Brief
+  // centrifuge remains non-fractionating handling rather than sep.
+  agit(sample = wash_buffer_3, mode = "invert", cycles = 3);
+  agit(sample = template_switch_buffer, mode = "invert", cycles = 3);
+  agit(sample = template_switch_primer, mode = "invert", cycles = 3);
+
+  // Source master-mix table: for one sample, combine 101.75 uL Template Switch
+  // Buffer, 2.75 uL Template Switch Primer, and 5.5 uL Template Switch Enzyme.
+  // Source says mix by pipetting 10x but not stroke volume; use 80% of the
+  // 110 uL working volume, 88 uL, under cold-chain handling.
+  with constraint(cold_chain) {
+    template_switch_master_mix << [template_switch_buffer:101.75uL];
+    template_switch_master_mix << [template_switch_primer:2.75uL];
+    template_switch_master_mix << [template_switch_enzyme:5.5uL];
+    repeat template_switch_master_mix_pipette_mix in schedule(start = 1, end = 10, step = 1) {
+      template_switch_master_mix << [template_switch_master_mix:88uL];
+    }
+  }
+
+  // Source steps S1–S6: keep captured cDNA on the high magnetic-rack position,
+  // clear about 2 min, remove supernatant, add 125 uL Wash Buffer 3 while still
+  // on the rack, incubate 1 min, then remove and discard Wash Buffer 3.
+  let prewash_split = sep(
+    sample = bead_bound_cdna_input,
+    program = magnetic_program(duration = 2min),
+    component_fates = {
+      STREPTAVIDIN_BEADS: { bound: 100%, flowthrough: 0% },
+      CAPTURED_CDNA: { bound: 100%, flowthrough: 0% },
+      WB2: { bound: 0%, flowthrough: 100% }
+    },
+    transitions = [
+      transition(subject = bead_bound_cdna_input.materials[1], output = MagneticProgramOutput.BOUND,
+        to = MaterialRelation.BEAD_BOUND, associated_with = bead_bound_cdna_input.materials[0])
+    ]
+  );
+  let captured_cdna = prewash_split[0];
+  with env(field = magnetic_rack) {
+    waste << [prewash_split[1]];
+    captured_cdna << [wash_buffer_3:125uL];
+    with env(thermal = 25C) {
+      sep(
+        sample = captured_cdna,
+        program = magnetic_program(duration = 1min),
+        component_fates = {
+          STREPTAVIDIN_BEADS: { bound: 100%, flowthrough: 0% },
+          CAPTURED_CDNA: { bound: 100%, flowthrough: 0% },
+          WB3: { bound: 0%, flowthrough: 100% }
+        }
+      );
+      waste << [captured_cdna.contents[1]];
+    }
+  }
+
+  // Source step S7: remove the tube(s) from the magnetic rack.
+
+  // Source step S8: fully resuspend bead pellets with 100 uL Template Switch
+  // Master Mix. The source says viscous full resuspension may take time but
+  // gives no cycle count; use 10 cycles at 80% working volume.
+  captured_cdna << [template_switch_master_mix:100uL];
+  repeat template_switch_resuspension_mix in schedule(start = 1, end = 10, step = 1) {
+    captured_cdna << [captured_cdna:80uL];
+  }
+  // Source step S9: briefly centrifuge without letting beads collect at the
+  // bottom. This remains non-fractionating bead-safe handling, not sep.
+
+  // Source step S10: incubate for 30 min at room temperature.
+  with env(thermal = 25C, duration = 30min) {
+    hold(sample = captured_cdna);
+  }
+
+  // Source step S11: fully resuspend each bead pellet by mixing 5x with a P200
+  // set to 75 uL.
+  repeat post_rt_template_switch_mix in schedule(start = 1, end = 5, step = 1) {
+    captured_cdna << [captured_cdna:75uL];
+  }
+
+  // Source step S12: run the Template Switch thermocycler program.
+  with env(thermal = thermal_program(from = 42C, duration = 60min)) {
+    hold(sample = captured_cdna);
+  }
+
+  // Source step S13: continue immediately to the cDNA amplification module, or
+  // execute the optional storage branch before cDNA amplification. The reviewed mainline
+  // chooses immediate continuation.
+  if proceed_immediately {
+    with env(thermal = 4C, duration = 10min) {
+      hold(sample = captured_cdna);
+    }
+  } else {
+    // Source step S14: for optional storage, place tube(s) on the high magnetic
+    // rack and clear about 2 min; settled beads may need resuspension.
+    with env(field = magnetic_rack) {
+      sep(
+        sample = captured_cdna,
+        program = magnetic_program(duration = 2min),
+        component_fates = {
+          STREPTAVIDIN_BEADS: { bound: 100%, flowthrough: 0% },
+          CAPTURED_CDNA: { bound: 100%, flowthrough: 0% },
+          TSB: { bound: 0%, flowthrough: 100% },
+          TSP: { bound: 0%, flowthrough: 100% },
+          TSE: { bound: 0%, flowthrough: 100% }
+        }
+      );
+      waste << [captured_cdna.contents[1]];
+    }
+
+    // Source step S15: while still on the magnetic rack, remove and discard the
+    // supernatant.
+
+    // Source step S16: remove the tube(s) from the magnetic rack.
+
+    // Source step S17: fully resuspend each bead pellet with 125 uL Wash Buffer
+    // 2; use 10 cycles at 80% working volume.
+    captured_cdna << [wash_buffer_2:125uL];
+    repeat storage_resuspension_mix in schedule(start = 1, end = 10, step = 1) {
+      captured_cdna << [captured_cdna:100uL];
+    }
+
+    // Source step S18: template-switched cDNA can be stored at 4C for up to
+    // 18 h; do not freeze.
+    with env(thermal = 4C, duration = 18h) {
+      hold(sample = captured_cdna);
+    }
+  }
+  return captured_cdna;
+}
+
+// Benchmark-declared inputs, not measured yields from the vendor manual.
+let cdna_template_switch_result = CDNATemplateSwitch(
+  bead_mass = 0.4mg, cdna_mass = 0.1ug,
+  proceed_immediately = true
+);
+return cdna_template_switch_result;

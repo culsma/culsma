@@ -1,0 +1,24 @@
+{
+  "case_id": "14",
+  "title": "Magnetic Bead Immunoprecipitation with Western Blot Readout",
+  "schema_version": 1,
+  "source_steps": [
+    { "source_step_id": "S1", "phase": "bead_conjugation", "summary": "Prepare the input fraction and antibody-conjugated beads.", "culsma_representation": ["BindCaptureAntibody", "transition"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S2", "phase": "immunoprecipitation_setup", "summary": "Add clarified lysate and binding buffer to the beads.", "culsma_representation": ["container transfer"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S3", "phase": "target_binding", "summary": "Rotate the immunoprecipitation reaction at 4 C.", "culsma_representation": ["env", "agit"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S4", "phase": "capture", "summary": "Separate and retain the captured beads while collecting flowthrough.", "culsma_representation": ["CaptureTargetProtein", "component_fates", "transition"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S5", "phase": "wash", "summary": "Wash the bead-bound target three times.", "culsma_representation": ["schedule", "magnetic_program", "component_fates"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S6", "phase": "elution", "summary": "Denature, elute, and separate the target from spent beads.", "culsma_representation": ["ReleaseDenaturingEluate", "transition"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S7", "phase": "sample_preparation", "summary": "Prepare input, flowthrough, and eluate samples.", "culsma_representation": ["tube", "env", "sep"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S8", "phase": "sds_page", "summary": "Load assigned lanes and run electrophoresis.", "culsma_representation": ["well", "field_program", "component_fates"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S9", "phase": "protein_transfer", "summary": "Activate and equilibrate PVDF and transfer the separated proteins.", "culsma_representation": ["filtration_program", "field_program", "component_fates"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S10", "phase": "membrane_processing", "summary": "Block, probe, and wash the transferred membrane.", "culsma_representation": ["schedule", "env", "constraint", "component_fates"], "coverage": "current", "boundary_notes": [] },
+    { "source_step_id": "S11", "phase": "imaging", "summary": "Acquire and return the structured Western blot readout.", "culsma_representation": ["data_schema", "img"], "coverage": "current", "boundary_notes": [] }
+  ],
+  "semantic_boundaries": [
+    { "kind": "analysis_boundary", "label": "Western blot interpretation", "paper_wording": "Band identity, enrichment, and imaging-quality interpretation remain downstream of the recorded signals." }
+  ],
+  "known_warnings": [],
+  "paper_safe_claims": ["The current program completed all 265 generated steps without diagnostics.", "Affinity capture, release, electrophoresis, transfer, and membrane processing are represented with explicit material fates."],
+  "avoid_claiming": ["Do not claim biological enrichment or band identity beyond the recorded readout fields."]
+}

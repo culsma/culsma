@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "case_id": "14",
+  "derivation": "reviewed_against_current_protocol_and_source",
+  "descriptor_item_count": 72,
+  "rows": [
+    { "step": "S1", "source": "Prepare the input fraction and antibody-conjugated magnetic beads, including bead washing and antibody binding.", "descriptors": ["500uL clarified lysate with 1mg total protein", "0.1mg target and 0.9mg background proteins", "25uL input fraction", "50uL Protein G bead slurry", "30s vortex", "5ug anti-GFP antibody", "200uL binding/wash buffer", "10min antibody binding", "2min magnetic separations", "bead/antibody association transition"] },
+    { "step": "S2", "source": "Add the remaining clarified lysate and binding buffer to the antibody-conjugated beads.", "descriptors": ["clarified lysate 475uL", "binding/wash buffer 25uL", "named antibody_conjugated_beads"] },
+    { "step": "S3", "source": "Rotate the immunoprecipitation reaction for 2 h at 4 C.", "descriptors": ["temperature 4C", "duration 2h", "shake rate 20rpm"] },
+    { "step": "S4", "source": "Magnetically separate the reaction and collect the flowthrough while retaining the beads.", "descriptors": ["2min magnetic separation", "target/background component fates", "target/bead association transition", "flowthrough_fraction", "captured_ip_beads", "low_carryover collection"] },
+    { "step": "S5", "source": "Wash the bead-bound target three times and discard each wash supernatant.", "descriptors": ["three-cycle wash schedule", "wash buffer 200uL", "ten 160uL resuspension cycles", "5min wash at 4C", "2min magnetic separation", "wash-waste routing"] },
+    { "step": "S6", "source": "Denature and elute the bead-bound protein, then magnetically separate the eluate from spent beads.", "descriptors": ["denaturing elution buffer 20uL", "4x reducing LDS buffer 10uL", "ten 24uL resuspension cycles", "70C for 10min", "2min magnetic separation", "target and antibody release transitions", "ip_eluate", "spent-bead retention"] },
+    { "step": "S7", "source": "Prepare the input, flowthrough, and eluate samples for electrophoresis.", "descriptors": ["input fraction 10uL", "flowthrough 10uL", "2x reducing LDS buffer 10uL", "70C for 10min", "3000g for 5s", "prepared_input", "prepared_flowthrough"] },
+    { "step": "S8", "source": "Load the three samples into assigned lanes and run electrophoresis.", "descriptors": ["input/flowthrough/eluate lane identities", "A1/A2/A3 positions", "15uL/15uL/20uL loads", "1x MOPS running buffer 800mL", "field 180V and duration 50min", "lane-specific component fates", "separated_gel"] },
+    { "step": "S9", "source": "Activate and equilibrate the PVDF membrane, assemble the transfer stack, and transfer proteins.", "descriptors": ["methanol activation 1min", "water rinse 2min", "cold transfer-buffer equilibration 10min", "directional transfer stack", "field 100V and duration 60min", "temperature 4C", "protein/membrane component fates", "transferred_membrane_tank"] },
+    { "step": "S10", "source": "Block, probe, and wash the membrane under the stated conditions.", "descriptors": ["15mL 5% milk block", "1h block at 25C", "10mL primary at 1:1000", "16h primary incubation at 4C", "three 15mL post-primary washes", "10mL secondary at 1:10000", "1h secondary incubation at 25C", "three 15mL post-secondary washes", "60rpm agitation", "dark_protected secondary handling"] },
+    { "step": "S11", "source": "Acquire the fluorescence signals and return a structured Western blot readout.", "descriptors": ["input/flowthrough/eluate signal fields", "lane and sample identities", "imaging QC status", "raw image retention"] }
+  ],
+  "display_name": "Structured Experimental-Detail Capture",
+  "description": "Each reviewed source step is paired with the Culsma variables or modules that make its experimental details explicit."
+}

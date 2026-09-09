@@ -1,0 +1,64 @@
+{
+  "protocol_id": "12",
+  "title": "Magnetic-Bead cDNA Amplification",
+  "source_class": "anonymized_vendor_protocol_excerpt",
+  "review_revision": "2026-06-14",
+  "source_file": "source.md",
+  "steps": [
+    {
+      "id": "S1",
+      "section": "Amplification Procedure",
+      "source_text": "Place each tube of bead-bound template-switched cDNA input material on the high position of the magnetic rack."
+    },
+    {
+      "id": "S2",
+      "section": "Amplification Procedure",
+      "source_text": "Incubate until the solution clears, about 2 minutes. If beads have settled, pipette mix to resuspend them so they separate appropriately."
+    },
+    {
+      "id": "S3",
+      "section": "Amplification Procedure",
+      "source_text": "While still on the magnetic rack, remove and discard the supernatant."
+    },
+    {
+      "id": "S4",
+      "section": "Amplification Procedure",
+      "source_text": "While still on the magnetic rack, add 125 uL of Wash Buffer 3 to each tube."
+    },
+    {
+      "id": "S5",
+      "section": "Amplification Procedure",
+      "source_text": "Incubate for 1 minute at room temperature."
+    },
+    {
+      "id": "S6",
+      "section": "Amplification Procedure",
+      "source_text": "While still on the magnetic rack, remove and discard Wash Buffer 3."
+    },
+    {
+      "id": "S7",
+      "section": "Amplification Procedure",
+      "source_text": "Remove the tube(s) from the magnetic rack."
+    },
+    {
+      "id": "S8",
+      "section": "Amplification Procedure",
+      "source_text": "Fully resuspend each bead pellet with 100 uL of the Amplification Master Mix."
+    },
+    {
+      "id": "S9",
+      "section": "Amplification Procedure",
+      "source_text": "Store on ice."
+    },
+    {
+      "id": "S10",
+      "section": "Amplification Procedure",
+      "source_text": "Determine the number of PCR cycles required for cDNA amplification based on input cell or nuclei count and sample type."
+    },
+    {
+      "id": "S11",
+      "section": "Amplification Procedure",
+      "source_text": "Place the tube(s) into a thermocycler and run the cDNA Amplification program."
+    }
+  ]
+}

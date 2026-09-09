@@ -1,0 +1,43 @@
+{
+  "protocol_id": "00",
+  "title": "GFP Lysate Clarification Fluorescence Readout",
+  "source_class": "canonical_textbook_style_teaching_example",
+  "source_file": "source.md",
+  "steps": [
+    {
+      "id": "S1",
+      "section": "Canonical Workflow",
+      "source_text": "Transfer 80 uL washed GFP-expressing microbial-cell suspension containing 100000 cells and 80 uL 2x lysis buffer into the lysis tube."
+    },
+    {
+      "id": "S2",
+      "section": "Canonical Workflow",
+      "source_text": "Mix the lysis mixture by pipetting 10 times."
+    },
+    {
+      "id": "S3",
+      "section": "Canonical Workflow",
+      "source_text": "Incubate the lysis mixture at 37 C for 30 min."
+    },
+    {
+      "id": "S4",
+      "section": "Canonical Workflow",
+      "source_text": "Centrifuge the lysate at 12000 x g and 22 C for 10 min to resolve a clarified supernatant fraction and a debris-pellet fraction."
+    },
+    {
+      "id": "S5",
+      "section": "Canonical Workflow",
+      "source_text": "Transfer 100 uL clarified supernatant fraction to the clarified-lysate output tube."
+    },
+    {
+      "id": "S6",
+      "section": "Canonical Workflow",
+      "source_text": "Discard the debris-pellet fraction."
+    },
+    {
+      "id": "S7",
+      "section": "Canonical Workflow",
+      "source_text": "Record a fluorescence readout from the clarified lysate."
+    }
+  ]
+}

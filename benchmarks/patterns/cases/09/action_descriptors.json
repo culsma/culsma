@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "case_id": "09",
+  "derivation": "migrated_from_reviewed_case_page",
+  "descriptor_item_count": 33,
+  "rows": [
+    {
+      "step": "S1",
+      "source": "Split 293T cells in 6-well dishes 24 h before transfection at 200K cells per well in 2 mL DMEM.",
+      "descriptors": [
+        "carrier: SixWellDish",
+        "position: A1",
+        "load: HEK293T 200000cells and complete DMEM 2mL",
+        "temperature: 37C",
+        "duration: 24h"
+      ]
+    },
+    {
+      "step": "S2",
+      "source": "Warm PEI and Opti-MEM, mix GFP-Rab7 and LRRK1 DNA in Opti-MEM, add PEI, incubate 15 min, replace media, and add mixture dropwise.",
+      "descriptors": [
+        "opti_mem 150uL",
+        "gfp_rab7 1uL",
+        "lrrk1_construct 2uL",
+        "pei 3uL",
+        "temperature: 25C",
+        "duration: 15min"
+      ]
+    },
+    {
+      "step": "S3",
+      "source": "After 36 h, wash on ice with cold PBS, add 300 uL RIPA buffer with inhibitors, lift cells, shake lysate 15 min in cold room, and centrifuge 15 min at 4 C.",
+      "descriptors": [
+        "cell lysate transfer 310uL",
+        "ripa 300uL",
+        "inhibitors 10uL",
+        "temperature: 4C",
+        "duration: 15min",
+        "drive: 12000g"
+      ]
+    },
+    {
+      "step": "S4",
+      "source": "Prepare sample by boiling lysate with reducing agent and LDS sample buffer at 95 C for 10 min.",
+      "descriptors": [
+        "clarified_lysate 65uL",
+        "reducing_agent 10uL",
+        "lds_buffer 25uL",
+        "temperature: 95C",
+        "duration: 10min"
+      ]
+    },
+    {
+      "step": "S5",
+      "source": "Load 25 uL prepared lysate on a 4-12 percent Bis-Tris gel and run at 180 V for about 50 min.",
+      "descriptors": [
+        "prepared_sample 25uL",
+        "field: 180V",
+        "duration: 50min"
+      ]
+    },
+    {
+      "step": "S6",
+      "source": "Activate PVDF membrane, transfer proteins in Tris/Glycine buffer with 20 percent methanol at 200 mA for 4 h at 4 C, then rinse and dry membrane.",
+      "descriptors": [
+        "transfer_buffer 30mL",
+        "temperature: 4C",
+        "duration: 4h"
+      ]
+    },
+    {
+      "step": "S7",
+      "source": "Block membrane, incubate overnight at 4 C with primary antibodies, wash, incubate 1 h with LiCor secondary antibodies, wash, and image on LiCor Odyssey CLx.",
+      "descriptors": [
+        "primary_antibody_solution 10mL",
+        "secondary_antibody_solution 10mL",
+        "primary_wash repeat",
+        "secondary_wash repeat",
+        "readout schema"
+      ]
+    }
+  ],
+  "display_name": "Structured Experimental-Detail Capture",
+  "description": "Each reviewed source step is paired with the Culsma variables or modules that make its experimental details explicit."
+}

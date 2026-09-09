@@ -1,0 +1,34 @@
+protocol BidirectionalSangerSequenceClone(
+  sample,
+  sequencing_primers,
+  sequencing_submission
+) {
+  // Submit one plasmid sample with primers flanking the insert. The sequencing
+  // protocol owns the sequence readout and clone-confirmation result schema.
+  sequencing_submission << [sample:10uL, sequencing_primers:2uL]
+    with constraint(high_precision, low_carryover);
+
+  let sanger_schema = data_schema(
+    label = "SangerCloneConfirmation",
+    fields = [
+      candidate_id,
+      forward_sequence_read,
+      reverse_sequence_read,
+      insert_present,
+      orientation_correct,
+      ecori_junction_correct,
+      hindiii_junction_correct,
+      mutation_free,
+      rearrangement_absent,
+      reading_frame_correct,
+      final_clone_confirmed
+    ]
+  );
+  let sanger_confirmation = phy(
+    sample = sequencing_submission,
+    quantity = customized,
+    schema_ref = sanger_schema,
+    save_raw = true
+  );
+  return sequencing_submission;
+}

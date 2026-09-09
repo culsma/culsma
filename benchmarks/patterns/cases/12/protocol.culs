@@ -1,0 +1,186 @@
+protocol PreAmplificationWash(sample, wash_buffer_3, waste) returns (washed_cdna) {
+  // Source steps S1–S2: place the bead-bound cDNA on the magnetic rack,
+  // resuspending settled beads when needed, and wait until the solution clears.
+  repeat settled_bead_resuspension_mix in schedule(start = 1, end = 10, step = 1) {
+    sample << [sample:80uL];
+  }
+  // Source input is already bead-bound. RC8 records that association at this
+  // first separation output; this is not a new binding incubation or an
+  // initialization-time relationship declaration. Input order: beads [0], cDNA [1].
+  let pre_amplification_split = sep(
+    sample = sample,
+    program = magnetic_program(duration = 2min),
+    component_fates = {
+      STREPTAVIDIN_BEADS: { bound: 100%, flowthrough: 0% },
+      TSC_DNA: { bound: 100%, flowthrough: 0% },
+      TEMPLATE_SWITCH_REACTION_SOLUTION: { bound: 0%, flowthrough: 100% }
+    },
+    transitions = [
+      transition(subject = sample.materials[1], output = MagneticProgramOutput.BOUND,
+        to = MaterialRelation.BEAD_BOUND, associated_with = sample.materials[0])
+    ]
+  );
+  let washed_cdna = pre_amplification_split[0];
+  with env(field = magnetic_rack) {
+    // Source step S3: remove and discard the cleared supernatant.
+    waste << [pre_amplification_split[1]];
+    // Source step S4: add 125 uL Wash Buffer 3 while the tube remains on the rack.
+    washed_cdna << [wash_buffer_3:125uL];
+    // Source step S5: incubate the wash for 1 min at room temperature.
+    with env(thermal = 25C) {
+      // Source step S6: remove and discard Wash Buffer 3.
+      sep(sample = washed_cdna, program = magnetic_program(duration = 1min),
+        component_fates = {
+          STREPTAVIDIN_BEADS: { bound: 100%, flowthrough: 0% },
+          TSC_DNA: { bound: 100%, flowthrough: 0% },
+          WB3: { bound: 0%, flowthrough: 100% }
+        });
+      waste << [washed_cdna.contents[1]];
+    }
+  }
+  return washed_cdna;
+}
+
+protocol RunCDNAAmplificationBatch(
+  selected_sample_count = 1,
+  selected_amplification_cycles = 7
+) {
+  // Batch execution wrapper: run the independent single-sample module once per
+  // selected sample. The PCR cycle count is selected once for this batch run.
+  repeat cdna_amplification in schedule(start = 1, end = selected_sample_count, step = 1) {
+    CDNAAmplification(
+      selected_amplification_cycles = selected_amplification_cycles
+    );
+  }
+}
+
+protocol CDNAAmplification(selected_amplification_cycles = 7) returns (amplified_cdna) {
+  // Source context: separate masses and carrier volume. Masses are case
+  // assumptions, not source measurements. No DNA yield is inferred from PCR.
+  let input_cdna = tube(
+    label = "BeadBoundTemplateSwitchedCDNAInput",
+    capacity = 250uL,
+    load = [
+      content(kind = particulate, type = beads, code = "STREPTAVIDIN_BEADS", attrs = {bead_property: "magnetic"}):0.4mg,
+      content(kind = bio_molecule_or_virus, type = dna, code = "TSC_DNA", attrs = {state: template_switched}):0.1ug,
+      content(kind = formulation, type = reaction_buffer, code = "TEMPLATE_SWITCH_REACTION_SOLUTION"):100uL
+    ]
+  );
+  let wash_buffer_3 = tube(
+    label = "WashBuffer3",
+    capacity = 500uL,
+    load = [content(kind = formulation, type = buffer, code = "WB3", attrs = {role: wash}):200uL]
+  );
+  let cdna_amp_mix = tube(
+    label = "CDNAAmpMix",
+    capacity = 100uL,
+    load = [content(kind = formulation, type = master_mix, code = "AMP_MIX", attrs = {role: reaction_mix}):70uL]
+  );
+  let cdna_amp_primers = tube(
+    label = "CDNAAmpPrimers",
+    capacity = 100uL,
+    load = [content(kind = bio_molecule_or_virus, type = dna, code = "AMP_PRIMERS", attrs = {role: primer}):70uL]
+  );
+  let amplification_master_mix = tube(label = "AmplificationMasterMix", capacity = 2000uL);
+  let waste = tube(label = "CdnaAmplificationWaste", capacity = 2000uL);
+
+  // Source reagent preparation: cDNA Amp Mix and cDNA Amp Primers are thawed at
+  // room temperature, placed on ice, mixed by inverting 3x, and briefly
+  // centrifuged before use. Use the author-defined 15 min room-temperature
+  // thaw boundary. Brief centrifugation is treated as a non-fractionating
+  // spin-down convention of 3000g for 5s, not as sep(...).
+  with env(thermal = 25C, duration = 15min) {
+    hold(sample = cdna_amp_mix);
+  }
+  with env(thermal = 25C, duration = 15min) {
+    hold(sample = cdna_amp_primers);
+  }
+
+  // Source master-mix preparation for 1 sublibrary: 60.5 uL cDNA Amp Mix plus
+  // 60.5 uL cDNA Amp Primers, total 121 uL. Source specifies pipetting 10x
+  // without stroke volume; apply the reviewed protocol convention at 80% of
+  // 121 uL, or 96.8 uL. The 90 min 0C environment uses the source-defined
+  // total duration of Section 2.3 as a conservative on-ice handling window.
+  with env(thermal = 0C, duration = 90min) {
+    agit(sample = cdna_amp_mix, mode = "invert", cycles = 3);
+    agit(sample = cdna_amp_primers, mode = "invert", cycles = 3);
+    amplification_master_mix << [cdna_amp_mix:60.5uL];
+    amplification_master_mix << [cdna_amp_primers:60.5uL];
+    repeat amplification_master_mix_pipette_mix in schedule(start = 1, end = 10, step = 1) {
+      amplification_master_mix << [amplification_master_mix:96.8uL];
+    }
+  }
+
+  // The subprotocol above implements benchmark steps S1–S6: place template-switched cDNA on the magnetic rack until
+  // clear, about 2 min; discard supernatant; while still on the rack add Wash
+  // Buffer 3, wait 1 min at room temperature, and discard the wash. The outer
+  // env expresses persistent on-rack handling across these operations.
+  // The source says to pipette mix if beads have settled so they separate
+  // appropriately. Encode this as a required preventive resuspension step,
+  // using the reviewed 80% volume x 10 convention inherited from the 100 uL
+  // single-sample template-switched cDNA volume.
+  // Source step S7: remove the washed cDNA tube from the magnetic rack.
+  let template_switched_cdna = PreAmplificationWash(
+    sample = input_cdna, wash_buffer_3 = wash_buffer_3, waste = waste
+  );
+
+  // Source steps S8–S9: fully resuspend the bead pellet with Amplification
+  // Master Mix and store the prepared reaction on ice. The source does
+  // not specify resuspension pipetting parameters, so use 80 uL x 10. Use an
+  // author-defined 15 min 0C handling window for the on-ice prepared sample.
+  with env(thermal = 0C, duration = 15min) {
+    template_switched_cdna << [amplification_master_mix:100uL];
+    repeat amplification_resuspension_mix in schedule(start = 1, end = 10, step = 1) {
+      template_switched_cdna << [template_switched_cdna:80uL];
+    }
+  }
+
+  // Source step S10: Select the variable amplification cycle count using the
+  // source table for input cell/nuclei count and sample type, and pass the
+  // selected count as the protocol parameter selected_amplification_cycles.
+
+  // Source step S11: Run the cDNA Amplification thermocycler program. Lid temperature
+  // 105C and sample volume 100 uL are execution-level source annotations.
+  with env(thermal = 95C, duration = 3min) {
+    hold(sample = template_switched_cdna);
+  }
+  repeat initial_amplification_cycles in schedule(start = 1, end = 5, step = 1) {
+    with env(thermal = 98C, duration = 20s) {
+      hold(sample = template_switched_cdna);
+    }
+    with env(thermal = 65C, duration = 45s) {
+      hold(sample = template_switched_cdna);
+    }
+    with env(thermal = 72C, duration = 3min) {
+      hold(sample = template_switched_cdna);
+    }
+  }
+  repeat selected_amplification_cycle in schedule(start = 1, end = selected_amplification_cycles, step = 1) {
+    with env(thermal = 98C, duration = 20s) {
+      hold(sample = template_switched_cdna);
+    }
+    with env(thermal = 67C, duration = 20s) {
+      hold(sample = template_switched_cdna);
+    }
+    with env(thermal = 72C, duration = 3min) {
+      hold(sample = template_switched_cdna);
+    }
+  }
+  with env(thermal = 72C, duration = 5min) {
+    hold(sample = template_switched_cdna);
+  }
+  with env(thermal = 4C, duration = 15min) {
+    hold(sample = template_switched_cdna);
+  }
+
+  // Storage note after return: amplified cDNA may be stored at 4C for up to
+  // 18 h. This is storage metadata for the returned product, not an active
+  // execution hold in this protocol.
+  let amplified_cdna = template_switched_cdna;
+  return amplified_cdna = amplified_cdna;
+}
+
+RunCDNAAmplificationBatch(
+  selected_sample_count = 1,
+  selected_amplification_cycles = 7
+);

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "case_id": "00",
+  "tracked_object_count": 3,
+  "reuse_link_count": 8,
+  "evidence_basis": {
+    "culsma_version": "local 1.0.6rc8 source at a87d53a",
+    "structure_source": "ast.json",
+    "execution_source": "run.json",
+    "rule": "A named program object is tracked when it is introduced in one source step and referenced in a later source step on the completed runtime path."
+  },
+  "rows": [
+    {
+      "object": "lysis_tube",
+      "introduced_at": "S1",
+      "used_in": [
+        "S2",
+        "S3",
+        "S4",
+        "S5",
+        "S6"
+      ],
+      "culsma_evidence": "let lysis_tube = tube(...); repeated mixing transfers use lysis_tube; hold(sample = lysis_tube); sep(sample = lysis_tube, ...); the separated contents are routed through lysis_tube.contents[0] and lysis_tube.contents[1]"
+    },
+    {
+      "object": "clarified_lysate",
+      "introduced_at": "S1",
+      "used_in": [
+        "S5",
+        "S7"
+      ],
+      "culsma_evidence": "let clarified_lysate = tube(...); clarified_lysate << [lysis_tube.contents[0]:clarified_volume]; img(sample = clarified_lysate, ...)"
+    },
+    {
+      "object": "debris_waste",
+      "introduced_at": "S1",
+      "used_in": [
+        "S6"
+      ],
+      "culsma_evidence": "let debris_waste = tube(...); debris_waste << [lysis_tube.contents[1]]"
+    }
+  ],
+  "display_name": "Object Reuse",
+  "description": "Named program objects are listed when they are introduced in one source step and referenced in a later source step on the completed program path."
+}
