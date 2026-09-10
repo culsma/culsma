@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Iterable, Mapping, cast
 
+from culsma.pipeline.content_inputs import ContentArgumentResolver, ContentInputSource
 from culsma.pipeline.ir_nodes import (
     IRAssign,
     IRCall,
@@ -134,7 +135,8 @@ class LetTypecheckHandler(BaseTypecheckStatementHandler):
         if stmt.value is None:
             ctx.expr_bindings.pop(stmt.name, None)
             return
-        ctx.expr_bindings[stmt.name] = stmt.value
+        result = ContentArgumentResolver.resolve_argument(stmt.value, None, ctx.content_scope())
+        ctx.expr_bindings[stmt.name] = result.value if result.source is ContentInputSource.ENUM and result.token is not None else stmt.value
 
     def check_child_expressions(
         self,
@@ -152,6 +154,7 @@ class LetTypecheckHandler(BaseTypecheckStatementHandler):
                     stmt.value,
                     stmt.id,
                     expr_bindings=ctx.expr_bindings,
+                    scope=ctx.content_scope(),
                 )
             )
             return
@@ -169,6 +172,7 @@ class LetTypecheckHandler(BaseTypecheckStatementHandler):
                     stmt.value,
                     stmt.id,
                     expr_bindings=ctx.expr_bindings,
+                    scope=ctx.content_scope(),
                 )
             )
 
@@ -197,6 +201,13 @@ class AssignTypecheckHandler(BaseTypecheckStatementHandler):
                 expr_bindings=ctx.expr_bindings,
             )
         )
+
+
+    def apply_post_child_effects(self, stmt: IRStatement, ctx: TypecheckContext, _state: TypecheckStatementState) -> None:
+        stmt = cast(IRAssign, stmt)
+        result = ContentArgumentResolver.resolve_argument(stmt.value, None, ctx.content_scope())
+        if isinstance(stmt.target, IRIdentifier) and result.source is ContentInputSource.ENUM and result.token is not None:
+            ctx.expr_bindings[stmt.target.name] = result.value
 
 
 class WithEnvTypecheckHandler(BaseTypecheckStatementHandler):
@@ -325,7 +336,7 @@ class StepTypecheckHandler(BaseTypecheckStatementHandler):
     ) -> None:
         stmt = cast(IRStep, stmt)
         ctx.extend(self.services.typecheck_step_container_target_view_positions(stmt, expr_bindings=ctx.expr_bindings))
-        ctx.extend(self.services.typecheck_content_descriptors(stmt))
+        ctx.extend(self.services.typecheck_content_descriptors(stmt, scope=ctx.content_scope()))
 
 
 _STATEMENT_HANDLERS_BY_TYPE: dict[type[object], BaseTypecheckStatementHandler] = {

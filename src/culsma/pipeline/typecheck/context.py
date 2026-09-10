@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any, Mapping
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.pipeline.content_inputs import ContentArgumentScope
 from culsma.pipeline.ir_nodes import IRProgram
 from culsma.pipeline.operation_specs import OperationSpec
 from culsma.pipeline.scope import ScopeQueryService
@@ -28,6 +29,10 @@ class TypecheckContext:
     expr_bindings: dict[str, Any] = field(default_factory=dict)
     scope_query: ScopeQueryService | None = None
     statement_typechecker: Any = None
+    parameter_names: frozenset[str] = frozenset()
+
+    def content_scope(self) -> ContentArgumentScope:
+        return ContentArgumentScope(expr_bindings=self.expr_bindings, defined_names=self.parameter_names)
 
     def derive_with_bindings(self, bindings: dict[str, Any]) -> TypecheckContext:
         return TypecheckContext(
@@ -36,6 +41,7 @@ class TypecheckContext:
             expr_bindings=bindings,
             scope_query=self.scope_query,
             statement_typechecker=self.statement_typechecker,
+            parameter_names=self.parameter_names,
         )
 
     def emit(self, diagnostic: Diagnostic) -> None:

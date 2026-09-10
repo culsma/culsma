@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from culsma.pipeline.content_inputs import ContentArgumentResolver, ContentArgumentScope, ContentInputSource
 from culsma.common.diagnostics import Diagnostic
 from culsma.common.source import Span
 from culsma.pipeline.ir_nodes import (
@@ -41,6 +42,11 @@ class BindingValidator:
         node_id: str | None,
     ) -> list[Diagnostic]:
         resolved = ExprResolver.resolve_bound_expr(expr, expr_bindings)
+        enum_result = ContentArgumentResolver.resolve_argument(
+            resolved, None, ContentArgumentScope(literal_bindings, expr_bindings, defined_names),
+        )
+        if enum_result.source is ContentInputSource.ENUM:
+            return []
         if isinstance(resolved, IRString):
             reads = {}
         elif isinstance(resolved, IRCall):

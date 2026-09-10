@@ -12,7 +12,13 @@ from culsma.pipeline.content_vocab import (
     CONTENT_KIND_WHITELIST,
     CONTENT_TYPE_PATTERN,
     ContainerKind,
+    ContentKind,
+    ContentType,
     is_allowed_content_type,
+)
+from culsma.pipeline.content_inputs import (
+    ContentArgumentResolver, ContentArgumentScope, ContentInputSource, ContentResolutionStatus,
+    content_enum_diagnostics,
 )
 from culsma.pipeline.ir_nodes import IRArg, IRCall, IRList, IRPair, IRStep
 
@@ -27,12 +33,15 @@ class ConstructorValidator:
         *,
         content_whitelist_mode: str,
         content_type_policy: str,
-        defined_names: set[str] | None = None,
+        scope: ContentArgumentScope | None = None,
     ) -> list[Diagnostic]:
         diagnostics: list[Diagnostic] = []
+        scope = scope or ContentArgumentScope(literal_bindings=literal_bindings)
         if step.name == "AllocContainer":
             kind_arg = find_arg(step, "kind")
-            kind_value = content_syntax.resolve_kind_token(kind_arg, literal_bindings, defined_names)
+            kind_result = ContentArgumentResolver.resolve_argument(kind_arg.value if kind_arg else None, ContainerKind, scope)
+            kind_value = kind_result.token
+            diagnostics.extend(content_enum_diagnostics(kind_result, span=kind_arg.value.span if kind_arg else step.span, node_id=step.id))
             if kind_value is not None and kind_value not in CONTAINER_KIND_WHITELIST:
                 diagnostics.append(
                     Diagnostic(
@@ -56,7 +65,9 @@ class ConstructorValidator:
             return diagnostics
 
         kind_arg = find_arg(step, "kind")
-        kind_value = content_syntax.resolve_kind_token(kind_arg, literal_bindings, defined_names)
+        kind_result = ContentArgumentResolver.resolve_argument(kind_arg.value if kind_arg else None, ContentKind, scope)
+        kind_value = kind_result.token
+        diagnostics.extend(content_enum_diagnostics(kind_result, span=kind_arg.value.span if kind_arg else step.span, node_id=step.id))
         if kind_arg is None:
             diagnostics.append(
                 Diagnostic(
@@ -82,7 +93,12 @@ class ConstructorValidator:
             )
 
         type_arg = find_arg(step, "type")
-        type_value = content_syntax.resolve_type_token(type_arg, literal_bindings)
+        type_result = ContentArgumentResolver.resolve_argument(type_arg.value if type_arg else None, ContentType, scope)
+        type_value = type_result.token
+        diagnostics.extend(content_enum_diagnostics(type_result, span=type_arg.value.span if type_arg else step.span, node_id=step.id))
+        if type_arg is not None and type_result.status is not ContentResolutionStatus.RESOLVED:
+            return diagnostics
+        compat_mode = compat_mode and kind_result.source is not ContentInputSource.ENUM and type_result.source is not ContentInputSource.ENUM
         if type_arg is None or type_value is None or not CONTENT_TYPE_PATTERN.match(type_value):
             diagnostics.append(
                 Diagnostic(
@@ -126,11 +142,14 @@ class ConstructorValidator:
         node_id: str | None,
         content_whitelist_mode: str,
         content_type_policy: str,
-        defined_names: set[str] | None = None,
+        scope: ContentArgumentScope | None = None,
     ) -> list[Diagnostic]:
         diagnostics: list[Diagnostic] = []
+        scope = scope or ContentArgumentScope(literal_bindings, expr_bindings)
         kind_arg = find_arg_by_name(call.args, "kind")
-        kind_value = content_syntax.resolve_kind_token(kind_arg, literal_bindings, defined_names)
+        kind_result = ContentArgumentResolver.resolve_argument(kind_arg.value if kind_arg else None, ContainerKind, scope)
+        kind_value = kind_result.token
+        diagnostics.extend(content_enum_diagnostics(kind_result, span=kind_arg.value.span if kind_arg else call.span, node_id=node_id))
         if kind_arg is not None and kind_value is not None and kind_value not in CONTAINER_KIND_WHITELIST:
             diagnostics.append(
                 Diagnostic(
@@ -182,7 +201,7 @@ class ConstructorValidator:
                     node_id=node_id,
                     content_whitelist_mode=content_whitelist_mode,
                     content_type_policy=content_type_policy,
-                    defined_names=defined_names,
+                    scope=scope,
                 )
             )
         return diagnostics
@@ -214,7 +233,7 @@ class ConstructorValidator:
         node_id: str | None,
         content_whitelist_mode: str,
         content_type_policy: str,
-        defined_names: set[str] | None = None,
+        scope: ContentArgumentScope | None = None,
     ) -> list[Diagnostic]:
         step = IRStep(
             id=node_id or "<call>",
@@ -227,7 +246,7 @@ class ConstructorValidator:
             literal_bindings,
             content_whitelist_mode=content_whitelist_mode,
             content_type_policy=content_type_policy,
-            defined_names=defined_names,
+            scope=scope,
         )
 
 

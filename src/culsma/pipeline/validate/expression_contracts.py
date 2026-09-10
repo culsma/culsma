@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.pipeline.content_inputs import ContentArgumentResolver, ContentArgumentScope, ContentInputSource, content_enum_diagnostics
 from culsma.pipeline.container_views import (
     classify_container_target_view,
     container_view_path_error,
@@ -239,7 +240,7 @@ def validate_expr_contracts(
                     node_id=node_id,
                     content_whitelist_mode=content_whitelist_mode,
                     content_type_policy=content_type_policy,
-                    defined_names=defined_names,
+                    scope=ContentArgumentScope(literal_bindings, expr_bindings, defined_names or frozenset()),
                 )
             )
         if expr.name == "DefineContent":
@@ -250,7 +251,7 @@ def validate_expr_contracts(
                     node_id=node_id,
                     content_whitelist_mode=content_whitelist_mode,
                     content_type_policy=content_type_policy,
-                    defined_names=defined_names,
+                    scope=ContentArgumentScope(literal_bindings, expr_bindings, defined_names or frozenset()),
                 )
             )
         for arg in expr.args:
@@ -372,6 +373,11 @@ def validate_expr_contracts(
         return diagnostics
 
     if isinstance(expr, IRMember):
+        enum_result = ContentArgumentResolver.resolve_argument(
+            expr, None, ContentArgumentScope(literal_bindings, expr_bindings, defined_names or frozenset()),
+        )
+        if enum_result.source is ContentInputSource.ENUM:
+            return content_enum_diagnostics(enum_result, span=expr.span, node_id=node_id)
         error = container_view_path_error(expr)
         if error is not None:
             diagnostics.append(

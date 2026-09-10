@@ -6,6 +6,7 @@ from typing import Mapping
 
 from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.analysis import CompileAnalysis, ProtocolAnalysis
+from culsma.pipeline.content_inputs import ContentArgumentResolver, ContentArgumentScope, content_enum_diagnostics
 from culsma.pipeline.ir_nodes import IRBoolean, IRList, IRParam, IRProgram, IRQuantity, IRScriptEntry, IRString
 from culsma.pipeline.operation_specs import BUILTIN_OPERATION_SPECS, OperationSpec
 from culsma.pipeline.scope import ScopeQueryService
@@ -51,6 +52,11 @@ def validate(
         }
         group_bindings: dict[str, _GroupBinding] = {}
         defined_names: set[str] = set(initial_defined_names or set()) | {param.name for param in protocol.params}
+        content_scope = ContentArgumentScope(literal_bindings, expr_bindings, defined_names)
+        for param in protocol.params:
+            if param.default is not None:
+                result = ContentArgumentResolver.resolve_argument(param.default, None, content_scope)
+                diagnostics.extend(content_enum_diagnostics(result, span=param.default.span, node_id=protocol.id))
         protocol_analysis = analysis.protocols.get(protocol.id, ProtocolAnalysis())
         ctx = StatementValidationContext(
             literal_bindings=literal_bindings,

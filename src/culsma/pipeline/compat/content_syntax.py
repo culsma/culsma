@@ -2,7 +2,8 @@
 
 The constructor validator is the source admission boundary. Bare/string tokens
 remain accepted in strict mode; that mode controls taxonomy normalization only.
-Explicit enum syntax and stricter dynamic binding contracts are a later change.
+The shared resolver owns enum identity and binding traversal; this module owns
+admission of legacy text after lexical bindings have been resolved.
 """
 
 from __future__ import annotations
@@ -15,6 +16,15 @@ from culsma.pipeline.content_vocab import CONTENT_KIND_WHITELIST, is_allowed_con
 from culsma.pipeline.ir_nodes import IRArg, IRIdentifier, IRString
 
 from .content_taxonomy import normalize_content_classification
+
+
+def resolve_legacy_content_token(value: Any) -> str | None:
+    """Admit legacy text or an unbound bare name after scope resolution."""
+    if isinstance(value, IRString):
+        return value.value
+    if isinstance(value, IRIdentifier):
+        return value.name
+    return value if isinstance(value, str) else None
 
 
 def resolve_string_binding(value: Any, literal_bindings: dict[str, Any]) -> str | None:

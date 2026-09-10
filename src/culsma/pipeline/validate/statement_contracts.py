@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Any, Mapping
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.pipeline.content_inputs import ContentArgumentScope
 from culsma.common.source import Span
 from culsma.pipeline.ir_nodes import (
     IRArg,
@@ -521,7 +522,7 @@ def validate_let_call_contract(
             node_id=stmt.id,
             content_whitelist_mode=content_whitelist_mode,
             content_type_policy=content_type_policy,
-            defined_names=defined_names,
+            scope=ContentArgumentScope(literal_bindings, expr_bindings, defined_names or frozenset()),
         )
         diagnostics.append(
             Diagnostic(
@@ -594,7 +595,7 @@ def validate_let_call_contract(
             node_id=stmt.id,
             content_whitelist_mode=content_whitelist_mode,
             content_type_policy=content_type_policy,
-            defined_names=defined_names,
+            scope=ContentArgumentScope(literal_bindings, expr_bindings, defined_names or frozenset()),
         )
     )
     return diagnostics

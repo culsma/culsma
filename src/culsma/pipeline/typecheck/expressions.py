@@ -4,10 +4,14 @@ from __future__ import annotations
 
 from typing import Any
 
+from culsma.common.content_contracts import CONTENT_ENUM_TYPES
 from culsma.common.diagnostics import Diagnostic
+from culsma.pipeline.content_inputs import (
+    ContentArgumentResolver, ContentArgumentScope, ContentInputSource, ContentResolutionIssue,
+)
 from culsma.pipeline.container_views import classify_container_target_view, is_container_target_view
 from culsma.pipeline.compat.content_taxonomy import normalize_content_classification
-from culsma.pipeline.content_vocab import ContentKind
+from culsma.pipeline.content_vocab import ContentKind, ContentType, ContainerKind
 from culsma.pipeline.ir_nodes import (
     IRAssign,
     IRBinary,
@@ -188,7 +192,9 @@ class TypecheckExpressionServices:
         node_id: str,
         *,
         expr_bindings: dict[str, Any],
+        scope: ContentArgumentScope | None = None,
     ) -> list[Diagnostic]:
+        scope = scope or ContentArgumentScope(expr_bindings=expr_bindings)
         if call.name == "thermal_program":
             return self.typecheck_thermal_program_call(call, node_id=node_id)
         diagnostics = self.typecheck_call_container_target_view_positions(
@@ -200,11 +206,13 @@ class TypecheckExpressionServices:
             diagnostics.extend(self.typecheck_program_call(call, node_id=node_id, expr_bindings=expr_bindings))
             return diagnostics
         if call.name == "DefineContent":
-            diagnostics.extend(self.typecheck_define_content_args(call.args, call.span, node_id))
+            diagnostics.extend(self.typecheck_define_content_args(call.args, call.span, node_id, scope=scope))
             return diagnostics
         if call.name != "AllocContainer":
             return diagnostics
         for arg in call.args:
+            if arg.name == "kind":
+                diagnostics.extend(self.typecheck_content_enum_argument(arg, ContainerKind, node_id, scope))
             if arg.name == "capacity":
                 diagnostics.extend(
                     self.validate_quantity_dimensions(
@@ -220,7 +228,7 @@ class TypecheckExpressionServices:
                     )
                 )
             elif arg.name == "load":
-                diagnostics.extend(self.typecheck_constructor_load(arg.value, node_id=node_id, expr_bindings=expr_bindings))
+                diagnostics.extend(self.typecheck_constructor_load(arg.value, node_id=node_id, expr_bindings=expr_bindings, scope=scope))
         return diagnostics
 
     def typecheck_call_container_target_view_positions(
@@ -324,7 +332,7 @@ class TypecheckExpressionServices:
                 )
         return diagnostics
 
-    def typecheck_constructor_load(self, value: Any, *, node_id: str, expr_bindings: dict[str, Any]) -> list[Diagnostic]:
+    def typecheck_constructor_load(self, value: Any, *, node_id: str, expr_bindings: dict[str, Any], scope: ContentArgumentScope | None = None) -> list[Diagnostic]:
         resolved = self.resolve_bound_expr(value, expr_bindings)
         if not isinstance(resolved, IRList):
             return []
@@ -333,7 +341,7 @@ class TypecheckExpressionServices:
             if not isinstance(item, IRPair):
                 continue
             if isinstance(item.left, IRCall) and item.left.name == "DefineContent":
-                diagnostics.extend(self.typecheck_define_content_args(item.left.args, item.left.span, node_id))
+                diagnostics.extend(self.typecheck_define_content_args(item.left.args, item.left.span, node_id, scope=scope or ContentArgumentScope(expr_bindings=expr_bindings)))
             amount = self.resolve_bound_expr(item.right, expr_bindings)
             diagnostics.extend(
                 self.validate_quantity_dimensions(
@@ -358,7 +366,14 @@ class TypecheckExpressionServices:
                             node_id=node_id,
                         )
                     )
-                content_kind, content_type = _content_call_kind_type(item.left)
+                content_scope = scope or ContentArgumentScope(expr_bindings=expr_bindings)
+                content_values = {
+                    arg.name: ContentArgumentResolver.resolve_argument(
+                        arg.value, ContentKind if arg.name == "kind" else ContentType, content_scope,
+                    ).token
+                    for arg in item.left.args if arg.name in {"kind", "type"}
+                } if isinstance(item.left, IRCall) else {}
+                content_kind, content_type = content_values.get("kind"), content_values.get("type")
                 normalized = (
                     normalize_content_classification(content_kind, content_type)
                     if content_kind is not None and content_type is not None
@@ -487,7 +502,7 @@ class TypecheckExpressionServices:
         target_type = self.classify_local_expr_type(target_expr, expr_bindings=expr_bindings)
         value_type = self.classify_local_expr_type(stmt.value, expr_bindings=expr_bindings)
 
-        if target_type not in _ASSIGNABLE_TYPES:
+        if target_type not in _ASSIGNABLE_TYPES and target_type not in CONTENT_ENUM_TYPES:
             diagnostics.append(
                 Diagnostic(
                     code="TYPE_LOCAL_ASSIGN_TARGET_FORBIDDEN",
@@ -557,6 +572,9 @@ class TypecheckExpressionServices:
         return current.name, members
 
     def classify_local_expr_type(self, expr: Any, *, expr_bindings: dict[str, Any]) -> str:
+        enum_result = ContentArgumentResolver.resolve_argument(expr, None, ContentArgumentScope(expr_bindings=expr_bindings))
+        if enum_result.source is ContentInputSource.ENUM and enum_result.token is not None:
+            return type(enum_result.value).__name__
         resolved = self.resolve_bound_expr(expr, expr_bindings)
         if isinstance(resolved, IRBoolean):
             return "bool"
@@ -619,54 +637,49 @@ class TypecheckExpressionServices:
                     return "quantity"
         return "unknown"
 
-    def typecheck_content_descriptors(self, step: IRStep) -> list[Diagnostic]:
+    def typecheck_content_enum_argument(self, arg, expected_enum, node_id, scope: ContentArgumentScope) -> list[Diagnostic]:
+        result = ContentArgumentResolver.resolve_argument(arg.value, expected_enum, scope)
+        if result.issue is ContentResolutionIssue.WRONG_ENUM_TYPE:
+            return [Diagnostic(
+                code="TYPE_CONTENT_ENUM_TYPE_MISMATCH",
+                message=f"Argument '{arg.name}' expects {expected_enum.__name__}, got {result.detail}",
+                span=arg.value.span if hasattr(arg.value, "span") else arg.span,
+                node_id=node_id,
+            )]
+        if result.issue is not ContentResolutionIssue.NON_TEXT:
+            return []
+        code = "TYPE_CONTAINER_KIND_NOT_TEXT" if expected_enum is ContainerKind else f"TYPE_CONTENT_{arg.name.upper()}_NOT_TEXT"
+        return [Diagnostic(
+            code=code, message=f"Argument '{arg.name}' must be {expected_enum.__name__} or a compatible text input",
+            span=arg.span, node_id=node_id,
+        )]
+
+    def typecheck_content_descriptors(self, step: IRStep, *, scope: ContentArgumentScope | None = None) -> list[Diagnostic]:
+        scope = scope or ContentArgumentScope()
+        if step.name == "AllocContainer":
+            return [d for arg in step.args if arg.name == "kind"
+                    for d in self.typecheck_content_enum_argument(arg, ContainerKind, step.id, scope)]
         if step.name != "DefineContent":
             return []
-        return self.typecheck_define_content_args(step.args, step.span, step.id)
+        return self.typecheck_define_content_args(step.args, step.span, step.id, scope=scope)
 
-    def typecheck_define_content_args(self, args: list[Any], span, node_id: str) -> list[Diagnostic]:
+    def typecheck_define_content_args(self, args: list[Any], span, node_id: str, *, scope: ContentArgumentScope | None = None) -> list[Diagnostic]:
+        scope = scope or ContentArgumentScope()
         diagnostics: list[Diagnostic] = []
         for arg in args:
-            if arg.name == "kind":
-                if not isinstance(arg.value, (IRString, IRIdentifier)):
-                    diagnostics.append(
-                        Diagnostic(
-                            code="TYPE_CONTENT_KIND_NOT_TEXT",
-                            message="DefineContent arg 'kind' must be text-like",
-                            span=arg.span or span,
-                            node_id=node_id,
-                        )
-                    )
-            elif arg.name == "code":
-                if not isinstance(arg.value, (IRString, IRIdentifier)):
-                    diagnostics.append(
-                        Diagnostic(
-                            code="TYPE_CONTENT_CODE_NOT_TEXT",
-                            message="DefineContent arg 'code' must be text-like",
-                            span=arg.span or span,
-                            node_id=node_id,
-                        )
-                    )
-            elif arg.name == "type":
-                if not isinstance(arg.value, (IRString, IRIdentifier)):
-                    diagnostics.append(
-                        Diagnostic(
-                            code="TYPE_CONTENT_TYPE_NOT_TEXT",
-                            message="DefineContent arg 'type' must be text-like",
-                            span=arg.span or span,
-                            node_id=node_id,
-                        )
-                    )
-            elif arg.name == "attrs":
-                if not isinstance(arg.value, IRRecord):
-                    diagnostics.append(
-                        Diagnostic(
-                            code="TYPE_CONTENT_ATTRS_NOT_RECORD",
-                            message="DefineContent arg 'attrs' must be record-like",
-                            span=arg.span or span,
-                            node_id=node_id,
-                        )
-                    )
+            if arg.name in {"kind", "type"}:
+                expected_enum = ContentKind if arg.name == "kind" else ContentType
+                diagnostics.extend(self.typecheck_content_enum_argument(arg, expected_enum, node_id, scope))
+            elif arg.name == "code" and not isinstance(arg.value, (IRString, IRIdentifier)):
+                diagnostics.append(Diagnostic(
+                    code="TYPE_CONTENT_CODE_NOT_TEXT", message="DefineContent arg 'code' must be text-like",
+                    span=arg.span or span, node_id=node_id,
+                ))
+            elif arg.name == "attrs" and not isinstance(arg.value, IRRecord):
+                diagnostics.append(Diagnostic(
+                    code="TYPE_CONTENT_ATTRS_NOT_RECORD", message="DefineContent arg 'attrs' must be record-like",
+                    span=arg.span or span, node_id=node_id,
+                ))
         return diagnostics
 
     def typecheck_program_calls_in_expr(

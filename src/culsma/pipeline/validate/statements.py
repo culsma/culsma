@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any, Iterable, Mapping, cast
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.pipeline.content_inputs import ContentArgumentResolver, ContentArgumentScope, ContentInputSource
 from culsma.pipeline.analysis import CompileAnalysis, ProtocolAnalysis
 from culsma.pipeline.ir_nodes import (
     IRAssign,
@@ -341,11 +342,17 @@ class LetHandler(BaseStatementHandler):
     ) -> None:
         del state
         stmt = cast(IRLet, stmt)
+        enum_result = ContentArgumentResolver.resolve_argument(
+            stmt.value, None, ContentArgumentScope(ctx.literal_bindings, ctx.expr_bindings, ctx.defined_names),
+        )
         if stmt.value is not None:
             ctx.expr_bindings[stmt.name] = stmt.value
         else:
             ctx.expr_bindings.pop(stmt.name, None)
-        resolved = BindingValidator.resolve_let_value(stmt, ctx.literal_bindings)
+        resolved = (
+            enum_result.value if enum_result.source is ContentInputSource.ENUM and enum_result.token is not None
+            else BindingValidator.resolve_let_value(stmt, ctx.literal_bindings)
+        )
         if resolved is not None:
             ctx.literal_bindings[stmt.name] = resolved
         else:
@@ -435,8 +442,14 @@ class AssignHandler(BaseStatementHandler):
         stmt = cast(IRAssign, stmt)
         assign_root = BindingValidator.assign_target_root_name(stmt.target)
         if assign_root is not None and isinstance(stmt.target, IRIdentifier):
+            result = ContentArgumentResolver.resolve_argument(
+                stmt.value, None, ContentArgumentScope(ctx.literal_bindings, ctx.expr_bindings, ctx.defined_names),
+            )
             ctx.expr_bindings[assign_root] = stmt.value
-            ctx.literal_bindings.pop(assign_root, None)
+            if result.source is ContentInputSource.ENUM and result.token is not None:
+                ctx.literal_bindings[assign_root] = result.value
+            else:
+                ctx.literal_bindings.pop(assign_root, None)
 
     def iter_child_expressions(
         self,
@@ -841,7 +854,7 @@ class StepHandler(BaseStatementHandler):
                 literal_bindings=ctx.literal_bindings,
                 content_whitelist_mode=ctx.content_whitelist_mode,
                 content_type_policy=ctx.content_type_policy,
-                defined_names=ctx.defined_names,
+                scope=ContentArgumentScope(ctx.literal_bindings, ctx.expr_bindings, ctx.defined_names),
             ),
         )
         self.append_diagnostics(

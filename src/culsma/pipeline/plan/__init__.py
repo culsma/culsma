@@ -11,6 +11,7 @@ from culsma.pipeline.ir_nodes import IRProgram, IRProtocol, IRScriptEntry
 from culsma.pipeline.plan_nodes import PlanProgram, ProtocolPlan
 from culsma.pipeline.scope import ScopeAnalyzer, ScopeQueryService
 
+from .content_enums import guard_content_enum_execution
 from .context import PlanLoweringContext
 from .references import DEFAULT_PLAN_REFERENCE_RESOLVER, PlanReferenceResolver
 from .serialization import DEFAULT_PLAN_EXPRESSION_SERIALIZER, PlanExpressionSerializer
@@ -66,7 +67,7 @@ def lower_ir_to_plan(
                 reference_resolver=reference_resolver,
             )
         )
-        return PlanProgram(plans=plans, diagnostics=diagnostics, span=ir.span)
+        return guard_content_enum_execution(PlanProgram(plans=plans, diagnostics=diagnostics, span=ir.span))
 
     root_protocol = next(
         (protocol for protocol in ir.protocols if protocol.name == entry_resolution.protocol_name),
@@ -96,7 +97,7 @@ def lower_ir_to_plan(
         )
     )
 
-    return PlanProgram(plans=plans, diagnostics=diagnostics, span=ir.span)
+    return guard_content_enum_execution(PlanProgram(plans=plans, diagnostics=diagnostics, span=ir.span))
 
 
 def lower_script_entry_to_plan(

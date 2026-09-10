@@ -59,6 +59,7 @@ def typecheck(
 
     for protocol in ir.protocols:
         ctx = TypecheckContext(
+            parameter_names=frozenset(param.name for param in protocol.params),
             operation_specs=operation_specs,
             diagnostics=diagnostics,
             expr_bindings={

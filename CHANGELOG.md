@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+### Added
+
+- Frontend validation for explicit `ContentKind`, `ContentType`, and
+  `ContainerKind` members, including aliases, parameter defaults, lexical
+  shadowing, and enum-family checks. Explicit enum pair errors are rejected
+  in compatibility mode as well as strict mode. Legacy text inputs remain
+  supported through the centralized compatibility adapter.
+- A temporary `PLAN_CONTENT_ENUM_EXECUTION_UNSUPPORTED` error prevents
+  execution of content enum expressions until plan/runtime support is
+  connected. This frontend-only milestone must not write empty material
+  classifications. Existing text-based protocols remain executable.
+
 ### Fixed
 
 - Bare `kind` tokens in content and container constructors now receive the
@@ -11,6 +23,8 @@
 
 ### Changed
 
+- Moved content enum definitions to `common/content_contracts.py`, retaining
+  the same enum classes through the existing `pipeline.content_vocab` imports.
 - Centralized legacy content syntax and taxonomy conversion under
   `pipeline/compat`, with separate source and historical-data adapters.
   Canonical vocabulary and validation remain independent of legacy aliases.
