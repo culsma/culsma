@@ -4,6 +4,10 @@
 
 ### Added
 
+- Immutable `ContentClassification` values enforce actual enum families and
+  valid kind/type pairs at construction. Semantic checks, cell-count checks,
+  and legacy-result promotion share this contract; unknown historical data
+  remains preserved without being treated as a validated classification.
 - Frontend validation for explicit `ContentKind`, `ContentType`, and
   `ContainerKind` members, including aliases, parameter defaults, lexical
   shadowing, and enum-family checks. Explicit enum pair errors are rejected
@@ -23,6 +27,10 @@
 
 ### Changed
 
+- Canonical content pair tables and queries now live in the shared contract
+  module and retain their old import paths. The tables are read-only; legacy
+  alias/fallback selection remains in the compatibility adapter. Classification
+  serialization explicitly emits existing string values.
 - Moved content enum definitions to `common/content_contracts.py`, retaining
   the same enum classes through the existing `pipeline.content_vocab` imports.
 - Centralized legacy content syntax and taxonomy conversion under

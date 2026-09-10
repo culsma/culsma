@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from culsma.common.content_contracts import CONTENT_ENUM_TYPES
+from culsma.common.content_contracts import CONTENT_ENUM_TYPES, parse_content_classification, parse_content_kind
 from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.content_inputs import (
     ContentArgumentResolver, ContentArgumentScope, ContentInputSource, ContentResolutionIssue,
@@ -367,20 +367,20 @@ class TypecheckExpressionServices:
                         )
                     )
                 content_scope = scope or ContentArgumentScope(expr_bindings=expr_bindings)
-                content_values = {
+                content_results = {
                     arg.name: ContentArgumentResolver.resolve_argument(
                         arg.value, ContentKind if arg.name == "kind" else ContentType, content_scope,
-                    ).token
+                    )
                     for arg in item.left.args if arg.name in {"kind", "type"}
                 } if isinstance(item.left, IRCall) else {}
-                content_kind, content_type = content_values.get("kind"), content_values.get("type")
-                normalized = (
-                    normalize_content_classification(content_kind, content_type)
-                    if content_kind is not None and content_type is not None
-                    else None
-                )
-                effective_kind = normalized.kind if normalized is not None else content_kind
-                if effective_kind is not None and effective_kind != ContentKind.BIO_CELLULAR.value:
+                content_kind = content_results["kind"].token if "kind" in content_results else None
+                content_type = content_results["type"].token if "type" in content_results else None
+                classification = parse_content_classification(content_kind, content_type)
+                if (classification is None and content_kind is not None and content_type is not None
+                        and all(result.source is not ContentInputSource.ENUM for result in content_results.values())):
+                    classification = normalize_content_classification(content_kind, content_type).classification
+                effective_kind = classification.kind if classification is not None else parse_content_kind(content_kind)
+                if content_kind is not None and effective_kind is not ContentKind.BIO_CELLULAR:
                     diagnostics.append(
                         Diagnostic(
                             code="TYPE_LOAD_COUNT_CONTENT_MISMATCH",

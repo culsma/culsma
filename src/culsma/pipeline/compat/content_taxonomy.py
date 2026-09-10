@@ -8,11 +8,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from culsma.pipeline.content_vocab import (
+from culsma.common.content_contracts import (
     CONTENT_KIND_WHITELIST,
     FALLBACK_CONTENT_TYPE_BY_KIND,
     ContentKind,
     ContentType,
+    ContentClassification,
+    parse_content_classification,
     is_standard_content_type,
 )
 
@@ -27,6 +29,11 @@ class NormalizedContentClassification:
     attrs: dict[str, str] = field(default_factory=dict)
     original_kind: str | None = None
     original_type: str | None = None
+
+    @property
+    def classification(self) -> ContentClassification | None:
+        """Promote only valid canonical results, preserving unknown historical data."""
+        return parse_content_classification(self.kind, self.type)
 
     @property
     def changed(self) -> bool:

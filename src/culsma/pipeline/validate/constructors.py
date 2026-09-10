@@ -7,6 +7,7 @@ from typing import Any
 from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.compat import content_syntax
 from culsma.pipeline.compat.content_taxonomy import KNOWN_CONTENT_KINDS
+from culsma.common.content_contracts import parse_content_classification
 from culsma.pipeline.content_vocab import (
     CONTAINER_KIND_WHITELIST,
     CONTENT_KIND_WHITELIST,
@@ -14,7 +15,6 @@ from culsma.pipeline.content_vocab import (
     ContainerKind,
     ContentKind,
     ContentType,
-    is_allowed_content_type,
 )
 from culsma.pipeline.content_inputs import (
     ContentArgumentResolver, ContentArgumentScope, ContentInputSource, ContentResolutionStatus,
@@ -111,7 +111,8 @@ class ConstructorValidator:
             return diagnostics
 
         if type_arg is not None and type_value is not None and kind_value in CONTENT_KIND_WHITELIST:
-            if not is_allowed_content_type(kind_value, type_value):
+            classification = parse_content_classification(kind_result.value, type_result.value)
+            if classification is None:
                 diagnostics.extend(
                     content_type_value_diagnostics(
                         kind_value=kind_value,

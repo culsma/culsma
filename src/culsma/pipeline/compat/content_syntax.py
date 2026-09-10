@@ -12,7 +12,7 @@ from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
 from culsma.parser.ast_nodes import Arg, StringLiteral
-from culsma.pipeline.content_vocab import CONTENT_KIND_WHITELIST, is_allowed_content_type
+from culsma.common.content_contracts import is_allowed_content_type
 from culsma.pipeline.ir_nodes import IRArg, IRIdentifier, IRString
 
 from .content_taxonomy import normalize_content_classification
@@ -73,8 +73,9 @@ def normalization_diagnostics(
     if not compat_mode or is_allowed_content_type(kind_value, type_value):
         return []
     normalized = normalize_content_classification(kind_value, type_value)
-    if normalized.kind in CONTENT_KIND_WHITELIST and is_allowed_content_type(normalized.kind, normalized.type):
-        suggested = format_content_suggestion(normalized.kind, normalized.type, normalized.attrs)
+    classification = normalized.classification
+    if classification is not None:
+        suggested = format_content_suggestion(classification.kind.value, classification.type.value, normalized.attrs)
         return [
             Diagnostic(
                 code="SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
