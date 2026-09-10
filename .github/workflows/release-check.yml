@@ -37,6 +37,9 @@ jobs:
       - name: Run tests
         run: python -m pytest -q
 
+      - name: Check content reference contract
+        run: python -m conformance.content_contract --check
+
   package:
     name: Package build
     runs-on: ubuntu-latest

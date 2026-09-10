@@ -2,9 +2,9 @@
 
 from typing import Any
 
-from culsma.common.content_contracts import ContainerKind
+from culsma.common.content_contracts import ContainerKind, ContentKind, ContentType
 from culsma.common.diagnostics import Diagnostic
-from culsma.pipeline.content_boundary import resolve_bound_content_classification, resolve_bound_container_kind
+from culsma.pipeline.content_boundary import read_bound_content_token, resolve_bound_content_classification, resolve_bound_container_kind
 from culsma.pipeline.plan_nodes import PlanProgram, PlanStep
 
 
@@ -16,6 +16,9 @@ def validate_bound_content_step(step: PlanStep) -> list[Diagnostic]:
     try:
         if step.op == 'DefineContent':
             kind, content_type = step.args.get('kind'), step.args.get('type')
+            for value, expected in ((kind, ContentKind), (content_type, ContentType)):
+                if not is_deferred_content_input(value):
+                    read_bound_content_token(value, expected)
             if not is_deferred_content_input(kind) and not is_deferred_content_input(content_type):
                 resolve_bound_content_classification(kind, content_type)
         elif step.op == 'AllocContainer' and 'kind' in step.args:

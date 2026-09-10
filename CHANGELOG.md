@@ -4,6 +4,12 @@
 
 ### Added
 
+- A content reference conformance pilot extracts the owning Markdown sections
+  into a derived source snapshot with hashes and requirement-to-test hooks.
+  Checks compare canonical pairs, fallbacks, selected legacy conversions and
+  diagnostic ownership, plus volume/mass/count calculations and event replay.
+  Implementation CI checks the frozen snapshot; reference CI detects source drift.
+  These development artifacts are not runtime dependencies.
 - Immutable `ContentClassification` values enforce actual enum families and
   valid kind/type pairs at construction. Semantic checks, cell-count checks,
   and legacy-result promotion share this contract; unknown historical data
@@ -21,6 +27,8 @@
 
 ### Fixed
 
+- Plan validation rejects an already-known wrong content enum family even when
+  the other classification argument remains deferred.
 - Runtime content definition rejects missing, nontext, wrong-family, and
   unsupported classifications before modifying the registry. Invalid explicit
   enum pairs cannot be repaired by legacy fallback. Container enums and surface

@@ -4,7 +4,7 @@
 
 ```mermaid
 flowchart TB
-    subgraph Current["当前分支 codex/content-enum-resolution · 第一阶段、2A–2C 已实现"]
+    subgraph Current["当前分支 codex/content-enum-resolution · 第一阶段、2A–2C 与 2D 内容试点已实现"]
         Source["旧裸 token / 字符串<br/>ContentKind.FORMULATION / ContentType.MEDIUM"] --> Frontend["Parser / Compile"]
         Frontend --> Resolver["2A ContentArgumentScope / Resolver<br/>成员、别名、默认值、命名空间遮蔽"]
         Resolver --> Validate["Semantic / Typecheck<br/>成员、枚举族、配对与 cells 约束"]
@@ -23,13 +23,25 @@ flowchart TB
         Store --> Science["本次 2C：科学模型分类<br/>ComponentSnapshot.classification<br/>ClassificationRule 使用共享枚举"]
         Note["本次解除 2A 临时执行拦截<br/>PLAN_CONTENT_ENUM_EXECUTION_UNSUPPORTED 已移除<br/>直接成员、别名、参数、分支、循环、cells 与 JSON 往返已测试"]
     end
-    Science -.-> Next["下一步 2D · 待实现<br/>reference / 诊断 registry / 实现的机械对照<br/>扩大计算、序列化与回放一致性验收<br/>将 conformance 试点接入 CI"]
+    subgraph Conformance["本次 2D 内容试点 · 已实现"]
+        Reference["Owning reference Markdown<br/>分类表、推荐角色、兼容案例、诊断表<br/>CNT-ENUM-01 至 07 → 测试入口"]
+        Reference --> Extract["conformance/content_contract.py<br/>直接提取章节；歧义或缺项报错"]
+        Extract --> Snapshot["content_reference.json · 派生快照<br/>内含原章节、来源路径与 SHA-256<br/>不能独立编辑；运行时不读取"]
+        Snapshot --> CheckCI["本次：代码 PR CI 对照实现<br/>枚举、配对、fallback、兼容案例与测试映射"]
+        Reference --> RefCI["本次：reference PR CI 检查源文档漂移<br/>支持选择协同实现分支"]
+        RefCI --> Snapshot
+        CheckCI --> Evidence["本次：真实行为及差异检测测试<br/>完整配对矩阵；15 个诊断归属<br/>3 种数量轴计算、JSON 与事件回放"]
+        PipelineFix["本次检查发现并修复<br/>已知错误枚举族不再因另一个参数延迟而漏过 Plan 检查"]
+    end
+    Science -.->|被检查，不读取规范文件| CheckCI
+    Evidence -.-> Next["后续扩展 · 待实现<br/>其它 operation / program 参数表<br/>单位与维度；更多诊断和 runtime 表<br/>role 标准词汇及开放扩展另行推进"]
     Next -.-> Major["后续大版本<br/>旧源码准入统一退役<br/>历史数据转换独立决定退役时间"]
-    Legend["图例<br/>绿色：已实现，本次 2C 在节点中标注<br/>橙色虚线：下一步 2D<br/>灰色：错误出口 / 更晚事项"]
+    Legend["图例<br/>绿色：已实现，本次 2D 在独立区标注<br/>橙色虚线：后续扩展；CI 已配置，远程运行待推送<br/>灰色：错误出口 / 更晚事项"]
     classDef current fill:#dcfce7,stroke:#15803d,color:#14532d,stroke-width:2px;
     classDef next fill:#ffedd5,stroke:#c2410c,color:#7c2d12,stroke-dasharray:5 5;
     classDef limit fill:#f3f4f6,stroke:#6b7280,color:#374151;
     class Source,Frontend,Resolver,Validate,Flow,Serialize,Bound,Execute,Boundary,Legacy,Strict,Classification,Store,Science,Note current;
+    class Reference,Extract,Snapshot,CheckCI,RefCI,Evidence,PipelineFix current;
     class Next next;
     class PlanReject,RuntimeReject,Major limit;
 ```
@@ -47,6 +59,9 @@ sequenceDiagram
     participant Shared as common/content_contracts.py
     participant Material as 物料状态
     participant Science as 科学模型分类
+    participant Reference as Reference Markdown
+    participant Conformance as Content conformance checker
+    participant CI as PR CI
 
     rect rgb(220, 252, 231)
         Author->>Check: 直接枚举、别名、参数或旧文本
@@ -85,8 +100,20 @@ sequenceDiagram
             end
         end
     end
+    rect rgb(220, 252, 231)
+        Note over Reference, CI: 本次 2D 内容试点已实现；远程 CI 待两侧分支推送后运行
+        Reference->>Conformance: 提取拥有语义的章节与 Req ID → Test ID
+        Conformance->>Conformance: 保存原文、SHA-256 和派生 JSON 快照
+        CI->>Conformance: 代码 PR：检查固定快照与实现
+        CI->>Conformance: Reference PR：检查新原文与实现快照
+        Conformance->>Shared: 对照枚举、完整配对与 fallback
+        Conformance->>Legacy: 对照规范中的兼容案例与元数据
+        Conformance->>Check: 真实错误用例核对阶段及严重度
+        Conformance->>Material: 体积、质量、cells 计算及事件回放
+        Conformance-->>CI: 任何漂移或失效测试映射导致失败
+    end
     rect rgb(255, 237, 213)
-        Note over Check, Science: 下一步 2D：规范表、诊断 registry 与实现对照<br/>扩大计算/运行记录/回放验收，接入 CI<br/>attrs.role 仍开放；code / name 仍为字符串
+        Note over Reference, CI: 后续扩展其它规范表与 role 标准词汇<br/>本轮仍保留 attrs.role 开放、code / name 字符串契约
     end
 ```
 
@@ -177,11 +204,34 @@ classDiagram
     }
     ComponentSnapshot ..> SharedContentContracts : 本次：消费者边界提升
     ClassificationRule ..> ContentClassification : 本次：枚举身份匹配
+    class ContentReferenceChecker["conformance/content_contract.py"]
+    class ContentReferenceChecker {
+        +read_reference(root)
+        +validate_snapshot(snapshot)
+        +implementation_errors(contract)
+        +requirement_hook_errors(contract, root)
+        +main(argv)
+    }
     class EnumConformanceTests {
-        <<planned_2D>>
-        +reference_and_diagnostic_registry()
-        +legacy_compute_and_replay()
-        +CI_contract_check()
+        +test_reference_taxonomy_matches_implementation()
+        +test_reference_diagnostic_ownership()
+        +test_enum_text_calculation_and_event_replay()
+        +test_reference_pair_matrix_enforced_by_frontend()
+    }
+    class ReferenceMarkdown
+    class DerivedReferenceSnapshot {
+        +sources : markdown and sha256
+        +contract : generated data
+    }
+    class ContentConformanceCI
+    ReferenceMarkdown ..> ContentReferenceChecker : 本次：规范来源
+    ContentReferenceChecker ..> DerivedReferenceSnapshot : 本次：生成与校验
+    ContentConformanceCI ..> ContentReferenceChecker : 本次：两端 PR 检查
+    ContentConformanceCI ..> EnumConformanceTests
+    class BroaderConformance {
+        <<planned>>
+        +operation_and_program_tables()
+        +units_and_remaining_diagnostics()
     }
     EnumConformanceTests ..> SharedContentContracts
     EnumConformanceTests ..> RuntimeContent
@@ -189,7 +239,7 @@ classDiagram
     note for ContentBoundary "本次 2C：计划与运行时共用公开边界函数<br/>test_content_enum_execution.py 验收<br/>非法最终值在物料写入前拒绝"
     note for BoundContentPlanValidator "原 2A 临时 guard 已移除<br/>本次改为最终绑定值校验，不再禁止合法枚举执行"
     note for NormalizedContentClassification "历史字符串、attrs 与原分类元数据继续保留<br/>旧源码准入退役不影响独立历史适配"
-    note for EnumConformanceTests "图例：绿色已实现；橙色下一步 2D<br/>本次包含 JSON 往返与旧协议回归，广泛规范对照仍待完成"
+    note for EnumConformanceTests "本次 2D：内容试点与差异检测已完成<br/>本地直接对照 reference，包含事件回放<br/>绿色已实现；橙色为更广泛规范表扩展"
     style SharedContentContracts fill:#dcfce7,stroke:#15803d,color:#14532d
     style ContentClassification fill:#dcfce7,stroke:#15803d,color:#14532d
     style DeferredContentEnum fill:#dcfce7,stroke:#15803d,color:#14532d
@@ -201,5 +251,9 @@ classDiagram
     style RuntimeContent fill:#dcfce7,stroke:#15803d,color:#14532d
     style ComponentSnapshot fill:#dcfce7,stroke:#15803d,color:#14532d
     style ClassificationRule fill:#dcfce7,stroke:#15803d,color:#14532d
-    style EnumConformanceTests fill:#ffedd5,stroke:#c2410c,color:#7c2d12,stroke-dasharray:5 5
+    style EnumConformanceTests fill:#dcfce7,stroke:#15803d,color:#14532d
+    style ContentReferenceChecker fill:#dcfce7,stroke:#15803d,color:#14532d
+    style ContentConformanceCI fill:#dcfce7,stroke:#15803d,color:#14532d
+    style DerivedReferenceSnapshot fill:#dcfce7,stroke:#15803d,color:#14532d
+    style BroaderConformance fill:#ffedd5,stroke:#c2410c,color:#7c2d12,stroke-dasharray:5 5
 ```

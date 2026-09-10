@@ -1,0 +1,545 @@
+{
+  "contract": {
+    "container_kinds": [
+      "chamber",
+      "surface",
+      "tube",
+      "well"
+    ],
+    "diagnostics": {
+      "MAT_CONTAINER_KIND_INVALID": {
+        "severity": "error",
+        "stage": "material",
+        "status": "current"
+      },
+      "MAT_CONTENT_CLASSIFICATION_INVALID": {
+        "severity": "error",
+        "stage": "material",
+        "status": "current"
+      },
+      "MAT_INVALID_CAPACITY": {
+        "severity": "error",
+        "stage": "material",
+        "status": "current"
+      },
+      "PLAN_CONTAINER_KIND_INVALID": {
+        "severity": "error",
+        "stage": "plan",
+        "status": "current"
+      },
+      "PLAN_CONTENT_CLASSIFICATION_INVALID": {
+        "severity": "error",
+        "stage": "plan",
+        "status": "current"
+      },
+      "SEM_CONTENT_ENUM_BINDING_CYCLE": {
+        "severity": "error",
+        "stage": "semantic",
+        "status": "current"
+      },
+      "SEM_CONTENT_ENUM_MEMBER_INVALID": {
+        "severity": "error",
+        "stage": "semantic",
+        "status": "current"
+      },
+      "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED": {
+        "severity": "warning",
+        "stage": "semantic",
+        "status": "current warning"
+      },
+      "SEM_INVALID_CONTENT_KIND": {
+        "severity": "error",
+        "stage": "semantic",
+        "status": "current"
+      },
+      "SEM_INVALID_CONTENT_TYPE_VALUE": {
+        "severity": "error",
+        "stage": "semantic",
+        "status": "current"
+      },
+      "SEM_SURFACE_CAPACITY_FORBIDDEN": {
+        "severity": "error",
+        "stage": "semantic",
+        "status": "current"
+      },
+      "TYPE_CONTAINER_KIND_NOT_TEXT": {
+        "severity": "error",
+        "stage": "type",
+        "status": "current"
+      },
+      "TYPE_CONTENT_ENUM_TYPE_MISMATCH": {
+        "severity": "error",
+        "stage": "type",
+        "status": "current"
+      },
+      "TYPE_CONTENT_KIND_NOT_TEXT": {
+        "severity": "error",
+        "stage": "type",
+        "status": "current"
+      },
+      "TYPE_CONTENT_TYPE_NOT_TEXT": {
+        "severity": "error",
+        "stage": "type",
+        "status": "current"
+      }
+    },
+    "fallback_by_kind": {
+      "bio_cellular": "other_cellular_material",
+      "bio_entity": "other_bio_entity",
+      "bio_fluid": "other_body_fluid",
+      "bio_molecule_or_virus": "other_biomolecule_or_virus",
+      "bio_subcellular": "other_subcellular_structure",
+      "chemical": "other_chemical",
+      "formulation": "other_formulation",
+      "particulate": "other_particulate"
+    },
+    "legacy_cases": [
+      {
+        "attrs": {
+          "state": "stock"
+        },
+        "input": [
+          "biosample",
+          "dna_stock"
+        ],
+        "output": [
+          "bio_molecule_or_virus",
+          "dna"
+        ]
+      },
+      {
+        "attrs": {
+          "state": "pellet"
+        },
+        "input": [
+          "biosample",
+          "cell_pellet"
+        ],
+        "output": [
+          "bio_cellular",
+          "other_cellular_material"
+        ]
+      },
+      {
+        "attrs": {
+          "role": "wash"
+        },
+        "input": [
+          "buffer",
+          "wash_buffer"
+        ],
+        "output": [
+          "formulation",
+          "buffer"
+        ]
+      },
+      {
+        "attrs": {
+          "role": "enzyme"
+        },
+        "input": [
+          "reagent",
+          "enzyme"
+        ],
+        "output": [
+          "bio_molecule_or_virus",
+          "protein"
+        ]
+      },
+      {
+        "attrs": {},
+        "input": [
+          "blood",
+          "lab_local"
+        ],
+        "output": [
+          "bio_fluid",
+          "whole_blood"
+        ]
+      },
+      {
+        "attrs": {
+          "original_type": "lab_local"
+        },
+        "input": [
+          "formulation",
+          "lab_local"
+        ],
+        "output": [
+          "formulation",
+          "other_formulation"
+        ]
+      },
+      {
+        "attrs": {
+          "original_type": "medium"
+        },
+        "input": [
+          "chemical",
+          "medium"
+        ],
+        "output": [
+          "chemical",
+          "other_chemical"
+        ]
+      },
+      {
+        "attrs": {
+          "disposition": "waste",
+          "original_type": "lab_local"
+        },
+        "input": [
+          "waste",
+          "lab_local"
+        ],
+        "output": [
+          "formulation",
+          "other_formulation"
+        ]
+      }
+    ],
+    "recommended_roles": {
+      "bio_cellular/cell_line": [
+        "material"
+      ],
+      "bio_cellular/cell_population": [
+        "material"
+      ],
+      "bio_cellular/microbial_cells": [
+        "material"
+      ],
+      "bio_cellular/other_cellular_material": [
+        "material"
+      ],
+      "bio_cellular/primary_cells": [
+        "material"
+      ],
+      "bio_entity/organ": [
+        "material"
+      ],
+      "bio_entity/organism": [
+        "material"
+      ],
+      "bio_entity/other_bio_entity": [
+        "material"
+      ],
+      "bio_entity/tissue": [
+        "material"
+      ],
+      "bio_fluid/ascites": [
+        "material"
+      ],
+      "bio_fluid/bronchoalveolar_lavage_fluid": [
+        "material"
+      ],
+      "bio_fluid/buffy_coat": [
+        "material"
+      ],
+      "bio_fluid/cerebrospinal_fluid": [
+        "material"
+      ],
+      "bio_fluid/lymph": [
+        "material"
+      ],
+      "bio_fluid/other_body_fluid": [
+        "material"
+      ],
+      "bio_fluid/plasma": [
+        "material"
+      ],
+      "bio_fluid/saliva": [
+        "material"
+      ],
+      "bio_fluid/semen": [
+        "material"
+      ],
+      "bio_fluid/serum": [
+        "material"
+      ],
+      "bio_fluid/synovial_fluid": [
+        "material"
+      ],
+      "bio_fluid/tears": [
+        "material"
+      ],
+      "bio_fluid/urine": [
+        "material"
+      ],
+      "bio_fluid/whole_blood": [
+        "material"
+      ],
+      "bio_molecule_or_virus/dna": [
+        "sample",
+        "template",
+        "primer",
+        "probe",
+        "marker",
+        "standard",
+        "vector"
+      ],
+      "bio_molecule_or_virus/other_biomolecule_or_virus": [
+        "sample"
+      ],
+      "bio_molecule_or_virus/protein": [
+        "sample",
+        "antibody",
+        "enzyme",
+        "cytokine",
+        "marker",
+        "standard",
+        "antigen"
+      ],
+      "bio_molecule_or_virus/rna": [
+        "sample",
+        "template",
+        "guide",
+        "probe",
+        "marker",
+        "standard"
+      ],
+      "bio_molecule_or_virus/virus": [
+        "sample",
+        "vector"
+      ],
+      "bio_subcellular/cytoskeletal_structure": [
+        "sample"
+      ],
+      "bio_subcellular/membrane": [
+        "sample"
+      ],
+      "bio_subcellular/organelle": [
+        "sample"
+      ],
+      "bio_subcellular/other_subcellular_structure": [
+        "sample"
+      ],
+      "bio_subcellular/vesicle": [
+        "sample"
+      ],
+      "chemical/detergent": [
+        "lysis",
+        "permeabilization",
+        "washing",
+        "solubilization"
+      ],
+      "chemical/dye": [
+        "stain",
+        "detection",
+        "tracking"
+      ],
+      "chemical/inorganic_compound": [
+        "salt",
+        "pH_adjuster",
+        "ion_source",
+        "cofactor"
+      ],
+      "chemical/organic_compound": [
+        "substrate",
+        "inhibitor",
+        "activator",
+        "fixative",
+        "selection",
+        "precipitation",
+        "crowding_agent",
+        "matrix_component"
+      ],
+      "chemical/other_chemical": [
+        "material"
+      ],
+      "chemical/solvent": [
+        "solvent",
+        "carrier",
+        "extraction",
+        "fixative"
+      ],
+      "formulation/buffer": [
+        "wash",
+        "elution",
+        "binding",
+        "lysis",
+        "storage",
+        "reaction_environment"
+      ],
+      "formulation/gradient_medium": [
+        "density_gradient_separation"
+      ],
+      "formulation/master_mix": [
+        "reaction_mix"
+      ],
+      "formulation/medium": [
+        "culture",
+        "maintenance"
+      ],
+      "formulation/other_formulation": [
+        "material"
+      ],
+      "formulation/supplement": [
+        "supplement",
+        "selection",
+        "growth_factor"
+      ],
+      "particulate/beads": [
+        "capture",
+        "cleanup",
+        "purification",
+        "enrichment"
+      ],
+      "particulate/other_particulate": [
+        "material"
+      ],
+      "particulate/particle": [
+        "labeling",
+        "calibration"
+      ],
+      "particulate/resin": [
+        "affinity_purification",
+        "chromatography",
+        "capture"
+      ]
+    },
+    "requirements": {
+      "CNT-ENUM-01": {
+        "owner": "Chapter 6 §6.2.5–6; common/content_contracts.py",
+        "test": "tests/test_content_reference_conformance.py::test_reference_taxonomy_matches_implementation"
+      },
+      "CNT-ENUM-02": {
+        "owner": "Chapter 6 §6.2.7; pipeline/content_inputs.py",
+        "test": "tests/test_content_enum_execution.py; tests/test_content_enum_resolution.py"
+      },
+      "CNT-ENUM-03": {
+        "owner": "Chapter 6 §6.2.8; pipeline/compat",
+        "test": "tests/test_content_reference_conformance.py::test_reference_legacy_examples"
+      },
+      "CNT-ENUM-04": {
+        "owner": "Chapter 6 §6.2.6–7",
+        "test": "tests/test_content_reference_conformance.py::test_open_metadata_survives_execution_and_replay"
+      },
+      "CNT-ENUM-05": {
+        "owner": "Chapter 8 §8.2.2; content boundary validators",
+        "test": "tests/test_content_reference_conformance.py::test_reference_diagnostic_ownership"
+      },
+      "CNT-ENUM-06": {
+        "owner": "Chapter 7; runtime/material; scientific model classifier",
+        "test": "tests/test_content_reference_conformance.py::test_enum_text_calculation_and_event_replay"
+      },
+      "CNT-ENUM-07": {
+        "owner": "This chapter; conformance/content_contract.py",
+        "test": "tests/test_content_reference_conformance.py::test_reference_snapshot_is_self_consistent; tests/test_content_contract_checker.py"
+      }
+    },
+    "roles_open": true,
+    "types_by_kind": {
+      "bio_cellular": [
+        "cell_line",
+        "cell_population",
+        "microbial_cells",
+        "other_cellular_material",
+        "primary_cells"
+      ],
+      "bio_entity": [
+        "organ",
+        "organism",
+        "other_bio_entity",
+        "tissue"
+      ],
+      "bio_fluid": [
+        "ascites",
+        "bronchoalveolar_lavage_fluid",
+        "buffy_coat",
+        "cerebrospinal_fluid",
+        "lymph",
+        "other_body_fluid",
+        "plasma",
+        "saliva",
+        "semen",
+        "serum",
+        "synovial_fluid",
+        "tears",
+        "urine",
+        "whole_blood"
+      ],
+      "bio_molecule_or_virus": [
+        "dna",
+        "other_biomolecule_or_virus",
+        "protein",
+        "rna",
+        "virus"
+      ],
+      "bio_subcellular": [
+        "cytoskeletal_structure",
+        "membrane",
+        "organelle",
+        "other_subcellular_structure",
+        "vesicle"
+      ],
+      "chemical": [
+        "detergent",
+        "dye",
+        "inorganic_compound",
+        "organic_compound",
+        "other_chemical",
+        "solvent"
+      ],
+      "formulation": [
+        "buffer",
+        "gradient_medium",
+        "master_mix",
+        "medium",
+        "other_formulation",
+        "supplement"
+      ],
+      "particulate": [
+        "beads",
+        "other_particulate",
+        "particle",
+        "resin"
+      ]
+    }
+  },
+  "schema_version": 1,
+  "source_repository": "culsma/culsma-reference",
+  "sources": {
+    "containers": {
+      "heading": "### 6.2.4 Container/Carrier and Content Taxonomy",
+      "markdown": "### 6.2.4 Container/Carrier and Content Taxonomy\n\nContainer taxonomy rules:\n\n1. `Container` is an abstract handle type, not a user-mutable object/class.\n2. Concrete container kinds are `tube`, `well`, `chamber`, and `surface`.\n3. `plate` is modeled as carrier context; content-bearing runtime state is on well containers.\n4. Built-ins must accept abstract `Container` handles and remain independent of frontend sugar spellings.\n\nContent taxonomy rules:\n\n1. Content identity/classification is represented as `Content` records and container-linked content state.\n2. Recommended content fields: `content_kind`, `content_type`, `content_code`, `content_name`, and `attrs`.\n3. `content_kind` is a closed mid-level material family and answers \"what family of material is this?\".\n4. `content_type` is a closed canonical material category within `content_kind` and answers \"what material category is this?\".\n5. `content_code` and `content_name` identify/display the concrete instance; they are not taxonomy fields.\n6. `attrs` is the open metadata record for state, source, preparation, concentration, composition detail, and `attrs.role`.\n7. `attrs.role` is the role field. It is not promoted to a top-level `role` argument in this baseline.\n8. Source-level family constructors (`blood/reagent/buffer`) are compatibility/ergonomic sugar and do not define canonical `content_kind` names by themselves.\n",
+      "path": "05_operation_vocabulary_and_call_contracts.md",
+      "sha256": "9115778e6fea06a5c2cfcc5c1db2f6a4b8e97222de92793917f2c18771a6e329"
+    },
+    "diagnostics": {
+      "heading": "## 8.2.2 Diagnostic Mapping Table (Content + Mutation Model)",
+      "markdown": "## 8.2.2 Diagnostic Mapping Table (Content + Mutation Model)\n\n| Failure condition | Earliest stage | Diagnostic code | Status |\n|---|---|---|---|\n| missing `content_kind` in `DefineContent` | semantic | `SEM_MISSING_CONTENT_KIND` | current |\n| unknown explicit content/container enum member | semantic | `SEM_CONTENT_ENUM_MEMBER_INVALID` | current |\n| cyclic content binding | semantic | `SEM_CONTENT_ENUM_BINDING_CYCLE` | current |\n| content/container argument uses the wrong enum family | type | `TYPE_CONTENT_ENUM_TYPE_MISMATCH` | current |\n| non-text and non-enum container kind | type | `TYPE_CONTAINER_KIND_NOT_TEXT` | current |\n| final statically bound content classification is invalid | plan | `PLAN_CONTENT_CLASSIFICATION_INVALID` | current |\n| final statically bound container kind or surface capacity is invalid | plan | `PLAN_CONTAINER_KIND_INVALID` | current |\n| final runtime content classification is missing, nontext, wrong-family or invalid | material | `MAT_CONTENT_CLASSIFICATION_INVALID` | current |\n| final runtime container kind is invalid | material | `MAT_CONTAINER_KIND_INVALID` | current |\n| invalid container capacity, including surface volume capacity | material | `MAT_INVALID_CAPACITY` | current |\n| non-whitelisted `content_kind` (strict mode) | semantic | `SEM_INVALID_CONTENT_KIND` | current |\n| invalid `content_type` normalization (required mode) | semantic | `SEM_INVALID_CONTENT_TYPE_FORMAT` | current |\n| unsupported `content_type` token in strict canonical mode | semantic | `SEM_INVALID_CONTENT_TYPE_VALUE` | current |\n| legacy or unknown content taxonomy normalized to canonical value or `other_*` in compatibility mode | semantic | `SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED` | current warning |\n| unsupported constructor `container kind` | semantic | `SEM_INVALID_CONTAINER_KIND` | current |\n| `surface(...)` constructor provides volume `capacity` | semantic | `SEM_SURFACE_CAPACITY_FORBIDDEN` | current |\n| constructor `load = [...]` item is not a valid `content_spec:quantity` pair list | semantic | `SEM_INVALID_LOAD_ITEM` | current |\n| invalid container target-view member path such as `container.structure`, `container.structure.upper`, or `container.structure.top.inner` | semantic | `SEM_CONTAINER_TARGET_VIEW_INVALID` | current |\n| non-text `content_kind` | type | `TYPE_CONTENT_KIND_NOT_TEXT` | current |\n| non-text `content_type` | type | `TYPE_CONTENT_TYPE_NOT_TEXT` | current |\n| non-text `content_code` | type | `TYPE_CONTENT_CODE_NOT_TEXT` | current |\n| non-record `attrs` | type | `TYPE_CONTENT_ATTRS_NOT_RECORD` | current |\n| `ContainerTargetView` is used where a material `Container` is required | type | `TYPE_CONTAINER_TARGET_VIEW_POSITION_INVALID` | current |\n| mutation source list mixes quantified and full-transfer items | semantic | `SEM_MUTATION_QUANTITY_STYLE_CONFLICT` | current |\n| mutation statement uses legacy per-source `program(...)` payload shape | semantic | `SEM_MUTATION_PROGRAM_SOURCE_SHAPE_CONFLICT` | current |\n| `source.partition(program)[i]` is used outside mutation source position | semantic | `SEM_SOURCE_PARTITION_CONTEXT_INVALID` | current |\n| `source.partition(program)[i]` program does not resolve to a partition-capable concrete program | semantic | `SEM_PROGRAM_OWNER_MISMATCH` / `SEM_PROGRAM_KIND_INVALID` | current |\n| `source.partition(program)[i]` index is missing, non-static, negative, or outside binary range | semantic | `SEM_INDEX_NOT_STATIC_INTEGER` / `SEM_INDEX_NOT_NONNEGATIVE_INTEGER` / `SEM_INDEX_OUT_OF_RANGE` | current |\n| `container.contents[i]` is used outside mutation source position | semantic | `SEM_CONTAINER_CONTENTS_INDEX_CONTEXT_INVALID` | current |\n| `container.contents[i]` index is missing, non-static, or negative | semantic | `SEM_INDEX_NOT_STATIC_INTEGER` / `SEM_INDEX_NOT_NONNEGATIVE_INTEGER` | current |\n| standalone content init appears in execution flow | semantic | `SEM_STANDALONE_CONTENT_INIT_FORBIDDEN` | current |\n| unknown content identity at load/apply | material | `MAT_CONTENT_NOT_FOUND` | current |\n| incompatible amount axis in content loading | material | `MAT_CONTENT_LOAD_AXIS_MISMATCH` | current |\n| immutable content metadata conflict | material | `MAT_CONTENT_METADATA_CONFLICT` | current |\n| selected scientific provider is absent, not applicable, or returns `UNRESOLVED` | material | `MAT_SCIENTIFIC_MODEL_UNRESOLVED` | current |\n| selected scientific provider fails | material | `MAT_SCIENTIFIC_MODEL_FAILED` | current |\n| selected scientific provider returns an invalid proposal | material | `MAT_SCIENTIFIC_MODEL_PROPOSAL_INVALID` | current |\n| `sep.component_fates` is not a nested record, omits an output, uses an unknown output name, contains an invalid ratio, or does not sum to 100% | semantic | `SEM_SEPARATION_FATE_RULE_SHAPE_INVALID` / `SEM_SEPARATION_FATE_RULE_SLOT_INVALID` / `SEM_SEPARATION_FATE_RULE_VALUE_INVALID` / `SEM_SEPARATION_FATE_RULE_TOTAL_INVALID` | current |\n| `sep.component_fates` references content absent from the runtime source | material | `MAT_SEPARATION_FATE_COMPONENT_NOT_FOUND` | current |\n| `sep.transitions` is not a list of typed `transition(...)` values, uses an invalid selector, uses a bare/cross-program/unknown output member, supplies a string, bare, unknown, or internal target state, or supplies an invalid association selector | semantic | `SEM_MATERIAL_TRANSITIONS_SHAPE_INVALID` / `SEM_MATERIAL_TRANSITION_*` / `SEM_MATERIAL_SELECTOR_*` | current |\n| `sep.transitions` target is outside the author-settable `MaterialRelation` enum, a selected index or exact entry ID is unavailable, the selected output has zero quantity, or a component-bound association target is missing from that output | material | `MAT_MATERIAL_TRANSITION_*` / `MAT_MATERIAL_INDEX_OUT_OF_RANGE` / `MAT_MATERIAL_ENTRY_ID_NOT_FOUND` / `MAT_MATERIAL_RELATION_INVALID` | current |\n| `container.contents[i]` is read without a current valid indexed contents state | material | `MAT_CONTENTS_STATE_NOT_INDEXED` | current |\n| `container.contents[i]` index does not exist in the current contents state | material | `MAT_CONTENTS_STATE_INDEX_OUT_OF_RANGE` | current |\n| `container.contents[i]` reads a preserved indexed contents state outside its required preservation context | material | `MAT_CONTENTS_STATE_PRESERVATION_NOT_SATISFIED` | current |\n",
+      "path": "06_validation_and_diagnostics.md",
+      "sha256": "0c539117fd13996ab7ec3c35bdcf49fc1309b45dd54836801cb4bf8a7ad782cb"
+    },
+    "enums": {
+      "heading": "### 6.2.7 Explicit Content Enum Contract",
+      "markdown": "### 6.2.7 Explicit Content Enum Contract\n\nStatus: accepted working-reference update for the local 2A–2C implementation;\nnot a declaration that the feature is in the published 1.0.6 distribution.\n\n1. Content classification accepts `ContentKind.FORMULATION` and `ContentType.MEDIUM`;\n   container classification accepts members such as `ContainerKind.TUBE`.\n   Members are the uppercase names corresponding exactly to §6.2.5–6 canonical\n   tokens. Enum families are distinct even when their string values compare equal.\n2. A kind/type pair MUST belong to the canonical table. If either argument is an\n   explicit enum, an invalid pair MUST fail even in compatibility mode; legacy\n   normalization MUST NOT repair it.\n3. Bare canonical tokens and quoted canonical strings remain compatibility source\n   forms in both strict and compatibility taxonomy modes. This update does not\n   retire them. Legacy noncanonical values normalize only through the compatibility\n   adapter. The implementation's source validator defaults to compatibility mode.\n4. Named bindings, aliases, protocol defaults and parameters preserve enum identity.\n   Local names shadow enum namespaces. Assignments cannot change enum family;\n   aliases capture their value at declaration. Values changed by a branch/loop\n   require final-value checks rather than reuse of stale static classifications.\n5. Static bound inputs are checked during planning. Dynamic final inputs are checked\n   again before material writes. Missing, nontext, wrong-family or unsupported\n   classifications MUST NOT be written as empty or invalid registry classifications.\n6. A validated `ContentClassification` contains real `ContentKind`/`ContentType`\n   members and is immutable. Wire/registry classification fields remain canonical\n   strings. Plan enum expressions preserve both enum family and member name.\n7. `attrs.role` remains open recommendation metadata, not another closed enum.\n   `code` and `name` remain instance strings. Unknown historical classifications may\n   be retained as historical data but MUST NOT be promoted to valid classifications.\n\nRunnable source example:\n\n```culsma\nprotocol EnumMedium {\n  let medium = container(kind = ContainerKind.TUBE, capacity = 5mL, load = [\n    content(kind = ContentKind.FORMULATION, type = ContentType.MEDIUM,\n            code = \"DMEM_F12_COMPLETE\", attrs = { role: culture }):4mL\n  ]);\n}\nEnumMedium();\n```\n",
+      "path": "05_operation_vocabulary_and_call_contracts.md",
+      "sha256": "5615a1401e1aebfb10351b46197d8f7de548d0b2cf1ae230d67e44b9db806e56"
+    },
+    "kinds": {
+      "heading": "### 6.2.5 Canonical Content Kind Set",
+      "markdown": "### 6.2.5 Canonical Content Kind Set\n\n`content_kind` set used by strict-mode validation:\n\n1. `bio_entity`\n2. `bio_fluid`\n3. `bio_cellular`\n4. `bio_subcellular`\n5. `bio_molecule_or_virus`\n6. `chemical`\n7. `particulate`\n8. `formulation`\n\nMode note:\n\n1. Strict-mode conformance uses this exact whitelist.\n2. Authoring examples and conformance claims must stay within this whitelist.\n3. Legacy inputs such as `biosample`, `reagent`, `buffer`, `control`, `waste`, or `fraction` are compatibility inputs only when legacy normalization mode is explicitly enabled.\n",
+      "path": "05_operation_vocabulary_and_call_contracts.md",
+      "sha256": "caac9f6b8d9e97811b07f910535e291f814496309f1238c47678193bf4101cb3"
+    },
+    "legacy": {
+      "heading": "### 6.2.8 Selected Legacy Normalization Conformance Cases",
+      "markdown": "### 6.2.8 Selected Legacy Normalization Conformance Cases\n\nThese cases freeze representative compatibility behavior, not new canonical\nmembers or an exhaustive list of historical aliases. Canonical per-kind fallback\nis the unique `other_*` member in §6.2.6. Original kind/type and inferred attrs are\npreserved by the adapter; explicit attrs take precedence when material is defined.\n\n| legacy kind | legacy type | canonical kind | canonical type | inferred attrs |\n|---|---|---|---|---|\n| `biosample` | `dna_stock` | `bio_molecule_or_virus` | `dna` | `{\"state\":\"stock\"}` |\n| `biosample` | `cell_pellet` | `bio_cellular` | `other_cellular_material` | `{\"state\":\"pellet\"}` |\n| `buffer` | `wash_buffer` | `formulation` | `buffer` | `{\"role\":\"wash\"}` |\n| `reagent` | `enzyme` | `bio_molecule_or_virus` | `protein` | `{\"role\":\"enzyme\"}` |\n| `blood` | `lab_local` | `bio_fluid` | `whole_blood` | `{}` |\n| `formulation` | `lab_local` | `formulation` | `other_formulation` | `{\"original_type\":\"lab_local\"}` |\n| `chemical` | `medium` | `chemical` | `other_chemical` | `{\"original_type\":\"medium\"}` |\n| `waste` | `lab_local` | `formulation` | `other_formulation` | `{\"disposition\":\"waste\",\"original_type\":\"lab_local\"}` |\n\nHistorical material plans may retain the generic `container` kind. It is not an\nadditional source-level `ContainerKind` member. Source-admission retirement and\nhistorical-data retirement are independent changes.\n",
+      "path": "05_operation_vocabulary_and_call_contracts.md",
+      "sha256": "9f8abdb873022f97587376c55baf7306a57c0a6e197f8179963f1c29ce3f4770"
+    },
+    "mapping": {
+      "heading": "## 12.15 Content Enum Conformance Card (PM #110)",
+      "markdown": "## 12.15 Content Enum Conformance Card (PM #110)\n\nStatus: accepted working-reference contract; implementation baseline `65c3e7d`\n(local development, not a new release). This card freezes the existing 2A–2C\ninvariants before implementing the 2D checks.\n\n| Invariant | Owner | Requirement ID | Conformance hook in culsma/culsma |\n|---|---|---|---|\n| Exactly the canonical kind/type pairs; one canonical other_* fallback per kind | Chapter 6 §6.2.5–6; common/content_contracts.py | CNT-ENUM-01 | tests/test_content_reference_conformance.py::test_reference_taxonomy_matches_implementation |\n| Four container kinds; exact enum families; local bindings shadow namespaces | Chapter 6 §6.2.7; pipeline/content_inputs.py | CNT-ENUM-02 | tests/test_content_enum_execution.py; tests/test_content_enum_resolution.py |\n| Legacy source admission and historical metadata conversion remain separate from validated classification | Chapter 6 §6.2.8; pipeline/compat | CNT-ENUM-03 | tests/test_content_reference_conformance.py::test_reference_legacy_examples |\n| role recommendations do not close attrs.role or attrs; code/name remain strings | Chapter 6 §6.2.6–7 | CNT-ENUM-04 | tests/test_content_reference_conformance.py::test_open_metadata_survives_execution_and_replay |\n| Errors belong to the earliest stage with enough information; explicit enum errors never use fallback | Chapter 8 §8.2.2; content boundary validators | CNT-ENUM-05 | tests/test_content_reference_conformance.py::test_reference_diagnostic_ownership |\n| Canonical enum/text runs preserve material calculations, strings and event replay | Chapter 7; runtime/material; scientific model classifier | CNT-ENUM-06 | tests/test_content_reference_conformance.py::test_enum_text_calculation_and_event_replay |\n| Markdown remains authoritative; generated snapshot and implementation drift fail checks | This chapter; conformance/content_contract.py | CNT-ENUM-07 | tests/test_content_reference_conformance.py::test_reference_snapshot_is_self_consistent; tests/test_content_contract_checker.py |\n\nThe pilot reads the existing Markdown sections and generates\n`conformance/content_reference.json` in the implementation repository. It is a\nreviewable derived snapshot, not a second independently editable specification.\nIts included source sections and SHA-256 digests preserve exact provenance.\n`python -m conformance.content_contract --reference-root ../culsma-reference --write`\nrefreshes it; `--check` fails on source/snapshot or implementation drift. Without\n`--reference-root`, checks are reproducible from the checked-in source snapshot.\nRuntime never reads these files.\n\nImplementation pull-request CI checks the frozen snapshot. Reference pull-request\nCI checks the edited reference against the implementation snapshot; its manual\ninput may select a coordinated implementation branch. Both local branches must\nbe pushed and CI run before claiming remote CI success. This pilot covers content\ntaxonomy and the mapped enum diagnostics; it does not claim conformance for every\noperation/program, unit table, or diagnostic in the reference.\n",
+      "path": "10_conformance_and_test_mapping.md",
+      "sha256": "272328beef46793a0fe97cb09c675281cc712f04e4f2bfb0a80ca315482e49a1"
+    },
+    "types": {
+      "heading": "### 6.2.6 Canonical `content_type` and `attrs.role` Table",
+      "markdown": "### 6.2.6 Canonical `content_type` and `attrs.role` Table\n\nThis table defines the canonical material taxonomy. `attrs.role`\ncontains common controlled/recommended role values for that `kind/type`; it does\nnot make `role` a required top-level field.\n\n| content_kind | canonical content_type | recommended `attrs.role` values |\n|---|---|---|\n| `bio_entity` | `organism`, `organ`, `tissue`, `other_bio_entity` | `material` |\n| `bio_fluid` | `whole_blood`, `plasma`, `serum`, `buffy_coat`, `urine`, `saliva`, `lymph`, `cerebrospinal_fluid`, `tears`, `semen`, `ascites`, `synovial_fluid`, `bronchoalveolar_lavage_fluid`, `other_body_fluid` | `material` |\n| `bio_cellular` | `cell_line`, `primary_cells`, `cell_population`, `microbial_cells`, `other_cellular_material` | `material` |\n| `bio_subcellular` | `organelle`, `membrane`, `vesicle`, `cytoskeletal_structure`, `other_subcellular_structure` | `sample` |\n| `bio_molecule_or_virus` | `dna` | `sample`, `template`, `primer`, `probe`, `marker`, `standard`, `vector` |\n| `bio_molecule_or_virus` | `rna` | `sample`, `template`, `guide`, `probe`, `marker`, `standard` |\n| `bio_molecule_or_virus` | `protein` | `sample`, `antibody`, `enzyme`, `cytokine`, `marker`, `standard`, `antigen` |\n| `bio_molecule_or_virus` | `virus` | `sample`, `vector` |\n| `bio_molecule_or_virus` | `other_biomolecule_or_virus` | `sample` |\n| `chemical` | `organic_compound` | `substrate`, `inhibitor`, `activator`, `fixative`, `selection`, `precipitation`, `crowding_agent`, `matrix_component` |\n| `chemical` | `inorganic_compound` | `salt`, `pH_adjuster`, `ion_source`, `cofactor` |\n| `chemical` | `solvent` | `solvent`, `carrier`, `extraction`, `fixative` |\n| `chemical` | `detergent` | `lysis`, `permeabilization`, `washing`, `solubilization` |\n| `chemical` | `dye` | `stain`, `detection`, `tracking` |\n| `chemical` | `other_chemical` | `material` |\n| `particulate` | `beads` | `capture`, `cleanup`, `purification`, `enrichment` |\n| `particulate` | `resin` | `affinity_purification`, `chromatography`, `capture` |\n| `particulate` | `particle` | `labeling`, `calibration` |\n| `particulate` | `other_particulate` | `material` |\n| `formulation` | `medium` | `culture`, `maintenance` |\n| `formulation` | `buffer` | `wash`, `elution`, `binding`, `lysis`, `storage`, `reaction_environment` |\n| `formulation` | `supplement` | `supplement`, `selection`, `growth_factor` |\n| `formulation` | `master_mix` | `reaction_mix` |\n| `formulation` | `gradient_medium` | `density_gradient_separation` |\n| `formulation` | `other_formulation` | `material` |\n\nNormalization rules:\n\n1. `content_type` values SHOULD use lowercase snake_case for stable matching.\n2. Display labels (human-readable) MAY be stored separately in metadata.\n3. `content_type` is closed by the canonical table. Unknown or lab-local material categories should use the appropriate canonical `other_*` type plus `attrs`, `code`, and `name`.\n4. Non-standard `attrs.role` values MAY be recorded as ordinary attr metadata; unknown attr keys remain allowed because `attrs` is open metadata.\n5. Specific identities such as mitochondrion, exosome, plasmid, amplicon, peptide, polymer class, bead material, unusual body-fluid identity, or virus form belong in `attrs` when they are more specific than the canonical `kind/type` table.\n6. Preparation or state labels such as pellet, suspension, lysate, stock, diluted, purified, or amplified belong in `attrs.state` or a more specific attr key, not in `content_type`.\n7. Workflow labels such as control, waste, fraction, wash, elution, binding, lysis, detection, or capture belong in `attrs.role`, `attrs.disposition`, or operation-return metadata, not in `content_kind`.\n8. Legacy aliases or previously accepted unknown/custom type strings are compatibility inputs; legacy normalization mode should emit a warning and normalize to canonical `content_kind`, canonical `content_type` including an `other_*` fallback when needed, and `attrs`.\n\nExamples:\n\n```culsma\ncontent(kind = bio_fluid, type = whole_blood, code = \"WB-001\")\ncontent(kind = bio_fluid, type = synovial_fluid, code = \"SF-001\")\ncontent(kind = formulation, type = buffer, code = \"PBS-001\", attrs = { role: wash })\ncontent(kind = bio_molecule_or_virus, type = protein, code = \"AB-001\", attrs = { role: antibody })\ncontent(kind = bio_molecule_or_virus, type = dna, code = \"PRIMER-001\", attrs = { role: primer })\ncontent(kind = bio_fluid, type = other_body_fluid, code = \"AF-001\", attrs = { fluid_identity: amniotic_fluid })\n```\n",
+      "path": "05_operation_vocabulary_and_call_contracts.md",
+      "sha256": "0102d367878dc746af344212f79b36c6d457ea0f55a9f8aca0693fba50040fb8"
+    }
+  }
+}
