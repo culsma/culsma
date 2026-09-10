@@ -233,6 +233,7 @@ class BaseStatementHandler:
                 content_whitelist_mode=ctx.content_whitelist_mode,
                 content_type_policy=ctx.content_type_policy,
                 allow_source_partition=allow_source_partition,
+                defined_names=ctx.defined_names,
             )
         )
 
@@ -308,6 +309,7 @@ class LetHandler(BaseStatementHandler):
                     operations=ctx.operations,
                     content_whitelist_mode=ctx.content_whitelist_mode,
                     content_type_policy=ctx.content_type_policy,
+                    defined_names=ctx.defined_names,
                 ),
             )
 
@@ -570,6 +572,7 @@ class WithConstraintHandler(BaseStatementHandler):
                 stmt,
                 literal_bindings=ctx.literal_bindings,
                 expr_bindings=ctx.expr_bindings,
+                defined_names=ctx.defined_names,
             ),
         )
 
@@ -838,6 +841,7 @@ class StepHandler(BaseStatementHandler):
                 literal_bindings=ctx.literal_bindings,
                 content_whitelist_mode=ctx.content_whitelist_mode,
                 content_type_policy=ctx.content_type_policy,
+                defined_names=ctx.defined_names,
             ),
         )
         self.append_diagnostics(

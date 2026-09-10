@@ -3,11 +3,11 @@
 from __future__ import annotations
 
 from culsma.parser.ast_nodes import Arg, CallExpr, Expression, GroupExpr, StepCall, StringLiteral
+from culsma.pipeline.compat.content_syntax import lower_legacy_content_callable
 from culsma.pipeline.content_vocab import (
     CONTENT_SPEC_SUGAR_TO_CANONICAL,
     ContainerKind,
     ContentSpecSugar,
-    ContentType,
     parse_content_spec_sugar,
 )
 from culsma.pipeline.ir_nodes import IRLet
@@ -23,7 +23,7 @@ class CallableLowering:
         self.session = session
 
     def lower_callable(self, name: str, args: list[Arg], span) -> tuple[str, list[Arg]]:
-        return _lower_callable(name, args, span)
+        return lower_callable(name, args, span)
 
     def normalize_grouped_readout_call(
         self,
@@ -65,35 +65,30 @@ def _find_named_arg(args: list[Arg], name: str) -> Arg | None:
     return None
 
 
-def _lower_callable(name: str, args: list[Arg], span) -> tuple[str, list[Arg]]:
+def inject_default_argument(args: list[Arg], name: str, value: Expression, span) -> None:
+    """Add a constructor default only when the caller supplied no value."""
+    if any(arg.name == name for arg in args):
+        return
+    args.insert(0, Arg(name=name, value=value, span=span))
+
+
+def lower_callable(name: str, args: list[Arg], span) -> tuple[str, list[Arg]]:
+    legacy = lower_legacy_content_callable(name, args, span)
+    if legacy is not None:
+        return legacy
     canonical_name = CONTENT_SPEC_SUGAR_TO_CANONICAL.get(name, name)
     args = list(args)
-    existing = {arg.name for arg in args}
     sugar = parse_content_spec_sugar(name)
 
-    def _inject(name: str, value: Expression) -> None:
-        if name in existing:
-            return
-        args.insert(0, Arg(name=name, value=value, span=span))
-        existing.add(name)
-
     if sugar == ContentSpecSugar.TUBE:
-        _inject("kind", StringLiteral(value=ContainerKind.TUBE.value, span=span))
+        inject_default_argument(args, "kind", StringLiteral(value=ContainerKind.TUBE.value, span=span), span)
     elif sugar == ContentSpecSugar.WELL:
-        _inject("kind", StringLiteral(value=ContainerKind.WELL.value, span=span))
-        _inject("carrier_kind", StringLiteral(value="plate", span=span))
+        inject_default_argument(args, "kind", StringLiteral(value=ContainerKind.WELL.value, span=span), span)
+        inject_default_argument(args, "carrier_kind", StringLiteral(value="plate", span=span), span)
     elif sugar == ContentSpecSugar.CHAMBER:
-        _inject("kind", StringLiteral(value=ContainerKind.CHAMBER.value, span=span))
+        inject_default_argument(args, "kind", StringLiteral(value=ContainerKind.CHAMBER.value, span=span), span)
     elif sugar == ContentSpecSugar.SURFACE:
-        _inject("kind", StringLiteral(value=ContainerKind.SURFACE.value, span=span))
-    elif sugar == ContentSpecSugar.BLOOD:
-        _inject("kind", StringLiteral(value="blood", span=span))
-        _inject("type", StringLiteral(value=ContentType.WHOLE_BLOOD.value, span=span))
-    elif sugar == ContentSpecSugar.REAGENT:
-        _inject("kind", StringLiteral(value="reagent", span=span))
-    elif sugar == ContentSpecSugar.BUFFER:
-        _inject("kind", StringLiteral(value="buffer", span=span))
-        _inject("type", StringLiteral(value=ContentType.BUFFER.value, span=span))
+        inject_default_argument(args, "kind", StringLiteral(value=ContainerKind.SURFACE.value, span=span), span)
 
     return canonical_name, args
 

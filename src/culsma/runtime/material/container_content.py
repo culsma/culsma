@@ -5,7 +5,8 @@ from __future__ import annotations
 from typing import Any
 from urllib.parse import quote
 
-from culsma.pipeline.content_vocab import ContainerKind, normalize_content_classification
+from culsma.pipeline.compat.content_taxonomy import normalize_content_classification
+from culsma.pipeline.content_vocab import ContainerKind
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.material.args import arg_bool, arg_quantity, arg_string
 from culsma.runtime.material.contents_state import invalidate_contents_state

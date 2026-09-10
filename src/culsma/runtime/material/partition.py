@@ -5,11 +5,11 @@ from __future__ import annotations
 from enum import StrEnum
 from typing import Any
 
+from culsma.pipeline.compat.content_taxonomy import normalize_content_classification
 from culsma.pipeline.content_vocab import (
     ContentKind,
     ContentType,
     is_standard_content_type,
-    normalize_content_classification,
     parse_content_kind,
     parse_content_type,
 )

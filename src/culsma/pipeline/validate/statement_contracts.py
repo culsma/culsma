@@ -264,6 +264,7 @@ def validate_with_constraint_contract(
     *,
     literal_bindings: dict[str, Any],
     expr_bindings: dict[str, Any],
+    defined_names: set[str] | None = None,
 ) -> list[Diagnostic]:
     diagnostics: list[Diagnostic] = []
     if not stmt.statements:
@@ -382,6 +383,7 @@ def validate_with_constraint_contract(
                     node_id=stmt.id,
                     content_whitelist_mode="strict",
                     content_type_policy="required",
+                    defined_names=defined_names,
                 )
             )
     elif stmt.options:
@@ -507,6 +509,7 @@ def validate_let_call_contract(
     operations: Mapping[str, OperationSpec],
     content_whitelist_mode: str,
     content_type_policy: str,
+    defined_names: set[str] | None = None,
 ) -> list[Diagnostic]:
     value = stmt.value
     if not isinstance(value, IRCall):
@@ -518,6 +521,7 @@ def validate_let_call_contract(
             node_id=stmt.id,
             content_whitelist_mode=content_whitelist_mode,
             content_type_policy=content_type_policy,
+            defined_names=defined_names,
         )
         diagnostics.append(
             Diagnostic(
@@ -590,6 +594,7 @@ def validate_let_call_contract(
             node_id=stmt.id,
             content_whitelist_mode=content_whitelist_mode,
             content_type_policy=content_type_policy,
+            defined_names=defined_names,
         )
     )
     return diagnostics

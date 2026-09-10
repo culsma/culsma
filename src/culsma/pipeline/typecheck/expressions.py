@@ -6,7 +6,8 @@ from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.container_views import classify_container_target_view, is_container_target_view
-from culsma.pipeline.content_vocab import ContentKind, normalize_content_classification
+from culsma.pipeline.compat.content_taxonomy import normalize_content_classification
+from culsma.pipeline.content_vocab import ContentKind
 from culsma.pipeline.ir_nodes import (
     IRAssign,
     IRBinary,

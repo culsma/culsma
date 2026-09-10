@@ -5,14 +5,14 @@ from __future__ import annotations
 from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.pipeline.compat import content_syntax
+from culsma.pipeline.compat.content_taxonomy import KNOWN_CONTENT_KINDS
 from culsma.pipeline.content_vocab import (
     CONTAINER_KIND_WHITELIST,
     CONTENT_KIND_WHITELIST,
     CONTENT_TYPE_PATTERN,
-    KNOWN_CONTENT_KINDS,
     ContainerKind,
     is_allowed_content_type,
-    normalize_content_classification,
 )
 from culsma.pipeline.ir_nodes import IRArg, IRCall, IRList, IRPair, IRStep
 
@@ -27,11 +27,12 @@ class ConstructorValidator:
         *,
         content_whitelist_mode: str,
         content_type_policy: str,
+        defined_names: set[str] | None = None,
     ) -> list[Diagnostic]:
         diagnostics: list[Diagnostic] = []
         if step.name == "AllocContainer":
-            kind_arg = _find_arg(step, "kind")
-            kind_value = ExprResolver.to_string(kind_arg.value, literal_bindings) if kind_arg is not None else None
+            kind_arg = find_arg(step, "kind")
+            kind_value = content_syntax.resolve_kind_token(kind_arg, literal_bindings, defined_names)
             if kind_value is not None and kind_value not in CONTAINER_KIND_WHITELIST:
                 diagnostics.append(
                     Diagnostic(
@@ -44,7 +45,7 @@ class ConstructorValidator:
             diagnostics.extend(
                 ConstructorValidator.validate_surface_capacity_forbidden(
                     kind_value=kind_value,
-                    capacity_arg=_find_arg(step, "capacity"),
+                    capacity_arg=find_arg(step, "capacity"),
                     span=step.span,
                     node_id=step.id,
                 )
@@ -54,8 +55,8 @@ class ConstructorValidator:
         if step.name != "DefineContent":
             return diagnostics
 
-        kind_arg = _find_arg(step, "kind")
-        kind_value = ExprResolver.to_string(kind_arg.value, literal_bindings) if kind_arg is not None else None
+        kind_arg = find_arg(step, "kind")
+        kind_value = content_syntax.resolve_kind_token(kind_arg, literal_bindings, defined_names)
         if kind_arg is None:
             diagnostics.append(
                 Diagnostic(
@@ -80,8 +81,8 @@ class ConstructorValidator:
                 )
             )
 
-        type_arg = _find_arg(step, "type")
-        type_value = ExprResolver.to_text_token(type_arg.value, literal_bindings) if type_arg is not None else None
+        type_arg = find_arg(step, "type")
+        type_value = content_syntax.resolve_type_token(type_arg, literal_bindings)
         if type_arg is None or type_value is None or not CONTENT_TYPE_PATTERN.match(type_value):
             diagnostics.append(
                 Diagnostic(
@@ -94,9 +95,9 @@ class ConstructorValidator:
             return diagnostics
 
         if type_arg is not None and type_value is not None and kind_value in CONTENT_KIND_WHITELIST:
-            if not _is_allowed_content_type_value(kind_value, type_value):
+            if not is_allowed_content_type(kind_value, type_value):
                 diagnostics.extend(
-                    _content_type_value_diagnostics(
+                    content_type_value_diagnostics(
                         kind_value=kind_value,
                         type_value=type_value,
                         span=type_arg.span or step.span,
@@ -106,7 +107,7 @@ class ConstructorValidator:
                 )
         elif type_arg is not None and type_value is not None and kind_value in KNOWN_CONTENT_KINDS:
             diagnostics.extend(
-                _content_type_value_diagnostics(
+                content_type_value_diagnostics(
                     kind_value=kind_value,
                     type_value=type_value,
                     span=type_arg.span or step.span,
@@ -125,10 +126,11 @@ class ConstructorValidator:
         node_id: str | None,
         content_whitelist_mode: str,
         content_type_policy: str,
+        defined_names: set[str] | None = None,
     ) -> list[Diagnostic]:
         diagnostics: list[Diagnostic] = []
-        kind_arg = _find_arg_by_name(call.args, "kind")
-        kind_value = ExprResolver.to_string(kind_arg.value, literal_bindings) if kind_arg is not None else None
+        kind_arg = find_arg_by_name(call.args, "kind")
+        kind_value = content_syntax.resolve_kind_token(kind_arg, literal_bindings, defined_names)
         if kind_arg is not None and kind_value is not None and kind_value not in CONTAINER_KIND_WHITELIST:
             diagnostics.append(
                 Diagnostic(
@@ -141,13 +143,13 @@ class ConstructorValidator:
         diagnostics.extend(
             ConstructorValidator.validate_surface_capacity_forbidden(
                 kind_value=kind_value,
-                capacity_arg=_find_arg_by_name(call.args, "capacity"),
+                capacity_arg=find_arg_by_name(call.args, "capacity"),
                 span=call.span,
                 node_id=node_id,
             )
         )
 
-        load_arg = _find_arg_by_name(call.args, "load")
+        load_arg = find_arg_by_name(call.args, "load")
         if load_arg is None:
             return diagnostics
         load_value = ExprResolver.resolve_bound_expr(load_arg.value, expr_bindings)
@@ -180,6 +182,7 @@ class ConstructorValidator:
                     node_id=node_id,
                     content_whitelist_mode=content_whitelist_mode,
                     content_type_policy=content_type_policy,
+                    defined_names=defined_names,
                 )
             )
         return diagnostics
@@ -211,6 +214,7 @@ class ConstructorValidator:
         node_id: str | None,
         content_whitelist_mode: str,
         content_type_policy: str,
+        defined_names: set[str] | None = None,
     ) -> list[Diagnostic]:
         step = IRStep(
             id=node_id or "<call>",
@@ -223,28 +227,25 @@ class ConstructorValidator:
             literal_bindings,
             content_whitelist_mode=content_whitelist_mode,
             content_type_policy=content_type_policy,
+            defined_names=defined_names,
         )
 
 
-def _find_arg(step: IRStep, name: str):
+def find_arg(step: IRStep, name: str):
     for arg in step.args:
         if arg.name == name:
             return arg
     return None
 
 
-def _find_arg_by_name(args: list[IRArg], name: str) -> IRArg | None:
+def find_arg_by_name(args: list[IRArg], name: str) -> IRArg | None:
     for arg in args:
         if arg.name == name:
             return arg
     return None
 
 
-def _is_allowed_content_type_value(kind_value: str, type_value: str) -> bool:
-    return is_allowed_content_type(kind_value, type_value)
-
-
-def _content_type_value_diagnostics(
+def content_type_value_diagnostics(
     *,
     kind_value: str,
     type_value: str,
@@ -252,22 +253,15 @@ def _content_type_value_diagnostics(
     node_id: str | None,
     compat_mode: bool,
 ) -> list[Diagnostic]:
-    normalized = normalize_content_classification(kind_value, type_value)
-    if compat_mode and normalized.kind in CONTENT_KIND_WHITELIST and _is_allowed_content_type_value(normalized.kind, normalized.type):
-        suggested = _format_content_suggestion(normalized.kind, normalized.type, normalized.attrs)
-        return [
-            Diagnostic(
-                code="SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
-                message=(
-                    f"Content taxonomy value '{kind_value}/{type_value}' is deprecated; "
-                    f"compatibility mode normalizes it to {suggested}. "
-                    "Use that canonical content form to avoid this warning."
-                ),
-                span=span,
-                severity="warning",
-                node_id=node_id,
-            )
-        ]
+    compatibility_diagnostics = content_syntax.normalization_diagnostics(
+        kind_value=kind_value,
+        type_value=type_value,
+        span=span,
+        node_id=node_id,
+        compat_mode=compat_mode,
+    )
+    if compatibility_diagnostics:
+        return compatibility_diagnostics
     return [
         Diagnostic(
             code="SEM_INVALID_CONTENT_TYPE_VALUE",
@@ -279,11 +273,3 @@ def _content_type_value_diagnostics(
             node_id=node_id,
         )
     ]
-
-
-def _format_content_suggestion(kind_value: str, type_value: str, attrs: dict[str, str]) -> str:
-    parts = [f'kind="{kind_value}"', f'type="{type_value}"']
-    if attrs:
-        attrs_text = ", ".join(f'{key}: "{value}"' for key, value in sorted(attrs.items()))
-        parts.append(f"attrs={{{attrs_text}}}")
-    return f"content({', '.join(parts)})"

@@ -44,6 +44,7 @@ def validate_expr_contracts(
     content_whitelist_mode: str = "strict",
     content_type_policy: str = "required",
     allow_source_partition: bool = False,
+    defined_names: set[str] | None = None,
 ) -> list[Diagnostic]:
     diagnostics: list[Diagnostic] = []
 
@@ -81,6 +82,7 @@ def validate_expr_contracts(
                     node_id=node_id,
                     content_whitelist_mode=content_whitelist_mode,
                     content_type_policy=content_type_policy,
+                    defined_names=defined_names,
                 )
             )
             if index_value is None:
@@ -93,6 +95,7 @@ def validate_expr_contracts(
                         node_id=node_id,
                         content_whitelist_mode=content_whitelist_mode,
                         content_type_policy=content_type_policy,
+                        defined_names=defined_names,
                     )
                 )
             return diagnostics
@@ -138,6 +141,7 @@ def validate_expr_contracts(
                     node_id=node_id,
                     content_whitelist_mode=content_whitelist_mode,
                     content_type_policy=content_type_policy,
+                    defined_names=defined_names,
                 )
             )
             if index_value is None:
@@ -150,6 +154,7 @@ def validate_expr_contracts(
                         node_id=node_id,
                         content_whitelist_mode=content_whitelist_mode,
                         content_type_policy=content_type_policy,
+                        defined_names=defined_names,
                     )
                 )
             return diagnostics
@@ -171,6 +176,7 @@ def validate_expr_contracts(
                 node_id=node_id,
                 content_whitelist_mode=content_whitelist_mode,
                 content_type_policy=content_type_policy,
+                defined_names=defined_names,
             )
         )
         diagnostics.extend(
@@ -182,6 +188,7 @@ def validate_expr_contracts(
                 node_id=node_id,
                 content_whitelist_mode=content_whitelist_mode,
                 content_type_policy=content_type_policy,
+                defined_names=defined_names,
             )
         )
         return diagnostics
@@ -232,6 +239,7 @@ def validate_expr_contracts(
                     node_id=node_id,
                     content_whitelist_mode=content_whitelist_mode,
                     content_type_policy=content_type_policy,
+                    defined_names=defined_names,
                 )
             )
         if expr.name == "DefineContent":
@@ -242,6 +250,7 @@ def validate_expr_contracts(
                     node_id=node_id,
                     content_whitelist_mode=content_whitelist_mode,
                     content_type_policy=content_type_policy,
+                    defined_names=defined_names,
                 )
             )
         for arg in expr.args:
@@ -254,6 +263,7 @@ def validate_expr_contracts(
                     node_id=node_id,
                     content_whitelist_mode=content_whitelist_mode,
                     content_type_policy=content_type_policy,
+                    defined_names=defined_names,
                 )
             )
         return diagnostics
@@ -269,6 +279,7 @@ def validate_expr_contracts(
                     node_id=node_id,
                     content_whitelist_mode=content_whitelist_mode,
                     content_type_policy=content_type_policy,
+                    defined_names=defined_names,
                 )
             )
         return diagnostics
@@ -287,6 +298,7 @@ def validate_expr_contracts(
                     node_id=node_id,
                     content_whitelist_mode=content_whitelist_mode,
                     content_type_policy=content_type_policy,
+                    defined_names=defined_names,
                 )
             )
         return diagnostics
@@ -302,6 +314,7 @@ def validate_expr_contracts(
                     node_id=node_id,
                     content_whitelist_mode=content_whitelist_mode,
                     content_type_policy=content_type_policy,
+                    defined_names=defined_names,
                 )
             )
         return diagnostics
@@ -326,6 +339,7 @@ def validate_expr_contracts(
                 node_id=node_id,
                 content_whitelist_mode=content_whitelist_mode,
                 content_type_policy=content_type_policy,
+                defined_names=defined_names,
             )
         )
         return diagnostics
@@ -340,6 +354,7 @@ def validate_expr_contracts(
                 node_id=node_id,
                 content_whitelist_mode=content_whitelist_mode,
                 content_type_policy=content_type_policy,
+                defined_names=defined_names,
             )
         )
         diagnostics.extend(
@@ -351,6 +366,7 @@ def validate_expr_contracts(
                 node_id=node_id,
                 content_whitelist_mode=content_whitelist_mode,
                 content_type_policy=content_type_policy,
+                defined_names=defined_names,
             )
         )
         return diagnostics
@@ -375,6 +391,7 @@ def validate_expr_contracts(
             node_id=node_id,
             content_whitelist_mode=content_whitelist_mode,
             content_type_policy=content_type_policy,
+            defined_names=defined_names,
         )
 
     if isinstance(expr, IRUnary):
@@ -386,6 +403,7 @@ def validate_expr_contracts(
             node_id=node_id,
             content_whitelist_mode=content_whitelist_mode,
             content_type_policy=content_type_policy,
+            defined_names=defined_names,
         )
 
     if isinstance(expr, IRBinary):
@@ -398,6 +416,7 @@ def validate_expr_contracts(
                 node_id=node_id,
                 content_whitelist_mode=content_whitelist_mode,
                 content_type_policy=content_type_policy,
+                defined_names=defined_names,
             )
         )
         diagnostics.extend(
@@ -409,6 +428,7 @@ def validate_expr_contracts(
                 node_id=node_id,
                 content_whitelist_mode=content_whitelist_mode,
                 content_type_policy=content_type_policy,
+                defined_names=defined_names,
             )
         )
     return diagnostics
@@ -428,6 +448,7 @@ def validate_source_partition_contract(
     node_id: str | None,
     content_whitelist_mode: str,
     content_type_policy: str,
+    defined_names: set[str] | None = None,
 ) -> list[Diagnostic]:
     diagnostics: list[Diagnostic] = []
     diagnostics.extend(
@@ -439,6 +460,7 @@ def validate_source_partition_contract(
             node_id=node_id,
             content_whitelist_mode=content_whitelist_mode,
             content_type_policy=content_type_policy,
+            defined_names=defined_names,
         )
     )
     diagnostics.extend(

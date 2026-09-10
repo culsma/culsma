@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- Bare `kind` tokens in content and container constructors now receive the
+  same vocabulary checks as quoted tokens, including content kind/type
+  pairing and the surface-capacity restriction. String bindings, deferred
+  kind parameters, and legacy taxonomy normalization remain compatible.
+
+### Changed
+
+- Centralized legacy content syntax and taxonomy conversion under
+  `pipeline/compat`, with separate source and historical-data adapters.
+  Canonical vocabulary and validation remain independent of legacy aliases.
+
 ## 1.0.6 — 2026-09-07
 
 This release consolidates the 1.0.6 internal prereleases and subsequent
