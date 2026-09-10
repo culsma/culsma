@@ -68,7 +68,7 @@ class PlanReferenceResolver:
                         )
                     )
                     continue
-                bound[name] = value
+                bound[name] = self.serializer.serialize_expr(value)
         else:
             seen_arg_names: set[str] = set()
             for arg in call_args:

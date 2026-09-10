@@ -17,7 +17,7 @@ from culsma.pipeline.content_inputs import (
 )
 from culsma.pipeline.ir_nodes import IRIdentifier, IRMember, IRQuantity, IRRecord, IRString
 from culsma.pipeline.plan.content_enums import (
-    contains_member_expression, guard_content_enum_execution, has_unlowered_content_enum,
+    is_deferred_content_input, validate_bound_content_plan,
 )
 from culsma.pipeline.plan_nodes import PlanProgram
 
@@ -107,24 +107,16 @@ def test_diagnostic_phase_ownership(issue, code):
     assert all(d.node_id == "n" for d in diagnostics)
 
 
-@pytest.mark.parametrize(
-    ("payload", "blocked"),
-    [
-        ({"kind": "IRMember", "base": {"kind": "IRIdentifier", "name": "ContentKind"}, "member": "FORMULATION"}, True),
-        ({"kind": "IRMember", "base": {"kind": "IRIdentifier", "name": "MaterialRelation"}, "member": "FREE"}, False),
-        ({"op": "DefineContent", "args": {"kind": {"kind": "IRMember", "base": {}, "member": "kind"}}}, True),
-        ({"kind": "IRCall", "name": "AllocContainer", "args": [{"name": "kind", "value": {"kind": "IRMember"}}]}, True),
-        ([{"op": "DefineContent", "args": {"kind": "formulation", "type": "medium"}}], False),
-        ({"op": "Other", "args": {"kind": {"kind": "IRMember"}}}, False),
-    ],
-)
-def test_execution_boundary_payload_detection(payload, blocked):
-    assert has_unlowered_content_enum(payload) is blocked
-    assert has_unlowered_content_enum([payload]) is blocked
+@pytest.mark.parametrize(("payload", "deferred"), [
+    ({"kind":"IRIdentifier", "name":"k"}, True),
+    ({"kind":"IRMember", "member":"kind"}, True),
+    ({"kind":"ContentEnum", "enum":"ContentKind", "member":"FORMULATION"}, False),
+    ("formulation", False),
+])
+def test_bound_input_deferred_detection(payload, deferred):
+    assert is_deferred_content_input(payload) is deferred
 
 
-def test_public_execution_guard_preserves_legacy_plan():
-    assert contains_member_expression([{"nested": {"kind": "IRMember"}}])
-    assert not contains_member_expression({"value": "medium"})
+def test_bound_validation_preserves_empty_plan():
     plan = PlanProgram()
-    assert guard_content_enum_execution(plan) is plan
+    assert validate_bound_content_plan(plan) is plan

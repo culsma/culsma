@@ -1,50 +1,47 @@
-"""Explicit execution boundary until content enum runtime support is connected."""
-
-from __future__ import annotations
+"""Validate statically bound content inputs; dynamic values are checked at runtime."""
 
 from typing import Any
 
-from culsma.common.content_contracts import CONTENT_ENUM_TYPES
+from culsma.common.content_contracts import ContainerKind
 from culsma.common.diagnostics import Diagnostic
-from culsma.pipeline.plan_nodes import PlanProgram
+from culsma.pipeline.content_boundary import resolve_bound_content_classification, resolve_bound_container_kind
+from culsma.pipeline.plan_nodes import PlanProgram, PlanStep
 
 
-def contains_member_expression(value: Any) -> bool:
+def is_deferred_content_input(value: Any) -> bool:
+    return isinstance(value, dict) and value.get('kind') in {'IRIdentifier', 'IRMember', 'IRIndex', 'IRCall', 'IRBinary'}
+
+
+def validate_bound_content_step(step: PlanStep) -> list[Diagnostic]:
+    try:
+        if step.op == 'DefineContent':
+            kind, content_type = step.args.get('kind'), step.args.get('type')
+            if not is_deferred_content_input(kind) and not is_deferred_content_input(content_type):
+                resolve_bound_content_classification(kind, content_type)
+        elif step.op == 'AllocContainer' and 'kind' in step.args:
+            value = step.args['kind']
+            if not is_deferred_content_input(value):
+                kind = resolve_bound_container_kind(value)
+                if kind is ContainerKind.SURFACE and step.args.get('capacity') is not None:
+                    raise ValueError('surface constructor does not support volume capacity')
+    except ValueError as error:
+        code = 'PLAN_CONTENT_CLASSIFICATION_INVALID' if step.op == 'DefineContent' else 'PLAN_CONTAINER_KIND_INVALID'
+        return [Diagnostic(code=code, message=str(error), span=step.span, node_id=step.step_id)]
+    return []
+
+
+def validate_bound_content_steps(value: Any) -> list[Diagnostic]:
+    if isinstance(value, PlanStep):
+        return validate_bound_content_step(value) + validate_bound_content_steps(value.args)
     if isinstance(value, dict):
-        return value.get("kind") == "IRMember" or any(contains_member_expression(item) for item in value.values())
-    return isinstance(value, list) and any(contains_member_expression(item) for item in value)
+        return [d for item in value.values() for d in validate_bound_content_steps(item)]
+    if isinstance(value, list):
+        return [d for item in value for d in validate_bound_content_steps(item)]
+    return []
 
 
-def has_unlowered_content_enum(value: Any) -> bool:
-    if isinstance(value, dict):
-        if value.get("kind") == "IRMember":
-            base = value.get("base")
-            if isinstance(base, dict) and base.get("kind") == "IRIdentifier" and base.get("name") in CONTENT_ENUM_TYPES:
-                return True
-        if value.get("op", value.get("name")) in {"AllocContainer", "DefineContent"}:
-            args = value.get("args")
-            if isinstance(args, dict):
-                if any(contains_member_expression(args.get(name)) for name in ("kind", "type")):
-                    return True
-            elif isinstance(args, list):
-                if any(isinstance(arg, dict) and arg.get("name") in {"kind", "type"}
-                       and contains_member_expression(arg.get("value")) for arg in args):
-                    return True
-        return any(has_unlowered_content_enum(item) for item in value.values())
-    return isinstance(value, list) and any(has_unlowered_content_enum(item) for item in value)
-
-
-def guard_content_enum_execution(plan: PlanProgram) -> PlanProgram:
-    """Never execute a partially supported enum as an empty material classification."""
-    if not has_unlowered_content_enum(plan.to_dict()):
+def validate_bound_content_plan(plan: PlanProgram) -> PlanProgram:
+    diagnostics = [d for protocol in plan.plans for d in validate_bound_content_steps(protocol.steps)]
+    if not diagnostics:
         return plan
-    return PlanProgram(
-        plans=[],
-        diagnostics=[*plan.diagnostics, Diagnostic(
-            code="PLAN_CONTENT_ENUM_EXECUTION_UNSUPPORTED",
-            message="Explicit content enums currently support semantic and type checking only; "
-                    "execution requires the planned enum runtime support. Use compatible text inputs for execution.",
-            span=plan.span,
-        )],
-        span=plan.span,
-    )
+    return PlanProgram(plans=[], diagnostics=[*plan.diagnostics, *diagnostics], span=plan.span)

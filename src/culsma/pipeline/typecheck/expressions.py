@@ -7,7 +7,7 @@ from typing import Any
 from culsma.common.content_contracts import CONTENT_ENUM_TYPES, parse_content_classification, parse_content_kind
 from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.content_inputs import (
-    ContentArgumentResolver, ContentArgumentScope, ContentInputSource, ContentResolutionIssue,
+    ContentArgumentResolver, ContentArgumentScope, ContentInputSource, ContentResolutionIssue, DeferredContentEnum,
 )
 from culsma.pipeline.container_views import classify_container_target_view, is_container_target_view
 from culsma.pipeline.compat.content_taxonomy import normalize_content_classification
@@ -572,6 +572,9 @@ class TypecheckExpressionServices:
         return current.name, members
 
     def classify_local_expr_type(self, expr: Any, *, expr_bindings: dict[str, Any]) -> str:
+        deferred = expr_bindings.get(expr.name) if isinstance(expr, IRIdentifier) else expr
+        if isinstance(deferred, DeferredContentEnum):
+            return deferred.enum_type.__name__
         enum_result = ContentArgumentResolver.resolve_argument(expr, None, ContentArgumentScope(expr_bindings=expr_bindings))
         if enum_result.source is ContentInputSource.ENUM and enum_result.token is not None:
             return type(enum_result.value).__name__

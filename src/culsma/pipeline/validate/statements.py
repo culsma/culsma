@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from typing import Any, Iterable, Mapping, cast
 
 from culsma.common.diagnostics import Diagnostic
-from culsma.pipeline.content_inputs import ContentArgumentResolver, ContentArgumentScope, ContentInputSource
+from culsma.pipeline.content_inputs import ContentArgumentResolver, ContentArgumentScope, ContentInputSource, DeferredContentEnum, deferred_content_enum_bindings
 from culsma.pipeline.analysis import CompileAnalysis, ProtocolAnalysis
 from culsma.pipeline.ir_nodes import (
     IRAssign,
@@ -173,7 +173,8 @@ class BaseStatementHandler:
         ctx: StatementValidationContext,
         state: HandlerState,
     ) -> None:
-        del stmt, ctx, state
+        if isinstance(stmt, IRRepeat):
+            self.defer_content_assignments(stmt, ctx)
 
     def iter_child_expressions(
         self,
@@ -207,7 +208,19 @@ class BaseStatementHandler:
         ctx: StatementValidationContext,
         state: HandlerState,
     ) -> None:
-        del stmt, ctx, state
+        if isinstance(stmt, (IRConditional, IRRepeat)):
+            self.defer_content_assignments(stmt, ctx)
+
+    def defer_content_assignments(self, stmt: IRStatement, ctx: StatementValidationContext) -> None:
+        if ctx.scope_query is None:
+            return
+        names = [effect.name for effect in ctx.scope_query.assignment_effects(stmt.id)]
+        updates = deferred_content_enum_bindings(
+            names, ContentArgumentScope(ctx.literal_bindings, ctx.expr_bindings, ctx.defined_names),
+        )
+        for name, value in updates.items():
+            ctx.literal_bindings.pop(name, None)
+            ctx.expr_bindings[name] = value
 
     def append_diagnostics(
         self,
@@ -350,7 +363,7 @@ class LetHandler(BaseStatementHandler):
         else:
             ctx.expr_bindings.pop(stmt.name, None)
         resolved = (
-            enum_result.value if enum_result.source is ContentInputSource.ENUM and enum_result.token is not None
+            enum_result.value if enum_result.source is ContentInputSource.ENUM and (enum_result.token is not None or isinstance(enum_result.value, DeferredContentEnum))
             else BindingValidator.resolve_let_value(stmt, ctx.literal_bindings)
         )
         if resolved is not None:
@@ -446,7 +459,7 @@ class AssignHandler(BaseStatementHandler):
                 stmt.value, None, ContentArgumentScope(ctx.literal_bindings, ctx.expr_bindings, ctx.defined_names),
             )
             ctx.expr_bindings[assign_root] = stmt.value
-            if result.source is ContentInputSource.ENUM and result.token is not None:
+            if result.source is ContentInputSource.ENUM and (result.token is not None or isinstance(result.value, DeferredContentEnum)):
                 ctx.literal_bindings[assign_root] = result.value
             else:
                 ctx.literal_bindings.pop(assign_root, None)

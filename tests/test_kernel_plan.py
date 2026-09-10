@@ -875,8 +875,9 @@ protocol T {
     steps = plan.plans[0].steps
     ops = [step.op for step in steps]
     assert "Electrophoresis" not in ops
-    assert ops == ["assign_local", "sep", "Mutation", "img"]
-    program_arg_names = [arg["name"] for arg in steps[1].args["program"]["args"]]
+    assert ops == ["assign_local", "assign_local", "sep", "Mutation", "img"]
+    program_step = next(step for step in steps if step.op == "sep")
+    program_arg_names = [arg["name"] for arg in program_step.args["program"]["args"]]
     assert "voltage" in program_arg_names
     assert "field" not in program_arg_names
     assert steps[-1].args["bind"] == "gel_obs"

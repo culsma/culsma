@@ -315,3 +315,8 @@ CONTENT_TYPE_CUSTOM_PREFIX = "custom_"
 
 def is_custom_content_type(type_value: str) -> bool:
     return type_value.startswith(CONTENT_TYPE_CUSTOM_PREFIX) and len(type_value) > len(CONTENT_TYPE_CUSTOM_PREFIX)
+
+
+def legacy_runtime_container_kind(value: str) -> str | None:
+    """Preserve the generic container kind accepted by historical material plans."""
+    return value if value == 'container' else None

@@ -244,3 +244,20 @@ def is_allowed_content_type(kind_value: str, type_value: str) -> bool:
 
 def content_type_fallback_for_kind(kind_value: str) -> str | None:
     return FALLBACK_CONTENT_TYPE_BY_KIND.get(kind_value)
+
+
+def serialize_content_enum(value: StrEnum) -> dict[str, str]:
+    """Preserve enum family and member identity across a JSON boundary."""
+    if type(value) not in CONTENT_ENUM_TYPES.values():
+        raise ValueError('Expected a content or container enum')
+    return {'kind': 'ContentEnum', 'enum': type(value).__name__, 'member': value.name}
+
+
+def parse_serialized_content_enum(value: object) -> StrEnum | None:
+    if not isinstance(value, dict) or value.get('kind') != 'ContentEnum':
+        return None
+    family, member = value.get('enum'), value.get('member')
+    if not isinstance(family, str) or not isinstance(member, str):
+        return None
+    enum_type = CONTENT_ENUM_TYPES.get(family)
+    return resolve_content_enum_member(enum_type, member) if enum_type is not None else None

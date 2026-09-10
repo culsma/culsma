@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 from urllib.parse import quote
 
-from culsma.pipeline.compat.content_taxonomy import normalize_content_classification
+from culsma.pipeline.content_boundary import resolve_bound_content_classification, resolve_runtime_container_kind
 from culsma.pipeline.content_vocab import ContainerKind
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.material.args import arg_bool, arg_quantity, arg_string
@@ -47,6 +47,14 @@ def apply_alloc_container(step: PlanStep, state: dict[str, Any]) -> MaterialUpda
             "MAT_CONTAINER_IDENTITY_MISSING",
             "Container allocation requires a definition namespace and scoped declaration name",
         )
+    if "kind" in step.args:
+        try:
+            resolved_kind = resolve_runtime_container_kind(step.args["kind"])
+            kind = resolved_kind.value if isinstance(resolved_kind, ContainerKind) else resolved_kind
+        except ValueError as error:
+            return diagnostic_result(step, state, "MAT_CONTAINER_KIND_INVALID", str(error))
+    if kind == ContainerKind.SURFACE.value and step.args.get("capacity") is not None:
+        return diagnostic_result(step, state, "MAT_INVALID_CAPACITY", "surface constructor does not support volume capacity")
     container_id = allocation_container_id(
         namespace=container_namespace,
         invocation_id=step.step_id,
@@ -112,14 +120,16 @@ def _container_id_segment(value: str) -> str:
 
 
 def apply_define_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
-    kind = arg_string(step.args.get("kind"))
-    ctype = arg_string(step.args.get("type"))
+    try:
+        resolved = resolve_bound_content_classification(step.args.get("kind"), step.args.get("type"))
+    except ValueError as error:
+        return diagnostic_result(step, state, "MAT_CONTENT_CLASSIFICATION_INVALID", str(error))
     code = arg_string(step.args.get("code"))
     name = arg_string(step.args.get("name"))
     explicit_attrs = _arg_string_map(step.args.get("attrs"))
-    normalized = normalize_content_classification(kind, ctype) if kind is not None and ctype is not None else None
-    stored_kind = normalized.kind if normalized is not None else kind
-    stored_type = normalized.type if normalized is not None else ctype
+    normalized = resolved.normalization
+    stored_kind = resolved.classification.kind.value
+    stored_type = resolved.classification.type.value
     content_id = code or name or step.step_id
     registry = state.setdefault("content_registry", {})
     if not isinstance(registry, dict):

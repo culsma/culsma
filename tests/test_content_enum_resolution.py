@@ -96,7 +96,7 @@ def test_enum_surface_still_forbids_capacity():
 
 
 @pytest.mark.parametrize("use_alias", [False, True])
-def test_frontend_enum_support_cannot_silently_execute_empty_classification(use_alias):
+def test_frontend_enum_support_executes_valid_classification(use_alias):
     from culsma.pipeline.plan import lower_ir_to_plan
     from culsma.driver.stub import StubDriver
     from culsma.runtime.executor import run
@@ -108,11 +108,11 @@ def test_frontend_enum_support_cannot_silently_execute_empty_classification(use_
     }}'''
     compiled = compile_ast(resolve_program(parse(source)).prepared_program)
     plan = lower_ir_to_plan(compiled.ir)
-    assert [d.code for d in plan.diagnostics] == ["PLAN_CONTENT_ENUM_EXECUTION_UNSUPPORTED"]
-    assert plan.plans == []
+    assert not plan.diagnostics
+    assert plan.plans
     result = run(plan=plan, driver=StubDriver())
-    assert not result.ok
-    assert not result.state.artifacts.get("material_state", {}).get("content_registry")
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    assert result.state.artifacts["material_state"]["content_registry"]["M"]["content_kind"] == "formulation"
 
 
 @pytest.mark.parametrize("namespace", ['let ContentKind = "shadow";', ''])

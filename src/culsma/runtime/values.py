@@ -5,12 +5,18 @@ from __future__ import annotations
 from copy import deepcopy
 from typing import Any
 
+from culsma.common.content_contracts import CONTENT_ENUM_TYPES, parse_serialized_content_enum, serialize_content_enum
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.state import RuntimeState
 
 
 _LOCAL_RUNTIME_CONSTRUCTORS = {"markers", "stream", "data_ref", "data_group_ref", "data_schema"}
 UNRESOLVED = object()
+
+
+def evaluate_content_enum(expr: Any) -> Any:
+    value = parse_serialized_content_enum(expr)
+    return value if value is not None else UNRESOLVED
 
 
 class RuntimeValueResolver:
@@ -30,7 +36,7 @@ class RuntimeValueResolver:
         return _resolve_runtime_member_assign_target(expr, state)
 
     def value_to_serialized(self, value: Any) -> Any:
-        return _runtime_value_to_serialized(value)
+        return serialize_runtime_value(value)
 
     def deep_serialize(self, value: Any) -> Any:
         return _runtime_deep_serialize(value)
@@ -66,6 +72,8 @@ class RuntimeValueResolver:
 def _eval_runtime_expr(expr: Any, state: RuntimeState) -> Any:
     if isinstance(expr, dict):
         kind = expr.get("kind")
+        if kind == "ContentEnum":
+            return evaluate_content_enum(expr)
         if kind == "IRBoolean":
             return expr.get("value")
         if kind == "IRString":
@@ -626,7 +634,9 @@ def _runtime_bound_value(value: Any, state: RuntimeState) -> Any:
     return value
 
 
-def _runtime_value_to_serialized(value: Any) -> Any:
+def serialize_runtime_value(value: Any) -> Any:
+    if type(value) in CONTENT_ENUM_TYPES.values():
+        return serialize_content_enum(value)
     if isinstance(value, tuple) and len(value) == 2 and isinstance(value[0], (int, float)) and isinstance(value[1], str):
         return {"kind": "IRQuantity", "value": float(value[0]), "unit": value[1]}
     if isinstance(value, float) and value.is_integer():
@@ -639,7 +649,7 @@ def _runtime_deep_serialize(value: Any) -> Any:
         return [_runtime_deep_serialize(item) for item in value]
     if isinstance(value, dict):
         return {key: _runtime_deep_serialize(item) for key, item in value.items()}
-    return _runtime_value_to_serialized(value)
+    return serialize_runtime_value(value)
 
 
 def _runtime_protocol_output_serialize(value: Any) -> Any:
@@ -671,21 +681,21 @@ def _runtime_protocol_output_serialize(value: Any) -> Any:
                 if key in public_keys
             }
         return {key: _runtime_protocol_output_serialize(item) for key, item in value.items()}
-    return _runtime_value_to_serialized(value)
+    return serialize_runtime_value(value)
 
 
 def _resolve_step_runtime_args(step: PlanStep, state: RuntimeState) -> PlanStep:
     return PlanStep(
         step_id=step.step_id,
         op=step.op,
-        args=_resolve_runtime_arg_value(step.args, state),
+        args=resolve_runtime_arg_value(step.args, state),
         deps=list(step.deps),
         gate=step.gate,
         span=step.span,
     )
 
 
-def _resolve_runtime_arg_value(value: Any, state: RuntimeState) -> Any:
+def resolve_runtime_arg_value(value: Any, state: RuntimeState) -> Any:
     if isinstance(value, dict):
         kind = value.get("kind")
         if isinstance(kind, str) and kind == "IRIdentifier":
@@ -693,13 +703,13 @@ def _resolve_runtime_arg_value(value: Any, state: RuntimeState) -> Any:
             local_bindings = state.artifacts.get("local_bindings", {})
             if isinstance(name, str) and isinstance(local_bindings, dict) and name in local_bindings:
                 return local_bindings[name]
-        if isinstance(kind, str) and kind in {"IRBinary", "IRUnary"}:
+        if isinstance(kind, str) and kind in {"IRBinary", "IRUnary", "IRMember"}:
             evaluated = _eval_runtime_expr(value, state)
             if evaluated is not UNRESOLVED:
-                return _runtime_value_to_serialized(evaluated)
-        return {key: _resolve_runtime_arg_value(item, state) for key, item in value.items()}
+                return serialize_runtime_value(evaluated)
+        return {key: resolve_runtime_arg_value(item, state) for key, item in value.items()}
     if isinstance(value, list):
-        return [_resolve_runtime_arg_value(item, state) for item in value]
+        return [resolve_runtime_arg_value(item, state) for item in value]
     return value
 
 

@@ -47,6 +47,7 @@ class PlanStatementLoweringState:
 @dataclass
 class LetPlanState(PlanStatementLoweringState):
     call: IRCall | None = None
+    runtime_alias_value: Any = None
 
 
 @dataclass
@@ -164,7 +165,18 @@ class LetPlanHandler(BasePlanStatementHandler):
         stmt = cast(IRLet, stmt)
         state = cast(LetPlanState, state)
         if state.call is None and stmt.value is not None:
-            ctx.local_env[stmt.name] = self.serializer.serialize_expr(stmt.value, ctx.local_env)
+            value = self.serializer.serialize_expr(stmt.value, ctx.local_env)
+            if self.is_runtime_local_alias(stmt.value, ctx.local_env):
+                state.runtime_alias_value = value
+                ctx.local_env[stmt.name] = {"kind": "IRIdentifier", "name": stmt.name}
+            else:
+                ctx.local_env[stmt.name] = value
+
+    def is_runtime_local_alias(self, value: Any, env: dict[str, Any]) -> bool:
+        if not isinstance(value, IRIdentifier):
+            return False
+        bound = env.get(value.name)
+        return isinstance(bound, dict) and bound.get("kind") == "IRIdentifier" and bound.get("name") == value.name
 
     def lower_current_or_children(
         self,
@@ -175,6 +187,12 @@ class LetPlanHandler(BasePlanStatementHandler):
         stmt = cast(IRLet, stmt)
         state = cast(LetPlanState, state)
         if state.call is None:
+            if state.runtime_alias_value is not None:
+                return [PlanStep(
+                    step_id=f"{ctx.step_id_prefix}{stmt.id}", op="assign_local",
+                    args={"target": stmt.name, "value": state.runtime_alias_value},
+                    deps=[], gate=merge_gate(ctx.gate_base), span=stmt.span,
+                )]
             return []
         return self.lower_let_call_to_steps(stmt=stmt, call=state.call, ctx=ctx)
 

@@ -5,10 +5,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Iterable, Mapping, cast
 
-from culsma.pipeline.content_inputs import ContentArgumentResolver, ContentInputSource
+from culsma.pipeline.content_inputs import ContentArgumentResolver, ContentInputSource, DeferredContentEnum, deferred_content_enum_bindings
 from culsma.pipeline.ir_nodes import (
     IRAssign,
     IRCall,
+    IRConditional,
     IRIdentifier,
     IRLet,
     IRMutation,
@@ -83,7 +84,8 @@ class BaseTypecheckStatementHandler:
         _ctx: TypecheckContext,
         _state: TypecheckStatementState,
     ) -> None:
-        return
+        if isinstance(_stmt, IRRepeat):
+            self.defer_content_assignments(_stmt, _ctx)
 
     def check_child_expressions(
         self,
@@ -115,7 +117,13 @@ class BaseTypecheckStatementHandler:
         _ctx: TypecheckContext,
         _state: TypecheckStatementState,
     ) -> None:
-        return
+        if isinstance(_stmt, (IRConditional, IRRepeat)):
+            self.defer_content_assignments(_stmt, _ctx)
+
+    def defer_content_assignments(self, stmt: IRStatement, ctx: TypecheckContext) -> None:
+        if ctx.scope_query is not None:
+            names = [effect.name for effect in ctx.scope_query.assignment_effects(stmt.id)]
+            ctx.expr_bindings.update(deferred_content_enum_bindings(names, ctx.content_scope()))
 
     def recurse(self, child: ChildStatementBlock, ctx: TypecheckContext) -> None:
         if ctx.statement_typechecker is None:
@@ -136,7 +144,7 @@ class LetTypecheckHandler(BaseTypecheckStatementHandler):
             ctx.expr_bindings.pop(stmt.name, None)
             return
         result = ContentArgumentResolver.resolve_argument(stmt.value, None, ctx.content_scope())
-        ctx.expr_bindings[stmt.name] = result.value if result.source is ContentInputSource.ENUM and result.token is not None else stmt.value
+        ctx.expr_bindings[stmt.name] = result.value if result.source is ContentInputSource.ENUM and (result.token is not None or isinstance(result.value, DeferredContentEnum)) else stmt.value
 
     def check_child_expressions(
         self,
@@ -206,7 +214,7 @@ class AssignTypecheckHandler(BaseTypecheckStatementHandler):
     def apply_post_child_effects(self, stmt: IRStatement, ctx: TypecheckContext, _state: TypecheckStatementState) -> None:
         stmt = cast(IRAssign, stmt)
         result = ContentArgumentResolver.resolve_argument(stmt.value, None, ctx.content_scope())
-        if isinstance(stmt.target, IRIdentifier) and result.source is ContentInputSource.ENUM and result.token is not None:
+        if isinstance(stmt.target, IRIdentifier) and result.source is ContentInputSource.ENUM and (result.token is not None or isinstance(result.value, DeferredContentEnum)):
             ctx.expr_bindings[stmt.target.name] = result.value
 
 
@@ -267,6 +275,14 @@ class RepeatTypecheckHandler(BaseTypecheckStatementHandler):
         nested_bindings = dict(ctx.expr_bindings)
         nested_bindings[stmt.binding] = IRIdentifier(name=stmt.binding, span=stmt.span)
         return (ChildStatementBlock(stmt.statements, nested_bindings),)
+
+
+class ConditionalTypecheckHandler(BaseTypecheckStatementHandler):
+    def iter_child_blocks(self, stmt, ctx, _state):
+        return (
+            ChildStatementBlock(stmt.then_statements, dict(ctx.expr_bindings)),
+            ChildStatementBlock(stmt.else_statements, dict(ctx.expr_bindings)),
+        )
 
 
 class MutationTypecheckHandler(BaseTypecheckStatementHandler):
@@ -345,6 +361,7 @@ _STATEMENT_HANDLERS_BY_TYPE: dict[type[object], BaseTypecheckStatementHandler] =
     IRWithEnv: WithEnvTypecheckHandler(),
     IRWithConstraint: WithConstraintTypecheckHandler(),
     IRRepeat: RepeatTypecheckHandler(),
+    IRConditional: ConditionalTypecheckHandler(),
     IRMutation: MutationTypecheckHandler(),
     IRStep: StepTypecheckHandler(),
 }

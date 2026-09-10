@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 from dataclasses import fields, is_dataclass
+from enum import StrEnum
 from typing import Any
+
+from culsma.common.content_contracts import CONTENT_ENUM_TYPES, serialize_content_enum
 
 from culsma.pipeline.ir_nodes import (
     IRArg,
@@ -12,6 +15,7 @@ from culsma.pipeline.ir_nodes import (
     IRConditional,
     IRIdentifier,
     IRIndex,
+    IRMember,
     IRRecord,
     IRRepeat,
     IRString,
@@ -92,8 +96,17 @@ class PlanExpressionSerializer:
 
     def serialize_expr(self, value: Any, env: dict[str, Any] | None = None) -> Any:
         """Serialize IR expression dataclass into JSON-friendly structure."""
+        if isinstance(value, StrEnum) and type(value) in CONTENT_ENUM_TYPES.values():
+            return serialize_content_enum(value)
         if isinstance(value, IRIdentifier) and env is not None and value.name in env:
             return env[value.name]
+        if (isinstance(value, IRMember) and isinstance(value.base, IRIdentifier)
+                and value.base.name in CONTENT_ENUM_TYPES and value.base.name not in (env or {})):
+            return {"kind": "ContentEnum", "enum": value.base.name, "member": value.member}
+        if isinstance(value, IRMember) and isinstance(value.base, IRIdentifier) and env is not None:
+            base = env.get(value.base.name)
+            if isinstance(base, dict) and value.member in base:
+                return base[value.member]
         if isinstance(value, IRCall):
             value = IRCall(
                 name=value.name,
@@ -121,7 +134,10 @@ class PlanExpressionSerializer:
                 "kind": "IRIndex",
             }
         if isinstance(value, IRRecord):
-            return {key: self.serialize_expr(record_value, None) for key, record_value in value.entries.items()}
+            return {
+                key: self.serialize_expr(record_value, env if isinstance(record_value, IRMember) else None)
+                for key, record_value in value.entries.items()
+            }
         if is_dataclass(value):
             payload = {field.name: getattr(value, field.name) for field in fields(value)}
             if value.__class__.__name__ != "Span":

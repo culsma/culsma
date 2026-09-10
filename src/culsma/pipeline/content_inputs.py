@@ -33,6 +33,11 @@ class ContentResolutionIssue(StrEnum):
 
 
 @dataclass(frozen=True)
+class DeferredContentEnum:
+    enum_type: type[StrEnum]
+
+
+@dataclass(frozen=True)
 class ContentArgumentScope:
     literal_bindings: Mapping[str, Any] = field(default_factory=dict)
     expr_bindings: Mapping[str, Any] = field(default_factory=dict)
@@ -45,7 +50,7 @@ class ContentArgumentScope:
 @dataclass(frozen=True)
 class ContentEnumResolution:
     status: ContentResolutionStatus
-    value: StrEnum | str | None = None
+    value: StrEnum | str | DeferredContentEnum | None = None
     source: ContentInputSource = ContentInputSource.UNKNOWN
     issue: ContentResolutionIssue | None = None
     detail: str = ""
@@ -66,6 +71,17 @@ class ContentArgumentResolver:
         scope: ContentArgumentScope,
         seen_names: frozenset[str] = frozenset(),
     ) -> ContentEnumResolution:
+        if isinstance(expr, DeferredContentEnum):
+            if expected_enum is not None and expr.enum_type is not expected_enum:
+                return ContentEnumResolution(
+                    ContentResolutionStatus.INVALID, source=ContentInputSource.ENUM,
+                    issue=ContentResolutionIssue.WRONG_ENUM_TYPE, detail=expr.enum_type.__name__,
+                    expected_enum=expected_enum,
+                )
+            return ContentEnumResolution(
+                ContentResolutionStatus.DEFERRED, value=expr, source=ContentInputSource.ENUM,
+                expected_enum=expected_enum,
+            )
         if isinstance(expr, StrEnum):
             return ContentArgumentResolver.resolve_enum_value(expr, expected_enum)
         if isinstance(expr, IRString) or isinstance(expr, str):
@@ -194,3 +210,17 @@ def content_enum_diagnostics(
             span=span, node_id=node_id,
         )]
     return []
+
+
+def deferred_content_enum_bindings(names, scope: ContentArgumentScope) -> dict[str, DeferredContentEnum]:
+    """Forget values modified by control flow while retaining their enum families."""
+    bindings = {}
+    for name in names:
+        existing = scope.expr_bindings.get(name)
+        if isinstance(existing, DeferredContentEnum):
+            bindings[name] = existing
+            continue
+        result = ContentArgumentResolver.resolve_binding(name, None, scope)
+        if result.source is ContentInputSource.ENUM and result.token is not None:
+            bindings[name] = DeferredContentEnum(type(result.value))
+    return bindings

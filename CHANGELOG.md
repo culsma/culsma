@@ -13,13 +13,21 @@
   shadowing, and enum-family checks. Explicit enum pair errors are rejected
   in compatibility mode as well as strict mode. Legacy text inputs remain
   supported through the centralized compatibility adapter.
-- A temporary `PLAN_CONTENT_ENUM_EXECUTION_UNSUPPORTED` error prevents
-  execution of content enum expressions until plan/runtime support is
-  connected. This frontend-only milestone must not write empty material
-  classifications. Existing text-based protocols remain executable.
+- Explicit content enums now execute through aliases, protocol defaults,
+  entry arguments, assignments, conditionals, and loops. Plans retain enum
+  family/member identity in JSON; final classification is checked after
+  static binding and again before material writes. The temporary frontend-only
+  execution guard has been removed.
 
 ### Fixed
 
+- Runtime content definition rejects missing, nontext, wrong-family, and
+  unsupported classifications before modifying the registry. Invalid explicit
+  enum pairs cannot be repaired by legacy fallback. Container enums and surface
+  capacity are checked before allocation.
+- Runtime local aliases capture their value at declaration. Branch and loop
+  assignments no longer leave stale enum values in static content checks, and
+  conditional bodies receive type checking.
 - Bare `kind` tokens in content and container constructors now receive the
   same vocabulary checks as quoted tokens, including content kind/type
   pairing and the surface-capacity restriction. String bindings, deferred
@@ -27,6 +35,9 @@
 
 ### Changed
 
+- Scientific material classification rules use shared enum members. Snapshot
+  and registry string fields, legacy metadata, and unknown-history behavior
+  remain compatible.
 - Canonical content pair tables and queries now live in the shared contract
   module and retain their old import paths. The tables are read-only; legacy
   alias/fallback selection remains in the compatibility adapter. Classification

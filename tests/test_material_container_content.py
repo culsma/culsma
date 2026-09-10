@@ -269,6 +269,7 @@ def test_runtime_detects_container_content_state_conflict():
         op="DefineContent",
         args={
             "kind": _ir_string("reagent"),
+            "type": _ir_string("other_chemical"),
             "code": _ir_string("S1"),
         },
         deps=[],

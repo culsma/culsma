@@ -7,6 +7,8 @@ from dataclasses import dataclass, field
 from enum import StrEnum
 from types import MappingProxyType
 
+from culsma.common.content_contracts import ContentClassification, parse_content_classification
+
 from ..contracts import ProviderProvenance, freeze_mapping
 
 
@@ -99,6 +101,10 @@ class ComponentSnapshot:
     canonical_type: str
     quantity: QuantitySnapshot
     relationship: RelationshipSnapshot
+
+    @property
+    def classification(self) -> ContentClassification | None:
+        return parse_content_classification(self.canonical_kind, self.canonical_type)
 
 
 @dataclass(frozen=True)
