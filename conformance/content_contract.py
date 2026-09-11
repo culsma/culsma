@@ -19,7 +19,7 @@ SECTIONS = {
     'enums': (VOCABULARY, '### 6.2.7 Explicit Content Enum Contract'),
     'legacy': (VOCABULARY, '### 6.2.8 Selected Legacy Normalization Conformance Cases'),
     'diagnostics': (DIAGNOSTICS, '## 8.2.2 Diagnostic Mapping Table (Content + Mutation Model)'),
-    'mapping': (MAPPING, '## 12.15 Content Enum Conformance Card (PM #110)'),
+    'mapping': (MAPPING, '## 12.8 Material Content Requirement Mapping'),
 }
 PILOT_DIAGNOSTICS = frozenset({
     'SEM_INVALID_CONTENT_KIND', 'SEM_INVALID_CONTENT_TYPE_VALUE',
@@ -31,6 +31,7 @@ PILOT_DIAGNOSTICS = frozenset({
     'MAT_CONTENT_CLASSIFICATION_INVALID', 'MAT_CONTAINER_KIND_INVALID', 'MAT_INVALID_CAPACITY',
 })
 SNAPSHOT = Path(__file__).with_name('content_reference.json')
+TEST_HOOKS = Path(__file__).with_name('test_hooks.json')
 
 
 def extract_section(text: str, heading: str) -> str:
@@ -126,7 +127,7 @@ def project_contract(sections: dict[str, str]) -> dict:
     for row in table_rows(sections['mapping'], 'Invariant'):
         if row[2] in requirements:
             raise ValueError(f'Duplicate requirement: {row[2]}')
-        requirements[row[2]] = {'owner': row[1], 'test': row[3]}
+        requirements[row[2]] = {'owner': row[1], 'coverage': row[3]}
     return {'container_kinds': sorted(containers), 'types_by_kind': {k: sorted(v) for k, v in types.items()},
             'fallback_by_kind': fallback, 'recommended_roles': roles, 'roles_open': True,
             'legacy_cases': legacy, 'diagnostics': diagnostics, 'requirements': requirements}
@@ -186,15 +187,28 @@ def implementation_errors(contract: dict) -> list[str]:
     return errors
 
 
-def requirement_hook_errors(contract: dict, root: Path) -> list[str]:
+def requirement_hook_errors(contract: dict, root: Path, test_hooks: dict | None = None) -> list[str]:
+    """Check implementation-owned evidence without deriving code paths from reference."""
     errors = []
+    if test_hooks is None:
+        test_hooks = json.loads(TEST_HOOKS.read_text())
     if set(contract['requirements']) != {f'CNT-ENUM-0{index}' for index in range(1, 8)}:
         errors.append('Missing or extra content pilot requirement IDs')
-    for requirement, entry in contract['requirements'].items():
-        hooks = re.findall(r'(tests/[a-zA-Z0-9_]+\.py)(?:::(test_[a-zA-Z0-9_]+))?', entry['test'])
-        if not hooks:
+    for requirement in contract['requirements']:
+        if not test_hooks.get(requirement):
             errors.append(f'{requirement} has no executable test hook')
-        for file, function in hooks:
+    for requirement, hooks in test_hooks.items():
+        if requirement.startswith('CNT-ENUM-') and requirement not in contract['requirements']:
+            errors.append(f'Unknown content requirement in implementation mapping: {requirement}')
+        if not isinstance(hooks, list) or not hooks:
+            errors.append(f'{requirement} must map to a nonempty list of test hooks')
+            continue
+        for hook in hooks:
+            match = re.fullmatch(r'(tests/[a-zA-Z0-9_]+\.py)(?:::(test_[a-zA-Z0-9_]+))?', hook) if isinstance(hook, str) else None
+            if match is None:
+                errors.append(f'{requirement}: invalid test hook {hook!r}')
+                continue
+            file, function = match.groups()
             target = root / file
             if not target.is_file():
                 errors.append(f'{requirement}: missing test module {file}')

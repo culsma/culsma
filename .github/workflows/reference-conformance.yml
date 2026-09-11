@@ -1,0 +1,43 @@
+name: Reference Conformance
+
+on:
+  workflow_dispatch:
+    inputs:
+      reference_ref:
+        description: 'Reference revision to check against this implementation branch'
+        default: 'main'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  content-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out implementation
+        uses: actions/checkout@v4
+        with:
+          path: implementation
+          persist-credentials: false
+      - name: Check out reference
+        uses: actions/checkout@v4
+        with:
+          repository: culsma/culsma-reference
+          ref: ${{ inputs.reference_ref }}
+          path: reference
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install implementation and test dependencies
+        working-directory: implementation
+        run: python -m pip install -e '.[dev]'
+      - name: Check implementation against selected reference
+        working-directory: implementation
+        run: python -m conformance.content_contract --reference-root ../reference --check
+      - name: Check content behavior and evidence mappings
+        working-directory: implementation
+        run: python -m pytest -q tests/test_content_reference_conformance.py tests/test_content_contract_checker.py tests/test_content_frontend_diagnostics.py

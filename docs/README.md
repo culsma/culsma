@@ -1,6 +1,6 @@
 # Culsma Docs Layout
 
-Last updated: 2026-06-18
+Last updated: 2026-09-11
 
 ## Purpose
 
@@ -10,6 +10,11 @@ the Culsma repository.
 It is not the language reference manual, a user manual, a release workspace, or
 a code-reading notebook. The public language reference is maintained in the
 companion `culsma-reference` repository/worktree.
+
+The reference defines language behavior and acceptance criteria independently of
+this implementation. Requirement-to-test mappings, derived reference snapshots,
+and conformance automation belong to this repository's `conformance/` and CI.
+The validation diagrams describe that dependency and its local check commands.
 
 ## Structure
 

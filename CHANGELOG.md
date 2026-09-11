@@ -8,7 +8,10 @@
   into a derived source snapshot with hashes and requirement-to-test hooks.
   Checks compare canonical pairs, fallbacks, selected legacy conversions and
   diagnostic ownership, plus volume/mass/count calculations and event replay.
-  Implementation CI checks the frozen snapshot; reference CI detects source drift.
+  Implementation CI checks the frozen snapshot; an implementation-owned manual
+  workflow checks a selected reference revision. Test mappings stay in the
+  implementation repository, while the reference defines independent acceptance
+  criteria.
   These development artifacts are not runtime dependencies.
 - Immutable `ContentClassification` values enforce actual enum families and
   valid kind/type pairs at construction. Semantic checks, cell-count checks,

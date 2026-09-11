@@ -6,7 +6,7 @@ import json
 import pytest
 
 from conformance.content_contract import (
-    SNAPSHOT, SECTIONS, extract_section, implementation_errors, main,
+    SNAPSHOT, SECTIONS, TEST_HOOKS, extract_section, implementation_errors, main,
     project_contract, read_reference, snapshot_from_sections, table_rows, validate_snapshot,
 )
 
@@ -102,7 +102,34 @@ def test_requirement_hooks_are_executable_and_missing_hooks_fail():
     root=Path(__file__).resolve().parents[1]
     contract=deepcopy(SNAPSHOT_DATA['contract'])
     assert requirement_hook_errors(contract,root) == []
-    contract['requirements']['CNT-ENUM-01']['test']='tests/test_content_reference_conformance.py::test_missing'
-    assert requirement_hook_errors(contract,root)
-    contract['requirements']['CNT-ENUM-01']['test']='tests/absent.py'
-    assert requirement_hook_errors(contract,root)
+    hooks=json.loads(TEST_HOOKS.read_text())
+    hooks['CNT-ENUM-01']=['tests/test_content_reference_conformance.py::test_missing']
+    assert requirement_hook_errors(contract,root,hooks)
+    hooks['CNT-ENUM-01']=['tests/absent.py']
+    assert requirement_hook_errors(contract,root,hooks)
+
+
+@pytest.mark.parametrize('mutation', ['missing', 'extra', 'empty', 'malformed'])
+def test_independent_evidence_mapping_rejects_invalid_hooks(mutation):
+    from pathlib import Path
+    from conformance.content_contract import requirement_hook_errors
+    hooks=json.loads(TEST_HOOKS.read_text())
+    if mutation == 'missing':
+        del hooks['CNT-ENUM-01']
+    elif mutation == 'extra':
+        hooks['CNT-ENUM-08']=hooks['CNT-ENUM-01']
+    elif mutation == 'empty':
+        hooks['CNT-ENUM-01']=[]
+    else:
+        hooks['CNT-ENUM-01']=['../../external.py']
+    assert requirement_hook_errors(SNAPSHOT_DATA['contract'],Path(__file__).resolve().parents[1],hooks)
+
+
+def test_reference_requirements_are_readable_without_test_paths():
+    sections=source_sections()
+    assert 'tests/' not in sections['mapping']
+    assert 'Span' not in sections['mapping']
+    assert 'implementation baseline' not in sections['mapping']
+    requirements=project_contract(sections)['requirements']
+    assert all(entry['owner'] and entry['coverage'] for entry in requirements.values())
+    assert all('test' not in entry for entry in requirements.values())

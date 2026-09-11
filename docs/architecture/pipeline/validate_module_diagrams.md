@@ -4,48 +4,43 @@
 
 ```mermaid
 flowchart TB
-    subgraph Current["当前分支 codex/content-enum-resolution · 第一阶段、2A–2C 与 2D 内容试点已实现"]
-        Source["旧裸 token / 字符串<br/>ContentKind.FORMULATION / ContentType.MEDIUM"] --> Frontend["Parser / Compile"]
-        Frontend --> Resolver["2A ContentArgumentScope / Resolver<br/>成员、别名、默认值、命名空间遮蔽"]
-        Resolver --> Validate["Semantic / Typecheck<br/>成员、枚举族、配对与 cells 约束"]
-        Validate --> Audit["本次修整 · 已实现<br/>嵌套 content 复用通用参数名检查<br/>SEM_UNKNOWN_ARG / SEM_DUPLICATE_ARG<br/>同一 Span 来源去重；不同来源保留"]
-        Audit --> Flow["2C：控制流中的值失效处理<br/>DeferredContentEnum 保留枚举族<br/>分支内类型检查；运行时别名取值快照"]
-        Flow --> Serialize["本次 2C：PlanExpressionSerializer<br/>ContentEnum：enum + member<br/>参数绑定后仍保留枚举身份"]
-        Serialize --> Bound["本次 2C：validate_bound_content_plan<br/>静态最终参数复核，含循环体"]
-        Bound -->|非法| PlanReject["PLAN_CONTENT_CLASSIFICATION_INVALID<br/>PLAN_CONTAINER_KIND_INVALID<br/>不产生可执行计划"]
-        Bound -->|合法或动态待定| Execute["本次 2C：RuntimeValueResolver<br/>枚举求值、赋值、动态引用解析"]
-        Execute --> Boundary["本次 2C：content_boundary.py<br/>最终 kind / type 与容器类型复核"]
-        Boundary -->|旧文本| Legacy["compat/content_taxonomy.py<br/>旧别名 / fallback / 原分类元数据<br/>历史通用 container token 独立保留"]
-        Boundary -->|显式枚举| Strict["准确枚举族与配对<br/>不允许 compat fallback 修正"]
-        Legacy --> Classification["2B ContentClassification<br/>真实且不可变的枚举成员<br/>仅合法分类可创建"]
-        Strict --> Classification
-        Boundary -->|非法| RuntimeReject["MAT_CONTENT_CLASSIFICATION_INVALID<br/>MAT_CONTAINER_KIND_INVALID / MAT_INVALID_CAPACITY<br/>在物料写入前拒绝"]
-        Classification --> Store["Runtime registry<br/>kind / type 显式转回既有字符串<br/>保留 attrs 与原始分类元数据"]
-        Store --> Science["本次 2C：科学模型分类<br/>ComponentSnapshot.classification<br/>ClassificationRule 使用共享枚举"]
-        Note["本次解除 2A 临时执行拦截<br/>PLAN_CONTENT_ENUM_EXECUTION_UNSUPPORTED 已移除<br/>直接成员、别名、参数、分支、循环、cells 与 JSON 往返已测试"]
+    subgraph Pipeline["内容校验与执行"]
+        Source["源码：裸 token、字符串、显式枚举"] --> Frontend["Parser / Frontend / Compile<br/>展开时保留原始 Span 来源"]
+        Frontend --> Names["OperationContractValidator<br/>通用调用与嵌套 content 共用参数名检查<br/>允许参数来自 BUILTIN_OPERATION_SPECS"]
+        Names --> Resolver["ContentArgumentScope / Resolver<br/>成员、别名、默认值、遮蔽与赋值快照"]
+        Resolver --> Checks["Semantic / Typecheck<br/>枚举族、成员、kind/type 配对、cells<br/>控制流改变值后保留类型并延迟最终值判断"]
+        Checks --> Diagnostics["deduplicate_diagnostics<br/>共享 Span 对象确认同一源码来源<br/>不同来源、消息或严重度分别保留"]
+        Diagnostics --> Gate{"校验通过？"}
+        Gate -->|否| Reject["阻止执行<br/>未知参数 / 重复参数 / 分类错误"]
+        Gate -->|是| Plan["PlanExpressionSerializer<br/>ContentEnum 保存 enum + member<br/>绑定后的静态值由 validate_bound_content_plan 复核"]
+        Plan -->|非法| Reject
+        Plan -->|合法或动态待定| Values["RuntimeValueResolver<br/>枚举解码、动态取值与别名快照"]
+        Values --> Boundary["content_boundary.py<br/>物料写入前检查最终分类与容器 kind"]
+        Boundary -->|非法| RuntimeReject["MAT 诊断<br/>拒绝受影响的物料写入"]
+        Boundary -->|显式枚举| Shared["common/content_contracts.py<br/>真实枚举、只读配对表<br/>不可变 ContentClassification"]
+        Boundary -->|旧文本| History["compat/content_taxonomy.py<br/>别名、fallback、原分类及推断属性"]
+        History --> Shared
+        Shared --> Material["物料记录<br/>分类字段写入 canonical 字符串<br/>保留显式 attrs 和兼容元数据"]
+        Material --> Science["科学模型<br/>ComponentSnapshot 提升分类<br/>ClassificationRule 使用共享枚举"]
+        Resolver --> LegacySource["compat/content_syntax.py<br/>旧源码准入及兼容诊断"]
     end
-    subgraph Conformance["本次 2D 内容试点 · 已实现"]
-        Reference["Owning reference Markdown<br/>分类表、推荐角色、兼容案例、诊断表<br/>CNT-ENUM-01 至 07 → 测试入口"]
-        Reference --> Extract["conformance/content_contract.py<br/>直接提取章节；歧义或缺项报错"]
-        Extract --> Snapshot["content_reference.json · 派生快照<br/>内含原章节、来源路径与 SHA-256<br/>不能独立编辑；运行时不读取"]
-        Snapshot --> CheckCI["本次：代码 PR CI 对照实现<br/>枚举、配对、fallback、兼容案例与测试映射"]
-        Reference --> RefCI["本次：reference PR CI 检查源文档漂移<br/>支持选择协同实现分支"]
-        RefCI --> Snapshot
-        CheckCI --> Evidence["本次补充：实际文件入口与事件回放<br/>99 个推荐 role 组合、6 种写法<br/>旧映射、未知参数、重复参数与跨文件诊断"]
-        PipelineFix["本次检查发现并修复<br/>已知错误枚举族不再因另一个参数延迟而漏过 Plan 检查"]
+    subgraph Conformance["实现仓库维护的符合性证据"]
+        Reference["独立 reference<br/>语言行为、诊断契约、Req ID 与验收标准"] --> Extract["conformance/content_contract.py<br/>提取拥有契约的章节"]
+        Extract --> Snapshot["content_reference.json<br/>派生契约、原章节、路径与 SHA-256"]
+        Hooks["test_hooks.json<br/>实现维护的 Req ID → 测试入口"] --> Checker["检查规范漂移、实现差异与失效测试映射"]
+        Snapshot --> Checker
+        Shared -.-> Checker
+        History -.-> Checker
+        Checker --> Evidence["源码入口、参数错误、推荐 role、旧值转换<br/>数量计算、序列化与事件回放"]
+        CodeCI["实现 PR CI：固定快照<br/>实现仓库手动工作流：指定 reference revision"] --> Checker
     end
-    Science -.->|被检查，不读取规范文件| CheckCI
-    Evidence -.-> Next["后续扩展 · 待实现<br/>其它 operation / program 参数表<br/>单位与维度；更多诊断和 runtime 表<br/>role 保持现有推荐词汇与开放扩展"]
-    Next -.-> Major["后续大版本<br/>旧源码准入统一退役<br/>历史数据转换独立决定退役时间"]
-    Legend["图例<br/>绿色：已实现，本次 2D 在独立区标注<br/>橙色虚线：后续扩展；CI 已配置，远程运行待推送<br/>灰色：错误出口 / 更晚事项"]
-    classDef current fill:#dcfce7,stroke:#15803d,color:#14532d,stroke-width:2px;
-    classDef next fill:#ffedd5,stroke:#c2410c,color:#7c2d12,stroke-dasharray:5 5;
-    classDef limit fill:#f3f4f6,stroke:#6b7280,color:#374151;
-    class Source,Frontend,Resolver,Validate,Flow,Serialize,Bound,Execute,Boundary,Legacy,Strict,Classification,Store,Science,Note current;
-    class Reference,Extract,Snapshot,CheckCI,RefCI,Evidence,PipelineFix current;
-    class Audit current;
-    class Next next;
-    class PlanReject,RuntimeReject,Major limit;
+    note["源码兼容与历史记录转换分别维护<br/>reference 不读取实现代码；runtime 不读取 reference<br/>当前机械对照覆盖内容契约，不代表全部规范表已覆盖"]
+    classDef stage fill:#dcfce7,stroke:#15803d,color:#14532d;
+    classDef evidence fill:#dbeafe,stroke:#2563eb,color:#1e3a8a;
+    classDef stop fill:#f3f4f6,stroke:#6b7280,color:#374151;
+    class Source,Frontend,Names,Resolver,Checks,Diagnostics,Plan,Values,Boundary,Shared,History,Material,Science,LegacySource stage;
+    class Reference,Extract,Snapshot,Hooks,Checker,Evidence,CodeCI evidence;
+    class Reject,RuntimeReject,note stop;
 ```
 
 ## 时序图
@@ -53,73 +48,45 @@ flowchart TB
 ```mermaid
 sequenceDiagram
     actor Author as 协议作者
-    participant Check as Validate / Typecheck
-    participant Plan as Plan / 参数绑定
-    participant Values as RuntimeValueResolver
-    participant Boundary as content_boundary.py
-    participant Legacy as compat 模块
-    participant Shared as common/content_contracts.py
+    participant Frontend as Frontend / Compile
+    participant Validate as Semantic / Typecheck
+    participant Shared as 共享分类契约
+    participant Plan as Plan
+    participant Runtime as Runtime
+    participant Compat as 历史分类适配
     participant Material as 物料状态
-    participant Science as 科学模型分类
-    participant Reference as Reference Markdown
-    participant Conformance as Content conformance checker
-    participant CI as PR CI
 
-    rect rgb(220, 252, 231)
-        Author->>Check: 直接枚举、别名、参数或旧文本
-        Check->>Check: 本次：嵌套 content 复用 validate_argument_names
-        Note over Author, Check: 顶层 role / 未知参数 / 重复参数 → SEM 错误，阻止执行
-        Check->>Shared: 2A–2B：成员 / 枚举族 / 静态配对校验
-        Shared-->>Check: ContentClassification / 诊断
-        Check->>Check: 本次：deduplicate_diagnostics 按共享源码 Span 身份去重
-        Note over Author, Check: 不同来源、不同绑定值的诊断分别保留
-        Note over Check, Plan: 本次 2C：分支/循环修改值后保留类型，延迟最终值判断
-        Check->>Plan: 校验通过的 IR
-        Plan->>Plan: 参数绑定；枚举序列化为 enum + member
-        Plan->>Boundary: validate_bound_content_plan：复核静态最终值
-        Boundary->>Shared: resolve_bound_content_classification / container kind
-        Shared-->>Boundary: 有效分类 / 失败
-        alt 静态绑定非法
-            Boundary-->>Author: PLAN_CONTENT_CLASSIFICATION_INVALID / PLAN_CONTAINER_KIND_INVALID
-        else 静态合法或需运行时求值
-            Plan->>Values: 执行计划；临时枚举拦截已解除
-            Values->>Values: 解码真实枚举、保存赋值快照、求最终参数
-            Values->>Boundary: 物料操作前再次验证最终输入
-            alt 仅旧文本
-                Boundary->>Legacy: normalize_content_classification
-                Legacy->>Shared: 合法转换结果提升为 ContentClassification
-                Shared-->>Legacy: 分类对象 / None
-                Legacy-->>Boundary: 分类及历史元数据
-            else 显式枚举
-                Boundary->>Shared: 严格枚举族与配对验证，无 fallback
-                Shared-->>Boundary: 分类对象 / 失败
+    Author->>Frontend: 源码及显式入口调用
+    Frontend->>Frontend: 展开调用，保留原始 Span
+    Frontend->>Validate: IR 与作用域分析
+    Validate->>Validate: 通用参数名检查覆盖嵌套 content
+    Validate->>Shared: 解析绑定，检查成员、枚举族与配对
+    Shared-->>Validate: 分类结果或诊断
+    Validate->>Validate: 同一来源的相同诊断只保留一次
+    alt 静态校验失败
+        Validate-->>Author: SEM / TYPE 诊断，阻止执行
+    else 静态校验通过
+        Validate->>Plan: 已校验 IR
+        Plan->>Plan: 参数绑定，序列化枚举族与成员
+        Plan->>Shared: 复核已知最终值
+        alt 绑定值非法
+            Plan-->>Author: PLAN 诊断，阻止执行
+        else 已知值合法或需动态求值
+            Plan->>Runtime: 可执行计划
+            Runtime->>Runtime: 解码枚举，求动态值与别名快照
+            alt 旧文本分类
+                Runtime->>Compat: 规范化并保留原分类及推断属性
+                Compat->>Shared: 检查规范化后的分类
+            else 显式枚举分类
+                Runtime->>Shared: 检查精确枚举族与配对
             end
-            alt 最终值非法
-                Boundary-->>Author: MAT_CONTENT_CLASSIFICATION_INVALID / 容器诊断
-                Note over Boundary, Material: 不修改 content registry 或无效容器分类
-            else 最终值合法
-                Boundary->>Material: 成员 value 写入原有字符串字段
-                Material->>Science: ComponentSnapshot
-                Science->>Shared: classification 提升为枚举分类
-                Shared-->>Science: 有效分类 / 未知历史值
-                Science->>Science: 枚举规则匹配，未知历史值保留 unknown 行为
+            alt 最终分类非法
+                Runtime-->>Author: MAT 诊断，拒绝受影响的写入
+            else 最终分类合法
+                Runtime->>Material: 写入 canonical 文本分类和属性
+                Note over Runtime, Material: 显式 attrs 优先；role 可省略或自定义
             end
         end
-    end
-    rect rgb(220, 252, 231)
-        Note over Reference, CI: 本次 2D 内容试点已实现；远程 CI 待两侧分支推送后运行
-        Reference->>Conformance: 提取拥有语义的章节与 Req ID → Test ID
-        Conformance->>Conformance: 保存原文、SHA-256 和派生 JSON 快照
-        CI->>Conformance: 代码 PR：检查固定快照与实现
-        CI->>Conformance: Reference PR：检查新原文与实现快照
-        Conformance->>Shared: 对照枚举、完整配对与 fallback
-        Conformance->>Legacy: 对照规范中的兼容案例与元数据
-        Conformance->>Check: 真实错误用例核对阶段及严重度
-        Conformance->>Material: 体积、质量、cells 计算及事件回放
-        Conformance-->>CI: 任何漂移或失效测试映射导致失败
-    end
-    rect rgb(255, 237, 213)
-        Note over Reference, CI: 后续扩展其它规范表<br/>role 推荐值已逐项验证；attrs.role 开放、code / name 保持字符串
     end
 ```
 
@@ -133,19 +100,33 @@ classDiagram
     }
     class ConstructorValidator {
         +validate_define_content_call(call)
+        +validate_alloc_container_call(call)
     }
+    class SemanticValidator["validate/validator.py"]
     class SemanticValidator {
+        +validate(ir, analysis)
         +deduplicate_diagnostics(diagnostics)
     }
-    ConstructorValidator ..> OperationContractValidator : 本次：复用现有允许参数表
+    class BuiltinOperationSpecs["operation_specs.py"]
+    ConstructorValidator ..> OperationContractValidator : 参数名检查
+    OperationContractValidator ..> BuiltinOperationSpecs : 允许参数
     SemanticValidator ..> ConstructorValidator
-    note for SemanticValidator "本次：同一源码 Span 对象标识展开来源<br/>不同文件相同坐标不合并；无来源时保守保留"
+    note for SemanticValidator "Span 对象身份确认共享来源<br/>坐标相同不代表同源；缺少来源时保守保留"
+
+    class ContentArgumentResolver
+    class ContentArgumentScope
+    class DeferredContentEnum {
+        +enum_type
+    }
+    ContentArgumentResolver ..> ContentArgumentScope
+    ContentArgumentResolver ..> DeferredContentEnum : 控制流后保留枚举族
+    ConstructorValidator ..> ContentArgumentResolver
     class SharedContentContracts["common/content_contracts.py"]
     class SharedContentContracts {
         +parse_content_classification(kind, type)
         +serialize_content_enum(value)
         +parse_serialized_content_enum(payload)
-        +STANDARD_CONTENT_TYPES_BY_KIND_ENUM : readonly
+        +STANDARD_CONTENT_TYPES_BY_KIND_ENUM
     }
     class ContentKind {
         <<enumeration>>
@@ -162,24 +143,13 @@ classDiagram
         +validate()
         +to_dict()
     }
-    SharedContentContracts ..> ContentKind
-    SharedContentContracts ..> ContentType
-    SharedContentContracts ..> ContainerKind
-    SharedContentContracts ..> ContentClassification : 严格创建
     ContentClassification --> ContentKind
     ContentClassification --> ContentType
-    class ContentArgumentResolver
-    class DeferredContentEnum {
-        +enum_type
-    }
-    ContentArgumentResolver ..> DeferredContentEnum : 本次：保留控制流后的枚举族
+    SharedContentContracts ..> ContentClassification
+    SharedContentContracts ..> ContainerKind
+    ContentArgumentResolver ..> SharedContentContracts
+
     class PlanExpressionSerializer
-    PlanExpressionSerializer ..> SharedContentContracts : 本次：枚举身份序列化
-    class BoundContentPlanValidator["plan/content_enums.py"]
-    class BoundContentPlanValidator {
-        +validate_bound_content_plan(plan)
-        +validate_bound_content_step(step)
-    }
     class ContentBoundary["pipeline/content_boundary.py"]
     class ContentBoundary {
         +read_bound_content_token(value, expected_enum)
@@ -187,10 +157,9 @@ classDiagram
         +resolve_bound_container_kind(value)
         +resolve_runtime_container_kind(value)
     }
-    class BoundContentClassification {
-        +classification : ContentClassification
-        +normalization : NormalizedContentClassification or None
-    }
+    class BoundContentPlanValidator["plan/content_enums.py"]
+    class RuntimeContent["runtime/material/container_content.py"]
+    class LegacyContentTaxonomy["compat/content_taxonomy.py"]
     class NormalizedContentClassification {
         +kind : str
         +type : str
@@ -199,85 +168,35 @@ classDiagram
         +original_type
         +classification : ContentClassification or None
     }
-    class LegacyContentTaxonomy["compat/content_taxonomy.py"]
-    BoundContentPlanValidator ..> ContentBoundary : 本次：绑定后复核
+    PlanExpressionSerializer ..> SharedContentContracts : 序列化枚举身份
+    BoundContentPlanValidator ..> ContentBoundary
+    RuntimeContent ..> ContentBoundary
     ContentBoundary ..> SharedContentContracts
     ContentBoundary ..> LegacyContentTaxonomy : 仅旧输入
-    ContentBoundary ..> BoundContentClassification : 返回
-    BoundContentClassification --> ContentClassification
-    BoundContentClassification --> NormalizedContentClassification
     LegacyContentTaxonomy ..> NormalizedContentClassification
-    class RuntimeValueResolver
-    RuntimeValueResolver ..> SharedContentContracts : 本次：求值与序列化
-    class RuntimeContent["runtime/material/container_content.py"]
-    RuntimeContent ..> ContentBoundary : 本次：物料写入前复核
-    class ComponentSnapshot {
-        +canonical_kind : str
-        +canonical_type : str
-        +classification : ContentClassification or None
-    }
-    class ClassificationRule {
-        +canonical_kind : ContentKind or None
-        +canonical_types : ContentType set or None
-        +matches_classification(classification)
-    }
-    ComponentSnapshot ..> SharedContentContracts : 本次：消费者边界提升
-    ClassificationRule ..> ContentClassification : 本次：枚举身份匹配
+    NormalizedContentClassification ..> ContentClassification : 合法分类提升
+
     class ContentReferenceChecker["conformance/content_contract.py"]
     class ContentReferenceChecker {
         +read_reference(root)
         +validate_snapshot(snapshot)
         +implementation_errors(contract)
         +requirement_hook_errors(contract, root)
-        +main(argv)
     }
-    class EnumConformanceTests {
-        +test_reference_taxonomy_matches_implementation()
-        +test_reference_diagnostic_ownership()
-        +test_enum_text_calculation_and_event_replay()
-        +test_reference_pair_matrix_enforced_by_frontend()
-        +test_all_recommended_roles_from_file_entry()
-        +test_file_entry_enforces_nested_content_argument_contract()
-    }
-    class ReferenceMarkdown
-    class DerivedReferenceSnapshot {
-        +sources : markdown and sha256
-        +contract : generated data
-    }
-    class ContentConformanceCI
-    ReferenceMarkdown ..> ContentReferenceChecker : 本次：规范来源
-    ContentReferenceChecker ..> DerivedReferenceSnapshot : 本次：生成与校验
-    ContentConformanceCI ..> ContentReferenceChecker : 本次：两端 PR 检查
-    ContentConformanceCI ..> EnumConformanceTests
-    class BroaderConformance {
-        <<planned>>
-        +operation_and_program_tables()
-        +units_and_remaining_diagnostics()
-    }
-    EnumConformanceTests ..> SharedContentContracts
-    EnumConformanceTests ..> RuntimeContent
-    EnumConformanceTests ..> ClassificationRule
-    note for ContentBoundary "本次 2C：计划与运行时共用公开边界函数<br/>test_content_enum_execution.py 验收<br/>非法最终值在物料写入前拒绝"
-    note for BoundContentPlanValidator "原 2A 临时 guard 已移除<br/>本次改为最终绑定值校验，不再禁止合法枚举执行"
-    note for NormalizedContentClassification "历史字符串、attrs 与原分类元数据继续保留<br/>旧源码准入退役不影响独立历史适配"
-    note for EnumConformanceTests "本次 2D：内容试点与差异检测已完成<br/>本地直接对照 reference，包含事件回放<br/>绿色已实现；橙色为更广泛规范表扩展"
-    style SharedContentContracts fill:#dcfce7,stroke:#15803d,color:#14532d
-    style OperationContractValidator fill:#dcfce7,stroke:#15803d,color:#14532d
-    style ConstructorValidator fill:#dcfce7,stroke:#15803d,color:#14532d
-    style SemanticValidator fill:#dcfce7,stroke:#15803d,color:#14532d
-    style ContentClassification fill:#dcfce7,stroke:#15803d,color:#14532d
-    style DeferredContentEnum fill:#dcfce7,stroke:#15803d,color:#14532d
-    style PlanExpressionSerializer fill:#dcfce7,stroke:#15803d,color:#14532d
-    style BoundContentPlanValidator fill:#dcfce7,stroke:#15803d,color:#14532d
-    style ContentBoundary fill:#dcfce7,stroke:#15803d,color:#14532d
-    style BoundContentClassification fill:#dcfce7,stroke:#15803d,color:#14532d
-    style RuntimeValueResolver fill:#dcfce7,stroke:#15803d,color:#14532d
-    style RuntimeContent fill:#dcfce7,stroke:#15803d,color:#14532d
-    style ComponentSnapshot fill:#dcfce7,stroke:#15803d,color:#14532d
-    style ClassificationRule fill:#dcfce7,stroke:#15803d,color:#14532d
-    style EnumConformanceTests fill:#dcfce7,stroke:#15803d,color:#14532d
-    style ContentReferenceChecker fill:#dcfce7,stroke:#15803d,color:#14532d
-    style ContentConformanceCI fill:#dcfce7,stroke:#15803d,color:#14532d
-    style DerivedReferenceSnapshot fill:#dcfce7,stroke:#15803d,color:#14532d
-    style BroaderConformance fill:#ffedd5,stroke:#c2410c,color:#7c2d12,stroke-dasharray:5 5
+    class ReferenceRequirements["独立规范要求"]
+    class ImplementationTestHooks["conformance/test_hooks.json"]
+    class DerivedReferenceSnapshot["conformance/content_reference.json"]
+    ContentReferenceChecker ..> ReferenceRequirements : 单向读取
+    ContentReferenceChecker ..> DerivedReferenceSnapshot : 生成与核对
+    ContentReferenceChecker ..> ImplementationTestHooks : 核对本仓库测试入口
+    ContentReferenceChecker ..> SharedContentContracts : 验证符合性
+    note for ContentReferenceChecker "工具和测试映射属于实现仓库<br/>不改变 reference 的语义权威或独立发布边界"
 ```
+
+符合性工具与测试映射位于实现仓库的 `conformance/`。`test_hooks.json` 保存本实现的测试入口，reference 只提供要求和验收标准。
+
+| 检查入口 | 用途 |
+|---|---|
+| `python -m conformance.content_contract --check` | 对照固定规范快照、实现及测试映射；实现 PR CI 使用此入口 |
+| `python -m conformance.content_contract --reference-root ../culsma-reference --check` | 对照选定 reference 工作树；实现仓库的 Reference Conformance 手动工作流支持指定 revision |
+| `python -m conformance.content_contract --reference-root ../culsma-reference --write` | 从已审阅规范重新生成派生快照；随后运行相应行为测试 |

@@ -1,0 +1,62 @@
+{
+  "CNT-ENUM-01": [
+    "tests/test_content_reference_conformance.py::test_reference_taxonomy_matches_implementation",
+    "tests/test_content_reference_conformance.py::test_reference_pair_matrix_enforced_by_frontend",
+    "tests/test_content_reference_conformance.py::test_reference_per_kind_fallback"
+  ],
+  "CNT-ENUM-02": [
+    "tests/test_content_enum_execution.py",
+    "tests/test_content_enum_resolution.py"
+  ],
+  "CNT-ENUM-03": [
+    "tests/test_content_reference_conformance.py::test_reference_legacy_examples",
+    "tests/test_content_reference_conformance.py::test_reference_legacy_examples_from_file_entry",
+    "tests/test_content_reference_conformance.py::test_role_is_optional_open_and_overrides_legacy_inference_from_file"
+  ],
+  "CNT-ENUM-04": [
+    "tests/test_content_reference_conformance.py::test_open_metadata_survives_execution_and_replay",
+    "tests/test_content_reference_conformance.py::test_all_recommended_roles_from_file_entry",
+    "tests/test_content_reference_conformance.py::test_role_is_optional_open_and_overrides_legacy_inference_from_file",
+    "tests/test_content_reference_conformance.py::test_file_entry_rejects_role_outside_attrs",
+    "tests/test_content_reference_conformance.py::test_file_entry_enforces_nested_content_argument_contract",
+    "tests/test_content_frontend_diagnostics.py"
+  ],
+  "CNT-ENUM-05": [
+    "tests/test_content_reference_conformance.py::test_reference_diagnostic_ownership",
+    "tests/test_content_reference_conformance.py::test_file_entry_enforces_nested_content_argument_contract",
+    "tests/test_content_reference_conformance.py::test_file_entry_rejects_invalid_classification_before_execution",
+    "tests/test_content_frontend_diagnostics.py"
+  ],
+  "CNT-ENUM-06": [
+    "tests/test_content_reference_conformance.py::test_enum_text_calculation_and_event_replay"
+  ],
+  "CNT-ENUM-07": [
+    "tests/test_content_reference_conformance.py::test_reference_snapshot_is_self_consistent",
+    "tests/test_content_contract_checker.py"
+  ],
+  "DISRUPT-METHOD-01": [
+    "tests/test_kernel_validate.py::test_validate_disrupt_program_accepts_current_optional_args",
+    "tests/test_kernel_validate.py::test_validate_disrupt_program_accepts_device_independent_methods",
+    "tests/test_kernel_validate.py::test_validate_disrupt_program_rejects_unknown_method"
+  ],
+  "DISRUPT-METHOD-02": [
+    "tests/test_kernel_validate.py::test_validate_disrupt_program_rejects_device_binding"
+  ],
+  "FIELD-CONTROL-01": [
+    "tests/test_kernel_validate.py::test_validate_field_program_accepts_one_electrical_control_mode",
+    "tests/test_kernel_validate.py::test_validate_field_program_requires_an_electrical_control_mode",
+    "tests/test_kernel_validate.py::test_validate_field_program_rejects_conflicting_control_modes"
+  ],
+  "FIELD-CONTROL-02": [
+    "tests/test_kernel_validate.py::test_validate_field_program_field_alias_warns",
+    "tests/test_kernel_plan.py::test_plan_canonicalizes_field_program_control_args",
+    "tests/test_kernel_plan.py::test_plan_canonicalizes_let_bound_field_program_alias"
+  ],
+  "FIELD-CONTROL-03": [
+    "tests/test_kernel_typecheck.py::test_typecheck_field_program_accepts_typed_electrical_control_modes",
+    "tests/test_kernel_typecheck.py::test_typecheck_field_program_rejects_wrong_control_dimensions"
+  ],
+  "FIELD-CONTROL-04": [
+    "tests/test_kernel_plan.py::test_plan_let_bound_electrophoresis_stdlib_has_no_legacy_electrophoresis_step"
+  ]
+}
