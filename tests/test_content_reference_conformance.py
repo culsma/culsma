@@ -6,6 +6,7 @@ import pytest
 
 from conformance.content_contract import SNAPSHOT, PILOT_DIAGNOSTICS, implementation_errors, validate_snapshot
 from culsma.common.content_contracts import ContentKind, ContentType, STANDARD_CONTENT_TYPES_BY_KIND_ENUM
+from culsma.cli import execute_pipeline
 from culsma.driver.stub import StubDriver
 from culsma.frontend.resolver import resolve_program
 from culsma.parser import parse
@@ -174,3 +175,114 @@ def test_reference_pair_matrix_enforced_by_frontend(kind):
             semantic, typed, _ = compile_source(source)
             assert typed.ok
             assert [d.code for d in semantic.diagnostics] == ([] if valid else ['SEM_INVALID_CONTENT_TYPE_VALUE']), (kind,content_type,explicit)
+
+
+def execute_source_file(tmp_path, source):
+    """Use the same file loading, entry resolution and validation gates as CLI run."""
+    entry = tmp_path / 'content_contract.culs'
+    entry.write_text(source, encoding='utf-8')
+    return execute_pipeline([entry])
+
+
+def assert_file_run_and_replay(bundle):
+    assert bundle['output']['ok'], {
+        stage: bundle[stage] for stage in ('validate', 'typecheck', 'summary')
+    }
+    events = json.loads(json.dumps(bundle['run']['events']))
+    replayed = replay_events(events)
+    material = bundle['run']['state']['artifacts']['material_state']
+    assert replayed.artifacts['material_state'] == material
+    assert replayed.step_status == bundle['run']['state']['step_status']
+    return material['content_registry']
+
+
+@pytest.mark.parametrize('form', ['bare', 'quoted', 'enum'])
+@pytest.mark.parametrize('quoted_role', [False, True], ids=['bare-role', 'quoted-role'])
+def test_all_recommended_roles_from_file_entry(tmp_path, form, quoted_role):
+    declarations, expected = [], {}
+    for pair, roles in CONTRACT['recommended_roles'].items():
+        kind, content_type = pair.split('/')
+        kind_expr = {'bare': kind, 'quoted': json.dumps(kind), 'enum': f'ContentKind.{kind.upper()}'}[form]
+        type_expr = {'bare': content_type, 'quoted': json.dumps(content_type), 'enum': f'ContentType.{content_type.upper()}'}[form]
+        for role in roles:
+            code = f'M{len(expected)}'
+            role_expr = json.dumps(role) if quoted_role else role
+            declarations.append(f'let v{len(expected)}=tube(load=[content(kind={kind_expr},'
+                                f'type={type_expr},code="{code}",attrs={{role:{role_expr}}}):1uL]);')
+            expected[code] = (kind, content_type, role)
+    assert expected
+    bundle = execute_source_file(tmp_path, 'protocol T {\n' + '\n'.join(declarations) + '\n}\nT();')
+    assert bundle['validate'] == bundle['typecheck'] == bundle['plan']['diagnostics'] == []
+    registry = assert_file_run_and_replay(bundle)
+    assert set(registry) == set(expected)
+    for code, (kind, content_type, role) in expected.items():
+        assert registry[code]['content_kind'] == kind
+        assert registry[code]['content_type'] == content_type
+        assert registry[code]['content_attrs'] == {'role': role}
+
+
+@pytest.mark.parametrize('case', CONTRACT['legacy_cases'], ids=lambda case: '/'.join(case['input']))
+@pytest.mark.parametrize('quoted', [False, True], ids=['bare', 'quoted'])
+def test_reference_legacy_examples_from_file_entry(tmp_path, case, quoted):
+    kind, content_type = [json.dumps(value) if quoted else value for value in case['input']]
+    bundle = execute_source_file(tmp_path, f'''protocol T {{
+      let x=tube(load=[content(kind={kind},type={content_type},code="M"):1uL]);
+    }} T();''')
+    content = assert_file_run_and_replay(bundle)['M']
+    assert [content['content_kind'], content['content_type']] == case['output']
+    assert [content['content_original_kind'], content['content_original_type']] == case['input']
+    assert content.get('content_attrs', {}) == case['attrs']
+    assert [(d['code'], d['severity']) for d in bundle['validate']] == [
+        ('SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED', 'warning')
+    ]
+
+
+@pytest.mark.parametrize('role', [None, 'lab_specific_role', 'culture'])
+def test_role_is_optional_open_and_overrides_legacy_inference_from_file(tmp_path, role):
+    attrs = '' if role is None else f',attrs={{role:"{role}",custom_key:"retained"}}'
+    bundle = execute_source_file(tmp_path, f'''protocol T {{
+      let x=tube(load=[content(kind=buffer,type=wash_buffer,code="M"{attrs}):1uL]);
+    }} T();''')
+    content = assert_file_run_and_replay(bundle)['M']
+    assert content['content_attrs'] == ({'role': 'wash'} if role is None else
+                                        {'role': role, 'custom_key': 'retained'})
+
+
+@pytest.mark.parametrize(('kind', 'content_type', 'stage', 'code'), [
+    ('formulaton', 'medium', 'validate', 'SEM_INVALID_CONTENT_KIND'),
+    ('ContentKind.FORMULATON', 'ContentType.MEDIUM', 'validate', 'SEM_CONTENT_ENUM_MEMBER_INVALID'),
+    ('ContentKind.CHEMICAL', 'ContentType.MEDIUM', 'validate', 'SEM_INVALID_CONTENT_TYPE_VALUE'),
+    ('chemical', 'ContentType.MEDIUM', 'validate', 'SEM_INVALID_CONTENT_TYPE_VALUE'),
+    ('ContentType.MEDIUM', 'ContentType.MEDIUM', 'typecheck', 'TYPE_CONTENT_ENUM_TYPE_MISMATCH'),
+    ('3', 'medium', 'typecheck', 'TYPE_CONTENT_KIND_NOT_TEXT'),
+])
+def test_file_entry_rejects_invalid_classification_before_execution(tmp_path, kind, content_type, stage, code):
+    bundle = execute_source_file(tmp_path, f'''protocol T {{
+      let x=tube(load=[content(kind={kind},type={content_type},code="M"):1uL]);
+    }} T();''')
+    assert not bundle['output']['ok']
+    assert code in [d['code'] for d in bundle[stage]]
+    assert bundle['run']['events'] == []
+    assert not bundle['run']['state']['artifacts']['material_state'].get('content_registry')
+
+
+def test_file_entry_rejects_role_outside_attrs(tmp_path):
+    bundle = execute_source_file(tmp_path, '''protocol T {
+      let x=tube(load=[content(kind=formulation,type=medium,code="M",role=culture):1uL]);
+    } T();''')
+    assert not bundle['output']['ok'], 'A top-level role argument must not be silently discarded'
+    assert bundle['run']['events'] == []
+
+
+@pytest.mark.parametrize(('args', 'code'), [
+    ('kind=formulation,type=medium,typo=1', 'SEM_UNKNOWN_ARG'),
+    ('kind=formulation,type=medium,type=buffer', 'SEM_DUPLICATE_ARG'),
+    ('kind=formulation,kind=chemical,type=medium', 'SEM_DUPLICATE_ARG'),
+])
+def test_file_entry_enforces_nested_content_argument_contract(tmp_path, args, code):
+    bundle = execute_source_file(tmp_path, f'''protocol T {{
+      let x=tube(load=[content({args},code="M"):1uL]);
+    }} T();''')
+    assert code in [d['code'] for d in bundle['validate']]
+    assert not bundle['output']['ok']
+    assert bundle['run']['events'] == []

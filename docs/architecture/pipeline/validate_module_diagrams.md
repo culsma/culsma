@@ -8,7 +8,8 @@ flowchart TB
         Source["旧裸 token / 字符串<br/>ContentKind.FORMULATION / ContentType.MEDIUM"] --> Frontend["Parser / Compile"]
         Frontend --> Resolver["2A ContentArgumentScope / Resolver<br/>成员、别名、默认值、命名空间遮蔽"]
         Resolver --> Validate["Semantic / Typecheck<br/>成员、枚举族、配对与 cells 约束"]
-        Validate --> Flow["本次 2C：控制流中的值失效处理<br/>DeferredContentEnum 保留枚举族<br/>分支内类型检查；运行时别名取值快照"]
+        Validate --> Audit["本次修整 · 已实现<br/>嵌套 content 复用通用参数名检查<br/>SEM_UNKNOWN_ARG / SEM_DUPLICATE_ARG<br/>同一 Span 来源去重；不同来源保留"]
+        Audit --> Flow["2C：控制流中的值失效处理<br/>DeferredContentEnum 保留枚举族<br/>分支内类型检查；运行时别名取值快照"]
         Flow --> Serialize["本次 2C：PlanExpressionSerializer<br/>ContentEnum：enum + member<br/>参数绑定后仍保留枚举身份"]
         Serialize --> Bound["本次 2C：validate_bound_content_plan<br/>静态最终参数复核，含循环体"]
         Bound -->|非法| PlanReject["PLAN_CONTENT_CLASSIFICATION_INVALID<br/>PLAN_CONTAINER_KIND_INVALID<br/>不产生可执行计划"]
@@ -30,11 +31,11 @@ flowchart TB
         Snapshot --> CheckCI["本次：代码 PR CI 对照实现<br/>枚举、配对、fallback、兼容案例与测试映射"]
         Reference --> RefCI["本次：reference PR CI 检查源文档漂移<br/>支持选择协同实现分支"]
         RefCI --> Snapshot
-        CheckCI --> Evidence["本次：真实行为及差异检测测试<br/>完整配对矩阵；15 个诊断归属<br/>3 种数量轴计算、JSON 与事件回放"]
+        CheckCI --> Evidence["本次补充：实际文件入口与事件回放<br/>99 个推荐 role 组合、6 种写法<br/>旧映射、未知参数、重复参数与跨文件诊断"]
         PipelineFix["本次检查发现并修复<br/>已知错误枚举族不再因另一个参数延迟而漏过 Plan 检查"]
     end
     Science -.->|被检查，不读取规范文件| CheckCI
-    Evidence -.-> Next["后续扩展 · 待实现<br/>其它 operation / program 参数表<br/>单位与维度；更多诊断和 runtime 表<br/>role 标准词汇及开放扩展另行推进"]
+    Evidence -.-> Next["后续扩展 · 待实现<br/>其它 operation / program 参数表<br/>单位与维度；更多诊断和 runtime 表<br/>role 保持现有推荐词汇与开放扩展"]
     Next -.-> Major["后续大版本<br/>旧源码准入统一退役<br/>历史数据转换独立决定退役时间"]
     Legend["图例<br/>绿色：已实现，本次 2D 在独立区标注<br/>橙色虚线：后续扩展；CI 已配置，远程运行待推送<br/>灰色：错误出口 / 更晚事项"]
     classDef current fill:#dcfce7,stroke:#15803d,color:#14532d,stroke-width:2px;
@@ -42,6 +43,7 @@ flowchart TB
     classDef limit fill:#f3f4f6,stroke:#6b7280,color:#374151;
     class Source,Frontend,Resolver,Validate,Flow,Serialize,Bound,Execute,Boundary,Legacy,Strict,Classification,Store,Science,Note current;
     class Reference,Extract,Snapshot,CheckCI,RefCI,Evidence,PipelineFix current;
+    class Audit current;
     class Next next;
     class PlanReject,RuntimeReject,Major limit;
 ```
@@ -65,8 +67,12 @@ sequenceDiagram
 
     rect rgb(220, 252, 231)
         Author->>Check: 直接枚举、别名、参数或旧文本
+        Check->>Check: 本次：嵌套 content 复用 validate_argument_names
+        Note over Author, Check: 顶层 role / 未知参数 / 重复参数 → SEM 错误，阻止执行
         Check->>Shared: 2A–2B：成员 / 枚举族 / 静态配对校验
         Shared-->>Check: ContentClassification / 诊断
+        Check->>Check: 本次：deduplicate_diagnostics 按共享源码 Span 身份去重
+        Note over Author, Check: 不同来源、不同绑定值的诊断分别保留
         Note over Check, Plan: 本次 2C：分支/循环修改值后保留类型，延迟最终值判断
         Check->>Plan: 校验通过的 IR
         Plan->>Plan: 参数绑定；枚举序列化为 enum + member
@@ -113,7 +119,7 @@ sequenceDiagram
         Conformance-->>CI: 任何漂移或失效测试映射导致失败
     end
     rect rgb(255, 237, 213)
-        Note over Reference, CI: 后续扩展其它规范表与 role 标准词汇<br/>本轮仍保留 attrs.role 开放、code / name 字符串契约
+        Note over Reference, CI: 后续扩展其它规范表<br/>role 推荐值已逐项验证；attrs.role 开放、code / name 保持字符串
     end
 ```
 
@@ -121,6 +127,19 @@ sequenceDiagram
 
 ```mermaid
 classDiagram
+    class OperationContractValidator {
+        +validate_argument_names(call, node_id, allowed_args)
+        +validate_call(call, node_id, operations)
+    }
+    class ConstructorValidator {
+        +validate_define_content_call(call)
+    }
+    class SemanticValidator {
+        +deduplicate_diagnostics(diagnostics)
+    }
+    ConstructorValidator ..> OperationContractValidator : 本次：复用现有允许参数表
+    SemanticValidator ..> ConstructorValidator
+    note for SemanticValidator "本次：同一源码 Span 对象标识展开来源<br/>不同文件相同坐标不合并；无来源时保守保留"
     class SharedContentContracts["common/content_contracts.py"]
     class SharedContentContracts {
         +parse_content_classification(kind, type)
@@ -217,6 +236,8 @@ classDiagram
         +test_reference_diagnostic_ownership()
         +test_enum_text_calculation_and_event_replay()
         +test_reference_pair_matrix_enforced_by_frontend()
+        +test_all_recommended_roles_from_file_entry()
+        +test_file_entry_enforces_nested_content_argument_contract()
     }
     class ReferenceMarkdown
     class DerivedReferenceSnapshot {
@@ -241,6 +262,9 @@ classDiagram
     note for NormalizedContentClassification "历史字符串、attrs 与原分类元数据继续保留<br/>旧源码准入退役不影响独立历史适配"
     note for EnumConformanceTests "本次 2D：内容试点与差异检测已完成<br/>本地直接对照 reference，包含事件回放<br/>绿色已实现；橙色为更广泛规范表扩展"
     style SharedContentContracts fill:#dcfce7,stroke:#15803d,color:#14532d
+    style OperationContractValidator fill:#dcfce7,stroke:#15803d,color:#14532d
+    style ConstructorValidator fill:#dcfce7,stroke:#15803d,color:#14532d
+    style SemanticValidator fill:#dcfce7,stroke:#15803d,color:#14532d
     style ContentClassification fill:#dcfce7,stroke:#15803d,color:#14532d
     style DeferredContentEnum fill:#dcfce7,stroke:#15803d,color:#14532d
     style PlanExpressionSerializer fill:#dcfce7,stroke:#15803d,color:#14532d

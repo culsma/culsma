@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Mapping
+from typing import AbstractSet, Mapping
 
 from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.ir_nodes import IRCall
@@ -31,13 +31,12 @@ class OperationContractValidator:
         node_id: str | None,
         operations: Mapping[str, OperationSpec],
     ) -> list[Diagnostic]:
-        required_args, allowed_args = _call_contract_for_name(call.name, operations=operations)
+        required_args, allowed_args = call_contract_for_name(call.name, operations=operations)
         if required_args is None or allowed_args is None:
             return []
 
         diagnostics: list[Diagnostic] = []
-        arg_names = [arg.name for arg in call.args]
-        arg_name_set = set(arg_names)
+        arg_name_set = {arg.name for arg in call.args}
 
         for missing in sorted(required_args - arg_name_set):
             diagnostics.append(
@@ -49,6 +48,21 @@ class OperationContractValidator:
                 )
             )
 
+        diagnostics.extend(OperationContractValidator.validate_argument_names(
+            call, node_id=node_id, allowed_args=allowed_args,
+        ))
+        return diagnostics
+
+    @staticmethod
+    def validate_argument_names(
+        call: IRCall,
+        *,
+        node_id: str | None,
+        allowed_args: AbstractSet[str],
+    ) -> list[Diagnostic]:
+        """Check names without changing a constructor's required-value diagnostics."""
+        diagnostics: list[Diagnostic] = []
+        arg_names = [arg.name for arg in call.args]
         for arg in call.args:
             if arg.name not in allowed_args:
                 diagnostics.append(
@@ -79,7 +93,7 @@ class OperationContractValidator:
         return diagnostics
 
 
-def _call_contract_for_name(
+def call_contract_for_name(
     name: str,
     *,
     operations: Mapping[str, OperationSpec],

@@ -27,6 +27,13 @@
 
 ### Fixed
 
+- Nested content constructors now reject unknown and duplicate argument names
+  through the shared call contract. A misplaced top-level `role` cannot be
+  silently discarded, and duplicate kind/type values cannot override validation.
+- Semantic diagnostics from repeated expansion of one source occurrence are
+  reported once. Equal coordinates in separate files and different bound-value
+  messages remain distinct. File-entry tests cover recommended roles, legacy
+  metadata preservation, rejected arguments and event replay.
 - Plan validation rejects an already-known wrong content enum family even when
   the other classification argument remains deferred.
 - Runtime content definition rejects missing, nontext, wrong-family, and

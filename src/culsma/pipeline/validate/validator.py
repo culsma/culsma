@@ -75,7 +75,7 @@ def validate(
         )
         validate_statement_list_with_context(protocol.statements, ctx)
 
-    return ValidationResult(ir=ir, diagnostics=_dedupe_diagnostics(diagnostics))
+    return ValidationResult(ir=ir, diagnostics=deduplicate_diagnostics(diagnostics))
 
 
 def validate_script_entry(
@@ -131,18 +131,28 @@ def literal_param_value(value: object) -> object | None:
     return None
 
 
-def _dedupe_diagnostics(diagnostics: list[Diagnostic]) -> list[Diagnostic]:
+def deduplicate_diagnostics(diagnostics: list[Diagnostic]) -> list[Diagnostic]:
+    """Collapse repeated visits to one source occurrence, not equal coordinates.
+
+    Expansion and compilation retain the original immutable Span object. Its
+    identity distinguishes source occurrences even across files with identical
+    text. Without a span, node identity is the conservative fallback.
+    """
     seen: set[tuple[object, ...]] = set()
     unique: list[Diagnostic] = []
     for diagnostic in diagnostics:
         span = diagnostic.span
-        span_key = None if span is None else (span.line, span.col, span.start, span.end)
+        if span is not None:
+            origin = ("span", id(span))
+        elif diagnostic.node_id is not None:
+            origin = ("node", diagnostic.node_id)
+        else:
+            origin = ("diagnostic", id(diagnostic))
         key = (
             diagnostic.code,
             diagnostic.message,
             diagnostic.severity,
-            diagnostic.node_id,
-            span_key,
+            origin,
         )
         if key in seen:
             continue

@@ -21,7 +21,9 @@ from culsma.pipeline.content_inputs import (
     content_enum_diagnostics,
 )
 from culsma.pipeline.ir_nodes import IRArg, IRCall, IRList, IRPair, IRStep
+from culsma.pipeline.operation_specs import BUILTIN_OPERATION_SPECS
 
+from .operations import OperationContractValidator
 from .resolution import ExprResolver
 
 
@@ -236,6 +238,13 @@ class ConstructorValidator:
         content_type_policy: str,
         scope: ContentArgumentScope | None = None,
     ) -> list[Diagnostic]:
+        diagnostics = OperationContractValidator.validate_argument_names(
+            call,
+            node_id=node_id,
+            allowed_args=BUILTIN_OPERATION_SPECS["DefineContent"].allowed_args,
+        )
+        if diagnostics:
+            return diagnostics
         step = IRStep(
             id=node_id or "<call>",
             name="DefineContent",
