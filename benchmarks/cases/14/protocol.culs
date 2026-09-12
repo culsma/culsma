@@ -1,0 +1,518 @@
+protocol BindCaptureAntibody(sample) returns (conjugation_split) {
+  let conjugation_split = sep(
+    sample = sample,
+    program = magnetic_program(duration = 2min),
+    component_fates = {
+      PROTEIN_G_MAGNETIC_BEADS: { bound: 100%, flowthrough: 0% },
+      ANTI_GFP_CAPTURE_ANTIBODY: { bound: 100%, flowthrough: 0% },
+      ANTIBODY_BINDING_WASH_BUFFER: { bound: 0%, flowthrough: 100% }
+    },
+    transitions = [
+      transition(
+        subject = sample.materials[1],
+        output = MagneticProgramOutput.BOUND,
+        to = MaterialRelation.BEAD_BOUND,
+        associated_with = sample.materials[0]
+      )
+    ]
+  );
+  return conjugation_split;
+}
+
+protocol CaptureTargetProtein(sample) returns (capture_split) {
+  let capture_split = sep(
+    sample = sample,
+    program = magnetic_program(duration = 2min),
+    component_fates = {
+      PROTEIN_G_MAGNETIC_BEADS: { bound: 100%, flowthrough: 0% },
+      ANTI_GFP_CAPTURE_ANTIBODY: { bound: 100%, flowthrough: 0% },
+      GFP_TARGET_PROTEIN: { bound: 100%, flowthrough: 0% },
+      LYSATE_BACKGROUND_PROTEINS: { bound: 0%, flowthrough: 100% },
+      IP_LYSIS_BUFFER: { bound: 0%, flowthrough: 100% },
+      ANTIBODY_BINDING_WASH_BUFFER: { bound: 0%, flowthrough: 100% }
+    },
+    transitions = [
+      transition(
+        subject = sample.materials[3],
+        output = MagneticProgramOutput.BOUND,
+        to = MaterialRelation.BEAD_BOUND,
+        associated_with = sample.materials[1]
+      )
+    ]
+  );
+  return capture_split;
+}
+
+protocol ReleaseDenaturingEluate(sample) returns (elution_split) {
+  let elution_split = sep(
+    sample = sample,
+    program = magnetic_program(duration = 2min),
+    component_fates = {
+      PROTEIN_G_MAGNETIC_BEADS: { bound: 100%, flowthrough: 0% },
+      ANTI_GFP_CAPTURE_ANTIBODY: { bound: 0%, flowthrough: 100% },
+      GFP_TARGET_PROTEIN: { bound: 0%, flowthrough: 100% },
+      DENATURING_ELUTION_BUFFER: { bound: 0%, flowthrough: 100% },
+      LDS_REDUCING_BUFFER_4X: { bound: 0%, flowthrough: 100% }
+    },
+    transitions = [
+      transition(
+        subject = sample.materials[1],
+        output = MagneticProgramOutput.FLOWTHROUGH,
+        to = MaterialRelation.FREE
+      ),
+      transition(
+        subject = sample.materials[2],
+        output = MagneticProgramOutput.FLOWTHROUGH,
+        to = MaterialRelation.FREE
+      )
+    ]
+  );
+  return elution_split;
+}
+
+protocol MagneticBeadImmunoprecipitationWithWesternBlotReadout returns (ip_blot_image) {
+  // Starting material and immunoprecipitation reagents.
+  // Source step S1: prepare the input fraction and antibody-conjugated beads.
+  let clarified_cell_lysate = tube(label = "ClarifiedCellLysate", capacity = 1.5mL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "GFP_TARGET_PROTEIN", attrs = { role: ip_target, state: clarified_lysate }):0.1mg,
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "LYSATE_BACKGROUND_PROTEINS", attrs = { role: sample_background, state: clarified_lysate }):0.9mg,
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "IP_LYSIS_BUFFER", attrs = { role: carrier }):500uL
+  ]);
+  let protein_g_bead_stock = tube(label = "ProteinGMagneticBeadStock", capacity = 1.5mL, load = [
+    content(kind = ContentKind.PARTICULATE, type = ContentType.BEADS, code = "PROTEIN_G_MAGNETIC_BEADS", attrs = { role: capture, bead_property: "magnetic" }):50uL,
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "PROTEIN_G_BEAD_STORAGE_BUFFER", attrs = { role: storage }):50uL
+  ]);
+  let anti_gfp_capture_antibody = tube(label = "AntiGfpCaptureAntibody", capacity = 200uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ANTI_GFP_CAPTURE_ANTIBODY", attrs = { role: antibody, target: "GFP" }):50ug
+  ]);
+  let antibody_binding_wash_buffer = container(label = "AntibodyBindingAndWashBuffer", capacity = 100mL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "ANTIBODY_BINDING_WASH_BUFFER", attrs = { role: binding }):50mL
+  ]);
+  let ip_wash_buffer = container(label = "IceColdIpWashBuffer", capacity = 100mL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "IP_WASH_BUFFER", attrs = { role: wash, state: ice_cold }):50mL
+  ]);
+  let denaturing_elution_buffer = tube(label = "DenaturingElutionBuffer", capacity = 500uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "DENATURING_ELUTION_BUFFER", attrs = { role: elution }):400uL
+  ]);
+  let premixed_lds_reducing_4x = tube(label = "PremixedFourXLdsReducingBuffer", capacity = 500uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "LDS_REDUCING_BUFFER_4X", attrs = { role: reaction_environment }):400uL
+  ]);
+  let premixed_lds_reducing_2x = tube(label = "PremixedTwoXLdsReducingBuffer", capacity = 500uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "LDS_REDUCING_BUFFER_2X", attrs = { role: reaction_environment }):400uL
+  ]);
+  let liquid_waste = container(label = "ImmunoprecipitationLiquidWaste", capacity = 100mL);
+
+  // Prepare the 5 percent input fraction and keep it cold.
+  let input_fraction = tube(label = "FivePercentInputFraction", capacity = 500uL);
+  input_fraction << [clarified_cell_lysate:25uL];
+
+  // Resuspend the bead stock, transfer 50 uL slurry, and remove storage liquid.
+  agit(sample = protein_g_bead_stock, mode = "vortex", duration = 30s);
+  let ip_bead_tube = tube(label = "ProteinGIpBeadTube", capacity = 1.5mL);
+  ip_bead_tube << [protein_g_bead_stock:50uL];
+  with env(field = magnetic_rack) {
+    with env(thermal = 25C, duration = 2min) {
+      sep(
+        sample = ip_bead_tube,
+        program = magnetic_program(duration = 2min),
+        component_fates = {
+          PROTEIN_G_MAGNETIC_BEADS: { bound: 100%, flowthrough: 0% },
+          PROTEIN_G_BEAD_STORAGE_BUFFER: { bound: 0%, flowthrough: 100% }
+        }
+      );
+      liquid_waste << [ip_bead_tube.contents[1]];
+    }
+  }
+
+  // Prepare 5 ug anti-GFP in 200 uL buffer and conjugate it to the beads.
+  let antibody_binding_mix = tube(label = "AntiGfpBindingMix", capacity = 500uL);
+  antibody_binding_mix << [anti_gfp_capture_antibody:5ug, antibody_binding_wash_buffer:200uL];
+  ip_bead_tube << [antibody_binding_mix:200uL];
+  with env(thermal = 25C, duration = 10min) {
+    agit(sample = ip_bead_tube, mode = "shake", duration = 10min, rate = 20rpm);
+  }
+  let conjugation_split = BindCaptureAntibody(sample = ip_bead_tube);
+  liquid_waste << [conjugation_split[1]];
+  let antibody_conjugated_beads = conjugation_split[0];
+
+  // Wash the antibody-conjugated beads once and retain them in the same tube.
+  antibody_conjugated_beads << [antibody_binding_wash_buffer:200uL];
+  repeat conjugated_bead_resuspension in schedule(start = 1, end = 10, step = 1) {
+    antibody_conjugated_beads << [antibody_conjugated_beads:160uL];
+  }
+  with env(field = magnetic_rack) {
+    with env(thermal = 25C, duration = 2min) {
+      sep(
+        sample = antibody_conjugated_beads,
+        program = magnetic_program(duration = 2min),
+        component_fates = {
+          PROTEIN_G_MAGNETIC_BEADS: { bound: 100%, flowthrough: 0% },
+          ANTI_GFP_CAPTURE_ANTIBODY: { bound: 100%, flowthrough: 0% },
+          ANTIBODY_BINDING_WASH_BUFFER: { bound: 0%, flowthrough: 100% }
+        }
+      );
+      liquid_waste << [antibody_conjugated_beads.contents[1]];
+    }
+  }
+
+  // Bind target protein from the remaining lysate.
+  // Source step S2: add clarified lysate and binding buffer to the conjugated beads.
+  antibody_conjugated_beads << [clarified_cell_lysate:475uL, antibody_binding_wash_buffer:25uL];
+  with env(thermal = 4C, duration = 2h) {
+    // Source step S3: rotate the immunoprecipitation reaction for 2 h at 4 C.
+    agit(sample = antibody_conjugated_beads, mode = "shake", duration = 2h, rate = 20rpm);
+  }
+  let flowthrough_fraction = tube(label = "IpFlowthroughFraction", capacity = 1.5mL);
+  // Source step S4: separate the reaction and retain beads while collecting flowthrough.
+  let ip_capture_split = CaptureTargetProtein(sample = antibody_conjugated_beads);
+  flowthrough_fraction << [ip_capture_split[1]] with constraint(low_carryover);
+  let captured_ip_beads = ip_capture_split[0];
+
+  // Wash bead-bound target three times.
+  // Source step S5: wash the bead-bound target three times.
+  repeat ip_wash_cycle in schedule(start = 1, end = 3, step = 1) {
+    captured_ip_beads << [ip_wash_buffer:200uL];
+    repeat ip_bead_resuspension in schedule(start = 1, end = 10, step = 1) {
+      captured_ip_beads << [captured_ip_beads:160uL];
+    }
+    with env(thermal = 4C, duration = 5min) {
+      agit(sample = captured_ip_beads, mode = "shake", duration = 5min, rate = 20rpm);
+    }
+    with env(field = magnetic_rack) {
+      with env(thermal = 4C, duration = 2min) {
+        sep(
+          sample = captured_ip_beads,
+          program = magnetic_program(duration = 2min),
+          component_fates = {
+            PROTEIN_G_MAGNETIC_BEADS: { bound: 100%, flowthrough: 0% },
+            ANTI_GFP_CAPTURE_ANTIBODY: { bound: 100%, flowthrough: 0% },
+            GFP_TARGET_PROTEIN: { bound: 100%, flowthrough: 0% },
+            IP_WASH_BUFFER: { bound: 0%, flowthrough: 100% }
+          }
+        );
+        liquid_waste << [captured_ip_beads.contents[1]];
+      }
+    }
+  }
+
+  // Denature and elute the bead-bound protein.
+  captured_ip_beads << [denaturing_elution_buffer:20uL, premixed_lds_reducing_4x:10uL];
+  repeat elution_resuspension in schedule(start = 1, end = 10, step = 1) {
+    captured_ip_beads << [captured_ip_beads:24uL];
+  }
+  with env(thermal = 70C, duration = 10min) {
+    hold(sample = captured_ip_beads);
+  }
+  let ip_eluate = tube(label = "IpDenaturingEluate", capacity = 500uL);
+  // Source step S6: denature and separate the eluate from spent beads.
+  let elution_split = ReleaseDenaturingEluate(sample = captured_ip_beads);
+  ip_eluate << [elution_split[1]] with constraint(low_carryover);
+
+  // Prepare input and flowthrough controls for electrophoresis.
+  // Source step S7: prepare input, flowthrough, and eluate samples for electrophoresis.
+  let prepared_input = tube(label = "PreparedInputSample", capacity = 200uL);
+  let prepared_flowthrough = tube(label = "PreparedFlowthroughSample", capacity = 200uL);
+  prepared_input << [input_fraction:10uL, premixed_lds_reducing_2x:10uL];
+  prepared_flowthrough << [flowthrough_fraction:10uL, premixed_lds_reducing_2x:10uL];
+  with env(thermal = 70C, duration = 10min) {
+    hold(sample = group([prepared_input, prepared_flowthrough]));
+  }
+  with env(thermal = 25C, duration = 5s) {
+    sep(sample = prepared_input, program = centrifuge_program(drive = 3000g));
+    sep(sample = prepared_flowthrough, program = centrifuge_program(drive = 3000g));
+    sep(sample = ip_eluate, program = centrifuge_program(drive = 3000g));
+  }
+
+  // Run input, flowthrough, and eluate in defined SDS-PAGE lanes.
+  // Source step S8: load the three samples and run electrophoresis.
+  let electrophoresis_tank = chamber(label = "BisTrisElectrophoresisTank", capacity = 800mL);
+  let mops_running_buffer = container(label = "OneXMopsRunningBuffer", capacity = 1L, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "MOPS_RUNNING_BUFFER_1X", attrs = { role: reaction_environment }):800mL
+  ]);
+  electrophoresis_tank << [mops_running_buffer:800mL];
+  let input_lane = well(label = "InputLane", capacity = 50uL, carrier_id = "FourToTwelvePercentBisTrisGel", carrier_position = "A1");
+  let flowthrough_lane = well(label = "FlowthroughLane", capacity = 50uL, carrier_id = "FourToTwelvePercentBisTrisGel", carrier_position = "A2");
+  let eluate_lane = well(label = "EluateLane", capacity = 50uL, carrier_id = "FourToTwelvePercentBisTrisGel", carrier_position = "A3");
+  input_lane << [prepared_input:15uL];
+  flowthrough_lane << [prepared_flowthrough:15uL];
+  eluate_lane << [ip_eluate:20uL];
+  let input_lane_run = sep(
+    sample = input_lane,
+    program = field_program(field = 180V, duration = 50min),
+    component_fates = {
+      GFP_TARGET_PROTEIN: { target_band_fraction: 100%, non_target_fraction: 0% },
+      LYSATE_BACKGROUND_PROTEINS: { target_band_fraction: 100%, non_target_fraction: 0% },
+      IP_LYSIS_BUFFER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      LDS_REDUCING_BUFFER_2X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let flowthrough_lane_run = sep(
+    sample = flowthrough_lane,
+    program = field_program(field = 180V, duration = 50min),
+    component_fates = {
+      LYSATE_BACKGROUND_PROTEINS: { target_band_fraction: 100%, non_target_fraction: 0% },
+      IP_LYSIS_BUFFER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      ANTIBODY_BINDING_WASH_BUFFER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      LDS_REDUCING_BUFFER_2X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let eluate_lane_run = sep(
+    sample = eluate_lane,
+    program = field_program(field = 180V, duration = 50min),
+    component_fates = {
+      ANTI_GFP_CAPTURE_ANTIBODY: { target_band_fraction: 100%, non_target_fraction: 0% },
+      GFP_TARGET_PROTEIN: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DENATURING_ELUTION_BUFFER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      LDS_REDUCING_BUFFER_4X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let separated_lane_group = group([input_lane_run[0], flowthrough_lane_run[0], eluate_lane_run[0]]);
+
+  // Activate and equilibrate the PVDF membrane and gel.
+  let methanol = container(label = "Methanol", capacity = 100mL, load = [
+    content(kind = ContentKind.CHEMICAL, type = ContentType.SOLVENT, code = "METHANOL", attrs = { role: activation }):50mL
+  ]);
+  let deionized_water = container(label = "DeionizedWater", capacity = 1L, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "DEIONIZED_WATER", attrs = { role: rinse }):500mL
+  ]);
+  let transfer_buffer = container(label = "ColdTransferBuffer", capacity = 1L, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "WESTERN_TRANSFER_BUFFER", attrs = { role: reaction_environment, state: cold }):500mL
+  ]);
+  let membrane_processing_tank = chamber(label = "PvdfMembraneProcessingTank", capacity = 50mL, open = true, load = [
+    content(kind = ContentKind.BIO_SUBCELLULAR, type = ContentType.MEMBRANE, code = "PVDF_MEMBRANE", attrs = { role: transfer_substrate, count: "1_piece" }):0uL
+  ]);
+  let membrane_liquid_waste = container(label = "MembraneLiquidWaste", capacity = 500mL);
+  membrane_processing_tank << [methanol:15mL];
+  with env(thermal = 25C, duration = 1min) {
+    hold(sample = membrane_processing_tank);
+  }
+  let methanol_split = sep(sample = membrane_processing_tank, program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"));
+  membrane_liquid_waste << [methanol_split[0]];
+  membrane_processing_tank << [deionized_water:15mL];
+  with env(thermal = 25C, duration = 2min) {
+    hold(sample = membrane_processing_tank);
+  }
+  let water_rinse_split = sep(sample = membrane_processing_tank, program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"));
+  membrane_liquid_waste << [water_rinse_split[0]];
+  membrane_processing_tank << [transfer_buffer:15mL];
+  let membrane_equilibration_split = sep(sample = membrane_processing_tank, program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"));
+  membrane_liquid_waste << [membrane_equilibration_split[0]];
+  let gel_equilibration_bath = chamber(label = "IpWesternGelEquilibrationBath", capacity = 50mL, open = true);
+  gel_equilibration_bath << [transfer_buffer:15mL];
+  with env(thermal = 4C, duration = 10min) {
+    hold(sample = separated_lane_group);
+    hold(sample = gel_equilibration_bath);
+  }
+
+  // Assemble the directional transfer stack and transfer at 100 V for 60 min.
+  // Source step S9: activate and equilibrate PVDF, assemble the stack, and transfer proteins.
+  let input_transfer_stack = chamber(label = "InputLaneToPvdfTransferStack", capacity = 50mL);
+  let flowthrough_transfer_stack = chamber(label = "FlowthroughLaneToPvdfTransferStack", capacity = 50mL);
+  let eluate_transfer_stack = chamber(label = "EluateLaneToPvdfTransferStack", capacity = 50mL);
+  input_transfer_stack << [input_lane_run[0]];
+  input_transfer_stack << [transfer_buffer:10mL];
+  flowthrough_transfer_stack << [flowthrough_lane_run[0]];
+  flowthrough_transfer_stack << [transfer_buffer:10mL];
+  eluate_transfer_stack << [eluate_lane_run[0]];
+  eluate_transfer_stack << [transfer_buffer:10mL];
+  let input_membrane_track = well(label = "InputMembraneTrack", carrier_kind = "pvdf_membrane", carrier_id = "IpWesternPvdfMembrane", carrier_position = "A1", capacity = 50mL, open = true);
+  let flowthrough_membrane_track = well(label = "FlowthroughMembraneTrack", carrier_kind = "pvdf_membrane", carrier_id = "IpWesternPvdfMembrane", carrier_position = "A2", capacity = 50mL, open = true);
+  let eluate_membrane_track = well(label = "EluateMembraneTrack", carrier_kind = "pvdf_membrane", carrier_id = "IpWesternPvdfMembrane", carrier_position = "A3", capacity = 50mL, open = true);
+  // PM #100 bridge: these lane-to-track mappings belong to one physical transfer run.
+  with env(thermal = 4C, duration = 60min) {
+    let transferred_input_lane = sep(
+      sample = input_transfer_stack,
+      program = field_program(field = 100V, duration = 60min),
+      component_fates = {
+        GFP_TARGET_PROTEIN: { target_band_fraction: 100%, non_target_fraction: 0% },
+        LYSATE_BACKGROUND_PROTEINS: { target_band_fraction: 100%, non_target_fraction: 0% },
+        IP_LYSIS_BUFFER: { target_band_fraction: 0%, non_target_fraction: 100% },
+        LDS_REDUCING_BUFFER_2X: { target_band_fraction: 0%, non_target_fraction: 100% },
+        WESTERN_TRANSFER_BUFFER: { target_band_fraction: 0%, non_target_fraction: 100% }
+      }
+    );
+    let transferred_flowthrough_lane = sep(
+      sample = flowthrough_transfer_stack,
+      program = field_program(field = 100V, duration = 60min),
+      component_fates = {
+        LYSATE_BACKGROUND_PROTEINS: { target_band_fraction: 100%, non_target_fraction: 0% },
+        IP_LYSIS_BUFFER: { target_band_fraction: 0%, non_target_fraction: 100% },
+        ANTIBODY_BINDING_WASH_BUFFER: { target_band_fraction: 0%, non_target_fraction: 100% },
+        LDS_REDUCING_BUFFER_2X: { target_band_fraction: 0%, non_target_fraction: 100% },
+        WESTERN_TRANSFER_BUFFER: { target_band_fraction: 0%, non_target_fraction: 100% }
+      }
+    );
+    let transferred_eluate_lane = sep(
+      sample = eluate_transfer_stack,
+      program = field_program(field = 100V, duration = 60min),
+      component_fates = {
+        ANTI_GFP_CAPTURE_ANTIBODY: { target_band_fraction: 100%, non_target_fraction: 0% },
+        GFP_TARGET_PROTEIN: { target_band_fraction: 100%, non_target_fraction: 0% },
+        DENATURING_ELUTION_BUFFER: { target_band_fraction: 0%, non_target_fraction: 100% },
+        LDS_REDUCING_BUFFER_4X: { target_band_fraction: 0%, non_target_fraction: 100% },
+        WESTERN_TRANSFER_BUFFER: { target_band_fraction: 0%, non_target_fraction: 100% }
+      }
+    );
+    input_membrane_track << [transferred_input_lane[0]];
+    flowthrough_membrane_track << [transferred_flowthrough_lane[0]];
+    eluate_membrane_track << [transferred_eluate_lane[0]];
+  }
+  let transferred_membrane_tank = group([input_membrane_track, flowthrough_membrane_track, eluate_membrane_track]);
+  let membrane_incubation_bath = chamber(label = "TransferredPvdfMembraneTank", capacity = 50mL, open = true);
+  membrane_incubation_bath << [deionized_water:15mL];
+  sep(
+    sample = membrane_incubation_bath,
+    program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+    component_fates = {
+      DEIONIZED_WATER: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  membrane_liquid_waste << [membrane_incubation_bath.contents[0]];
+
+  // Prepare blocking and antibody solutions.
+  let blocking_milk_tbst = container(label = "FivePercentMilkBlockingSolution", capacity = 100mL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "BLOCKING_MILK_PROTEIN", attrs = { role: blocking, concentration: "5_percent_w_v" }):4g,
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "TBST_CARRIER", attrs = { role: carrier }):80mL
+  ]);
+  let bsa_tbst = container(label = "FivePercentBsaInTbst", capacity = 100mL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "PRIMARY_DILUENT_BSA", attrs = { role: antibody_diluent, concentration: "5_percent_w_v" }):2.5g,
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "TBST_CARRIER", attrs = { role: carrier }):50mL
+  ]);
+  let secondary_milk_tbst = container(label = "FivePercentMilkSecondaryDiluent", capacity = 100mL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "SECONDARY_DILUENT_MILK_PROTEIN", attrs = { role: antibody_diluent, concentration: "5_percent_w_v" }):2.5g,
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "TBST_CARRIER", attrs = { role: carrier }):50mL
+  ]);
+  let tbst = container(label = "TbstWashBuffer", capacity = 500mL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "TBST_CARRIER", attrs = { role: wash }):400mL
+  ]);
+  let anti_gfp_primary_stock = tube(label = "RabbitAntiGfpPrimaryStock", capacity = 200uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "RABBIT_ANTI_GFP_PRIMARY", attrs = { role: antibody, target: "GFP" }):100uL
+  ]);
+  let irdye_secondary_stock = tube(label = "IrDyeAntiRabbitSecondaryStock", capacity = 200uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "IRDYE_ANTI_RABBIT_SECONDARY", attrs = { role: antibody, target: "rabbit_primary" }):100uL
+  ]);
+  let primary_antibody_solution = chamber(label = "RabbitAntiGfpOneToOneThousand", capacity = 15mL);
+  primary_antibody_solution << [bsa_tbst:9.99mL, anti_gfp_primary_stock:10uL];
+  let secondary_antibody_solution = chamber(label = "IrDyeAntiRabbitOneToTenThousand", capacity = 15mL);
+  secondary_antibody_solution << [secondary_milk_tbst:9.999mL, irdye_secondary_stock:1uL];
+
+  // Block, probe, wash, and image the transferred membrane.
+  // Source step S10: block, probe, and wash the membrane.
+  membrane_incubation_bath << [blocking_milk_tbst:15mL];
+  with env(thermal = 25C, duration = 1h) {
+    agit(sample = transferred_membrane_tank, mode = "shake", duration = 1h, rate = 60rpm);
+    agit(sample = membrane_incubation_bath, mode = "shake", duration = 1h, rate = 60rpm);
+  }
+  sep(
+    sample = membrane_incubation_bath,
+    program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+    component_fates = {
+      BLOCKING_MILK_PROTEIN: { filtrate: 95%, retentate: 5% },
+      TBST_CARRIER: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  membrane_liquid_waste << [membrane_incubation_bath.contents[0]];
+
+  membrane_incubation_bath << [primary_antibody_solution:10mL];
+  with env(thermal = 4C, duration = 16h) {
+    agit(sample = transferred_membrane_tank, mode = "shake", duration = 16h, rate = 60rpm);
+    agit(sample = membrane_incubation_bath, mode = "shake", duration = 16h, rate = 60rpm);
+  }
+  sep(
+    sample = membrane_incubation_bath,
+    program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+    component_fates = {
+      RABBIT_ANTI_GFP_PRIMARY: { filtrate: 95%, retentate: 5% },
+      PRIMARY_DILUENT_BSA: { filtrate: 95%, retentate: 5% },
+      TBST_CARRIER: { filtrate: 100%, retentate: 0% },
+      BLOCKING_MILK_PROTEIN: { filtrate: 0%, retentate: 100% }
+    }
+  );
+  membrane_liquid_waste << [membrane_incubation_bath.contents[0]];
+
+  repeat post_primary_wash in schedule(start = 1, end = 3, step = 1) {
+    membrane_incubation_bath << [tbst:15mL];
+    with env(thermal = 25C, duration = 5min) {
+      agit(sample = transferred_membrane_tank, mode = "shake", duration = 5min, rate = 60rpm);
+      agit(sample = membrane_incubation_bath, mode = "shake", duration = 5min, rate = 60rpm);
+    }
+    sep(
+      sample = membrane_incubation_bath,
+      program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+      component_fates = {
+        TBST_CARRIER: { filtrate: 100%, retentate: 0% },
+        RABBIT_ANTI_GFP_PRIMARY: { filtrate: 0%, retentate: 100% },
+        PRIMARY_DILUENT_BSA: { filtrate: 0%, retentate: 100% },
+        BLOCKING_MILK_PROTEIN: { filtrate: 0%, retentate: 100% }
+      }
+    );
+    membrane_liquid_waste << [membrane_incubation_bath.contents[0]];
+  }
+
+  membrane_incubation_bath << [secondary_antibody_solution:10mL] with constraint(dark_protected);
+  with constraint(dark_protected) {
+    with env(thermal = 25C, duration = 1h) {
+      agit(sample = transferred_membrane_tank, mode = "shake", duration = 1h, rate = 60rpm);
+      agit(sample = membrane_incubation_bath, mode = "shake", duration = 1h, rate = 60rpm);
+    }
+  }
+  sep(
+    sample = membrane_incubation_bath,
+    program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+    component_fates = {
+      IRDYE_ANTI_RABBIT_SECONDARY: { filtrate: 95%, retentate: 5% },
+      SECONDARY_DILUENT_MILK_PROTEIN: { filtrate: 95%, retentate: 5% },
+      TBST_CARRIER: { filtrate: 100%, retentate: 0% },
+      RABBIT_ANTI_GFP_PRIMARY: { filtrate: 0%, retentate: 100% },
+      PRIMARY_DILUENT_BSA: { filtrate: 0%, retentate: 100% },
+      BLOCKING_MILK_PROTEIN: { filtrate: 0%, retentate: 100% }
+    }
+  );
+  membrane_liquid_waste << [membrane_incubation_bath.contents[0]] with constraint(dark_protected);
+
+  repeat post_secondary_wash in schedule(start = 1, end = 3, step = 1) {
+    membrane_incubation_bath << [tbst:15mL] with constraint(dark_protected);
+    with constraint(dark_protected) {
+      with env(thermal = 25C, duration = 5min) {
+        agit(sample = transferred_membrane_tank, mode = "shake", duration = 5min, rate = 60rpm);
+        agit(sample = membrane_incubation_bath, mode = "shake", duration = 5min, rate = 60rpm);
+      }
+    }
+    sep(
+      sample = membrane_incubation_bath,
+      program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+      component_fates = {
+        TBST_CARRIER: { filtrate: 100%, retentate: 0% },
+        IRDYE_ANTI_RABBIT_SECONDARY: { filtrate: 0%, retentate: 100% },
+        SECONDARY_DILUENT_MILK_PROTEIN: { filtrate: 0%, retentate: 100% },
+        RABBIT_ANTI_GFP_PRIMARY: { filtrate: 0%, retentate: 100% },
+        PRIMARY_DILUENT_BSA: { filtrate: 0%, retentate: 100% },
+        BLOCKING_MILK_PROTEIN: { filtrate: 0%, retentate: 100% }
+      }
+    );
+    membrane_liquid_waste << [membrane_incubation_bath.contents[0]] with constraint(dark_protected);
+  }
+
+  let ip_blot_schema = data_schema(
+    label = "MagneticBeadIpWesternBlotReadout",
+    fields = [
+      lane_id,
+      sample_id,
+      target_id,
+      input_band_signal,
+      flowthrough_band_signal,
+      eluate_band_signal,
+      imaging_qc_status
+    ]
+  );
+  // Source step S11: acquire fluorescence and return the structured readout.
+  let ip_blot_image = img(
+    sample = transferred_membrane_tank,
+    quantity = customized,
+    schema_ref = ip_blot_schema,
+    save_raw = true
+  );
+  return ip_blot_image = ip_blot_image;
+}
+
+let immunoprecipitation_blot_result = MagneticBeadImmunoprecipitationWithWesternBlotReadout();

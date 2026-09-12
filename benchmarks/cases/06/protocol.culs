@@ -1,0 +1,890 @@
+protocol CRISPRKnockoutValidation(
+  cell_count_viable_cell_count,
+  cell_count_viability_percent,
+  operator_selected_a3_for_clone_a,
+  operator_selected_a4_for_clone_b,
+  operator_selected_a5_for_clone_c,
+  pcr_wt_band_500_present,
+  pcr_wt_band_620_present,
+  pcr_wt_band_count,
+  pcr_wt_control_qc_pass,
+  pcr_nt_band_500_present,
+  pcr_nt_band_620_present,
+  pcr_nt_band_count,
+  pcr_nt_control_qc_pass,
+  pcr_clone_a_band_500_present,
+  pcr_clone_a_band_620_present,
+  pcr_clone_a_band_count,
+  pcr_clone_b_band_500_present,
+  pcr_clone_b_band_620_present,
+  pcr_clone_b_band_count,
+  pcr_clone_c_band_500_present,
+  pcr_clone_c_band_620_present,
+  pcr_clone_c_band_count,
+  genotype_clone_a_allele_1_call,
+  genotype_clone_a_allele_2_call,
+  genotype_clone_a_biallelic_deletion_confirmed,
+  genotype_clone_a_heterozygous_deletion_confirmed,
+  genotype_clone_a_qc_pass,
+  genotype_clone_b_allele_1_call,
+  genotype_clone_b_allele_2_call,
+  genotype_clone_b_biallelic_deletion_confirmed,
+  genotype_clone_b_heterozygous_deletion_confirmed,
+  genotype_clone_b_qc_pass,
+  protein_wt_gene_x_surface_status,
+  protein_wt_protein_negative,
+  protein_wt_control_qc_pass,
+  protein_nt_gene_x_surface_status,
+  protein_nt_protein_negative,
+  protein_nt_control_qc_pass,
+  protein_clone_a_gene_x_surface_status,
+  protein_clone_a_protein_negative,
+  protein_clone_a_control_qc_pass,
+  function_wt_psignal_x_status,
+  function_wt_function_lost,
+  function_wt_control_qc_pass,
+  function_nt_psignal_x_status,
+  function_nt_function_lost,
+  function_nt_control_qc_pass,
+  function_clone_a_psignal_x_status,
+  function_clone_a_function_lost,
+  function_clone_a_control_qc_pass
+) returns (validated_clone_a) {
+
+  // Source step S1: Edit cells with CRISPR-Cas9 RNP formulations and culture the edited groups.
+  // Seed editing groups, assemble 10 uL RNP formulations,
+  // and combine each RNP with 50 uL preconfigured lipid delivery mix.
+  let editing_plate = plate(
+    label = "Editing24WellPlate",
+    format = "24well",
+    carrier_id = "Editing24WellPlate",
+    capacity = 3mL
+  );
+  let editing_wells = editing_plate[A1:A3];
+  let wt_cells = editing_wells[0];
+  let nt_cells = editing_wells[1];
+  let deletion_cells = editing_wells[2];
+
+  let wt_cell_input = tube(
+    label = "WTControlCellInput",
+    capacity = 2mL,
+    load = [content(kind = ContentKind.BIO_CELLULAR, type = ContentType.CELL_LINE, code = "HEK293T_GENE_X_POSITIVE", attrs = { role: material, experimental_group: "WT", starting_cells: "100000" }):1000uL]
+  );
+  let nt_cell_input = tube(
+    label = "NonTargetingControlCellInput",
+    capacity = 2mL,
+    load = [content(kind = ContentKind.BIO_CELLULAR, type = ContentType.CELL_LINE, code = "HEK293T_GENE_X_POSITIVE", attrs = { role: material, experimental_group: "NT", starting_cells: "100000" }):1000uL]
+  );
+  let deletion_cell_input = tube(
+    label = "DeletionEditingCellInput",
+    capacity = 2mL,
+    load = [content(kind = ContentKind.BIO_CELLULAR, type = ContentType.CELL_LINE, code = "HEK293T_GENE_X_POSITIVE", attrs = { role: material, experimental_group: "deletion", starting_cells: "100000" }):1000uL]
+  );
+  wt_cells << [wt_cell_input:1mL];
+  nt_cells << [nt_cell_input:1mL];
+  deletion_cells << [deletion_cell_input:1mL];
+  with env(thermal = 37C, co2 = 5%, duration = 18h) {
+    hold(sample = editing_wells);
+  }
+  let confluence_schema = data_schema(label = "EditingWellConfluence", fields = [sample_id, confluence_percent, qc_pass]);
+  let editing_well_confluence = img(
+    sample = editing_wells,
+    quantity = customized,
+    schema_ref = confluence_schema,
+    save_raw = true
+  );
+
+  let cas9_protein = tube(label = "Cas9Protein", capacity = 100uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "CAS9_PROTEIN", attrs = { concentration: "6_pmol_per_reaction", mass_approx_ug: "1" }):30uL
+  ]);
+  let sgrna_1 = tube(label = "SgRNA1", capacity = 100uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.RNA, code = "SGRNA_1", attrs = { amount_per_reaction_pmol: "3" }):30uL
+  ]);
+  let sgrna_2 = tube(label = "SgRNA2", capacity = 100uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.RNA, code = "SGRNA_2", attrs = { amount_per_reaction_pmol: "3" }):30uL
+  ]);
+  let non_targeting_sgrna = tube(label = "NonTargetingSgRNA", capacity = 100uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.RNA, code = "NON_TARGETING_SGRNA", attrs = { amount_per_reaction_pmol: "6" }):30uL
+  ]);
+  let rnp_assembly_buffer = tube(label = "RNPAssemblyBufferOptiMEM", capacity = 100uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "RNP_ASSEMBLY_BUFFER_OPTIMEM", attrs = { role: reaction_environment }):80uL
+  ]);
+  let deletion_rnp = tube(label = "DeletionRNP10uL", capacity = 100uL);
+  let nt_rnp = tube(label = "NonTargetingRNP10uL", capacity = 100uL);
+  deletion_rnp << [cas9_protein:2uL, sgrna_1:2uL, sgrna_2:2uL, rnp_assembly_buffer:4uL];
+  nt_rnp << [cas9_protein:2uL, non_targeting_sgrna:4uL, rnp_assembly_buffer:4uL];
+  with env(thermal = 25C, duration = 10min) {
+    hold(sample = group([deletion_rnp, nt_rnp]));
+  }
+  let deletion_preconfigured_lipid_delivery_mix = tube(label = "DeletionPreconfiguredLipidDeliveryMix", capacity = 100uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.OTHER_FORMULATION, code = "PRECONFIGURED_LIPID_DELIVERY_MIX", attrs = { role: reaction_environment, target_group: "deletion", internal_setup_protocol: "separate_delivery_protocol" }):50uL
+  ]);
+  let nt_preconfigured_lipid_delivery_mix = tube(label = "NonTargetingPreconfiguredLipidDeliveryMix", capacity = 100uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.OTHER_FORMULATION, code = "PRECONFIGURED_LIPID_DELIVERY_MIX", attrs = { role: reaction_environment, target_group: "non_targeting", internal_setup_protocol: "separate_delivery_protocol" }):50uL
+  ]);
+  let deletion_delivery_mix = tube(label = "DeletionLipidRNPDeliveryMix60uL", capacity = 100uL);
+  let nt_delivery_mix = tube(label = "NonTargetingLipidRNPDeliveryMix60uL", capacity = 100uL);
+  deletion_delivery_mix << [deletion_rnp:10uL, deletion_preconfigured_lipid_delivery_mix:50uL];
+  nt_delivery_mix << [nt_rnp:10uL, nt_preconfigured_lipid_delivery_mix:50uL];
+  with env(thermal = 25C, duration = 15min) {
+    hold(sample = group([deletion_delivery_mix, nt_delivery_mix]));
+  }
+  nt_cells << [nt_delivery_mix:60uL];
+  deletion_cells << [deletion_delivery_mix:60uL];
+  with env(thermal = 37C, co2 = 5%, duration = 72h) {
+    hold(sample = editing_wells);
+  }
+
+  // Source step S2: Isolate candidate clones by limiting dilution and manual selection.
+  // Use the externally supplied cell-count output to
+  // prepare a 1:40,000 limiting-dilution suspension and seed the plate.
+  let viable_cell_schema = data_schema(label = "ViableCellCount", fields = [sample_id, viable_cell_count, viability_percent]);
+  let edited_pool_count = phy(sample = deletion_cells, quantity = customized, schema_ref = viable_cell_schema, save_raw = true);
+  edited_pool_count.result.viable_cell_count = cell_count_viable_cell_count;
+  edited_pool_count.result.viability_percent = cell_count_viability_percent;
+  let counted_edited_bulk_pool = tube(label = "CountedEditedBulkPool1mL", capacity = 2mL);
+  counted_edited_bulk_pool << [deletion_cells:1mL];
+  let limiting_dilution_medium = tube(label = "LimitingDilutionMedium", capacity = 50mL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.MEDIUM, code = "LIMITING_DILUTION_CULTURE_MEDIUM", attrs = { role: culture }):39.999mL
+  ]);
+  let limiting_dilution_suspension = tube(label = "EditedPoolLimitingDilutionSuspension5CellsPerMl", capacity = 50mL);
+  // Paper-case calculation: 1 uL of the counted 2.0e5 cells/mL pool plus
+  // 39.999 mL medium produces 40 mL at an expected density of 5 cells/mL.
+  limiting_dilution_suspension << [counted_edited_bulk_pool:1uL, limiting_dilution_medium:39.999mL];
+  let limiting_dilution_plate = plate(label = "EditedPoolLimitingDilution96WellPlate", format = "96well", carrier_id = "EditedPoolLimitingDilution96WellPlate");
+  let limiting_dilution_wells = limiting_dilution_plate[A1:H12];
+  // Each well receives 100 uL at 5 cells/mL. The resulting 0.5 cell/well is
+  // an expected average seeding density, not an exact fractional-cell transfer.
+  limiting_dilution_wells << [limiting_dilution_suspension:100uL];
+  with env(thermal = 37C, co2 = 5%, duration = 336h) {
+    hold(sample = limiting_dilution_wells);
+  }
+  let colony_outgrowth_schema = data_schema(
+    label = "SingleColonyOutgrowthSelection",
+    fields = [well_id, estimated_starting_cells, single_colony_outgrowth, selected_clone_id]
+  );
+  let colony_outgrowth = img(
+    sample = limiting_dilution_wells,
+    quantity = customized,
+    schema_ref = colony_outgrowth_schema,
+    save_raw = true
+  );
+  // MANUAL REVIEW BOUNDARY: Review colony_outgrowth and identify wells that
+  // contain one colony rather than multiple colonies or no outgrowth. For this
+  // paper case, the operator records A3, A4, and A5 as the selected single-
+  // colony wells. Static well references are required because a readout field
+  // such as selected_clone_id cannot currently resolve into a material ref.
+  let selected_clone_wells = limiting_dilution_plate[A3:A5];
+  let selected_clone_a_well = selected_clone_wells[0];
+  let selected_clone_b_well = selected_clone_wells[1];
+  let selected_clone_c_well = selected_clone_wells[2];
+  let clone_a = tube(label = "CloneAExpansionCulture", capacity = 3000uL);
+  let clone_b = tube(label = "CloneBExpansionCulture", capacity = 3000uL);
+  let clone_c = tube(label = "CloneCExpansionCulture", capacity = 3000uL);
+  // Manually pick each confirmed single colony into its expansion culture.
+  if operator_selected_a3_for_clone_a {
+    clone_a << [selected_clone_a_well];
+  }
+  if operator_selected_a4_for_clone_b {
+    clone_b << [selected_clone_b_well];
+  }
+  if operator_selected_a5_for_clone_c {
+    clone_c << [selected_clone_c_well];
+  }
+  // The source requires expansion but does not specify its duration or culture
+  // volume, so the selected materials enter expansion culture without an
+  // invented finite hold.
+
+  // Author-declared sampling budget: bring each suspension to 2 mL without
+  // creating new cells. Expansion yield remains outside this material model.
+  // Reserve 500 uL for DNA extraction, 500 uL each for conditional flow and
+  // stimulation, and 500 uL for the surviving culture/archive output.
+  let validation_sampling_medium = tube(label = "ValidationSamplingMedium", capacity = 10mL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.MEDIUM, code = "LIMITING_DILUTION_CULTURE_MEDIUM", attrs = { role: culture }):8mL
+  ]);
+  wt_cells << [validation_sampling_medium:1mL];
+  nt_cells << [validation_sampling_medium:940uL];
+  clone_a << [validation_sampling_medium:1.9mL];
+  clone_b << [validation_sampling_medium:1.9mL];
+  clone_c << [validation_sampling_medium:1.9mL];
+  repeat sampling_mix in schedule(start = 1, end = 10, step = 1) {
+    wt_cells << [wt_cells:1.6mL];
+    nt_cells << [nt_cells:1.6mL];
+    clone_a << [clone_a:1.6mL];
+    clone_b << [clone_b:1.6mL];
+    clone_c << [clone_c:1.6mL];
+  }
+  let wt_dna_input = tube(label = "WTCellsForDNAExtraction", capacity = 2mL);
+  let nt_dna_input = tube(label = "NTCellsForDNAExtraction", capacity = 2mL);
+  let clone_a_dna_input = tube(label = "CloneACellsForDNAExtraction", capacity = 2mL);
+  let clone_b_dna_input = tube(label = "CloneBCellsForDNAExtraction", capacity = 2mL);
+  let clone_c_dna_input = tube(label = "CloneCCellsForDNAExtraction", capacity = 2mL);
+  wt_dna_input << [wt_cells:500uL];
+  nt_dna_input << [nt_cells:500uL];
+  clone_a_dna_input << [clone_a:500uL];
+  clone_b_dna_input << [clone_b:500uL];
+  clone_c_dna_input << [clone_c:500uL];
+
+  // Source step S3: Prepare genomic-DNA inputs using the reusable extraction protocol.
+  // Extract and purify genomic DNA from each cell sample
+  // using the local cultured-cell spin-column helper above.
+  let genomic_dna_extraction_pbs = tube(label = "GenomicDNAExtractionPBS", capacity = 3000uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "PBS_PH_7_2", attrs = { role: wash }):2500uL
+  ]);
+  let genomic_dna_proteinase_k = tube(label = "GenomicDNAProteinaseK", capacity = 300uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "PROTEINASE_K", attrs = { role: enzyme }):150uL
+  ]);
+  let genomic_dna_buffer_al = tube(label = "GenomicDNABufferAL", capacity = 1500uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "DNEASY_BUFFER_AL", attrs = { role: lysis }):1200uL
+  ]);
+  let genomic_dna_ethanol = tube(label = "GenomicDNAEthanol96To100Percent", capacity = 1500uL, load = [
+    content(kind = ContentKind.CHEMICAL, type = ContentType.SOLVENT, code = "ETHANOL_96_100_PERCENT", attrs = { role: binding }):1200uL
+  ]);
+  let genomic_dna_buffer_aw1 = tube(label = "GenomicDNABufferAW1", capacity = 3000uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "DNEASY_BUFFER_AW1", attrs = { role: wash }):2500uL
+  ]);
+  let genomic_dna_buffer_aw2 = tube(label = "GenomicDNABufferAW2", capacity = 3000uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "DNEASY_BUFFER_AW2", attrs = { role: wash }):2500uL
+  ]);
+  let genomic_dna_buffer_ae = tube(label = "GenomicDNABufferAE", capacity = 1000uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "DNEASY_BUFFER_AE", attrs = { role: elution }):800uL
+  ]);
+  let genomic_dna_extraction_waste = tube(label = "GenomicDNAExtractionWaste", capacity = 20000uL);
+  let wt_gdna = tube(label = "WTgDNA50uL", capacity = 200uL);
+  let nt_gdna = tube(label = "NTgDNA50uL", capacity = 200uL);
+  let clone_a_gdna = tube(label = "CloneAgDNA50uL", capacity = 200uL);
+  let clone_b_gdna = tube(label = "CloneBgDNA50uL", capacity = 200uL);
+  let clone_c_gdna = tube(label = "CloneCgDNA50uL", capacity = 200uL);
+  let wt_dna_column = chamber(label = "WTGenomicDNASilicaSpinColumn", capacity = 2mL);
+  let nt_dna_column = chamber(label = "NTGenomicDNASilicaSpinColumn", capacity = 2mL);
+  let clone_a_dna_column = chamber(label = "CloneAGenomicDNASilicaSpinColumn", capacity = 2mL);
+  let clone_b_dna_column = chamber(label = "CloneBGenomicDNASilicaSpinColumn", capacity = 2mL);
+  let clone_c_dna_column = chamber(label = "CloneCGenomicDNASilicaSpinColumn", capacity = 2mL);
+  ExtractAndPurifyGenomicDNA(
+    sample = wt_dna_input,
+    output = wt_gdna,
+    extraction_pbs = genomic_dna_extraction_pbs,
+    proteinase_k = genomic_dna_proteinase_k,
+    buffer_al = genomic_dna_buffer_al,
+    ethanol_96_100 = genomic_dna_ethanol,
+    buffer_aw1 = genomic_dna_buffer_aw1,
+    buffer_aw2 = genomic_dna_buffer_aw2,
+    buffer_ae = genomic_dna_buffer_ae,
+    extraction_waste = genomic_dna_extraction_waste,
+    silica_spin_column = wt_dna_column,
+    sample_group = 0,
+    output_volume = 50uL
+  );
+  ExtractAndPurifyGenomicDNA(
+    sample = nt_dna_input,
+    output = nt_gdna,
+    extraction_pbs = genomic_dna_extraction_pbs,
+    proteinase_k = genomic_dna_proteinase_k,
+    buffer_al = genomic_dna_buffer_al,
+    ethanol_96_100 = genomic_dna_ethanol,
+    buffer_aw1 = genomic_dna_buffer_aw1,
+    buffer_aw2 = genomic_dna_buffer_aw2,
+    buffer_ae = genomic_dna_buffer_ae,
+    extraction_waste = genomic_dna_extraction_waste,
+    silica_spin_column = nt_dna_column,
+    sample_group = 1,
+    output_volume = 50uL
+  );
+  ExtractAndPurifyGenomicDNA(
+    sample = clone_a_dna_input,
+    output = clone_a_gdna,
+    extraction_pbs = genomic_dna_extraction_pbs,
+    proteinase_k = genomic_dna_proteinase_k,
+    buffer_al = genomic_dna_buffer_al,
+    ethanol_96_100 = genomic_dna_ethanol,
+    buffer_aw1 = genomic_dna_buffer_aw1,
+    buffer_aw2 = genomic_dna_buffer_aw2,
+    buffer_ae = genomic_dna_buffer_ae,
+    extraction_waste = genomic_dna_extraction_waste,
+    silica_spin_column = clone_a_dna_column,
+    sample_group = 2,
+    output_volume = 50uL
+  );
+  ExtractAndPurifyGenomicDNA(
+    sample = clone_b_dna_input,
+    output = clone_b_gdna,
+    extraction_pbs = genomic_dna_extraction_pbs,
+    proteinase_k = genomic_dna_proteinase_k,
+    buffer_al = genomic_dna_buffer_al,
+    ethanol_96_100 = genomic_dna_ethanol,
+    buffer_aw1 = genomic_dna_buffer_aw1,
+    buffer_aw2 = genomic_dna_buffer_aw2,
+    buffer_ae = genomic_dna_buffer_ae,
+    extraction_waste = genomic_dna_extraction_waste,
+    silica_spin_column = clone_b_dna_column,
+    sample_group = 2,
+    output_volume = 50uL
+  );
+  ExtractAndPurifyGenomicDNA(
+    sample = clone_c_dna_input,
+    output = clone_c_gdna,
+    extraction_pbs = genomic_dna_extraction_pbs,
+    proteinase_k = genomic_dna_proteinase_k,
+    buffer_al = genomic_dna_buffer_al,
+    ethanol_96_100 = genomic_dna_ethanol,
+    buffer_aw1 = genomic_dna_buffer_aw1,
+    buffer_aw2 = genomic_dna_buffer_aw2,
+    buffer_ae = genomic_dna_buffer_ae,
+    extraction_waste = genomic_dna_extraction_waste,
+    silica_spin_column = clone_c_dna_column,
+    sample_group = 2,
+    output_volume = 50uL
+  );
+
+  // Source step S4: Screen the target locus by PCR and agarose-gel readout.
+  // Assemble and amplify five 25 uL locus-screening PCRs.
+  let pcr_master_mix = tube(label = "PCRMasterMix2x", capacity = 1000uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.MASTER_MIX, code = "PCR_MASTER_MIX_2X", attrs = { role: reaction_mix }):500uL
+  ]);
+  let forward_primer = tube(label = "OutsideCutSitesForwardPrimer10uM", capacity = 200uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.DNA, code = "GENE_X_OUTSIDE_FORWARD_PRIMER", attrs = { role: primer, concentration_uM: "10" }):100uL
+  ]);
+  let reverse_primer = tube(label = "OutsideCutSitesReversePrimer10uM", capacity = 200uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.DNA, code = "GENE_X_OUTSIDE_REVERSE_PRIMER", attrs = { role: primer, concentration_uM: "10" }):100uL
+  ]);
+  let nuclease_free_water = tube(label = "NucleaseFreeWater", capacity = 5000uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "NFW", attrs = { role: reaction_environment }):4000uL
+  ]);
+  let wt_pcr = tube(label = "WTPCR", capacity = 100uL);
+  let nt_pcr = tube(label = "NTPCR", capacity = 100uL);
+  let clone_a_pcr = tube(label = "CloneAPCR", capacity = 100uL);
+  let clone_b_pcr = tube(label = "CloneBPCR", capacity = 100uL);
+  let clone_c_pcr = tube(label = "CloneCPCR", capacity = 100uL);
+  wt_pcr << [pcr_master_mix:12.5uL, forward_primer:0.5uL, reverse_primer:0.5uL, wt_gdna:1uL, nuclease_free_water:10.5uL];
+  nt_pcr << [pcr_master_mix:12.5uL, forward_primer:0.5uL, reverse_primer:0.5uL, nt_gdna:1uL, nuclease_free_water:10.5uL];
+  clone_a_pcr << [pcr_master_mix:12.5uL, forward_primer:0.5uL, reverse_primer:0.5uL, clone_a_gdna:1uL, nuclease_free_water:10.5uL];
+  clone_b_pcr << [pcr_master_mix:12.5uL, forward_primer:0.5uL, reverse_primer:0.5uL, clone_b_gdna:1uL, nuclease_free_water:10.5uL];
+  clone_c_pcr << [pcr_master_mix:12.5uL, forward_primer:0.5uL, reverse_primer:0.5uL, clone_c_gdna:1uL, nuclease_free_water:10.5uL];
+  let all_pcr = group([wt_pcr, nt_pcr, clone_a_pcr, clone_b_pcr, clone_c_pcr]);
+  with env(thermal = 95C, duration = 3min) { hold(sample = all_pcr); }
+  repeat pcr_cycle in schedule(start = 1, end = 35, step = 1) {
+    with env(thermal = 95C, duration = 15s) { hold(sample = all_pcr); }
+    with env(thermal = 60C, duration = 20s) { hold(sample = all_pcr); }
+    with env(thermal = 72C, duration = 30s) { hold(sample = all_pcr); }
+  }
+  with env(thermal = 72C, duration = 5min) { hold(sample = all_pcr); }
+  // Source specifies an indefinite 4 C hold; 10 min is the finite benchmark window.
+  with env(thermal = 4C, duration = 10min) { hold(sample = all_pcr); }
+
+  let prepared_loading_dye = tube(label = "PreparedDNALoadingDye", capacity = 10mL, load = [
+    content(kind = ContentKind.CHEMICAL, type = ContentType.DYE, code = "DNA_LOADING_DYE_6X", attrs = { role: tracking }):800uL
+  ]);
+  let selected_dna_ladder = tube(label = "SelectedDNA100bpSizeLadder", capacity = 10mL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.DNA, code = "DNA_100BP_SIZE_LADDER", attrs = { role: standard }):800uL
+  ]);
+  let prepared_gel_ladder_lane = well(
+    label = "PreparedGelLadderLane",
+    spec = "cast_2_percent_agarose_in_1x_tbe",
+    carrier_kind = "agarose_gel",
+    carrier_id = "GeneXLocusScreenGel",
+    carrier_position = "A6",
+    capacity = 50uL,
+    open = true
+  );
+  let prepared_agarose_gel = chamber(
+    label = "GeneXLocusScreenGel",
+    spec = "cast_2_percent_agarose_in_1x_tbe_with_fluorescent_dna_stain",
+    carrier_kind = "agarose_gel_casting_tray",
+    carrier_id = "GeneXLocusScreenGel",
+    capacity = 150mL,
+    open = true
+  );
+  PrepareTwoPercentAgaroseGel(
+    prepared_loading_dye = prepared_loading_dye,
+    selected_dna_ladder = selected_dna_ladder,
+    prepared_gel_ladder_lane = prepared_gel_ladder_lane,
+    prepared_agarose_gel = prepared_agarose_gel
+  );
+  let wt_lane = well(label = "WTLane", spec = "cast_2_percent_agarose_in_1x_tbe", carrier_kind = "agarose_gel", carrier_id = "GeneXLocusScreenGel", carrier_position = "A1", capacity = 50uL, open = true);
+  let nt_lane = well(label = "NTLane", spec = "cast_2_percent_agarose_in_1x_tbe", carrier_kind = "agarose_gel", carrier_id = "GeneXLocusScreenGel", carrier_position = "A2", capacity = 50uL, open = true);
+  let clone_a_lane = well(label = "CloneALane", spec = "cast_2_percent_agarose_in_1x_tbe", carrier_kind = "agarose_gel", carrier_id = "GeneXLocusScreenGel", carrier_position = "A3", capacity = 50uL, open = true);
+  let clone_b_lane = well(label = "CloneBLane", spec = "cast_2_percent_agarose_in_1x_tbe", carrier_kind = "agarose_gel", carrier_id = "GeneXLocusScreenGel", carrier_position = "A4", capacity = 50uL, open = true);
+  let clone_c_lane = well(label = "CloneCLane", spec = "cast_2_percent_agarose_in_1x_tbe", carrier_kind = "agarose_gel", carrier_id = "GeneXLocusScreenGel", carrier_position = "A5", capacity = 50uL, open = true);
+  wt_lane << [wt_pcr:5uL, prepared_loading_dye:1uL];
+  nt_lane << [nt_pcr:5uL, prepared_loading_dye:1uL];
+  clone_a_lane << [clone_a_pcr:5uL, prepared_loading_dye:1uL];
+  clone_b_lane << [clone_b_pcr:5uL, prepared_loading_dye:1uL];
+  clone_c_lane << [clone_c_pcr:5uL, prepared_loading_dye:1uL];
+  let wt_run = sep(sample = wt_lane,
+    program = field_program(field = 120V, duration = 35min),
+    component_fates = {
+      PCR_MASTER_MIX_2X: { target_band_fraction: 0%, non_target_fraction: 100% },
+      GENOMIC_DNA: { target_band_fraction: 100%, non_target_fraction: 0% },
+      GENE_X_OUTSIDE_FORWARD_PRIMER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      GENE_X_OUTSIDE_REVERSE_PRIMER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNEASY_BUFFER_AE: { target_band_fraction: 0%, non_target_fraction: 100% },
+      NFW: { target_band_fraction: 0%, non_target_fraction: 100% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 0%, non_target_fraction: 100% }
+    });
+  let nt_run = sep(sample = nt_lane,
+    program = field_program(field = 120V, duration = 35min),
+    component_fates = {
+      PCR_MASTER_MIX_2X: { target_band_fraction: 0%, non_target_fraction: 100% },
+      GENOMIC_DNA: { target_band_fraction: 100%, non_target_fraction: 0% },
+      GENE_X_OUTSIDE_FORWARD_PRIMER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      GENE_X_OUTSIDE_REVERSE_PRIMER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNEASY_BUFFER_AE: { target_band_fraction: 0%, non_target_fraction: 100% },
+      NFW: { target_band_fraction: 0%, non_target_fraction: 100% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 0%, non_target_fraction: 100% }
+    });
+  let clone_a_run = sep(sample = clone_a_lane,
+    program = field_program(field = 120V, duration = 35min),
+    component_fates = {
+      PCR_MASTER_MIX_2X: { target_band_fraction: 0%, non_target_fraction: 100% },
+      GENOMIC_DNA: { target_band_fraction: 100%, non_target_fraction: 0% },
+      GENE_X_OUTSIDE_FORWARD_PRIMER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      GENE_X_OUTSIDE_REVERSE_PRIMER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNEASY_BUFFER_AE: { target_band_fraction: 0%, non_target_fraction: 100% },
+      NFW: { target_band_fraction: 0%, non_target_fraction: 100% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 0%, non_target_fraction: 100% }
+    });
+  let clone_b_run = sep(sample = clone_b_lane,
+    program = field_program(field = 120V, duration = 35min),
+    component_fates = {
+      PCR_MASTER_MIX_2X: { target_band_fraction: 0%, non_target_fraction: 100% },
+      GENOMIC_DNA: { target_band_fraction: 100%, non_target_fraction: 0% },
+      GENE_X_OUTSIDE_FORWARD_PRIMER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      GENE_X_OUTSIDE_REVERSE_PRIMER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNEASY_BUFFER_AE: { target_band_fraction: 0%, non_target_fraction: 100% },
+      NFW: { target_band_fraction: 0%, non_target_fraction: 100% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 0%, non_target_fraction: 100% }
+    });
+  let clone_c_run = sep(sample = clone_c_lane,
+    program = field_program(field = 120V, duration = 35min),
+    component_fates = {
+      PCR_MASTER_MIX_2X: { target_band_fraction: 0%, non_target_fraction: 100% },
+      GENOMIC_DNA: { target_band_fraction: 100%, non_target_fraction: 0% },
+      GENE_X_OUTSIDE_FORWARD_PRIMER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      GENE_X_OUTSIDE_REVERSE_PRIMER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNEASY_BUFFER_AE: { target_band_fraction: 0%, non_target_fraction: 100% },
+      NFW: { target_band_fraction: 0%, non_target_fraction: 100% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 0%, non_target_fraction: 100% }
+    });
+  // target_band_fraction denotes the modeled migrating DNA fraction, not a
+  // predicted locus-specific band, primer incorporation, or fluorescence signal.
+  let ladder_run = sep(sample = prepared_gel_ladder_lane,
+    program = field_program(field = 120V, duration = 35min),
+    component_fates = {
+      DNA_100BP_SIZE_LADDER: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DNA_LOADING_DYE_6X: { target_band_fraction: 0%, non_target_fraction: 100% }
+    });
+  let gel_readout_schema = data_schema(
+    label = "GeneXLocusPCRBandReadout",
+    fields = [sample_id, band_500_present, band_620_present, band_count, control_qc_pass]
+  );
+  let wt_band_readout = img(sample = wt_run[0], quantity = customized, schema_ref = gel_readout_schema, save_raw = true);
+  let nt_band_readout = img(sample = nt_run[0], quantity = customized, schema_ref = gel_readout_schema, save_raw = true);
+  let clone_a_band_readout = img(sample = clone_a_run[0], quantity = customized, schema_ref = gel_readout_schema, save_raw = true);
+  let clone_b_band_readout = img(sample = clone_b_run[0], quantity = customized, schema_ref = gel_readout_schema, save_raw = true);
+  let clone_c_band_readout = img(sample = clone_c_run[0], quantity = customized, schema_ref = gel_readout_schema, save_raw = true);
+  let ladder_readout = img(sample = ladder_run[0], quantity = customized, schema_ref = gel_readout_schema, save_raw = true);
+
+  // Source step S5: Bind externally supplied PCR-band observations to the
+  // readouts. The deterministic benchmark fixture supplies these values below.
+  wt_band_readout.result.band_500_present = pcr_wt_band_500_present;
+  wt_band_readout.result.band_620_present = pcr_wt_band_620_present;
+  wt_band_readout.result.band_count = pcr_wt_band_count;
+  wt_band_readout.result.control_qc_pass = pcr_wt_control_qc_pass;
+  nt_band_readout.result.band_500_present = pcr_nt_band_500_present;
+  nt_band_readout.result.band_620_present = pcr_nt_band_620_present;
+  nt_band_readout.result.band_count = pcr_nt_band_count;
+  nt_band_readout.result.control_qc_pass = pcr_nt_control_qc_pass;
+  clone_a_band_readout.result.band_500_present = pcr_clone_a_band_500_present;
+  clone_a_band_readout.result.band_620_present = pcr_clone_a_band_620_present;
+  clone_a_band_readout.result.band_count = pcr_clone_a_band_count;
+  clone_b_band_readout.result.band_500_present = pcr_clone_b_band_500_present;
+  clone_b_band_readout.result.band_620_present = pcr_clone_b_band_620_present;
+  clone_b_band_readout.result.band_count = pcr_clone_b_band_count;
+  clone_c_band_readout.result.band_500_present = pcr_clone_c_band_500_present;
+  clone_c_band_readout.result.band_620_present = pcr_clone_c_band_620_present;
+  clone_c_band_readout.result.band_count = pcr_clone_c_band_count;
+
+  // Source step S6: Route genotype-confirmation outcomes from the PCR evidence.
+  // Genotype confirmation is a structured external readout boundary; the
+  // source intentionally does not expand the sequencing protocol.
+  let genotype_schema = data_schema(
+    label = "GeneXGenotypeConfirmation",
+    fields = [sample_id, allele_1_call, allele_2_call, biallelic_deletion_confirmed, heterozygous_deletion_confirmed, qc_pass]
+  );
+  let clone_b_archive = tube(label = "ArchivedCloneBHeterozygousCells", capacity = 3000uL);
+  let clone_c_discard = tube(label = "DiscardedCloneCUneditedCells", capacity = 3000uL);
+  let validated_clone_a = tube(label = "ValidatedGeneXKnockoutCloneA", capacity = 3000uL);
+  let inconclusive_clone_a = tube(label = "CloneAValidationInconclusive", capacity = 3000uL);
+  if clone_b_band_readout.result.band_500_present == true and clone_b_band_readout.result.band_620_present == true {
+    let clone_b_genotype = phy(sample = clone_b_pcr, quantity = customized, schema_ref = genotype_schema, save_raw = true);
+    clone_b_genotype.result.allele_1_call = genotype_clone_b_allele_1_call;
+    clone_b_genotype.result.allele_2_call = genotype_clone_b_allele_2_call;
+    clone_b_genotype.result.biallelic_deletion_confirmed = genotype_clone_b_biallelic_deletion_confirmed;
+    clone_b_genotype.result.heterozygous_deletion_confirmed = genotype_clone_b_heterozygous_deletion_confirmed;
+    clone_b_genotype.result.qc_pass = genotype_clone_b_qc_pass;
+    if clone_b_genotype.result.heterozygous_deletion_confirmed == true {
+      clone_b_archive << [clone_b];
+    }
+  }
+  if clone_c_band_readout.result.band_500_present == false and clone_c_band_readout.result.band_620_present == true {
+    clone_c_discard << [clone_c];
+  }
+
+  // Source step S7: Validate protein loss in the genotype-qualified clone.
+  // Clone A proceeds stage by stage. Flow validation is
+  // created only after biallelic genotype confirmation; functional validation
+  // is created only after the flow readout reports loss of GENE-X protein.
+  if clone_a_band_readout.result.band_500_present == true and clone_a_band_readout.result.band_620_present == false {
+    let clone_a_genotype = phy(sample = clone_a_pcr, quantity = customized, schema_ref = genotype_schema, save_raw = true);
+    clone_a_genotype.result.allele_1_call = genotype_clone_a_allele_1_call;
+    clone_a_genotype.result.allele_2_call = genotype_clone_a_allele_2_call;
+    clone_a_genotype.result.biallelic_deletion_confirmed = genotype_clone_a_biallelic_deletion_confirmed;
+    clone_a_genotype.result.heterozygous_deletion_confirmed = genotype_clone_a_heterozygous_deletion_confirmed;
+    clone_a_genotype.result.qc_pass = genotype_clone_a_qc_pass;
+    if clone_a_genotype.result.biallelic_deletion_confirmed == true {
+      let wt_flow_sample = tube(label = "WTGeneXFlowAcquisitionSample", capacity = 1000uL);
+      let nt_flow_sample = tube(label = "NTGeneXFlowAcquisitionSample", capacity = 1000uL);
+      let clone_a_flow_sample = tube(label = "CloneAGeneXFlowAcquisitionSample", capacity = 1000uL);
+      wt_flow_sample << [wt_cells:500uL];
+      nt_flow_sample << [nt_cells:500uL];
+      clone_a_flow_sample << [clone_a:500uL];
+      let gene_x_panel = markers([GENE_X, LiveDead]);
+      let wt_events = stream(sample = wt_flow_sample, unit = single_cell, panel = gene_x_panel);
+      let nt_events = stream(sample = nt_flow_sample, unit = single_cell, panel = gene_x_panel);
+      let clone_a_events = stream(sample = clone_a_flow_sample, unit = single_cell, panel = gene_x_panel);
+      let protein_schema = data_schema(
+        label = "GeneXSurfaceProteinReadout",
+        fields = [sample_id, gene_x_surface_status, protein_negative, control_qc_pass]
+      );
+      let wt_protein = img(sample = wt_events, quantity = customized, schema_ref = protein_schema, save_raw = true);
+      let nt_protein = img(sample = nt_events, quantity = customized, schema_ref = protein_schema, save_raw = true);
+      let clone_a_protein = img(sample = clone_a_events, quantity = customized, schema_ref = protein_schema, save_raw = true);
+      wt_protein.result.gene_x_surface_status = protein_wt_gene_x_surface_status;
+      wt_protein.result.protein_negative = protein_wt_protein_negative;
+      wt_protein.result.control_qc_pass = protein_wt_control_qc_pass;
+      nt_protein.result.gene_x_surface_status = protein_nt_gene_x_surface_status;
+      nt_protein.result.protein_negative = protein_nt_protein_negative;
+      nt_protein.result.control_qc_pass = protein_nt_control_qc_pass;
+      clone_a_protein.result.gene_x_surface_status = protein_clone_a_gene_x_surface_status;
+      clone_a_protein.result.protein_negative = protein_clone_a_protein_negative;
+      clone_a_protein.result.control_qc_pass = protein_clone_a_control_qc_pass;
+      // Source step S8: Validate functional response in the protein-negative clone.
+      if clone_a_protein.result.protein_negative == true {
+        // Ligand-X stock concentration and preparation volumes are unspecified.
+        // Preserve the three source-cell lineages while recording the stated
+        // 100 ng/mL stimulation target in the source-aligned annotation.
+        let wt_stimulation = tube(label = "WTLigandXStimulation", spec = "ligand_x_target_100_ng_per_mL", capacity = 1000uL);
+        let nt_stimulation = tube(label = "NTLigandXStimulation", spec = "ligand_x_target_100_ng_per_mL", capacity = 1000uL);
+        let clone_a_stimulation = tube(label = "CloneALigandXStimulation", spec = "ligand_x_target_100_ng_per_mL", capacity = 1000uL);
+        wt_stimulation << [wt_cells:500uL];
+        nt_stimulation << [nt_cells:500uL];
+        clone_a_stimulation << [clone_a:500uL];
+        with env(thermal = 37C, co2 = 5%, duration = 30min) {
+          hold(sample = group([wt_stimulation, nt_stimulation, clone_a_stimulation]));
+        }
+        let function_schema = data_schema(
+          label = "LigandXDependentPsignalXReadout",
+          fields = [sample_id, psignal_x_status, function_lost, control_qc_pass]
+        );
+        let wt_function = phy(sample = wt_stimulation, quantity = customized, schema_ref = function_schema, save_raw = true);
+        let nt_function = phy(sample = nt_stimulation, quantity = customized, schema_ref = function_schema, save_raw = true);
+        let clone_a_function = phy(sample = clone_a_stimulation, quantity = customized, schema_ref = function_schema, save_raw = true);
+        wt_function.result.psignal_x_status = function_wt_psignal_x_status;
+        wt_function.result.function_lost = function_wt_function_lost;
+        wt_function.result.control_qc_pass = function_wt_control_qc_pass;
+        nt_function.result.psignal_x_status = function_nt_psignal_x_status;
+        nt_function.result.function_lost = function_nt_function_lost;
+        nt_function.result.control_qc_pass = function_nt_control_qc_pass;
+        clone_a_function.result.psignal_x_status = function_clone_a_psignal_x_status;
+        clone_a_function.result.function_lost = function_clone_a_function_lost;
+        clone_a_function.result.control_qc_pass = function_clone_a_control_qc_pass;
+        if wt_band_readout.result.control_qc_pass == true
+          and nt_band_readout.result.control_qc_pass == true
+          and wt_protein.result.control_qc_pass == true
+          and nt_protein.result.control_qc_pass == true
+          and wt_function.result.control_qc_pass == true
+          and nt_function.result.control_qc_pass == true
+          and clone_a_function.result.function_lost == true {
+          validated_clone_a << [clone_a];
+        } else {
+          inconclusive_clone_a << [clone_a];
+        }
+      } else {
+        inconclusive_clone_a << [clone_a];
+      }
+    } else {
+      inconclusive_clone_a << [clone_a];
+    }
+  } else {
+    inconclusive_clone_a << [clone_a];
+  }
+  // Source step S9: Record final clone status and return the validated material.
+  return validated_clone_a = validated_clone_a;
+}
+
+protocol ExtractAndPurifyGenomicDNA(
+  sample,
+  output,
+  extraction_pbs,
+  proteinase_k,
+  buffer_al,
+  ethanol_96_100,
+  buffer_aw1,
+  buffer_aw2,
+  buffer_ae,
+  extraction_waste,
+  silica_spin_column,
+  sample_group = 0,
+  declared_genomic_dna_mass = 1ug,
+  output_volume = 50uL
+) {
+  // Cultured-cell spin-column genomic-DNA purification: collect cells, digest
+  // with Proteinase K and lysis buffer, bind DNA to silica, wash, and elute.
+  with env(thermal = 25C, duration = 5min) {
+    // Group 0: WT; group 1: non-targeting; group 2: edited clones.
+    // Delivered RNP is assumed to accompany cells, not a measured uptake rate.
+    if sample_group == 0 {
+      let wt_harvest_split = sep(sample = sample,
+        program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+        component_fates = {
+          HEK293T_GENE_X_POSITIVE: { supernatant: 0%, pellet: 100% },
+          LIMITING_DILUTION_CULTURE_MEDIUM: { supernatant: 100%, pellet: 0% }
+        }
+      );
+      extraction_waste << [wt_harvest_split[0]];
+    } else {
+      if sample_group == 1 {
+        let nt_harvest_split = sep(sample = sample,
+          program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+          component_fates = {
+            HEK293T_GENE_X_POSITIVE: { supernatant: 0%, pellet: 100% },
+            CAS9_PROTEIN: { supernatant: 0%, pellet: 100% },
+            NON_TARGETING_SGRNA: { supernatant: 0%, pellet: 100% },
+            RNP_ASSEMBLY_BUFFER_OPTIMEM: { supernatant: 100%, pellet: 0% },
+            PRECONFIGURED_LIPID_DELIVERY_MIX: { supernatant: 100%, pellet: 0% },
+            LIMITING_DILUTION_CULTURE_MEDIUM: { supernatant: 100%, pellet: 0% }
+          }
+        );
+        extraction_waste << [nt_harvest_split[0]];
+      } else {
+        let clone_harvest_split = sep(sample = sample,
+          program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+          component_fates = {
+            HEK293T_GENE_X_POSITIVE: { supernatant: 0%, pellet: 100% },
+            CAS9_PROTEIN: { supernatant: 0%, pellet: 100% },
+            SGRNA_1: { supernatant: 0%, pellet: 100% },
+            SGRNA_2: { supernatant: 0%, pellet: 100% },
+            RNP_ASSEMBLY_BUFFER_OPTIMEM: { supernatant: 100%, pellet: 0% },
+            PRECONFIGURED_LIPID_DELIVERY_MIX: { supernatant: 100%, pellet: 0% },
+            LIMITING_DILUTION_CULTURE_MEDIUM: { supernatant: 100%, pellet: 0% }
+          }
+        );
+        extraction_waste << [clone_harvest_split[0]];
+      }
+    }
+  }
+  let harvested_cell_pellet = sample;
+  harvested_cell_pellet << [extraction_pbs:200uL, proteinase_k:20uL];
+  harvested_cell_pellet << [buffer_al:200uL];
+  with env(thermal = 56C, duration = 10min) {
+    hold(sample = harvested_cell_pellet);
+  }
+  // Author-declared analyte after lysis, following Case02. This mass is a
+  // configurable benchmark assumption, not a predicted yield or a DNA addition.
+  // The original sample contents accompany this declaration into the lysate.
+  // Their cellular component is a residue proxy, not the purified analyte;
+  // this checkpoint does not model cell-to-DNA conversion or mass conservation.
+  let declared_lysate = tube(label = "DeclaredGenomicDNALysate", capacity = 2mL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.DNA, code = "GENOMIC_DNA",
+      attrs = { role: target, source_sample: sample, accounting_basis: author_declared_post_lysis }):declared_genomic_dna_mass
+  ]);
+  declared_lysate << [harvested_cell_pellet];
+  declared_lysate << [ethanol_96_100:200uL];
+
+  silica_spin_column << [declared_lysate];
+  // Post-lysis RNA/protein removal is an idealized benchmark fate, not a
+  // claim that silica purification alone quantitatively eliminates all RNA.
+  if sample_group == 0 {
+    sep(sample = silica_spin_column,
+      program = centrifugal_filtration_program(membrane = "silica", drive = 6000g, duration = 1min),
+      component_fates = {
+        GENOMIC_DNA: { filtrate: 0%, retentate: 100% },
+        HEK293T_GENE_X_POSITIVE: { filtrate: 100%, retentate: 0% },
+        PBS_PH_7_2: { filtrate: 100%, retentate: 0% },
+        PROTEINASE_K: { filtrate: 100%, retentate: 0% },
+        DNEASY_BUFFER_AL: { filtrate: 100%, retentate: 0% },
+        ETHANOL_96_100_PERCENT: { filtrate: 100%, retentate: 0% }
+      }
+    );
+  } else {
+    if sample_group == 1 {
+      sep(sample = silica_spin_column,
+        program = centrifugal_filtration_program(membrane = "silica", drive = 6000g, duration = 1min),
+        component_fates = {
+          GENOMIC_DNA: { filtrate: 0%, retentate: 100% },
+          HEK293T_GENE_X_POSITIVE: { filtrate: 100%, retentate: 0% },
+          CAS9_PROTEIN: { filtrate: 100%, retentate: 0% },
+          NON_TARGETING_SGRNA: { filtrate: 100%, retentate: 0% },
+          PBS_PH_7_2: { filtrate: 100%, retentate: 0% },
+          PROTEINASE_K: { filtrate: 100%, retentate: 0% },
+          DNEASY_BUFFER_AL: { filtrate: 100%, retentate: 0% },
+          ETHANOL_96_100_PERCENT: { filtrate: 100%, retentate: 0% }
+        }
+      );
+    } else {
+      sep(sample = silica_spin_column,
+        program = centrifugal_filtration_program(membrane = "silica", drive = 6000g, duration = 1min),
+        component_fates = {
+          GENOMIC_DNA: { filtrate: 0%, retentate: 100% },
+          HEK293T_GENE_X_POSITIVE: { filtrate: 100%, retentate: 0% },
+          CAS9_PROTEIN: { filtrate: 100%, retentate: 0% },
+          SGRNA_1: { filtrate: 100%, retentate: 0% },
+          SGRNA_2: { filtrate: 100%, retentate: 0% },
+          PBS_PH_7_2: { filtrate: 100%, retentate: 0% },
+          PROTEINASE_K: { filtrate: 100%, retentate: 0% },
+          DNEASY_BUFFER_AL: { filtrate: 100%, retentate: 0% },
+          ETHANOL_96_100_PERCENT: { filtrate: 100%, retentate: 0% }
+        }
+      );
+    }
+  }
+  extraction_waste << [silica_spin_column.contents[0]];
+
+  silica_spin_column << [buffer_aw1:500uL];
+  sep(
+    sample = silica_spin_column,
+    program = centrifugal_filtration_program(membrane = "silica", drive = 6000g, duration = 1min),
+    component_fates = {
+      GENOMIC_DNA: { filtrate: 0%, retentate: 100% },
+      DNEASY_BUFFER_AW1: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  extraction_waste << [silica_spin_column.contents[0]];
+
+  silica_spin_column << [buffer_aw2:500uL];
+  sep(
+    sample = silica_spin_column,
+    program = centrifugal_filtration_program(membrane = "silica", drive = 20000g, duration = 3min),
+    component_fates = {
+      GENOMIC_DNA: { filtrate: 0%, retentate: 100% },
+      DNEASY_BUFFER_AW2: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  extraction_waste << [silica_spin_column.contents[0]];
+
+  with env(thermal = 25C, duration = 1min) {
+    silica_spin_column << [buffer_ae:output_volume];
+    hold(sample = silica_spin_column);
+  }
+  sep(
+    sample = silica_spin_column,
+    program = centrifugal_filtration_program(membrane = "silica", drive = 6000g, duration = 1min),
+    component_fates = {
+      GENOMIC_DNA: { filtrate: 100%, retentate: 0% },
+      DNEASY_BUFFER_AE: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  output << [silica_spin_column.contents[0]:output_volume];
+  return output;
+}
+
+protocol PrepareTwoPercentAgaroseGel(
+  prepared_loading_dye,
+  selected_dna_ladder,
+  prepared_gel_ladder_lane,
+  prepared_agarose_gel
+) {
+  let agarose_powder = tube(label = "AgarosePowder", capacity = 10mL, load = [
+    content(kind = ContentKind.PARTICULATE, type = ContentType.PARTICLE, code = "MOLECULAR_BIOLOGY_AGAROSE", attrs = { role: matrix_component }):2g
+  ]);
+  let tbe_1x = tube(label = "TBE1xRunningBuffer", capacity = 200mL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "TBE_1X", attrs = { role: reaction_environment }):100mL
+  ]);
+  let fluorescent_dna_stain = tube(label = "FluorescentDNAStain", capacity = 5000uL, load = [
+    content(kind = ContentKind.CHEMICAL, type = ContentType.DYE, code = "DNA_FLUORESCENT_STAIN_10000X", attrs = { role: stain }):100uL
+  ]);
+  let molten_agarose = chamber(label = "MoltenTwoPercentAgarose", capacity = 150mL, open = true);
+  molten_agarose << [agarose_powder:2g, tbe_1x:100mL];
+  with env(thermal = 95C, duration = 5min) {
+    hold(sample = molten_agarose);
+  }
+  with env(thermal = 60C, duration = 10min) {
+    hold(sample = molten_agarose);
+  }
+  molten_agarose << [fluorescent_dna_stain:5uL];
+
+  // NOTE: Install the comb before pouring and remove it after solidification
+  // to form open sample-loading wells. Culsma has no structured casting-layout
+  // operation, so these required actions remain explicit execution notes.
+  prepared_agarose_gel << [molten_agarose];
+  with env(thermal = 25C, duration = 30min) {
+    hold(sample = prepared_agarose_gel);
+  }
+
+  prepared_gel_ladder_lane << [selected_dna_ladder:5uL, prepared_loading_dye:1uL];
+  return prepared_agarose_gel;
+}
+
+// Deterministic benchmark fixture. A real execution replaces these arguments
+// with observations supplied by its instruments, operators, or analysis systems.
+
+let fixture_labels = data_ref(kind = custom);
+fixture_labels.result.fixture_deleted_allele = "deletion";
+fixture_labels.result.fixture_wild_type_allele = "WT";
+fixture_labels.result.fixture_protein_positive = "positive";
+fixture_labels.result.fixture_protein_negative = "negative";
+fixture_labels.result.fixture_signal_induced = "induced";
+fixture_labels.result.fixture_signal_not_induced = "not_induced";
+let validated_clone_a_result = CRISPRKnockoutValidation(
+  cell_count_viable_cell_count = 200000,
+  cell_count_viability_percent = 100,
+  operator_selected_a3_for_clone_a = true,
+  operator_selected_a4_for_clone_b = true,
+  operator_selected_a5_for_clone_c = true,
+  pcr_wt_band_500_present = false,
+  pcr_wt_band_620_present = true,
+  pcr_wt_band_count = 1,
+  pcr_wt_control_qc_pass = true,
+  pcr_nt_band_500_present = false,
+  pcr_nt_band_620_present = true,
+  pcr_nt_band_count = 1,
+  pcr_nt_control_qc_pass = true,
+  pcr_clone_a_band_500_present = true,
+  pcr_clone_a_band_620_present = false,
+  pcr_clone_a_band_count = 1,
+  pcr_clone_b_band_500_present = true,
+  pcr_clone_b_band_620_present = true,
+  pcr_clone_b_band_count = 2,
+  pcr_clone_c_band_500_present = false,
+  pcr_clone_c_band_620_present = true,
+  pcr_clone_c_band_count = 1,
+  genotype_clone_a_allele_1_call = fixture_labels.result.fixture_deleted_allele,
+  genotype_clone_a_allele_2_call = fixture_labels.result.fixture_deleted_allele,
+  genotype_clone_a_biallelic_deletion_confirmed = true,
+  genotype_clone_a_heterozygous_deletion_confirmed = false,
+  genotype_clone_a_qc_pass = true,
+  genotype_clone_b_allele_1_call = fixture_labels.result.fixture_wild_type_allele,
+  genotype_clone_b_allele_2_call = fixture_labels.result.fixture_deleted_allele,
+  genotype_clone_b_biallelic_deletion_confirmed = false,
+  genotype_clone_b_heterozygous_deletion_confirmed = true,
+  genotype_clone_b_qc_pass = true,
+  protein_wt_gene_x_surface_status = fixture_labels.result.fixture_protein_positive,
+  protein_wt_protein_negative = false,
+  protein_wt_control_qc_pass = true,
+  protein_nt_gene_x_surface_status = fixture_labels.result.fixture_protein_positive,
+  protein_nt_protein_negative = false,
+  protein_nt_control_qc_pass = true,
+  protein_clone_a_gene_x_surface_status = fixture_labels.result.fixture_protein_negative,
+  protein_clone_a_protein_negative = true,
+  protein_clone_a_control_qc_pass = true,
+  function_wt_psignal_x_status = fixture_labels.result.fixture_signal_induced,
+  function_wt_function_lost = false,
+  function_wt_control_qc_pass = true,
+  function_nt_psignal_x_status = fixture_labels.result.fixture_signal_induced,
+  function_nt_function_lost = false,
+  function_nt_control_qc_pass = true,
+  function_clone_a_psignal_x_status = fixture_labels.result.fixture_signal_not_induced,
+  function_clone_a_function_lost = true,
+  function_clone_a_control_qc_pass = true
+);
+return validated_clone_a_result;

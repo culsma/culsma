@@ -1,0 +1,503 @@
+protocol FullWesternBlotWorkflow returns (
+  transferred_membrane_tank,
+  blot_image
+) {
+  // Part 1: Adherent-cell wash and on-plate protein lysis.
+  // Source step S1: accept cultured adherent mammalian cells at protein harvest.
+  let cultured_cells = well(
+    label = "TB03CulturedMammalianCells",
+    carrier_id = "SixWellPlate",
+    carrier_position = "A1",
+    capacity = 4mL,
+    load = [
+      content(kind = ContentKind.BIO_CELLULAR, type = ContentType.CELL_LINE, code = "MAMMALIAN_CELLS", attrs = { role: material, culture_state: adherent_monolayer, mass_basis: wet_weight, source_cell_count: "5e6" }):40mg,
+      content(kind = ContentKind.FORMULATION, type = ContentType.MEDIUM, code = "COMPLETE_CULTURE_MEDIUM", attrs = { role: culture }):2mL
+    ]
+  );
+  let pbs = tube(label = "PBS1X", capacity = 10mL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "PBS_1X", attrs = { role: wash }):10mL
+  ]);
+  let ripa_buffer = tube(label = "ColdRipaLysisBuffer", capacity = 2mL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "RIPA", attrs = { role: lysis, thermal_state: cold }):1.5mL
+  ]);
+  let inhibitor_cocktail = tube(label = "ProteasePhosphataseInhibitorCocktail", capacity = 200uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.SUPPLEMENT, code = "PROTEASE_PHOSPHATASE_INHIBITOR", attrs = { role: inhibitor }):100uL
+  ]);
+  let wash_waste = tube(label = "TB03WashWaste", capacity = 10mL);
+
+  sep(
+    sample = cultured_cells,
+    program = filtration_program(membrane = "well_surface", drive = "aspiration"),
+    component_fates = {
+      MAMMALIAN_CELLS: { filtrate: 0%, retentate: 100% },
+      COMPLETE_CULTURE_MEDIUM: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  // Source step S2: remove medium, wash the monolayer, lyse on plate, and collect crude lysate.
+  wash_waste << [cultured_cells.contents[0]];
+
+  repeat pbs_wash_cycle in schedule(start = 1, end = 2, step = 1) {
+    cultured_cells << [pbs:1mL];
+    sep(
+      sample = cultured_cells,
+      program = filtration_program(membrane = "well_surface", drive = "aspiration"),
+      component_fates = {
+        MAMMALIAN_CELLS: { filtrate: 0%, retentate: 100% },
+        PBS_1X: { filtrate: 100%, retentate: 0% }
+      }
+    );
+    wash_waste << [cultured_cells.contents[0]];
+  }
+
+  cultured_cells << [ripa_buffer:300uL, inhibitor_cocktail:10uL];
+  with env(thermal = 0C, duration = 20min) {
+    hold(sample = cultured_cells);
+  }
+
+  let crude_lysate = tube(label = "TB03CrudeProteinLysate", capacity = 1.5mL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "MAMMALIAN_TOTAL_PROTEIN", attrs = { role: total_cellular_protein, basis: "5e6_cells_at_200_pg_per_cell", state: crude_lysate }):1mg
+  ]);
+  crude_lysate << [cultured_cells:310uL] with constraint(low_carryover);
+
+  repeat lysis_resuspension_mix in schedule(start = 1, end = 10, step = 1) {
+    crude_lysate << [crude_lysate:240uL];
+  }
+
+  let clarified_lysate = tube(label = "TB03ClarifiedProteinLysate", capacity = 1.5mL);
+  with env(thermal = 4C, duration = 10min) {
+    // Source step S3: clarify the crude lysate and retain the soluble fraction.
+    let lysate_clarification = sep(
+      sample = crude_lysate,
+      program = centrifuge_program(drive = 12000g),
+      component_fates = {
+        MAMMALIAN_TOTAL_PROTEIN: { supernatant: 100%, pellet: 0% },
+        RIPA: { supernatant: 100%, pellet: 0% },
+        PROTEASE_PHOSPHATASE_INHIBITOR: { supernatant: 100%, pellet: 0% }
+      }
+    );
+    clarified_lysate << [lysate_clarification[0]:250uL] with constraint(low_carryover);
+  }
+
+  // Part 2: Protein quantification.
+  let bca_reagent_a = tube(label = "BCAReagentA", capacity = 5mL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.OTHER_FORMULATION, code = "BCA_REAGENT_A", attrs = { role: detection }):4.9mL
+  ]);
+  let bca_reagent_b = tube(label = "BCAReagentB", capacity = 200uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.OTHER_FORMULATION, code = "BCA_REAGENT_B", attrs = { role: detection }):100uL
+  ]);
+  // Source step S4: prepare and run the BCA assay and record the loading criterion.
+  let bca_working_reagent = tube(label = "BCAWorkingReagent50To1", capacity = 5mL);
+  bca_working_reagent << [bca_reagent_a:4.9mL, bca_reagent_b:100uL];
+  agit(sample = bca_working_reagent, mode = "invert", cycles = 10);
+
+  let bsa_standard_0000 = tube(label = "BSAStandard0ugPermL", capacity = 100uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "BSA_STD_0", attrs = { role: standard, concentration_ug_mL: "0" }):100uL
+  ]);
+  let bsa_standard_0125 = tube(label = "BSAStandard125ugPermL", capacity = 100uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "BSA_STD_125", attrs = { role: standard, concentration_ug_mL: "125" }):100uL
+  ]);
+  let bsa_standard_0500 = tube(label = "BSAStandard500ugPermL", capacity = 100uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "BSA_STD_500", attrs = { role: standard, concentration_ug_mL: "500" }):100uL
+  ]);
+  let bsa_standard_1000 = tube(label = "BSAStandard1000ugPermL", capacity = 100uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "BSA_STD_1000", attrs = { role: standard, concentration_ug_mL: "1000" }):100uL
+  ]);
+  let bsa_standard_2000 = tube(label = "BSAStandard2000ugPermL", capacity = 100uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "BSA_STD_2000", attrs = { role: standard, concentration_ug_mL: "2000" }):100uL
+  ]);
+  let bca_sample_well_1 = well(label = "BCASampleDuplicate1", carrier_id = "BCAPlate", carrier_position = "A1", capacity = 300uL);
+  let bca_sample_well_2 = well(label = "BCASampleDuplicate2", carrier_id = "BCAPlate", carrier_position = "A2", capacity = 300uL);
+  let bca_standard_0000_well_1 = well(label = "BCAStandard0Duplicate1", carrier_id = "BCAPlate", carrier_position = "B1", capacity = 300uL);
+  let bca_standard_0000_well_2 = well(label = "BCAStandard0Duplicate2", carrier_id = "BCAPlate", carrier_position = "B2", capacity = 300uL);
+  let bca_standard_0125_well_1 = well(label = "BCAStandard125Duplicate1", carrier_id = "BCAPlate", carrier_position = "B3", capacity = 300uL);
+  let bca_standard_0125_well_2 = well(label = "BCAStandard125Duplicate2", carrier_id = "BCAPlate", carrier_position = "B4", capacity = 300uL);
+  let bca_standard_0500_well_1 = well(label = "BCAStandard500Duplicate1", carrier_id = "BCAPlate", carrier_position = "B5", capacity = 300uL);
+  let bca_standard_0500_well_2 = well(label = "BCAStandard500Duplicate2", carrier_id = "BCAPlate", carrier_position = "B6", capacity = 300uL);
+  let bca_standard_1000_well_1 = well(label = "BCAStandard1000Duplicate1", carrier_id = "BCAPlate", carrier_position = "B7", capacity = 300uL);
+  let bca_standard_1000_well_2 = well(label = "BCAStandard1000Duplicate2", carrier_id = "BCAPlate", carrier_position = "B8", capacity = 300uL);
+  let bca_standard_2000_well_1 = well(label = "BCAStandard2000Duplicate1", carrier_id = "BCAPlate", carrier_position = "B9", capacity = 300uL);
+  let bca_standard_2000_well_2 = well(label = "BCAStandard2000Duplicate2", carrier_id = "BCAPlate", carrier_position = "B10", capacity = 300uL);
+  bca_sample_well_1 << [clarified_lysate:10uL, bca_working_reagent:200uL];
+  bca_sample_well_2 << [clarified_lysate:10uL, bca_working_reagent:200uL];
+  bca_standard_0000_well_1 << [bsa_standard_0000:10uL, bca_working_reagent:200uL];
+  bca_standard_0000_well_2 << [bsa_standard_0000:10uL, bca_working_reagent:200uL];
+  bca_standard_0125_well_1 << [bsa_standard_0125:10uL, bca_working_reagent:200uL];
+  bca_standard_0125_well_2 << [bsa_standard_0125:10uL, bca_working_reagent:200uL];
+  bca_standard_0500_well_1 << [bsa_standard_0500:10uL, bca_working_reagent:200uL];
+  bca_standard_0500_well_2 << [bsa_standard_0500:10uL, bca_working_reagent:200uL];
+  bca_standard_1000_well_1 << [bsa_standard_1000:10uL, bca_working_reagent:200uL];
+  bca_standard_1000_well_2 << [bsa_standard_1000:10uL, bca_working_reagent:200uL];
+  bca_standard_2000_well_1 << [bsa_standard_2000:10uL, bca_working_reagent:200uL];
+  bca_standard_2000_well_2 << [bsa_standard_2000:10uL, bca_working_reagent:200uL];
+  let bca_assay_wells = group([
+    bca_sample_well_1, bca_sample_well_2,
+    bca_standard_0000_well_1, bca_standard_0000_well_2,
+    bca_standard_0125_well_1, bca_standard_0125_well_2,
+    bca_standard_0500_well_1, bca_standard_0500_well_2,
+    bca_standard_1000_well_1, bca_standard_1000_well_2,
+    bca_standard_2000_well_1, bca_standard_2000_well_2
+  ]);
+  with env(thermal = 37C, duration = 30min) {
+    hold(sample = bca_assay_wells);
+  }
+  let bca_schema = data_schema(
+    label = "TB03BCAProteinQuantification",
+    fields = [sample_id, replicate_id, absorbance_590nm, protein_concentration_ug_uL, loading_mass_ug, loading_volume_uL, qc_pass]
+  );
+  let bca_readout = img(
+    sample = bca_assay_wells,
+    quantity = customized,
+    schema_ref = bca_schema,
+    save_raw = true
+  );
+  bca_readout.result.loading_mass_ug = 30;
+  bca_readout.result.qc_pass = true;
+
+  // Part 3: Reducing sample preparation.
+  let lds_sample_buffer_4x = tube(label = "LDSFourXSampleBuffer", capacity = 500uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "LDS_SAMPLE_BUFFER_4X", attrs = { role: reaction_environment }):400uL
+  ]);
+  let reducing_agent = tube(label = "ReducingAgent", capacity = 200uL, load = [
+    content(kind = ContentKind.CHEMICAL, type = ContentType.OTHER_CHEMICAL, code = "REDUCING_AGENT", attrs = { role: reaction_environment, final_fraction: "10_percent_v_v_in_loading_buffer" }):100uL
+  ]);
+  let reducing_loading_buffer = tube(label = "ReducingFourXLoadingBuffer", capacity = 500uL);
+  reducing_loading_buffer << [lds_sample_buffer_4x:180uL, reducing_agent:20uL];
+  agit(sample = reducing_loading_buffer, mode = "invert", cycles = 10);
+
+  // Source step S5: prepare, denature, and briefly spin down the reducing sample.
+  let prepared_sample = tube(label = "TB03PreparedReducingProteinSample", capacity = 200uL);
+  prepared_sample << [clarified_lysate:10.5uL, reducing_loading_buffer:6.25uL, pbs:8.25uL];
+  repeat prepared_sample_mix in schedule(start = 1, end = 10, step = 1) {
+    prepared_sample << [prepared_sample:20uL];
+  }
+  with env(thermal = 98C, duration = 15min) {
+    hold(sample = prepared_sample);
+  }
+  with env(thermal = 25C, duration = 5s) {
+    sep(
+      sample = prepared_sample,
+      program = centrifuge_program(drive = 3000g),
+      component_fates = {
+        MAMMALIAN_TOTAL_PROTEIN: { supernatant: 100%, pellet: 0% },
+        RIPA: { supernatant: 100%, pellet: 0% },
+        PROTEASE_PHOSPHATASE_INHIBITOR: { supernatant: 100%, pellet: 0% },
+        LDS_SAMPLE_BUFFER_4X: { supernatant: 100%, pellet: 0% },
+        REDUCING_AGENT: { supernatant: 100%, pellet: 0% },
+        PBS_1X: { supernatant: 100%, pellet: 0% }
+      }
+    );
+  }
+
+  // Part 4: SDS-PAGE separation.
+  let bis_tris_gel = chamber(label = "FourToTwelvePercentBisTrisGel", capacity = 600uL, open = true);
+  let electrophoresis_tank = chamber(label = "TB03ElectrophoresisTank", capacity = 800mL);
+  let running_buffer = container(label = "SDSPageRunningBufferBottle", capacity = 1L, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "SDS_PAGE_RUNNING_BUFFER_1X", attrs = { role: reaction_environment }):800mL
+  ]);
+  let protein_marker = tube(label = "PrestainedProteinMarker", capacity = 200uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "PRESTAINED_PROTEIN_MARKER", attrs = { role: marker }):100uL
+  ]);
+  // Source step S6: prepare the gel and tank and load the sample and marker lanes.
+  let sample_lane = well(label = "TB03SampleLane", carrier_id = "BisTrisGel", carrier_position = "A1", capacity = 50uL);
+  let marker_lane = well(label = "TB03MarkerLane", carrier_id = "BisTrisGel", carrier_position = "A2", capacity = 50uL);
+
+  electrophoresis_tank << [running_buffer:800mL];
+  sample_lane << [prepared_sample:25uL];
+  marker_lane << [protein_marker:10uL];
+  // Source step S7: run the stacking and separation voltage stages.
+  let stacking_sample_lane = sep(
+    sample = sample_lane,
+    program = field_program(field = 100V, duration = 15min),
+    component_fates = {
+      MAMMALIAN_TOTAL_PROTEIN: { target_band_fraction: 100%, non_target_fraction: 0% },
+      RIPA: { target_band_fraction: 100%, non_target_fraction: 0% },
+      PROTEASE_PHOSPHATASE_INHIBITOR: { target_band_fraction: 100%, non_target_fraction: 0% },
+      LDS_SAMPLE_BUFFER_4X: { target_band_fraction: 100%, non_target_fraction: 0% },
+      REDUCING_AGENT: { target_band_fraction: 100%, non_target_fraction: 0% },
+      PBS_1X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let stacking_marker_lane = sep(
+    sample = marker_lane,
+    program = field_program(field = 100V, duration = 15min),
+    component_fates = {
+      PRESTAINED_PROTEIN_MARKER: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let separated_sample_lane = sep(
+    sample = stacking_sample_lane[0],
+    program = field_program(field = 150V, duration = 45min),
+    component_fates = {
+      MAMMALIAN_TOTAL_PROTEIN: { target_band_fraction: 100%, non_target_fraction: 0% },
+      RIPA: { target_band_fraction: 100%, non_target_fraction: 0% },
+      PROTEASE_PHOSPHATASE_INHIBITOR: { target_band_fraction: 100%, non_target_fraction: 0% },
+      LDS_SAMPLE_BUFFER_4X: { target_band_fraction: 100%, non_target_fraction: 0% },
+      REDUCING_AGENT: { target_band_fraction: 100%, non_target_fraction: 0% },
+      PBS_1X: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let separated_marker_lane = sep(
+    sample = stacking_marker_lane[0],
+    program = field_program(field = 150V, duration = 45min),
+    component_fates = {
+      PRESTAINED_PROTEIN_MARKER: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+  let separated_lane_group = group([separated_sample_lane[0], separated_marker_lane[0]]);
+
+  // Part 5: Protein transfer and blocking.
+  let methanol = tube(label = "Methanol", capacity = 50mL, load = [
+    content(kind = ContentKind.CHEMICAL, type = ContentType.SOLVENT, code = "METHANOL", attrs = { role: activation }):50mL
+  ]);
+  let transfer_buffer = chamber(label = "TransferBufferTwentyPercentMethanol", capacity = 1L, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "TRANSFER_BUFFER_20_PERCENT_METHANOL", attrs = { role: reaction_environment }):500mL
+  ]);
+  let deionized_water = container(label = "DeionizedWaterBottle", capacity = 1L, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "DEIONIZED_WATER", attrs = { role: rinse }):500mL
+  ]);
+  // Source step S8: activate and equilibrate PVDF, assemble the stack, and transfer proteins.
+  let membrane_processing_tank = chamber(label = "TB03PVDFMembraneProcessingTank", capacity = 50mL, open = true, load = [
+    content(kind = ContentKind.BIO_SUBCELLULAR, type = ContentType.MEMBRANE, code = "PVDF_MEMBRANE", attrs = { role: transfer_substrate, count: "1_piece" }):0uL
+  ]);
+  let membrane_solution_waste = chamber(label = "TB03MembraneSolutionWaste", capacity = 500mL);
+  membrane_processing_tank << [methanol:15mL];
+  with env(thermal = 25C, duration = 1min) {
+    hold(sample = membrane_processing_tank);
+  }
+  let methanol_activation_split = sep(sample = membrane_processing_tank, program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"));
+  membrane_solution_waste << [methanol_activation_split[0]];
+  membrane_processing_tank << [deionized_water:15mL];
+  with env(thermal = 25C, duration = 2min) {
+    hold(sample = membrane_processing_tank);
+  }
+  let water_equilibration_split = sep(sample = membrane_processing_tank, program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"));
+  membrane_solution_waste << [water_equilibration_split[0]];
+  membrane_processing_tank << [transfer_buffer:15mL];
+  let transfer_buffer_equilibration_split = sep(sample = membrane_processing_tank, program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"));
+  membrane_solution_waste << [transfer_buffer_equilibration_split[0]];
+  let gel_equilibration_bath = chamber(label = "TB03GelEquilibrationBath", capacity = 50mL, open = true);
+  gel_equilibration_bath << [transfer_buffer:15mL];
+  with env(thermal = 25C, duration = 15min) {
+    hold(sample = separated_lane_group);
+    hold(sample = gel_equilibration_bath);
+  }
+  let sample_transfer_stack = chamber(label = "TB03SampleLaneTransferStack", capacity = 50mL);
+  let marker_transfer_stack = chamber(label = "TB03MarkerLaneTransferStack", capacity = 50mL);
+  sample_transfer_stack << [separated_sample_lane[0]];
+  sample_transfer_stack << [transfer_buffer:15mL];
+  marker_transfer_stack << [separated_marker_lane[0]];
+  marker_transfer_stack << [transfer_buffer:15mL];
+  let sample_membrane_track = well(label = "TB03SampleMembraneTrack", carrier_kind = "pvdf_membrane", carrier_id = "TB03PVDFMembrane", carrier_position = "A1", capacity = 50mL, open = true);
+  let marker_membrane_track = well(label = "TB03MarkerMembraneTrack", carrier_kind = "pvdf_membrane", carrier_id = "TB03PVDFMembrane", carrier_position = "A2", capacity = 50mL, open = true);
+  // PM #100 bridge: these lane-to-track mappings belong to one physical transfer run.
+  with env(thermal = 4C, duration = 90min) {
+    let transferred_sample_lane = sep(
+      sample = sample_transfer_stack,
+      program = field_program(field = 100V, duration = 90min),
+      component_fates = {
+        MAMMALIAN_TOTAL_PROTEIN: { target_band_fraction: 100%, non_target_fraction: 0% },
+        RIPA: { target_band_fraction: 0%, non_target_fraction: 100% },
+        PROTEASE_PHOSPHATASE_INHIBITOR: { target_band_fraction: 0%, non_target_fraction: 100% },
+        LDS_SAMPLE_BUFFER_4X: { target_band_fraction: 0%, non_target_fraction: 100% },
+        REDUCING_AGENT: { target_band_fraction: 0%, non_target_fraction: 100% },
+        PBS_1X: { target_band_fraction: 0%, non_target_fraction: 100% },
+        TRANSFER_BUFFER_20_PERCENT_METHANOL: { target_band_fraction: 0%, non_target_fraction: 100% }
+      }
+    );
+    let transferred_marker_lane = sep(
+      sample = marker_transfer_stack,
+      program = field_program(field = 100V, duration = 90min),
+      component_fates = {
+        PRESTAINED_PROTEIN_MARKER: { target_band_fraction: 100%, non_target_fraction: 0% },
+        TRANSFER_BUFFER_20_PERCENT_METHANOL: { target_band_fraction: 0%, non_target_fraction: 100% }
+      }
+    );
+    sample_membrane_track << [transferred_sample_lane[0]];
+    marker_membrane_track << [transferred_marker_lane[0]];
+  }
+  let transferred_membrane_tank = group([sample_membrane_track, marker_membrane_track]);
+  let membrane_incubation_bath = chamber(label = "TB03TransferredMembraneBlockingTank", capacity = 50mL, open = true);
+
+  let tbst = chamber(label = "TBSTWashBuffer", capacity = 1L, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "TBST_CARRIER", attrs = { role: wash }):500mL
+  ]);
+  // Source step S9: rinse, block, and wash the transferred membrane.
+  let blocking_buffer = chamber(label = "FivePercentMilkInTBST", capacity = 50mL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "BLOCKING_MILK_PROTEIN", attrs = { role: blocking, concentration: "5_percent_w_v" }):1.5g,
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "TBST_CARRIER", attrs = { role: carrier }):30mL
+  ]);
+  membrane_incubation_bath << [tbst:15mL];
+  sep(
+    sample = membrane_incubation_bath,
+    program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+    component_fates = {
+      TBST_CARRIER: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  membrane_solution_waste << [membrane_incubation_bath.contents[0]];
+  membrane_incubation_bath << [blocking_buffer:15mL];
+  with env(thermal = 25C, duration = 1h) {
+    agit(sample = transferred_membrane_tank, mode = "shake", duration = 1h, rate = 60rpm);
+    agit(sample = membrane_incubation_bath, mode = "shake", duration = 1h, rate = 60rpm);
+  }
+  sep(
+    sample = membrane_incubation_bath,
+    program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+    component_fates = {
+      BLOCKING_MILK_PROTEIN: { filtrate: 95%, retentate: 5% },
+      TBST_CARRIER: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  membrane_solution_waste << [membrane_incubation_bath.contents[0]];
+  repeat post_block_wash in schedule(start = 1, end = 3, step = 1) {
+    membrane_incubation_bath << [tbst:15mL];
+    with env(thermal = 25C, duration = 5min) {
+      agit(sample = transferred_membrane_tank, mode = "shake", duration = 5min, rate = 60rpm);
+      agit(sample = membrane_incubation_bath, mode = "shake", duration = 5min, rate = 60rpm);
+    }
+    sep(
+      sample = membrane_incubation_bath,
+      program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+      component_fates = {
+        TBST_CARRIER: { filtrate: 100%, retentate: 0% },
+        BLOCKING_MILK_PROTEIN: { filtrate: 0%, retentate: 100% }
+      }
+    );
+    membrane_solution_waste << [membrane_incubation_bath.contents[0]];
+  }
+
+  // Part 6: Antibody incubation, washes, and imaging.
+  let primary_dilution_buffer = chamber(label = "PrimaryAntibodyDilutionBufferFivePercentBsaTbst", capacity = 20mL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "PRIMARY_DILUENT_BSA", attrs = { role: antibody_diluent, concentration: "5_percent_w_v" }):0.75g,
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "TBST_CARRIER", attrs = { role: carrier }):15mL
+  ]);
+  let anti_alpha_tubulin_primary = tube(label = "MouseAntiAlphaTubulinDM1A", capacity = 100uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "MOUSE_ANTI_ALPHA_TUBULIN_DM1A", attrs = { role: antibody, target: "alpha_tubulin", dilution: "1:1000" }):20uL
+  ]);
+  // Source step S10: incubate the membrane with primary antibody.
+  let primary_antibody_solution = chamber(label = "AntiAlphaTubulinPrimarySolution", capacity = 15mL);
+  primary_antibody_solution << [primary_dilution_buffer:10mL, anti_alpha_tubulin_primary:10uL];
+  agit(sample = primary_antibody_solution, mode = "invert", cycles = 10);
+  membrane_incubation_bath << [primary_antibody_solution:10mL];
+  with env(thermal = 4C, duration = 18h) {
+    agit(sample = transferred_membrane_tank, mode = "shake", duration = 18h, rate = 60rpm);
+    agit(sample = membrane_incubation_bath, mode = "shake", duration = 18h, rate = 60rpm);
+  }
+  sep(
+    sample = membrane_incubation_bath,
+    program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+    component_fates = {
+      MOUSE_ANTI_ALPHA_TUBULIN_DM1A: { filtrate: 95%, retentate: 5% },
+      PRIMARY_DILUENT_BSA: { filtrate: 95%, retentate: 5% },
+      TBST_CARRIER: { filtrate: 100%, retentate: 0% },
+      BLOCKING_MILK_PROTEIN: { filtrate: 0%, retentate: 100% }
+    }
+  );
+  membrane_solution_waste << [membrane_incubation_bath.contents[0]];
+
+  // Source step S11: wash the primary-antibody-treated membrane three times.
+  repeat post_primary_wash in schedule(start = 1, end = 3, step = 1) {
+    membrane_incubation_bath << [tbst:15mL];
+    with env(thermal = 25C, duration = 5min) {
+      agit(sample = transferred_membrane_tank, mode = "shake", duration = 5min, rate = 60rpm);
+      agit(sample = membrane_incubation_bath, mode = "shake", duration = 5min, rate = 60rpm);
+    }
+    sep(
+      sample = membrane_incubation_bath,
+      program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+      component_fates = {
+        TBST_CARRIER: { filtrate: 100%, retentate: 0% },
+        MOUSE_ANTI_ALPHA_TUBULIN_DM1A: { filtrate: 0%, retentate: 100% },
+        PRIMARY_DILUENT_BSA: { filtrate: 0%, retentate: 100% },
+        BLOCKING_MILK_PROTEIN: { filtrate: 0%, retentate: 100% }
+      }
+    );
+    membrane_solution_waste << [membrane_incubation_bath.contents[0]];
+  }
+
+  let secondary_dilution_buffer = chamber(label = "SecondaryAntibodyDilutionBufferFivePercentMilkTbst", capacity = 20mL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "SECONDARY_DILUENT_MILK_PROTEIN", attrs = { role: antibody_diluent, concentration: "5_percent_w_v" }):0.75g,
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "TBST_CARRIER", attrs = { role: carrier }):15mL
+  ]);
+  let secondary_antibody = tube(label = "GoatAntiMouseAlexaFluor680", capacity = 100uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "GOAT_ANTI_MOUSE_IGG_ALEXA_FLUOR_680", attrs = { role: antibody, target: "mouse_primary", dilution: "1:10000" }):20uL
+  ]);
+  // Source step S12: incubate with fluorescent secondary antibody under dark protection.
+  let secondary_antibody_solution = chamber(label = "AlexaFluor680SecondarySolution", capacity = 15mL);
+  secondary_antibody_solution << [secondary_dilution_buffer:10mL, secondary_antibody:1uL];
+  agit(sample = secondary_antibody_solution, mode = "invert", cycles = 10);
+  membrane_incubation_bath << [secondary_antibody_solution:10mL] with constraint(dark_protected);
+  with constraint(dark_protected) {
+    with env(thermal = 25C, duration = 1h) {
+      agit(sample = transferred_membrane_tank, mode = "shake", duration = 1h, rate = 60rpm);
+      agit(sample = membrane_incubation_bath, mode = "shake", duration = 1h, rate = 60rpm);
+    }
+  }
+  sep(
+    sample = membrane_incubation_bath,
+    program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+    component_fates = {
+      GOAT_ANTI_MOUSE_IGG_ALEXA_FLUOR_680: { filtrate: 95%, retentate: 5% },
+      SECONDARY_DILUENT_MILK_PROTEIN: { filtrate: 95%, retentate: 5% },
+      TBST_CARRIER: { filtrate: 100%, retentate: 0% },
+      MOUSE_ANTI_ALPHA_TUBULIN_DM1A: { filtrate: 0%, retentate: 100% },
+      PRIMARY_DILUENT_BSA: { filtrate: 0%, retentate: 100% },
+      BLOCKING_MILK_PROTEIN: { filtrate: 0%, retentate: 100% }
+    }
+  );
+  membrane_solution_waste << [membrane_incubation_bath.contents[0]] with constraint(dark_protected);
+
+  // Source step S13: wash the stained membrane three times under dark protection.
+  repeat post_secondary_wash in schedule(start = 1, end = 3, step = 1) {
+    membrane_incubation_bath << [tbst:15mL] with constraint(dark_protected);
+    with constraint(dark_protected) {
+      with env(thermal = 25C, duration = 5min) {
+        agit(sample = transferred_membrane_tank, mode = "shake", duration = 5min, rate = 60rpm);
+        agit(sample = membrane_incubation_bath, mode = "shake", duration = 5min, rate = 60rpm);
+      }
+    }
+    sep(
+      sample = membrane_incubation_bath,
+      program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+      component_fates = {
+        TBST_CARRIER: { filtrate: 100%, retentate: 0% },
+        GOAT_ANTI_MOUSE_IGG_ALEXA_FLUOR_680: { filtrate: 0%, retentate: 100% },
+        SECONDARY_DILUENT_MILK_PROTEIN: { filtrate: 0%, retentate: 100% },
+        MOUSE_ANTI_ALPHA_TUBULIN_DM1A: { filtrate: 0%, retentate: 100% },
+        PRIMARY_DILUENT_BSA: { filtrate: 0%, retentate: 100% },
+        BLOCKING_MILK_PROTEIN: { filtrate: 0%, retentate: 100% }
+      }
+    );
+    membrane_solution_waste << [membrane_incubation_bath.contents[0]] with constraint(dark_protected);
+  }
+  with env(thermal = 25C, duration = 1min) {
+    hold(sample = transferred_membrane_tank);
+  }
+
+  let blot_schema = data_schema(
+    label = "TB03WesternBlotImage",
+    fields = [
+      sample_id,
+      channel_nm,
+      antibody_target,
+      target_band_position_kDa,
+      target_signal,
+      marker_visible,
+      exposure_setting,
+      image_file,
+      membrane_qc_pass
+    ]
+  );
+  // Source step S14: acquire the structured Western blot image readout.
+  let blot_image = img(sample = transferred_membrane_tank, quantity = customized, schema_ref = blot_schema, save_raw = true);
+  blot_image.result.channel_nm = 680;
+  blot_image.result.antibody_target = anti_alpha_tubulin_primary;
+  blot_image.result.marker_visible = true;
+  blot_image.result.membrane_qc_pass = true;
+
+  return
+    transferred_membrane_tank = transferred_membrane_tank,
+    blot_image = blot_image;
+}
+
+FullWesternBlotWorkflow();

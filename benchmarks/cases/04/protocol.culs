@@ -1,0 +1,211 @@
+protocol SandwichELISA returns (elisa_result) {
+  // Source step S1: Declare the 96-well ELISA plate and named well groups.
+  let elisa_plate = plate(label = "ELISA96", format = "96well", carrier_id = "ELISA96", capacity = 500uL);
+  let assay_wells = elisa_plate[A1:H2];
+  let standard_wells = elisa_plate[A1:H1];
+  let unknown_sample_wells = elisa_plate[A2:B2];
+  let positive_control_well = elisa_plate[C2];
+  let negative_control_well = elisa_plate[D2];
+  let blank_wells = elisa_plate[E2:H2];
+
+  let standard_2000 = tube(label = "Standard2000pgmL", capacity = 500uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "STD_2000", attrs = { role: standard }):0uL, content(kind = ContentKind.CHEMICAL, type = ContentType.SOLVENT, code = "DIL", attrs = { role: carrier }):400uL]);
+  let standard_1000 = tube(label = "Standard1000pgmL", capacity = 500uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "STD_1000", attrs = { role: standard }):0uL, content(kind = ContentKind.CHEMICAL, type = ContentType.SOLVENT, code = "DIL", attrs = { role: carrier }):400uL]);
+  let standard_500 = tube(label = "Standard500pgmL", capacity = 500uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "STD_500", attrs = { role: standard }):0uL, content(kind = ContentKind.CHEMICAL, type = ContentType.SOLVENT, code = "DIL", attrs = { role: carrier }):400uL]);
+  let standard_250 = tube(label = "Standard250pgmL", capacity = 500uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "STD_250", attrs = { role: standard }):0uL, content(kind = ContentKind.CHEMICAL, type = ContentType.SOLVENT, code = "DIL", attrs = { role: carrier }):400uL]);
+  let standard_125 = tube(label = "Standard125pgmL", capacity = 500uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "STD_125", attrs = { role: standard }):0uL, content(kind = ContentKind.CHEMICAL, type = ContentType.SOLVENT, code = "DIL", attrs = { role: carrier }):400uL]);
+  let standard_62_5 = tube(label = "Standard62p5pgmL", capacity = 500uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "STD_62P5", attrs = { role: standard }):0uL, content(kind = ContentKind.CHEMICAL, type = ContentType.SOLVENT, code = "DIL", attrs = { role: carrier }):400uL]);
+  let standard_31_25 = tube(label = "Standard31p25pgmL", capacity = 500uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "STD_31P25", attrs = { role: standard }):0uL, content(kind = ContentKind.CHEMICAL, type = ContentType.SOLVENT, code = "DIL", attrs = { role: carrier }):400uL]);
+  let zero_standard = tube(label = "ZeroStandard", capacity = 1000uL, load = [content(kind = ContentKind.CHEMICAL, type = ContentType.SOLVENT, code = "DIL", attrs = { role: carrier }):800uL]);
+
+  let capture_antibody = tube(label = "CaptureAntibodyWorkingSolution", capacity = 3mL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "CAPTURE_AB", attrs = { role: antibody }):0uL, content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "CAPTURE_AB_WORKING_BUFFER", attrs = { role: reaction_environment }):2mL]);
+  let blocking_buffer = tube(label = "BlockingBuffer", capacity = 6mL, load = [content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "BLOCK", attrs = { role: blocking }):5mL]);
+  let wash_buffer = tube(label = "WashBuffer", capacity = 150mL, load = [content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "WASH", attrs = { role: wash }):120mL]);
+  let reagent_diluent = tube(label = "ReagentDiluent", capacity = 5mL, load = [content(kind = ContentKind.CHEMICAL, type = ContentType.SOLVENT, code = "DIL", attrs = { role: carrier }):4mL]);
+  let unknown_sample_1 = tube(label = "UnknownSample1", capacity = 500uL, load = [content(kind = ContentKind.BIO_FLUID, type = ContentType.SERUM, code = "UNKNOWN_1"):400uL]);
+  let unknown_sample_2 = tube(label = "UnknownSample2", capacity = 500uL, load = [content(kind = ContentKind.BIO_FLUID, type = ContentType.SERUM, code = "UNKNOWN_2"):400uL]);
+  let positive_control = tube(label = "PositiveControl", capacity = 500uL, load = [content(kind = ContentKind.BIO_FLUID, type = ContentType.SERUM, code = "POS_CTRL", attrs = { workflow_role: positive_control }):400uL]);
+  let negative_control = tube(label = "NegativeControl", capacity = 500uL, load = [content(kind = ContentKind.BIO_FLUID, type = ContentType.SERUM, code = "NEG_CTRL", attrs = { workflow_role: negative_control }):400uL]);
+  let detection_antibody = tube(label = "DetectionAntibodyWorkingSolution", capacity = 3mL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "DETECTION_AB", attrs = { role: antibody }):0uL, content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "DETECTION_AB_WORKING_BUFFER", attrs = { role: reaction_environment }):2mL]);
+  let streptavidin_hrp = tube(label = "StreptavidinHRPWorkingSolution", capacity = 3mL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "SA_HRP", attrs = { role: enzyme_conjugate }):0uL, content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "SA_HRP_WORKING_BUFFER", attrs = { role: reaction_environment }):2mL]);
+  let tmb_substrate = tube(label = "TMBSubstrate", capacity = 3mL, load = [content(kind = ContentKind.CHEMICAL, type = ContentType.ORGANIC_COMPOUND, code = "TMB", attrs = { role: substrate }):2mL]);
+  let stop_solution = tube(label = "StopSolution", capacity = 2mL, load = [content(kind = ContentKind.CHEMICAL, type = ContentType.INORGANIC_COMPOUND, code = "STOP", attrs = { role: stop_solution }):1mL]);
+  let waste = tube(label = "ELISAWashWaste", capacity = 150mL);
+
+  // Source step S2: Add capture antibody to the assay wells and incubate overnight.
+  assay_wells << [capture_antibody:100uL] with constraint(high_precision, low_carryover);
+  with env(thermal = 25C, duration = 18h) {
+    hold(sample = assay_wells);
+  }
+
+  // Source step S3: Aspirate the coating solution and wash the assay wells three times.
+  repeat coating_well_index in schedule(start = 0, end = 15, step = 1) {
+    with constraint(gentle) {
+      waste << [
+        assay_wells[coating_well_index].partition(
+          filtration_program(membrane = "well_surface", drive = "aspiration")
+        )[0]
+      ];
+    }
+  }
+
+  repeat coating_wash_cycle in schedule(start = 1, end = 3, step = 1) {
+    assay_wells << [wash_buffer:400uL];
+    repeat coating_wash_well_index in schedule(start = 0, end = 15, step = 1) {
+      waste << [
+        assay_wells[coating_wash_well_index].partition(
+          filtration_program(membrane = "well_surface", drive = "aspiration")
+        )[0]
+      ];
+    }
+  }
+
+  // Source step S4: Block assay wells, incubate, aspirate, and wash three times.
+  assay_wells << [blocking_buffer:300uL] with constraint(high_precision, low_carryover);
+  with env(thermal = 25C, duration = 1h) {
+    hold(sample = assay_wells);
+  }
+  repeat blocking_well_index in schedule(start = 0, end = 15, step = 1) {
+    waste << [
+      assay_wells[blocking_well_index].partition(
+        filtration_program(membrane = "well_surface", drive = "aspiration")
+      )[0]
+    ];
+  }
+
+  repeat blocking_wash_cycle in schedule(start = 1, end = 3, step = 1) {
+    assay_wells << [wash_buffer:400uL];
+    repeat blocking_wash_well_index in schedule(start = 0, end = 15, step = 1) {
+      waste << [
+        assay_wells[blocking_wash_well_index].partition(
+          filtration_program(membrane = "well_surface", drive = "aspiration")
+        )[0]
+      ];
+    }
+  }
+
+  // Source step S5: Load standards, unknown samples, controls, and blanks.
+  elisa_plate[A1] << [standard_2000:100uL] with constraint(high_precision, low_carryover);
+  elisa_plate[B1] << [standard_1000:100uL] with constraint(high_precision, low_carryover);
+  elisa_plate[C1] << [standard_500:100uL] with constraint(high_precision, low_carryover);
+  elisa_plate[D1] << [standard_250:100uL] with constraint(high_precision, low_carryover);
+  elisa_plate[E1] << [standard_125:100uL] with constraint(high_precision, low_carryover);
+  elisa_plate[F1] << [standard_62_5:100uL] with constraint(high_precision, low_carryover);
+  elisa_plate[G1] << [standard_31_25:100uL] with constraint(high_precision, low_carryover);
+  elisa_plate[H1] << [zero_standard:100uL] with constraint(high_precision, low_carryover);
+  elisa_plate[A2] << [unknown_sample_1:100uL] with constraint(high_precision, low_carryover);
+  elisa_plate[B2] << [unknown_sample_2:100uL] with constraint(high_precision, low_carryover);
+  positive_control_well << [positive_control:100uL] with constraint(high_precision, low_carryover);
+  negative_control_well << [negative_control:100uL] with constraint(high_precision, low_carryover);
+  blank_wells << [reagent_diluent:100uL] with constraint(high_precision, low_carryover);
+
+  // Source step S6: Incubate loaded wells, aspirate, and wash three times.
+  with env(thermal = 25C, duration = 2h) {
+    hold(sample = assay_wells);
+  }
+  repeat sample_well_index in schedule(start = 0, end = 15, step = 1) {
+    waste << [
+      assay_wells[sample_well_index].partition(
+        filtration_program(membrane = "well_surface", drive = "aspiration")
+      )[0]
+    ];
+  }
+
+  repeat sample_wash_cycle in schedule(start = 1, end = 3, step = 1) {
+    assay_wells << [wash_buffer:400uL];
+    repeat sample_wash_well_index in schedule(start = 0, end = 15, step = 1) {
+      waste << [
+        assay_wells[sample_wash_well_index].partition(
+          filtration_program(membrane = "well_surface", drive = "aspiration")
+        )[0]
+      ];
+    }
+  }
+
+  // Source step S7: Add detection antibody, incubate, aspirate, and wash three times.
+  assay_wells << [detection_antibody:100uL] with constraint(high_precision, low_carryover);
+  with env(thermal = 25C, duration = 2h) {
+    hold(sample = assay_wells);
+  }
+  repeat detection_well_index in schedule(start = 0, end = 15, step = 1) {
+    waste << [
+      assay_wells[detection_well_index].partition(
+        filtration_program(membrane = "well_surface", drive = "aspiration")
+      )[0]
+    ];
+  }
+
+  repeat detection_wash_cycle in schedule(start = 1, end = 3, step = 1) {
+    assay_wells << [wash_buffer:400uL];
+    repeat detection_wash_well_index in schedule(start = 0, end = 15, step = 1) {
+      waste << [
+        assay_wells[detection_wash_well_index].partition(
+          filtration_program(membrane = "well_surface", drive = "aspiration")
+        )[0]
+      ];
+    }
+  }
+
+  // Source step S8: Add streptavidin-HRP, incubate protected from light, aspirate, and wash three times.
+  assay_wells << [streptavidin_hrp:100uL] with constraint(high_precision, low_carryover);
+  with constraint(dark_protected) {
+    with env(thermal = 25C, duration = 20min) {
+      hold(sample = assay_wells);
+    }
+  }
+  repeat hrp_well_index in schedule(start = 0, end = 15, step = 1) {
+    waste << [
+      assay_wells[hrp_well_index].partition(
+        filtration_program(membrane = "well_surface", drive = "aspiration")
+      )[0]
+    ];
+  }
+
+  repeat hrp_wash_cycle in schedule(start = 1, end = 3, step = 1) {
+    assay_wells << [wash_buffer:400uL];
+    repeat hrp_wash_well_index in schedule(start = 0, end = 15, step = 1) {
+      waste << [
+        assay_wells[hrp_wash_well_index].partition(
+          filtration_program(membrane = "well_surface", drive = "aspiration")
+        )[0]
+      ];
+    }
+  }
+
+  // Source step S9: Develop with TMB under dark protection, stop, and tap-mix.
+  assay_wells << [tmb_substrate:100uL] with constraint(high_precision, low_carryover, dark_protected);
+  with constraint(dark_protected) {
+    with env(thermal = 25C, duration = 20min) {
+      hold(sample = assay_wells);
+    }
+  }
+  assay_wells << [stop_solution:50uL] with constraint(high_precision, low_carryover);
+  agit(sample = assay_wells, mode = "shake", duration = 10s);
+
+  // Source step S10: Read absorbance and record the standard-curve and QC result fields.
+  let elisa_absorbance_schema = data_schema(
+    label = "SandwichELISAAbsorbanceReadout",
+    fields = [
+      well_id,
+      well_role,
+      absorbance_450nm,
+      absorbance_570nm,
+      corrected_absorbance,
+      standard_concentration_pg_mL,
+      four_parameter_logistic_fit,
+      estimated_sample_concentration_pg_mL,
+      blank_qc_pass,
+      positive_control_qc_pass,
+      negative_control_qc_pass
+    ]
+  );
+  let elisa_result = img(
+    sample = assay_wells,
+    quantity = customized,
+    schema_ref = elisa_absorbance_schema,
+    save_raw = true
+  );
+
+  return elisa_result;
+}
+
+let sandwich_elisa_result = SandwichELISA();

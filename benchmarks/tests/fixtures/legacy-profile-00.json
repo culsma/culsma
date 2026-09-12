@@ -1,0 +1,18 @@
+{
+  "case_id": "00",
+  "role": "worked_example",
+  "protocol": "GfpLysateClarification",
+  "expected_steps": [
+    "S1",
+    "S2",
+    "S3",
+    "S4",
+    "S5",
+    "S6",
+    "S7"
+  ],
+  "source": "protocol.culs",
+  "source_sha256": "7ac220164212f34a5d33094f6d41be8b879829bae6cd2e28b2c6ae8470a6eff9",
+  "culsma_version": "1.0.7rc1",
+  "lark_version": "1.3.1"
+}

@@ -24,10 +24,11 @@ The executable core is organized in:
 - `src/culsma/stdlib/`
 - `tests/`
 
-The repository also contains self-contained paper reproduction materials under
-[`benchmarks/patterns/`](benchmarks/patterns/README.md), separate from the language
-implementation and its PyPI package. This benchmark is a submission candidate;
-its own archived release identifier is pending.
+The repository also maintains the Patterns benchmark cases and reproduction tools under
+[`benchmarks/`](benchmarks/README.md), separate from the language
+implementation and its PyPI package. This is the canonical maintenance location
+for the paper's cases. The current candidate uses internal Culsma 1.0.7rc1;
+a matching public installation path and archived benchmark release remain pending.
 
 It intentionally leaves out full manuscript sources, MCP tooling, editor
 integrations, and internal design-workspace documents.
@@ -69,7 +70,7 @@ src/culsma/runtime/   execution state, events, and material compute
 src/culsma/driver/    backend boundary and concrete drivers
 src/culsma/stdlib/    bundled standard-library source
 tests/                regression and runtime tests
-benchmarks/patterns/   fixed paper benchmark, expected results and reproduction tools
+benchmarks/   fixed paper benchmark, expected results and reproduction tools
 ```
 
 ## Quick Run
