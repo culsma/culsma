@@ -14,6 +14,7 @@ from copy import deepcopy
 import gzip
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -37,6 +38,45 @@ class EvidenceError(ValueError):
 def require(condition, message):
     if not condition:
         raise EvidenceError(message)
+
+
+def final_material_records(run):
+    """Read physical containers from the final state, never replay event snapshots."""
+    require(run.get("ok") is True, "FINAL_MATERIAL_STATE: run did not complete successfully")
+    state = run.get("state", {}).get("artifacts", {}).get("material_state")
+    require(isinstance(state, dict) and isinstance(state.get("containers"), dict),
+            "FINAL_MATERIAL_STATE: missing final container map")
+    records = []
+    for container_id, raw in sorted(state["containers"].items()):
+        require(isinstance(container_id, str) and isinstance(raw, dict),
+                "FINAL_MATERIAL_STATE: invalid container record")
+        # Runtime fraction handles use '::'; they are views within physical containers.
+        if "::" in container_id:
+            continue
+        values = [raw[k] for k in ("volume_uL", "mass_mg", "count_cells") if k in raw]
+        quantities = raw.get("component_quantities", {})
+        require(isinstance(quantities, dict), "FINAL_MATERIAL_STATE: invalid component quantities")
+        for quantity in quantities.values():
+            require(isinstance(quantity, dict) and "value" in quantity,
+                    "FINAL_MATERIAL_STATE: invalid component quantity")
+            values.append(quantity["value"])
+        require(values and all(type(v) in (int, float) and math.isfinite(v) and v >= -1e-9
+                               for v in values), "FINAL_MATERIAL_STATE: invalid or missing quantity")
+        if not any(v > 1e-9 for v in values):
+            continue
+        metadata = raw.get("metadata", {})
+        require(isinstance(metadata, dict), "FINAL_MATERIAL_STATE: invalid metadata")
+        name = metadata.get("label") or container_id
+        require(isinstance(name, str), "FINAL_MATERIAL_STATE: invalid label")
+        pointer_id = container_id.replace("~", "~0").replace("/", "~1")
+        records.append({
+            "container_id": container_id,
+            "record": {"name": name, **{k: raw[k] for k in ("volume_uL", "mass_mg", "count_cells")
+                                         if k in raw}, "material_state": deepcopy(raw)},
+            "evidence": {"file": "artifacts/run.json", "json_pointer":
+                         "/state/artifacts/material_state/containers/" + pointer_id},
+        })
+    return records
 
 
 def canonical(value):
@@ -728,7 +768,7 @@ class Extractor:
                 and containers["touched_count"] == len(names), "RESULT_CONTAINERS: count mismatch")
         output = {}
         for label, key in (("reagent_records", "reagent_consumption"),
-                           ("final_material_states", "final_products")):
+                           ("reported_final_products", "final_products")):
             records = materials[key]
             require(isinstance(records, list) and all(isinstance(r, dict) for r in records),
                     "RESULT_MATERIALS: invalid " + key)
@@ -737,7 +777,18 @@ class Extractor:
             output[label] = len(records)
             output[key] = [{"record": row, "evidence": self.ev("result", f"/materials/{key}/{i}")}
                            for i, row in enumerate(records)]
+        final_records = final_material_records(self.data["run"])
         output.update(
+            final_material_states=len(final_records),
+            final_material_records=final_records,
+            final_material_scope={
+                "rule": "final-physical-container-state-v1",
+                "source": "run.json /state/artifacts/material_state/containers",
+                "includes": "Every nonempty physical container, including residual source stocks and waste.",
+                "excludes": "Empty containers and internal fraction handles containing '::'.",
+                "identity": "One record per runtime container ID; display names are not deduplicated.",
+                "positive_quantity_tolerance": 1e-9,
+            },
             touched_containers=len(names),
             touched_names=[{"name": name, "evidence": self.ev(
                 "result", f"/resource_summary/containers/touched_names/{i}")}

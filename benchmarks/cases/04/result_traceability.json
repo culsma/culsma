@@ -1,1 +1,4023 @@
-{"adapter_sha256":"6f3dfe206ac08dcbc4a65b2e2e534a97374001705b41834a8f036fac1fe3852d","case_id":"04","case_role":"corpus","container_identity":{"available":false,"evidence_level":"runtime_summary_name_record","note":"List indices locate summary records, not container identities."},"entry":{"evidence":{"file":"artifacts/ast.json","json_pointer":"/statements"},"protocol":"SandwichELISA"},"environment":{"culsma":"1.0.7rc1","culsma_file":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/lib/python3.12/site-packages/culsma/__init__.py","executable":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/bin/python","lark":"1.3.1","prefix":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv","python":"3.12.8"},"evidence_base":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/04/input","extraction_id":"85c34c6e5159f481ce452fc3986e3177d98a7427ac21f3f17b3b1c48a3fdae12","extractor_sha256":"11e290bb80e3d5eb76cd93cbe9a4f3863c98ef674f2bbb18191afd1afc2236c8","final_material_states":17,"final_products":[{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/0"},"record":{"mass_mg":107200.0,"name":"ELISAWashWaste","primary_component":"UNKNOWN_1","volume_mL":107.2,"volume_uL":107200.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/1"},"record":{"mass_mg":150.0,"name":"ELISA96_A1","primary_component":"TMB","volume_mL":0.15,"volume_uL":150.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/2"},"record":{"mass_mg":150.0,"name":"ELISA96_A2","primary_component":"TMB","volume_mL":0.15,"volume_uL":150.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/3"},"record":{"mass_mg":150.0,"name":"ELISA96_B1","primary_component":"TMB","volume_mL":0.15,"volume_uL":150.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/4"},"record":{"mass_mg":150.0,"name":"ELISA96_B2","primary_component":"TMB","volume_mL":0.15,"volume_uL":150.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/5"},"record":{"mass_mg":150.0,"name":"ELISA96_C1","primary_component":"TMB","volume_mL":0.15,"volume_uL":150.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/6"},"record":{"mass_mg":150.0,"name":"ELISA96_C2","primary_component":"TMB","volume_mL":0.15,"volume_uL":150.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/7"},"record":{"mass_mg":150.0,"name":"ELISA96_D1","primary_component":"TMB","volume_mL":0.15,"volume_uL":150.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/8"},"record":{"mass_mg":150.0,"name":"ELISA96_D2","primary_component":"TMB","volume_mL":0.15,"volume_uL":150.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/9"},"record":{"mass_mg":150.0,"name":"ELISA96_E1","primary_component":"TMB","volume_mL":0.15,"volume_uL":150.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/10"},"record":{"mass_mg":150.0,"name":"ELISA96_E2","primary_component":"TMB","volume_mL":0.15,"volume_uL":150.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/11"},"record":{"mass_mg":150.0,"name":"ELISA96_F1","primary_component":"TMB","volume_mL":0.15,"volume_uL":150.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/12"},"record":{"mass_mg":150.0,"name":"ELISA96_F2","primary_component":"TMB","volume_mL":0.15,"volume_uL":150.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/13"},"record":{"mass_mg":150.0,"name":"ELISA96_G1","primary_component":"TMB","volume_mL":0.15,"volume_uL":150.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/14"},"record":{"mass_mg":150.0,"name":"ELISA96_G2","primary_component":"TMB","volume_mL":0.15,"volume_uL":150.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/15"},"record":{"mass_mg":150.0,"name":"ELISA96_H1","primary_component":"TMB","volume_mL":0.15,"volume_uL":150.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/16"},"record":{"mass_mg":150.0,"name":"ELISA96_H2","primary_component":"TMB","volume_mL":0.15,"volume_uL":150.0}}],"formal_returns":{"evidence":{"file":"artifacts/output.json","json_pointer":"/returns"},"value":{"entry":{"entry_kind":"script","protocol_id":"entry","protocol_name":"entry","returns":[]}}},"input_files":{"artifacts/ast.json":"460f54490e7a29f36c001cadee2fa3f8f711871a6b7e16aa66e6970bd65ab9f6","artifacts/ir.json":"b99ebbdbc3713eed9d0024d91fd56ad1863c9dffff3ce4c318bc1588a57d8803","artifacts/output.json":"99a39e00f6d6378c2e87466c6b28e847006b5271e0a1eb0f612d555176776850","artifacts/plan.json":"e8c17e6b80122c1811b385c1d7125f48af6b36d4ca9d693ceadeae03ab36252b","artifacts/result.json":"081a798d7b559e627eaf429de1c9ed404a027a7b5f2f507e0ca5c27001721181","artifacts/run.json":"5757950a5b61f842fcc46cbe024cd7f3cc9991cc044c6fd7d7174c442747028c","artifacts/summary.json":"0685344e538cd0cc9c945e36ba889c457dd81388e9a39bfb451741b9e09c689d","artifacts/typecheck.json":"37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570","artifacts/validate.json":"37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570","case.json":"d7a6ff1e3c37f376b4931b40501cd60d4b2ec7e71f9228e486df2a32bc630c4b","protocol.culs":"0505175bad5b2da110df4f9e8cd8354744a717d3836770aa6bec9a2bdf91617a","receipt.json":"e5dc2cbe38dbcc32ccec71b1f1185bb9586568f53277ff900b2e631993189e5c","stderr.txt":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","stdout.txt":"99a39e00f6d6378c2e87466c6b28e847006b5271e0a1eb0f612d555176776850"},"profile":"nested-v1","reagent_consumption":[{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/0"},"record":{"consumed_mL":96.0,"consumed_mg":null,"consumed_uL":96000.0,"name":"WashBuffer","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/1"},"record":{"consumed_mL":4.8,"consumed_mg":null,"consumed_uL":4800.0,"name":"BlockingBuffer","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/2"},"record":{"consumed_mL":1.6,"consumed_mg":null,"consumed_uL":1600.0,"name":"CaptureAntibodyWorkingSolution","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/3"},"record":{"consumed_mL":1.6,"consumed_mg":null,"consumed_uL":1600.0,"name":"DetectionAntibodyWorkingSolution","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/4"},"record":{"consumed_mL":1.6,"consumed_mg":null,"consumed_uL":1600.0,"name":"StreptavidinHRPWorkingSolution","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/5"},"record":{"consumed_mL":1.6,"consumed_mg":null,"consumed_uL":1600.0,"name":"TMBSubstrate","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/6"},"record":{"consumed_mL":0.8,"consumed_mg":null,"consumed_uL":800.0,"name":"StopSolution","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/7"},"record":{"consumed_mL":0.4,"consumed_mg":null,"consumed_uL":400.0,"name":"ReagentDiluent","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/8"},"record":{"consumed_mL":0.1,"consumed_mg":null,"consumed_uL":100.0,"name":"NegativeControl","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/9"},"record":{"consumed_mL":0.1,"consumed_mg":null,"consumed_uL":100.0,"name":"PositiveControl","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/10"},"record":{"consumed_mL":0.1,"consumed_mg":null,"consumed_uL":100.0,"name":"Standard1000pgmL","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/11"},"record":{"consumed_mL":0.1,"consumed_mg":null,"consumed_uL":100.0,"name":"Standard125pgmL","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/12"},"record":{"consumed_mL":0.1,"consumed_mg":null,"consumed_uL":100.0,"name":"Standard2000pgmL","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/13"},"record":{"consumed_mL":0.1,"consumed_mg":null,"consumed_uL":100.0,"name":"Standard250pgmL","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/14"},"record":{"consumed_mL":0.1,"consumed_mg":null,"consumed_uL":100.0,"name":"Standard31p25pgmL","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/15"},"record":{"consumed_mL":0.1,"consumed_mg":null,"consumed_uL":100.0,"name":"Standard500pgmL","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/16"},"record":{"consumed_mL":0.1,"consumed_mg":null,"consumed_uL":100.0,"name":"Standard62p5pgmL","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/17"},"record":{"consumed_mL":0.1,"consumed_mg":null,"consumed_uL":100.0,"name":"UnknownSample1","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/18"},"record":{"consumed_mL":0.1,"consumed_mg":null,"consumed_uL":100.0,"name":"UnknownSample2","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/19"},"record":{"consumed_mL":0.1,"consumed_mg":null,"consumed_uL":100.0,"name":"ZeroStandard","roles":["source"]}}],"reagent_records":20,"rules_version":"patterns-metrics-nested-v8","schema_version":"patterns-metrics-v1","section":"3.4","statistics_scope":{"runtime":"whole invocation","source":"reachable nested AST constructs","step_protocol":"SandwichELISA"},"support_scope":"Nested AST calls, result members, declared plate groups/selectors, grouped readouts and conditional execution; unresolved JSON joins fail","touched_containers":37,"touched_names":[{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/0"},"name":"BlockingBuffer"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/1"},"name":"CaptureAntibodyWorkingSolution"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/2"},"name":"DetectionAntibodyWorkingSolution"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/3"},"name":"ELISA96_A1"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/4"},"name":"ELISA96_A2"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/5"},"name":"ELISA96_B1"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/6"},"name":"ELISA96_B2"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/7"},"name":"ELISA96_C1"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/8"},"name":"ELISA96_C2"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/9"},"name":"ELISA96_D1"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/10"},"name":"ELISA96_D2"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/11"},"name":"ELISA96_E1"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/12"},"name":"ELISA96_E2"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/13"},"name":"ELISA96_F1"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/14"},"name":"ELISA96_F2"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/15"},"name":"ELISA96_G1"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/16"},"name":"ELISA96_G2"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/17"},"name":"ELISA96_H1"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/18"},"name":"ELISA96_H2"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/19"},"name":"ELISAWashWaste"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/20"},"name":"NegativeControl"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/21"},"name":"PositiveControl"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/22"},"name":"ReagentDiluent"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/23"},"name":"Standard1000pgmL"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/24"},"name":"Standard125pgmL"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/25"},"name":"Standard2000pgmL"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/26"},"name":"Standard250pgmL"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/27"},"name":"Standard31p25pgmL"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/28"},"name":"Standard500pgmL"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/29"},"name":"Standard62p5pgmL"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/30"},"name":"StopSolution"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/31"},"name":"StreptavidinHRPWorkingSolution"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/32"},"name":"TMBSubstrate"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/33"},"name":"UnknownSample1"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/34"},"name":"UnknownSample2"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/35"},"name":"WashBuffer"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/36"},"name":"ZeroStandard"}]}
+{
+  "adapter_sha256": "d1efba860cc871e3e3dedda3b6a097503a990fbd52f24245a27a3565d9c431ef",
+  "case_id": "04",
+  "case_role": "corpus",
+  "container_identity": {
+    "available": false,
+    "evidence_level": "runtime_summary_name_record",
+    "note": "List indices locate summary records, not container identities."
+  },
+  "entry": {
+    "evidence": {
+      "file": "artifacts/ast.json",
+      "json_pointer": "/statements"
+    },
+    "protocol": "SandwichELISA"
+  },
+  "environment": {
+    "culsma": "1.0.7rc1",
+    "culsma_file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/lib/python3.12/site-packages/culsma/__init__.py",
+    "executable": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/bin/python",
+    "lark": "1.3.1",
+    "prefix": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv",
+    "python": "3.12.8"
+  },
+  "evidence_base": "/private/tmp/culsma-terminal-metrics-0ettVh/all-cases-v9/04/input",
+  "extraction_id": "764798db43b5128d8057afd8f1159732066e7278b61b45faff15909391755620",
+  "extractor_sha256": "39c3aab4ffe7afd1f4afb257978639975103d14025eec94b513e1b278aa4fe26",
+  "final_material_records": [
+    {
+      "container_id": "container/entry/entry.s1%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s0_elisa_plate_A1",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Awell%3A%3AA1%3A%3Aalloc~1__lw_plate___cmp_entry_s0_elisa_plate_A1"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TMB",
+              "entry_id": "TMB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 50.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STOP",
+              "entry_id": "STOP",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 50.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "STOP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50.0
+            },
+            "TMB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "STOP": 50.0,
+            "TMB": 100.0
+          },
+          "mass_mg": 150.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__lw_plate___cmp_entry_s0_elisa_plate_A1",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::well::A1::alloc",
+            "capacity_uL": 500.0,
+            "kind": "well",
+            "label": "ELISA96_A1"
+          },
+          "volume_uL": 150.0
+        },
+        "name": "ELISA96_A1",
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s1%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s0_elisa_plate_A2",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Awell%3A%3AA2%3A%3Aalloc~1__lw_plate___cmp_entry_s0_elisa_plate_A2"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TMB",
+              "entry_id": "TMB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 50.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STOP",
+              "entry_id": "STOP",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 50.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "STOP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50.0
+            },
+            "TMB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "STOP": 50.0,
+            "TMB": 100.0
+          },
+          "mass_mg": 150.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__lw_plate___cmp_entry_s0_elisa_plate_A2",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::well::A2::alloc",
+            "capacity_uL": 500.0,
+            "kind": "well",
+            "label": "ELISA96_A2"
+          },
+          "volume_uL": 150.0
+        },
+        "name": "ELISA96_A2",
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s1%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s0_elisa_plate_B1",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Awell%3A%3AB1%3A%3Aalloc~1__lw_plate___cmp_entry_s0_elisa_plate_B1"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TMB",
+              "entry_id": "TMB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 50.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STOP",
+              "entry_id": "STOP",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 50.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "STOP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50.0
+            },
+            "TMB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "STOP": 50.0,
+            "TMB": 100.0
+          },
+          "mass_mg": 150.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__lw_plate___cmp_entry_s0_elisa_plate_B1",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::well::B1::alloc",
+            "capacity_uL": 500.0,
+            "kind": "well",
+            "label": "ELISA96_B1"
+          },
+          "volume_uL": 150.0
+        },
+        "name": "ELISA96_B1",
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s1%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s0_elisa_plate_B2",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Awell%3A%3AB2%3A%3Aalloc~1__lw_plate___cmp_entry_s0_elisa_plate_B2"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TMB",
+              "entry_id": "TMB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 50.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STOP",
+              "entry_id": "STOP",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 50.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "STOP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50.0
+            },
+            "TMB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "STOP": 50.0,
+            "TMB": 100.0
+          },
+          "mass_mg": 150.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__lw_plate___cmp_entry_s0_elisa_plate_B2",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::well::B2::alloc",
+            "capacity_uL": 500.0,
+            "kind": "well",
+            "label": "ELISA96_B2"
+          },
+          "volume_uL": 150.0
+        },
+        "name": "ELISA96_B2",
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s1%3A%3Awell%3A%3AC1%3A%3Aalloc/__lw_plate___cmp_entry_s0_elisa_plate_C1",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Awell%3A%3AC1%3A%3Aalloc~1__lw_plate___cmp_entry_s0_elisa_plate_C1"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TMB",
+              "entry_id": "TMB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 50.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STOP",
+              "entry_id": "STOP",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 50.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "STOP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50.0
+            },
+            "TMB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "STOP": 50.0,
+            "TMB": 100.0
+          },
+          "mass_mg": 150.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__lw_plate___cmp_entry_s0_elisa_plate_C1",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::well::C1::alloc",
+            "capacity_uL": 500.0,
+            "kind": "well",
+            "label": "ELISA96_C1"
+          },
+          "volume_uL": 150.0
+        },
+        "name": "ELISA96_C1",
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s1%3A%3Awell%3A%3AC2%3A%3Aalloc/__lw_plate___cmp_entry_s0_elisa_plate_C2",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Awell%3A%3AC2%3A%3Aalloc~1__lw_plate___cmp_entry_s0_elisa_plate_C2"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TMB",
+              "entry_id": "TMB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 50.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STOP",
+              "entry_id": "STOP",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 50.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "STOP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50.0
+            },
+            "TMB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "STOP": 50.0,
+            "TMB": 100.0
+          },
+          "mass_mg": 150.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__lw_plate___cmp_entry_s0_elisa_plate_C2",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::well::C2::alloc",
+            "capacity_uL": 500.0,
+            "kind": "well",
+            "label": "ELISA96_C2"
+          },
+          "volume_uL": 150.0
+        },
+        "name": "ELISA96_C2",
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s1%3A%3Awell%3A%3AD1%3A%3Aalloc/__lw_plate___cmp_entry_s0_elisa_plate_D1",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Awell%3A%3AD1%3A%3Aalloc~1__lw_plate___cmp_entry_s0_elisa_plate_D1"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TMB",
+              "entry_id": "TMB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 50.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STOP",
+              "entry_id": "STOP",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 50.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "STOP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50.0
+            },
+            "TMB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "STOP": 50.0,
+            "TMB": 100.0
+          },
+          "mass_mg": 150.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__lw_plate___cmp_entry_s0_elisa_plate_D1",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::well::D1::alloc",
+            "capacity_uL": 500.0,
+            "kind": "well",
+            "label": "ELISA96_D1"
+          },
+          "volume_uL": 150.0
+        },
+        "name": "ELISA96_D1",
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s1%3A%3Awell%3A%3AD2%3A%3Aalloc/__lw_plate___cmp_entry_s0_elisa_plate_D2",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Awell%3A%3AD2%3A%3Aalloc~1__lw_plate___cmp_entry_s0_elisa_plate_D2"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TMB",
+              "entry_id": "TMB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 50.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STOP",
+              "entry_id": "STOP",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 50.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "STOP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50.0
+            },
+            "TMB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "STOP": 50.0,
+            "TMB": 100.0
+          },
+          "mass_mg": 150.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__lw_plate___cmp_entry_s0_elisa_plate_D2",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::well::D2::alloc",
+            "capacity_uL": 500.0,
+            "kind": "well",
+            "label": "ELISA96_D2"
+          },
+          "volume_uL": 150.0
+        },
+        "name": "ELISA96_D2",
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s1%3A%3Awell%3A%3AE1%3A%3Aalloc/__lw_plate___cmp_entry_s0_elisa_plate_E1",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Awell%3A%3AE1%3A%3Aalloc~1__lw_plate___cmp_entry_s0_elisa_plate_E1"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TMB",
+              "entry_id": "TMB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 50.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STOP",
+              "entry_id": "STOP",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 50.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "STOP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50.0
+            },
+            "TMB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "STOP": 50.0,
+            "TMB": 100.0
+          },
+          "mass_mg": 150.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__lw_plate___cmp_entry_s0_elisa_plate_E1",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::well::E1::alloc",
+            "capacity_uL": 500.0,
+            "kind": "well",
+            "label": "ELISA96_E1"
+          },
+          "volume_uL": 150.0
+        },
+        "name": "ELISA96_E1",
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s1%3A%3Awell%3A%3AE2%3A%3Aalloc/__lw_plate___cmp_entry_s0_elisa_plate_E2",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Awell%3A%3AE2%3A%3Aalloc~1__lw_plate___cmp_entry_s0_elisa_plate_E2"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TMB",
+              "entry_id": "TMB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 50.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STOP",
+              "entry_id": "STOP",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 50.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "STOP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50.0
+            },
+            "TMB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "STOP": 50.0,
+            "TMB": 100.0
+          },
+          "mass_mg": 150.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__lw_plate___cmp_entry_s0_elisa_plate_E2",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::well::E2::alloc",
+            "capacity_uL": 500.0,
+            "kind": "well",
+            "label": "ELISA96_E2"
+          },
+          "volume_uL": 150.0
+        },
+        "name": "ELISA96_E2",
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s1%3A%3Awell%3A%3AF1%3A%3Aalloc/__lw_plate___cmp_entry_s0_elisa_plate_F1",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Awell%3A%3AF1%3A%3Aalloc~1__lw_plate___cmp_entry_s0_elisa_plate_F1"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TMB",
+              "entry_id": "TMB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 50.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STOP",
+              "entry_id": "STOP",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 50.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "STOP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50.0
+            },
+            "TMB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "STOP": 50.0,
+            "TMB": 100.0
+          },
+          "mass_mg": 150.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__lw_plate___cmp_entry_s0_elisa_plate_F1",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::well::F1::alloc",
+            "capacity_uL": 500.0,
+            "kind": "well",
+            "label": "ELISA96_F1"
+          },
+          "volume_uL": 150.0
+        },
+        "name": "ELISA96_F1",
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s1%3A%3Awell%3A%3AF2%3A%3Aalloc/__lw_plate___cmp_entry_s0_elisa_plate_F2",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Awell%3A%3AF2%3A%3Aalloc~1__lw_plate___cmp_entry_s0_elisa_plate_F2"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TMB",
+              "entry_id": "TMB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 50.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STOP",
+              "entry_id": "STOP",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 50.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "STOP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50.0
+            },
+            "TMB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "STOP": 50.0,
+            "TMB": 100.0
+          },
+          "mass_mg": 150.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__lw_plate___cmp_entry_s0_elisa_plate_F2",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::well::F2::alloc",
+            "capacity_uL": 500.0,
+            "kind": "well",
+            "label": "ELISA96_F2"
+          },
+          "volume_uL": 150.0
+        },
+        "name": "ELISA96_F2",
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s1%3A%3Awell%3A%3AG1%3A%3Aalloc/__lw_plate___cmp_entry_s0_elisa_plate_G1",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Awell%3A%3AG1%3A%3Aalloc~1__lw_plate___cmp_entry_s0_elisa_plate_G1"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TMB",
+              "entry_id": "TMB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 50.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STOP",
+              "entry_id": "STOP",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 50.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "STOP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50.0
+            },
+            "TMB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "STOP": 50.0,
+            "TMB": 100.0
+          },
+          "mass_mg": 150.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__lw_plate___cmp_entry_s0_elisa_plate_G1",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::well::G1::alloc",
+            "capacity_uL": 500.0,
+            "kind": "well",
+            "label": "ELISA96_G1"
+          },
+          "volume_uL": 150.0
+        },
+        "name": "ELISA96_G1",
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s1%3A%3Awell%3A%3AG2%3A%3Aalloc/__lw_plate___cmp_entry_s0_elisa_plate_G2",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Awell%3A%3AG2%3A%3Aalloc~1__lw_plate___cmp_entry_s0_elisa_plate_G2"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TMB",
+              "entry_id": "TMB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 50.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STOP",
+              "entry_id": "STOP",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 50.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "STOP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50.0
+            },
+            "TMB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "STOP": 50.0,
+            "TMB": 100.0
+          },
+          "mass_mg": 150.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__lw_plate___cmp_entry_s0_elisa_plate_G2",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::well::G2::alloc",
+            "capacity_uL": 500.0,
+            "kind": "well",
+            "label": "ELISA96_G2"
+          },
+          "volume_uL": 150.0
+        },
+        "name": "ELISA96_G2",
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s1%3A%3Awell%3A%3AH1%3A%3Aalloc/__lw_plate___cmp_entry_s0_elisa_plate_H1",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Awell%3A%3AH1%3A%3Aalloc~1__lw_plate___cmp_entry_s0_elisa_plate_H1"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TMB",
+              "entry_id": "TMB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 50.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STOP",
+              "entry_id": "STOP",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 50.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "STOP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50.0
+            },
+            "TMB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "STOP": 50.0,
+            "TMB": 100.0
+          },
+          "mass_mg": 150.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__lw_plate___cmp_entry_s0_elisa_plate_H1",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::well::H1::alloc",
+            "capacity_uL": 500.0,
+            "kind": "well",
+            "label": "ELISA96_H1"
+          },
+          "volume_uL": 150.0
+        },
+        "name": "ELISA96_H1",
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s1%3A%3Awell%3A%3AH2%3A%3Aalloc/__lw_plate___cmp_entry_s0_elisa_plate_H2",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Awell%3A%3AH2%3A%3Aalloc~1__lw_plate___cmp_entry_s0_elisa_plate_H2"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TMB",
+              "entry_id": "TMB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 50.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STOP",
+              "entry_id": "STOP",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 50.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "STOP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50.0
+            },
+            "TMB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "STOP": 50.0,
+            "TMB": 100.0
+          },
+          "mass_mg": 150.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__lw_plate___cmp_entry_s0_elisa_plate_H2",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::well::H2::alloc",
+            "capacity_uL": 500.0,
+            "kind": "well",
+            "label": "ELISA96_H2"
+          },
+          "volume_uL": 150.0
+        },
+        "name": "ELISA96_H2",
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s23%3A%3Aalloc/__cmp_entry_s0_standard_2000",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s23%3A%3Aalloc~1__cmp_entry_s0_standard_2000"
+      },
+      "record": {
+        "mass_mg": 300.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 300.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DIL",
+              "entry_id": "DIL",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 300.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "DIL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 300.0
+            }
+          },
+          "components": {
+            "DIL": 300.0
+          },
+          "mass_mg": 300.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_standard_2000",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s23::alloc",
+            "capacity_uL": 500.0,
+            "kind": "tube",
+            "label": "Standard2000pgmL"
+          },
+          "volume_uL": 300.0
+        },
+        "name": "Standard2000pgmL",
+        "volume_uL": 300.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s24%3A%3Aalloc/__cmp_entry_s0_standard_1000",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s24%3A%3Aalloc~1__cmp_entry_s0_standard_1000"
+      },
+      "record": {
+        "mass_mg": 300.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 300.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DIL",
+              "entry_id": "DIL",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 300.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "DIL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 300.0
+            }
+          },
+          "components": {
+            "DIL": 300.0
+          },
+          "mass_mg": 300.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_standard_1000",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s24::alloc",
+            "capacity_uL": 500.0,
+            "kind": "tube",
+            "label": "Standard1000pgmL"
+          },
+          "volume_uL": 300.0
+        },
+        "name": "Standard1000pgmL",
+        "volume_uL": 300.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s25%3A%3Aalloc/__cmp_entry_s0_standard_500",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s25%3A%3Aalloc~1__cmp_entry_s0_standard_500"
+      },
+      "record": {
+        "mass_mg": 300.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 300.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DIL",
+              "entry_id": "DIL",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 300.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "DIL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 300.0
+            }
+          },
+          "components": {
+            "DIL": 300.0
+          },
+          "mass_mg": 300.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_standard_500",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s25::alloc",
+            "capacity_uL": 500.0,
+            "kind": "tube",
+            "label": "Standard500pgmL"
+          },
+          "volume_uL": 300.0
+        },
+        "name": "Standard500pgmL",
+        "volume_uL": 300.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s26%3A%3Aalloc/__cmp_entry_s0_standard_250",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s26%3A%3Aalloc~1__cmp_entry_s0_standard_250"
+      },
+      "record": {
+        "mass_mg": 300.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 300.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DIL",
+              "entry_id": "DIL",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 300.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "DIL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 300.0
+            }
+          },
+          "components": {
+            "DIL": 300.0
+          },
+          "mass_mg": 300.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_standard_250",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s26::alloc",
+            "capacity_uL": 500.0,
+            "kind": "tube",
+            "label": "Standard250pgmL"
+          },
+          "volume_uL": 300.0
+        },
+        "name": "Standard250pgmL",
+        "volume_uL": 300.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s27%3A%3Aalloc/__cmp_entry_s0_standard_125",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s27%3A%3Aalloc~1__cmp_entry_s0_standard_125"
+      },
+      "record": {
+        "mass_mg": 300.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 300.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DIL",
+              "entry_id": "DIL",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 300.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "DIL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 300.0
+            }
+          },
+          "components": {
+            "DIL": 300.0
+          },
+          "mass_mg": 300.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_standard_125",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s27::alloc",
+            "capacity_uL": 500.0,
+            "kind": "tube",
+            "label": "Standard125pgmL"
+          },
+          "volume_uL": 300.0
+        },
+        "name": "Standard125pgmL",
+        "volume_uL": 300.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s28%3A%3Aalloc/__cmp_entry_s0_standard_62_5",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s28%3A%3Aalloc~1__cmp_entry_s0_standard_62_5"
+      },
+      "record": {
+        "mass_mg": 300.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 300.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DIL",
+              "entry_id": "DIL",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 300.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "DIL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 300.0
+            }
+          },
+          "components": {
+            "DIL": 300.0
+          },
+          "mass_mg": 300.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_standard_62_5",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s28::alloc",
+            "capacity_uL": 500.0,
+            "kind": "tube",
+            "label": "Standard62p5pgmL"
+          },
+          "volume_uL": 300.0
+        },
+        "name": "Standard62p5pgmL",
+        "volume_uL": 300.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s29%3A%3Aalloc/__cmp_entry_s0_standard_31_25",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s29%3A%3Aalloc~1__cmp_entry_s0_standard_31_25"
+      },
+      "record": {
+        "mass_mg": 300.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 300.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DIL",
+              "entry_id": "DIL",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 300.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "DIL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 300.0
+            }
+          },
+          "components": {
+            "DIL": 300.0
+          },
+          "mass_mg": 300.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_standard_31_25",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s29::alloc",
+            "capacity_uL": 500.0,
+            "kind": "tube",
+            "label": "Standard31p25pgmL"
+          },
+          "volume_uL": 300.0
+        },
+        "name": "Standard31p25pgmL",
+        "volume_uL": 300.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s30%3A%3Aalloc/__cmp_entry_s0_zero_standard",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s30%3A%3Aalloc~1__cmp_entry_s0_zero_standard"
+      },
+      "record": {
+        "mass_mg": 700.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 700.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DIL",
+              "entry_id": "DIL",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 700.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "DIL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 700.0
+            }
+          },
+          "components": {
+            "DIL": 700.0
+          },
+          "mass_mg": 700.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_zero_standard",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s30::alloc",
+            "capacity_uL": 1000.0,
+            "kind": "tube",
+            "label": "ZeroStandard"
+          },
+          "volume_uL": 700.0
+        },
+        "name": "ZeroStandard",
+        "volume_uL": 700.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s31%3A%3Aalloc/__cmp_entry_s0_capture_antibody",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s31%3A%3Aalloc~1__cmp_entry_s0_capture_antibody"
+      },
+      "record": {
+        "mass_mg": 400.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 400.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "CAPTURE_AB_WORKING_BUFFER",
+              "entry_id": "CAPTURE_AB_WORKING_BUFFER",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 400.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "CAPTURE_AB_WORKING_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 400.0
+            }
+          },
+          "components": {
+            "CAPTURE_AB_WORKING_BUFFER": 400.0
+          },
+          "mass_mg": 400.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_capture_antibody",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s31::alloc",
+            "capacity_uL": 3000.0,
+            "kind": "tube",
+            "label": "CaptureAntibodyWorkingSolution"
+          },
+          "volume_uL": 400.0
+        },
+        "name": "CaptureAntibodyWorkingSolution",
+        "volume_uL": 400.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s32%3A%3Aalloc/__cmp_entry_s0_blocking_buffer",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s32%3A%3Aalloc~1__cmp_entry_s0_blocking_buffer"
+      },
+      "record": {
+        "mass_mg": 200.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 200.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "BLOCK",
+              "entry_id": "BLOCK",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 200.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "BLOCK": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 200.0
+            }
+          },
+          "components": {
+            "BLOCK": 200.0
+          },
+          "mass_mg": 200.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_blocking_buffer",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s32::alloc",
+            "capacity_uL": 6000.0,
+            "kind": "tube",
+            "label": "BlockingBuffer"
+          },
+          "volume_uL": 200.0
+        },
+        "name": "BlockingBuffer",
+        "volume_uL": 200.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s33%3A%3Aalloc/__cmp_entry_s0_wash_buffer",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s33%3A%3Aalloc~1__cmp_entry_s0_wash_buffer"
+      },
+      "record": {
+        "mass_mg": 24000.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 24000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "WASH",
+              "entry_id": "WASH",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 24000.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "WASH": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 24000.0
+            }
+          },
+          "components": {
+            "WASH": 24000.0
+          },
+          "mass_mg": 24000.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_wash_buffer",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s33::alloc",
+            "capacity_uL": 150000.0,
+            "kind": "tube",
+            "label": "WashBuffer"
+          },
+          "volume_uL": 24000.0
+        },
+        "name": "WashBuffer",
+        "volume_uL": 24000.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s34%3A%3Aalloc/__cmp_entry_s0_reagent_diluent",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s34%3A%3Aalloc~1__cmp_entry_s0_reagent_diluent"
+      },
+      "record": {
+        "mass_mg": 3600.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 3600.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DIL",
+              "entry_id": "DIL",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 3600.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "DIL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 3600.0
+            }
+          },
+          "components": {
+            "DIL": 3600.0
+          },
+          "mass_mg": 3600.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_reagent_diluent",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s34::alloc",
+            "capacity_uL": 5000.0,
+            "kind": "tube",
+            "label": "ReagentDiluent"
+          },
+          "volume_uL": 3600.0
+        },
+        "name": "ReagentDiluent",
+        "volume_uL": 3600.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s35%3A%3Aalloc/__cmp_entry_s0_unknown_sample_1",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s35%3A%3Aalloc~1__cmp_entry_s0_unknown_sample_1"
+      },
+      "record": {
+        "mass_mg": 300.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 300.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "UNKNOWN_1",
+              "entry_id": "UNKNOWN_1",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 300.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "UNKNOWN_1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 300.0
+            }
+          },
+          "components": {
+            "UNKNOWN_1": 300.0
+          },
+          "mass_mg": 300.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_unknown_sample_1",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s35::alloc",
+            "capacity_uL": 500.0,
+            "kind": "tube",
+            "label": "UnknownSample1"
+          },
+          "volume_uL": 300.0
+        },
+        "name": "UnknownSample1",
+        "volume_uL": 300.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s36%3A%3Aalloc/__cmp_entry_s0_unknown_sample_2",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s36%3A%3Aalloc~1__cmp_entry_s0_unknown_sample_2"
+      },
+      "record": {
+        "mass_mg": 300.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 300.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "UNKNOWN_2",
+              "entry_id": "UNKNOWN_2",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 300.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "UNKNOWN_2": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 300.0
+            }
+          },
+          "components": {
+            "UNKNOWN_2": 300.0
+          },
+          "mass_mg": 300.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_unknown_sample_2",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s36::alloc",
+            "capacity_uL": 500.0,
+            "kind": "tube",
+            "label": "UnknownSample2"
+          },
+          "volume_uL": 300.0
+        },
+        "name": "UnknownSample2",
+        "volume_uL": 300.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s37%3A%3Aalloc/__cmp_entry_s0_positive_control",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s37%3A%3Aalloc~1__cmp_entry_s0_positive_control"
+      },
+      "record": {
+        "mass_mg": 300.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 300.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "POS_CTRL",
+              "entry_id": "POS_CTRL",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 300.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "POS_CTRL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 300.0
+            }
+          },
+          "components": {
+            "POS_CTRL": 300.0
+          },
+          "mass_mg": 300.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_positive_control",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s37::alloc",
+            "capacity_uL": 500.0,
+            "kind": "tube",
+            "label": "PositiveControl"
+          },
+          "volume_uL": 300.0
+        },
+        "name": "PositiveControl",
+        "volume_uL": 300.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s38%3A%3Aalloc/__cmp_entry_s0_negative_control",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s38%3A%3Aalloc~1__cmp_entry_s0_negative_control"
+      },
+      "record": {
+        "mass_mg": 300.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 300.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NEG_CTRL",
+              "entry_id": "NEG_CTRL",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 300.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "NEG_CTRL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 300.0
+            }
+          },
+          "components": {
+            "NEG_CTRL": 300.0
+          },
+          "mass_mg": 300.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_negative_control",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s38::alloc",
+            "capacity_uL": 500.0,
+            "kind": "tube",
+            "label": "NegativeControl"
+          },
+          "volume_uL": 300.0
+        },
+        "name": "NegativeControl",
+        "volume_uL": 300.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s39%3A%3Aalloc/__cmp_entry_s0_detection_antibody",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s39%3A%3Aalloc~1__cmp_entry_s0_detection_antibody"
+      },
+      "record": {
+        "mass_mg": 400.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 400.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DETECTION_AB_WORKING_BUFFER",
+              "entry_id": "DETECTION_AB_WORKING_BUFFER",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 400.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "DETECTION_AB_WORKING_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 400.0
+            }
+          },
+          "components": {
+            "DETECTION_AB_WORKING_BUFFER": 400.0
+          },
+          "mass_mg": 400.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_detection_antibody",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s39::alloc",
+            "capacity_uL": 3000.0,
+            "kind": "tube",
+            "label": "DetectionAntibodyWorkingSolution"
+          },
+          "volume_uL": 400.0
+        },
+        "name": "DetectionAntibodyWorkingSolution",
+        "volume_uL": 400.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s40%3A%3Aalloc/__cmp_entry_s0_streptavidin_hrp",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s40%3A%3Aalloc~1__cmp_entry_s0_streptavidin_hrp"
+      },
+      "record": {
+        "mass_mg": 400.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 400.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "SA_HRP_WORKING_BUFFER",
+              "entry_id": "SA_HRP_WORKING_BUFFER",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 400.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "SA_HRP_WORKING_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 400.0
+            }
+          },
+          "components": {
+            "SA_HRP_WORKING_BUFFER": 400.0
+          },
+          "mass_mg": 400.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_streptavidin_hrp",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s40::alloc",
+            "capacity_uL": 3000.0,
+            "kind": "tube",
+            "label": "StreptavidinHRPWorkingSolution"
+          },
+          "volume_uL": 400.0
+        },
+        "name": "StreptavidinHRPWorkingSolution",
+        "volume_uL": 400.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s41%3A%3Aalloc/__cmp_entry_s0_tmb_substrate",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s41%3A%3Aalloc~1__cmp_entry_s0_tmb_substrate"
+      },
+      "record": {
+        "mass_mg": 400.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 400.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TMB",
+              "entry_id": "TMB",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 400.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "TMB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 400.0
+            }
+          },
+          "components": {
+            "TMB": 400.0
+          },
+          "mass_mg": 400.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_tmb_substrate",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s41::alloc",
+            "capacity_uL": 3000.0,
+            "kind": "tube",
+            "label": "TMBSubstrate"
+          },
+          "volume_uL": 400.0
+        },
+        "name": "TMBSubstrate",
+        "volume_uL": 400.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s42%3A%3Aalloc/__cmp_entry_s0_stop_solution",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s42%3A%3Aalloc~1__cmp_entry_s0_stop_solution"
+      },
+      "record": {
+        "mass_mg": 200.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 200.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STOP",
+              "entry_id": "STOP",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 200.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "STOP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 200.0
+            }
+          },
+          "components": {
+            "STOP": 200.0
+          },
+          "mass_mg": 200.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_stop_solution",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s42::alloc",
+            "capacity_uL": 2000.0,
+            "kind": "tube",
+            "label": "StopSolution"
+          },
+          "volume_uL": 200.0
+        },
+        "name": "StopSolution",
+        "volume_uL": 200.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s43%3A%3Aalloc/__cmp_entry_s0_waste",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s43%3A%3Aalloc~1__cmp_entry_s0_waste"
+      },
+      "record": {
+        "mass_mg": 107200.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "CAPTURE_AB",
+              "entry_id": "CAPTURE_AB",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 1600.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "CAPTURE_AB_WORKING_BUFFER",
+              "entry_id": "CAPTURE_AB_WORKING_BUFFER",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 1600.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 96000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "WASH",
+              "entry_id": "WASH",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 96000.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 4800.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "BLOCK",
+              "entry_id": "BLOCK",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 4800.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STD_2000",
+              "entry_id": "STD_2000",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 1200.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DIL",
+              "entry_id": "DIL",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 1200.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "UNKNOWN_1",
+              "entry_id": "UNKNOWN_1",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STD_1000",
+              "entry_id": "STD_1000",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "UNKNOWN_2",
+              "entry_id": "UNKNOWN_2",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STD_500",
+              "entry_id": "STD_500",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "POS_CTRL",
+              "entry_id": "POS_CTRL",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STD_250",
+              "entry_id": "STD_250",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 100.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NEG_CTRL",
+              "entry_id": "NEG_CTRL",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STD_125",
+              "entry_id": "STD_125",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STD_62P5",
+              "entry_id": "STD_62P5",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "STD_31P25",
+              "entry_id": "STD_31P25",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DETECTION_AB",
+              "entry_id": "DETECTION_AB",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 1600.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DETECTION_AB_WORKING_BUFFER",
+              "entry_id": "DETECTION_AB_WORKING_BUFFER",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 1600.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "SA_HRP",
+              "entry_id": "SA_HRP",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 1600.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "SA_HRP_WORKING_BUFFER",
+              "entry_id": "SA_HRP_WORKING_BUFFER",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 1600.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "BLOCK": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 4800.0
+            },
+            "CAPTURE_AB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "CAPTURE_AB_WORKING_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 1600.0
+            },
+            "DETECTION_AB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "DETECTION_AB_WORKING_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 1600.0
+            },
+            "DIL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 1200.0
+            },
+            "NEG_CTRL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            },
+            "POS_CTRL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            },
+            "SA_HRP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "SA_HRP_WORKING_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 1600.0
+            },
+            "STD_1000": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "STD_125": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "STD_2000": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "STD_250": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "STD_31P25": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "STD_500": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "STD_62P5": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "UNKNOWN_1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            },
+            "UNKNOWN_2": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            },
+            "WASH": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 96000.0
+            }
+          },
+          "components": {
+            "BLOCK": 4800.0,
+            "CAPTURE_AB": 0.0,
+            "CAPTURE_AB_WORKING_BUFFER": 1600.0,
+            "DETECTION_AB": 0.0,
+            "DETECTION_AB_WORKING_BUFFER": 1600.0,
+            "DIL": 1200.0,
+            "NEG_CTRL": 100.0,
+            "POS_CTRL": 100.0,
+            "SA_HRP": 0.0,
+            "SA_HRP_WORKING_BUFFER": 1600.0,
+            "STD_1000": 0.0,
+            "STD_125": 0.0,
+            "STD_2000": 0.0,
+            "STD_250": 0.0,
+            "STD_31P25": 0.0,
+            "STD_500": 0.0,
+            "STD_62P5": 0.0,
+            "UNKNOWN_1": 100.0,
+            "UNKNOWN_2": 100.0,
+            "WASH": 96000.0
+          },
+          "mass_mg": 107200.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_waste",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s43::alloc",
+            "capacity_uL": 150000.0,
+            "kind": "tube",
+            "label": "ELISAWashWaste"
+          },
+          "volume_uL": 107200.0
+        },
+        "name": "ELISAWashWaste",
+        "volume_uL": 107200.0
+      }
+    }
+  ],
+  "final_material_scope": {
+    "excludes": "Empty containers and internal fraction handles containing '::'.",
+    "identity": "One record per runtime container ID; display names are not deduplicated.",
+    "includes": "Every nonempty physical container, including residual source stocks and waste.",
+    "positive_quantity_tolerance": 1e-09,
+    "rule": "final-physical-container-state-v1",
+    "source": "run.json /state/artifacts/material_state/containers"
+  },
+  "final_material_states": 37,
+  "final_products": [
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/0"
+      },
+      "record": {
+        "mass_mg": 107200.0,
+        "name": "ELISAWashWaste",
+        "primary_component": "UNKNOWN_1",
+        "volume_mL": 107.2,
+        "volume_uL": 107200.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/1"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "name": "ELISA96_A1",
+        "primary_component": "TMB",
+        "volume_mL": 0.15,
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/2"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "name": "ELISA96_A2",
+        "primary_component": "TMB",
+        "volume_mL": 0.15,
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/3"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "name": "ELISA96_B1",
+        "primary_component": "TMB",
+        "volume_mL": 0.15,
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/4"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "name": "ELISA96_B2",
+        "primary_component": "TMB",
+        "volume_mL": 0.15,
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/5"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "name": "ELISA96_C1",
+        "primary_component": "TMB",
+        "volume_mL": 0.15,
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/6"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "name": "ELISA96_C2",
+        "primary_component": "TMB",
+        "volume_mL": 0.15,
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/7"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "name": "ELISA96_D1",
+        "primary_component": "TMB",
+        "volume_mL": 0.15,
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/8"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "name": "ELISA96_D2",
+        "primary_component": "TMB",
+        "volume_mL": 0.15,
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/9"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "name": "ELISA96_E1",
+        "primary_component": "TMB",
+        "volume_mL": 0.15,
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/10"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "name": "ELISA96_E2",
+        "primary_component": "TMB",
+        "volume_mL": 0.15,
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/11"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "name": "ELISA96_F1",
+        "primary_component": "TMB",
+        "volume_mL": 0.15,
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/12"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "name": "ELISA96_F2",
+        "primary_component": "TMB",
+        "volume_mL": 0.15,
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/13"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "name": "ELISA96_G1",
+        "primary_component": "TMB",
+        "volume_mL": 0.15,
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/14"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "name": "ELISA96_G2",
+        "primary_component": "TMB",
+        "volume_mL": 0.15,
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/15"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "name": "ELISA96_H1",
+        "primary_component": "TMB",
+        "volume_mL": 0.15,
+        "volume_uL": 150.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/16"
+      },
+      "record": {
+        "mass_mg": 150.0,
+        "name": "ELISA96_H2",
+        "primary_component": "TMB",
+        "volume_mL": 0.15,
+        "volume_uL": 150.0
+      }
+    }
+  ],
+  "formal_returns": {
+    "evidence": {
+      "file": "artifacts/output.json",
+      "json_pointer": "/returns"
+    },
+    "value": {
+      "entry": {
+        "entry_kind": "script",
+        "protocol_id": "entry",
+        "protocol_name": "entry",
+        "returns": []
+      }
+    }
+  },
+  "input_files": {
+    "artifacts/ast.json": "b72f7ee3d4aadb068ca3dc04f0891b9938bf65f1820f7a1a45718d62c36d3b34",
+    "artifacts/ir.json": "38acf042c0c9fa4280b5fd538b0d14e29f87dcdd3a1bb8e4b6f4770ab86c2dea",
+    "artifacts/output.json": "99a39e00f6d6378c2e87466c6b28e847006b5271e0a1eb0f612d555176776850",
+    "artifacts/plan.json": "e8c17e6b80122c1811b385c1d7125f48af6b36d4ca9d693ceadeae03ab36252b",
+    "artifacts/result.json": "081a798d7b559e627eaf429de1c9ed404a027a7b5f2f507e0ca5c27001721181",
+    "artifacts/run.json": "5757950a5b61f842fcc46cbe024cd7f3cc9991cc044c6fd7d7174c442747028c",
+    "artifacts/summary.json": "0685344e538cd0cc9c945e36ba889c457dd81388e9a39bfb451741b9e09c689d",
+    "artifacts/typecheck.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "artifacts/validate.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "case.json": "d7a6ff1e3c37f376b4931b40501cd60d4b2ec7e71f9228e486df2a32bc630c4b",
+    "protocol.culs": "0505175bad5b2da110df4f9e8cd8354744a717d3836770aa6bec9a2bdf91617a",
+    "receipt.json": "d0f253c3590ed238e9b78b415bc288da796b46e3bf66a98369dec8586a27577c",
+    "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout.txt": "99a39e00f6d6378c2e87466c6b28e847006b5271e0a1eb0f612d555176776850"
+  },
+  "profile": "nested-v1",
+  "reagent_consumption": [
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/0"
+      },
+      "record": {
+        "consumed_mL": 96.0,
+        "consumed_mg": null,
+        "consumed_uL": 96000.0,
+        "name": "WashBuffer",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/1"
+      },
+      "record": {
+        "consumed_mL": 4.8,
+        "consumed_mg": null,
+        "consumed_uL": 4800.0,
+        "name": "BlockingBuffer",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/2"
+      },
+      "record": {
+        "consumed_mL": 1.6,
+        "consumed_mg": null,
+        "consumed_uL": 1600.0,
+        "name": "CaptureAntibodyWorkingSolution",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/3"
+      },
+      "record": {
+        "consumed_mL": 1.6,
+        "consumed_mg": null,
+        "consumed_uL": 1600.0,
+        "name": "DetectionAntibodyWorkingSolution",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/4"
+      },
+      "record": {
+        "consumed_mL": 1.6,
+        "consumed_mg": null,
+        "consumed_uL": 1600.0,
+        "name": "StreptavidinHRPWorkingSolution",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/5"
+      },
+      "record": {
+        "consumed_mL": 1.6,
+        "consumed_mg": null,
+        "consumed_uL": 1600.0,
+        "name": "TMBSubstrate",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/6"
+      },
+      "record": {
+        "consumed_mL": 0.8,
+        "consumed_mg": null,
+        "consumed_uL": 800.0,
+        "name": "StopSolution",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/7"
+      },
+      "record": {
+        "consumed_mL": 0.4,
+        "consumed_mg": null,
+        "consumed_uL": 400.0,
+        "name": "ReagentDiluent",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/8"
+      },
+      "record": {
+        "consumed_mL": 0.1,
+        "consumed_mg": null,
+        "consumed_uL": 100.0,
+        "name": "NegativeControl",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/9"
+      },
+      "record": {
+        "consumed_mL": 0.1,
+        "consumed_mg": null,
+        "consumed_uL": 100.0,
+        "name": "PositiveControl",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/10"
+      },
+      "record": {
+        "consumed_mL": 0.1,
+        "consumed_mg": null,
+        "consumed_uL": 100.0,
+        "name": "Standard1000pgmL",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/11"
+      },
+      "record": {
+        "consumed_mL": 0.1,
+        "consumed_mg": null,
+        "consumed_uL": 100.0,
+        "name": "Standard125pgmL",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/12"
+      },
+      "record": {
+        "consumed_mL": 0.1,
+        "consumed_mg": null,
+        "consumed_uL": 100.0,
+        "name": "Standard2000pgmL",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/13"
+      },
+      "record": {
+        "consumed_mL": 0.1,
+        "consumed_mg": null,
+        "consumed_uL": 100.0,
+        "name": "Standard250pgmL",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/14"
+      },
+      "record": {
+        "consumed_mL": 0.1,
+        "consumed_mg": null,
+        "consumed_uL": 100.0,
+        "name": "Standard31p25pgmL",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/15"
+      },
+      "record": {
+        "consumed_mL": 0.1,
+        "consumed_mg": null,
+        "consumed_uL": 100.0,
+        "name": "Standard500pgmL",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/16"
+      },
+      "record": {
+        "consumed_mL": 0.1,
+        "consumed_mg": null,
+        "consumed_uL": 100.0,
+        "name": "Standard62p5pgmL",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/17"
+      },
+      "record": {
+        "consumed_mL": 0.1,
+        "consumed_mg": null,
+        "consumed_uL": 100.0,
+        "name": "UnknownSample1",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/18"
+      },
+      "record": {
+        "consumed_mL": 0.1,
+        "consumed_mg": null,
+        "consumed_uL": 100.0,
+        "name": "UnknownSample2",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/19"
+      },
+      "record": {
+        "consumed_mL": 0.1,
+        "consumed_mg": null,
+        "consumed_uL": 100.0,
+        "name": "ZeroStandard",
+        "roles": [
+          "source"
+        ]
+      }
+    }
+  ],
+  "reagent_records": 20,
+  "reported_final_products": 17,
+  "rules_version": "patterns-metrics-nested-v9",
+  "schema_version": "patterns-metrics-v1",
+  "section": "3.4",
+  "statistics_scope": {
+    "runtime": "whole invocation",
+    "source": "reachable nested AST constructs",
+    "step_protocol": "SandwichELISA"
+  },
+  "support_scope": "Nested AST calls, result members, declared plate groups/selectors, grouped readouts and conditional execution; unresolved JSON joins fail",
+  "touched_containers": 37,
+  "touched_names": [
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/0"
+      },
+      "name": "BlockingBuffer"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/1"
+      },
+      "name": "CaptureAntibodyWorkingSolution"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/2"
+      },
+      "name": "DetectionAntibodyWorkingSolution"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/3"
+      },
+      "name": "ELISA96_A1"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/4"
+      },
+      "name": "ELISA96_A2"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/5"
+      },
+      "name": "ELISA96_B1"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/6"
+      },
+      "name": "ELISA96_B2"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/7"
+      },
+      "name": "ELISA96_C1"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/8"
+      },
+      "name": "ELISA96_C2"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/9"
+      },
+      "name": "ELISA96_D1"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/10"
+      },
+      "name": "ELISA96_D2"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/11"
+      },
+      "name": "ELISA96_E1"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/12"
+      },
+      "name": "ELISA96_E2"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/13"
+      },
+      "name": "ELISA96_F1"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/14"
+      },
+      "name": "ELISA96_F2"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/15"
+      },
+      "name": "ELISA96_G1"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/16"
+      },
+      "name": "ELISA96_G2"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/17"
+      },
+      "name": "ELISA96_H1"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/18"
+      },
+      "name": "ELISA96_H2"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/19"
+      },
+      "name": "ELISAWashWaste"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/20"
+      },
+      "name": "NegativeControl"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/21"
+      },
+      "name": "PositiveControl"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/22"
+      },
+      "name": "ReagentDiluent"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/23"
+      },
+      "name": "Standard1000pgmL"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/24"
+      },
+      "name": "Standard125pgmL"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/25"
+      },
+      "name": "Standard2000pgmL"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/26"
+      },
+      "name": "Standard250pgmL"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/27"
+      },
+      "name": "Standard31p25pgmL"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/28"
+      },
+      "name": "Standard500pgmL"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/29"
+      },
+      "name": "Standard62p5pgmL"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/30"
+      },
+      "name": "StopSolution"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/31"
+      },
+      "name": "StreptavidinHRPWorkingSolution"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/32"
+      },
+      "name": "TMBSubstrate"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/33"
+      },
+      "name": "UnknownSample1"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/34"
+      },
+      "name": "UnknownSample2"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/35"
+      },
+      "name": "WashBuffer"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/36"
+      },
+      "name": "ZeroStandard"
+    }
+  ]
+}

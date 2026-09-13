@@ -1,1 +1,4334 @@
-{"adapter_sha256":"6f3dfe206ac08dcbc4a65b2e2e534a97374001705b41834a8f036fac1fe3852d","case_id":"05","case_role":"corpus","container_identity":{"available":false,"evidence_level":"runtime_summary_name_record","note":"List indices locate summary records, not container identities."},"entry":{"evidence":{"file":"artifacts/ast.json","json_pointer":"/statements"},"protocol":"PBMCFlowCytometryImmunophenotyping"},"environment":{"culsma":"1.0.7rc1","culsma_file":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/lib/python3.12/site-packages/culsma/__init__.py","executable":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/bin/python","lark":"1.3.1","prefix":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv","python":"3.12.8"},"evidence_base":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/05/input","extraction_id":"48ecce87c1c27364c9689c5e4665c217ef6905e07f599dace31ad230530f452b","extractor_sha256":"11e290bb80e3d5eb76cd93cbe9a4f3863c98ef674f2bbb18191afd1afc2236c8","final_material_states":9,"final_products":[{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/0"},"record":{"mass_mg":67199.848,"name":"FlowProcessWaste","primary_component":"FIX_IN_PBS","volume_mL":67.199848,"volume_uL":67199.848}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/1"},"record":{"mass_mg":600.075,"name":"FullyStainedSample","primary_component":"PBMC","volume_mL":0.600075,"volume_uL":600.075}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/2"},"record":{"mass_mg":600.053,"name":"IsotypeControlPanel","primary_component":"PBMC","volume_mL":0.600052,"volume_uL":600.053}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/3"},"record":{"mass_mg":600.005,"name":"SingleAntibodyControl1","primary_component":"PBMC","volume_mL":0.600005,"volume_uL":600.005}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/4"},"record":{"mass_mg":600.005,"name":"SingleAntibodyControl2","primary_component":"PBMC","volume_mL":0.600005,"volume_uL":600.005}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/5"},"record":{"mass_mg":600.005,"name":"SingleAntibodyControl3","primary_component":"PBMC","volume_mL":0.600005,"volume_uL":600.005}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/6"},"record":{"mass_mg":600.005,"name":"SingleAntibodyControl4","primary_component":"PBMC","volume_mL":0.600005,"volume_uL":600.005}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/7"},"record":{"mass_mg":600.005,"name":"SingleAntibodyControl5","primary_component":"PBMC","volume_mL":0.600005,"volume_uL":600.005}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/8"},"record":{"mass_mg":600.0,"name":"UnstainedAutofluorescenceControl","primary_component":"PBMC","volume_mL":0.6,"volume_uL":600.0}}],"formal_returns":{"evidence":{"file":"artifacts/output.json","json_pointer":"/returns"},"value":{"entry":{"entry_kind":"script","protocol_id":"entry","protocol_name":"entry","returns":[]}}},"input_files":{"artifacts/ast.json":"d6f148bf920c6544c5f2f02916c4ffa2cd2db7956dd90d3d559bf51e398330ab","artifacts/ir.json":"d4daee85bb357502f4ad9fb6150b6f9a8982979ee465ca04d53577c7b32608c6","artifacts/output.json":"9fad806b9289dc2ab91c03c4c5c90b66e522408dc9908688265f1b559ccda167","artifacts/plan.json":"61f19b37dc41c873ad951d65ca6040e9db1ec14e360d03ff4547fdacf7198d94","artifacts/result.json":"105154abcc244a374932dc7910529001003202ed4140b22ad7fc7ac24f46bde7","artifacts/run.json":"da0c71a0829fc825034272a188ad8928bc46969c31e1122383e9fb0c321ffaf6","artifacts/summary.json":"77630c1f6d044fb8c9ad474cbd3b778f7374d5d22e000b4e74b7790bdd581622","artifacts/typecheck.json":"37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570","artifacts/validate.json":"37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570","case.json":"e03c24a30d1d2dd9307773f1ac9f1d95516e475222a18ec86b69218a4de789aa","protocol.culs":"ed6acbb820b515510e5c84be6c06be93bf70bebe923f7bb188f9f7c1c84de416","receipt.json":"caf340b0b4e5313a75c238d74ed0cf47afe8ad9e05ca5d235d737cc5a69068b1","stderr.txt":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","stdout.txt":"9fad806b9289dc2ab91c03c4c5c90b66e522408dc9908688265f1b559ccda167"},"profile":"nested-v1","reagent_consumption":[{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/0"},"record":{"consumed_mL":64.675,"consumed_mg":null,"consumed_uL":64675.0,"name":"FlowStainingBuffer","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/1"},"record":{"consumed_mL":4.0,"consumed_mg":null,"consumed_uL":4000.0,"name":"FlowAcquisitionBuffer","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/2"},"record":{"consumed_mL":2.4,"consumed_mg":null,"consumed_uL":2400.0,"name":"FixationBufferDilutedInPBS","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/3"},"record":{"consumed_mL":0.8,"consumed_mg":null,"consumed_uL":800.0,"name":"InputPBMCSuspension","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/4"},"record":{"consumed_mL":0.04,"consumed_mg":null,"consumed_uL":40.0,"name":"HumanFcBlock","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/5"},"record":{"consumed_mL":0.01,"consumed_mg":null,"consumed_uL":10.0,"name":"AntiCD19","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/6"},"record":{"consumed_mL":0.01,"consumed_mg":null,"consumed_uL":10.0,"name":"AntiCD3","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/7"},"record":{"consumed_mL":0.01,"consumed_mg":null,"consumed_uL":10.0,"name":"AntiCD4","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/8"},"record":{"consumed_mL":0.01,"consumed_mg":null,"consumed_uL":10.0,"name":"AntiCD45","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/9"},"record":{"consumed_mL":0.01,"consumed_mg":null,"consumed_uL":10.0,"name":"AntiCD8","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/10"},"record":{"consumed_mL":0.01,"consumed_mg":null,"consumed_uL":10.0,"name":"ViabilityDye","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/11"},"record":{"consumed_mL":0.005,"consumed_mg":null,"consumed_uL":5.0,"name":"IsotypeCD19","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/12"},"record":{"consumed_mL":0.005,"consumed_mg":null,"consumed_uL":5.0,"name":"IsotypeCD3","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/13"},"record":{"consumed_mL":0.005,"consumed_mg":null,"consumed_uL":5.0,"name":"IsotypeCD4","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/14"},"record":{"consumed_mL":0.005,"consumed_mg":null,"consumed_uL":5.0,"name":"IsotypeCD45","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/15"},"record":{"consumed_mL":0.005,"consumed_mg":null,"consumed_uL":5.0,"name":"IsotypeCD8","roles":["source"]}}],"reagent_records":16,"rules_version":"patterns-metrics-nested-v8","schema_version":"patterns-metrics-v1","section":"3.4","statistics_scope":{"runtime":"whole invocation","source":"reachable nested AST constructs","step_protocol":"PBMCFlowCytometryImmunophenotyping"},"support_scope":"Nested AST calls, result members, declared plate groups/selectors, grouped readouts and conditional execution; unresolved JSON joins fail","touched_containers":33,"touched_names":[{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/0"},"name":"AntiCD19"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/1"},"name":"AntiCD3"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/2"},"name":"AntiCD4"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/3"},"name":"AntiCD45"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/4"},"name":"AntiCD8"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/5"},"name":"FixationBufferDilutedInPBS"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/6"},"name":"FlowAcquisitionBuffer"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/7"},"name":"FlowProcessWaste"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/8"},"name":"FlowStainingBuffer"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/9"},"name":"FullAntibodyPanel"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/10"},"name":"FullyStainedSample"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/11"},"name":"HumanFcBlock"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/12"},"name":"InputPBMCSuspension"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/13"},"name":"IsotypeCD19"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/14"},"name":"IsotypeCD3"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/15"},"name":"IsotypeCD4"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/16"},"name":"IsotypeCD45"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/17"},"name":"IsotypeCD8"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/18"},"name":"IsotypeControlPanel"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/19"},"name":"IsotypeControlPanel"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/20"},"name":"SingleAntibodyControl1"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/21"},"name":"SingleAntibodyControl2"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/22"},"name":"SingleAntibodyControl3"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/23"},"name":"SingleAntibodyControl4"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/24"},"name":"SingleAntibodyControl5"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/25"},"name":"SingleCD19Reagent"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/26"},"name":"SingleCD3Reagent"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/27"},"name":"SingleCD45Reagent"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/28"},"name":"SingleCD4Reagent"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/29"},"name":"SingleCD8Reagent"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/30"},"name":"UnstainedAutofluorescenceControl"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/31"},"name":"UnstainedControlReagent"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/32"},"name":"ViabilityDye"}]}
+{
+  "adapter_sha256": "d1efba860cc871e3e3dedda3b6a097503a990fbd52f24245a27a3565d9c431ef",
+  "case_id": "05",
+  "case_role": "corpus",
+  "container_identity": {
+    "available": false,
+    "evidence_level": "runtime_summary_name_record",
+    "note": "List indices locate summary records, not container identities."
+  },
+  "entry": {
+    "evidence": {
+      "file": "artifacts/ast.json",
+      "json_pointer": "/statements"
+    },
+    "protocol": "PBMCFlowCytometryImmunophenotyping"
+  },
+  "environment": {
+    "culsma": "1.0.7rc1",
+    "culsma_file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/lib/python3.12/site-packages/culsma/__init__.py",
+    "executable": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/bin/python",
+    "lark": "1.3.1",
+    "prefix": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv",
+    "python": "3.12.8"
+  },
+  "evidence_base": "/private/tmp/culsma-terminal-metrics-0ettVh/all-cases-v9/05/input",
+  "extraction_id": "c0b64b4877f515b2865cfc572c7fd5f63097feb4e4df85752f97276875a560ba",
+  "extractor_sha256": "39c3aab4ffe7afd1f4afb257978639975103d14025eec94b513e1b278aa4fe26",
+  "final_material_records": [
+    {
+      "container_id": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_input_pbmc",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s0%3A%3Aalloc~1__cmp_entry_s0_input_pbmc"
+      },
+      "record": {
+        "mass_mg": 200.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 200.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "PBMC",
+              "entry_id": "PBMC",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": "pelletable_cells",
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 200.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "PBMC": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 200.0
+            }
+          },
+          "components": {
+            "PBMC": 200.0
+          },
+          "mass_mg": 200.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_input_pbmc",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s0::alloc",
+            "capacity_uL": 2000.0,
+            "component_partition_classes": {
+              "PBMC": "pelletable_cells"
+            },
+            "kind": "tube",
+            "label": "InputPBMCSuspension"
+          },
+          "volume_uL": 200.0
+        },
+        "name": "InputPBMCSuspension",
+        "volume_uL": 200.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s1%3A%3Aalloc/__cmp_entry_s0_staining_buffer",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Aalloc~1__cmp_entry_s0_staining_buffer"
+      },
+      "record": {
+        "mass_mg": 15325.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 15325.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FSB",
+              "entry_id": "FSB",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 15325.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "FSB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 15325.0
+            }
+          },
+          "components": {
+            "FSB": 15325.0
+          },
+          "mass_mg": 15325.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_staining_buffer",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::alloc",
+            "capacity_uL": 100000.0,
+            "kind": "tube",
+            "label": "FlowStainingBuffer"
+          },
+          "volume_uL": 15325.0
+        },
+        "name": "FlowStainingBuffer",
+        "volume_uL": 15325.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s10%3A%3Aalloc/__cmp_entry_s0_viability_dye",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s10%3A%3Aalloc~1__cmp_entry_s0_viability_dye"
+      },
+      "record": {
+        "mass_mg": 70.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 70.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "VIABILITY_DYE",
+              "entry_id": "VIABILITY_DYE",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 70.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "VIABILITY_DYE": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 70.0
+            }
+          },
+          "components": {
+            "VIABILITY_DYE": 70.0
+          },
+          "mass_mg": 70.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_viability_dye",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s10::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "ViabilityDye"
+          },
+          "volume_uL": 70.0
+        },
+        "name": "ViabilityDye",
+        "volume_uL": 70.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s11%3A%3Aalloc/__cmp_entry_s0_isotype_cd45",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s11%3A%3Aalloc~1__cmp_entry_s0_isotype_cd45"
+      },
+      "record": {
+        "mass_mg": 75.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 75.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ISOTYPE_CD45",
+              "entry_id": "ISOTYPE_CD45",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 75.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "ISOTYPE_CD45": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 75.0
+            }
+          },
+          "components": {
+            "ISOTYPE_CD45": 75.0
+          },
+          "mass_mg": 75.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_isotype_cd45",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s11::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "IsotypeCD45"
+          },
+          "volume_uL": 75.0
+        },
+        "name": "IsotypeCD45",
+        "volume_uL": 75.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s12%3A%3Aalloc/__cmp_entry_s0_isotype_cd3",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s12%3A%3Aalloc~1__cmp_entry_s0_isotype_cd3"
+      },
+      "record": {
+        "mass_mg": 75.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 75.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ISOTYPE_CD3",
+              "entry_id": "ISOTYPE_CD3",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 75.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "ISOTYPE_CD3": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 75.0
+            }
+          },
+          "components": {
+            "ISOTYPE_CD3": 75.0
+          },
+          "mass_mg": 75.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_isotype_cd3",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s12::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "IsotypeCD3"
+          },
+          "volume_uL": 75.0
+        },
+        "name": "IsotypeCD3",
+        "volume_uL": 75.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s13%3A%3Aalloc/__cmp_entry_s0_isotype_cd4",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s13%3A%3Aalloc~1__cmp_entry_s0_isotype_cd4"
+      },
+      "record": {
+        "mass_mg": 75.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 75.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ISOTYPE_CD4",
+              "entry_id": "ISOTYPE_CD4",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 75.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "ISOTYPE_CD4": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 75.0
+            }
+          },
+          "components": {
+            "ISOTYPE_CD4": 75.0
+          },
+          "mass_mg": 75.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_isotype_cd4",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s13::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "IsotypeCD4"
+          },
+          "volume_uL": 75.0
+        },
+        "name": "IsotypeCD4",
+        "volume_uL": 75.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s14%3A%3Aalloc/__cmp_entry_s0_isotype_cd8",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s14%3A%3Aalloc~1__cmp_entry_s0_isotype_cd8"
+      },
+      "record": {
+        "mass_mg": 75.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 75.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ISOTYPE_CD8",
+              "entry_id": "ISOTYPE_CD8",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 75.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "ISOTYPE_CD8": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 75.0
+            }
+          },
+          "components": {
+            "ISOTYPE_CD8": 75.0
+          },
+          "mass_mg": 75.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_isotype_cd8",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s14::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "IsotypeCD8"
+          },
+          "volume_uL": 75.0
+        },
+        "name": "IsotypeCD8",
+        "volume_uL": 75.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s15%3A%3Aalloc/__cmp_entry_s0_isotype_cd19",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s15%3A%3Aalloc~1__cmp_entry_s0_isotype_cd19"
+      },
+      "record": {
+        "mass_mg": 75.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 75.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ISOTYPE_CD19",
+              "entry_id": "ISOTYPE_CD19",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 75.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "ISOTYPE_CD19": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 75.0
+            }
+          },
+          "components": {
+            "ISOTYPE_CD19": 75.0
+          },
+          "mass_mg": 75.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_isotype_cd19",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s15::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "IsotypeCD19"
+          },
+          "volume_uL": 75.0
+        },
+        "name": "IsotypeCD19",
+        "volume_uL": 75.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s150%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_shared_waste",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s150%3A%3Aalloc~1__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_shared_waste"
+      },
+      "record": {
+        "mass_mg": 67199.84750000002,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "PBMC",
+              "entry_id": "PBMC",
+              "label": null,
+              "material_state_source": null,
+              "partition_class": "pelletable_cells",
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 64675.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FSB",
+              "entry_id": "FSB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 64675.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 40.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FC_BLOCK",
+              "entry_id": "FC_BLOCK",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 40.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 9.990000000000002,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ANTI_CD45",
+              "entry_id": "ANTI_CD45",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 9.990000000000002
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 9.990000000000002,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ANTI_CD3",
+              "entry_id": "ANTI_CD3",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 9.990000000000002
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 9.990000000000002,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ANTI_CD4",
+              "entry_id": "ANTI_CD4",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 9.990000000000002
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 9.990000000000002,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ANTI_CD8",
+              "entry_id": "ANTI_CD8",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 9.990000000000002
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 9.990000000000002,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ANTI_CD19",
+              "entry_id": "ANTI_CD19",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 9.990000000000002
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 9.9,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "VIABILITY_DYE",
+              "entry_id": "VIABILITY_DYE",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 9.9
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 2400.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FIX_IN_PBS",
+              "entry_id": "FIX_IN_PBS",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 2400.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 4.999499999999999,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ISOTYPE_CD45",
+              "entry_id": "ISOTYPE_CD45",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 4.999499999999999
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 4.999499999999999,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ISOTYPE_CD3",
+              "entry_id": "ISOTYPE_CD3",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 4.999499999999999
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 4.999499999999999,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ISOTYPE_CD4",
+              "entry_id": "ISOTYPE_CD4",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 4.999499999999999
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 4.999499999999999,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ISOTYPE_CD8",
+              "entry_id": "ISOTYPE_CD8",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 4.999499999999999
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 4.999499999999999,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ISOTYPE_CD19",
+              "entry_id": "ISOTYPE_CD19",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 4.999499999999999
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "ANTI_CD19": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 9.990000000000002
+            },
+            "ANTI_CD3": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 9.990000000000002
+            },
+            "ANTI_CD4": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 9.990000000000002
+            },
+            "ANTI_CD45": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 9.990000000000002
+            },
+            "ANTI_CD8": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 9.990000000000002
+            },
+            "FC_BLOCK": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 40.0
+            },
+            "FIX_IN_PBS": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 2400.0
+            },
+            "FSB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 64675.0
+            },
+            "ISOTYPE_CD19": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 4.999499999999999
+            },
+            "ISOTYPE_CD3": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 4.999499999999999
+            },
+            "ISOTYPE_CD4": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 4.999499999999999
+            },
+            "ISOTYPE_CD45": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 4.999499999999999
+            },
+            "ISOTYPE_CD8": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 4.999499999999999
+            },
+            "PBMC": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "VIABILITY_DYE": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 9.9
+            }
+          },
+          "components": {
+            "ANTI_CD19": 9.990000000000002,
+            "ANTI_CD3": 9.990000000000002,
+            "ANTI_CD4": 9.990000000000002,
+            "ANTI_CD45": 9.990000000000002,
+            "ANTI_CD8": 9.990000000000002,
+            "FC_BLOCK": 40.0,
+            "FIX_IN_PBS": 2400.0,
+            "FSB": 64675.0,
+            "ISOTYPE_CD19": 4.999499999999999,
+            "ISOTYPE_CD3": 4.999499999999999,
+            "ISOTYPE_CD4": 4.999499999999999,
+            "ISOTYPE_CD45": 4.999499999999999,
+            "ISOTYPE_CD8": 4.999499999999999,
+            "PBMC": 0.0,
+            "VIABILITY_DYE": 9.9
+          },
+          "mass_mg": 67199.84750000002,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_shared_waste",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s150::alloc",
+            "capacity_uL": 100000.0,
+            "component_partition_classes": {
+              "PBMC": "pelletable_cells"
+            },
+            "kind": "tube",
+            "label": "FlowProcessWaste"
+          },
+          "volume_uL": 67199.84750000002
+        },
+        "name": "FlowProcessWaste",
+        "volume_uL": 67199.84750000002
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s151%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_full_stain_tube",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s151%3A%3Aalloc~1__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_full_stain_tube"
+      },
+      "record": {
+        "mass_mg": 600.0749999999999,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": "container/entry/entry.s151%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_full_stain_tube",
+              "association_target_kind": "container",
+              "content_ref": "PBMC",
+              "entry_id": "PBMC",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": "pelletable_cells",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "pellet",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FSB",
+              "entry_id": "FSB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FC_BLOCK",
+              "entry_id": "FC_BLOCK",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.005,
+              "associated_with": "PBMC",
+              "association_target_kind": "component_entry",
+              "content_ref": "ANTI_CD45",
+              "entry_id": "ANTI_CD45",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.005
+              },
+              "relation": "cell_bound",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.005,
+              "associated_with": "PBMC",
+              "association_target_kind": "component_entry",
+              "content_ref": "ANTI_CD3",
+              "entry_id": "ANTI_CD3",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.005
+              },
+              "relation": "cell_bound",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.005,
+              "associated_with": "PBMC",
+              "association_target_kind": "component_entry",
+              "content_ref": "ANTI_CD4",
+              "entry_id": "ANTI_CD4",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.005
+              },
+              "relation": "cell_bound",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.005,
+              "associated_with": "PBMC",
+              "association_target_kind": "component_entry",
+              "content_ref": "ANTI_CD8",
+              "entry_id": "ANTI_CD8",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.005
+              },
+              "relation": "cell_bound",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.005,
+              "associated_with": "PBMC",
+              "association_target_kind": "component_entry",
+              "content_ref": "ANTI_CD19",
+              "entry_id": "ANTI_CD19",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.005
+              },
+              "relation": "cell_bound",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.05,
+              "associated_with": "PBMC",
+              "association_target_kind": "component_entry",
+              "content_ref": "VIABILITY_DYE",
+              "entry_id": "VIABILITY_DYE",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.05
+              },
+              "relation": "cell_bound",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FIX_IN_PBS",
+              "entry_id": "FIX_IN_PBS",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 500.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ACQBUF",
+              "entry_id": "ACQBUF",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 500.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "ACQBUF": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 500.0
+            },
+            "ANTI_CD19": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.005
+            },
+            "ANTI_CD3": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.005
+            },
+            "ANTI_CD4": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.005
+            },
+            "ANTI_CD45": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.005
+            },
+            "ANTI_CD8": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.005
+            },
+            "FC_BLOCK": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "FIX_IN_PBS": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "FSB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "PBMC": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            },
+            "VIABILITY_DYE": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.05
+            }
+          },
+          "components": {
+            "ACQBUF": 500.0,
+            "ANTI_CD19": 0.005,
+            "ANTI_CD3": 0.005,
+            "ANTI_CD4": 0.005,
+            "ANTI_CD45": 0.005,
+            "ANTI_CD8": 0.005,
+            "FC_BLOCK": 0.0,
+            "FIX_IN_PBS": 0.0,
+            "FSB": 0.0,
+            "PBMC": 100.0,
+            "VIABILITY_DYE": 0.05
+          },
+          "mass_mg": 600.0749999999999,
+          "material_relationships": [
+            {
+              "associated_with": "container/entry/entry.s151%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_full_stain_tube",
+              "dispersed_component_ids": [
+                "PBMC"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "pellet",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            },
+            {
+              "associated_with": "PBMC",
+              "dispersed_component_ids": [
+                "ANTI_CD45"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "cell_bound",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            },
+            {
+              "associated_with": "PBMC",
+              "dispersed_component_ids": [
+                "ANTI_CD3"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "cell_bound",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            },
+            {
+              "associated_with": "PBMC",
+              "dispersed_component_ids": [
+                "ANTI_CD4"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "cell_bound",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            },
+            {
+              "associated_with": "PBMC",
+              "dispersed_component_ids": [
+                "ANTI_CD8"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "cell_bound",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            },
+            {
+              "associated_with": "PBMC",
+              "dispersed_component_ids": [
+                "ANTI_CD19"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "cell_bound",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            },
+            {
+              "associated_with": "PBMC",
+              "dispersed_component_ids": [
+                "VIABILITY_DYE"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "cell_bound",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            }
+          ],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_full_stain_tube",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s151::alloc",
+            "capacity_uL": 5000.0,
+            "component_partition_classes": {
+              "PBMC": "pelletable_cells"
+            },
+            "kind": "tube",
+            "label": "FullyStainedSample"
+          },
+          "volume_uL": 600.0749999999999
+        },
+        "name": "FullyStainedSample",
+        "volume_uL": 600.0749999999999
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s152%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_unstained_tube",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s152%3A%3Aalloc~1__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_unstained_tube"
+      },
+      "record": {
+        "mass_mg": 600.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": "container/entry/entry.s152%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_unstained_tube",
+              "association_target_kind": "container",
+              "content_ref": "PBMC",
+              "entry_id": "PBMC",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": "pelletable_cells",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "pellet",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FSB",
+              "entry_id": "FSB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FC_BLOCK",
+              "entry_id": "FC_BLOCK",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FIX_IN_PBS",
+              "entry_id": "FIX_IN_PBS",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 500.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ACQBUF",
+              "entry_id": "ACQBUF",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 500.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "ACQBUF": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 500.0
+            },
+            "FC_BLOCK": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "FIX_IN_PBS": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "FSB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "PBMC": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "ACQBUF": 500.0,
+            "FC_BLOCK": 0.0,
+            "FIX_IN_PBS": 0.0,
+            "FSB": 0.0,
+            "PBMC": 100.0
+          },
+          "mass_mg": 600.0,
+          "material_relationships": [
+            {
+              "associated_with": "container/entry/entry.s152%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_unstained_tube",
+              "dispersed_component_ids": [
+                "PBMC"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "pellet",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            }
+          ],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_unstained_tube",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s152::alloc",
+            "capacity_uL": 5000.0,
+            "component_partition_classes": {
+              "PBMC": "pelletable_cells"
+            },
+            "kind": "tube",
+            "label": "UnstainedAutofluorescenceControl"
+          },
+          "volume_uL": 600.0
+        },
+        "name": "UnstainedAutofluorescenceControl",
+        "volume_uL": 600.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s153%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_isotype_tube",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s153%3A%3Aalloc~1__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_isotype_tube"
+      },
+      "record": {
+        "mass_mg": 600.0525,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": "container/entry/entry.s153%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_isotype_tube",
+              "association_target_kind": "container",
+              "content_ref": "PBMC",
+              "entry_id": "PBMC",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": "pelletable_cells",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "pellet",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FSB",
+              "entry_id": "FSB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FC_BLOCK",
+              "entry_id": "FC_BLOCK",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0005,
+              "associated_with": "PBMC",
+              "association_target_kind": "component_entry",
+              "content_ref": "ISOTYPE_CD45",
+              "entry_id": "ISOTYPE_CD45",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0005
+              },
+              "relation": "cell_bound",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0005,
+              "associated_with": "PBMC",
+              "association_target_kind": "component_entry",
+              "content_ref": "ISOTYPE_CD3",
+              "entry_id": "ISOTYPE_CD3",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0005
+              },
+              "relation": "cell_bound",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0005,
+              "associated_with": "PBMC",
+              "association_target_kind": "component_entry",
+              "content_ref": "ISOTYPE_CD4",
+              "entry_id": "ISOTYPE_CD4",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0005
+              },
+              "relation": "cell_bound",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0005,
+              "associated_with": "PBMC",
+              "association_target_kind": "component_entry",
+              "content_ref": "ISOTYPE_CD8",
+              "entry_id": "ISOTYPE_CD8",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0005
+              },
+              "relation": "cell_bound",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0005,
+              "associated_with": "PBMC",
+              "association_target_kind": "component_entry",
+              "content_ref": "ISOTYPE_CD19",
+              "entry_id": "ISOTYPE_CD19",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0005
+              },
+              "relation": "cell_bound",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.05,
+              "associated_with": "PBMC",
+              "association_target_kind": "component_entry",
+              "content_ref": "VIABILITY_DYE",
+              "entry_id": "VIABILITY_DYE",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.05
+              },
+              "relation": "cell_bound",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FIX_IN_PBS",
+              "entry_id": "FIX_IN_PBS",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 500.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ACQBUF",
+              "entry_id": "ACQBUF",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 500.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "ACQBUF": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 500.0
+            },
+            "FC_BLOCK": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "FIX_IN_PBS": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "FSB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "ISOTYPE_CD19": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0005
+            },
+            "ISOTYPE_CD3": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0005
+            },
+            "ISOTYPE_CD4": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0005
+            },
+            "ISOTYPE_CD45": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0005
+            },
+            "ISOTYPE_CD8": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0005
+            },
+            "PBMC": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            },
+            "VIABILITY_DYE": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.05
+            }
+          },
+          "components": {
+            "ACQBUF": 500.0,
+            "FC_BLOCK": 0.0,
+            "FIX_IN_PBS": 0.0,
+            "FSB": 0.0,
+            "ISOTYPE_CD19": 0.0005,
+            "ISOTYPE_CD3": 0.0005,
+            "ISOTYPE_CD4": 0.0005,
+            "ISOTYPE_CD45": 0.0005,
+            "ISOTYPE_CD8": 0.0005,
+            "PBMC": 100.0,
+            "VIABILITY_DYE": 0.05
+          },
+          "mass_mg": 600.0525,
+          "material_relationships": [
+            {
+              "associated_with": "container/entry/entry.s153%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_isotype_tube",
+              "dispersed_component_ids": [
+                "PBMC"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "pellet",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            },
+            {
+              "associated_with": "PBMC",
+              "dispersed_component_ids": [
+                "ISOTYPE_CD45"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "cell_bound",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            },
+            {
+              "associated_with": "PBMC",
+              "dispersed_component_ids": [
+                "ISOTYPE_CD3"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "cell_bound",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            },
+            {
+              "associated_with": "PBMC",
+              "dispersed_component_ids": [
+                "ISOTYPE_CD4"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "cell_bound",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            },
+            {
+              "associated_with": "PBMC",
+              "dispersed_component_ids": [
+                "ISOTYPE_CD8"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "cell_bound",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            },
+            {
+              "associated_with": "PBMC",
+              "dispersed_component_ids": [
+                "ISOTYPE_CD19"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "cell_bound",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            },
+            {
+              "associated_with": "PBMC",
+              "dispersed_component_ids": [
+                "VIABILITY_DYE"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "cell_bound",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            }
+          ],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_isotype_tube",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s153::alloc",
+            "capacity_uL": 5000.0,
+            "component_partition_classes": {
+              "PBMC": "pelletable_cells"
+            },
+            "kind": "tube",
+            "label": "IsotypeControlPanel"
+          },
+          "volume_uL": 600.0525
+        },
+        "name": "IsotypeControlPanel",
+        "volume_uL": 600.0525
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s154%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_1",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s154%3A%3Aalloc~1__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_1"
+      },
+      "record": {
+        "mass_mg": 600.005,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": "container/entry/entry.s154%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_1",
+              "association_target_kind": "container",
+              "content_ref": "PBMC",
+              "entry_id": "PBMC",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": "pelletable_cells",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "pellet",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FSB",
+              "entry_id": "FSB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FC_BLOCK",
+              "entry_id": "FC_BLOCK",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.005,
+              "associated_with": "PBMC",
+              "association_target_kind": "component_entry",
+              "content_ref": "ANTI_CD45",
+              "entry_id": "ANTI_CD45",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.005
+              },
+              "relation": "cell_bound",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FIX_IN_PBS",
+              "entry_id": "FIX_IN_PBS",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 500.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ACQBUF",
+              "entry_id": "ACQBUF",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 500.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "ACQBUF": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 500.0
+            },
+            "ANTI_CD45": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.005
+            },
+            "FC_BLOCK": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "FIX_IN_PBS": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "FSB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "PBMC": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "ACQBUF": 500.0,
+            "ANTI_CD45": 0.005,
+            "FC_BLOCK": 0.0,
+            "FIX_IN_PBS": 0.0,
+            "FSB": 0.0,
+            "PBMC": 100.0
+          },
+          "mass_mg": 600.005,
+          "material_relationships": [
+            {
+              "associated_with": "container/entry/entry.s154%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_1",
+              "dispersed_component_ids": [
+                "PBMC"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "pellet",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            },
+            {
+              "associated_with": "PBMC",
+              "dispersed_component_ids": [
+                "ANTI_CD45"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "cell_bound",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            }
+          ],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_1",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s154::alloc",
+            "capacity_uL": 5000.0,
+            "component_partition_classes": {
+              "PBMC": "pelletable_cells"
+            },
+            "kind": "tube",
+            "label": "SingleAntibodyControl1"
+          },
+          "volume_uL": 600.005
+        },
+        "name": "SingleAntibodyControl1",
+        "volume_uL": 600.005
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s155%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_2",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s155%3A%3Aalloc~1__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_2"
+      },
+      "record": {
+        "mass_mg": 600.005,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": "container/entry/entry.s155%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_2",
+              "association_target_kind": "container",
+              "content_ref": "PBMC",
+              "entry_id": "PBMC",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": "pelletable_cells",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "pellet",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FSB",
+              "entry_id": "FSB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FC_BLOCK",
+              "entry_id": "FC_BLOCK",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.005,
+              "associated_with": "PBMC",
+              "association_target_kind": "component_entry",
+              "content_ref": "ANTI_CD3",
+              "entry_id": "ANTI_CD3",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.005
+              },
+              "relation": "cell_bound",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FIX_IN_PBS",
+              "entry_id": "FIX_IN_PBS",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 500.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ACQBUF",
+              "entry_id": "ACQBUF",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 500.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "ACQBUF": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 500.0
+            },
+            "ANTI_CD3": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.005
+            },
+            "FC_BLOCK": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "FIX_IN_PBS": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "FSB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "PBMC": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "ACQBUF": 500.0,
+            "ANTI_CD3": 0.005,
+            "FC_BLOCK": 0.0,
+            "FIX_IN_PBS": 0.0,
+            "FSB": 0.0,
+            "PBMC": 100.0
+          },
+          "mass_mg": 600.005,
+          "material_relationships": [
+            {
+              "associated_with": "container/entry/entry.s155%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_2",
+              "dispersed_component_ids": [
+                "PBMC"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "pellet",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            },
+            {
+              "associated_with": "PBMC",
+              "dispersed_component_ids": [
+                "ANTI_CD3"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "cell_bound",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            }
+          ],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_2",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s155::alloc",
+            "capacity_uL": 5000.0,
+            "component_partition_classes": {
+              "PBMC": "pelletable_cells"
+            },
+            "kind": "tube",
+            "label": "SingleAntibodyControl2"
+          },
+          "volume_uL": 600.005
+        },
+        "name": "SingleAntibodyControl2",
+        "volume_uL": 600.005
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s156%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_3",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s156%3A%3Aalloc~1__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_3"
+      },
+      "record": {
+        "mass_mg": 600.005,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": "container/entry/entry.s156%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_3",
+              "association_target_kind": "container",
+              "content_ref": "PBMC",
+              "entry_id": "PBMC",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": "pelletable_cells",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "pellet",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FSB",
+              "entry_id": "FSB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FC_BLOCK",
+              "entry_id": "FC_BLOCK",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.005,
+              "associated_with": "PBMC",
+              "association_target_kind": "component_entry",
+              "content_ref": "ANTI_CD4",
+              "entry_id": "ANTI_CD4",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.005
+              },
+              "relation": "cell_bound",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FIX_IN_PBS",
+              "entry_id": "FIX_IN_PBS",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 500.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ACQBUF",
+              "entry_id": "ACQBUF",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 500.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "ACQBUF": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 500.0
+            },
+            "ANTI_CD4": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.005
+            },
+            "FC_BLOCK": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "FIX_IN_PBS": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "FSB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "PBMC": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "ACQBUF": 500.0,
+            "ANTI_CD4": 0.005,
+            "FC_BLOCK": 0.0,
+            "FIX_IN_PBS": 0.0,
+            "FSB": 0.0,
+            "PBMC": 100.0
+          },
+          "mass_mg": 600.005,
+          "material_relationships": [
+            {
+              "associated_with": "container/entry/entry.s156%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_3",
+              "dispersed_component_ids": [
+                "PBMC"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "pellet",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            },
+            {
+              "associated_with": "PBMC",
+              "dispersed_component_ids": [
+                "ANTI_CD4"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "cell_bound",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            }
+          ],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_3",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s156::alloc",
+            "capacity_uL": 5000.0,
+            "component_partition_classes": {
+              "PBMC": "pelletable_cells"
+            },
+            "kind": "tube",
+            "label": "SingleAntibodyControl3"
+          },
+          "volume_uL": 600.005
+        },
+        "name": "SingleAntibodyControl3",
+        "volume_uL": 600.005
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s157%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_4",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s157%3A%3Aalloc~1__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_4"
+      },
+      "record": {
+        "mass_mg": 600.005,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": "container/entry/entry.s157%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_4",
+              "association_target_kind": "container",
+              "content_ref": "PBMC",
+              "entry_id": "PBMC",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": "pelletable_cells",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "pellet",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FSB",
+              "entry_id": "FSB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FC_BLOCK",
+              "entry_id": "FC_BLOCK",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.005,
+              "associated_with": "PBMC",
+              "association_target_kind": "component_entry",
+              "content_ref": "ANTI_CD8",
+              "entry_id": "ANTI_CD8",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.005
+              },
+              "relation": "cell_bound",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FIX_IN_PBS",
+              "entry_id": "FIX_IN_PBS",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 500.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ACQBUF",
+              "entry_id": "ACQBUF",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 500.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "ACQBUF": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 500.0
+            },
+            "ANTI_CD8": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.005
+            },
+            "FC_BLOCK": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "FIX_IN_PBS": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "FSB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "PBMC": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "ACQBUF": 500.0,
+            "ANTI_CD8": 0.005,
+            "FC_BLOCK": 0.0,
+            "FIX_IN_PBS": 0.0,
+            "FSB": 0.0,
+            "PBMC": 100.0
+          },
+          "mass_mg": 600.005,
+          "material_relationships": [
+            {
+              "associated_with": "container/entry/entry.s157%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_4",
+              "dispersed_component_ids": [
+                "PBMC"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "pellet",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            },
+            {
+              "associated_with": "PBMC",
+              "dispersed_component_ids": [
+                "ANTI_CD8"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "cell_bound",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            }
+          ],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_4",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s157::alloc",
+            "capacity_uL": 5000.0,
+            "component_partition_classes": {
+              "PBMC": "pelletable_cells"
+            },
+            "kind": "tube",
+            "label": "SingleAntibodyControl4"
+          },
+          "volume_uL": 600.005
+        },
+        "name": "SingleAntibodyControl4",
+        "volume_uL": 600.005
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s158%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_5",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s158%3A%3Aalloc~1__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_5"
+      },
+      "record": {
+        "mass_mg": 600.005,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 100.0,
+              "associated_with": "container/entry/entry.s158%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_5",
+              "association_target_kind": "container",
+              "content_ref": "PBMC",
+              "entry_id": "PBMC",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": "pelletable_cells",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "pellet",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FSB",
+              "entry_id": "FSB",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FC_BLOCK",
+              "entry_id": "FC_BLOCK",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.005,
+              "associated_with": "PBMC",
+              "association_target_kind": "component_entry",
+              "content_ref": "ANTI_CD19",
+              "entry_id": "ANTI_CD19",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.005
+              },
+              "relation": "cell_bound",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FIX_IN_PBS",
+              "entry_id": "FIX_IN_PBS",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": "derived",
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 500.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ACQBUF",
+              "entry_id": "ACQBUF",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 500.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "ACQBUF": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 500.0
+            },
+            "ANTI_CD19": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.005
+            },
+            "FC_BLOCK": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "FIX_IN_PBS": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "FSB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "PBMC": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "components": {
+            "ACQBUF": 500.0,
+            "ANTI_CD19": 0.005,
+            "FC_BLOCK": 0.0,
+            "FIX_IN_PBS": 0.0,
+            "FSB": 0.0,
+            "PBMC": 100.0
+          },
+          "mass_mg": 600.005,
+          "material_relationships": [
+            {
+              "associated_with": "container/entry/entry.s158%3A%3Aalloc/__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_5",
+              "dispersed_component_ids": [
+                "PBMC"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "pellet",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            },
+            {
+              "associated_with": "PBMC",
+              "dispersed_component_ids": [
+                "ANTI_CD19"
+              ],
+              "kind": "association",
+              "label": "pellet_output",
+              "material_state": "cell_bound",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            }
+          ],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_PBMCFlowCytometryImmunophenotyping_s30_single_control_tube_5",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s158::alloc",
+            "capacity_uL": 5000.0,
+            "component_partition_classes": {
+              "PBMC": "pelletable_cells"
+            },
+            "kind": "tube",
+            "label": "SingleAntibodyControl5"
+          },
+          "volume_uL": 600.005
+        },
+        "name": "SingleAntibodyControl5",
+        "volume_uL": 600.005
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s2%3A%3Aalloc/__cmp_entry_s0_acquisition_buffer",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s2%3A%3Aalloc~1__cmp_entry_s0_acquisition_buffer"
+      },
+      "record": {
+        "mass_mg": 4000.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 4000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ACQBUF",
+              "entry_id": "ACQBUF",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 4000.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "ACQBUF": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 4000.0
+            }
+          },
+          "components": {
+            "ACQBUF": 4000.0
+          },
+          "mass_mg": 4000.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_acquisition_buffer",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s2::alloc",
+            "capacity_uL": 10000.0,
+            "kind": "tube",
+            "label": "FlowAcquisitionBuffer"
+          },
+          "volume_uL": 4000.0
+        },
+        "name": "FlowAcquisitionBuffer",
+        "volume_uL": 4000.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s3%3A%3Aalloc/__cmp_entry_s0_fc_block",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s3%3A%3Aalloc~1__cmp_entry_s0_fc_block"
+      },
+      "record": {
+        "mass_mg": 60.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 60.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FC_BLOCK",
+              "entry_id": "FC_BLOCK",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 60.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "FC_BLOCK": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 60.0
+            }
+          },
+          "components": {
+            "FC_BLOCK": 60.0
+          },
+          "mass_mg": 60.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_fc_block",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s3::alloc",
+            "capacity_uL": 200.0,
+            "kind": "tube",
+            "label": "HumanFcBlock"
+          },
+          "volume_uL": 60.0
+        },
+        "name": "HumanFcBlock",
+        "volume_uL": 60.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s4%3A%3Aalloc/__cmp_entry_s0_fixation_buffer",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s4%3A%3Aalloc~1__cmp_entry_s0_fixation_buffer"
+      },
+      "record": {
+        "mass_mg": 2600.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 2600.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "FIX_IN_PBS",
+              "entry_id": "FIX_IN_PBS",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 2600.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "FIX_IN_PBS": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 2600.0
+            }
+          },
+          "components": {
+            "FIX_IN_PBS": 2600.0
+          },
+          "mass_mg": 2600.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_fixation_buffer",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s4::alloc",
+            "capacity_uL": 10000.0,
+            "kind": "tube",
+            "label": "FixationBufferDilutedInPBS"
+          },
+          "volume_uL": 2600.0
+        },
+        "name": "FixationBufferDilutedInPBS",
+        "volume_uL": 2600.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s5%3A%3Aalloc/__cmp_entry_s0_anti_cd45",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s5%3A%3Aalloc~1__cmp_entry_s0_anti_cd45"
+      },
+      "record": {
+        "mass_mg": 70.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 70.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ANTI_CD45",
+              "entry_id": "ANTI_CD45",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 70.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "ANTI_CD45": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 70.0
+            }
+          },
+          "components": {
+            "ANTI_CD45": 70.0
+          },
+          "mass_mg": 70.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_anti_cd45",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s5::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "AntiCD45"
+          },
+          "volume_uL": 70.0
+        },
+        "name": "AntiCD45",
+        "volume_uL": 70.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s6%3A%3Aalloc/__cmp_entry_s0_anti_cd3",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s6%3A%3Aalloc~1__cmp_entry_s0_anti_cd3"
+      },
+      "record": {
+        "mass_mg": 70.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 70.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ANTI_CD3",
+              "entry_id": "ANTI_CD3",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 70.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "ANTI_CD3": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 70.0
+            }
+          },
+          "components": {
+            "ANTI_CD3": 70.0
+          },
+          "mass_mg": 70.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_anti_cd3",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s6::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "AntiCD3"
+          },
+          "volume_uL": 70.0
+        },
+        "name": "AntiCD3",
+        "volume_uL": 70.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s7%3A%3Aalloc/__cmp_entry_s0_anti_cd4",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s7%3A%3Aalloc~1__cmp_entry_s0_anti_cd4"
+      },
+      "record": {
+        "mass_mg": 70.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 70.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ANTI_CD4",
+              "entry_id": "ANTI_CD4",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 70.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "ANTI_CD4": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 70.0
+            }
+          },
+          "components": {
+            "ANTI_CD4": 70.0
+          },
+          "mass_mg": 70.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_anti_cd4",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s7::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "AntiCD4"
+          },
+          "volume_uL": 70.0
+        },
+        "name": "AntiCD4",
+        "volume_uL": 70.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s8%3A%3Aalloc/__cmp_entry_s0_anti_cd8",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s8%3A%3Aalloc~1__cmp_entry_s0_anti_cd8"
+      },
+      "record": {
+        "mass_mg": 70.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 70.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ANTI_CD8",
+              "entry_id": "ANTI_CD8",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 70.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "ANTI_CD8": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 70.0
+            }
+          },
+          "components": {
+            "ANTI_CD8": 70.0
+          },
+          "mass_mg": 70.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_anti_cd8",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s8::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "AntiCD8"
+          },
+          "volume_uL": 70.0
+        },
+        "name": "AntiCD8",
+        "volume_uL": 70.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s9%3A%3Aalloc/__cmp_entry_s0_anti_cd19",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s9%3A%3Aalloc~1__cmp_entry_s0_anti_cd19"
+      },
+      "record": {
+        "mass_mg": 70.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 70.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "ANTI_CD19",
+              "entry_id": "ANTI_CD19",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 70.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "ANTI_CD19": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 70.0
+            }
+          },
+          "components": {
+            "ANTI_CD19": 70.0
+          },
+          "mass_mg": 70.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_anti_cd19",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s9::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "AntiCD19"
+          },
+          "volume_uL": 70.0
+        },
+        "name": "AntiCD19",
+        "volume_uL": 70.0
+      }
+    }
+  ],
+  "final_material_scope": {
+    "excludes": "Empty containers and internal fraction handles containing '::'.",
+    "identity": "One record per runtime container ID; display names are not deduplicated.",
+    "includes": "Every nonempty physical container, including residual source stocks and waste.",
+    "positive_quantity_tolerance": 1e-09,
+    "rule": "final-physical-container-state-v1",
+    "source": "run.json /state/artifacts/material_state/containers"
+  },
+  "final_material_states": 25,
+  "final_products": [
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/0"
+      },
+      "record": {
+        "mass_mg": 67199.848,
+        "name": "FlowProcessWaste",
+        "primary_component": "FIX_IN_PBS",
+        "volume_mL": 67.199848,
+        "volume_uL": 67199.848
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/1"
+      },
+      "record": {
+        "mass_mg": 600.075,
+        "name": "FullyStainedSample",
+        "primary_component": "PBMC",
+        "volume_mL": 0.600075,
+        "volume_uL": 600.075
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/2"
+      },
+      "record": {
+        "mass_mg": 600.053,
+        "name": "IsotypeControlPanel",
+        "primary_component": "PBMC",
+        "volume_mL": 0.600052,
+        "volume_uL": 600.053
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/3"
+      },
+      "record": {
+        "mass_mg": 600.005,
+        "name": "SingleAntibodyControl1",
+        "primary_component": "PBMC",
+        "volume_mL": 0.600005,
+        "volume_uL": 600.005
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/4"
+      },
+      "record": {
+        "mass_mg": 600.005,
+        "name": "SingleAntibodyControl2",
+        "primary_component": "PBMC",
+        "volume_mL": 0.600005,
+        "volume_uL": 600.005
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/5"
+      },
+      "record": {
+        "mass_mg": 600.005,
+        "name": "SingleAntibodyControl3",
+        "primary_component": "PBMC",
+        "volume_mL": 0.600005,
+        "volume_uL": 600.005
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/6"
+      },
+      "record": {
+        "mass_mg": 600.005,
+        "name": "SingleAntibodyControl4",
+        "primary_component": "PBMC",
+        "volume_mL": 0.600005,
+        "volume_uL": 600.005
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/7"
+      },
+      "record": {
+        "mass_mg": 600.005,
+        "name": "SingleAntibodyControl5",
+        "primary_component": "PBMC",
+        "volume_mL": 0.600005,
+        "volume_uL": 600.005
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/8"
+      },
+      "record": {
+        "mass_mg": 600.0,
+        "name": "UnstainedAutofluorescenceControl",
+        "primary_component": "PBMC",
+        "volume_mL": 0.6,
+        "volume_uL": 600.0
+      }
+    }
+  ],
+  "formal_returns": {
+    "evidence": {
+      "file": "artifacts/output.json",
+      "json_pointer": "/returns"
+    },
+    "value": {
+      "entry": {
+        "entry_kind": "script",
+        "protocol_id": "entry",
+        "protocol_name": "entry",
+        "returns": []
+      }
+    }
+  },
+  "input_files": {
+    "artifacts/ast.json": "92c544a647c13d6733b4045d2021c3e7e9f9735383e2a6c1afc82117551ac1c4",
+    "artifacts/ir.json": "4c310a9ea31f44146255f1ea54c87b8f74260828ae85e51640a26ad2f903a734",
+    "artifacts/output.json": "9fad806b9289dc2ab91c03c4c5c90b66e522408dc9908688265f1b559ccda167",
+    "artifacts/plan.json": "61f19b37dc41c873ad951d65ca6040e9db1ec14e360d03ff4547fdacf7198d94",
+    "artifacts/result.json": "105154abcc244a374932dc7910529001003202ed4140b22ad7fc7ac24f46bde7",
+    "artifacts/run.json": "da0c71a0829fc825034272a188ad8928bc46969c31e1122383e9fb0c321ffaf6",
+    "artifacts/summary.json": "77630c1f6d044fb8c9ad474cbd3b778f7374d5d22e000b4e74b7790bdd581622",
+    "artifacts/typecheck.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "artifacts/validate.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "case.json": "e03c24a30d1d2dd9307773f1ac9f1d95516e475222a18ec86b69218a4de789aa",
+    "protocol.culs": "ed6acbb820b515510e5c84be6c06be93bf70bebe923f7bb188f9f7c1c84de416",
+    "receipt.json": "c4e6ab34043e963bad260fda564a1663240c80f3f5581579c9babc8f5cc5098d",
+    "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout.txt": "9fad806b9289dc2ab91c03c4c5c90b66e522408dc9908688265f1b559ccda167"
+  },
+  "profile": "nested-v1",
+  "reagent_consumption": [
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/0"
+      },
+      "record": {
+        "consumed_mL": 64.675,
+        "consumed_mg": null,
+        "consumed_uL": 64675.0,
+        "name": "FlowStainingBuffer",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/1"
+      },
+      "record": {
+        "consumed_mL": 4.0,
+        "consumed_mg": null,
+        "consumed_uL": 4000.0,
+        "name": "FlowAcquisitionBuffer",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/2"
+      },
+      "record": {
+        "consumed_mL": 2.4,
+        "consumed_mg": null,
+        "consumed_uL": 2400.0,
+        "name": "FixationBufferDilutedInPBS",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/3"
+      },
+      "record": {
+        "consumed_mL": 0.8,
+        "consumed_mg": null,
+        "consumed_uL": 800.0,
+        "name": "InputPBMCSuspension",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/4"
+      },
+      "record": {
+        "consumed_mL": 0.04,
+        "consumed_mg": null,
+        "consumed_uL": 40.0,
+        "name": "HumanFcBlock",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/5"
+      },
+      "record": {
+        "consumed_mL": 0.01,
+        "consumed_mg": null,
+        "consumed_uL": 10.0,
+        "name": "AntiCD19",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/6"
+      },
+      "record": {
+        "consumed_mL": 0.01,
+        "consumed_mg": null,
+        "consumed_uL": 10.0,
+        "name": "AntiCD3",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/7"
+      },
+      "record": {
+        "consumed_mL": 0.01,
+        "consumed_mg": null,
+        "consumed_uL": 10.0,
+        "name": "AntiCD4",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/8"
+      },
+      "record": {
+        "consumed_mL": 0.01,
+        "consumed_mg": null,
+        "consumed_uL": 10.0,
+        "name": "AntiCD45",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/9"
+      },
+      "record": {
+        "consumed_mL": 0.01,
+        "consumed_mg": null,
+        "consumed_uL": 10.0,
+        "name": "AntiCD8",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/10"
+      },
+      "record": {
+        "consumed_mL": 0.01,
+        "consumed_mg": null,
+        "consumed_uL": 10.0,
+        "name": "ViabilityDye",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/11"
+      },
+      "record": {
+        "consumed_mL": 0.005,
+        "consumed_mg": null,
+        "consumed_uL": 5.0,
+        "name": "IsotypeCD19",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/12"
+      },
+      "record": {
+        "consumed_mL": 0.005,
+        "consumed_mg": null,
+        "consumed_uL": 5.0,
+        "name": "IsotypeCD3",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/13"
+      },
+      "record": {
+        "consumed_mL": 0.005,
+        "consumed_mg": null,
+        "consumed_uL": 5.0,
+        "name": "IsotypeCD4",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/14"
+      },
+      "record": {
+        "consumed_mL": 0.005,
+        "consumed_mg": null,
+        "consumed_uL": 5.0,
+        "name": "IsotypeCD45",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/15"
+      },
+      "record": {
+        "consumed_mL": 0.005,
+        "consumed_mg": null,
+        "consumed_uL": 5.0,
+        "name": "IsotypeCD8",
+        "roles": [
+          "source"
+        ]
+      }
+    }
+  ],
+  "reagent_records": 16,
+  "reported_final_products": 9,
+  "rules_version": "patterns-metrics-nested-v9",
+  "schema_version": "patterns-metrics-v1",
+  "section": "3.4",
+  "statistics_scope": {
+    "runtime": "whole invocation",
+    "source": "reachable nested AST constructs",
+    "step_protocol": "PBMCFlowCytometryImmunophenotyping"
+  },
+  "support_scope": "Nested AST calls, result members, declared plate groups/selectors, grouped readouts and conditional execution; unresolved JSON joins fail",
+  "touched_containers": 33,
+  "touched_names": [
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/0"
+      },
+      "name": "AntiCD19"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/1"
+      },
+      "name": "AntiCD3"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/2"
+      },
+      "name": "AntiCD4"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/3"
+      },
+      "name": "AntiCD45"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/4"
+      },
+      "name": "AntiCD8"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/5"
+      },
+      "name": "FixationBufferDilutedInPBS"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/6"
+      },
+      "name": "FlowAcquisitionBuffer"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/7"
+      },
+      "name": "FlowProcessWaste"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/8"
+      },
+      "name": "FlowStainingBuffer"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/9"
+      },
+      "name": "FullAntibodyPanel"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/10"
+      },
+      "name": "FullyStainedSample"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/11"
+      },
+      "name": "HumanFcBlock"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/12"
+      },
+      "name": "InputPBMCSuspension"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/13"
+      },
+      "name": "IsotypeCD19"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/14"
+      },
+      "name": "IsotypeCD3"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/15"
+      },
+      "name": "IsotypeCD4"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/16"
+      },
+      "name": "IsotypeCD45"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/17"
+      },
+      "name": "IsotypeCD8"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/18"
+      },
+      "name": "IsotypeControlPanel"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/19"
+      },
+      "name": "IsotypeControlPanel"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/20"
+      },
+      "name": "SingleAntibodyControl1"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/21"
+      },
+      "name": "SingleAntibodyControl2"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/22"
+      },
+      "name": "SingleAntibodyControl3"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/23"
+      },
+      "name": "SingleAntibodyControl4"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/24"
+      },
+      "name": "SingleAntibodyControl5"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/25"
+      },
+      "name": "SingleCD19Reagent"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/26"
+      },
+      "name": "SingleCD3Reagent"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/27"
+      },
+      "name": "SingleCD45Reagent"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/28"
+      },
+      "name": "SingleCD4Reagent"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/29"
+      },
+      "name": "SingleCD8Reagent"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/30"
+      },
+      "name": "UnstainedAutofluorescenceControl"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/31"
+      },
+      "name": "UnstainedControlReagent"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/32"
+      },
+      "name": "ViabilityDye"
+    }
+  ]
+}

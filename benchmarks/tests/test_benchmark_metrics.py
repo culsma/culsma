@@ -464,7 +464,10 @@ class Case04Tests(unittest.TestCase):
         self.assertEqual(len(readout["runtime_identity"]["item_ids"]), 16)
         self.assertIn("data_group_id", readout["runtime_identity"])
         self.assertEqual((t["reagent_records"], t["touched_containers"], t["final_material_states"]),
-                         (20, 37, 17))
+                         (20, 37, 37))
+        self.assertEqual(t["reported_final_products"], 17)
+        wash = next(r for r in t["final_material_records"] if r["record"]["name"] == "WashBuffer")
+        self.assertEqual(wash["record"]["volume_uL"], 24000)
 
     def test_single_index_changes_member_later_use_sets(self):
         # A small real-frontend case distinguishes index[0] from a whole-group use.

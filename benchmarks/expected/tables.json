@@ -1,169 +1,169 @@
 {
   "cases": {
     "00": {
-      "source_steps": 7,
       "descriptor_items": 25,
-      "reused_objects": 3,
-      "later_use_links": 8,
+      "source_steps": 7,
       "active_steps": 27,
       "completed_steps": 27,
+      "later_use_links": 8,
+      "reused_objects": 3,
+      "final_material_states": 3,
       "reagent_records": 2,
-      "touched_containers": 5,
-      "final_material_states": 3
+      "touched_containers": 5
     },
     "01": {
-      "source_steps": 18,
       "descriptor_items": 511,
-      "reused_objects": 42,
-      "later_use_links": 59,
+      "source_steps": 18,
       "active_steps": 611,
       "completed_steps": 611,
+      "later_use_links": 59,
+      "reused_objects": 42,
+      "final_material_states": 69,
       "reagent_records": 39,
-      "touched_containers": 115,
-      "final_material_states": 29
+      "touched_containers": 115
     },
     "02": {
-      "source_steps": 12,
       "descriptor_items": 208,
-      "reused_objects": 43,
-      "later_use_links": 99,
+      "source_steps": 12,
       "active_steps": 344,
       "completed_steps": 344,
+      "later_use_links": 99,
+      "reused_objects": 43,
+      "final_material_states": 46,
       "reagent_records": 15,
-      "touched_containers": 52,
-      "final_material_states": 24
+      "touched_containers": 52
     },
     "03": {
-      "source_steps": 14,
       "descriptor_items": 261,
-      "reused_objects": 28,
-      "later_use_links": 48,
+      "source_steps": 14,
       "active_steps": 275,
       "completed_steps": 275,
+      "later_use_links": 48,
+      "reused_objects": 28,
+      "final_material_states": 44,
       "reagent_records": 25,
-      "touched_containers": 56,
-      "final_material_states": 24
+      "touched_containers": 56
     },
     "04": {
-      "source_steps": 10,
       "descriptor_items": 157,
-      "reused_objects": 37,
-      "later_use_links": 173,
+      "source_steps": 10,
       "active_steps": 778,
       "completed_steps": 778,
+      "later_use_links": 173,
+      "reused_objects": 37,
+      "final_material_states": 37,
       "reagent_records": 20,
-      "touched_containers": 37,
-      "final_material_states": 17
+      "touched_containers": 37
     },
     "05": {
-      "source_steps": 11,
       "descriptor_items": 1359,
-      "reused_objects": 33,
-      "later_use_links": 88,
+      "source_steps": 11,
       "active_steps": 871,
       "completed_steps": 871,
+      "later_use_links": 88,
+      "reused_objects": 33,
+      "final_material_states": 25,
       "reagent_records": 16,
-      "touched_containers": 33,
-      "final_material_states": 9
+      "touched_containers": 33
     },
     "06": {
-      "source_steps": 9,
       "descriptor_items": 507,
-      "reused_objects": 28,
-      "later_use_links": 33,
+      "source_steps": 9,
       "active_steps": 739,
       "completed_steps": 739,
+      "later_use_links": 33,
+      "reused_objects": 28,
+      "final_material_states": 142,
       "reagent_records": 29,
-      "touched_containers": 180,
-      "final_material_states": 124
+      "touched_containers": 180
     },
     "07": {
-      "source_steps": 10,
       "descriptor_items": 172,
-      "reused_objects": 20,
-      "later_use_links": 28,
+      "source_steps": 10,
       "active_steps": 135,
       "completed_steps": 135,
+      "later_use_links": 28,
+      "reused_objects": 20,
+      "final_material_states": 29,
       "reagent_records": 11,
-      "touched_containers": 39,
-      "final_material_states": 20
+      "touched_containers": 39
     },
     "08": {
-      "source_steps": 8,
       "descriptor_items": 94,
-      "reused_objects": 3,
-      "later_use_links": 16,
+      "source_steps": 8,
       "active_steps": 133,
       "completed_steps": 133,
+      "later_use_links": 16,
+      "reused_objects": 3,
+      "final_material_states": 13,
       "reagent_records": 15,
-      "touched_containers": 17,
-      "final_material_states": 2
+      "touched_containers": 17
     },
     "09": {
-      "source_steps": 7,
       "descriptor_items": 139,
-      "reused_objects": 18,
-      "later_use_links": 20,
+      "source_steps": 7,
       "active_steps": 176,
       "completed_steps": 176,
+      "later_use_links": 20,
+      "reused_objects": 18,
+      "final_material_states": 22,
       "reagent_records": 21,
-      "touched_containers": 33,
-      "final_material_states": 7
+      "touched_containers": 33
     },
     "10": {
-      "source_steps": 42,
       "descriptor_items": 100,
-      "reused_objects": 8,
-      "later_use_links": 33,
+      "source_steps": 42,
       "active_steps": 127,
       "completed_steps": 127,
+      "later_use_links": 33,
+      "reused_objects": 8,
+      "final_material_states": 8,
       "reagent_records": 7,
-      "touched_containers": 8,
-      "final_material_states": 4
+      "touched_containers": 8
     },
     "11": {
-      "source_steps": 18,
       "descriptor_items": 72,
-      "reused_objects": 4,
-      "later_use_links": 14,
+      "source_steps": 18,
       "active_steps": 64,
       "completed_steps": 64,
+      "later_use_links": 14,
+      "reused_objects": 4,
+      "final_material_states": 7,
       "reagent_records": 5,
-      "touched_containers": 8,
-      "final_material_states": 5
+      "touched_containers": 8
     },
     "12": {
-      "source_steps": 11,
       "descriptor_items": 58,
-      "reused_objects": 4,
-      "later_use_links": 11,
+      "source_steps": 11,
       "active_steps": 99,
       "completed_steps": 99,
+      "later_use_links": 11,
+      "reused_objects": 4,
+      "final_material_states": 5,
       "reagent_records": 4,
-      "touched_containers": 6,
-      "final_material_states": 4
+      "touched_containers": 6
     },
     "13": {
-      "source_steps": 27,
       "descriptor_items": 77,
-      "reused_objects": 7,
-      "later_use_links": 25,
+      "source_steps": 27,
       "active_steps": 55,
       "completed_steps": 55,
+      "later_use_links": 25,
+      "reused_objects": 7,
+      "final_material_states": 6,
       "reagent_records": 4,
-      "touched_containers": 7,
-      "final_material_states": 4
+      "touched_containers": 7
     },
     "14": {
-      "source_steps": 11,
       "descriptor_items": 214,
-      "reused_objects": 24,
-      "later_use_links": 33,
+      "source_steps": 11,
       "active_steps": 265,
       "completed_steps": 265,
+      "later_use_links": 33,
+      "reused_objects": 24,
+      "final_material_states": 29,
       "reagent_records": 18,
-      "touched_containers": 42,
-      "final_material_states": 14
+      "touched_containers": 42
     }
   },
   "totals": {
@@ -175,6 +175,6 @@
     "completed_steps": 4672,
     "reagent_records": 229,
     "touched_containers": 633,
-    "final_material_states": 287
+    "final_material_states": 482
   }
 }

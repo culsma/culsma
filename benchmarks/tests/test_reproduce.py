@@ -158,9 +158,12 @@ class ReproductionTests(unittest.TestCase):
     def test_plain_trace_projection_matches_runtime_records(self):
         for case in ("00", "01", "05"):
             trace = r.read_json(r.case_dir(case) / "result_traceability.json")
-            self.assertEqual(r.trace_projection(trace), r.record_projection(runtime_fixture(case)))
+            run = {"ok": True, "state": {"artifacts": {"material_state": {"containers": {
+                row["container_id"]: row["record"]["material_state"]
+                for row in trace["final_material_records"]}}}}}
+            self.assertEqual(r.trace_projection(trace), r.record_projection(runtime_fixture(case), run))
             changed = copy.deepcopy(trace)
-            changed["final_products"][0]["record"]["volume_uL"] += 1
+            changed["final_material_records"][0]["record"]["volume_uL"] += 1
             self.assertNotEqual(r.trace_projection(changed), r.trace_projection(trace))
 
     def test_delivery_has_no_archives_or_duplicate_reuse_files(self):

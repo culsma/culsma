@@ -702,7 +702,9 @@ Main(score = fixture.result.score);
         self.assertEqual(sum(m['kind'] == 'well' for r in c['rows'] for m in r['members']),16)
         self.assertEqual(out['action_descriptors.json']['descriptor_items'],157)
         trace = out['result_traceability.json']
-        self.assertEqual((trace['reagent_records'], trace['touched_containers'], trace['final_material_states']), (20,37,17))
+        self.assertEqual((trace['reagent_records'], trace['touched_containers'], trace['final_material_states']), (20,37,37))
+        self.assertEqual(trace['reported_final_products'], 17)
+        self.assertEqual(len({r['container_id'] for r in trace['final_material_records']}), 37)
         for key in ('reagent_consumption', 'final_products'):
             self.assertEqual([r['record'] for r in trace[key]], x.data['result']['materials'][key])
         self.assertEqual([r['name'] for r in trace['touched_names']],

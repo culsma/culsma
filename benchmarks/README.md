@@ -113,7 +113,7 @@ S1, gaps, malformed/ranged markers and ambiguous mappings fail. Without a
 separate step list, an entirely deleted final marker cannot be detected solely
 from remaining source; expected tables provide an independent comparison.
 
-The fixed `patterns-metrics-nested-v8` rules deduplicate identical descriptors
+The fixed `patterns-metrics-nested-v9` rules deduplicate identical descriptors
 within a step. Loop iterations do not multiply static descriptors; distinct
 explicit calls retain their object context. Groups require program-defined
 membership, a common introduction step and identical later-use steps;
@@ -121,13 +121,29 @@ overlapping eligible groups are split. Later uses are compared by source-step
 number, while runtime events establish actual use. Traceability counts preserve
 distinct records even when display names repeat.
 
-The 14 cases total 208 source steps, 3929 descriptors, 299 reused objects,
+The committed baseline for the 14 cases totals 208 source steps, 3929 descriptors, 299 reused objects,
 680 later-use links and 4672/4672 completed/active steps. Section 3.4 totals
-are 229 reagent records, 633 touched-container records and 287 final states.
+are 229 reagent records, 633 touched-container records and 482 final states.
 These describe modeled execution, not biological validation or device execution.
 Static compatibility warnings are distinct from runtime diagnostics.
 Capture paths/hashes and evidence-list ordering may differ between runs without
 changing metric content.
+
+### Final-state scope
+
+New extractions count nonempty physical containers directly from
+`run.json` at `/state/artifacts/material_state/containers`, including residual
+source stocks, assay containers and waste. Each `final_material_records` entry
+preserves the runtime container ID, full material state and a JSON pointer.
+Empty containers and internal fraction handles (`::`) are excluded; event
+snapshots are not accumulated. Positive quantities use a tolerance of `1e-9`.
+The runtime's narrower `final_products` summary remains available separately
+under its original name and is not the basis of the revised final-state count.
+
+All 15 cases have been rerun with this scope. Cases 01–14 contain 482 final
+material records in total, compared with 287 records in the former summary-only
+scope. Case 00 remains separate with three records. Descriptor and continuity
+counts are unchanged. The case JSONs and expected tables use the revised scope.
 
 ## Maintainer checks
 

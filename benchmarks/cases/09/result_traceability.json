@@ -1,1 +1,3583 @@
-{"adapter_sha256":"6f3dfe206ac08dcbc4a65b2e2e534a97374001705b41834a8f036fac1fe3852d","case_id":"09","case_role":"corpus","container_identity":{"available":false,"evidence_level":"runtime_summary_name_record","note":"List indices locate summary records, not container identities."},"entry":{"evidence":{"file":"artifacts/ast.json","json_pointer":"/statements"},"protocol":"CellCultureWesternBlot"},"environment":{"culsma":"1.0.7rc1","culsma_file":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/lib/python3.12/site-packages/culsma/__init__.py","executable":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/bin/python","lark":"1.3.1","prefix":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv","python":"3.12.8"},"evidence_base":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/09/input","extraction_id":"0c717a76b3c9054c7f4defa7591501c56630e4c0da0303b210acd83f7e5f3721","extractor_sha256":"11e290bb80e3d5eb76cd93cbe9a4f3863c98ef674f2bbb18191afd1afc2236c8","final_material_states":7,"final_products":[{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/0"},"record":{"mass_mg":800000.0,"name":"PIO80356ElectrophoresisTank","primary_component":"MOPS_RUNNING_BUFFER_1X","volume_mL":800.0,"volume_uL":800000.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/1"},"record":{"mass_mg":197500.0,"name":"PIO80356MembraneSolutionWaste","primary_component":"METHANOL","volume_mL":197.5,"volume_uL":197500.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/2"},"record":{"mass_mg":4150.0,"name":"CellCultureLiquidWaste","primary_component":"DMEM_FBS_PENSTREP","volume_mL":4.15,"volume_uL":4150.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/3"},"record":{"mass_mg":2500.002,"name":"PIO80356TransferredMembraneTank","primary_component":"PRIMARY_ANTIBODY_MIX","volume_mL":2.500002,"volume_uL":2500.002}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/4"},"record":{"mass_mg":235.03,"name":"ClarifiedLysate","primary_component":"HEK293T_TOTAL_PROTEIN","volume_mL":0.23503,"volume_uL":235.03}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/5"},"record":{"mass_mg":75.006,"name":"PreparedProteinSample","primary_component":"RED1","volume_mL":0.075006,"volume_uL":75.006}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/6"},"record":{"mass_mg":6.0,"name":"PEITransfectionMix","primary_component":"OPTI1","volume_mL":0.006,"volume_uL":6.0}}],"formal_returns":{"evidence":{"file":"artifacts/output.json","json_pointer":"/returns"},"value":{"entry":{"entry_kind":"script","protocol_id":"entry","protocol_name":"entry","returns":[]}}},"input_files":{"artifacts/ast.json":"732fdef42d8a0e3ffc45d12105e6c865df4b95d049f2363ac453fea06542d29d","artifacts/ir.json":"df7074ab50c32eb63c5eee70006111333987eb04b27ceeabfc07bce5952ae32f","artifacts/output.json":"23ea263ca9a79ee11797d6e714e624a14d401a5a1e7679a30b3af1d245445fcc","artifacts/plan.json":"c422f6c3b50eacc52a0998032dadb9b3f05164e4f0ff830815a70a8b72ec37d6","artifacts/result.json":"06136688a2f7b20fec841f5cf9b092ea59c65406d6252d5f2a3e954cd35295ab","artifacts/run.json":"1a79165078374eed7932a8f11f0db486203fd45aa0ceadf166907f38512afbb8","artifacts/summary.json":"38a63cc3ea6e7ab19be44f3cc99f041c7066014108ee4f731c0de695338923b8","artifacts/typecheck.json":"37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570","artifacts/validate.json":"e98eef3e6629e584be98f075601f5dd1a3f400c46f505f525c261d01a4d34fea","case.json":"2ece65994c2602c9d8964c39b3b11b8231f7d77a491626d18430079204d68591","protocol.culs":"9fc8da574afb882a7c22a28c71fdca2a96f7aa5c2bdf01f2d13a6ab0f3912fa3","receipt.json":"91237a859198cbcf5bbc0ea0dd679beb818310432d0296ad42ba684e1d4d43ad","stderr.txt":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","stdout.txt":"23ea263ca9a79ee11797d6e714e624a14d401a5a1e7679a30b3af1d245445fcc"},"profile":"nested-v1","reagent_consumption":[{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/0"},"record":{"consumed_mL":800.0,"consumed_mg":null,"consumed_uL":800000.0,"name":"MOPSRunningBufferBottle","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/1"},"record":{"consumed_mL":90.0,"consumed_mg":null,"consumed_uL":90000.0,"name":"TBSTWashBuffer","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/2"},"record":{"consumed_mL":60.0,"consumed_mg":null,"consumed_uL":60000.0,"name":"TrisGlycineTransferBufferTwentyPercentMethanol","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/3"},"record":{"consumed_mL":30.0,"consumed_mg":null,"consumed_uL":30000.0,"name":"WaterBottle","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/4"},"record":{"consumed_mL":15.0,"consumed_mg":null,"consumed_uL":15000.0,"name":"FivePercentMilkInTBS","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/5"},"record":{"consumed_mL":15.0,"consumed_mg":null,"consumed_uL":15000.0,"name":"FivePercentMilkInTBST","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/6"},"record":{"consumed_mL":15.0,"consumed_mg":null,"consumed_uL":15000.0,"name":"Methanol","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/7"},"record":{"consumed_mL":10.0,"consumed_mg":null,"consumed_uL":10000.0,"name":"LiCorSecondaryAntibodyMixInFivePercentMilkTBST","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/8"},"record":{"consumed_mL":10.0,"consumed_mg":null,"consumed_uL":10000.0,"name":"PrimaryAntibodyMixInFivePercentMilkTBST","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/9"},"record":{"consumed_mL":2.0,"consumed_mg":null,"consumed_uL":2000.0,"name":"HEK293TCells","roles":["dest","sample"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/10"},"record":{"consumed_mL":1.0,"consumed_mg":null,"consumed_uL":1000.0,"name":"ColdPBS","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/11"},"record":{"consumed_mL":1.0,"consumed_mg":null,"consumed_uL":1000.0,"name":"DMEMWithFBSNoPenStrep","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/12"},"record":{"consumed_mL":0.3,"consumed_mg":null,"consumed_uL":300.0,"name":"RIPABuffer","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/13"},"record":{"consumed_mL":0.15,"consumed_mg":null,"consumed_uL":150.0,"name":"OptiMEM","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/14"},"record":{"consumed_mL":0.025,"consumed_mg":null,"consumed_uL":25.0,"name":"LDSBuffer4x","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/15"},"record":{"consumed_mL":0.01,"consumed_mg":null,"consumed_uL":10.0,"name":"ProteasePhosphataseInhibitors","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/16"},"record":{"consumed_mL":0.01,"consumed_mg":null,"consumed_uL":10.0,"name":"ReducingAgent10x","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/17"},"record":{"consumed_mL":0.003,"consumed_mg":null,"consumed_uL":3.0,"name":"PEI","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/18"},"record":{"consumed_mL":0.002,"consumed_mg":null,"consumed_uL":2.0,"name":"LRRK1DNA","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/19"},"record":{"consumed_mL":0.001,"consumed_mg":null,"consumed_uL":1.0,"name":"GFPRab7DNA","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/20"},"record":{"consumed_mL":null,"consumed_mg":0.04,"consumed_uL":null,"name":"CellLysate","roles":["dest","sample"]}}],"reagent_records":21,"rules_version":"patterns-metrics-nested-v8","schema_version":"patterns-metrics-v1","section":"3.4","statistics_scope":{"runtime":"whole invocation","source":"reachable nested AST constructs","step_protocol":"CellCultureWesternBlot"},"support_scope":"Nested AST calls, result members, declared plate groups/selectors, grouped readouts and conditional execution; unresolved JSON joins fail","touched_containers":33,"touched_names":[{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/0"},"name":"BisTrisGelLane"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/1"},"name":"CellCultureLiquidWaste"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/2"},"name":"CellLysate"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/3"},"name":"ClarifiedLysate"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/4"},"name":"ColdPBS"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/5"},"name":"DMEMWithFBSNoPenStrep"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/6"},"name":"FivePercentMilkInTBS"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/7"},"name":"FivePercentMilkInTBST"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/8"},"name":"FourToTwelvePercentBisTrisGel"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/9"},"name":"GFPRab7DNA"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/10"},"name":"HEK293TCells"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/11"},"name":"LDSBuffer4x"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/12"},"name":"LRRK1DNA"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/13"},"name":"LiCorSecondaryAntibodyMixInFivePercentMilkTBST"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/14"},"name":"MOPSRunningBufferBottle"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/15"},"name":"Methanol"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/16"},"name":"OptiMEM"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/17"},"name":"PEI"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/18"},"name":"PEITransfectionMix"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/19"},"name":"PIO80356ElectrophoresisTank"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/20"},"name":"PIO80356MembraneSolutionWaste"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/21"},"name":"PIO80356PVDFMembraneProcessingTank"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/22"},"name":"PIO80356SeparatedGel"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/23"},"name":"PIO80356TransferStack"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/24"},"name":"PIO80356TransferredMembraneTank"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/25"},"name":"PreparedProteinSample"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/26"},"name":"PrimaryAntibodyMixInFivePercentMilkTBST"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/27"},"name":"ProteasePhosphataseInhibitors"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/28"},"name":"RIPABuffer"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/29"},"name":"ReducingAgent10x"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/30"},"name":"TBSTWashBuffer"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/31"},"name":"TrisGlycineTransferBufferTwentyPercentMethanol"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/32"},"name":"WaterBottle"}]}
+{
+  "adapter_sha256": "d1efba860cc871e3e3dedda3b6a097503a990fbd52f24245a27a3565d9c431ef",
+  "case_id": "09",
+  "case_role": "corpus",
+  "container_identity": {
+    "available": false,
+    "evidence_level": "runtime_summary_name_record",
+    "note": "List indices locate summary records, not container identities."
+  },
+  "entry": {
+    "evidence": {
+      "file": "artifacts/ast.json",
+      "json_pointer": "/statements"
+    },
+    "protocol": "CellCultureWesternBlot"
+  },
+  "environment": {
+    "culsma": "1.0.7rc1",
+    "culsma_file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/lib/python3.12/site-packages/culsma/__init__.py",
+    "executable": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/bin/python",
+    "lark": "1.3.1",
+    "prefix": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv",
+    "python": "3.12.8"
+  },
+  "evidence_base": "/private/tmp/culsma-terminal-metrics-0ettVh/all-cases-v9/09/input",
+  "extraction_id": "56af1b7d3bfb2f79a7890d3e6233380cc496a0025c002d69b4a9522bc2f7a86c",
+  "extractor_sha256": "39c3aab4ffe7afd1f4afb257978639975103d14025eec94b513e1b278aa4fe26",
+  "final_material_records": [
+    {
+      "container_id": "container/entry/entry.s1%3A%3Aalloc/__cmp_entry_s0_waste",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Aalloc~1__cmp_entry_s0_waste"
+      },
+      "record": {
+        "mass_mg": 4150.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HEK293T",
+              "entry_id": "HEK293T",
+              "label": null,
+              "material_state_source": null,
+              "partition_class": "pelletable_cells",
+              "preservation": null,
+              "quantity": {
+                "dimension": "count",
+                "unit": "cells",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 2000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DMEM_FBS_PENSTREP",
+              "entry_id": "DMEM_FBS_PENSTREP",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 2000.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 1000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DMEM_FBS_NO_PENSTREP",
+              "entry_id": "DMEM_FBS_NO_PENSTREP",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 1000.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 144.23076923076923,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "OPTI1",
+              "entry_id": "OPTI1",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 144.23076923076923
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.9615384615384616,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "RAB7DNA",
+              "entry_id": "RAB7DNA",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.9615384615384616
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 1.9230769230769231,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "LRRK1DNA",
+              "entry_id": "LRRK1DNA",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 1.9230769230769231
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 2.8846153846153846,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "PEI1",
+              "entry_id": "PEI1",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 2.8846153846153846
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 1000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "PBS1",
+              "entry_id": "PBS1",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 1000.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "DMEM_FBS_NO_PENSTREP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 1000.0
+            },
+            "DMEM_FBS_PENSTREP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 2000.0
+            },
+            "HEK293T": {
+              "dimension": "count",
+              "unit": "cells",
+              "value": 0.0
+            },
+            "LRRK1DNA": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 1.9230769230769231
+            },
+            "OPTI1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 144.23076923076923
+            },
+            "PBS1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 1000.0
+            },
+            "PEI1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 2.8846153846153846
+            },
+            "RAB7DNA": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.9615384615384616
+            }
+          },
+          "components": {
+            "DMEM_FBS_NO_PENSTREP": 1000.0,
+            "DMEM_FBS_PENSTREP": 2000.0,
+            "HEK293T": 0.0,
+            "LRRK1DNA": 1.9230769230769231,
+            "OPTI1": 144.23076923076923,
+            "PBS1": 1000.0,
+            "PEI1": 2.8846153846153846,
+            "RAB7DNA": 0.9615384615384616
+          },
+          "mass_mg": 4150.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_waste",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::alloc",
+            "capacity_uL": 100000.0,
+            "component_partition_classes": {
+              "HEK293T": "pelletable_cells"
+            },
+            "label": "CellCultureLiquidWaste"
+          },
+          "volume_uL": 4150.0
+        },
+        "name": "CellCultureLiquidWaste",
+        "volume_uL": 4150.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s2%3A%3Aalloc/__cmp_entry_s0_opti_mem",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s2%3A%3Aalloc~1__cmp_entry_s0_opti_mem"
+      },
+      "record": {
+        "mass_mg": 350.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 350.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "OPTI1",
+              "entry_id": "OPTI1",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 350.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "OPTI1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 350.0
+            }
+          },
+          "components": {
+            "OPTI1": 350.0
+          },
+          "mass_mg": 350.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_opti_mem",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s2::alloc",
+            "capacity_uL": 1000.0,
+            "kind": "tube",
+            "label": "OptiMEM"
+          },
+          "volume_uL": 350.0
+        },
+        "name": "OptiMEM",
+        "volume_uL": 350.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s25%3A%3Aalloc/__cmp_entry_s0_cold_pbs",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s25%3A%3Aalloc~1__cmp_entry_s0_cold_pbs"
+      },
+      "record": {
+        "mass_mg": 3000.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 3000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "PBS1",
+              "entry_id": "PBS1",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 3000.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "PBS1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 3000.0
+            }
+          },
+          "components": {
+            "PBS1": 3000.0
+          },
+          "mass_mg": 3000.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_cold_pbs",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s25::alloc",
+            "capacity_uL": 5000.0,
+            "kind": "tube",
+            "label": "ColdPBS"
+          },
+          "volume_uL": 3000.0
+        },
+        "name": "ColdPBS",
+        "volume_uL": 3000.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s3%3A%3Aalloc/__cmp_entry_s0_gfp_rab7",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s3%3A%3Aalloc~1__cmp_entry_s0_gfp_rab7"
+      },
+      "record": {
+        "mass_mg": 19.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 19.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "RAB7DNA",
+              "entry_id": "RAB7DNA",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 19.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "RAB7DNA": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 19.0
+            }
+          },
+          "components": {
+            "RAB7DNA": 19.0
+          },
+          "mass_mg": 19.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_gfp_rab7",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s3::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "GFPRab7DNA"
+          },
+          "volume_uL": 19.0
+        },
+        "name": "GFPRab7DNA",
+        "volume_uL": 19.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s31%3A%3Aalloc/__cmp_entry_s0_ripa",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s31%3A%3Aalloc~1__cmp_entry_s0_ripa"
+      },
+      "record": {
+        "mass_mg": 500.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 500.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "RIPA1",
+              "entry_id": "RIPA1",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 500.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "RIPA1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 500.0
+            }
+          },
+          "components": {
+            "RIPA1": 500.0
+          },
+          "mass_mg": 500.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_ripa",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s31::alloc",
+            "capacity_uL": 1000.0,
+            "kind": "tube",
+            "label": "RIPABuffer"
+          },
+          "volume_uL": 500.0
+        },
+        "name": "RIPABuffer",
+        "volume_uL": 500.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s32%3A%3Aalloc/__cmp_entry_s0_inhibitors",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s32%3A%3Aalloc~1__cmp_entry_s0_inhibitors"
+      },
+      "record": {
+        "mass_mg": 40.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 40.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "INHIB1",
+              "entry_id": "INHIB1",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 40.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "INHIB1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 40.0
+            }
+          },
+          "components": {
+            "INHIB1": 40.0
+          },
+          "mass_mg": 40.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_inhibitors",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s32::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "ProteasePhosphataseInhibitors"
+          },
+          "volume_uL": 40.0
+        },
+        "name": "ProteasePhosphataseInhibitors",
+        "volume_uL": 40.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s36%3A%3Aalloc/__cmp_entry_s0_clarified_lysate",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s36%3A%3Aalloc~1__cmp_entry_s0_clarified_lysate"
+      },
+      "record": {
+        "mass_mg": 235.03032258064516,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.03032258064516129,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HEK293T_TOTAL_PROTEIN",
+              "entry_id": "HEK293T_TOTAL_PROTEIN",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.03032258064516129
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 227.41935483870967,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "RIPA1",
+              "entry_id": "RIPA1",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 227.41935483870967
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 7.580645161290323,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "INHIB1",
+              "entry_id": "INHIB1",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 7.580645161290323
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "HEK293T_TOTAL_PROTEIN": {
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 0.03032258064516129
+            },
+            "INHIB1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 7.580645161290323
+            },
+            "RIPA1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 227.41935483870967
+            }
+          },
+          "components": {
+            "HEK293T_TOTAL_PROTEIN": 0.03032258064516129,
+            "INHIB1": 7.580645161290323,
+            "RIPA1": 227.41935483870967
+          },
+          "mass_mg": 235.03032258064516,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_clarified_lysate",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s36::alloc",
+            "capacity_uL": 1000.0,
+            "kind": "tube",
+            "label": "ClarifiedLysate"
+          },
+          "volume_uL": 235.03032258064516
+        },
+        "name": "ClarifiedLysate",
+        "volume_uL": 235.03032258064516
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s38%3A%3Aalloc/__cmp_entry_s0_reducing_agent",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s38%3A%3Aalloc~1__cmp_entry_s0_reducing_agent"
+      },
+      "record": {
+        "mass_mg": 90.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 90.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "RED1",
+              "entry_id": "RED1",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 90.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "RED1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 90.0
+            }
+          },
+          "components": {
+            "RED1": 90.0
+          },
+          "mass_mg": 90.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_reducing_agent",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s38::alloc",
+            "capacity_uL": 200.0,
+            "kind": "tube",
+            "label": "ReducingAgent10x"
+          },
+          "volume_uL": 90.0
+        },
+        "name": "ReducingAgent10x",
+        "volume_uL": 90.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s39%3A%3Aalloc/__cmp_entry_s0_lds_buffer",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s39%3A%3Aalloc~1__cmp_entry_s0_lds_buffer"
+      },
+      "record": {
+        "mass_mg": 375.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 375.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "LDS1",
+              "entry_id": "LDS1",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 375.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "LDS1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 375.0
+            }
+          },
+          "components": {
+            "LDS1": 375.0
+          },
+          "mass_mg": 375.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_lds_buffer",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s39::alloc",
+            "capacity_uL": 500.0,
+            "kind": "tube",
+            "label": "LDSBuffer4x"
+          },
+          "volume_uL": 375.0
+        },
+        "name": "LDSBuffer4x",
+        "volume_uL": 375.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s4%3A%3Aalloc/__cmp_entry_s0_lrrk1_construct",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s4%3A%3Aalloc~1__cmp_entry_s0_lrrk1_construct"
+      },
+      "record": {
+        "mass_mg": 18.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 18.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "LRRK1DNA",
+              "entry_id": "LRRK1DNA",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 18.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "LRRK1DNA": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 18.0
+            }
+          },
+          "components": {
+            "LRRK1DNA": 18.0
+          },
+          "mass_mg": 18.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_lrrk1_construct",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s4::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "LRRK1DNA"
+          },
+          "volume_uL": 18.0
+        },
+        "name": "LRRK1DNA",
+        "volume_uL": 18.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s40%3A%3Aalloc/__cmp_entry_s0_prepared_sample",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s40%3A%3Aalloc~1__cmp_entry_s0_prepared_sample"
+      },
+      "record": {
+        "mass_mg": 75.00629032258064,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.006290322580645162,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HEK293T_TOTAL_PROTEIN",
+              "entry_id": "HEK293T_TOTAL_PROTEIN",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.006290322580645162
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 47.17741935483871,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "RIPA1",
+              "entry_id": "RIPA1",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 47.17741935483871
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 1.5725806451612903,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "INHIB1",
+              "entry_id": "INHIB1",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 1.5725806451612903
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 7.5,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "RED1",
+              "entry_id": "RED1",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 7.5
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 18.75,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "LDS1",
+              "entry_id": "LDS1",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 18.75
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "HEK293T_TOTAL_PROTEIN": {
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 0.006290322580645162
+            },
+            "INHIB1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 1.5725806451612903
+            },
+            "LDS1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 18.75
+            },
+            "RED1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 7.5
+            },
+            "RIPA1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 47.17741935483871
+            }
+          },
+          "components": {
+            "HEK293T_TOTAL_PROTEIN": 0.006290322580645162,
+            "INHIB1": 1.5725806451612903,
+            "LDS1": 18.75,
+            "RED1": 7.5,
+            "RIPA1": 47.17741935483871
+          },
+          "mass_mg": 75.00629032258064,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_prepared_sample",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s40::alloc",
+            "capacity_uL": 200.0,
+            "kind": "tube",
+            "label": "PreparedProteinSample"
+          },
+          "volume_uL": 75.00629032258064
+        },
+        "name": "PreparedProteinSample",
+        "volume_uL": 75.00629032258064
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s44%3A%3Aalloc/__cmp_entry_s0_electrophoresis_tank",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s44%3A%3Aalloc~1__cmp_entry_s0_electrophoresis_tank"
+      },
+      "record": {
+        "mass_mg": 800000.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 800000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "MOPS_RUNNING_BUFFER_1X",
+              "entry_id": "MOPS_RUNNING_BUFFER_1X",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 800000.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "MOPS_RUNNING_BUFFER_1X": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 800000.0
+            }
+          },
+          "components": {
+            "MOPS_RUNNING_BUFFER_1X": 800000.0
+          },
+          "mass_mg": 800000.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_electrophoresis_tank",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s44::alloc",
+            "capacity_uL": 800000.0,
+            "kind": "chamber",
+            "label": "PIO80356ElectrophoresisTank"
+          },
+          "volume_uL": 800000.0
+        },
+        "name": "PIO80356ElectrophoresisTank",
+        "volume_uL": 800000.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s5%3A%3Aalloc/__cmp_entry_s0_pei",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s5%3A%3Aalloc~1__cmp_entry_s0_pei"
+      },
+      "record": {
+        "mass_mg": 47.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 47.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "PEI1",
+              "entry_id": "PEI1",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 47.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "PEI1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 47.0
+            }
+          },
+          "components": {
+            "PEI1": 47.0
+          },
+          "mass_mg": 47.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_pei",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s5::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "PEI"
+          },
+          "volume_uL": 47.0
+        },
+        "name": "PEI",
+        "volume_uL": 47.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s50%3A%3Aalloc/__cmp_entry_s0_methanol",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s50%3A%3Aalloc~1__cmp_entry_s0_methanol"
+      },
+      "record": {
+        "mass_mg": 35000.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 35000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "METHANOL",
+              "entry_id": "METHANOL",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 35000.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "METHANOL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 35000.0
+            }
+          },
+          "components": {
+            "METHANOL": 35000.0
+          },
+          "mass_mg": 35000.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_methanol",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s50::alloc",
+            "capacity_uL": 50000.0,
+            "kind": "tube",
+            "label": "Methanol"
+          },
+          "volume_uL": 35000.0
+        },
+        "name": "Methanol",
+        "volume_uL": 35000.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s51%3A%3Aalloc/__cmp_entry_s0_water",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s51%3A%3Aalloc~1__cmp_entry_s0_water"
+      },
+      "record": {
+        "mass_mg": 470000.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 470000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "WATER",
+              "entry_id": "WATER",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 470000.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "WATER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 470000.0
+            }
+          },
+          "components": {
+            "WATER": 470000.0
+          },
+          "mass_mg": 470000.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_water",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s51::alloc",
+            "capacity_uL": 1000000.0,
+            "label": "WaterBottle"
+          },
+          "volume_uL": 470000.0
+        },
+        "name": "WaterBottle",
+        "volume_uL": 470000.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s52%3A%3Aalloc/__cmp_entry_s0_transfer_buffer",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s52%3A%3Aalloc~1__cmp_entry_s0_transfer_buffer"
+      },
+      "record": {
+        "mass_mg": 440000.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 440000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TRIS_GLYCINE_TRANSFER_BUFFER_20_PERCENT_METHANOL",
+              "entry_id": "TRIS_GLYCINE_TRANSFER_BUFFER_20_PERCENT_METHANOL",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 440000.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "TRIS_GLYCINE_TRANSFER_BUFFER_20_PERCENT_METHANOL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 440000.0
+            }
+          },
+          "components": {
+            "TRIS_GLYCINE_TRANSFER_BUFFER_20_PERCENT_METHANOL": 440000.0
+          },
+          "mass_mg": 440000.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_transfer_buffer",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s52::alloc",
+            "capacity_uL": 1000000.0,
+            "kind": "chamber",
+            "label": "TrisGlycineTransferBufferTwentyPercentMethanol"
+          },
+          "volume_uL": 440000.0
+        },
+        "name": "TrisGlycineTransferBufferTwentyPercentMethanol",
+        "volume_uL": 440000.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s54%3A%3Aalloc/__cmp_entry_s0_membrane_solution_waste",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s54%3A%3Aalloc~1__cmp_entry_s0_membrane_solution_waste"
+      },
+      "record": {
+        "mass_mg": 197500.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "IMMOBILON_FL_PVDF_MEMBRANE",
+              "entry_id": "IMMOBILON_FL_PVDF_MEMBRANE",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 15000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "METHANOL",
+              "entry_id": "METHANOL",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 15000.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 30000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "WATER",
+              "entry_id": "WATER",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 30000.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 15000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TRIS_GLYCINE_TRANSFER_BUFFER_20_PERCENT_METHANOL",
+              "entry_id": "TRIS_GLYCINE_TRANSFER_BUFFER_20_PERCENT_METHANOL",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 15000.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HEK293T",
+              "entry_id": "HEK293T",
+              "label": null,
+              "material_state_source": null,
+              "partition_class": "pelletable_cells",
+              "preservation": null,
+              "quantity": {
+                "dimension": "count",
+                "unit": "cells",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DMEM_FBS_PENSTREP",
+              "entry_id": "DMEM_FBS_PENSTREP",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DMEM_FBS_NO_PENSTREP",
+              "entry_id": "DMEM_FBS_NO_PENSTREP",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "OPTI1",
+              "entry_id": "OPTI1",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "RAB7DNA",
+              "entry_id": "RAB7DNA",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "LRRK1DNA",
+              "entry_id": "LRRK1DNA",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "PEI1",
+              "entry_id": "PEI1",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "PBS1",
+              "entry_id": "PBS1",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "RIPA1",
+              "entry_id": "RIPA1",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "INHIB1",
+              "entry_id": "INHIB1",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "RED1",
+              "entry_id": "RED1",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "LDS1",
+              "entry_id": "LDS1",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HEK293T_TOTAL_PROTEIN",
+              "entry_id": "HEK293T_TOTAL_PROTEIN",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 14250.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "MILK_5_PERCENT_TBS",
+              "entry_id": "MILK_5_PERCENT_TBS",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 14250.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 9500.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "PRIMARY_ANTIBODY_MIX",
+              "entry_id": "PRIMARY_ANTIBODY_MIX",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 9500.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 90000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TBST_1X",
+              "entry_id": "TBST_1X",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 90000.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 14250.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "MILK_5_PERCENT_TBST",
+              "entry_id": "MILK_5_PERCENT_TBST",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 14250.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 9500.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "LICOR_SECONDARY_ANTIBODY_MIX",
+              "entry_id": "LICOR_SECONDARY_ANTIBODY_MIX",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 9500.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "DMEM_FBS_NO_PENSTREP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "DMEM_FBS_PENSTREP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "HEK293T": {
+              "dimension": "count",
+              "unit": "cells",
+              "value": 0.0
+            },
+            "HEK293T_TOTAL_PROTEIN": {
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 0.0
+            },
+            "IMMOBILON_FL_PVDF_MEMBRANE": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "INHIB1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "LDS1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "LICOR_SECONDARY_ANTIBODY_MIX": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 9500.0
+            },
+            "LRRK1DNA": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "METHANOL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 15000.0
+            },
+            "MILK_5_PERCENT_TBS": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 14250.0
+            },
+            "MILK_5_PERCENT_TBST": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 14250.0
+            },
+            "OPTI1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "PBS1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "PEI1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "PRIMARY_ANTIBODY_MIX": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 9500.0
+            },
+            "RAB7DNA": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "RED1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "RIPA1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "TBST_1X": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 90000.0
+            },
+            "TRIS_GLYCINE_TRANSFER_BUFFER_20_PERCENT_METHANOL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 15000.0
+            },
+            "WATER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 30000.0
+            }
+          },
+          "components": {
+            "DMEM_FBS_NO_PENSTREP": 0.0,
+            "DMEM_FBS_PENSTREP": 0.0,
+            "HEK293T": 0.0,
+            "HEK293T_TOTAL_PROTEIN": 0.0,
+            "IMMOBILON_FL_PVDF_MEMBRANE": 0.0,
+            "INHIB1": 0.0,
+            "LDS1": 0.0,
+            "LICOR_SECONDARY_ANTIBODY_MIX": 9500.0,
+            "LRRK1DNA": 0.0,
+            "METHANOL": 15000.0,
+            "MILK_5_PERCENT_TBS": 14250.0,
+            "MILK_5_PERCENT_TBST": 14250.0,
+            "OPTI1": 0.0,
+            "PBS1": 0.0,
+            "PEI1": 0.0,
+            "PRIMARY_ANTIBODY_MIX": 9500.0,
+            "RAB7DNA": 0.0,
+            "RED1": 0.0,
+            "RIPA1": 0.0,
+            "TBST_1X": 90000.0,
+            "TRIS_GLYCINE_TRANSFER_BUFFER_20_PERCENT_METHANOL": 15000.0,
+            "WATER": 30000.0
+          },
+          "mass_mg": 197500.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_membrane_solution_waste",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s54::alloc",
+            "capacity_uL": 500000.0,
+            "component_partition_classes": {
+              "HEK293T": "pelletable_cells"
+            },
+            "kind": "chamber",
+            "label": "PIO80356MembraneSolutionWaste"
+          },
+          "volume_uL": 197500.0
+        },
+        "name": "PIO80356MembraneSolutionWaste",
+        "volume_uL": 197500.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s6%3A%3Aalloc/__cmp_entry_s0_transfection_mix",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s6%3A%3Aalloc~1__cmp_entry_s0_transfection_mix"
+      },
+      "record": {
+        "mass_mg": 6.0000000000000036,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 5.769230769230774,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "OPTI1",
+              "entry_id": "OPTI1",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.769230769230774
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.038461538461538436,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "RAB7DNA",
+              "entry_id": "RAB7DNA",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.038461538461538436
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.07692307692307687,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "LRRK1DNA",
+              "entry_id": "LRRK1DNA",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.07692307692307687
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.11538461538461542,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "PEI1",
+              "entry_id": "PEI1",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.11538461538461542
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "LRRK1DNA": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.07692307692307687
+            },
+            "OPTI1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.769230769230774
+            },
+            "PEI1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.11538461538461542
+            },
+            "RAB7DNA": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.038461538461538436
+            }
+          },
+          "components": {
+            "LRRK1DNA": 0.07692307692307687,
+            "OPTI1": 5.769230769230774,
+            "PEI1": 0.11538461538461542,
+            "RAB7DNA": 0.038461538461538436
+          },
+          "mass_mg": 6.0000000000000036,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_transfection_mix",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s6::alloc",
+            "capacity_uL": 300.0,
+            "kind": "tube",
+            "label": "PEITransfectionMix"
+          },
+          "volume_uL": 6.0000000000000036
+        },
+        "name": "PEITransfectionMix",
+        "volume_uL": 6.0000000000000036
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s73%3A%3Aalloc/__cmp_entry_s0_transferred_membrane_tank",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s73%3A%3Aalloc~1__cmp_entry_s0_transferred_membrane_tank"
+      },
+      "record": {
+        "mass_mg": 2500.0020967741934,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HEK293T",
+              "entry_id": "HEK293T",
+              "label": null,
+              "material_state_source": null,
+              "partition_class": "pelletable_cells",
+              "preservation": null,
+              "quantity": {
+                "dimension": "count",
+                "unit": "cells",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DMEM_FBS_PENSTREP",
+              "entry_id": "DMEM_FBS_PENSTREP",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "DMEM_FBS_NO_PENSTREP",
+              "entry_id": "DMEM_FBS_NO_PENSTREP",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "OPTI1",
+              "entry_id": "OPTI1",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "RAB7DNA",
+              "entry_id": "RAB7DNA",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "LRRK1DNA",
+              "entry_id": "LRRK1DNA",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "PEI1",
+              "entry_id": "PEI1",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "PBS1",
+              "entry_id": "PBS1",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "RIPA1",
+              "entry_id": "RIPA1",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "INHIB1",
+              "entry_id": "INHIB1",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "RED1",
+              "entry_id": "RED1",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "LDS1",
+              "entry_id": "LDS1",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TRIS_GLYCINE_TRANSFER_BUFFER_20_PERCENT_METHANOL",
+              "entry_id": "TRIS_GLYCINE_TRANSFER_BUFFER_20_PERCENT_METHANOL",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HEK293T_TOTAL_PROTEIN",
+              "entry_id": "HEK293T_TOTAL_PROTEIN",
+              "label": null,
+              "material_state_source": null,
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "WATER",
+              "entry_id": "WATER",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "MILK_5_PERCENT_TBS",
+              "entry_id": "MILK_5_PERCENT_TBS",
+              "label": null,
+              "material_state_source": null,
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "PRIMARY_ANTIBODY_MIX",
+              "entry_id": "PRIMARY_ANTIBODY_MIX",
+              "label": null,
+              "material_state_source": null,
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "MILK_5_PERCENT_TBST",
+              "entry_id": "MILK_5_PERCENT_TBST",
+              "label": null,
+              "material_state_source": null,
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "LICOR_SECONDARY_ANTIBODY_MIX",
+              "entry_id": "LICOR_SECONDARY_ANTIBODY_MIX",
+              "label": null,
+              "material_state_source": null,
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TBST_1X",
+              "entry_id": "TBST_1X",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TBST_1X",
+              "entry_id": "TBST_1X_1",
+              "label": "filtrate_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0020967741935483874,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HEK293T_TOTAL_PROTEIN",
+              "entry_id": "HEK293T_TOTAL_PROTEIN_1",
+              "label": "retentate_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.0020967741935483874
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 750.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "MILK_5_PERCENT_TBS",
+              "entry_id": "MILK_5_PERCENT_TBS_1",
+              "label": "retentate_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 750.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 500.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "PRIMARY_ANTIBODY_MIX",
+              "entry_id": "PRIMARY_ANTIBODY_MIX_1",
+              "label": "retentate_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 500.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 750.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "MILK_5_PERCENT_TBST",
+              "entry_id": "MILK_5_PERCENT_TBST_1",
+              "label": "retentate_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 750.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 500.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "LICOR_SECONDARY_ANTIBODY_MIX",
+              "entry_id": "LICOR_SECONDARY_ANTIBODY_MIX_1",
+              "label": "retentate_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 500.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "DMEM_FBS_NO_PENSTREP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "DMEM_FBS_PENSTREP": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "HEK293T": {
+              "dimension": "count",
+              "unit": "cells",
+              "value": 0.0
+            },
+            "HEK293T_TOTAL_PROTEIN": {
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 0.0020967741935483874
+            },
+            "INHIB1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "LDS1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "LICOR_SECONDARY_ANTIBODY_MIX": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 500.0
+            },
+            "LRRK1DNA": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "MILK_5_PERCENT_TBS": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 750.0
+            },
+            "MILK_5_PERCENT_TBST": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 750.0
+            },
+            "OPTI1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "PBS1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "PEI1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "PRIMARY_ANTIBODY_MIX": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 500.0
+            },
+            "RAB7DNA": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "RED1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "RIPA1": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "TBST_1X": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "TRIS_GLYCINE_TRANSFER_BUFFER_20_PERCENT_METHANOL": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "WATER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            }
+          },
+          "components": {
+            "DMEM_FBS_NO_PENSTREP": 0.0,
+            "DMEM_FBS_PENSTREP": 0.0,
+            "HEK293T": 0.0,
+            "HEK293T_TOTAL_PROTEIN": 0.0020967741935483874,
+            "INHIB1": 0.0,
+            "LDS1": 0.0,
+            "LICOR_SECONDARY_ANTIBODY_MIX": 500.0,
+            "LRRK1DNA": 0.0,
+            "MILK_5_PERCENT_TBS": 750.0,
+            "MILK_5_PERCENT_TBST": 750.0,
+            "OPTI1": 0.0,
+            "PBS1": 0.0,
+            "PEI1": 0.0,
+            "PRIMARY_ANTIBODY_MIX": 500.0,
+            "RAB7DNA": 0.0,
+            "RED1": 0.0,
+            "RIPA1": 0.0,
+            "TBST_1X": 0.0,
+            "TRIS_GLYCINE_TRANSFER_BUFFER_20_PERCENT_METHANOL": 0.0,
+            "WATER": 0.0
+          },
+          "mass_mg": 2500.0020967741934,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_transferred_membrane_tank",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s73::alloc",
+            "capacity_uL": 50000.0,
+            "component_partition_classes": {
+              "HEK293T": "pelletable_cells"
+            },
+            "kind": "chamber",
+            "label": "PIO80356TransferredMembraneTank",
+            "open": true
+          },
+          "volume_uL": 2500.0020967741934
+        },
+        "name": "PIO80356TransferredMembraneTank",
+        "volume_uL": 2500.0020967741934
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s79%3A%3Aalloc/__cmp_entry_s0_milk_block_tbs",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s79%3A%3Aalloc~1__cmp_entry_s0_milk_block_tbs"
+      },
+      "record": {
+        "mass_mg": 15000.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 15000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "MILK_5_PERCENT_TBS",
+              "entry_id": "MILK_5_PERCENT_TBS",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 15000.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "MILK_5_PERCENT_TBS": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 15000.0
+            }
+          },
+          "components": {
+            "MILK_5_PERCENT_TBS": 15000.0
+          },
+          "mass_mg": 15000.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_milk_block_tbs",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s79::alloc",
+            "capacity_uL": 50000.0,
+            "kind": "chamber",
+            "label": "FivePercentMilkInTBS"
+          },
+          "volume_uL": 15000.0
+        },
+        "name": "FivePercentMilkInTBS",
+        "volume_uL": 15000.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s81%3A%3Aalloc/__cmp_entry_s0_milk_tbst",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s81%3A%3Aalloc~1__cmp_entry_s0_milk_tbst"
+      },
+      "record": {
+        "mass_mg": 15000.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 15000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "MILK_5_PERCENT_TBST",
+              "entry_id": "MILK_5_PERCENT_TBST",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 15000.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "MILK_5_PERCENT_TBST": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 15000.0
+            }
+          },
+          "components": {
+            "MILK_5_PERCENT_TBST": 15000.0
+          },
+          "mass_mg": 15000.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_milk_tbst",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s81::alloc",
+            "capacity_uL": 50000.0,
+            "kind": "chamber",
+            "label": "FivePercentMilkInTBST"
+          },
+          "volume_uL": 15000.0
+        },
+        "name": "FivePercentMilkInTBST",
+        "volume_uL": 15000.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s82%3A%3Aalloc/__cmp_entry_s0_tbst",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s82%3A%3Aalloc~1__cmp_entry_s0_tbst"
+      },
+      "record": {
+        "mass_mg": 410000.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 410000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "TBST_1X",
+              "entry_id": "TBST_1X",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 410000.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "TBST_1X": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 410000.0
+            }
+          },
+          "components": {
+            "TBST_1X": 410000.0
+          },
+          "mass_mg": 410000.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_tbst",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s82::alloc",
+            "capacity_uL": 1000000.0,
+            "kind": "chamber",
+            "label": "TBSTWashBuffer"
+          },
+          "volume_uL": 410000.0
+        },
+        "name": "TBSTWashBuffer",
+        "volume_uL": 410000.0
+      }
+    }
+  ],
+  "final_material_scope": {
+    "excludes": "Empty containers and internal fraction handles containing '::'.",
+    "identity": "One record per runtime container ID; display names are not deduplicated.",
+    "includes": "Every nonempty physical container, including residual source stocks and waste.",
+    "positive_quantity_tolerance": 1e-09,
+    "rule": "final-physical-container-state-v1",
+    "source": "run.json /state/artifacts/material_state/containers"
+  },
+  "final_material_states": 22,
+  "final_products": [
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/0"
+      },
+      "record": {
+        "mass_mg": 800000.0,
+        "name": "PIO80356ElectrophoresisTank",
+        "primary_component": "MOPS_RUNNING_BUFFER_1X",
+        "volume_mL": 800.0,
+        "volume_uL": 800000.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/1"
+      },
+      "record": {
+        "mass_mg": 197500.0,
+        "name": "PIO80356MembraneSolutionWaste",
+        "primary_component": "METHANOL",
+        "volume_mL": 197.5,
+        "volume_uL": 197500.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/2"
+      },
+      "record": {
+        "mass_mg": 4150.0,
+        "name": "CellCultureLiquidWaste",
+        "primary_component": "DMEM_FBS_PENSTREP",
+        "volume_mL": 4.15,
+        "volume_uL": 4150.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/3"
+      },
+      "record": {
+        "mass_mg": 2500.002,
+        "name": "PIO80356TransferredMembraneTank",
+        "primary_component": "PRIMARY_ANTIBODY_MIX",
+        "volume_mL": 2.500002,
+        "volume_uL": 2500.002
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/4"
+      },
+      "record": {
+        "mass_mg": 235.03,
+        "name": "ClarifiedLysate",
+        "primary_component": "HEK293T_TOTAL_PROTEIN",
+        "volume_mL": 0.23503,
+        "volume_uL": 235.03
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/5"
+      },
+      "record": {
+        "mass_mg": 75.006,
+        "name": "PreparedProteinSample",
+        "primary_component": "RED1",
+        "volume_mL": 0.075006,
+        "volume_uL": 75.006
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/6"
+      },
+      "record": {
+        "mass_mg": 6.0,
+        "name": "PEITransfectionMix",
+        "primary_component": "OPTI1",
+        "volume_mL": 0.006,
+        "volume_uL": 6.0
+      }
+    }
+  ],
+  "formal_returns": {
+    "evidence": {
+      "file": "artifacts/output.json",
+      "json_pointer": "/returns"
+    },
+    "value": {
+      "entry": {
+        "entry_kind": "script",
+        "protocol_id": "entry",
+        "protocol_name": "entry",
+        "returns": []
+      }
+    }
+  },
+  "input_files": {
+    "artifacts/ast.json": "e629bd753cf4a63511f231b4b4ce4d5b3b50bcd12eacb9a582ea0ea519f1483a",
+    "artifacts/ir.json": "621e3043f978691547dad8f3b894cc3a3d71fbe08381ea37cf5c11fcad054a22",
+    "artifacts/output.json": "23ea263ca9a79ee11797d6e714e624a14d401a5a1e7679a30b3af1d245445fcc",
+    "artifacts/plan.json": "c422f6c3b50eacc52a0998032dadb9b3f05164e4f0ff830815a70a8b72ec37d6",
+    "artifacts/result.json": "06136688a2f7b20fec841f5cf9b092ea59c65406d6252d5f2a3e954cd35295ab",
+    "artifacts/run.json": "1a79165078374eed7932a8f11f0db486203fd45aa0ceadf166907f38512afbb8",
+    "artifacts/summary.json": "38a63cc3ea6e7ab19be44f3cc99f041c7066014108ee4f731c0de695338923b8",
+    "artifacts/typecheck.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "artifacts/validate.json": "e98eef3e6629e584be98f075601f5dd1a3f400c46f505f525c261d01a4d34fea",
+    "case.json": "2ece65994c2602c9d8964c39b3b11b8231f7d77a491626d18430079204d68591",
+    "protocol.culs": "9fc8da574afb882a7c22a28c71fdca2a96f7aa5c2bdf01f2d13a6ab0f3912fa3",
+    "receipt.json": "984fec8f22b7d1651213700d659b6ea58a7434ad6f67e77f44160ad9b05b8b33",
+    "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout.txt": "23ea263ca9a79ee11797d6e714e624a14d401a5a1e7679a30b3af1d245445fcc"
+  },
+  "profile": "nested-v1",
+  "reagent_consumption": [
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/0"
+      },
+      "record": {
+        "consumed_mL": 800.0,
+        "consumed_mg": null,
+        "consumed_uL": 800000.0,
+        "name": "MOPSRunningBufferBottle",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/1"
+      },
+      "record": {
+        "consumed_mL": 90.0,
+        "consumed_mg": null,
+        "consumed_uL": 90000.0,
+        "name": "TBSTWashBuffer",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/2"
+      },
+      "record": {
+        "consumed_mL": 60.0,
+        "consumed_mg": null,
+        "consumed_uL": 60000.0,
+        "name": "TrisGlycineTransferBufferTwentyPercentMethanol",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/3"
+      },
+      "record": {
+        "consumed_mL": 30.0,
+        "consumed_mg": null,
+        "consumed_uL": 30000.0,
+        "name": "WaterBottle",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/4"
+      },
+      "record": {
+        "consumed_mL": 15.0,
+        "consumed_mg": null,
+        "consumed_uL": 15000.0,
+        "name": "FivePercentMilkInTBS",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/5"
+      },
+      "record": {
+        "consumed_mL": 15.0,
+        "consumed_mg": null,
+        "consumed_uL": 15000.0,
+        "name": "FivePercentMilkInTBST",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/6"
+      },
+      "record": {
+        "consumed_mL": 15.0,
+        "consumed_mg": null,
+        "consumed_uL": 15000.0,
+        "name": "Methanol",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/7"
+      },
+      "record": {
+        "consumed_mL": 10.0,
+        "consumed_mg": null,
+        "consumed_uL": 10000.0,
+        "name": "LiCorSecondaryAntibodyMixInFivePercentMilkTBST",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/8"
+      },
+      "record": {
+        "consumed_mL": 10.0,
+        "consumed_mg": null,
+        "consumed_uL": 10000.0,
+        "name": "PrimaryAntibodyMixInFivePercentMilkTBST",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/9"
+      },
+      "record": {
+        "consumed_mL": 2.0,
+        "consumed_mg": null,
+        "consumed_uL": 2000.0,
+        "name": "HEK293TCells",
+        "roles": [
+          "dest",
+          "sample"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/10"
+      },
+      "record": {
+        "consumed_mL": 1.0,
+        "consumed_mg": null,
+        "consumed_uL": 1000.0,
+        "name": "ColdPBS",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/11"
+      },
+      "record": {
+        "consumed_mL": 1.0,
+        "consumed_mg": null,
+        "consumed_uL": 1000.0,
+        "name": "DMEMWithFBSNoPenStrep",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/12"
+      },
+      "record": {
+        "consumed_mL": 0.3,
+        "consumed_mg": null,
+        "consumed_uL": 300.0,
+        "name": "RIPABuffer",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/13"
+      },
+      "record": {
+        "consumed_mL": 0.15,
+        "consumed_mg": null,
+        "consumed_uL": 150.0,
+        "name": "OptiMEM",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/14"
+      },
+      "record": {
+        "consumed_mL": 0.025,
+        "consumed_mg": null,
+        "consumed_uL": 25.0,
+        "name": "LDSBuffer4x",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/15"
+      },
+      "record": {
+        "consumed_mL": 0.01,
+        "consumed_mg": null,
+        "consumed_uL": 10.0,
+        "name": "ProteasePhosphataseInhibitors",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/16"
+      },
+      "record": {
+        "consumed_mL": 0.01,
+        "consumed_mg": null,
+        "consumed_uL": 10.0,
+        "name": "ReducingAgent10x",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/17"
+      },
+      "record": {
+        "consumed_mL": 0.003,
+        "consumed_mg": null,
+        "consumed_uL": 3.0,
+        "name": "PEI",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/18"
+      },
+      "record": {
+        "consumed_mL": 0.002,
+        "consumed_mg": null,
+        "consumed_uL": 2.0,
+        "name": "LRRK1DNA",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/19"
+      },
+      "record": {
+        "consumed_mL": 0.001,
+        "consumed_mg": null,
+        "consumed_uL": 1.0,
+        "name": "GFPRab7DNA",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/20"
+      },
+      "record": {
+        "consumed_mL": null,
+        "consumed_mg": 0.04,
+        "consumed_uL": null,
+        "name": "CellLysate",
+        "roles": [
+          "dest",
+          "sample"
+        ]
+      }
+    }
+  ],
+  "reagent_records": 21,
+  "reported_final_products": 7,
+  "rules_version": "patterns-metrics-nested-v9",
+  "schema_version": "patterns-metrics-v1",
+  "section": "3.4",
+  "statistics_scope": {
+    "runtime": "whole invocation",
+    "source": "reachable nested AST constructs",
+    "step_protocol": "CellCultureWesternBlot"
+  },
+  "support_scope": "Nested AST calls, result members, declared plate groups/selectors, grouped readouts and conditional execution; unresolved JSON joins fail",
+  "touched_containers": 33,
+  "touched_names": [
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/0"
+      },
+      "name": "BisTrisGelLane"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/1"
+      },
+      "name": "CellCultureLiquidWaste"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/2"
+      },
+      "name": "CellLysate"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/3"
+      },
+      "name": "ClarifiedLysate"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/4"
+      },
+      "name": "ColdPBS"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/5"
+      },
+      "name": "DMEMWithFBSNoPenStrep"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/6"
+      },
+      "name": "FivePercentMilkInTBS"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/7"
+      },
+      "name": "FivePercentMilkInTBST"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/8"
+      },
+      "name": "FourToTwelvePercentBisTrisGel"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/9"
+      },
+      "name": "GFPRab7DNA"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/10"
+      },
+      "name": "HEK293TCells"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/11"
+      },
+      "name": "LDSBuffer4x"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/12"
+      },
+      "name": "LRRK1DNA"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/13"
+      },
+      "name": "LiCorSecondaryAntibodyMixInFivePercentMilkTBST"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/14"
+      },
+      "name": "MOPSRunningBufferBottle"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/15"
+      },
+      "name": "Methanol"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/16"
+      },
+      "name": "OptiMEM"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/17"
+      },
+      "name": "PEI"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/18"
+      },
+      "name": "PEITransfectionMix"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/19"
+      },
+      "name": "PIO80356ElectrophoresisTank"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/20"
+      },
+      "name": "PIO80356MembraneSolutionWaste"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/21"
+      },
+      "name": "PIO80356PVDFMembraneProcessingTank"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/22"
+      },
+      "name": "PIO80356SeparatedGel"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/23"
+      },
+      "name": "PIO80356TransferStack"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/24"
+      },
+      "name": "PIO80356TransferredMembraneTank"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/25"
+      },
+      "name": "PreparedProteinSample"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/26"
+      },
+      "name": "PrimaryAntibodyMixInFivePercentMilkTBST"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/27"
+      },
+      "name": "ProteasePhosphataseInhibitors"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/28"
+      },
+      "name": "RIPABuffer"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/29"
+      },
+      "name": "ReducingAgent10x"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/30"
+      },
+      "name": "TBSTWashBuffer"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/31"
+      },
+      "name": "TrisGlycineTransferBufferTwentyPercentMethanol"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/32"
+      },
+      "name": "WaterBottle"
+    }
+  ]
+}

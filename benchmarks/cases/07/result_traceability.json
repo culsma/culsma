@@ -1,1 +1,3238 @@
-{"adapter_sha256":"6f3dfe206ac08dcbc4a65b2e2e534a97374001705b41834a8f036fac1fe3852d","case_id":"07","case_role":"corpus","container_identity":{"available":false,"evidence_level":"runtime_summary_name_record","note":"List indices locate summary records, not container identities."},"entry":{"evidence":{"file":"artifacts/ast.json","json_pointer":"/statements"},"protocol":"RecombinantProteinAffinityPurificationWithSdsPageQc"},"environment":{"culsma":"1.0.7rc1","culsma_file":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/lib/python3.12/site-packages/culsma/__init__.py","executable":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/bin/python","lark":"1.3.1","prefix":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv","python":"3.12.8"},"evidence_base":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/07/input","extraction_id":"f5d77dd802a0f57d6b1e5fc1f7b781abec6ee0e31611c1c2fdd00907feb57796","extractor_sha256":"11e290bb80e3d5eb76cd93cbe9a4f3863c98ef674f2bbb18191afd1afc2236c8","final_material_states":20,"final_products":[{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/0"},"record":{"mass_mg":800000.0,"name":"TB08ElectrophoresisTank","primary_component":"SDS_PAGE_RUNNING_BUFFER_1X","volume_mL":800.0,"volume_uL":800000.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/1"},"record":{"mass_mg":119875.0,"name":"StainWaste","primary_component":"COOMASSIE_STAIN","volume_mL":119.875,"volume_uL":119875.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/2"},"record":{"mass_mg":2980.0,"name":"PooledWashFraction","primary_component":"NATIVE_WASH_BUFFER","volume_mL":2.98,"volume_uL":2980.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/3"},"record":{"mass_mg":1560.0,"name":"FlowthroughFraction","primary_component":"NATIVE_LYSIS_BINDING_BUFFER","volume_mL":1.56,"volume_uL":1560.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/4"},"record":{"mass_mg":1000.0,"name":"TB08LiquidWaste","primary_component":"NATIVE_BINDING_BUFFER","volume_mL":1.0,"volume_uL":1000.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/5"},"record":{"mass_mg":480.379,"name":"ElutionFraction1","primary_component":"HIS_TAGGED_TARGET_PROTEIN","volume_mL":0.480379,"volume_uL":480.379}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/6"},"record":{"mass_mg":480.379,"name":"ElutionFraction2","primary_component":"HIS_TAGGED_TARGET_PROTEIN","volume_mL":0.480379,"volume_uL":480.379}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/7"},"record":{"mass_mg":400.0,"name":"NickelAffinityGravityColumn","primary_component":"NI_AFFINITY_RESIN","volume_mL":0.4,"volume_uL":400.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/8"},"record":{"mass_mg":125.0,"name":"TB08GelProcessingBath","primary_component":"COOMASSIE_STAIN","volume_mL":0.125,"volume_uL":125.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/9"},"record":{"mass_mg":20.01,"name":"ClarifiedLysate","primary_component":"HIS_TAGGED_TARGET_PROTEIN","volume_mL":0.02001,"volume_uL":20.01}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/10"},"record":{"mass_mg":10.004,"name":"PreparedElution1QC","primary_component":"HIS_TAGGED_TARGET_PROTEIN","volume_mL":0.010004,"volume_uL":10.004}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/11"},"record":{"mass_mg":10.004,"name":"PreparedElution2QC","primary_component":"HIS_TAGGED_TARGET_PROTEIN","volume_mL":0.010004,"volume_uL":10.004}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/12"},"record":{"mass_mg":10.003,"name":"PreparedInputQC","primary_component":"HIS_TAGGED_TARGET_PROTEIN","volume_mL":0.010003,"volume_uL":10.003}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/13"},"record":{"mass_mg":10.0,"name":"PreparedFlowthroughQC","primary_component":"NATIVE_LYSIS_BINDING_BUFFER","volume_mL":0.01,"volume_uL":10.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/14"},"record":{"mass_mg":10.0,"name":"PreparedWashQC","primary_component":"NATIVE_WASH_BUFFER","volume_mL":0.01,"volume_uL":10.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/15"},"record":{"mass_mg":5.004,"name":"Elution1QC","primary_component":"HIS_TAGGED_TARGET_PROTEIN","volume_mL":0.005004,"volume_uL":5.004}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/16"},"record":{"mass_mg":5.004,"name":"Elution2QC","primary_component":"HIS_TAGGED_TARGET_PROTEIN","volume_mL":0.005004,"volume_uL":5.004}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/17"},"record":{"mass_mg":5.003,"name":"InputQC","primary_component":"HIS_TAGGED_TARGET_PROTEIN","volume_mL":0.005003,"volume_uL":5.003}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/18"},"record":{"mass_mg":5.0,"name":"FlowthroughQC","primary_component":"NATIVE_LYSIS_BINDING_BUFFER","volume_mL":0.005,"volume_uL":5.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/19"},"record":{"mass_mg":5.0,"name":"WashQC","primary_component":"NATIVE_WASH_BUFFER","volume_mL":0.005,"volume_uL":5.0}}],"formal_returns":{"evidence":{"file":"artifacts/output.json","json_pointer":"/returns"},"value":{"entry":{"entry_kind":"script","protocol_id":"entry","protocol_name":"entry","returns":[]}}},"input_files":{"artifacts/ast.json":"42423f939e17ce145100231bbafd85abefccaa15608495ecf46ec10e000eb886","artifacts/ir.json":"790d61d54e5b714c435aba2f40f9ddbfe4a03ec0a4d1fd039ee3881f4e8f5f50","artifacts/output.json":"2b623901553a4f9ddbd941ae9e488819a0d063cafa436ab66857d5aad90b3cdb","artifacts/plan.json":"c0fa132f92cad5371c40d890162e8c2c8294b1ecc0c7d309e54abfe8ee726aed","artifacts/result.json":"b3af934533b7eae59e92ee7847dd630a3b2cea46a2ca145090fb6f44b7640a1a","artifacts/run.json":"eee62324537f54268f738a3f83c9a228d298a026c7d2fddce4c3b31ee7f20712","artifacts/summary.json":"c4142b1b1ca987fb8014b2bd6723096b9d12f7ba016477b0a14a98f86c11f60b","artifacts/typecheck.json":"37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570","artifacts/validate.json":"5f46110854f513c9e31b75e712d4488935916f48a3e831425695ac62a8c91c73","case.json":"651a3c1294e2622bd76657c92b1fa49a10c7f404d7f40c11d3d68e5e60c1b19a","protocol.culs":"2a552e50c5085d1d87a2e613935ce0114281706212f8d6886007cf7321951869","receipt.json":"6cdfd9870bd9c5a3be5af918e0d208bd904560dd7c1fdbd07630be6b0c9433b2","stderr.txt":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","stdout.txt":"2b623901553a4f9ddbd941ae9e488819a0d063cafa436ab66857d5aad90b3cdb"},"profile":"nested-v1","reagent_consumption":[{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/0"},"record":{"consumed_mL":800.0,"consumed_mg":null,"consumed_uL":800000.0,"name":"SdsPageRunningBufferBottle","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/1"},"record":{"consumed_mL":70.0,"consumed_mg":null,"consumed_uL":70000.0,"name":"WaterBottle","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/2"},"record":{"consumed_mL":50.0,"consumed_mg":null,"consumed_uL":50000.0,"name":"CoomassieProteinStain","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/3"},"record":{"consumed_mL":3.0,"consumed_mg":null,"consumed_uL":3000.0,"name":"NativeWashBuffer20To40mMImidazole","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/4"},"record":{"consumed_mL":2.0,"consumed_mg":null,"consumed_uL":2000.0,"name":"NativeLysisBindingBuffer","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/5"},"record":{"consumed_mL":1.0,"consumed_mg":null,"consumed_uL":1000.0,"name":"NativeBindingBuffer","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/6"},"record":{"consumed_mL":1.0,"consumed_mg":null,"consumed_uL":1000.0,"name":"NativeElutionBuffer250To300mMImidazole","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/7"},"record":{"consumed_mL":0.4,"consumed_mg":null,"consumed_uL":400.0,"name":"NickelAffinityResin","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/8"},"record":{"consumed_mL":0.075,"consumed_mg":null,"consumed_uL":75.0,"name":"ReducingSdsPageLoadingDye2x","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/9"},"record":{"consumed_mL":0.01,"consumed_mg":null,"consumed_uL":10.0,"name":"MolecularWeightLadder","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/10"},"record":{"consumed_mL":null,"consumed_mg":401.0,"consumed_uL":null,"name":"HisTaggedExpressionCellPellet","roles":["dest","sample"]}}],"reagent_records":11,"rules_version":"patterns-metrics-nested-v8","schema_version":"patterns-metrics-v1","section":"3.4","statistics_scope":{"runtime":"whole invocation","source":"reachable nested AST constructs","step_protocol":"RecombinantProteinAffinityPurificationWithSdsPageQc"},"support_scope":"Nested AST calls, result members, declared plate groups/selectors, grouped readouts and conditional execution; unresolved JSON joins fail","touched_containers":39,"touched_names":[{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/0"},"name":"ClarifiedLysate"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/1"},"name":"CoomassieProteinStain"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/2"},"name":"Elution1Lane"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/3"},"name":"Elution1QC"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/4"},"name":"Elution2Lane"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/5"},"name":"Elution2QC"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/6"},"name":"ElutionFraction1"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/7"},"name":"ElutionFraction2"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/8"},"name":"FlowthroughFraction"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/9"},"name":"FlowthroughLane"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/10"},"name":"FlowthroughQC"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/11"},"name":"HisTaggedExpressionCellPellet"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/12"},"name":"InputLane"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/13"},"name":"InputQC"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/14"},"name":"MechanicallyDisruptedLysate"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/15"},"name":"MolecularWeightLadder"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/16"},"name":"MolecularWeightLadderLane"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/17"},"name":"NativeBindingBuffer"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/18"},"name":"NativeElutionBuffer250To300mMImidazole"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/19"},"name":"NativeLysisBindingBuffer"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/20"},"name":"NativeWashBuffer20To40mMImidazole"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/21"},"name":"NickelAffinityGravityColumn"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/22"},"name":"NickelAffinityResin"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/23"},"name":"PooledWashFraction"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/24"},"name":"PooledWashLane"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/25"},"name":"PreparedElution1QC"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/26"},"name":"PreparedElution2QC"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/27"},"name":"PreparedFlowthroughQC"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/28"},"name":"PreparedInputQC"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/29"},"name":"PreparedWashQC"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/30"},"name":"ReducingSdsPageLoadingDye2x"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/31"},"name":"SdsPageRunningBufferBottle"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/32"},"name":"StainWaste"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/33"},"name":"TB08ElectrophoresisTank"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/34"},"name":"TB08GelProcessingBath"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/35"},"name":"TB08LiquidWaste"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/36"},"name":"TB08SdsPageGel"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/37"},"name":"WashQC"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/38"},"name":"WaterBottle"}]}
+{
+  "adapter_sha256": "d1efba860cc871e3e3dedda3b6a097503a990fbd52f24245a27a3565d9c431ef",
+  "case_id": "07",
+  "case_role": "corpus",
+  "container_identity": {
+    "available": false,
+    "evidence_level": "runtime_summary_name_record",
+    "note": "List indices locate summary records, not container identities."
+  },
+  "entry": {
+    "evidence": {
+      "file": "artifacts/ast.json",
+      "json_pointer": "/statements"
+    },
+    "protocol": "RecombinantProteinAffinityPurificationWithSdsPageQc"
+  },
+  "environment": {
+    "culsma": "1.0.7rc1",
+    "culsma_file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/lib/python3.12/site-packages/culsma/__init__.py",
+    "executable": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/bin/python",
+    "lark": "1.3.1",
+    "prefix": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv",
+    "python": "3.12.8"
+  },
+  "evidence_base": "/private/tmp/culsma-terminal-metrics-0ettVh/all-cases-v9/07/input",
+  "extraction_id": "0540cc5f2aeb0e96e7f5b09302ea506b00bf8cd2258d7bc5375f83048fd50f96",
+  "extractor_sha256": "39c3aab4ffe7afd1f4afb257978639975103d14025eec94b513e1b278aa4fe26",
+  "final_material_records": [
+    {
+      "container_id": "container/entry/entry.s1%3A%3Aalloc/__cmp_entry_s0_native_lysis_binding_buffer",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s1%3A%3Aalloc~1__cmp_entry_s0_native_lysis_binding_buffer"
+      },
+      "record": {
+        "mass_mg": 6000.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 6000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_LYSIS_BINDING_BUFFER",
+              "entry_id": "NATIVE_LYSIS_BINDING_BUFFER",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 6000.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "NATIVE_LYSIS_BINDING_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 6000.0
+            }
+          },
+          "components": {
+            "NATIVE_LYSIS_BINDING_BUFFER": 6000.0
+          },
+          "mass_mg": 6000.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_native_lysis_binding_buffer",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s1::alloc",
+            "capacity_uL": 10000.0,
+            "kind": "tube",
+            "label": "NativeLysisBindingBuffer"
+          },
+          "volume_uL": 6000.0
+        },
+        "name": "NativeLysisBindingBuffer",
+        "volume_uL": 6000.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s11%3A%3Aalloc/__cmp_entry_s0_input_qc",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s11%3A%3Aalloc~1__cmp_entry_s0_input_qc"
+      },
+      "record": {
+        "mass_mg": 5.0025,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.0025000000000000005,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HIS_TAGGED_TARGET_PROTEIN",
+              "entry_id": "HIS_TAGGED_TARGET_PROTEIN",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.0025000000000000005
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 5.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_LYSIS_BINDING_BUFFER",
+              "entry_id": "NATIVE_LYSIS_BINDING_BUFFER",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "HIS_TAGGED_TARGET_PROTEIN": {
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 0.0025000000000000005
+            },
+            "NATIVE_LYSIS_BINDING_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            }
+          },
+          "components": {
+            "HIS_TAGGED_TARGET_PROTEIN": 0.0025000000000000005,
+            "NATIVE_LYSIS_BINDING_BUFFER": 5.0
+          },
+          "mass_mg": 5.0025,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_input_qc",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s11::alloc",
+            "capacity_uL": 200.0,
+            "kind": "tube",
+            "label": "InputQC"
+          },
+          "volume_uL": 5.0025
+        },
+        "name": "InputQC",
+        "volume_uL": 5.0025
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s113%3A%3Aalloc/__cmp_entry_s0_water",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s113%3A%3Aalloc~1__cmp_entry_s0_water"
+      },
+      "record": {
+        "mass_mg": 730000.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 730000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "WATER",
+              "entry_id": "WATER",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 730000.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "WATER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 730000.0
+            }
+          },
+          "components": {
+            "WATER": 730000.0
+          },
+          "mass_mg": 730000.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_water",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s113::alloc",
+            "capacity_uL": 1000000.0,
+            "label": "WaterBottle"
+          },
+          "volume_uL": 730000.0
+        },
+        "name": "WaterBottle",
+        "volume_uL": 730000.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s114%3A%3Aalloc/__cmp_entry_s0_coomassie_stain",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s114%3A%3Aalloc~1__cmp_entry_s0_coomassie_stain"
+      },
+      "record": {
+        "mass_mg": 350000.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 350000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "COOMASSIE_STAIN",
+              "entry_id": "COOMASSIE_STAIN",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 350000.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "COOMASSIE_STAIN": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 350000.0
+            }
+          },
+          "components": {
+            "COOMASSIE_STAIN": 350000.0
+          },
+          "mass_mg": 350000.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_coomassie_stain",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s114::alloc",
+            "capacity_uL": 500000.0,
+            "label": "CoomassieProteinStain"
+          },
+          "volume_uL": 350000.0
+        },
+        "name": "CoomassieProteinStain",
+        "volume_uL": 350000.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s115%3A%3Aalloc/__cmp_entry_s0_stain_waste",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s115%3A%3Aalloc~1__cmp_entry_s0_stain_waste"
+      },
+      "record": {
+        "mass_mg": 119875.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 70000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "WATER",
+              "entry_id": "WATER",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 70000.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 49875.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "COOMASSIE_STAIN",
+              "entry_id": "COOMASSIE_STAIN",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 49875.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "COOMASSIE_STAIN": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 49875.0
+            },
+            "WATER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 70000.0
+            }
+          },
+          "components": {
+            "COOMASSIE_STAIN": 49875.0,
+            "WATER": 70000.0
+          },
+          "mass_mg": 119875.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_stain_waste",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s115::alloc",
+            "capacity_uL": 1000000.0,
+            "label": "StainWaste"
+          },
+          "volume_uL": 119875.0
+        },
+        "name": "StainWaste",
+        "volume_uL": 119875.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s116%3A%3Aalloc/__cmp_entry_s0_gel_processing_bath",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s116%3A%3Aalloc~1__cmp_entry_s0_gel_processing_bath"
+      },
+      "record": {
+        "mass_mg": 125.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "COOMASSIE_STAIN",
+              "entry_id": "COOMASSIE_STAIN",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "WATER",
+              "entry_id": "WATER",
+              "label": "filtrate_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "COOMASSIE_STAIN",
+              "entry_id": "COOMASSIE_STAIN_1",
+              "label": "filtrate_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 125.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "COOMASSIE_STAIN",
+              "entry_id": "COOMASSIE_STAIN_2",
+              "label": "retentate_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 125.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "COOMASSIE_STAIN": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 125.0
+            },
+            "WATER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            }
+          },
+          "components": {
+            "COOMASSIE_STAIN": 125.0,
+            "WATER": 0.0
+          },
+          "mass_mg": 125.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_gel_processing_bath",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s116::alloc",
+            "capacity_uL": 100000.0,
+            "kind": "chamber",
+            "label": "TB08GelProcessingBath",
+            "open": true
+          },
+          "volume_uL": 125.0
+        },
+        "name": "TB08GelProcessingBath",
+        "volume_uL": 125.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s13%3A%3Aalloc/__cmp_entry_s0_nickel_resin",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s13%3A%3Aalloc~1__cmp_entry_s0_nickel_resin"
+      },
+      "record": {
+        "mass_mg": 400.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 400.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NI_AFFINITY_RESIN",
+              "entry_id": "NI_AFFINITY_RESIN",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 400.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "NI_AFFINITY_RESIN": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 400.0
+            }
+          },
+          "components": {
+            "NI_AFFINITY_RESIN": 400.0
+          },
+          "mass_mg": 400.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_nickel_resin",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s13::alloc",
+            "capacity_uL": 1000.0,
+            "kind": "tube",
+            "label": "NickelAffinityResin"
+          },
+          "volume_uL": 400.0
+        },
+        "name": "NickelAffinityResin",
+        "volume_uL": 400.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s14%3A%3Aalloc/__cmp_entry_s0_affinity_column",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s14%3A%3Aalloc~1__cmp_entry_s0_affinity_column"
+      },
+      "record": {
+        "mass_mg": 400.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NI_AFFINITY_RESIN",
+              "entry_id": "NI_AFFINITY_RESIN",
+              "label": null,
+              "material_state_source": null,
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_BINDING_BUFFER",
+              "entry_id": "NATIVE_BINDING_BUFFER",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HIS_TAGGED_TARGET_PROTEIN",
+              "entry_id": "HIS_TAGGED_TARGET_PROTEIN",
+              "label": null,
+              "material_state_source": null,
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_LYSIS_BINDING_BUFFER",
+              "entry_id": "NATIVE_LYSIS_BINDING_BUFFER",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_WASH_BUFFER",
+              "entry_id": "NATIVE_WASH_BUFFER_1",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_ELUTION_BUFFER",
+              "entry_id": "NATIVE_ELUTION_BUFFER",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HIS_TAGGED_TARGET_PROTEIN",
+              "entry_id": "HIS_TAGGED_TARGET_PROTEIN_2",
+              "label": "filtrate_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_ELUTION_BUFFER",
+              "entry_id": "NATIVE_ELUTION_BUFFER_1",
+              "label": "filtrate_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 400.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NI_AFFINITY_RESIN",
+              "entry_id": "NI_AFFINITY_RESIN_1",
+              "label": "retentate_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 400.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "HIS_TAGGED_TARGET_PROTEIN": {
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 0.0
+            },
+            "NATIVE_BINDING_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "NATIVE_ELUTION_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "NATIVE_LYSIS_BINDING_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "NATIVE_WASH_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "NI_AFFINITY_RESIN": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 400.0
+            }
+          },
+          "components": {
+            "HIS_TAGGED_TARGET_PROTEIN": 0.0,
+            "NATIVE_BINDING_BUFFER": 0.0,
+            "NATIVE_ELUTION_BUFFER": 0.0,
+            "NATIVE_LYSIS_BINDING_BUFFER": 0.0,
+            "NATIVE_WASH_BUFFER": 0.0,
+            "NI_AFFINITY_RESIN": 400.0
+          },
+          "mass_mg": 400.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_affinity_column",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s14::alloc",
+            "capacity_uL": 5000.0,
+            "kind": "chamber",
+            "label": "NickelAffinityGravityColumn",
+            "open": true
+          },
+          "volume_uL": 400.0
+        },
+        "name": "NickelAffinityGravityColumn",
+        "volume_uL": 400.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s2%3A%3Aalloc/__cmp_entry_s0_native_binding_buffer",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s2%3A%3Aalloc~1__cmp_entry_s0_native_binding_buffer"
+      },
+      "record": {
+        "mass_mg": 7000.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 7000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_BINDING_BUFFER",
+              "entry_id": "NATIVE_BINDING_BUFFER",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 7000.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "NATIVE_BINDING_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 7000.0
+            }
+          },
+          "components": {
+            "NATIVE_BINDING_BUFFER": 7000.0
+          },
+          "mass_mg": 7000.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_native_binding_buffer",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s2::alloc",
+            "capacity_uL": 10000.0,
+            "kind": "tube",
+            "label": "NativeBindingBuffer"
+          },
+          "volume_uL": 7000.0
+        },
+        "name": "NativeBindingBuffer",
+        "volume_uL": 7000.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s21%3A%3Aalloc/__cmp_entry_s0_flowthrough_fraction",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s21%3A%3Aalloc~1__cmp_entry_s0_flowthrough_fraction"
+      },
+      "record": {
+        "mass_mg": 1560.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 1560.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_LYSIS_BINDING_BUFFER",
+              "entry_id": "NATIVE_LYSIS_BINDING_BUFFER",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 1560.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "NATIVE_LYSIS_BINDING_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 1560.0
+            }
+          },
+          "components": {
+            "NATIVE_LYSIS_BINDING_BUFFER": 1560.0
+          },
+          "mass_mg": 1560.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_flowthrough_fraction",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s21::alloc",
+            "capacity_uL": 2000.0,
+            "kind": "tube",
+            "label": "FlowthroughFraction"
+          },
+          "volume_uL": 1560.0
+        },
+        "name": "FlowthroughFraction",
+        "volume_uL": 1560.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s23%3A%3Aalloc/__cmp_entry_s0_flowthrough_qc",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s23%3A%3Aalloc~1__cmp_entry_s0_flowthrough_qc"
+      },
+      "record": {
+        "mass_mg": 5.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 5.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_LYSIS_BINDING_BUFFER",
+              "entry_id": "NATIVE_LYSIS_BINDING_BUFFER",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "NATIVE_LYSIS_BINDING_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            }
+          },
+          "components": {
+            "NATIVE_LYSIS_BINDING_BUFFER": 5.0
+          },
+          "mass_mg": 5.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_flowthrough_qc",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s23::alloc",
+            "capacity_uL": 200.0,
+            "kind": "tube",
+            "label": "FlowthroughQC"
+          },
+          "volume_uL": 5.0
+        },
+        "name": "FlowthroughQC",
+        "volume_uL": 5.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s25%3A%3Aalloc/__cmp_entry_s0_pooled_wash_fraction",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s25%3A%3Aalloc~1__cmp_entry_s0_pooled_wash_fraction"
+      },
+      "record": {
+        "mass_mg": 2980.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 2980.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_WASH_BUFFER",
+              "entry_id": "NATIVE_WASH_BUFFER",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 2980.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "NATIVE_WASH_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 2980.0
+            }
+          },
+          "components": {
+            "NATIVE_WASH_BUFFER": 2980.0
+          },
+          "mass_mg": 2980.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_pooled_wash_fraction",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s25::alloc",
+            "capacity_uL": 5000.0,
+            "kind": "tube",
+            "label": "PooledWashFraction"
+          },
+          "volume_uL": 2980.0
+        },
+        "name": "PooledWashFraction",
+        "volume_uL": 2980.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s3%3A%3Aalloc/__cmp_entry_s0_native_wash_buffer",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s3%3A%3Aalloc~1__cmp_entry_s0_native_wash_buffer"
+      },
+      "record": {
+        "mass_mg": 5000.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 5000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_WASH_BUFFER",
+              "entry_id": "NATIVE_WASH_BUFFER",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5000.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "NATIVE_WASH_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5000.0
+            }
+          },
+          "components": {
+            "NATIVE_WASH_BUFFER": 5000.0
+          },
+          "mass_mg": 5000.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_native_wash_buffer",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s3::alloc",
+            "capacity_uL": 10000.0,
+            "kind": "tube",
+            "label": "NativeWashBuffer20To40mMImidazole"
+          },
+          "volume_uL": 5000.0
+        },
+        "name": "NativeWashBuffer20To40mMImidazole",
+        "volume_uL": 5000.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s35%3A%3Aalloc/__cmp_entry_s0_wash_qc",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s35%3A%3Aalloc~1__cmp_entry_s0_wash_qc"
+      },
+      "record": {
+        "mass_mg": 5.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 5.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_WASH_BUFFER",
+              "entry_id": "NATIVE_WASH_BUFFER",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "NATIVE_WASH_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            }
+          },
+          "components": {
+            "NATIVE_WASH_BUFFER": 5.0
+          },
+          "mass_mg": 5.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_wash_qc",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s35::alloc",
+            "capacity_uL": 200.0,
+            "kind": "tube",
+            "label": "WashQC"
+          },
+          "volume_uL": 5.0
+        },
+        "name": "WashQC",
+        "volume_uL": 5.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s4%3A%3Aalloc/__cmp_entry_s0_native_elution_buffer",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s4%3A%3Aalloc~1__cmp_entry_s0_native_elution_buffer"
+      },
+      "record": {
+        "mass_mg": 3000.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 3000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_ELUTION_BUFFER",
+              "entry_id": "NATIVE_ELUTION_BUFFER",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 3000.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "NATIVE_ELUTION_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 3000.0
+            }
+          },
+          "components": {
+            "NATIVE_ELUTION_BUFFER": 3000.0
+          },
+          "mass_mg": 3000.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_native_elution_buffer",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s4::alloc",
+            "capacity_uL": 5000.0,
+            "kind": "tube",
+            "label": "NativeElutionBuffer250To300mMImidazole"
+          },
+          "volume_uL": 3000.0
+        },
+        "name": "NativeElutionBuffer250To300mMImidazole",
+        "volume_uL": 3000.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s40%3A%3Aalloc/__cmp_entry_s0_elution_fraction_1",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s40%3A%3Aalloc~1__cmp_entry_s0_elution_fraction_1"
+      },
+      "record": {
+        "mass_mg": 480.3792,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.37920000000000004,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HIS_TAGGED_TARGET_PROTEIN",
+              "entry_id": "HIS_TAGGED_TARGET_PROTEIN",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.37920000000000004
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 480.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_ELUTION_BUFFER",
+              "entry_id": "NATIVE_ELUTION_BUFFER",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 480.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "HIS_TAGGED_TARGET_PROTEIN": {
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 0.37920000000000004
+            },
+            "NATIVE_ELUTION_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 480.0
+            }
+          },
+          "components": {
+            "HIS_TAGGED_TARGET_PROTEIN": 0.37920000000000004,
+            "NATIVE_ELUTION_BUFFER": 480.0
+          },
+          "mass_mg": 480.3792,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_elution_fraction_1",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s40::alloc",
+            "capacity_uL": 1000.0,
+            "kind": "tube",
+            "label": "ElutionFraction1"
+          },
+          "volume_uL": 480.3792
+        },
+        "name": "ElutionFraction1",
+        "volume_uL": 480.3792
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s42%3A%3Aalloc/__cmp_entry_s0_elution1_qc",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s42%3A%3Aalloc~1__cmp_entry_s0_elution1_qc"
+      },
+      "record": {
+        "mass_mg": 5.00395,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.00395,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HIS_TAGGED_TARGET_PROTEIN",
+              "entry_id": "HIS_TAGGED_TARGET_PROTEIN",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.00395
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 5.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_ELUTION_BUFFER",
+              "entry_id": "NATIVE_ELUTION_BUFFER",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "HIS_TAGGED_TARGET_PROTEIN": {
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 0.00395
+            },
+            "NATIVE_ELUTION_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            }
+          },
+          "components": {
+            "HIS_TAGGED_TARGET_PROTEIN": 0.00395,
+            "NATIVE_ELUTION_BUFFER": 5.0
+          },
+          "mass_mg": 5.00395,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_elution1_qc",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s42::alloc",
+            "capacity_uL": 200.0,
+            "kind": "tube",
+            "label": "Elution1QC"
+          },
+          "volume_uL": 5.00395
+        },
+        "name": "Elution1QC",
+        "volume_uL": 5.00395
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s47%3A%3Aalloc/__cmp_entry_s0_elution_fraction_2",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s47%3A%3Aalloc~1__cmp_entry_s0_elution_fraction_2"
+      },
+      "record": {
+        "mass_mg": 480.3792,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.37920000000000004,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HIS_TAGGED_TARGET_PROTEIN",
+              "entry_id": "HIS_TAGGED_TARGET_PROTEIN",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.37920000000000004
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 480.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_ELUTION_BUFFER",
+              "entry_id": "NATIVE_ELUTION_BUFFER",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 480.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "HIS_TAGGED_TARGET_PROTEIN": {
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 0.37920000000000004
+            },
+            "NATIVE_ELUTION_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 480.0
+            }
+          },
+          "components": {
+            "HIS_TAGGED_TARGET_PROTEIN": 0.37920000000000004,
+            "NATIVE_ELUTION_BUFFER": 480.0
+          },
+          "mass_mg": 480.3792,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_elution_fraction_2",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s47::alloc",
+            "capacity_uL": 1000.0,
+            "kind": "tube",
+            "label": "ElutionFraction2"
+          },
+          "volume_uL": 480.3792
+        },
+        "name": "ElutionFraction2",
+        "volume_uL": 480.3792
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s49%3A%3Aalloc/__cmp_entry_s0_elution2_qc",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s49%3A%3Aalloc~1__cmp_entry_s0_elution2_qc"
+      },
+      "record": {
+        "mass_mg": 5.00395,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.00395,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HIS_TAGGED_TARGET_PROTEIN",
+              "entry_id": "HIS_TAGGED_TARGET_PROTEIN",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.00395
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 5.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_ELUTION_BUFFER",
+              "entry_id": "NATIVE_ELUTION_BUFFER",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "HIS_TAGGED_TARGET_PROTEIN": {
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 0.00395
+            },
+            "NATIVE_ELUTION_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            }
+          },
+          "components": {
+            "HIS_TAGGED_TARGET_PROTEIN": 0.00395,
+            "NATIVE_ELUTION_BUFFER": 5.0
+          },
+          "mass_mg": 5.00395,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_elution2_qc",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s49::alloc",
+            "capacity_uL": 200.0,
+            "kind": "tube",
+            "label": "Elution2QC"
+          },
+          "volume_uL": 5.00395
+        },
+        "name": "Elution2QC",
+        "volume_uL": 5.00395
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s5%3A%3Aalloc/__cmp_entry_s0_liquid_waste",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s5%3A%3Aalloc~1__cmp_entry_s0_liquid_waste"
+      },
+      "record": {
+        "mass_mg": 1000.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NI_AFFINITY_RESIN",
+              "entry_id": "NI_AFFINITY_RESIN",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 1000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_BINDING_BUFFER",
+              "entry_id": "NATIVE_BINDING_BUFFER",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 1000.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "NATIVE_BINDING_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 1000.0
+            },
+            "NI_AFFINITY_RESIN": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            }
+          },
+          "components": {
+            "NATIVE_BINDING_BUFFER": 1000.0,
+            "NI_AFFINITY_RESIN": 0.0
+          },
+          "mass_mg": 1000.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_liquid_waste",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s5::alloc",
+            "capacity_uL": 20000.0,
+            "kind": "tube",
+            "label": "TB08LiquidWaste"
+          },
+          "volume_uL": 1000.0
+        },
+        "name": "TB08LiquidWaste",
+        "volume_uL": 1000.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s52%3A%3Aalloc/__cmp_entry_s0_reducing_loading_dye",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s52%3A%3Aalloc~1__cmp_entry_s0_reducing_loading_dye"
+      },
+      "record": {
+        "mass_mg": 325.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 325.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "REDUCING_SDS_PAGE_LOADING_DYE_2X",
+              "entry_id": "REDUCING_SDS_PAGE_LOADING_DYE_2X",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 325.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "REDUCING_SDS_PAGE_LOADING_DYE_2X": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 325.0
+            }
+          },
+          "components": {
+            "REDUCING_SDS_PAGE_LOADING_DYE_2X": 325.0
+          },
+          "mass_mg": 325.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_reducing_loading_dye",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s52::alloc",
+            "capacity_uL": 500.0,
+            "kind": "tube",
+            "label": "ReducingSdsPageLoadingDye2x"
+          },
+          "volume_uL": 325.0
+        },
+        "name": "ReducingSdsPageLoadingDye2x",
+        "volume_uL": 325.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s53%3A%3Aalloc/__cmp_entry_s0_molecular_weight_ladder",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s53%3A%3Aalloc~1__cmp_entry_s0_molecular_weight_ladder"
+      },
+      "record": {
+        "mass_mg": 90.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 90.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "MOLECULAR_WEIGHT_LADDER",
+              "entry_id": "MOLECULAR_WEIGHT_LADDER",
+              "label": null,
+              "material_state_source": "content_registry",
+              "partition_class": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 90.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            }
+          ],
+          "component_quantities": {
+            "MOLECULAR_WEIGHT_LADDER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 90.0
+            }
+          },
+          "components": {
+            "MOLECULAR_WEIGHT_LADDER": 90.0
+          },
+          "mass_mg": 90.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_molecular_weight_ladder",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s53::alloc",
+            "capacity_uL": 200.0,
+            "kind": "tube",
+            "label": "MolecularWeightLadder"
+          },
+          "volume_uL": 90.0
+        },
+        "name": "MolecularWeightLadder",
+        "volume_uL": 90.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s54%3A%3Aalloc/__cmp_entry_s0_prepared_input_qc",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s54%3A%3Aalloc~1__cmp_entry_s0_prepared_input_qc"
+      },
+      "record": {
+        "mass_mg": 10.002500000000001,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.0025000000000000005,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HIS_TAGGED_TARGET_PROTEIN",
+              "entry_id": "HIS_TAGGED_TARGET_PROTEIN",
+              "label": "supernatant_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.0025000000000000005
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 5.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_LYSIS_BINDING_BUFFER",
+              "entry_id": "NATIVE_LYSIS_BINDING_BUFFER",
+              "label": "supernatant_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 5.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "REDUCING_SDS_PAGE_LOADING_DYE_2X",
+              "entry_id": "REDUCING_SDS_PAGE_LOADING_DYE_2X",
+              "label": "supernatant_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "HIS_TAGGED_TARGET_PROTEIN": {
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 0.0025000000000000005
+            },
+            "NATIVE_LYSIS_BINDING_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            },
+            "REDUCING_SDS_PAGE_LOADING_DYE_2X": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            }
+          },
+          "components": {
+            "HIS_TAGGED_TARGET_PROTEIN": 0.0025000000000000005,
+            "NATIVE_LYSIS_BINDING_BUFFER": 5.0,
+            "REDUCING_SDS_PAGE_LOADING_DYE_2X": 5.0
+          },
+          "mass_mg": 10.002500000000001,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_prepared_input_qc",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s54::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "PreparedInputQC"
+          },
+          "volume_uL": 10.002500000000001
+        },
+        "name": "PreparedInputQC",
+        "volume_uL": 10.002500000000001
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s55%3A%3Aalloc/__cmp_entry_s0_prepared_flowthrough_qc",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s55%3A%3Aalloc~1__cmp_entry_s0_prepared_flowthrough_qc"
+      },
+      "record": {
+        "mass_mg": 10.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 5.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_LYSIS_BINDING_BUFFER",
+              "entry_id": "NATIVE_LYSIS_BINDING_BUFFER",
+              "label": "supernatant_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 5.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "REDUCING_SDS_PAGE_LOADING_DYE_2X",
+              "entry_id": "REDUCING_SDS_PAGE_LOADING_DYE_2X",
+              "label": "supernatant_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "NATIVE_LYSIS_BINDING_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            },
+            "REDUCING_SDS_PAGE_LOADING_DYE_2X": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            }
+          },
+          "components": {
+            "NATIVE_LYSIS_BINDING_BUFFER": 5.0,
+            "REDUCING_SDS_PAGE_LOADING_DYE_2X": 5.0
+          },
+          "mass_mg": 10.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_prepared_flowthrough_qc",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s55::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "PreparedFlowthroughQC"
+          },
+          "volume_uL": 10.0
+        },
+        "name": "PreparedFlowthroughQC",
+        "volume_uL": 10.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s56%3A%3Aalloc/__cmp_entry_s0_prepared_wash_qc",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s56%3A%3Aalloc~1__cmp_entry_s0_prepared_wash_qc"
+      },
+      "record": {
+        "mass_mg": 10.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 5.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_WASH_BUFFER",
+              "entry_id": "NATIVE_WASH_BUFFER",
+              "label": "supernatant_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 5.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "REDUCING_SDS_PAGE_LOADING_DYE_2X",
+              "entry_id": "REDUCING_SDS_PAGE_LOADING_DYE_2X",
+              "label": "supernatant_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "NATIVE_WASH_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            },
+            "REDUCING_SDS_PAGE_LOADING_DYE_2X": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            }
+          },
+          "components": {
+            "NATIVE_WASH_BUFFER": 5.0,
+            "REDUCING_SDS_PAGE_LOADING_DYE_2X": 5.0
+          },
+          "mass_mg": 10.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_prepared_wash_qc",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s56::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "PreparedWashQC"
+          },
+          "volume_uL": 10.0
+        },
+        "name": "PreparedWashQC",
+        "volume_uL": 10.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s57%3A%3Aalloc/__cmp_entry_s0_prepared_elution1_qc",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s57%3A%3Aalloc~1__cmp_entry_s0_prepared_elution1_qc"
+      },
+      "record": {
+        "mass_mg": 10.00395,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.00395,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HIS_TAGGED_TARGET_PROTEIN",
+              "entry_id": "HIS_TAGGED_TARGET_PROTEIN",
+              "label": "supernatant_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.00395
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 5.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_ELUTION_BUFFER",
+              "entry_id": "NATIVE_ELUTION_BUFFER",
+              "label": "supernatant_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 5.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "REDUCING_SDS_PAGE_LOADING_DYE_2X",
+              "entry_id": "REDUCING_SDS_PAGE_LOADING_DYE_2X",
+              "label": "supernatant_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "HIS_TAGGED_TARGET_PROTEIN": {
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 0.00395
+            },
+            "NATIVE_ELUTION_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            },
+            "REDUCING_SDS_PAGE_LOADING_DYE_2X": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            }
+          },
+          "components": {
+            "HIS_TAGGED_TARGET_PROTEIN": 0.00395,
+            "NATIVE_ELUTION_BUFFER": 5.0,
+            "REDUCING_SDS_PAGE_LOADING_DYE_2X": 5.0
+          },
+          "mass_mg": 10.00395,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_prepared_elution1_qc",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s57::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "PreparedElution1QC"
+          },
+          "volume_uL": 10.00395
+        },
+        "name": "PreparedElution1QC",
+        "volume_uL": 10.00395
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s58%3A%3Aalloc/__cmp_entry_s0_prepared_elution2_qc",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s58%3A%3Aalloc~1__cmp_entry_s0_prepared_elution2_qc"
+      },
+      "record": {
+        "mass_mg": 10.003950000000001,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.00395,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HIS_TAGGED_TARGET_PROTEIN",
+              "entry_id": "HIS_TAGGED_TARGET_PROTEIN",
+              "label": "supernatant_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.00395
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 5.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_ELUTION_BUFFER",
+              "entry_id": "NATIVE_ELUTION_BUFFER",
+              "label": "supernatant_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 5.000000000000002,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "REDUCING_SDS_PAGE_LOADING_DYE_2X",
+              "entry_id": "REDUCING_SDS_PAGE_LOADING_DYE_2X",
+              "label": "supernatant_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.000000000000002
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "HIS_TAGGED_TARGET_PROTEIN": {
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 0.00395
+            },
+            "NATIVE_ELUTION_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            },
+            "REDUCING_SDS_PAGE_LOADING_DYE_2X": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.000000000000002
+            }
+          },
+          "components": {
+            "HIS_TAGGED_TARGET_PROTEIN": 0.00395,
+            "NATIVE_ELUTION_BUFFER": 5.0,
+            "REDUCING_SDS_PAGE_LOADING_DYE_2X": 5.000000000000002
+          },
+          "mass_mg": 10.003950000000001,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_prepared_elution2_qc",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s58::alloc",
+            "capacity_uL": 100.0,
+            "kind": "tube",
+            "label": "PreparedElution2QC"
+          },
+          "volume_uL": 10.003950000000001
+        },
+        "name": "PreparedElution2QC",
+        "volume_uL": 10.003950000000001
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s67%3A%3Aalloc/__cmp_entry_s0_electrophoresis_tank",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s67%3A%3Aalloc~1__cmp_entry_s0_electrophoresis_tank"
+      },
+      "record": {
+        "mass_mg": 800000.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 800000.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "SDS_PAGE_RUNNING_BUFFER_1X",
+              "entry_id": "SDS_PAGE_RUNNING_BUFFER_1X",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 800000.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "SDS_PAGE_RUNNING_BUFFER_1X": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 800000.0
+            }
+          },
+          "components": {
+            "SDS_PAGE_RUNNING_BUFFER_1X": 800000.0
+          },
+          "mass_mg": 800000.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_electrophoresis_tank",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s67::alloc",
+            "capacity_uL": 800000.0,
+            "kind": "chamber",
+            "label": "TB08ElectrophoresisTank"
+          },
+          "volume_uL": 800000.0
+        },
+        "name": "TB08ElectrophoresisTank",
+        "volume_uL": 800000.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s7%3A%3Aalloc/__cmp_entry_s0_clarified_lysate",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s7%3A%3Aalloc~1__cmp_entry_s0_clarified_lysate"
+      },
+      "record": {
+        "mass_mg": 20.01,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.010000000000000009,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "HIS_TAGGED_TARGET_PROTEIN",
+              "entry_id": "HIS_TAGGED_TARGET_PROTEIN",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.010000000000000009
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 20.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "NATIVE_LYSIS_BINDING_BUFFER",
+              "entry_id": "NATIVE_LYSIS_BINDING_BUFFER",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 20.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "HIS_TAGGED_TARGET_PROTEIN": {
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 0.010000000000000009
+            },
+            "NATIVE_LYSIS_BINDING_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 20.0
+            }
+          },
+          "components": {
+            "HIS_TAGGED_TARGET_PROTEIN": 0.010000000000000009,
+            "NATIVE_LYSIS_BINDING_BUFFER": 20.0
+          },
+          "mass_mg": 20.01,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_clarified_lysate",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s7::alloc",
+            "capacity_uL": 2000.0,
+            "kind": "tube",
+            "label": "ClarifiedLysate"
+          },
+          "volume_uL": 20.01
+        },
+        "name": "ClarifiedLysate",
+        "volume_uL": 20.01
+      }
+    }
+  ],
+  "final_material_scope": {
+    "excludes": "Empty containers and internal fraction handles containing '::'.",
+    "identity": "One record per runtime container ID; display names are not deduplicated.",
+    "includes": "Every nonempty physical container, including residual source stocks and waste.",
+    "positive_quantity_tolerance": 1e-09,
+    "rule": "final-physical-container-state-v1",
+    "source": "run.json /state/artifacts/material_state/containers"
+  },
+  "final_material_states": 29,
+  "final_products": [
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/0"
+      },
+      "record": {
+        "mass_mg": 800000.0,
+        "name": "TB08ElectrophoresisTank",
+        "primary_component": "SDS_PAGE_RUNNING_BUFFER_1X",
+        "volume_mL": 800.0,
+        "volume_uL": 800000.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/1"
+      },
+      "record": {
+        "mass_mg": 119875.0,
+        "name": "StainWaste",
+        "primary_component": "COOMASSIE_STAIN",
+        "volume_mL": 119.875,
+        "volume_uL": 119875.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/2"
+      },
+      "record": {
+        "mass_mg": 2980.0,
+        "name": "PooledWashFraction",
+        "primary_component": "NATIVE_WASH_BUFFER",
+        "volume_mL": 2.98,
+        "volume_uL": 2980.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/3"
+      },
+      "record": {
+        "mass_mg": 1560.0,
+        "name": "FlowthroughFraction",
+        "primary_component": "NATIVE_LYSIS_BINDING_BUFFER",
+        "volume_mL": 1.56,
+        "volume_uL": 1560.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/4"
+      },
+      "record": {
+        "mass_mg": 1000.0,
+        "name": "TB08LiquidWaste",
+        "primary_component": "NATIVE_BINDING_BUFFER",
+        "volume_mL": 1.0,
+        "volume_uL": 1000.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/5"
+      },
+      "record": {
+        "mass_mg": 480.379,
+        "name": "ElutionFraction1",
+        "primary_component": "HIS_TAGGED_TARGET_PROTEIN",
+        "volume_mL": 0.480379,
+        "volume_uL": 480.379
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/6"
+      },
+      "record": {
+        "mass_mg": 480.379,
+        "name": "ElutionFraction2",
+        "primary_component": "HIS_TAGGED_TARGET_PROTEIN",
+        "volume_mL": 0.480379,
+        "volume_uL": 480.379
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/7"
+      },
+      "record": {
+        "mass_mg": 400.0,
+        "name": "NickelAffinityGravityColumn",
+        "primary_component": "NI_AFFINITY_RESIN",
+        "volume_mL": 0.4,
+        "volume_uL": 400.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/8"
+      },
+      "record": {
+        "mass_mg": 125.0,
+        "name": "TB08GelProcessingBath",
+        "primary_component": "COOMASSIE_STAIN",
+        "volume_mL": 0.125,
+        "volume_uL": 125.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/9"
+      },
+      "record": {
+        "mass_mg": 20.01,
+        "name": "ClarifiedLysate",
+        "primary_component": "HIS_TAGGED_TARGET_PROTEIN",
+        "volume_mL": 0.02001,
+        "volume_uL": 20.01
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/10"
+      },
+      "record": {
+        "mass_mg": 10.004,
+        "name": "PreparedElution1QC",
+        "primary_component": "HIS_TAGGED_TARGET_PROTEIN",
+        "volume_mL": 0.010004,
+        "volume_uL": 10.004
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/11"
+      },
+      "record": {
+        "mass_mg": 10.004,
+        "name": "PreparedElution2QC",
+        "primary_component": "HIS_TAGGED_TARGET_PROTEIN",
+        "volume_mL": 0.010004,
+        "volume_uL": 10.004
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/12"
+      },
+      "record": {
+        "mass_mg": 10.003,
+        "name": "PreparedInputQC",
+        "primary_component": "HIS_TAGGED_TARGET_PROTEIN",
+        "volume_mL": 0.010003,
+        "volume_uL": 10.003
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/13"
+      },
+      "record": {
+        "mass_mg": 10.0,
+        "name": "PreparedFlowthroughQC",
+        "primary_component": "NATIVE_LYSIS_BINDING_BUFFER",
+        "volume_mL": 0.01,
+        "volume_uL": 10.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/14"
+      },
+      "record": {
+        "mass_mg": 10.0,
+        "name": "PreparedWashQC",
+        "primary_component": "NATIVE_WASH_BUFFER",
+        "volume_mL": 0.01,
+        "volume_uL": 10.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/15"
+      },
+      "record": {
+        "mass_mg": 5.004,
+        "name": "Elution1QC",
+        "primary_component": "HIS_TAGGED_TARGET_PROTEIN",
+        "volume_mL": 0.005004,
+        "volume_uL": 5.004
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/16"
+      },
+      "record": {
+        "mass_mg": 5.004,
+        "name": "Elution2QC",
+        "primary_component": "HIS_TAGGED_TARGET_PROTEIN",
+        "volume_mL": 0.005004,
+        "volume_uL": 5.004
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/17"
+      },
+      "record": {
+        "mass_mg": 5.003,
+        "name": "InputQC",
+        "primary_component": "HIS_TAGGED_TARGET_PROTEIN",
+        "volume_mL": 0.005003,
+        "volume_uL": 5.003
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/18"
+      },
+      "record": {
+        "mass_mg": 5.0,
+        "name": "FlowthroughQC",
+        "primary_component": "NATIVE_LYSIS_BINDING_BUFFER",
+        "volume_mL": 0.005,
+        "volume_uL": 5.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/19"
+      },
+      "record": {
+        "mass_mg": 5.0,
+        "name": "WashQC",
+        "primary_component": "NATIVE_WASH_BUFFER",
+        "volume_mL": 0.005,
+        "volume_uL": 5.0
+      }
+    }
+  ],
+  "formal_returns": {
+    "evidence": {
+      "file": "artifacts/output.json",
+      "json_pointer": "/returns"
+    },
+    "value": {
+      "entry": {
+        "entry_kind": "script",
+        "protocol_id": "entry",
+        "protocol_name": "entry",
+        "returns": []
+      }
+    }
+  },
+  "input_files": {
+    "artifacts/ast.json": "066e2344dd26caf9c5ecb89eb4437f5b4bdb22500703cd1349b5357eb756d37f",
+    "artifacts/ir.json": "c6f437a0e5101ae22c491960452a011e6b78f0a08a4db937f211269325ecc0ef",
+    "artifacts/output.json": "2b623901553a4f9ddbd941ae9e488819a0d063cafa436ab66857d5aad90b3cdb",
+    "artifacts/plan.json": "c0fa132f92cad5371c40d890162e8c2c8294b1ecc0c7d309e54abfe8ee726aed",
+    "artifacts/result.json": "b3af934533b7eae59e92ee7847dd630a3b2cea46a2ca145090fb6f44b7640a1a",
+    "artifacts/run.json": "eee62324537f54268f738a3f83c9a228d298a026c7d2fddce4c3b31ee7f20712",
+    "artifacts/summary.json": "c4142b1b1ca987fb8014b2bd6723096b9d12f7ba016477b0a14a98f86c11f60b",
+    "artifacts/typecheck.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "artifacts/validate.json": "5f46110854f513c9e31b75e712d4488935916f48a3e831425695ac62a8c91c73",
+    "case.json": "651a3c1294e2622bd76657c92b1fa49a10c7f404d7f40c11d3d68e5e60c1b19a",
+    "protocol.culs": "2a552e50c5085d1d87a2e613935ce0114281706212f8d6886007cf7321951869",
+    "receipt.json": "47fd51629f89395a3d58a1ce20d189fbe7befda8f65ae131c605cd82da79e1d5",
+    "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout.txt": "2b623901553a4f9ddbd941ae9e488819a0d063cafa436ab66857d5aad90b3cdb"
+  },
+  "profile": "nested-v1",
+  "reagent_consumption": [
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/0"
+      },
+      "record": {
+        "consumed_mL": 800.0,
+        "consumed_mg": null,
+        "consumed_uL": 800000.0,
+        "name": "SdsPageRunningBufferBottle",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/1"
+      },
+      "record": {
+        "consumed_mL": 70.0,
+        "consumed_mg": null,
+        "consumed_uL": 70000.0,
+        "name": "WaterBottle",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/2"
+      },
+      "record": {
+        "consumed_mL": 50.0,
+        "consumed_mg": null,
+        "consumed_uL": 50000.0,
+        "name": "CoomassieProteinStain",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/3"
+      },
+      "record": {
+        "consumed_mL": 3.0,
+        "consumed_mg": null,
+        "consumed_uL": 3000.0,
+        "name": "NativeWashBuffer20To40mMImidazole",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/4"
+      },
+      "record": {
+        "consumed_mL": 2.0,
+        "consumed_mg": null,
+        "consumed_uL": 2000.0,
+        "name": "NativeLysisBindingBuffer",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/5"
+      },
+      "record": {
+        "consumed_mL": 1.0,
+        "consumed_mg": null,
+        "consumed_uL": 1000.0,
+        "name": "NativeBindingBuffer",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/6"
+      },
+      "record": {
+        "consumed_mL": 1.0,
+        "consumed_mg": null,
+        "consumed_uL": 1000.0,
+        "name": "NativeElutionBuffer250To300mMImidazole",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/7"
+      },
+      "record": {
+        "consumed_mL": 0.4,
+        "consumed_mg": null,
+        "consumed_uL": 400.0,
+        "name": "NickelAffinityResin",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/8"
+      },
+      "record": {
+        "consumed_mL": 0.075,
+        "consumed_mg": null,
+        "consumed_uL": 75.0,
+        "name": "ReducingSdsPageLoadingDye2x",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/9"
+      },
+      "record": {
+        "consumed_mL": 0.01,
+        "consumed_mg": null,
+        "consumed_uL": 10.0,
+        "name": "MolecularWeightLadder",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/10"
+      },
+      "record": {
+        "consumed_mL": null,
+        "consumed_mg": 401.0,
+        "consumed_uL": null,
+        "name": "HisTaggedExpressionCellPellet",
+        "roles": [
+          "dest",
+          "sample"
+        ]
+      }
+    }
+  ],
+  "reagent_records": 11,
+  "reported_final_products": 20,
+  "rules_version": "patterns-metrics-nested-v9",
+  "schema_version": "patterns-metrics-v1",
+  "section": "3.4",
+  "statistics_scope": {
+    "runtime": "whole invocation",
+    "source": "reachable nested AST constructs",
+    "step_protocol": "RecombinantProteinAffinityPurificationWithSdsPageQc"
+  },
+  "support_scope": "Nested AST calls, result members, declared plate groups/selectors, grouped readouts and conditional execution; unresolved JSON joins fail",
+  "touched_containers": 39,
+  "touched_names": [
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/0"
+      },
+      "name": "ClarifiedLysate"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/1"
+      },
+      "name": "CoomassieProteinStain"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/2"
+      },
+      "name": "Elution1Lane"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/3"
+      },
+      "name": "Elution1QC"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/4"
+      },
+      "name": "Elution2Lane"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/5"
+      },
+      "name": "Elution2QC"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/6"
+      },
+      "name": "ElutionFraction1"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/7"
+      },
+      "name": "ElutionFraction2"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/8"
+      },
+      "name": "FlowthroughFraction"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/9"
+      },
+      "name": "FlowthroughLane"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/10"
+      },
+      "name": "FlowthroughQC"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/11"
+      },
+      "name": "HisTaggedExpressionCellPellet"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/12"
+      },
+      "name": "InputLane"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/13"
+      },
+      "name": "InputQC"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/14"
+      },
+      "name": "MechanicallyDisruptedLysate"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/15"
+      },
+      "name": "MolecularWeightLadder"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/16"
+      },
+      "name": "MolecularWeightLadderLane"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/17"
+      },
+      "name": "NativeBindingBuffer"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/18"
+      },
+      "name": "NativeElutionBuffer250To300mMImidazole"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/19"
+      },
+      "name": "NativeLysisBindingBuffer"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/20"
+      },
+      "name": "NativeWashBuffer20To40mMImidazole"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/21"
+      },
+      "name": "NickelAffinityGravityColumn"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/22"
+      },
+      "name": "NickelAffinityResin"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/23"
+      },
+      "name": "PooledWashFraction"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/24"
+      },
+      "name": "PooledWashLane"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/25"
+      },
+      "name": "PreparedElution1QC"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/26"
+      },
+      "name": "PreparedElution2QC"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/27"
+      },
+      "name": "PreparedFlowthroughQC"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/28"
+      },
+      "name": "PreparedInputQC"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/29"
+      },
+      "name": "PreparedWashQC"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/30"
+      },
+      "name": "ReducingSdsPageLoadingDye2x"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/31"
+      },
+      "name": "SdsPageRunningBufferBottle"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/32"
+      },
+      "name": "StainWaste"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/33"
+      },
+      "name": "TB08ElectrophoresisTank"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/34"
+      },
+      "name": "TB08GelProcessingBath"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/35"
+      },
+      "name": "TB08LiquidWaste"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/36"
+      },
+      "name": "TB08SdsPageGel"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/37"
+      },
+      "name": "WashQC"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/38"
+      },
+      "name": "WaterBottle"
+    }
+  ]
+}

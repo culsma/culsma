@@ -1,1 +1,3024 @@
-{"adapter_sha256":"6f3dfe206ac08dcbc4a65b2e2e534a97374001705b41834a8f036fac1fe3852d","case_id":"00","case_role":"worked_example","descriptor_items":25,"environment":{"culsma":"1.0.7rc1","culsma_file":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/lib/python3.12/site-packages/culsma/__init__.py","executable":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/bin/python","lark":"1.3.1","prefix":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv","python":"3.12.8"},"evidence_base":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/00/input","extraction_id":"44a85ae33873407016c5879d2ba1b908f15afe1314f3f10afc39862a415c92cd","extractor_sha256":"11e290bb80e3d5eb76cd93cbe9a4f3863c98ef674f2bbb18191afd1afc2236c8","input_files":{"artifacts/ast.json":"35e751cc018fd518194aa8577691761022c601f1c01f0167e900d82bcc7fb557","artifacts/ir.json":"233c06fa764bd694c8a5ba372284dab610623374ee520f297cea6a3cbe09c510","artifacts/output.json":"dfe766e8e4d4b15b400d58413b1a103fb28179a0aa6ce6a177aad473c0549c16","artifacts/plan.json":"ce62b6074571ed678a6a27c6b93b0f55ed3c53574445d640a64c7c0f6527ffeb","artifacts/result.json":"9371b72c0d77d042300becab48d2ce1e3d5253a354def78b1b875003c449a27e","artifacts/run.json":"1ea6e327507e4fb5941391312701e5a4c99b367890a5a6da76dce22996da63dd","artifacts/summary.json":"c6495e2a60851ee290e5fcf8283273aabccd6c6af6d109bfb8d5c3b02e2c6365","artifacts/typecheck.json":"37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570","artifacts/validate.json":"37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570","case.json":"422452a6aa478f25df599ecd3010cd72861ceff0885ff447dc6bed69860569a0","protocol.culs":"7ac220164212f34a5d33094f6d41be8b879829bae6cd2e28b2c6ae8470a6eff9","receipt.json":"c56019fe0910116cdf3952127c80d7f73e95db30e7b9ffe317a849381896fd33","stderr.txt":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","stdout.txt":"dfe766e8e4d4b15b400d58413b1a103fb28179a0aa6ce6a177aad473c0549c16"},"parameters":{"cell_count":{"sources":[{"file":"artifacts/ast.json","json_pointer":"/protocols/0/params/1/default","origin_kind":"default","parameter":"cell_count","source_file":"protocol.culs","source_span":{"col":16,"end":92,"line":3,"start":81}}],"value":{"unit":"cells","value":100000.0}},"cell_suspension_volume":{"sources":[{"file":"artifacts/ast.json","json_pointer":"/protocols/0/params/0/default","origin_kind":"default","parameter":"cell_suspension_volume","source_file":"protocol.culs","source_span":{"col":28,"end":64,"line":2,"start":60}}],"value":{"unit":"uL","value":80.0}},"clarified_volume":{"sources":[{"file":"artifacts/ast.json","json_pointer":"/protocols/0/params/3/default","origin_kind":"default","parameter":"clarified_volume","source_file":"protocol.culs","source_span":{"col":22,"end":150,"line":5,"start":145}}],"value":{"unit":"uL","value":100.0}},"lysis_buffer_volume":{"sources":[{"file":"artifacts/ast.json","json_pointer":"/protocols/0/params/2/default","origin_kind":"default","parameter":"lysis_buffer_volume","source_file":"protocol.culs","source_span":{"col":25,"end":122,"line":4,"start":118}}],"value":{"unit":"uL","value":80.0}}},"profile":"nested-v1","rows":[{"descriptor_items":6,"descriptors":[{"category":"object","details":{"declaration":{"args":{"capacity":{"unit":"mL","value":1.5},"label":{"value":"LysisTube"}},"call":"tube"},"object_id":"source-object:edc201b181f45b6c5056"},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/2","source_file":"protocol.culs","source_span":{"col":3,"end":1159,"line":40,"start":1099},"step_origin":{"kind":"local","marker":{"marker_line":44,"marker_offset":1304,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S1"}}},{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/5/target","source_file":"protocol.culs","source_span":{"col":3,"end":1440,"line":46,"start":1430}}],"id":"descriptor:527fb3567e809781bb4c","label":"lysis_tube"},{"category":"object","details":{"declaration":{"args":{"capacity":{"unit":"mL","value":1.5},"label":{"value":"GfpCellSuspension"},"load":{"elements":[{"left":{"args":{"attrs":{"entries":{"carrier":{"value":"lysis_compatible_resuspension_buffer"},"state":{"token":"suspension"}}},"code":{"value":"GFP_EXPRESSING_MICROBIAL_CELLS"},"kind":{"base":{"token":"ContentKind"},"member":"BIO_CELLULAR"},"type":{"base":{"token":"ContentType"},"member":"MICROBIAL_CELLS"}},"call":"content"},"right":{"unit":"cells","value":100000.0}},{"left":{"args":{"code":{"value":"LYSIS_COMPATIBLE_RESUSPENSION_BUFFER"},"kind":{"base":{"token":"ContentKind"},"member":"FORMULATION"},"type":{"base":{"token":"ContentType"},"member":"BUFFER"}},"call":"content"},"right":{"unit":"uL","value":80.0}}]}},"call":"tube"},"object_id":"source-object:43e5b80dbbfd63d87865"},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/0","parameter_sources":[{"file":"artifacts/ast.json","json_pointer":"/protocols/0/params/1/default","origin_kind":"default","parameter":"cell_count","source_file":"protocol.culs","source_span":{"col":16,"end":92,"line":3,"start":81}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/0/value/args/2/value/elements/0/right","source_file":"protocol.culs","source_span":{"col":9,"end":618,"line":18,"start":608}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/params/0/default","origin_kind":"default","parameter":"cell_suspension_volume","source_file":"protocol.culs","source_span":{"col":28,"end":64,"line":2,"start":60}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/0/value/args/2/value/elements/1/right","source_file":"protocol.culs","source_span":{"col":9,"end":794,"line":23,"start":772}}],"source_file":"protocol.culs","source_span":{"col":3,"end":804,"line":9,"start":268},"step_origin":{"kind":"local","marker":{"marker_line":44,"marker_offset":1304,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S1"}}},{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/5/sources/0/left","source_file":"protocol.culs","source_span":{"col":5,"end":1465,"line":47,"start":1450}}],"id":"descriptor:7be5edf083f654f951cd","label":"cell_suspension"},{"category":"object","details":{"declaration":{"args":{"capacity":{"unit":"mL","value":1.0},"label":{"value":"ClarifiedLysate"}},"call":"tube"},"object_id":"source-object:b91846dd78007d317f89"},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/3","source_file":"protocol.culs","source_span":{"col":3,"end":1233,"line":41,"start":1163},"step_origin":{"kind":"local","marker":{"marker_line":44,"marker_offset":1304,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S1"}}}],"id":"descriptor:acd218863394ebe1a75a","label":"clarified_lysate"},{"category":"object","details":{"declaration":{"args":{"capacity":{"unit":"mL","value":1.0},"label":{"value":"DebrisWaste"}},"call":"tube"},"object_id":"source-object:27362e72440c3cad56a6"},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/4","source_file":"protocol.culs","source_span":{"col":3,"end":1299,"line":42,"start":1237},"step_origin":{"kind":"local","marker":{"marker_line":44,"marker_offset":1304,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S1"}}}],"id":"descriptor:ad93ffba63fbf0e92242","label":"debris_waste"},{"category":"object","details":{"declaration":{"args":{"capacity":{"unit":"mL","value":1.5},"label":{"value":"LysisBuffer2x"},"load":{"elements":[{"left":{"args":{"attrs":{"entries":{"role":{"token":"lysis"}}},"code":{"value":"LYSIS_BUFFER_2X"},"kind":{"base":{"token":"ContentKind"},"member":"FORMULATION"},"type":{"base":{"token":"ContentType"},"member":"BUFFER"}},"call":"content"},"right":{"unit":"uL","value":80.0}}]}},"call":"tube"},"object_id":"source-object:26805de9635024c42bf6"},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/1","parameter_sources":[{"file":"artifacts/ast.json","json_pointer":"/protocols/0/params/2/default","origin_kind":"default","parameter":"lysis_buffer_volume","source_file":"protocol.culs","source_span":{"col":25,"end":122,"line":4,"start":118}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/1/value/args/2/value/elements/0/right","source_file":"protocol.culs","source_span":{"col":9,"end":1084,"line":36,"start":1065}}],"source_file":"protocol.culs","source_span":{"col":3,"end":1094,"line":27,"start":809},"step_origin":{"kind":"local","marker":{"marker_line":44,"marker_offset":1304,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S1"}}},{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/5/sources/1/left","source_file":"protocol.culs","source_span":{"col":5,"end":1509,"line":48,"start":1494}}],"id":"descriptor:c15b24fa16d3863802e5","label":"lysis_buffer_2x"},{"category":"operation","details":{"sources":[{"left":{"object_id":"source-object:43e5b80dbbfd63d87865"},"right":{"unit":"uL","value":80.0}},{"left":{"object_id":"source-object:26805de9635024c42bf6"},"right":{"unit":"uL","value":80.0}}],"target":{"object_id":"source-object:edc201b181f45b6c5056"}},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/5","parameter_sources":[{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/2","source_file":"protocol.culs","source_span":{"col":3,"end":1159,"line":40,"start":1099}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/5/target","source_file":"protocol.culs","source_span":{"col":3,"end":1440,"line":46,"start":1430}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/params/0/default","origin_kind":"default","parameter":"cell_suspension_volume","source_file":"protocol.culs","source_span":{"col":28,"end":64,"line":2,"start":60}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/5/sources/0/right","source_file":"protocol.culs","source_span":{"col":21,"end":1488,"line":47,"start":1466}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/0","source_file":"protocol.culs","source_span":{"col":3,"end":804,"line":9,"start":268}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/5/sources/0/left","source_file":"protocol.culs","source_span":{"col":5,"end":1465,"line":47,"start":1450}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/params/2/default","origin_kind":"default","parameter":"lysis_buffer_volume","source_file":"protocol.culs","source_span":{"col":25,"end":122,"line":4,"start":118}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/5/sources/1/right","source_file":"protocol.culs","source_span":{"col":21,"end":1529,"line":48,"start":1510}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/1","source_file":"protocol.culs","source_span":{"col":3,"end":1094,"line":27,"start":809}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/5/sources/1/left","source_file":"protocol.culs","source_span":{"col":5,"end":1509,"line":48,"start":1494}}],"source_file":"protocol.culs","source_span":{"col":3,"end":1533,"line":46,"start":1430},"step_origin":{"kind":"local","marker":{"marker_line":44,"marker_offset":1304,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S1"}}}],"id":"descriptor:d44ac1da857ad2fe2357","label":"transfer"}],"source_range":{"markers":[{"marker_line":44,"marker_offset":1304,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S1"}],"step":"S1"},"step":"S1"},{"descriptor_items":3,"descriptors":[{"category":"object","details":{"declaration":{"args":{"capacity":{"unit":"mL","value":1.5},"label":{"value":"LysisTube"}},"call":"tube"},"object_id":"source-object:edc201b181f45b6c5056"},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/6/statements/0/target","source_file":"protocol.culs","source_span":{"col":5,"end":1697,"line":53,"start":1687}},{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/6/statements/0/sources/0/left","source_file":"protocol.culs","source_span":{"col":20,"end":1712,"line":53,"start":1702}}],"id":"descriptor:d1d68dfad8a1fff74dc9","label":"lysis_tube"},{"category":"operation","details":{"sources":[{"left":{"object_id":"source-object:edc201b181f45b6c5056"},"right":{"unit":"uL","value":128.0}}],"target":{"object_id":"source-object:edc201b181f45b6c5056"}},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/6/statements/0","parameter_sources":[{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/2","source_file":"protocol.culs","source_span":{"col":3,"end":1159,"line":40,"start":1099}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/6/statements/0/target","source_file":"protocol.culs","source_span":{"col":5,"end":1697,"line":53,"start":1687}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/6/statements/0/sources/0/left","source_file":"protocol.culs","source_span":{"col":20,"end":1712,"line":53,"start":1702}}],"source_file":"protocol.culs","source_span":{"col":5,"end":1719,"line":53,"start":1687},"step_origin":{"kind":"inherited","source":{"kind":"local","marker":{"marker_line":51,"marker_offset":1538,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S2"}}}}],"id":"descriptor:8fc2e7a8fd2e2c5e5950","label":"transfer"},{"category":"schedule","details":{"args":{"end":{"unit":null,"value":10.0},"start":{"unit":null,"value":1.0},"step":{"unit":null,"value":1.0}},"associations":[{"/args/sources":[{"left":{"object_id":"source-object:edc201b181f45b6c5056"}}],"/args/target":{"object_id":"source-object:edc201b181f45b6c5056"}}],"call":"schedule"},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/6","parameter_sources":[{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/2","source_file":"protocol.culs","source_span":{"col":3,"end":1159,"line":40,"start":1099}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/6/statements/0/target","source_file":"protocol.culs","source_span":{"col":5,"end":1697,"line":53,"start":1687}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/6/statements/0/sources/0/left","source_file":"protocol.culs","source_span":{"col":20,"end":1712,"line":53,"start":1702}}],"source_file":"protocol.culs","source_span":{"col":3,"end":1724,"line":52,"start":1613},"step_origin":{"kind":"local","marker":{"marker_line":51,"marker_offset":1538,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S2"}}}],"id":"descriptor:088edf7d8402fa25484d","label":"schedule"}],"source_range":{"markers":[{"marker_line":51,"marker_offset":1538,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S2"}],"step":"S2"},"step":"S2"},{"descriptor_items":3,"descriptors":[{"category":"environment","details":{"args":{"duration":{"unit":"min","value":30.0},"thermal":{"unit":"C","value":37.0}},"associations":[{"/gate/env_targets":[{"object_id":"source-object:edc201b181f45b6c5056"}]}]},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/7","parameter_sources":[{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/2","source_file":"protocol.culs","source_span":{"col":3,"end":1159,"line":40,"start":1099}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/7/statements/0/args/0/value","source_file":"protocol.culs","source_span":{"col":19,"end":1850,"line":58,"start":1840}}],"source_file":"protocol.culs","source_span":{"col":3,"end":1856,"line":57,"start":1778},"step_origin":{"kind":"local","marker":{"marker_line":56,"marker_offset":1728,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S3"}}}],"id":"descriptor:eadba93eaacb956f763c","label":"env"},{"category":"object","details":{"declaration":{"args":{"capacity":{"unit":"mL","value":1.5},"label":{"value":"LysisTube"}},"call":"tube"},"object_id":"source-object:edc201b181f45b6c5056"},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/7/statements/0/args/0/value","source_file":"protocol.culs","source_span":{"col":19,"end":1850,"line":58,"start":1840}}],"id":"descriptor:b6d44126b7526e5e5f99","label":"lysis_tube"},{"category":"operation","details":{"args":{"sample":{"object_id":"source-object:edc201b181f45b6c5056"}},"call":"hold"},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/7/statements/0","parameter_sources":[{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/2","source_file":"protocol.culs","source_span":{"col":3,"end":1159,"line":40,"start":1099}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/7/statements/0/args/0/value","source_file":"protocol.culs","source_span":{"col":19,"end":1850,"line":58,"start":1840}}],"source_file":"protocol.culs","source_span":{"col":5,"end":1851,"line":58,"start":1826},"step_origin":{"kind":"inherited","source":{"kind":"local","marker":{"marker_line":56,"marker_offset":1728,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S3"}}}}],"id":"descriptor:627be179028134c1ed34","label":"hold"}],"source_range":{"markers":[{"marker_line":56,"marker_offset":1728,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S3"}],"step":"S3"},"step":"S3"},{"descriptor_items":4,"descriptors":[{"category":"environment","details":{"args":{"duration":{"unit":"min","value":10.0},"thermal":{"unit":"C","value":22.0}},"associations":[{"/args/sample":{"object_id":"source-object:edc201b181f45b6c5056"}}]},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/8","parameter_sources":[{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/2","source_file":"protocol.culs","source_span":{"col":3,"end":1159,"line":40,"start":1099}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/8/statements/0/args/0/value","source_file":"protocol.culs","source_span":{"col":16,"end":2080,"line":65,"start":2070}}],"source_file":"protocol.culs","source_span":{"col":3,"end":2143,"line":63,"start":2002},"step_origin":{"kind":"local","marker":{"marker_line":61,"marker_offset":1860,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S4"}}}],"id":"descriptor:07e89a758c7537ffd87f","label":"env"},{"category":"object","details":{"declaration":{"args":{"capacity":{"unit":"mL","value":1.5},"label":{"value":"LysisTube"}},"call":"tube"},"object_id":"source-object:edc201b181f45b6c5056"},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/8/statements/0/args/0/value","source_file":"protocol.culs","source_span":{"col":16,"end":2080,"line":65,"start":2070}}],"id":"descriptor:ac1a7b991c213af69fd7","label":"lysis_tube"},{"category":"operation","details":{"args":{"program":{"args":{"drive":{"unit":"g","value":12000.0}},"call":"centrifuge_program"},"sample":{"object_id":"source-object:edc201b181f45b6c5056"}},"call":"sep"},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/8/statements/0","parameter_sources":[{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/2","source_file":"protocol.culs","source_span":{"col":3,"end":1159,"line":40,"start":1099}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/8/statements/0/args/0/value","source_file":"protocol.culs","source_span":{"col":16,"end":2080,"line":65,"start":2070}}],"source_file":"protocol.culs","source_span":{"col":5,"end":2138,"line":64,"start":2050},"step_origin":{"kind":"inherited","source":{"kind":"local","marker":{"marker_line":61,"marker_offset":1860,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S4"}}}}],"id":"descriptor:3436e110e8ea208c1b62","label":"sep"},{"category":"program","details":{"program":{"args":{"drive":{"unit":"g","value":12000.0}},"call":"centrifuge_program"},"sample":{"object_id":"source-object:edc201b181f45b6c5056"}},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/8/statements/0","parameter_sources":[{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/2","source_file":"protocol.culs","source_span":{"col":3,"end":1159,"line":40,"start":1099}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/8/statements/0/args/0/value","source_file":"protocol.culs","source_span":{"col":16,"end":2080,"line":65,"start":2070}}],"source_file":"protocol.culs","source_span":{"col":5,"end":2138,"line":64,"start":2050},"step_origin":{"kind":"inherited","source":{"kind":"local","marker":{"marker_line":61,"marker_offset":1860,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S4"}}}}],"id":"descriptor:cf02c4beea555da1d9ea","label":"centrifuge_program"}],"source_range":{"markers":[{"marker_line":61,"marker_offset":1860,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S4"}],"step":"S4"},"step":"S4"},{"descriptor_items":3,"descriptors":[{"category":"object","details":{"declaration":{"args":{"capacity":{"unit":"mL","value":1.0},"label":{"value":"ClarifiedLysate"}},"call":"tube"},"object_id":"source-object:b91846dd78007d317f89"},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/9/target","source_file":"protocol.culs","source_span":{"col":3,"end":2216,"line":70,"start":2200}}],"id":"descriptor:1e5a921ceacc8b783572","label":"clarified_lysate"},{"category":"object","details":{"declaration":{"args":{"capacity":{"unit":"mL","value":1.5},"label":{"value":"LysisTube"}},"call":"tube"},"object_id":"source-object:edc201b181f45b6c5056"},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/9/sources/0/left/base/base","source_file":"protocol.culs","source_span":{"col":24,"end":2231,"line":70,"start":2221}}],"id":"descriptor:70c510de0246041bd876","label":"lysis_tube"},{"category":"operation","details":{"sources":[{"left":{"base":{"base":{"object_id":"source-object:edc201b181f45b6c5056"},"member":"contents"},"index":{"unit":null,"value":0.0}},"right":{"unit":"uL","value":100.0}}],"target":{"object_id":"source-object:b91846dd78007d317f89"}},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/9","parameter_sources":[{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/3","source_file":"protocol.culs","source_span":{"col":3,"end":1233,"line":41,"start":1163}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/9/target","source_file":"protocol.culs","source_span":{"col":3,"end":2216,"line":70,"start":2200}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/params/3/default","origin_kind":"default","parameter":"clarified_volume","source_file":"protocol.culs","source_span":{"col":22,"end":150,"line":5,"start":145}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/9/sources/0/right","source_file":"protocol.culs","source_span":{"col":47,"end":2260,"line":70,"start":2244}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/2","source_file":"protocol.culs","source_span":{"col":3,"end":1159,"line":40,"start":1099}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/9/sources/0/left/base/base","source_file":"protocol.culs","source_span":{"col":24,"end":2231,"line":70,"start":2221}}],"source_file":"protocol.culs","source_span":{"col":3,"end":2261,"line":70,"start":2200},"step_origin":{"kind":"local","marker":{"marker_line":69,"marker_offset":2146,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S5"}}}],"id":"descriptor:e27c404a2f8732a218c3","label":"transfer"}],"source_range":{"markers":[{"marker_line":69,"marker_offset":2146,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S5"}],"step":"S5"},"step":"S5"},{"descriptor_items":3,"descriptors":[{"category":"object","details":{"declaration":{"args":{"capacity":{"unit":"mL","value":1.5},"label":{"value":"LysisTube"}},"call":"tube"},"object_id":"source-object:edc201b181f45b6c5056"},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/10/sources/0/base/base","source_file":"protocol.culs","source_span":{"col":20,"end":2349,"line":72,"start":2339}}],"id":"descriptor:60e3852d9da847e88c46","label":"lysis_tube"},{"category":"object","details":{"declaration":{"args":{"capacity":{"unit":"mL","value":1.0},"label":{"value":"DebrisWaste"}},"call":"tube"},"object_id":"source-object:27362e72440c3cad56a6"},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/10/target","source_file":"protocol.culs","source_span":{"col":3,"end":2334,"line":72,"start":2322}}],"id":"descriptor:e4f7a23b3537e415f863","label":"debris_waste"},{"category":"operation","details":{"sources":[{"base":{"base":{"object_id":"source-object:edc201b181f45b6c5056"},"member":"contents"},"index":{"unit":null,"value":1.0}}],"target":{"object_id":"source-object:27362e72440c3cad56a6"}},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/10","parameter_sources":[{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/4","source_file":"protocol.culs","source_span":{"col":3,"end":1299,"line":42,"start":1237}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/10/target","source_file":"protocol.culs","source_span":{"col":3,"end":2334,"line":72,"start":2322}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/2","source_file":"protocol.culs","source_span":{"col":3,"end":1159,"line":40,"start":1099}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/10/sources/0/base/base","source_file":"protocol.culs","source_span":{"col":20,"end":2349,"line":72,"start":2339}}],"source_file":"protocol.culs","source_span":{"col":3,"end":2362,"line":72,"start":2322},"step_origin":{"kind":"local","marker":{"marker_line":71,"marker_offset":2265,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S6"}}}],"id":"descriptor:e82ec0f2d28e4f0714cd","label":"transfer"}],"source_range":{"markers":[{"marker_line":71,"marker_offset":2265,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S6"}],"step":"S6"},"step":"S6"},{"descriptor_items":3,"descriptors":[{"category":"object","details":{"declaration":{"args":{"capacity":{"unit":"mL","value":1.0},"label":{"value":"ClarifiedLysate"}},"call":"tube"},"object_id":"source-object:b91846dd78007d317f89"},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/11/value/args/0/value","source_file":"protocol.culs","source_span":{"col":14,"end":2490,"line":76,"start":2474}}],"id":"descriptor:139eb22073be8d0c75cd","label":"clarified_lysate"},{"category":"object","details":{"declaration":{"args":{"quantity":{"token":"fluorescence"},"sample":{"object_id":"source-object:b91846dd78007d317f89"},"save_raw":{"value":true}},"call":"img"},"object_id":"source-object:98c95a747c6ec769e2c3"},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/11","parameter_sources":[{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/3","source_file":"protocol.culs","source_span":{"col":3,"end":1233,"line":41,"start":1163}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/11/value/args/0/value","source_file":"protocol.culs","source_span":{"col":14,"end":2490,"line":76,"start":2474}}],"source_file":"protocol.culs","source_span":{"col":3,"end":2544,"line":75,"start":2435},"step_origin":{"kind":"local","marker":{"marker_line":74,"marker_offset":2367,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S7"}}}],"id":"descriptor:3cf895a8f3c72f3c3670","label":"lysate_readout"},{"category":"operation","details":{"args":{"quantity":{"token":"fluorescence"},"sample":{"object_id":"source-object:b91846dd78007d317f89"},"save_raw":{"value":true}},"call":"img"},"evidence":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/11/value","parameter_sources":[{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/3","source_file":"protocol.culs","source_span":{"col":3,"end":1233,"line":41,"start":1163}},{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/11/value/args/0/value","source_file":"protocol.culs","source_span":{"col":14,"end":2490,"line":76,"start":2474}}],"source_file":"protocol.culs","source_span":{"col":24,"end":2544,"line":75,"start":2456},"step_origin":{"kind":"local","marker":{"marker_line":74,"marker_offset":2367,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S7"}}}],"id":"descriptor:f20496284d0792a5395d","label":"img"}],"source_range":{"markers":[{"marker_line":74,"marker_offset":2367,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S7"}],"step":"S7"},"step":"S7"}],"rules_version":"patterns-metrics-nested-v8","schema_version":"patterns-metrics-v1","section":"3.2","source_coverage":[{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"classification":"experimental_structure","shape":["name","value"],"source":{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/0","source_file":"protocol.culs","source_span":{"col":3,"end":804,"line":9,"start":268}},"step":"S1","step_origin":{"kind":"local","marker":{"marker_line":44,"marker_offset":1304,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S1"}}},{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"classification":"experimental_structure","shape":["name","value"],"source":{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/1","source_file":"protocol.culs","source_span":{"col":3,"end":1094,"line":27,"start":809}},"step":"S1","step_origin":{"kind":"local","marker":{"marker_line":44,"marker_offset":1304,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S1"}}},{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"classification":"experimental_structure","shape":["name","value"],"source":{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/2","source_file":"protocol.culs","source_span":{"col":3,"end":1159,"line":40,"start":1099}},"step":"S1","step_origin":{"kind":"local","marker":{"marker_line":44,"marker_offset":1304,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S1"}}},{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"classification":"experimental_structure","shape":["name","value"],"source":{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/3","source_file":"protocol.culs","source_span":{"col":3,"end":1233,"line":41,"start":1163}},"step":"S1","step_origin":{"kind":"local","marker":{"marker_line":44,"marker_offset":1304,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S1"}}},{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"classification":"experimental_structure","shape":["name","value"],"source":{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/4","source_file":"protocol.culs","source_span":{"col":3,"end":1299,"line":42,"start":1237}},"step":"S1","step_origin":{"kind":"local","marker":{"marker_line":44,"marker_offset":1304,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S1"}}},{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"classification":"experimental_structure","shape":["sources","target"],"source":{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/5","source_file":"protocol.culs","source_span":{"col":3,"end":1533,"line":46,"start":1430}},"step":"S1","step_origin":{"kind":"local","marker":{"marker_line":44,"marker_offset":1304,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S1"}}},{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"classification":"experimental_structure","shape":["sources","target"],"source":{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/6/statements/0","source_file":"protocol.culs","source_span":{"col":5,"end":1719,"line":53,"start":1687}},"step":"S2","step_origin":{"kind":"inherited","source":{"kind":"local","marker":{"marker_line":51,"marker_offset":1538,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S2"}}}},{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"classification":"experimental_structure","shape":["binding","iterable","statements","times"],"source":{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/6","source_file":"protocol.culs","source_span":{"col":3,"end":1724,"line":52,"start":1613}},"step":"S2","step_origin":{"kind":"local","marker":{"marker_line":51,"marker_offset":1538,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S2"}}},{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"classification":"experimental_structure","shape":["args","name"],"source":{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/7/statements/0","source_file":"protocol.culs","source_span":{"col":5,"end":1851,"line":58,"start":1826}},"step":"S3","step_origin":{"kind":"inherited","source":{"kind":"local","marker":{"marker_line":56,"marker_offset":1728,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S3"}}}},{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"classification":"experimental_structure","shape":["env_args","statements"],"source":{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/7","source_file":"protocol.culs","source_span":{"col":3,"end":1856,"line":57,"start":1778}},"step":"S3","step_origin":{"kind":"local","marker":{"marker_line":56,"marker_offset":1728,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S3"}}},{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"classification":"experimental_structure","shape":["args","name"],"source":{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/8/statements/0","source_file":"protocol.culs","source_span":{"col":5,"end":2138,"line":64,"start":2050}},"step":"S4","step_origin":{"kind":"inherited","source":{"kind":"local","marker":{"marker_line":61,"marker_offset":1860,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S4"}}}},{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"classification":"experimental_structure","shape":["env_args","statements"],"source":{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/8","source_file":"protocol.culs","source_span":{"col":3,"end":2143,"line":63,"start":2002}},"step":"S4","step_origin":{"kind":"local","marker":{"marker_line":61,"marker_offset":1860,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S4"}}},{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"classification":"experimental_structure","shape":["sources","target"],"source":{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/9","source_file":"protocol.culs","source_span":{"col":3,"end":2261,"line":70,"start":2200}},"step":"S5","step_origin":{"kind":"local","marker":{"marker_line":69,"marker_offset":2146,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S5"}}},{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"classification":"experimental_structure","shape":["sources","target"],"source":{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/10","source_file":"protocol.culs","source_span":{"col":3,"end":2362,"line":72,"start":2322}},"step":"S6","step_origin":{"kind":"local","marker":{"marker_line":71,"marker_offset":2265,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S6"}}},{"call_path":[{"file":"artifacts/ast.json","json_pointer":"/statements/0","source_file":"protocol.culs","source_span":{"col":1,"end":2573,"line":82,"start":2549}}],"classification":"experimental_structure","shape":["name","value"],"source":{"file":"artifacts/ast.json","json_pointer":"/protocols/0/statements/11","source_file":"protocol.culs","source_span":{"col":3,"end":2544,"line":75,"start":2435}},"step":"S7","step_origin":{"kind":"local","marker":{"marker_line":74,"marker_offset":2367,"procedure":"GfpLysateClarification","scope":"/protocols/0/statements","step":"S7"}}}],"source_steps":7,"statistics_scope":{"runtime":"whole invocation","source":"reachable nested AST constructs","step_protocol":"GfpLysateClarification"},"support_scope":"Nested AST calls, result members, declared plate groups/selectors, grouped readouts and conditional execution; unresolved JSON joins fail"}
+{
+  "adapter_sha256": "d1efba860cc871e3e3dedda3b6a097503a990fbd52f24245a27a3565d9c431ef",
+  "case_id": "00",
+  "case_role": "worked_example",
+  "descriptor_items": 25,
+  "environment": {
+    "culsma": "1.0.7rc1",
+    "culsma_file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/lib/python3.12/site-packages/culsma/__init__.py",
+    "executable": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/bin/python",
+    "lark": "1.3.1",
+    "prefix": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv",
+    "python": "3.12.8"
+  },
+  "evidence_base": "/private/tmp/culsma-terminal-metrics-0ettVh/all-cases-v9/00/input",
+  "extraction_id": "1438b29ed5ba14d6c2952a6e5e75bbf090e1c9816ddcb435a19abbec293ce69b",
+  "extractor_sha256": "39c3aab4ffe7afd1f4afb257978639975103d14025eec94b513e1b278aa4fe26",
+  "input_files": {
+    "artifacts/ast.json": "c5991e70db2fc8293a5d3c6b7efcac4030c4dc38463d358a97e0b4dd5569c3f2",
+    "artifacts/ir.json": "024d162cbaafe42f18b2e655633cc4ff1a3e08e56d7a7e1ff68398c15d0eea31",
+    "artifacts/output.json": "dfe766e8e4d4b15b400d58413b1a103fb28179a0aa6ce6a177aad473c0549c16",
+    "artifacts/plan.json": "ce62b6074571ed678a6a27c6b93b0f55ed3c53574445d640a64c7c0f6527ffeb",
+    "artifacts/result.json": "9371b72c0d77d042300becab48d2ce1e3d5253a354def78b1b875003c449a27e",
+    "artifacts/run.json": "1ea6e327507e4fb5941391312701e5a4c99b367890a5a6da76dce22996da63dd",
+    "artifacts/summary.json": "c6495e2a60851ee290e5fcf8283273aabccd6c6af6d109bfb8d5c3b02e2c6365",
+    "artifacts/typecheck.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "artifacts/validate.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "case.json": "422452a6aa478f25df599ecd3010cd72861ceff0885ff447dc6bed69860569a0",
+    "protocol.culs": "7ac220164212f34a5d33094f6d41be8b879829bae6cd2e28b2c6ae8470a6eff9",
+    "receipt.json": "010b0ec272ad793dd89e46b06424598ca94095e05fd5d8486644d07e74fad7da",
+    "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout.txt": "dfe766e8e4d4b15b400d58413b1a103fb28179a0aa6ce6a177aad473c0549c16"
+  },
+  "parameters": {
+    "cell_count": {
+      "sources": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/protocols/0/params/1/default",
+          "origin_kind": "default",
+          "parameter": "cell_count",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 16,
+            "end": 92,
+            "line": 3,
+            "start": 81
+          }
+        }
+      ],
+      "value": {
+        "unit": "cells",
+        "value": 100000.0
+      }
+    },
+    "cell_suspension_volume": {
+      "sources": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/protocols/0/params/0/default",
+          "origin_kind": "default",
+          "parameter": "cell_suspension_volume",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 28,
+            "end": 64,
+            "line": 2,
+            "start": 60
+          }
+        }
+      ],
+      "value": {
+        "unit": "uL",
+        "value": 80.0
+      }
+    },
+    "clarified_volume": {
+      "sources": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/protocols/0/params/3/default",
+          "origin_kind": "default",
+          "parameter": "clarified_volume",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 22,
+            "end": 150,
+            "line": 5,
+            "start": 145
+          }
+        }
+      ],
+      "value": {
+        "unit": "uL",
+        "value": 100.0
+      }
+    },
+    "lysis_buffer_volume": {
+      "sources": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/protocols/0/params/2/default",
+          "origin_kind": "default",
+          "parameter": "lysis_buffer_volume",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 25,
+            "end": 122,
+            "line": 4,
+            "start": 118
+          }
+        }
+      ],
+      "value": {
+        "unit": "uL",
+        "value": 80.0
+      }
+    }
+  },
+  "profile": "nested-v1",
+  "rows": [
+    {
+      "descriptor_items": 6,
+      "descriptors": [
+        {
+          "category": "object",
+          "details": {
+            "declaration": {
+              "args": {
+                "capacity": {
+                  "unit": "mL",
+                  "value": 1.5
+                },
+                "label": {
+                  "value": "LysisTube"
+                }
+              },
+              "call": "tube"
+            },
+            "object_id": "source-object:edc201b181f45b6c5056"
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/2",
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 3,
+                "end": 1159,
+                "line": 40,
+                "start": 1099
+              },
+              "step_origin": {
+                "kind": "local",
+                "marker": {
+                  "marker_line": 44,
+                  "marker_offset": 1304,
+                  "procedure": "GfpLysateClarification",
+                  "scope": "/protocols/0/statements",
+                  "step": "S1"
+                }
+              }
+            },
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/5/target",
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 3,
+                "end": 1440,
+                "line": 46,
+                "start": 1430
+              }
+            }
+          ],
+          "id": "descriptor:527fb3567e809781bb4c",
+          "label": "lysis_tube"
+        },
+        {
+          "category": "object",
+          "details": {
+            "declaration": {
+              "args": {
+                "capacity": {
+                  "unit": "mL",
+                  "value": 1.5
+                },
+                "label": {
+                  "value": "GfpCellSuspension"
+                },
+                "load": {
+                  "elements": [
+                    {
+                      "left": {
+                        "args": {
+                          "attrs": {
+                            "entries": {
+                              "carrier": {
+                                "value": "lysis_compatible_resuspension_buffer"
+                              },
+                              "state": {
+                                "token": "suspension"
+                              }
+                            }
+                          },
+                          "code": {
+                            "value": "GFP_EXPRESSING_MICROBIAL_CELLS"
+                          },
+                          "kind": {
+                            "base": {
+                              "token": "ContentKind"
+                            },
+                            "member": "BIO_CELLULAR"
+                          },
+                          "type": {
+                            "base": {
+                              "token": "ContentType"
+                            },
+                            "member": "MICROBIAL_CELLS"
+                          }
+                        },
+                        "call": "content"
+                      },
+                      "right": {
+                        "unit": "cells",
+                        "value": 100000.0
+                      }
+                    },
+                    {
+                      "left": {
+                        "args": {
+                          "code": {
+                            "value": "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER"
+                          },
+                          "kind": {
+                            "base": {
+                              "token": "ContentKind"
+                            },
+                            "member": "FORMULATION"
+                          },
+                          "type": {
+                            "base": {
+                              "token": "ContentType"
+                            },
+                            "member": "BUFFER"
+                          }
+                        },
+                        "call": "content"
+                      },
+                      "right": {
+                        "unit": "uL",
+                        "value": 80.0
+                      }
+                    }
+                  ]
+                }
+              },
+              "call": "tube"
+            },
+            "object_id": "source-object:43e5b80dbbfd63d87865"
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/0",
+              "parameter_sources": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/params/1/default",
+                  "origin_kind": "default",
+                  "parameter": "cell_count",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 16,
+                    "end": 92,
+                    "line": 3,
+                    "start": 81
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/0/value/args/2/value/elements/0/right",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 9,
+                    "end": 618,
+                    "line": 18,
+                    "start": 608
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/params/0/default",
+                  "origin_kind": "default",
+                  "parameter": "cell_suspension_volume",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 28,
+                    "end": 64,
+                    "line": 2,
+                    "start": 60
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/0/value/args/2/value/elements/1/right",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 9,
+                    "end": 794,
+                    "line": 23,
+                    "start": 772
+                  }
+                }
+              ],
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 3,
+                "end": 804,
+                "line": 9,
+                "start": 268
+              },
+              "step_origin": {
+                "kind": "local",
+                "marker": {
+                  "marker_line": 44,
+                  "marker_offset": 1304,
+                  "procedure": "GfpLysateClarification",
+                  "scope": "/protocols/0/statements",
+                  "step": "S1"
+                }
+              }
+            },
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/5/sources/0/left",
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 5,
+                "end": 1465,
+                "line": 47,
+                "start": 1450
+              }
+            }
+          ],
+          "id": "descriptor:7be5edf083f654f951cd",
+          "label": "cell_suspension"
+        },
+        {
+          "category": "object",
+          "details": {
+            "declaration": {
+              "args": {
+                "capacity": {
+                  "unit": "mL",
+                  "value": 1.0
+                },
+                "label": {
+                  "value": "ClarifiedLysate"
+                }
+              },
+              "call": "tube"
+            },
+            "object_id": "source-object:b91846dd78007d317f89"
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/3",
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 3,
+                "end": 1233,
+                "line": 41,
+                "start": 1163
+              },
+              "step_origin": {
+                "kind": "local",
+                "marker": {
+                  "marker_line": 44,
+                  "marker_offset": 1304,
+                  "procedure": "GfpLysateClarification",
+                  "scope": "/protocols/0/statements",
+                  "step": "S1"
+                }
+              }
+            }
+          ],
+          "id": "descriptor:acd218863394ebe1a75a",
+          "label": "clarified_lysate"
+        },
+        {
+          "category": "object",
+          "details": {
+            "declaration": {
+              "args": {
+                "capacity": {
+                  "unit": "mL",
+                  "value": 1.0
+                },
+                "label": {
+                  "value": "DebrisWaste"
+                }
+              },
+              "call": "tube"
+            },
+            "object_id": "source-object:27362e72440c3cad56a6"
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/4",
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 3,
+                "end": 1299,
+                "line": 42,
+                "start": 1237
+              },
+              "step_origin": {
+                "kind": "local",
+                "marker": {
+                  "marker_line": 44,
+                  "marker_offset": 1304,
+                  "procedure": "GfpLysateClarification",
+                  "scope": "/protocols/0/statements",
+                  "step": "S1"
+                }
+              }
+            }
+          ],
+          "id": "descriptor:ad93ffba63fbf0e92242",
+          "label": "debris_waste"
+        },
+        {
+          "category": "object",
+          "details": {
+            "declaration": {
+              "args": {
+                "capacity": {
+                  "unit": "mL",
+                  "value": 1.5
+                },
+                "label": {
+                  "value": "LysisBuffer2x"
+                },
+                "load": {
+                  "elements": [
+                    {
+                      "left": {
+                        "args": {
+                          "attrs": {
+                            "entries": {
+                              "role": {
+                                "token": "lysis"
+                              }
+                            }
+                          },
+                          "code": {
+                            "value": "LYSIS_BUFFER_2X"
+                          },
+                          "kind": {
+                            "base": {
+                              "token": "ContentKind"
+                            },
+                            "member": "FORMULATION"
+                          },
+                          "type": {
+                            "base": {
+                              "token": "ContentType"
+                            },
+                            "member": "BUFFER"
+                          }
+                        },
+                        "call": "content"
+                      },
+                      "right": {
+                        "unit": "uL",
+                        "value": 80.0
+                      }
+                    }
+                  ]
+                }
+              },
+              "call": "tube"
+            },
+            "object_id": "source-object:26805de9635024c42bf6"
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/1",
+              "parameter_sources": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/params/2/default",
+                  "origin_kind": "default",
+                  "parameter": "lysis_buffer_volume",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 25,
+                    "end": 122,
+                    "line": 4,
+                    "start": 118
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/1/value/args/2/value/elements/0/right",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 9,
+                    "end": 1084,
+                    "line": 36,
+                    "start": 1065
+                  }
+                }
+              ],
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 3,
+                "end": 1094,
+                "line": 27,
+                "start": 809
+              },
+              "step_origin": {
+                "kind": "local",
+                "marker": {
+                  "marker_line": 44,
+                  "marker_offset": 1304,
+                  "procedure": "GfpLysateClarification",
+                  "scope": "/protocols/0/statements",
+                  "step": "S1"
+                }
+              }
+            },
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/5/sources/1/left",
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 5,
+                "end": 1509,
+                "line": 48,
+                "start": 1494
+              }
+            }
+          ],
+          "id": "descriptor:c15b24fa16d3863802e5",
+          "label": "lysis_buffer_2x"
+        },
+        {
+          "category": "operation",
+          "details": {
+            "sources": [
+              {
+                "left": {
+                  "object_id": "source-object:43e5b80dbbfd63d87865"
+                },
+                "right": {
+                  "unit": "uL",
+                  "value": 80.0
+                }
+              },
+              {
+                "left": {
+                  "object_id": "source-object:26805de9635024c42bf6"
+                },
+                "right": {
+                  "unit": "uL",
+                  "value": 80.0
+                }
+              }
+            ],
+            "target": {
+              "object_id": "source-object:edc201b181f45b6c5056"
+            }
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/5",
+              "parameter_sources": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/2",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 1159,
+                    "line": 40,
+                    "start": 1099
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/5/target",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 1440,
+                    "line": 46,
+                    "start": 1430
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/params/0/default",
+                  "origin_kind": "default",
+                  "parameter": "cell_suspension_volume",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 28,
+                    "end": 64,
+                    "line": 2,
+                    "start": 60
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/5/sources/0/right",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 21,
+                    "end": 1488,
+                    "line": 47,
+                    "start": 1466
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 804,
+                    "line": 9,
+                    "start": 268
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/5/sources/0/left",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 5,
+                    "end": 1465,
+                    "line": 47,
+                    "start": 1450
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/params/2/default",
+                  "origin_kind": "default",
+                  "parameter": "lysis_buffer_volume",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 25,
+                    "end": 122,
+                    "line": 4,
+                    "start": 118
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/5/sources/1/right",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 21,
+                    "end": 1529,
+                    "line": 48,
+                    "start": 1510
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/1",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 1094,
+                    "line": 27,
+                    "start": 809
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/5/sources/1/left",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 5,
+                    "end": 1509,
+                    "line": 48,
+                    "start": 1494
+                  }
+                }
+              ],
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 3,
+                "end": 1533,
+                "line": 46,
+                "start": 1430
+              },
+              "step_origin": {
+                "kind": "local",
+                "marker": {
+                  "marker_line": 44,
+                  "marker_offset": 1304,
+                  "procedure": "GfpLysateClarification",
+                  "scope": "/protocols/0/statements",
+                  "step": "S1"
+                }
+              }
+            }
+          ],
+          "id": "descriptor:d44ac1da857ad2fe2357",
+          "label": "transfer"
+        }
+      ],
+      "source_range": {
+        "markers": [
+          {
+            "marker_line": 44,
+            "marker_offset": 1304,
+            "procedure": "GfpLysateClarification",
+            "scope": "/protocols/0/statements",
+            "step": "S1"
+          }
+        ],
+        "step": "S1"
+      },
+      "step": "S1"
+    },
+    {
+      "descriptor_items": 3,
+      "descriptors": [
+        {
+          "category": "object",
+          "details": {
+            "declaration": {
+              "args": {
+                "capacity": {
+                  "unit": "mL",
+                  "value": 1.5
+                },
+                "label": {
+                  "value": "LysisTube"
+                }
+              },
+              "call": "tube"
+            },
+            "object_id": "source-object:edc201b181f45b6c5056"
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/6/statements/0/target",
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 5,
+                "end": 1697,
+                "line": 53,
+                "start": 1687
+              }
+            },
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/6/statements/0/sources/0/left",
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 20,
+                "end": 1712,
+                "line": 53,
+                "start": 1702
+              }
+            }
+          ],
+          "id": "descriptor:d1d68dfad8a1fff74dc9",
+          "label": "lysis_tube"
+        },
+        {
+          "category": "operation",
+          "details": {
+            "sources": [
+              {
+                "left": {
+                  "object_id": "source-object:edc201b181f45b6c5056"
+                },
+                "right": {
+                  "unit": "uL",
+                  "value": 128.0
+                }
+              }
+            ],
+            "target": {
+              "object_id": "source-object:edc201b181f45b6c5056"
+            }
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/6/statements/0",
+              "parameter_sources": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/2",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 1159,
+                    "line": 40,
+                    "start": 1099
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/6/statements/0/target",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 5,
+                    "end": 1697,
+                    "line": 53,
+                    "start": 1687
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/6/statements/0/sources/0/left",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 20,
+                    "end": 1712,
+                    "line": 53,
+                    "start": 1702
+                  }
+                }
+              ],
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 5,
+                "end": 1719,
+                "line": 53,
+                "start": 1687
+              },
+              "step_origin": {
+                "kind": "inherited",
+                "source": {
+                  "kind": "local",
+                  "marker": {
+                    "marker_line": 51,
+                    "marker_offset": 1538,
+                    "procedure": "GfpLysateClarification",
+                    "scope": "/protocols/0/statements",
+                    "step": "S2"
+                  }
+                }
+              }
+            }
+          ],
+          "id": "descriptor:8fc2e7a8fd2e2c5e5950",
+          "label": "transfer"
+        },
+        {
+          "category": "schedule",
+          "details": {
+            "args": {
+              "end": {
+                "unit": null,
+                "value": 10.0
+              },
+              "start": {
+                "unit": null,
+                "value": 1.0
+              },
+              "step": {
+                "unit": null,
+                "value": 1.0
+              }
+            },
+            "associations": [
+              {
+                "/args/sources": [
+                  {
+                    "left": {
+                      "object_id": "source-object:edc201b181f45b6c5056"
+                    }
+                  }
+                ],
+                "/args/target": {
+                  "object_id": "source-object:edc201b181f45b6c5056"
+                }
+              }
+            ],
+            "call": "schedule"
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/6",
+              "parameter_sources": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/2",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 1159,
+                    "line": 40,
+                    "start": 1099
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/6/statements/0/target",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 5,
+                    "end": 1697,
+                    "line": 53,
+                    "start": 1687
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/6/statements/0/sources/0/left",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 20,
+                    "end": 1712,
+                    "line": 53,
+                    "start": 1702
+                  }
+                }
+              ],
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 3,
+                "end": 1724,
+                "line": 52,
+                "start": 1613
+              },
+              "step_origin": {
+                "kind": "local",
+                "marker": {
+                  "marker_line": 51,
+                  "marker_offset": 1538,
+                  "procedure": "GfpLysateClarification",
+                  "scope": "/protocols/0/statements",
+                  "step": "S2"
+                }
+              }
+            }
+          ],
+          "id": "descriptor:088edf7d8402fa25484d",
+          "label": "schedule"
+        }
+      ],
+      "source_range": {
+        "markers": [
+          {
+            "marker_line": 51,
+            "marker_offset": 1538,
+            "procedure": "GfpLysateClarification",
+            "scope": "/protocols/0/statements",
+            "step": "S2"
+          }
+        ],
+        "step": "S2"
+      },
+      "step": "S2"
+    },
+    {
+      "descriptor_items": 3,
+      "descriptors": [
+        {
+          "category": "environment",
+          "details": {
+            "args": {
+              "duration": {
+                "unit": "min",
+                "value": 30.0
+              },
+              "thermal": {
+                "unit": "C",
+                "value": 37.0
+              }
+            },
+            "associations": [
+              {
+                "/gate/env_targets": [
+                  {
+                    "object_id": "source-object:edc201b181f45b6c5056"
+                  }
+                ]
+              }
+            ]
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/7",
+              "parameter_sources": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/2",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 1159,
+                    "line": 40,
+                    "start": 1099
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/7/statements/0/args/0/value",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 19,
+                    "end": 1850,
+                    "line": 58,
+                    "start": 1840
+                  }
+                }
+              ],
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 3,
+                "end": 1856,
+                "line": 57,
+                "start": 1778
+              },
+              "step_origin": {
+                "kind": "local",
+                "marker": {
+                  "marker_line": 56,
+                  "marker_offset": 1728,
+                  "procedure": "GfpLysateClarification",
+                  "scope": "/protocols/0/statements",
+                  "step": "S3"
+                }
+              }
+            }
+          ],
+          "id": "descriptor:eadba93eaacb956f763c",
+          "label": "env"
+        },
+        {
+          "category": "object",
+          "details": {
+            "declaration": {
+              "args": {
+                "capacity": {
+                  "unit": "mL",
+                  "value": 1.5
+                },
+                "label": {
+                  "value": "LysisTube"
+                }
+              },
+              "call": "tube"
+            },
+            "object_id": "source-object:edc201b181f45b6c5056"
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/7/statements/0/args/0/value",
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 19,
+                "end": 1850,
+                "line": 58,
+                "start": 1840
+              }
+            }
+          ],
+          "id": "descriptor:b6d44126b7526e5e5f99",
+          "label": "lysis_tube"
+        },
+        {
+          "category": "operation",
+          "details": {
+            "args": {
+              "sample": {
+                "object_id": "source-object:edc201b181f45b6c5056"
+              }
+            },
+            "call": "hold"
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/7/statements/0",
+              "parameter_sources": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/2",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 1159,
+                    "line": 40,
+                    "start": 1099
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/7/statements/0/args/0/value",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 19,
+                    "end": 1850,
+                    "line": 58,
+                    "start": 1840
+                  }
+                }
+              ],
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 5,
+                "end": 1851,
+                "line": 58,
+                "start": 1826
+              },
+              "step_origin": {
+                "kind": "inherited",
+                "source": {
+                  "kind": "local",
+                  "marker": {
+                    "marker_line": 56,
+                    "marker_offset": 1728,
+                    "procedure": "GfpLysateClarification",
+                    "scope": "/protocols/0/statements",
+                    "step": "S3"
+                  }
+                }
+              }
+            }
+          ],
+          "id": "descriptor:627be179028134c1ed34",
+          "label": "hold"
+        }
+      ],
+      "source_range": {
+        "markers": [
+          {
+            "marker_line": 56,
+            "marker_offset": 1728,
+            "procedure": "GfpLysateClarification",
+            "scope": "/protocols/0/statements",
+            "step": "S3"
+          }
+        ],
+        "step": "S3"
+      },
+      "step": "S3"
+    },
+    {
+      "descriptor_items": 4,
+      "descriptors": [
+        {
+          "category": "environment",
+          "details": {
+            "args": {
+              "duration": {
+                "unit": "min",
+                "value": 10.0
+              },
+              "thermal": {
+                "unit": "C",
+                "value": 22.0
+              }
+            },
+            "associations": [
+              {
+                "/args/sample": {
+                  "object_id": "source-object:edc201b181f45b6c5056"
+                }
+              }
+            ]
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/8",
+              "parameter_sources": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/2",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 1159,
+                    "line": 40,
+                    "start": 1099
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/8/statements/0/args/0/value",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 16,
+                    "end": 2080,
+                    "line": 65,
+                    "start": 2070
+                  }
+                }
+              ],
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 3,
+                "end": 2143,
+                "line": 63,
+                "start": 2002
+              },
+              "step_origin": {
+                "kind": "local",
+                "marker": {
+                  "marker_line": 61,
+                  "marker_offset": 1860,
+                  "procedure": "GfpLysateClarification",
+                  "scope": "/protocols/0/statements",
+                  "step": "S4"
+                }
+              }
+            }
+          ],
+          "id": "descriptor:07e89a758c7537ffd87f",
+          "label": "env"
+        },
+        {
+          "category": "object",
+          "details": {
+            "declaration": {
+              "args": {
+                "capacity": {
+                  "unit": "mL",
+                  "value": 1.5
+                },
+                "label": {
+                  "value": "LysisTube"
+                }
+              },
+              "call": "tube"
+            },
+            "object_id": "source-object:edc201b181f45b6c5056"
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/8/statements/0/args/0/value",
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 16,
+                "end": 2080,
+                "line": 65,
+                "start": 2070
+              }
+            }
+          ],
+          "id": "descriptor:ac1a7b991c213af69fd7",
+          "label": "lysis_tube"
+        },
+        {
+          "category": "operation",
+          "details": {
+            "args": {
+              "program": {
+                "args": {
+                  "drive": {
+                    "unit": "g",
+                    "value": 12000.0
+                  }
+                },
+                "call": "centrifuge_program"
+              },
+              "sample": {
+                "object_id": "source-object:edc201b181f45b6c5056"
+              }
+            },
+            "call": "sep"
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/8/statements/0",
+              "parameter_sources": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/2",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 1159,
+                    "line": 40,
+                    "start": 1099
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/8/statements/0/args/0/value",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 16,
+                    "end": 2080,
+                    "line": 65,
+                    "start": 2070
+                  }
+                }
+              ],
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 5,
+                "end": 2138,
+                "line": 64,
+                "start": 2050
+              },
+              "step_origin": {
+                "kind": "inherited",
+                "source": {
+                  "kind": "local",
+                  "marker": {
+                    "marker_line": 61,
+                    "marker_offset": 1860,
+                    "procedure": "GfpLysateClarification",
+                    "scope": "/protocols/0/statements",
+                    "step": "S4"
+                  }
+                }
+              }
+            }
+          ],
+          "id": "descriptor:3436e110e8ea208c1b62",
+          "label": "sep"
+        },
+        {
+          "category": "program",
+          "details": {
+            "program": {
+              "args": {
+                "drive": {
+                  "unit": "g",
+                  "value": 12000.0
+                }
+              },
+              "call": "centrifuge_program"
+            },
+            "sample": {
+              "object_id": "source-object:edc201b181f45b6c5056"
+            }
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/8/statements/0",
+              "parameter_sources": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/2",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 1159,
+                    "line": 40,
+                    "start": 1099
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/8/statements/0/args/0/value",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 16,
+                    "end": 2080,
+                    "line": 65,
+                    "start": 2070
+                  }
+                }
+              ],
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 5,
+                "end": 2138,
+                "line": 64,
+                "start": 2050
+              },
+              "step_origin": {
+                "kind": "inherited",
+                "source": {
+                  "kind": "local",
+                  "marker": {
+                    "marker_line": 61,
+                    "marker_offset": 1860,
+                    "procedure": "GfpLysateClarification",
+                    "scope": "/protocols/0/statements",
+                    "step": "S4"
+                  }
+                }
+              }
+            }
+          ],
+          "id": "descriptor:cf02c4beea555da1d9ea",
+          "label": "centrifuge_program"
+        }
+      ],
+      "source_range": {
+        "markers": [
+          {
+            "marker_line": 61,
+            "marker_offset": 1860,
+            "procedure": "GfpLysateClarification",
+            "scope": "/protocols/0/statements",
+            "step": "S4"
+          }
+        ],
+        "step": "S4"
+      },
+      "step": "S4"
+    },
+    {
+      "descriptor_items": 3,
+      "descriptors": [
+        {
+          "category": "object",
+          "details": {
+            "declaration": {
+              "args": {
+                "capacity": {
+                  "unit": "mL",
+                  "value": 1.0
+                },
+                "label": {
+                  "value": "ClarifiedLysate"
+                }
+              },
+              "call": "tube"
+            },
+            "object_id": "source-object:b91846dd78007d317f89"
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/9/target",
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 3,
+                "end": 2216,
+                "line": 70,
+                "start": 2200
+              }
+            }
+          ],
+          "id": "descriptor:1e5a921ceacc8b783572",
+          "label": "clarified_lysate"
+        },
+        {
+          "category": "object",
+          "details": {
+            "declaration": {
+              "args": {
+                "capacity": {
+                  "unit": "mL",
+                  "value": 1.5
+                },
+                "label": {
+                  "value": "LysisTube"
+                }
+              },
+              "call": "tube"
+            },
+            "object_id": "source-object:edc201b181f45b6c5056"
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/9/sources/0/left/base/base",
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 24,
+                "end": 2231,
+                "line": 70,
+                "start": 2221
+              }
+            }
+          ],
+          "id": "descriptor:70c510de0246041bd876",
+          "label": "lysis_tube"
+        },
+        {
+          "category": "operation",
+          "details": {
+            "sources": [
+              {
+                "left": {
+                  "base": {
+                    "base": {
+                      "object_id": "source-object:edc201b181f45b6c5056"
+                    },
+                    "member": "contents"
+                  },
+                  "index": {
+                    "unit": null,
+                    "value": 0.0
+                  }
+                },
+                "right": {
+                  "unit": "uL",
+                  "value": 100.0
+                }
+              }
+            ],
+            "target": {
+              "object_id": "source-object:b91846dd78007d317f89"
+            }
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/9",
+              "parameter_sources": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/3",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 1233,
+                    "line": 41,
+                    "start": 1163
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/9/target",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 2216,
+                    "line": 70,
+                    "start": 2200
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/params/3/default",
+                  "origin_kind": "default",
+                  "parameter": "clarified_volume",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 22,
+                    "end": 150,
+                    "line": 5,
+                    "start": 145
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/9/sources/0/right",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 47,
+                    "end": 2260,
+                    "line": 70,
+                    "start": 2244
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/2",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 1159,
+                    "line": 40,
+                    "start": 1099
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/9/sources/0/left/base/base",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 24,
+                    "end": 2231,
+                    "line": 70,
+                    "start": 2221
+                  }
+                }
+              ],
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 3,
+                "end": 2261,
+                "line": 70,
+                "start": 2200
+              },
+              "step_origin": {
+                "kind": "local",
+                "marker": {
+                  "marker_line": 69,
+                  "marker_offset": 2146,
+                  "procedure": "GfpLysateClarification",
+                  "scope": "/protocols/0/statements",
+                  "step": "S5"
+                }
+              }
+            }
+          ],
+          "id": "descriptor:e27c404a2f8732a218c3",
+          "label": "transfer"
+        }
+      ],
+      "source_range": {
+        "markers": [
+          {
+            "marker_line": 69,
+            "marker_offset": 2146,
+            "procedure": "GfpLysateClarification",
+            "scope": "/protocols/0/statements",
+            "step": "S5"
+          }
+        ],
+        "step": "S5"
+      },
+      "step": "S5"
+    },
+    {
+      "descriptor_items": 3,
+      "descriptors": [
+        {
+          "category": "object",
+          "details": {
+            "declaration": {
+              "args": {
+                "capacity": {
+                  "unit": "mL",
+                  "value": 1.5
+                },
+                "label": {
+                  "value": "LysisTube"
+                }
+              },
+              "call": "tube"
+            },
+            "object_id": "source-object:edc201b181f45b6c5056"
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/10/sources/0/base/base",
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 20,
+                "end": 2349,
+                "line": 72,
+                "start": 2339
+              }
+            }
+          ],
+          "id": "descriptor:60e3852d9da847e88c46",
+          "label": "lysis_tube"
+        },
+        {
+          "category": "object",
+          "details": {
+            "declaration": {
+              "args": {
+                "capacity": {
+                  "unit": "mL",
+                  "value": 1.0
+                },
+                "label": {
+                  "value": "DebrisWaste"
+                }
+              },
+              "call": "tube"
+            },
+            "object_id": "source-object:27362e72440c3cad56a6"
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/10/target",
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 3,
+                "end": 2334,
+                "line": 72,
+                "start": 2322
+              }
+            }
+          ],
+          "id": "descriptor:e4f7a23b3537e415f863",
+          "label": "debris_waste"
+        },
+        {
+          "category": "operation",
+          "details": {
+            "sources": [
+              {
+                "base": {
+                  "base": {
+                    "object_id": "source-object:edc201b181f45b6c5056"
+                  },
+                  "member": "contents"
+                },
+                "index": {
+                  "unit": null,
+                  "value": 1.0
+                }
+              }
+            ],
+            "target": {
+              "object_id": "source-object:27362e72440c3cad56a6"
+            }
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/10",
+              "parameter_sources": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/4",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 1299,
+                    "line": 42,
+                    "start": 1237
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/10/target",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 2334,
+                    "line": 72,
+                    "start": 2322
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/2",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 1159,
+                    "line": 40,
+                    "start": 1099
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/10/sources/0/base/base",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 20,
+                    "end": 2349,
+                    "line": 72,
+                    "start": 2339
+                  }
+                }
+              ],
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 3,
+                "end": 2362,
+                "line": 72,
+                "start": 2322
+              },
+              "step_origin": {
+                "kind": "local",
+                "marker": {
+                  "marker_line": 71,
+                  "marker_offset": 2265,
+                  "procedure": "GfpLysateClarification",
+                  "scope": "/protocols/0/statements",
+                  "step": "S6"
+                }
+              }
+            }
+          ],
+          "id": "descriptor:e82ec0f2d28e4f0714cd",
+          "label": "transfer"
+        }
+      ],
+      "source_range": {
+        "markers": [
+          {
+            "marker_line": 71,
+            "marker_offset": 2265,
+            "procedure": "GfpLysateClarification",
+            "scope": "/protocols/0/statements",
+            "step": "S6"
+          }
+        ],
+        "step": "S6"
+      },
+      "step": "S6"
+    },
+    {
+      "descriptor_items": 3,
+      "descriptors": [
+        {
+          "category": "object",
+          "details": {
+            "declaration": {
+              "args": {
+                "capacity": {
+                  "unit": "mL",
+                  "value": 1.0
+                },
+                "label": {
+                  "value": "ClarifiedLysate"
+                }
+              },
+              "call": "tube"
+            },
+            "object_id": "source-object:b91846dd78007d317f89"
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/11/value/args/0/value",
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 14,
+                "end": 2490,
+                "line": 76,
+                "start": 2474
+              }
+            }
+          ],
+          "id": "descriptor:139eb22073be8d0c75cd",
+          "label": "clarified_lysate"
+        },
+        {
+          "category": "object",
+          "details": {
+            "declaration": {
+              "args": {
+                "quantity": {
+                  "token": "fluorescence"
+                },
+                "sample": {
+                  "object_id": "source-object:b91846dd78007d317f89"
+                },
+                "save_raw": {
+                  "value": true
+                }
+              },
+              "call": "img"
+            },
+            "object_id": "source-object:98c95a747c6ec769e2c3"
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/11",
+              "parameter_sources": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/3",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 1233,
+                    "line": 41,
+                    "start": 1163
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/11/value/args/0/value",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 14,
+                    "end": 2490,
+                    "line": 76,
+                    "start": 2474
+                  }
+                }
+              ],
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 3,
+                "end": 2544,
+                "line": 75,
+                "start": 2435
+              },
+              "step_origin": {
+                "kind": "local",
+                "marker": {
+                  "marker_line": 74,
+                  "marker_offset": 2367,
+                  "procedure": "GfpLysateClarification",
+                  "scope": "/protocols/0/statements",
+                  "step": "S7"
+                }
+              }
+            }
+          ],
+          "id": "descriptor:3cf895a8f3c72f3c3670",
+          "label": "lysate_readout"
+        },
+        {
+          "category": "operation",
+          "details": {
+            "args": {
+              "quantity": {
+                "token": "fluorescence"
+              },
+              "sample": {
+                "object_id": "source-object:b91846dd78007d317f89"
+              },
+              "save_raw": {
+                "value": true
+              }
+            },
+            "call": "img"
+          },
+          "evidence": [
+            {
+              "call_path": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/statements/0",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 1,
+                    "end": 2573,
+                    "line": 82,
+                    "start": 2549
+                  }
+                }
+              ],
+              "file": "artifacts/ast.json",
+              "json_pointer": "/protocols/0/statements/11/value",
+              "parameter_sources": [
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/3",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 3,
+                    "end": 1233,
+                    "line": 41,
+                    "start": 1163
+                  }
+                },
+                {
+                  "file": "artifacts/ast.json",
+                  "json_pointer": "/protocols/0/statements/11/value/args/0/value",
+                  "source_file": "protocol.culs",
+                  "source_span": {
+                    "col": 14,
+                    "end": 2490,
+                    "line": 76,
+                    "start": 2474
+                  }
+                }
+              ],
+              "source_file": "protocol.culs",
+              "source_span": {
+                "col": 24,
+                "end": 2544,
+                "line": 75,
+                "start": 2456
+              },
+              "step_origin": {
+                "kind": "local",
+                "marker": {
+                  "marker_line": 74,
+                  "marker_offset": 2367,
+                  "procedure": "GfpLysateClarification",
+                  "scope": "/protocols/0/statements",
+                  "step": "S7"
+                }
+              }
+            }
+          ],
+          "id": "descriptor:f20496284d0792a5395d",
+          "label": "img"
+        }
+      ],
+      "source_range": {
+        "markers": [
+          {
+            "marker_line": 74,
+            "marker_offset": 2367,
+            "procedure": "GfpLysateClarification",
+            "scope": "/protocols/0/statements",
+            "step": "S7"
+          }
+        ],
+        "step": "S7"
+      },
+      "step": "S7"
+    }
+  ],
+  "rules_version": "patterns-metrics-nested-v9",
+  "schema_version": "patterns-metrics-v1",
+  "section": "3.2",
+  "source_coverage": [
+    {
+      "call_path": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/statements/0",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 1,
+            "end": 2573,
+            "line": 82,
+            "start": 2549
+          }
+        }
+      ],
+      "classification": "experimental_structure",
+      "shape": [
+        "name",
+        "value"
+      ],
+      "source": {
+        "file": "artifacts/ast.json",
+        "json_pointer": "/protocols/0/statements/0",
+        "source_file": "protocol.culs",
+        "source_span": {
+          "col": 3,
+          "end": 804,
+          "line": 9,
+          "start": 268
+        }
+      },
+      "step": "S1",
+      "step_origin": {
+        "kind": "local",
+        "marker": {
+          "marker_line": 44,
+          "marker_offset": 1304,
+          "procedure": "GfpLysateClarification",
+          "scope": "/protocols/0/statements",
+          "step": "S1"
+        }
+      }
+    },
+    {
+      "call_path": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/statements/0",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 1,
+            "end": 2573,
+            "line": 82,
+            "start": 2549
+          }
+        }
+      ],
+      "classification": "experimental_structure",
+      "shape": [
+        "name",
+        "value"
+      ],
+      "source": {
+        "file": "artifacts/ast.json",
+        "json_pointer": "/protocols/0/statements/1",
+        "source_file": "protocol.culs",
+        "source_span": {
+          "col": 3,
+          "end": 1094,
+          "line": 27,
+          "start": 809
+        }
+      },
+      "step": "S1",
+      "step_origin": {
+        "kind": "local",
+        "marker": {
+          "marker_line": 44,
+          "marker_offset": 1304,
+          "procedure": "GfpLysateClarification",
+          "scope": "/protocols/0/statements",
+          "step": "S1"
+        }
+      }
+    },
+    {
+      "call_path": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/statements/0",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 1,
+            "end": 2573,
+            "line": 82,
+            "start": 2549
+          }
+        }
+      ],
+      "classification": "experimental_structure",
+      "shape": [
+        "name",
+        "value"
+      ],
+      "source": {
+        "file": "artifacts/ast.json",
+        "json_pointer": "/protocols/0/statements/2",
+        "source_file": "protocol.culs",
+        "source_span": {
+          "col": 3,
+          "end": 1159,
+          "line": 40,
+          "start": 1099
+        }
+      },
+      "step": "S1",
+      "step_origin": {
+        "kind": "local",
+        "marker": {
+          "marker_line": 44,
+          "marker_offset": 1304,
+          "procedure": "GfpLysateClarification",
+          "scope": "/protocols/0/statements",
+          "step": "S1"
+        }
+      }
+    },
+    {
+      "call_path": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/statements/0",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 1,
+            "end": 2573,
+            "line": 82,
+            "start": 2549
+          }
+        }
+      ],
+      "classification": "experimental_structure",
+      "shape": [
+        "name",
+        "value"
+      ],
+      "source": {
+        "file": "artifacts/ast.json",
+        "json_pointer": "/protocols/0/statements/3",
+        "source_file": "protocol.culs",
+        "source_span": {
+          "col": 3,
+          "end": 1233,
+          "line": 41,
+          "start": 1163
+        }
+      },
+      "step": "S1",
+      "step_origin": {
+        "kind": "local",
+        "marker": {
+          "marker_line": 44,
+          "marker_offset": 1304,
+          "procedure": "GfpLysateClarification",
+          "scope": "/protocols/0/statements",
+          "step": "S1"
+        }
+      }
+    },
+    {
+      "call_path": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/statements/0",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 1,
+            "end": 2573,
+            "line": 82,
+            "start": 2549
+          }
+        }
+      ],
+      "classification": "experimental_structure",
+      "shape": [
+        "name",
+        "value"
+      ],
+      "source": {
+        "file": "artifacts/ast.json",
+        "json_pointer": "/protocols/0/statements/4",
+        "source_file": "protocol.culs",
+        "source_span": {
+          "col": 3,
+          "end": 1299,
+          "line": 42,
+          "start": 1237
+        }
+      },
+      "step": "S1",
+      "step_origin": {
+        "kind": "local",
+        "marker": {
+          "marker_line": 44,
+          "marker_offset": 1304,
+          "procedure": "GfpLysateClarification",
+          "scope": "/protocols/0/statements",
+          "step": "S1"
+        }
+      }
+    },
+    {
+      "call_path": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/statements/0",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 1,
+            "end": 2573,
+            "line": 82,
+            "start": 2549
+          }
+        }
+      ],
+      "classification": "experimental_structure",
+      "shape": [
+        "sources",
+        "target"
+      ],
+      "source": {
+        "file": "artifacts/ast.json",
+        "json_pointer": "/protocols/0/statements/5",
+        "source_file": "protocol.culs",
+        "source_span": {
+          "col": 3,
+          "end": 1533,
+          "line": 46,
+          "start": 1430
+        }
+      },
+      "step": "S1",
+      "step_origin": {
+        "kind": "local",
+        "marker": {
+          "marker_line": 44,
+          "marker_offset": 1304,
+          "procedure": "GfpLysateClarification",
+          "scope": "/protocols/0/statements",
+          "step": "S1"
+        }
+      }
+    },
+    {
+      "call_path": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/statements/0",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 1,
+            "end": 2573,
+            "line": 82,
+            "start": 2549
+          }
+        }
+      ],
+      "classification": "experimental_structure",
+      "shape": [
+        "sources",
+        "target"
+      ],
+      "source": {
+        "file": "artifacts/ast.json",
+        "json_pointer": "/protocols/0/statements/6/statements/0",
+        "source_file": "protocol.culs",
+        "source_span": {
+          "col": 5,
+          "end": 1719,
+          "line": 53,
+          "start": 1687
+        }
+      },
+      "step": "S2",
+      "step_origin": {
+        "kind": "inherited",
+        "source": {
+          "kind": "local",
+          "marker": {
+            "marker_line": 51,
+            "marker_offset": 1538,
+            "procedure": "GfpLysateClarification",
+            "scope": "/protocols/0/statements",
+            "step": "S2"
+          }
+        }
+      }
+    },
+    {
+      "call_path": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/statements/0",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 1,
+            "end": 2573,
+            "line": 82,
+            "start": 2549
+          }
+        }
+      ],
+      "classification": "experimental_structure",
+      "shape": [
+        "binding",
+        "iterable",
+        "statements",
+        "times"
+      ],
+      "source": {
+        "file": "artifacts/ast.json",
+        "json_pointer": "/protocols/0/statements/6",
+        "source_file": "protocol.culs",
+        "source_span": {
+          "col": 3,
+          "end": 1724,
+          "line": 52,
+          "start": 1613
+        }
+      },
+      "step": "S2",
+      "step_origin": {
+        "kind": "local",
+        "marker": {
+          "marker_line": 51,
+          "marker_offset": 1538,
+          "procedure": "GfpLysateClarification",
+          "scope": "/protocols/0/statements",
+          "step": "S2"
+        }
+      }
+    },
+    {
+      "call_path": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/statements/0",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 1,
+            "end": 2573,
+            "line": 82,
+            "start": 2549
+          }
+        }
+      ],
+      "classification": "experimental_structure",
+      "shape": [
+        "args",
+        "name"
+      ],
+      "source": {
+        "file": "artifacts/ast.json",
+        "json_pointer": "/protocols/0/statements/7/statements/0",
+        "source_file": "protocol.culs",
+        "source_span": {
+          "col": 5,
+          "end": 1851,
+          "line": 58,
+          "start": 1826
+        }
+      },
+      "step": "S3",
+      "step_origin": {
+        "kind": "inherited",
+        "source": {
+          "kind": "local",
+          "marker": {
+            "marker_line": 56,
+            "marker_offset": 1728,
+            "procedure": "GfpLysateClarification",
+            "scope": "/protocols/0/statements",
+            "step": "S3"
+          }
+        }
+      }
+    },
+    {
+      "call_path": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/statements/0",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 1,
+            "end": 2573,
+            "line": 82,
+            "start": 2549
+          }
+        }
+      ],
+      "classification": "experimental_structure",
+      "shape": [
+        "env_args",
+        "statements"
+      ],
+      "source": {
+        "file": "artifacts/ast.json",
+        "json_pointer": "/protocols/0/statements/7",
+        "source_file": "protocol.culs",
+        "source_span": {
+          "col": 3,
+          "end": 1856,
+          "line": 57,
+          "start": 1778
+        }
+      },
+      "step": "S3",
+      "step_origin": {
+        "kind": "local",
+        "marker": {
+          "marker_line": 56,
+          "marker_offset": 1728,
+          "procedure": "GfpLysateClarification",
+          "scope": "/protocols/0/statements",
+          "step": "S3"
+        }
+      }
+    },
+    {
+      "call_path": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/statements/0",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 1,
+            "end": 2573,
+            "line": 82,
+            "start": 2549
+          }
+        }
+      ],
+      "classification": "experimental_structure",
+      "shape": [
+        "args",
+        "name"
+      ],
+      "source": {
+        "file": "artifacts/ast.json",
+        "json_pointer": "/protocols/0/statements/8/statements/0",
+        "source_file": "protocol.culs",
+        "source_span": {
+          "col": 5,
+          "end": 2138,
+          "line": 64,
+          "start": 2050
+        }
+      },
+      "step": "S4",
+      "step_origin": {
+        "kind": "inherited",
+        "source": {
+          "kind": "local",
+          "marker": {
+            "marker_line": 61,
+            "marker_offset": 1860,
+            "procedure": "GfpLysateClarification",
+            "scope": "/protocols/0/statements",
+            "step": "S4"
+          }
+        }
+      }
+    },
+    {
+      "call_path": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/statements/0",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 1,
+            "end": 2573,
+            "line": 82,
+            "start": 2549
+          }
+        }
+      ],
+      "classification": "experimental_structure",
+      "shape": [
+        "env_args",
+        "statements"
+      ],
+      "source": {
+        "file": "artifacts/ast.json",
+        "json_pointer": "/protocols/0/statements/8",
+        "source_file": "protocol.culs",
+        "source_span": {
+          "col": 3,
+          "end": 2143,
+          "line": 63,
+          "start": 2002
+        }
+      },
+      "step": "S4",
+      "step_origin": {
+        "kind": "local",
+        "marker": {
+          "marker_line": 61,
+          "marker_offset": 1860,
+          "procedure": "GfpLysateClarification",
+          "scope": "/protocols/0/statements",
+          "step": "S4"
+        }
+      }
+    },
+    {
+      "call_path": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/statements/0",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 1,
+            "end": 2573,
+            "line": 82,
+            "start": 2549
+          }
+        }
+      ],
+      "classification": "experimental_structure",
+      "shape": [
+        "sources",
+        "target"
+      ],
+      "source": {
+        "file": "artifacts/ast.json",
+        "json_pointer": "/protocols/0/statements/9",
+        "source_file": "protocol.culs",
+        "source_span": {
+          "col": 3,
+          "end": 2261,
+          "line": 70,
+          "start": 2200
+        }
+      },
+      "step": "S5",
+      "step_origin": {
+        "kind": "local",
+        "marker": {
+          "marker_line": 69,
+          "marker_offset": 2146,
+          "procedure": "GfpLysateClarification",
+          "scope": "/protocols/0/statements",
+          "step": "S5"
+        }
+      }
+    },
+    {
+      "call_path": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/statements/0",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 1,
+            "end": 2573,
+            "line": 82,
+            "start": 2549
+          }
+        }
+      ],
+      "classification": "experimental_structure",
+      "shape": [
+        "sources",
+        "target"
+      ],
+      "source": {
+        "file": "artifacts/ast.json",
+        "json_pointer": "/protocols/0/statements/10",
+        "source_file": "protocol.culs",
+        "source_span": {
+          "col": 3,
+          "end": 2362,
+          "line": 72,
+          "start": 2322
+        }
+      },
+      "step": "S6",
+      "step_origin": {
+        "kind": "local",
+        "marker": {
+          "marker_line": 71,
+          "marker_offset": 2265,
+          "procedure": "GfpLysateClarification",
+          "scope": "/protocols/0/statements",
+          "step": "S6"
+        }
+      }
+    },
+    {
+      "call_path": [
+        {
+          "file": "artifacts/ast.json",
+          "json_pointer": "/statements/0",
+          "source_file": "protocol.culs",
+          "source_span": {
+            "col": 1,
+            "end": 2573,
+            "line": 82,
+            "start": 2549
+          }
+        }
+      ],
+      "classification": "experimental_structure",
+      "shape": [
+        "name",
+        "value"
+      ],
+      "source": {
+        "file": "artifacts/ast.json",
+        "json_pointer": "/protocols/0/statements/11",
+        "source_file": "protocol.culs",
+        "source_span": {
+          "col": 3,
+          "end": 2544,
+          "line": 75,
+          "start": 2435
+        }
+      },
+      "step": "S7",
+      "step_origin": {
+        "kind": "local",
+        "marker": {
+          "marker_line": 74,
+          "marker_offset": 2367,
+          "procedure": "GfpLysateClarification",
+          "scope": "/protocols/0/statements",
+          "step": "S7"
+        }
+      }
+    }
+  ],
+  "source_steps": 7,
+  "statistics_scope": {
+    "runtime": "whole invocation",
+    "source": "reachable nested AST constructs",
+    "step_protocol": "GfpLysateClarification"
+  },
+  "support_scope": "Nested AST calls, result members, declared plate groups/selectors, grouped readouts and conditional execution; unresolved JSON joins fail"
+}

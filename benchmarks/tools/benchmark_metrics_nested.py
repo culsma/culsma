@@ -70,7 +70,7 @@ def object_associations(facts):
 
 
 class NestedExtractor(Extractor):
-    rules_version = "patterns-metrics-nested-v8"
+    rules_version = "patterns-metrics-nested-v9"
     support_scope = "Nested AST calls, result members, declared plate groups/selectors, grouped readouts and conditional execution; unresolved JSON joins fail"
 
     def __init__(self, root):

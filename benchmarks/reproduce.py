@@ -13,7 +13,7 @@ import sys
 
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT / "tools"))
-from benchmark_metrics import locked_versions
+from benchmark_metrics import locked_versions, final_material_records
 
 SUPPORTED_PYTHON_SERIES = ("3.11", "3.12", "3.13")
 FIELDS = (
@@ -72,12 +72,13 @@ def generated_counts(directory):
             step not in steps or int(step[1:]) <= int(intro[1:]) for step in uses
         ):
             raise ValueError("invalid later-use relation")
-    if t["reagent_records"] != len(t["reagent_consumption"]) or t["touched_containers"] != len(t["touched_names"]) or t["final_material_states"] != len(t["final_products"]):
+    finals = t["final_material_records"] if "final_material_records" in t else t["final_products"]
+    if t["reagent_records"] != len(t["reagent_consumption"]) or t["touched_containers"] != len(t["touched_names"]) or t["final_material_states"] != len(finals):
         raise ValueError("traceability count differs from generated records")
     return {key: value for data in (d,c,t) for key,value in data.items() if key in FIELDS}
 
 
-def runtime_counts(output):
+def runtime_counts(output, run=None):
     report = output["report"]
     execution = report["execution"]
     if not output["ok"] or not execution["ok"] or execution["failed_steps"] or execution["diagnostic_count"]:
@@ -97,14 +98,15 @@ def runtime_counts(output):
     return dict(active_steps=active, completed_steps=execution["completed_steps"],
                 reagent_records=len(materials["reagent_consumption"]),
                 touched_containers=len(containers["touched_names"]),
-                final_material_states=len(materials["final_products"]))
+                final_material_states=len(final_material_records(run)) if run is not None
+                else len(materials["final_products"]))
 
 
 def total(rows):
     return {k: sum(row[k] for case, row in rows.items() if case != "00") for k in FIELDS}
 
 
-def record_projection(output):
+def record_projection(output, run=None):
     """Compare full material rows and returns, not just their lengths."""
     r = output["report"]
     # Object key ordering is irrelevant; preserve duplicate rows using a sorted list.
@@ -112,7 +114,8 @@ def record_projection(output):
         return sorted(json.dumps(v, sort_keys=True, separators=(",", ":")) for v in values)
     return {
         "consumption": rows(r["materials"]["reagent_consumption"]),
-        "final_materials": rows(r["materials"]["final_products"]),
+        "final_materials": rows([x["record"] for x in final_material_records(run)]) if run is not None
+        else rows(r["materials"]["final_products"]),
         "touched_names": sorted(r["resource_summary"]["containers"]["touched_names"]),
         "returns": output["returns"],
     }
@@ -123,7 +126,9 @@ def derive(results=None):
     for case in discover_cases():
         row = generated_counts(case_dir(case) if results is None else results / case / "evaluation")
         if results is not None:
-            runtime = runtime_counts(read_json(results / case / "input/artifacts/output.json"))
+            trace = read_json(results / case / "evaluation/result_traceability.json")
+            run = read_json(results / case / "input/artifacts/run.json") if "final_material_records" in trace else None
+            runtime = runtime_counts(read_json(results / case / "input/artifacts/output.json"), run)
             if any(row[k] != v for k,v in runtime.items()):
                 raise ValueError(f"Case {case}: generated metrics and runtime disagree")
         rows[case] = row
@@ -154,7 +159,7 @@ def trace_projection(trace):
     def records(values):
         return sorted(json.dumps(v["record"], sort_keys=True, separators=(",", ":")) for v in values)
     return {"consumption": records(trace["reagent_consumption"]),
-            "final_materials": records(trace["final_products"]),
+            "final_materials": records(trace["final_material_records"] if "final_material_records" in trace else trace["final_products"]),
             "touched_names": sorted(v["name"] for v in trace["touched_names"]),
             "returns": trace["formal_returns"]["value"]}
 
@@ -178,7 +183,8 @@ def compare(rows, results=None):
             if actual_record[field] != expected_record[field]:
                 differences.append(f"Case {case}: {field} records differ (see result_traceability.json)")
         if results is not None:
-            runtime_record = record_projection(read_json(results / case / "input/artifacts/output.json"))
+            run = read_json(results / case / "input/artifacts/run.json") if "final_material_records" in actual else None
+            runtime_record = record_projection(read_json(results / case / "input/artifacts/output.json"), run)
             if actual_record != runtime_record:
                 differences.append(f"Case {case}: extracted traceability differs from raw runtime records")
     for field, value in total(rows).items():

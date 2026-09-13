@@ -1,1 +1,603 @@
-{"adapter_sha256":"6f3dfe206ac08dcbc4a65b2e2e534a97374001705b41834a8f036fac1fe3852d","case_id":"00","case_role":"worked_example","container_identity":{"available":false,"evidence_level":"runtime_summary_name_record","note":"List indices locate summary records, not container identities."},"entry":{"evidence":{"file":"artifacts/ast.json","json_pointer":"/statements"},"protocol":"GfpLysateClarification"},"environment":{"culsma":"1.0.7rc1","culsma_file":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/lib/python3.12/site-packages/culsma/__init__.py","executable":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/bin/python","lark":"1.3.1","prefix":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv","python":"3.12.8"},"evidence_base":"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/00/input","extraction_id":"44a85ae33873407016c5879d2ba1b908f15afe1314f3f10afc39862a415c92cd","extractor_sha256":"11e290bb80e3d5eb76cd93cbe9a4f3863c98ef674f2bbb18191afd1afc2236c8","final_material_states":3,"final_products":[{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/0"},"record":{"mass_mg":100.0,"name":"ClarifiedLysate","primary_component":"LYSIS_COMPATIBLE_RESUSPENSION_BUFFER","volume_mL":0.1,"volume_uL":100.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/1"},"record":{"mass_mg":60.0,"name":"LysisTube","primary_component":"LYSIS_COMPATIBLE_RESUSPENSION_BUFFER","volume_mL":0.06,"volume_uL":60.0}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/final_products/2"},"record":{"count_cells":100000.0,"mass_mg":0.0,"name":"DebrisWaste","primary_component":"GFP_EXPRESSING_MICROBIAL_CELLS","volume_mL":0.0,"volume_uL":0.0}}],"formal_returns":{"evidence":{"file":"artifacts/output.json","json_pointer":"/returns"},"value":{"entry":{"entry_kind":"script","protocol_id":"entry","protocol_name":"entry","returns":[]}}},"input_files":{"artifacts/ast.json":"35e751cc018fd518194aa8577691761022c601f1c01f0167e900d82bcc7fb557","artifacts/ir.json":"233c06fa764bd694c8a5ba372284dab610623374ee520f297cea6a3cbe09c510","artifacts/output.json":"dfe766e8e4d4b15b400d58413b1a103fb28179a0aa6ce6a177aad473c0549c16","artifacts/plan.json":"ce62b6074571ed678a6a27c6b93b0f55ed3c53574445d640a64c7c0f6527ffeb","artifacts/result.json":"9371b72c0d77d042300becab48d2ce1e3d5253a354def78b1b875003c449a27e","artifacts/run.json":"1ea6e327507e4fb5941391312701e5a4c99b367890a5a6da76dce22996da63dd","artifacts/summary.json":"c6495e2a60851ee290e5fcf8283273aabccd6c6af6d109bfb8d5c3b02e2c6365","artifacts/typecheck.json":"37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570","artifacts/validate.json":"37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570","case.json":"422452a6aa478f25df599ecd3010cd72861ceff0885ff447dc6bed69860569a0","protocol.culs":"7ac220164212f34a5d33094f6d41be8b879829bae6cd2e28b2c6ae8470a6eff9","receipt.json":"c56019fe0910116cdf3952127c80d7f73e95db30e7b9ffe317a849381896fd33","stderr.txt":"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855","stdout.txt":"dfe766e8e4d4b15b400d58413b1a103fb28179a0aa6ce6a177aad473c0549c16"},"profile":"nested-v1","reagent_consumption":[{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/0"},"record":{"consumed_cells":100000.0,"consumed_mL":0.08,"consumed_mg":null,"consumed_uL":80.0,"name":"GfpCellSuspension","roles":["source"]}},{"evidence":{"file":"artifacts/result.json","json_pointer":"/materials/reagent_consumption/1"},"record":{"consumed_mL":0.08,"consumed_mg":null,"consumed_uL":80.0,"name":"LysisBuffer2x","roles":["source"]}}],"reagent_records":2,"rules_version":"patterns-metrics-nested-v8","schema_version":"patterns-metrics-v1","section":"3.4","statistics_scope":{"runtime":"whole invocation","source":"reachable nested AST constructs","step_protocol":"GfpLysateClarification"},"support_scope":"Nested AST calls, result members, declared plate groups/selectors, grouped readouts and conditional execution; unresolved JSON joins fail","touched_containers":5,"touched_names":[{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/0"},"name":"ClarifiedLysate"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/1"},"name":"DebrisWaste"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/2"},"name":"GfpCellSuspension"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/3"},"name":"LysisBuffer2x"},{"evidence":{"file":"artifacts/result.json","json_pointer":"/resource_summary/containers/touched_names/4"},"name":"LysisTube"}]}
+{
+  "adapter_sha256": "d1efba860cc871e3e3dedda3b6a097503a990fbd52f24245a27a3565d9c431ef",
+  "case_id": "00",
+  "case_role": "worked_example",
+  "container_identity": {
+    "available": false,
+    "evidence_level": "runtime_summary_name_record",
+    "note": "List indices locate summary records, not container identities."
+  },
+  "entry": {
+    "evidence": {
+      "file": "artifacts/ast.json",
+      "json_pointer": "/statements"
+    },
+    "protocol": "GfpLysateClarification"
+  },
+  "environment": {
+    "culsma": "1.0.7rc1",
+    "culsma_file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/lib/python3.12/site-packages/culsma/__init__.py",
+    "executable": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv/bin/python",
+    "lark": "1.3.1",
+    "prefix": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/rc1-enum-review/venv",
+    "python": "3.12.8"
+  },
+  "evidence_base": "/private/tmp/culsma-terminal-metrics-0ettVh/all-cases-v9/00/input",
+  "extraction_id": "1438b29ed5ba14d6c2952a6e5e75bbf090e1c9816ddcb435a19abbec293ce69b",
+  "extractor_sha256": "39c3aab4ffe7afd1f4afb257978639975103d14025eec94b513e1b278aa4fe26",
+  "final_material_records": [
+    {
+      "container_id": "container/entry/entry.s6%3A%3Aalloc/__cmp_entry_s0_lysis_tube",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s6%3A%3Aalloc~1__cmp_entry_s0_lysis_tube"
+      },
+      "record": {
+        "mass_mg": 60.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "GFP_EXPRESSING_MICROBIAL_CELLS",
+              "entry_id": "GFP_EXPRESSING_MICROBIAL_CELLS",
+              "label": null,
+              "material_state_source": null,
+              "partition_class": "pelletable_cells",
+              "preservation": null,
+              "quantity": {
+                "dimension": "count",
+                "unit": "cells",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 30.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER",
+              "entry_id": "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER",
+              "label": "supernatant_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 30.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 30.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "LYSIS_BUFFER_2X",
+              "entry_id": "LYSIS_BUFFER_2X",
+              "label": "supernatant_output",
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 30.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 0.0,
+              "associated_with": "container/entry/entry.s6%3A%3Aalloc/__cmp_entry_s0_lysis_tube",
+              "association_target_kind": "container",
+              "content_ref": "GFP_EXPRESSING_MICROBIAL_CELLS",
+              "entry_id": "GFP_EXPRESSING_MICROBIAL_CELLS_1",
+              "label": "pellet_output",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": "pelletable_cells",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "count",
+                "unit": "cells",
+                "value": 0.0
+              },
+              "relation": "pellet",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "GFP_EXPRESSING_MICROBIAL_CELLS": {
+              "dimension": "count",
+              "unit": "cells",
+              "value": 0.0
+            },
+            "LYSIS_BUFFER_2X": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 30.0
+            },
+            "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 30.0
+            }
+          },
+          "components": {
+            "GFP_EXPRESSING_MICROBIAL_CELLS": 0.0,
+            "LYSIS_BUFFER_2X": 30.0,
+            "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER": 30.0
+          },
+          "mass_mg": 60.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_lysis_tube",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s6::alloc",
+            "capacity_uL": 1500.0,
+            "component_partition_classes": {
+              "GFP_EXPRESSING_MICROBIAL_CELLS": "pelletable_cells"
+            },
+            "kind": "tube",
+            "label": "LysisTube"
+          },
+          "volume_uL": 60.0
+        },
+        "name": "LysisTube",
+        "volume_uL": 60.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s7%3A%3Aalloc/__cmp_entry_s0_clarified_lysate",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s7%3A%3Aalloc~1__cmp_entry_s0_clarified_lysate"
+      },
+      "record": {
+        "mass_mg": 100.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "GFP_EXPRESSING_MICROBIAL_CELLS",
+              "entry_id": "GFP_EXPRESSING_MICROBIAL_CELLS",
+              "label": null,
+              "material_state_source": null,
+              "partition_class": "pelletable_cells",
+              "preservation": null,
+              "quantity": {
+                "dimension": "count",
+                "unit": "cells",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 50.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER",
+              "entry_id": "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 50.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            },
+            {
+              "amount": 50.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "LYSIS_BUFFER_2X",
+              "entry_id": "LYSIS_BUFFER_2X",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "preservation": null,
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 50.0
+              },
+              "relation": "free",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "GFP_EXPRESSING_MICROBIAL_CELLS": {
+              "dimension": "count",
+              "unit": "cells",
+              "value": 0.0
+            },
+            "LYSIS_BUFFER_2X": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50.0
+            },
+            "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50.0
+            }
+          },
+          "components": {
+            "GFP_EXPRESSING_MICROBIAL_CELLS": 0.0,
+            "LYSIS_BUFFER_2X": 50.0,
+            "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER": 50.0
+          },
+          "mass_mg": 100.0,
+          "material_relationships": [],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_clarified_lysate",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s7::alloc",
+            "capacity_uL": 1000.0,
+            "component_partition_classes": {
+              "GFP_EXPRESSING_MICROBIAL_CELLS": "pelletable_cells"
+            },
+            "kind": "tube",
+            "label": "ClarifiedLysate"
+          },
+          "volume_uL": 100.0
+        },
+        "name": "ClarifiedLysate",
+        "volume_uL": 100.0
+      }
+    },
+    {
+      "container_id": "container/entry/entry.s8%3A%3Aalloc/__cmp_entry_s0_debris_waste",
+      "evidence": {
+        "file": "artifacts/run.json",
+        "json_pointer": "/state/artifacts/material_state/containers/container~1entry~1entry.s8%3A%3Aalloc~1__cmp_entry_s0_debris_waste"
+      },
+      "record": {
+        "mass_mg": 0.0,
+        "material_state": {
+          "component_entries": [
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER",
+              "entry_id": "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 0.0,
+              "associated_with": null,
+              "association_target_kind": null,
+              "content_ref": "LYSIS_BUFFER_2X",
+              "entry_id": "LYSIS_BUFFER_2X",
+              "label": null,
+              "material_state_source": null,
+              "preservation": null,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "relationship_source": null
+            },
+            {
+              "amount": 100000.0,
+              "associated_with": "container/entry/entry.s8%3A%3Aalloc/__cmp_entry_s0_debris_waste",
+              "association_target_kind": "container",
+              "content_ref": "GFP_EXPRESSING_MICROBIAL_CELLS",
+              "entry_id": "GFP_EXPRESSING_MICROBIAL_CELLS",
+              "label": null,
+              "material_state_source": "scientific_model_provider",
+              "partition_class": "pelletable_cells",
+              "preservation": "derived",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "quantity": {
+                "dimension": "count",
+                "unit": "cells",
+                "value": 100000.0
+              },
+              "relation": "pellet",
+              "relationship_source": "scientific_model"
+            }
+          ],
+          "component_quantities": {
+            "GFP_EXPRESSING_MICROBIAL_CELLS": {
+              "dimension": "count",
+              "unit": "cells",
+              "value": 100000.0
+            },
+            "LYSIS_BUFFER_2X": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            }
+          },
+          "components": {
+            "GFP_EXPRESSING_MICROBIAL_CELLS": 100000.0,
+            "LYSIS_BUFFER_2X": 0.0,
+            "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER": 0.0
+          },
+          "mass_mg": 0.0,
+          "material_relationships": [
+            {
+              "assumption_policy_ids": [],
+              "carrier_component_ids": [],
+              "carrier_volume_uL": 0,
+              "concentration": {
+                "policy_id": "explicit_carrier_volume",
+                "source": "derived",
+                "unit": "cells_per_uL",
+                "value": null
+              },
+              "dispersed_component_ids": [
+                "GFP_EXPRESSING_MICROBIAL_CELLS"
+              ],
+              "kind": "dispersion",
+              "material_state": "pellet",
+              "material_state_source": "runtime_transition",
+              "subtype": "cell_suspension",
+              "transferability": "non_homogeneous"
+            },
+            {
+              "associated_with": "container/entry/entry.s8%3A%3Aalloc/__cmp_entry_s0_debris_waste",
+              "dispersed_component_ids": [
+                "GFP_EXPRESSING_MICROBIAL_CELLS"
+              ],
+              "kind": "association",
+              "material_state": "pellet",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "configuration": {},
+                "model_id": null,
+                "model_version": null,
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0"
+              },
+              "subtype": "scientific_model_relation"
+            }
+          ],
+          "metadata": {
+            "allocation_name": "__cmp_entry_s0_debris_waste",
+            "allocation_namespace": "entry",
+            "allocation_step_id": "entry.s8::alloc",
+            "capacity_uL": 1000.0,
+            "component_partition_classes": {
+              "GFP_EXPRESSING_MICROBIAL_CELLS": "pelletable_cells"
+            },
+            "kind": "tube",
+            "label": "DebrisWaste"
+          },
+          "volume_uL": 0.0
+        },
+        "name": "DebrisWaste",
+        "volume_uL": 0.0
+      }
+    }
+  ],
+  "final_material_scope": {
+    "excludes": "Empty containers and internal fraction handles containing '::'.",
+    "identity": "One record per runtime container ID; display names are not deduplicated.",
+    "includes": "Every nonempty physical container, including residual source stocks and waste.",
+    "positive_quantity_tolerance": 1e-09,
+    "rule": "final-physical-container-state-v1",
+    "source": "run.json /state/artifacts/material_state/containers"
+  },
+  "final_material_states": 3,
+  "final_products": [
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/0"
+      },
+      "record": {
+        "mass_mg": 100.0,
+        "name": "ClarifiedLysate",
+        "primary_component": "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER",
+        "volume_mL": 0.1,
+        "volume_uL": 100.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/1"
+      },
+      "record": {
+        "mass_mg": 60.0,
+        "name": "LysisTube",
+        "primary_component": "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER",
+        "volume_mL": 0.06,
+        "volume_uL": 60.0
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/final_products/2"
+      },
+      "record": {
+        "count_cells": 100000.0,
+        "mass_mg": 0.0,
+        "name": "DebrisWaste",
+        "primary_component": "GFP_EXPRESSING_MICROBIAL_CELLS",
+        "volume_mL": 0.0,
+        "volume_uL": 0.0
+      }
+    }
+  ],
+  "formal_returns": {
+    "evidence": {
+      "file": "artifacts/output.json",
+      "json_pointer": "/returns"
+    },
+    "value": {
+      "entry": {
+        "entry_kind": "script",
+        "protocol_id": "entry",
+        "protocol_name": "entry",
+        "returns": []
+      }
+    }
+  },
+  "input_files": {
+    "artifacts/ast.json": "c5991e70db2fc8293a5d3c6b7efcac4030c4dc38463d358a97e0b4dd5569c3f2",
+    "artifacts/ir.json": "024d162cbaafe42f18b2e655633cc4ff1a3e08e56d7a7e1ff68398c15d0eea31",
+    "artifacts/output.json": "dfe766e8e4d4b15b400d58413b1a103fb28179a0aa6ce6a177aad473c0549c16",
+    "artifacts/plan.json": "ce62b6074571ed678a6a27c6b93b0f55ed3c53574445d640a64c7c0f6527ffeb",
+    "artifacts/result.json": "9371b72c0d77d042300becab48d2ce1e3d5253a354def78b1b875003c449a27e",
+    "artifacts/run.json": "1ea6e327507e4fb5941391312701e5a4c99b367890a5a6da76dce22996da63dd",
+    "artifacts/summary.json": "c6495e2a60851ee290e5fcf8283273aabccd6c6af6d109bfb8d5c3b02e2c6365",
+    "artifacts/typecheck.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "artifacts/validate.json": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+    "case.json": "422452a6aa478f25df599ecd3010cd72861ceff0885ff447dc6bed69860569a0",
+    "protocol.culs": "7ac220164212f34a5d33094f6d41be8b879829bae6cd2e28b2c6ae8470a6eff9",
+    "receipt.json": "010b0ec272ad793dd89e46b06424598ca94095e05fd5d8486644d07e74fad7da",
+    "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout.txt": "dfe766e8e4d4b15b400d58413b1a103fb28179a0aa6ce6a177aad473c0549c16"
+  },
+  "profile": "nested-v1",
+  "reagent_consumption": [
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/0"
+      },
+      "record": {
+        "consumed_cells": 100000.0,
+        "consumed_mL": 0.08,
+        "consumed_mg": null,
+        "consumed_uL": 80.0,
+        "name": "GfpCellSuspension",
+        "roles": [
+          "source"
+        ]
+      }
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/materials/reagent_consumption/1"
+      },
+      "record": {
+        "consumed_mL": 0.08,
+        "consumed_mg": null,
+        "consumed_uL": 80.0,
+        "name": "LysisBuffer2x",
+        "roles": [
+          "source"
+        ]
+      }
+    }
+  ],
+  "reagent_records": 2,
+  "reported_final_products": 3,
+  "rules_version": "patterns-metrics-nested-v9",
+  "schema_version": "patterns-metrics-v1",
+  "section": "3.4",
+  "statistics_scope": {
+    "runtime": "whole invocation",
+    "source": "reachable nested AST constructs",
+    "step_protocol": "GfpLysateClarification"
+  },
+  "support_scope": "Nested AST calls, result members, declared plate groups/selectors, grouped readouts and conditional execution; unresolved JSON joins fail",
+  "touched_containers": 5,
+  "touched_names": [
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/0"
+      },
+      "name": "ClarifiedLysate"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/1"
+      },
+      "name": "DebrisWaste"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/2"
+      },
+      "name": "GfpCellSuspension"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/3"
+      },
+      "name": "LysisBuffer2x"
+    },
+    {
+      "evidence": {
+        "file": "artifacts/result.json",
+        "json_pointer": "/resource_summary/containers/touched_names/4"
+      },
+      "name": "LysisTube"
+    }
+  ]
+}
