@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from .unknown_quantity import is_unknown
+
 from dataclasses import dataclass
 from typing import Any
 
@@ -42,7 +44,7 @@ from .separation_fate import (
 @dataclass(frozen=True)
 class RuntimePartitionComponent:
     component_id: str
-    amount: float
+    amount: float | None
     explicit_fate: ExplicitContentFate | None
     physical_state: ContentPhysicalState
     content_ref: str | None = None
@@ -102,7 +104,7 @@ class ResolvedComponentOutput:
 @dataclass(frozen=True)
 class ResolvedComponentEffect:
     source_component_id: str
-    source_amount: float
+    source_amount: float | None
     source_relation: str
     source_accessibility: str
     source_preservation: str
@@ -166,6 +168,13 @@ class ScientificModelMaterialAdapter:
             for output in operation_contract.outputs
         )
         state_transition_only = operation_contract.effect_kind != "separation_fate"
+        for component in components.values():
+            if is_unknown(component.quantity) and (
+                component.explicit_fate is None or state_transition_only
+                or component.physical_state.association != "free"
+            ):
+                return MaterialEffectFailure("MAT_QUANTITY_UNKNOWN",
+                    "Unknown-mass components require explicit separation fates and a free relationship in this prototype")
         provider_components = (
             ()
             if state_transition_only
@@ -179,7 +188,7 @@ class ScientificModelMaterialAdapter:
                 )
                 for component in components.values()
                 if component.explicit_fate is None
-                and component.amount > ENTRY_EPSILON
+                and component.amount is not None and component.amount > ENTRY_EPSILON
             )
         )
         fractions_by_component = {
@@ -198,7 +207,7 @@ class ScientificModelMaterialAdapter:
             if component.explicit_fate is not None
         }
         for component in components.values():
-            if component.amount > ENTRY_EPSILON:
+            if is_unknown(component.quantity) or component.amount > ENTRY_EPSILON:
                 continue
             fractions_by_component[component.entry_id] = (1.0, 0.0)
             fate_source_by_component[component.entry_id] = "zero_quantity_noop"
@@ -310,6 +319,20 @@ class ScientificModelMaterialAdapter:
                     "MAT_SCIENTIFIC_MODEL_REJECTED",
                     f"No separation fate was produced for component '{component.entry_id}'",
                 )
+            if is_unknown(component.quantity):
+                if any(key[0] == component.entry_id for key in author_transition_resolution.transitions_by_output):
+                    return MaterialEffectFailure("MAT_QUANTITY_UNKNOWN", "Relationship changes on unknown mass are not supported by this prototype")
+                resolved_component_effects.append(ResolvedComponentEffect(
+                    source_component_id=component.entry_id, source_amount=None,
+                    source_relation="free", source_accessibility="accessible", source_preservation="declared",
+                    source_content_ref=component.content_ref,
+                    outputs=tuple(ResolvedComponentOutput(
+                        output=output, fraction=fraction, next_relation="free", next_label=component.label,
+                        retire_quantity=False, replacement_quantity=None, decision_source="author_override",
+                        fate_provenance=None, transition_provenance=None, transition_source="author"
+                    ) for output, fraction in zip(bound_outputs, component_fractions, strict=True)),
+                ))
+                continue
             base_snapshot = self.build_component_snapshot(
                 state=state,
                 source=source,
@@ -524,6 +547,12 @@ class ScientificModelMaterialAdapter:
             entry_id = str(entry.get("entry_id", ""))
             content_ref = str(entry.get("content_ref", ""))
             quantity = entry.get("quantity")
+            if is_unknown(quantity):
+                if entry.get("relation", "free") != "free":
+                    return MaterialEffectFailure("MAT_QUANTITY_UNKNOWN", "Unknown-mass transfer requires a free relationship")
+                resolved.append(ResolvedComponentTransition(source_entry_id=entry_id,
+                    next_relation="free", next_label=entry.get("label"), provenance=None))
+                continue
             component = RuntimePartitionComponent(
                 component_id=entry_id,
                 content_ref=content_ref,
@@ -658,7 +687,7 @@ class ScientificModelMaterialAdapter:
                     else None
                 ),
                 "provenance": provider_provenance_record(component.provenance),
-                "scientific_decision": True,
+                "scientific_decision": component.provenance is not None,
             }
             for component in transition.component_transitions
         }
@@ -922,7 +951,7 @@ class ScientificModelMaterialAdapter:
             return ()
         support_ids: list[str] = []
         for candidate in components.values():
-            if candidate.amount <= ENTRY_EPSILON:
+            if candidate.amount is None or candidate.amount <= ENTRY_EPSILON:
                 continue
             fractions = fractions_by_component.get(candidate.entry_id)
             if fractions is None or output_index >= len(fractions):

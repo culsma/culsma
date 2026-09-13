@@ -6,6 +6,8 @@ from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import Any
 
+from .unknown_quantity import container_has_unknown
+
 from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.material.args import arg_call, arg_quantity, arg_string, call_arg_int, call_arg_string
@@ -14,6 +16,7 @@ from culsma.runtime.material.component_entries import (
     container_component_entries,
     project_component_entries,
     replace_component_entries,
+    component_entry_has_quantity,
     subtract_component_entries,
 )
 from culsma.runtime.material.diagnostics import diagnostic_result
@@ -1130,7 +1133,9 @@ def record_partitioned_contents_state(
             continue
         residual_uL = float(slot_part.get("volume_uL", 0.0))
         residual_mg = float(slot_part.get("mass_mg", 0.0))
-        if residual_uL or residual_mg or container_count_cells(slot_part):
+        if residual_uL or residual_mg or container_count_cells(slot_part) or any(
+            component_entry_has_quantity(entry) for entry in slot_part.get("component_entries", [])
+        ):
             relocate_material(
                 slot_part,
                 source,
@@ -1346,6 +1351,8 @@ def _contents_transfer_amount(
         moved_mg = part_mass * ratio
         return moved_uL, moved_mg, container_count_cells(part) * ratio, ratio, "contents_state_volume", {}
     if unit in MASS_TO_MG:
+        if container_has_unknown(part):
+            return diagnostic_result(step, state, "MAT_QUANTITY_UNKNOWN", "Mass-based contents transfer requires known component mass")
         moved_mg = value * MASS_TO_MG[unit]
         if part_mass < moved_mg:
             return diagnostic_result(

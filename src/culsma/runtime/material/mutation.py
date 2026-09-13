@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from .unknown_quantity import is_unknown, container_has_unknown
+
 from abc import ABC, abstractmethod
 from copy import deepcopy
 from dataclasses import dataclass
@@ -549,7 +551,7 @@ def apply_source_partition_transfer(
             continue
         residual_uL = float(residual.get("volume_uL", 0.0))
         residual_mg = float(residual.get("mass_mg", 0.0))
-        if residual_uL or residual_mg or container_count_cells(residual):
+        if residual_uL or residual_mg or container_count_cells(residual) or container_has_unknown(residual):
             conflict = _quantity_axis_conflict(step, state, residual, source_after, residual_id, source_id)
             if conflict is not None:
                 return conflict
@@ -828,6 +830,8 @@ def _apply_transfer_mass(
 ) -> MaterialUpdateResult:
     src = state["containers"][src_id]
     dst = state["containers"][dst_id]
+    if container_has_unknown(src):
+        return diagnostic_result(step, state, "MAT_QUANTITY_UNKNOWN", "Mass-based transfer requires a known source mass; declared component mass is unknown")
     src_mass = container_component_quantity_total(src, "mass")
 
     if requested_mg < 0:
@@ -1006,7 +1010,7 @@ def _apply_transfer_count(
         return conflict
     target_quantities = dst.get("component_quantities")
     target_was_empty = not isinstance(target_quantities, dict) or not any(
-        isinstance(quantity, dict) and abs(float(quantity.get("value", 0.0))) > 1e-12
+        isinstance(quantity, dict) and (is_unknown(quantity) or abs(float(quantity.get("value", 0.0))) > 1e-12)
         for quantity in target_quantities.values()
     )
     movement = apply_material_movement(

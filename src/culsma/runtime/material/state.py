@@ -13,6 +13,7 @@ from culsma.runtime.material.container_content import (
     apply_load_content,
 )
 from culsma.runtime.material.suspension import apply_finalize_container_contents
+from culsma.runtime.material.replacement import apply_material_replace
 from culsma.runtime.material.contents_state import (
     ContentsStateTransitionPlan,
     MaterialIndexedPartsStateManager,
@@ -51,7 +52,7 @@ class MaterialStateManager:
         step: PlanStep,
         state: dict[str, Any],
     ) -> MaterialStateChangePlan | None:
-        if step.op in {"AllocContainer", "DefineContent", "LoadContent", "AnnotateContent", "FinalizeContainerContents"}:
+        if step.op in {"AllocContainer", "DefineContent", "LoadContent", "AnnotateContent", "FinalizeContainerContents", "replace"}:
             return MaterialStateChangePlan(kind="container_record", step=step)
 
         if step.op in {"sep", "frac", "agit"}:
@@ -110,6 +111,8 @@ class MaterialStateManager:
         )
 
     def _apply_container_record(self, step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
+        if step.op == "replace":
+            return apply_material_replace(step, state)
         if step.op == "AllocContainer":
             return apply_alloc_container(step, state)
         if step.op == "DefineContent":

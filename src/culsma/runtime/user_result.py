@@ -212,7 +212,7 @@ def _container_metrics(raw: Any) -> dict[str, float]:
         return {"volume_uL": 0.0, "mass_mg": 0.0, "components_total": 0.0, "count_cells": 0.0}
     comp = raw.get("components", {})
     if isinstance(comp, dict):
-        comp_total = sum(float(v) for v in comp.values())
+        comp_total = sum(float(v) for v in comp.values() if v is not None)
     else:
         comp_total = 0.0
     return {
@@ -357,7 +357,8 @@ def _final_products(
     for container_id, data in container_stats.items():
         after = data["after"]
         delta = data["delta"]
-        if after["volume_uL"] <= 1e-9 and after["mass_mg"] <= 1e-9 and after["count_cells"] <= 1e-9:
+        unknown_material = bool((data.get("final_raw") or {}).get("unknown_quantity_dimensions"))
+        if after["volume_uL"] <= 1e-9 and after["mass_mg"] <= 1e-9 and after["count_cells"] <= 1e-9 and not unknown_material:
             continue
         if "::" in container_id:
             continue
@@ -370,6 +371,7 @@ def _final_products(
             or delta["mass_mg"] > 1e-9
             or delta["count_cells"] > 1e-9
             or container_id in measured_names
+            or unknown_material
         ):
             continue
         if not (name_roles & {"dest", "mix_target", "sample"} or container_id in measured_names):
@@ -430,7 +432,7 @@ def _intermediate_materials(
         if container_id in final_product_ids or "::" in container_id:
             continue
         after = data["after"]
-        if after["volume_uL"] <= 1e-9 and after["count_cells"] <= 1e-9:
+        if after["volume_uL"] <= 1e-9 and after["count_cells"] <= 1e-9 and not (data.get("final_raw") or {}).get("unknown_quantity_dimensions"):
             continue
         name_roles = roles.get(container_id, set())
         is_process_container = bool(name_roles & {"dest", "mix_target"}) and not _is_user_output_name(display_name)
@@ -554,6 +556,8 @@ def _derived_container_state(
         components,
         content_registry=content_registry,
     )
+    if "mass" in raw_container.get("unknown_quantity_dimensions", []):
+        return None, primary_component
     return round(float(raw_container.get("mass_mg", 0.0)), 3), primary_component
 
 
@@ -565,8 +569,14 @@ def _select_primary_component(
     if not components:
         return None, None
 
+    # An unknown amount cannot participate in quantitative ranking.
+    unknown_names = [str(name) for name, amount in components.items() if amount is None]
+    if unknown_names:
+        return (unknown_names[0] if len(unknown_names) == 1 else None), None
     candidates: list[tuple[str, float, bool]] = []
     for name, amount in components.items():
+        if amount is None:
+            continue
         amount_f = float(amount)
         if amount_f <= 1e-9:
             continue

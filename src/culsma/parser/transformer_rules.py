@@ -338,7 +338,9 @@ class CallStatementHandler(SurfaceRuleHandler):
                 else:
                     normalized_args.append(Arg(name=f"arg{idx}", value=arg, span=getattr(arg, "span", None)))
             return ProtocolRefStatement(module=base.name, protocol=method, args=normalized_args, span=state.span)
-        if any(isinstance(arg, Arg) for arg in raw_args):
+        if any(isinstance(arg, Arg) for arg in raw_args) and not (
+            method == "replace" and isinstance(base, MemberExpr) and base.member == "materials"
+        ):
             raise ValueError("method call statements only accept positional args unless parsed as Module.Protocol(...)")
         return ExprStatement(value=MethodCallExpr(base=base, method=method, args=list(raw_args), span=state.span), span=state.span)
 

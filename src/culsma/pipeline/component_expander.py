@@ -517,7 +517,8 @@ def _rename_expr(expr: Expression, rename_map: dict[str, str]) -> Expression:
         return MethodCallExpr(
             base=_rename_expr(expr.base, rename_map),
             method=expr.method,
-            args=[_rename_expr(arg, rename_map) for arg in expr.args],
+            args=[Arg(name=arg.name, value=_rename_expr(arg.value, rename_map), span=arg.span)
+                  if isinstance(arg, Arg) else _rename_expr(arg, rename_map) for arg in expr.args],
             span=expr.span,
         )
     if isinstance(expr, SourcePartitionExpr):
@@ -561,7 +562,7 @@ def _contains_component_call(expr: Expression, lookup: dict[str, ProtocolDecl]) 
     if isinstance(expr, MemberExpr):
         return _contains_component_call(expr.base, lookup)
     if isinstance(expr, MethodCallExpr):
-        return _contains_component_call(expr.base, lookup) or any(_contains_component_call(arg, lookup) for arg in expr.args)
+        return _contains_component_call(expr.base, lookup) or any(_contains_component_call(arg.value if isinstance(arg, Arg) else arg, lookup) for arg in expr.args)
     if isinstance(expr, SourcePartitionExpr):
         return (
             _contains_component_call(expr.source, lookup)

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+from .unknown_quantity import is_unknown
+
 from culsma.runtime.material.ledger import CONSERVATION_ABS_EPS, container_count_cells, density_mg_per_uL
 from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_UL
 
@@ -35,6 +37,7 @@ def state_totals(state: dict[str, Any]) -> dict[str, float]:
     total_mass = 0.0
     total_components = 0.0
     total_cells = 0.0
+    unknown_shares = {}
     containers = state.setdefault("containers", {})
     for obj in containers.values():
         if not isinstance(obj, dict):
@@ -54,20 +57,28 @@ def state_totals(state: dict[str, Any]) -> dict[str, float]:
             total_components += sum(
                 canonical_component_amount(
                     quantities.get(component_id) if isinstance(quantities, dict) else None,
-                    fallback=float(amount),
+                    fallback=float(amount) if amount is not None else 0.0,
                 )
                 for component_id, amount in comp.items()
             )
         total_cells += container_count_cells(obj)
+        for quantity in obj.get("component_quantities", {}).values():
+            if is_unknown(quantity):
+                for origin, fraction in quantity["shares"].items():
+                    key = "unknown_share::" + origin
+                    unknown_shares[key] = unknown_shares.get(key, 0.0) + fraction
     return {
         "volume_uL": total_volume,
         "mass_mg": total_mass,
         "count_cells": total_cells,
         "components": total_components,
+        **unknown_shares,
     }
 
 
 def canonical_component_amount(quantity: Any, *, fallback: float) -> float:
+    if is_unknown(quantity):
+        return 0.0  # Numeric subtotal only; symbolic shares are checked separately.
     if not isinstance(quantity, dict):
         return fallback
     value = float(quantity.get("value", fallback))
@@ -85,7 +96,7 @@ def canonical_component_amount(quantity: Any, *, fallback: float) -> float:
 def totals_conserved(before: dict[str, float], after: dict[str, float]) -> bool:
     return all(
         _close_enough(float(before.get(key, 0.0)), float(after.get(key, 0.0)))
-        for key in ("volume_uL", "mass_mg", "count_cells", "components")
+        for key in set(before) | set(after)
     )
 
 

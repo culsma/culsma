@@ -431,7 +431,7 @@ class RuntimeStepDispatcher:
             return self.local_state_handler.handle(step, session)
         if step.op == "repeat_bind":
             return self.repeat_handler.handle(step, session)
-        if step.op == "FinalizeContainerContents":
+        if step.op in {"FinalizeContainerContents", "replace"}:
             return self.internal_material_handler.handle(step, session)
         return self.driver_handler.handle(step, session)
 

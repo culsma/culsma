@@ -670,6 +670,10 @@ def _runtime_protocol_output_serialize(value: Any) -> Any:
                 "mass_mg",
                 "count_cells",
                 "component_quantities",
+                "component_entries",
+                "unknown_quantity_dimensions",
+                "aggregate_quantity_policy",
+                "known_mass_subtotal_mg",
                 "material_relationships",
                 "container_kind",
                 "label",
@@ -744,6 +748,8 @@ def _container_ref_payload(material_state: Any, container_id: str) -> dict[str, 
         for name, amount in components.items():
             if isinstance(amount, (int, float)):
                 component_map[str(name)] = round(float(amount), 6)
+            elif amount is None:
+                component_map[str(name)] = None
     raw_quantities = raw.get("component_quantities")
     component_quantities: dict[str, Any] = {}
     count_cells = 0.0
@@ -766,7 +772,13 @@ def _container_ref_payload(material_state: Any, container_id: str) -> dict[str, 
         "components": component_map,
         "metadata": metadata_out,
     }
-    if count_cells > 0.0:
+    if raw.get("unknown_quantity_dimensions"):
+        payload["known_mass_subtotal_mg"] = payload["mass_mg"]
+        payload["mass_mg"] = None
+        payload["unknown_quantity_dimensions"] = deepcopy(raw["unknown_quantity_dimensions"])
+        payload["aggregate_quantity_policy"] = "known_subtotals_only"
+        payload["component_entries"] = deepcopy(raw.get("component_entries", []))
+    if count_cells > 0.0 or raw.get("unknown_quantity_dimensions"):
         payload["component_quantities"] = component_quantities
         payload["count_cells"] = round(count_cells, 6)
         relationships = raw.get("material_relationships")

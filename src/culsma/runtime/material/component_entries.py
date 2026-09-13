@@ -14,6 +14,8 @@ from culsma.scientific_model.material import (
 )
 from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_UL
 
+from .unknown_quantity import is_unknown, validate_unknown, scale_unknown, merge_unknown
+
 
 ENTRY_EPSILON = 1e-12
 COMPONENT_ENTRIES_KEY = "component_entries"
@@ -67,7 +69,12 @@ def validate_component_entry_set(
         if not isinstance(content_ref, str) or not content_ref:
             raise ValueError(f"Entry '{entry_id}' has no content_ref")
         amount = entry.get("amount")
-        if (
+        unknown = is_unknown(entry.get("quantity"))
+        if unknown:
+            validate_unknown(entry["quantity"])
+            if amount is not None:
+                raise ValueError("Unknown entries require a null amount")
+        if not unknown and (
             isinstance(amount, bool)
             or not isinstance(amount, (int, float))
             or not isfinite(float(amount))
@@ -75,7 +82,7 @@ def validate_component_entry_set(
         ):
             raise ValueError(f"Entry '{entry_id}' has an invalid amount")
         quantity = entry.get("quantity")
-        if quantity is not None:
+        if quantity is not None and not unknown:
             value = quantity.get("value") if isinstance(quantity, dict) else None
             if (
                 isinstance(value, bool)
@@ -204,7 +211,7 @@ def container_component_entries(
         entry: dict[str, Any] = {
             "entry_id": next_component_entry_id(entries, content_ref),
             "content_ref": content_ref,
-            "amount": float(amount),
+            "amount": None if is_unknown(quantity) else float(amount),
             "quantity": deepcopy(quantity) if isinstance(quantity, dict) else None,
             "relation": relation["relation"],
             "associated_with": relation.get("associated_with"),
@@ -377,6 +384,10 @@ def quantities_compatible(left: Any, right: Any) -> bool:
         return left is None and right is None
     if not isinstance(left, dict) or not isinstance(right, dict):
         return False
+    if is_unknown(left) != is_unknown(right):
+        known = right if is_unknown(left) else left
+        if known.get("value") != 0:
+            return False
     if left.get("dimension") != right.get("dimension"):
         return False
     return quantity_conversion_factor(
@@ -441,9 +452,8 @@ def merge_component_entry(
             )
             if converted is not None:
                 amount_factor = converted
-        existing["amount"] = float(existing.get("amount", 0.0)) + float(
-            incoming.get("amount", 0.0)
-        ) * amount_factor
+        existing["amount"] = (None if is_unknown(existing_quantity) or is_unknown(incoming_quantity) else
+            float(existing.get("amount", 0.0)) + float(incoming.get("amount", 0.0)) * amount_factor)
         merge_entry_quantity(existing, incoming)
         if existing.get("partition_class") is None:
             existing["partition_class"] = incoming.get("partition_class")
@@ -540,6 +550,9 @@ def merge_entry_quantity(existing: dict[str, Any], incoming: dict[str, Any]) -> 
             str(existing.get("content_ref", "")),
             "incompatible quantity dimensions or units",
         )
+    if is_unknown(left) or is_unknown(right):
+        merge_unknown(left, right)
+        return
     left["value"] = float(left.get("value", 0.0)) + float(right.get("value", 0.0)) * factor
 
 
@@ -647,6 +660,12 @@ def merge_transferred_entries(
 def split_component_entry(entry: dict[str, Any], ratio: float) -> tuple[dict[str, Any], dict[str, Any]]:
     remaining = deepcopy(entry)
     moved = deepcopy(entry)
+    if is_unknown(entry.get("quantity")):
+        remaining["quantity"] = scale_unknown(entry["quantity"], 1.0 - ratio)
+        moved["quantity"] = scale_unknown(entry["quantity"], ratio)
+        remaining["amount"] = None if ratio < 1 else 0.0
+        moved["amount"] = None if ratio > 0 else 0.0
+        return remaining, moved
     amount = float(entry.get("amount", 0.0))
     moved_amount = clamp_entry_value(amount * ratio)
     remaining["amount"] = clamp_entry_value(amount - moved_amount)
@@ -666,6 +685,8 @@ def split_component_entry(entry: dict[str, Any], ratio: float) -> tuple[dict[str
 
 def component_entry_has_quantity(entry: dict[str, Any]) -> bool:
     quantity = entry.get("quantity")
+    if is_unknown(quantity):
+        return any(value > 0 for value in quantity["shares"].values())
     if isinstance(quantity, dict):
         return abs(float(quantity.get("value", 0.0))) > ENTRY_EPSILON
     return abs(float(entry.get("amount", 0.0))) > ENTRY_EPSILON
@@ -871,6 +892,20 @@ def subtract_component_entries(
                 str(removed.get("content_ref", "")),
                 "source entry is missing",
             )
+        if is_unknown(match.get("quantity")) and is_unknown(removed.get("quantity")):
+            shares = match["quantity"]["shares"]
+            for origin, fraction in removed["quantity"]["shares"].items():
+                remaining = shares.get(origin, 0.0) - fraction
+                if remaining < -ENTRY_EPSILON:
+                    raise ComponentEntryMergeConflict(str(removed["content_ref"]), "unknown share underflow")
+                if remaining <= 0:
+                    shares.pop(origin, None)
+                else:
+                    shares[origin] = remaining
+            if not shares:
+                match["quantity"] = scale_unknown(removed["quantity"], 0.0)
+                match["amount"] = 0.0
+            continue
         match["amount"] = clamp_entry_value(
             float(match.get("amount", 0.0)) - float(removed.get("amount", 0.0))
         )
@@ -923,7 +958,7 @@ def project_component_entries(container: dict[str, Any]) -> None:
     entries = container.get(COMPONENT_ENTRIES_KEY)
     if not isinstance(entries, list):
         return
-    components: dict[str, float] = {}
+    components: dict[str, float | None] = {}
     quantities: dict[str, dict[str, Any]] = {}
     classes: dict[str, str] = {}
     for entry in entries:
@@ -940,9 +975,10 @@ def project_component_entries(container: dict[str, Any]) -> None:
             )
             if converted is not None:
                 amount_factor = converted
-        components[content_ref] = components.get(content_ref, 0.0) + float(
-            entry.get("amount", 0.0)
-        ) * amount_factor
+        if is_unknown(quantity) or is_unknown(existing_quantity):
+            components[content_ref] = None
+        else:
+            components[content_ref] = components.get(content_ref, 0.0) + float(entry.get("amount", 0.0)) * amount_factor
         if isinstance(quantity, dict):
             if existing_quantity is None:
                 quantities[content_ref] = deepcopy(quantity)
@@ -956,9 +992,10 @@ def project_component_entries(container: dict[str, Any]) -> None:
                         content_ref,
                         "legacy projection cannot represent incompatible quantities",
                     )
-                existing_quantity["value"] = float(existing_quantity.get("value", 0.0)) + float(
-                    quantity.get("value", 0.0)
-                ) * factor
+                if is_unknown(existing_quantity) or is_unknown(quantity):
+                    merge_unknown(existing_quantity, quantity)
+                else:
+                    existing_quantity["value"] = float(existing_quantity.get("value", 0.0)) + float(quantity.get("value", 0.0)) * factor
         partition_class = entry.get("partition_class")
         if isinstance(partition_class, str):
             classes[content_ref] = partition_class

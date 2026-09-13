@@ -63,20 +63,27 @@ protocol CellCultureWesternBlot returns (blot_image) {
     waste << [hek293t_cells.contents[0]];
     let ripa = tube(label = "RIPABuffer", capacity = 1000uL, load = [content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "RIPA1", attrs = { role: lysis }):800uL]);
     let inhibitors = tube(label = "ProteasePhosphataseInhibitors", capacity = 100uL, load = [content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "INHIB1", attrs = { role: inhibitor_cocktail }):50uL]);
-    let lysate = tube(label = "CellLysate", capacity = 1500uL, load = [
-        content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "HEK293T_TOTAL_PROTEIN", attrs = { role: total_cellular_protein, basis: "200000_cells_at_200_pg_per_cell" }):40ug
-    ]);
-    with env(thermal = 0C, duration = 5min) {
+    let lysate = tube(label = "CellLysate", capacity = 1500uL);
+    with env(thermal = 0C) {
         hek293t_cells << [ripa:300uL, inhibitors:10uL];
-        let disruption_group = sep(
-            sample = hek293t_cells,
-            program = disrupt_program(duration = 5min)
-        );
-        lysate << [disruption_group[0]];
+        // Lift with a cell lifter on ice and collect into the tube.
+        // The source specifies no separate timed disruption before collection.
+        lysate << [hek293t_cells];
     }
     with env(thermal = 4C) {
         agit(sample = lysate, mode = shake, duration = 15min);
     }
+    // Author-declared representation after chemical lysis; no protein yield is supplied.
+    lysate.materials.replace(
+        subject = lysate.materials.get("HEK293T"),
+        products = [
+            content(
+                kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+                type = ContentType.PROTEIN,
+                code = "HEK293T_TOTAL_PROTEIN"
+            ):unknown(dimension = mass)
+        ]
+    );
     let clarified_lysate = tube(label = "ClarifiedLysate", capacity = 1000uL);
     with env(thermal = 4C, duration = 15min) {
         let clarified_group = sep(

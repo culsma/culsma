@@ -32,7 +32,7 @@ from .operations import OperationContractValidator
 from .resolution import ExprResolver
 from .separation import validate_component_fates_contract
 
-BUILTIN_METHOD_STEPS = {"append"}
+BUILTIN_METHOD_STEPS = {"append", "replace"}
 CONSTRAINT_CUSTOMIZED = "customized"
 COLD_CHAIN_MAX_C = 8.0
 AGIT_MODES = {"vortex", "invert", "shake", "stir"}

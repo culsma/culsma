@@ -28,6 +28,7 @@ from culsma.pipeline.operation_specs import OperationSpec
 from culsma.pipeline.scope import ScopeModel, ScopeQueryService
 
 from .binding import BindingValidator
+from .material_replace import validate_material_replace
 from .constructors import ConstructorValidator
 from .context import _GroupBinding
 from .environment import EnvContractValidator
@@ -787,6 +788,8 @@ class StepHandler(BaseStatementHandler):
     ) -> None:
         stmt = cast(IRStep, stmt)
         state = cast(StepState, state)
+        if stmt.name == "replace":
+            ctx.diagnostics.extend(validate_material_replace(stmt, ctx.expr_bindings, ctx.defined_names))
         self.append_diagnostics(
             ctx,
             validate_active_constraint_compatibility(stmt, active_requirements=ctx.active_requirements),

@@ -155,6 +155,7 @@ class ExprCompiler:
         return [
             IRArg(name="self", value=self.compile(expr.base), span=expr.base.span),
             *[
+                self.compile_arg(arg) if isinstance(arg, Arg) else
                 IRArg(name=f"arg{idx}", value=self.compile(arg), span=arg.span)
                 for idx, arg in enumerate(expr.args)
             ],

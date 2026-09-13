@@ -131,6 +131,42 @@ implementation remains available for an explicitly disabled or unsupported
 capability. Aggregate volume and mass stay inside the kernel and are projected
 from the authoritative component-detail ledger.
 
+## Author-declared component replacement prototype (PM #112)
+
+```mermaid
+flowchart LR
+    Front["container.materials.replace<br/>subject + products"] --> Validate["Validate receiver, selector,<br/>content descriptors, unknown mass"]
+    Validate --> Candidate["Copy state<br/>retire counted cellular entry<br/>create derived entries + source history"]
+    Candidate --> Commit["Validate complete entry set<br/>atomic internal commit"]
+    Commit --> Route["Explicit separation fates<br/>volume aliquots + collection"]
+    Route --> Shares["Preserve unknown mass<br/>conserve symbolic shares"]
+    Route --> Numeric["Mass-based request<br/>MAT_QUANTITY_UNKNOWN"]
+```
+
+```culs
+lysate.materials.replace(
+    subject = lysate.materials.get("HEK293T"),
+    products = [
+        content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+                type = ContentType.PROTEIN,
+                code = "HEK293T_TOTAL_PROTEIN"):unknown(dimension = mass)
+    ]
+);
+```
+
+| Boundary | Prototype behavior |
+| --- | --- |
+| Scope | Counted cellular source → one or more newly represented components with unknown mass; a declaration after processing, not a hardware operation or yield prediction |
+| Frontend | Named method arguments are accepted for `materials.replace`; `products` avoids the reserved `with` keyword |
+| Retirement | Remove the selected live entry; retain its full snapshot and declaration/dependency IDs in `material_replacements`; unlisted constituents remain explicitly unenumerated, not asserted absent |
+| Quantities | Unknown entries use `amount: null`, `quantity.status: unknown`, `value: null`; never inherit cell count or invent protein mass |
+| Routing | Products are declared free and participate in the existing proportional volume-transfer convention; separation requires explicit component fates; zero fractions create no unknown-material entry |
+| Conservation | Known numerical subtotals and symbolic origin shares are checked separately; conserving shares does not verify protein mass balance |
+| Aggregates | Internal compatibility mass is a known subtotal, marked `known_subtotals_only`; public container returns and report rows expose unknown total mass as null |
+| Failures | Missing source, duplicate product, unsupported quantity/state, and dangling association reject atomically; collect active indexed parts before replacement |
+| Deferred | Numerical product yields, partial cell replacement, known/unknown merges, and relationship transitions on unknown entries; this prototype does not finalize the owning language reference |
+| Regression | `tests/test_material_replace_integration.py`, including full Case 09; existing relationship-transition tests remain applicable |
+
 ## Proposed Scientific Model API Contract
 
 The API has three layers. The caller injects one resolver, the resolver dispatches

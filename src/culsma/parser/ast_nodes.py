@@ -314,7 +314,7 @@ class MethodCallExpr:
     """<base>.<method>(<arg>, <arg>, ...)"""
     base: Expression
     method: str
-    args: list[Expression] = field(default_factory=list)
+    args: list[Expression | Arg] = field(default_factory=list)
     span: Span | None = None
 
 

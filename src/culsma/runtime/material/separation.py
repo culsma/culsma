@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from .unknown_quantity import is_unknown
+from .component_entries import split_component_entry
+
 from dataclasses import dataclass
 from typing import Any
 
@@ -163,6 +166,8 @@ def project_resolved_material_effect(
                         source_quantity.get("value", component.source_amount)
                     ) * output.fraction
                 continue
+            if is_unknown(source_quantity) and output.fraction == 0:
+                continue
             entries_by_part[output.part_id].append(
                 resolved_output_component_entry(
                     component,
@@ -215,6 +220,13 @@ def resolved_output_component_entry(
     source_entry: dict[str, Any],
     output_id: str | None = None,
 ) -> dict[str, Any]:
+    if is_unknown(source_quantity):
+        _, projected = split_component_entry(source_entry, output.fraction)
+        projected["relation"] = output.next_relation or component.source_relation
+        projected["associated_with"] = None
+        projected["association_target_kind"] = None
+        # Routing is author-declared; preserve the original replacement lineage.
+        return projected
     projected_quantity = None
     if isinstance(source_quantity, dict):
         projected_quantity = dict(source_quantity)
@@ -505,7 +517,7 @@ def apply_separation_material(
     for entry in source_entries:
         component_id = str(entry.get("entry_id"))
         content_ref = str(entry.get("content_ref"))
-        amount = float(entry.get("amount", 0.0))
+        amount = None if is_unknown(entry.get("quantity")) else float(entry.get("amount", 0.0))
         explicit_fate = author_fates.get(content_ref)
         if explicit_fate is None:
             legacy_ratios = component_partition_ratios(source, content_ref)
@@ -528,7 +540,7 @@ def apply_separation_material(
         )
         components[component_id] = RuntimePartitionComponent(
             component_id=component_id,
-            amount=float(amount),
+            amount=amount,
             explicit_fate=explicit_fate,
             physical_state=physical_state,
             content_ref=content_ref,

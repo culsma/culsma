@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from .unknown_quantity import is_unknown, validate_unknown, container_has_unknown
+
 from copy import deepcopy
 from dataclasses import dataclass
 from math import isfinite
@@ -267,6 +269,8 @@ def container_component_quantity_total(container: Any, dimension: str) -> float:
     for quantity in quantities.values():
         if not isinstance(quantity, dict) or quantity.get("dimension") != dimension:
             continue
+        if is_unknown(quantity):
+            continue
         value = float(quantity.get("value", 0.0))
         unit = str(quantity.get("unit", ""))
         if dimension == "volume" and unit in VOLUME_TO_UL:
@@ -293,6 +297,8 @@ def container_detail_aggregates(container: Any) -> tuple[float, float]:
         if not isinstance(quantity, dict):
             continue
         dimension = quantity.get("dimension")
+        if is_unknown(quantity):
+            continue
         value = float(quantity.get("value", 0.0))
         unit = str(quantity.get("unit", ""))
         raw_density = quantity.get("density_mg_per_uL")
@@ -325,6 +331,13 @@ def refresh_container_aggregates(container: Any) -> None:
     volume_uL, mass_mg = container_detail_aggregates(container)
     container["volume_uL"] = volume_uL
     container["mass_mg"] = mass_mg
+    unknown_dimensions = sorted({q["dimension"] for q in container.get("component_quantities", {}).values() if is_unknown(q)})
+    if unknown_dimensions:
+        container["unknown_quantity_dimensions"] = unknown_dimensions
+        container["aggregate_quantity_policy"] = "known_subtotals_only"
+    else:
+        container.pop("unknown_quantity_dimensions", None)
+        container.pop("aggregate_quantity_policy", None)
 
 
 def normalize_material_state_detail_ledger(
@@ -392,6 +405,12 @@ def _component_quantity_validation_error(container_id: str, container: dict[str,
         unit = str(quantity.get("unit", ""))
         if unit not in unit_map:
             return f"Container '{container_id}' quantity for '{component_id}' has invalid unit '{unit}'"
+        if is_unknown(quantity):
+            try:
+                validate_unknown(quantity)
+            except ValueError as error:
+                return f"Container '{container_id}' quantity for '{component_id}': {error}"
+            continue
         value = quantity.get("value")
         if (
             not isinstance(value, (int, float))
@@ -432,7 +451,7 @@ def _normalize_container_detail_ledger(container_id: str, container: dict[str, A
     assert isinstance(quantities, dict)
     for component_id, quantity in quantities.items():
         if component_id not in components and isinstance(quantity, dict):
-            components[str(component_id)] = float(quantity.get("value", 0.0))
+            components[str(component_id)] = None if is_unknown(quantity) else float(quantity.get("value", 0.0))
 
     _apply_declared_density(quantities, density_mg_per_uL(container))
 
@@ -517,6 +536,8 @@ def remove_ratio(source: dict[str, Any], ratio: float) -> None:
 
 
 def primary_concentration(container: dict[str, Any]) -> float | None:
+    if container_has_unknown(container):
+        return None
     volume = float(container.get("volume_uL", 0.0))
     if volume <= 0:
         return None

@@ -80,7 +80,7 @@ class MaterialEntryRef:
 
     entry_id: str
     content_ref: str
-    amount: float
+    amount: float | None
     quantity: Mapping[str, Any] | None
     relation: MaterialRelation
     association_target: AssociationTarget | None
@@ -259,7 +259,7 @@ def parse_explicit_material_transitions(
                 "MAT_MATERIAL_TRANSITION_SHAPE_INVALID",
                 "each transitions item requires subject, output, and to, with optional associated_with",
             )
-        selector = _parse_material_selector(args["subject"])
+        selector = parse_material_selector(args["subject"])
         if selector is None:
             return _parse_failure(
                 "MAT_MATERIAL_SELECTOR_INVALID",
@@ -314,7 +314,7 @@ def parse_explicit_material_transitions(
 
         association_selector = None
         if "associated_with" in args:
-            association_selector = _parse_material_selector(args["associated_with"])
+            association_selector = parse_material_selector(args["associated_with"])
             if association_selector is None:
                 return _parse_failure(
                     "MAT_MATERIAL_TRANSITION_ASSOCIATION_INVALID",
@@ -582,7 +582,7 @@ def resolve_material_entry(
     resolved = MaterialEntryRef(
         entry_id=entry_id,
         content_ref=content_ref,
-        amount=float(entry.get("amount", 0.0)),
+        amount=None if entry.get("amount") is None else float(entry.get("amount", 0.0)),
         quantity=quantity if isinstance(quantity, Mapping) else None,
         relation=relation,
         association_target=entry_association_target(entry),
@@ -835,7 +835,7 @@ def _serialized_call_args(value: Any, name: str) -> dict[str, Any] | None:
     return args
 
 
-def _parse_material_selector(value: Any) -> MaterialEntrySelector | None:
+def parse_material_selector(value: Any) -> MaterialEntrySelector | None:
     if isinstance(value, dict) and value.get("kind") == "IRIndex":
         receiver = value.get("base")
         if not _is_serialized_materials_member(receiver):
