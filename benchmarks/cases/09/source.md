@@ -11,18 +11,18 @@
 7. Incubate the transfection mixture for 15 min at 25 C.
 8. Aspirate the culture medium from the well while retaining the adherent cells.
 9. Add 1 mL DMEM supplemented with 10% FBS and without penicillin-streptomycin.
-10. Add 150 uL transfection mixture dropwise to the well.
+10. Add 150 uL transfection mixture dropwise to the well, then gently swirl the plate. For this benchmark, represent the gentle swirl as shaking for 5 s at 30 rpm.
 11. Incubate the cells for 36 h at 37 C with 5% CO2.
 
 ## Cell Lysis and Clarification
 
 1. Place the plate on ice and aspirate the culture medium while retaining the adherent cells.
 2. Add 1 mL cold 1x PBS, gently distribute it over the well, and aspirate the PBS while retaining the adherent cells.
-3. Add 300 uL RIPA buffer and 10 uL protease-phosphatase inhibitor mixture directly to the adherent cell layer.
-4. Collect the resulting 310 uL lysate into a 1.5 mL tube.
+3. Add 300 uL RIPA buffer containing protease and phosphatase inhibitors (cOmplete mini EDTA-free and PhosSTOP) directly to the adherent cell layer.
+4. Collect the lysate into a 1.5 mL tube.
 5. Shake the lysate for 15 min at 4 C.
 6. Centrifuge at 12,000 x g for 15 min at 4 C.
-7. Transfer 300 uL clarified supernatant to a clean tube without disturbing the insoluble pellet.
+7. Transfer the clarified supernatant to a clean tube without disturbing the insoluble pellet.
 
 ## SDS-PAGE
 
@@ -41,19 +41,20 @@
 5. Assemble the transfer stack with the gel facing the negative electrode and the PVDF membrane facing the positive electrode. Add 30 mL transfer buffer to keep the stack wet.
 6. Transfer proteins at 200 mA for 4 h at 4 C.
 7. Move the transferred PVDF membrane to a clean membrane-processing tank.
-8. Rinse the membrane in 15 mL water for 10 min at 25 C, then remove the water.
+8. Rinse the membrane in 15 mL water, then remove the water.
+9. Allow the membrane to dry between sheets of Whatman paper. For this benchmark, use 10 min at 25 C; the original protocol does not specify the drying time or temperature.
 
 ## Blocking, Antibody Incubation, and Imaging
 
 1. Add 15 mL 5% milk in TBS and shake the membrane at 60 rpm for 1 h at 25 C.
 2. Remove the blocking solution.
-3. Prepare 10 mL primary-antibody solution in 5% milk in TBST containing rabbit anti-Rab7 phospho-S72, mouse anti-GFP, rabbit anti-LRRK1, and rabbit anti-GAPDH, each diluted 1:1,000.
+3. Prepare 10 mL primary-antibody solution in 5% milk in TBST containing rabbit anti-Rab7 phospho-S72 (MJF-38) at 1:1,000, mouse anti-GFP (Santa Cruz) at 1:2,500, rabbit anti-LRRK1 (ab228666) at 1:500, and rabbit anti-GAPDH (Cell Signaling Technology) at 1:3,000.
 4. Add the primary-antibody solution and shake at 60 rpm for 16 h at 4 C.
 5. Remove the primary-antibody solution.
 6. Wash the membrane three times with 15 mL TBST for 5 min at 25 C with shaking at 60 rpm, removing the wash buffer after each wash.
 7. Rinse once with 15 mL 5% milk in TBST and remove the rinse solution.
-8. Prepare 10 mL secondary-antibody solution in 5% milk in TBST containing IRDye anti-mouse and anti-rabbit secondary antibodies, each diluted 1:10,000.
+8. Prepare 10 mL secondary-antibody solution in 5% milk in TBST containing IRDye anti-mouse and anti-rabbit secondary antibodies, each diluted 1:5,000.
 9. Add the secondary-antibody solution and shake at 60 rpm for 1 h at 25 C.
 10. Remove the secondary-antibody solution.
 11. Wash the membrane three times with 15 mL TBST for 5 min at 25 C with shaking at 60 rpm, removing the wash buffer after each wash.
-12. Acquire the Rab7 phospho-S72, GFP, LRRK1, and GAPDH fluorescence channels on an Odyssey CLx imager.
+12. Image the membrane on a Li-Cor Odyssey CLx imager.

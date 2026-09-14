@@ -1,0 +1,35 @@
+// Preparation steps inherit the caller's S7 marker.
+protocol PreparePrimaryAntibodies(total_volume, rab7_dilution, gfp_dilution, lrrk1_dilution, gapdh_dilution) returns (primary_antibody_solution) {
+    // This case retains its combined-antibody representation; source multiplex layout is not specified.
+    let rab7_antibody_volume = total_volume / rab7_dilution;
+    let gfp_antibody_volume = total_volume / gfp_dilution;
+    let lrrk1_antibody_volume = total_volume / lrrk1_dilution;
+    let gapdh_antibody_volume = total_volume / gapdh_dilution;
+    let primary_diluent_volume = total_volume - rab7_antibody_volume - gfp_antibody_volume - lrrk1_antibody_volume - gapdh_antibody_volume;
+    let rab7_antibody = tube(label = "ANTI_RAB7_PHOSPHO_S72", capacity = total_volume, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ANTI_RAB7_PHOSPHO_S72", attrs = { role: antibody, identity: "rabbit MJF-38" }):rab7_antibody_volume]);
+    let gfp_antibody = tube(label = "ANTI_GFP", capacity = total_volume, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ANTI_GFP", attrs = { role: antibody, identity: "mouse Santa Cruz" }):gfp_antibody_volume]);
+    let lrrk1_antibody = tube(label = "ANTI_LRRK1", capacity = total_volume, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ANTI_LRRK1", attrs = { role: antibody, identity: "rabbit ab228666" }):lrrk1_antibody_volume]);
+    let gapdh_antibody = tube(label = "ANTI_GAPDH", capacity = total_volume, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ANTI_GAPDH", attrs = { role: antibody, identity: "rabbit Cell Signaling Technology" }):gapdh_antibody_volume]);
+    let primary_diluent = chamber(label = "PrimaryAntibodyDiluent", capacity = total_volume * 2, load = [content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "PRIMARY_ANTIBODY_DILUENT", attrs = { formulation: "5% milk in TBST" }):primary_diluent_volume]);
+    let primary_antibody_solution = chamber(label = "PrimaryAntibodyMixInFivePercentMilkTBST", capacity = total_volume * 2);
+    primary_antibody_solution << [
+        rab7_antibody:rab7_antibody_volume,
+        gfp_antibody:gfp_antibody_volume,
+        lrrk1_antibody:lrrk1_antibody_volume,
+        gapdh_antibody:gapdh_antibody_volume,
+        primary_diluent:primary_diluent_volume
+    ];
+    return primary_antibody_solution;
+}
+
+protocol PrepareSecondaryAntibodies(total_volume, mouse_dilution, rabbit_dilution) returns (secondary_antibody_solution) {
+    let mouse_volume = total_volume / mouse_dilution;
+    let rabbit_volume = total_volume / rabbit_dilution;
+    let diluent_volume = total_volume - mouse_volume - rabbit_volume;
+    let anti_mouse = tube(label = "LiCorIRDyeAntimouse", capacity = total_volume, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "LICOR_IRDYE_ANTI_MOUSE", attrs = { role: antibody, identity: "Li-Cor IRDye anti-mouse" }):mouse_volume]);
+    let anti_rabbit = tube(label = "LiCorIRDyeAntirabbit", capacity = total_volume, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "LICOR_IRDYE_ANTI_RABBIT", attrs = { role: antibody, identity: "Li-Cor IRDye anti-rabbit" }):rabbit_volume]);
+    let diluent = chamber(label = "SecondaryAntibodyDiluent", capacity = total_volume * 2, load = [content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "SECONDARY_ANTIBODY_DILUENT", attrs = { formulation: "5% milk in TBST" }):diluent_volume]);
+    let secondary_antibody_solution = chamber(label = "LiCorSecondaryAntibodyMixInFivePercentMilkTBST", capacity = total_volume * 2);
+    secondary_antibody_solution << [anti_mouse:mouse_volume, anti_rabbit:rabbit_volume, diluent:diluent_volume];
+    return secondary_antibody_solution;
+}
