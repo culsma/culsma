@@ -14,7 +14,8 @@ protocol EvercodeWTMegaV3_Section2_1_cDNACapture_Reviewed {
   let lysate = tube(
     label = "BarcodedCDNALysate",
     capacity = 250uL,
-    load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.DNA, code = "LYSATE1", attrs = {state: lysate}):50uL]
+    // Source Section 1 produces 55 uL of lysate per sublibrary.
+    load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.DNA, code = "LYSATE1", attrs = {state: lysate}):55uL]
   );
   let capture_enhancer = tube(
     label = "CaptureEnhancer",

@@ -1,60 +1,123 @@
 # Cell culture and Western blot
 
-## Cell Culture and Transfection
+Source: Andrea Dickey and rabrisch, *Cell culture and Western blot*, protocols.io,
+version 1, 12 April 2023. [Original protocol](https://doi.org/10.17504/protocols.io.kxygx9bozg8j/v1)
+([PDF](https://www.protocols.io/view/cell-culture-and-western-blot-csqcwdsw.pdf)).
+Reproduced with formatting and wording normalization under the source's Creative
+Commons Attribution license. Original section and step numbers are retained.
+The S1–S7 labels are additional benchmark groupings, not original step numbers.
+Program-specific operating choices are not inserted into the source instructions below.
 
-1. Seed 200,000 HEK293T cells in one well of a 6-well plate containing 2 mL DMEM supplemented with 10% FBS and 1% penicillin-streptomycin.
-2. Incubate the cells for 24 h at 37 C with 5% CO2.
-3. Equilibrate PEI and Opti-MEM at room temperature for 15 min.
-4. Add 150 uL Opti-MEM, 500 ng GFP-Rab7 plasmid, and 1 ug LRRK1 plasmid to a 1.5 mL tube. Vortex for 5 s.
-5. Add 3 uL PEI to the DNA mixture.
-6. Mix by pipetting 10 times with a pipette set to 125 uL.
-7. Incubate the transfection mixture for 15 min at 25 C.
-8. Aspirate the culture medium from the well while retaining the adherent cells.
-9. Add 1 mL DMEM supplemented with 10% FBS and without penicillin-streptomycin.
-10. Add 150 uL transfection mixture dropwise to the well, then gently swirl the plate. For this benchmark, represent the gentle swirl as shaking for 5 s at 30 rpm.
-11. Incubate the cells for 36 h at 37 C with 5% CO2.
+## Cell culture and transfection
 
-## Cell Lysis and Clarification
+### 1. Day 1 — S1
 
-1. Place the plate on ice and aspirate the culture medium while retaining the adherent cells.
-2. Add 1 mL cold 1x PBS, gently distribute it over the well, and aspirate the PBS while retaining the adherent cells.
-3. Add 300 uL RIPA buffer containing protease and phosphatase inhibitors (cOmplete mini EDTA-free and PhosSTOP) directly to the adherent cell layer.
-4. Collect the lysate into a 1.5 mL tube.
-5. Shake the lysate for 15 min at 4 C.
-6. Centrifuge at 12,000 x g for 15 min at 4 C.
-7. Transfer the clarified supernatant to a clean tube without disturbing the insoluble pellet.
+Split 293T cells into 6-well dishes 24 h before transfection, at 200,000 cells per
+well in 2 mL DMEM with FBS and penicillin-streptomycin (P/S).
 
-## SDS-PAGE
+### 2. Day 2: Transfection — S2
 
-1. Prepare 100 uL electrophoresis sample by combining 65 uL clarified lysate, 10 uL 10x reducing agent, and 25 uL 4x LDS sample buffer.
-2. Heat the prepared sample at 95 C for 10 min.
-3. Fill the electrophoresis tank with 800 mL 1x MOPS running buffer and install a 4-12% Bis-Tris gel.
-4. Load 25 uL prepared sample into one gel lane.
-5. Run the gel at 180 V for 50 min, or until the dye front reaches the bottom of the gel.
+**2.1.** Warm PEI and Opti-MEM at room temperature for 15 min. Label a tube for each well.
 
-## PVDF Activation and Protein Transfer
+**2.2.** Add 500 ng GFP-Rab7 DNA and 1 ug of the LRRK1 construct of interest to
+150 uL Opti-MEM. Gently vortex for 5 s.
 
-1. Place one Immobilon-FL PVDF membrane in a membrane-processing tank containing 15 mL methanol and incubate for 1 min at 25 C.
-2. Remove the methanol, add 15 mL water, and rinse the membrane for 2 min at 25 C.
-3. Remove the water, add 15 mL Tris-glycine transfer buffer containing 20% methanol, and equilibrate the membrane for 15 min at 25 C.
-4. Equilibrate the separated gel in 15 mL of the same transfer buffer for 15 min at 25 C.
-5. Assemble the transfer stack with the gel facing the negative electrode and the PVDF membrane facing the positive electrode. Add 30 mL transfer buffer to keep the stack wet.
-6. Transfer proteins at 200 mA for 4 h at 4 C.
-7. Move the transferred PVDF membrane to a clean membrane-processing tank.
-8. Rinse the membrane in 15 mL water, then remove the water.
-9. Allow the membrane to dry between sheets of Whatman paper. For this benchmark, use 10 min at 25 C; the original protocol does not specify the drying time or temperature.
+**2.3.** Add 3 uL room-temperature PEI to each tube containing the Opti-MEM/DNA
+mixture. Mix gently by pipetting and incubate the mixture at room temperature
+in the hood for 15 min.
 
-## Blocking, Antibody Incubation, and Imaging
+**2.4.** During that incubation, remove the medium from the 6-well dish containing
+the cells and replace it with 1 mL fresh DMEM with FBS and without P/S. Return
+the dish to the 37 C incubator until ready to add the transfection mixture.
 
-1. Add 15 mL 5% milk in TBS and shake the membrane at 60 rpm for 1 h at 25 C.
-2. Remove the blocking solution.
-3. Prepare 10 mL primary-antibody solution in 5% milk in TBST containing rabbit anti-Rab7 phospho-S72 (MJF-38) at 1:1,000, mouse anti-GFP (Santa Cruz) at 1:2,500, rabbit anti-LRRK1 (ab228666) at 1:500, and rabbit anti-GAPDH (Cell Signaling Technology) at 1:3,000.
-4. Add the primary-antibody solution and shake at 60 rpm for 16 h at 4 C.
-5. Remove the primary-antibody solution.
-6. Wash the membrane three times with 15 mL TBST for 5 min at 25 C with shaking at 60 rpm, removing the wash buffer after each wash.
-7. Rinse once with 15 mL 5% milk in TBST and remove the rinse solution.
-8. Prepare 10 mL secondary-antibody solution in 5% milk in TBST containing IRDye anti-mouse and anti-rabbit secondary antibodies, each diluted 1:5,000.
-9. Add the secondary-antibody solution and shake at 60 rpm for 1 h at 25 C.
-10. Remove the secondary-antibody solution.
-11. Wash the membrane three times with 15 mL TBST for 5 min at 25 C with shaking at 60 rpm, removing the wash buffer after each wash.
-12. Image the membrane on a Li-Cor Odyssey CLx imager.
+**2.5.** After the 15 min incubation, add 150 uL DNA/Opti-MEM/PEI mixture dropwise
+to each well. Give the plate a light swirl before returning it to the incubator.
+
+## Cell lysis
+
+### 3. Begin cell lysis 36 h after transfection — S3–S4
+
+**3.1. — S3.** Wash the plate on ice with cold PBS (1x).
+
+**3.2. — S3.** Add 300 uL RIPA buffer (0.5% Triton, 50 mM Tris pH 7.5,
+150 mM NaCl, 0.1% SDS) with protease and phosphatase inhibitors
+(cOmplete mini EDTA-free and PhosSTOP tablets).
+
+**3.3. — S3.** Lift with cell lifters on ice.
+
+**3.4. — S3.** Pipette up the lysate, place it in an Eppendorf tube, and shake
+for 15 min in the cold room.
+
+**3.5. — S3.** Centrifuge at MAX at 4 C for 15 min.
+
+**3.6. — S3: supernatant collection; S4: sample preparation.** Remove the
+supernatant and prepare the sample, heating at 95 C for 10 min; store at -80 C.
+The source author also describes storing the lysate and taking an aliquot to
+prepare a sample, using 65 uL lysate, 10 uL 10x Reducing Agent, and 25 uL
+4x NuPAGE LDS sample buffer.
+
+## Western blot
+
+### 4. SDS-PAGE with Bis-Tris gel and MOPS running buffer — S5–S7
+
+**4.1. — S5.** Load 25 uL prepared lysate in sample buffer onto a 4–12% Bis-Tris
+gel. Run at 180 V for approximately 50 min, or until the dye front reaches
+the bottom of the gel.
+
+**4.2. — S6.** Assemble the gel with an Immobilon-FL PVDF membrane for transfer
+according to the instructions for the Western blot transfer apparatus. For
+fluorescence detection, use a low-fluorescence-background membrane
+(Immobilon-FL or equivalent). Activate the membrane with methanol and rinse
+with water. Transfer in Tris/glycine Western transfer buffer containing 20%
+methanol at 200 mA for 4 h at 4 C.
+
+**4.3. — S6.** After transfer, rinse the membrane with water and allow it to dry
+between sheets of Whatman paper.
+
+**4.4. — S7.** Block in 5% milk in TBS without Tween 20.
+
+**4.5. — S7.** Dilute primary antibodies in 5% milk in TBST with Tween 20:
+
+- Rabbit anti-Rab7 phospho-S72 (MJF-38), 1:1,000.
+- Mouse anti-GFP (Santa Cruz), 1:2,500, for total Rab quantification.
+- Rabbit anti-LRRK1 (ab228666), 1:500.
+- Rabbit anti-GAPDH (Cell Signaling Technology), 1:3,000.
+
+**4.6. — S7.** Rock overnight at 4 C.
+
+**4.7. — S7.** Rinse three times with TBST for 5 min each.
+
+**4.8. — S7.** Rinse once with 5% milk in TBST.
+
+**4.9. — S7.** Add Li-Cor anti-mouse and anti-rabbit IRDye secondary antibodies,
+diluted 1:5,000 in 5% milk in TBST. Incubate at room temperature for 1 h.
+
+**4.10. — S7.** Rinse three times with TBST for 5 min each.
+
+**4.11. — S7.** Image on a Li-Cor Odyssey CLx.
+
+## Benchmark mapping and execution choices (not original instructions)
+
+| Benchmark group | Original steps |
+| --- | --- |
+| S1 | 1 |
+| S2 | 2.1–2.5 |
+| S3 | 3.1–3.5 and supernatant collection in 3.6 |
+| S4 | Sample preparation in 3.6 |
+| S5 | 4.1 |
+| S6 | 4.2–4.3 |
+| S7 | 4.4–4.11 |
+
+These groups connect the source to the program and evaluation; they do not
+replace the original numbering. The 36 h interval in step 3 is implemented
+at the end of the program's S2, before lysis begins.
+
+The program selects continuous processing without the storage branch in 3.6,
+and schedules medium replacement sequentially rather than during mixture
+incubation. Its additional working volumes, mixing settings, room-temperature
+and cold-room set points, numeric centrifuge setting for MAX, and 16 h
+interpretation of overnight are benchmark choices, not source-specified values.
+Likewise, the source lists primary antibodies without specifying combined or
+separate probing; the program's combined preparation is an explicit modeling
+assumption. Source handling instructions remain above even where the program
+currently represents them only in comments.

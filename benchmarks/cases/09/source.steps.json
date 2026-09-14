@@ -5,6 +5,7 @@
   "steps": [
     {
       "id": "S1",
+      "original_steps": ["1"],
       "section": "Cell culture and transfection",
       "source_text": "Split 293T cells in 6-well dishes 24 h before transfection at 200K cells per well in 2 mL DMEM.",
       "operation": "cell_seeding",
@@ -31,6 +32,7 @@
     },
     {
       "id": "S2",
+      "original_steps": ["2.1", "2.2", "2.3", "2.4", "2.5"],
       "section": "Cell culture and transfection",
       "source_text": "Warm PEI and Opti-MEM, mix GFP-Rab7 and LRRK1 DNA in Opti-MEM, add PEI, incubate 15 min, replace media, and add mixture dropwise.",
       "operation": "pei_transfection",
@@ -64,6 +66,7 @@
     },
     {
       "id": "S3",
+      "original_steps": ["3", "3.1", "3.2", "3.3", "3.4", "3.5", "3.6 (supernatant collection)"],
       "section": "Cell lysis",
       "source_text": "After 36 h, wash on ice with cold PBS, add 300 uL RIPA buffer with inhibitors, lift cells, shake lysate 15 min in cold room, and centrifuge 15 min at 4 C.",
       "operation": "cell_lysis_and_clarification",
@@ -97,6 +100,7 @@
     },
     {
       "id": "S4",
+      "original_steps": ["3.6 (sample preparation)"],
       "section": "Cell lysis",
       "source_text": "Prepare sample by boiling lysate with reducing agent and LDS sample buffer at 95 C for 10 min.",
       "operation": "sample_preparation",
@@ -125,6 +129,7 @@
     },
     {
       "id": "S5",
+      "original_steps": ["4", "4.1"],
       "section": "Western blot",
       "source_text": "Load 25 uL prepared lysate on a 4-12 percent Bis-Tris gel and run at 180 V for about 50 min.",
       "operation": "sds_page",
@@ -153,6 +158,7 @@
     },
     {
       "id": "S6",
+      "original_steps": ["4.2", "4.3"],
       "section": "Western blot",
       "source_text": "Activate PVDF membrane, transfer proteins in Tris/Glycine buffer with 20 percent methanol at 200 mA for 4 h at 4 C, then rinse and dry membrane.",
       "operation": "membrane_transfer",
@@ -178,10 +184,11 @@
         "western transfer apparatus"
       ],
       "readout": "",
-      "notes": "Current Culsma translation does not model current-driven membrane transfer directly."
+      "notes": "Original step 4.2 delegates transfer assembly to the apparatus instructions; program-specific assembly and operating details are benchmark choices."
     },
     {
       "id": "S7",
+      "original_steps": ["4.4", "4.5", "4.6", "4.7", "4.8", "4.9", "4.10", "4.11"],
       "section": "Western blot",
       "source_text": "Block membrane, incubate overnight at 4 C with primary antibodies, wash, incubate 1 h with LiCor secondary antibodies, wash, and image on LiCor Odyssey CLx.",
       "operation": "immunoblot_detection",

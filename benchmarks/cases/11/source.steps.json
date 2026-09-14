@@ -1,99 +1,156 @@
 {
   "protocol_id": "11",
   "title": "Magnetic-Bead cDNA Template Switch Reaction",
-  "source_class": "anonymized_vendor_protocol_excerpt",
+  "source_class": "vendor_manual_excerpt",
   "review_revision": "2026-06-13",
   "source_file": "source.md",
   "steps": [
     {
       "id": "S1",
       "section": "Template Switch Procedure",
-      "source_text": "Place each tube of bead-bound captured cDNA input material on the high position of the magnetic rack."
+      "source_text": "Place each tube of captured cDNA from Section 2.1 on the high position of the magnetic rack.",
+      "original_steps": [
+        "2.2, step 3"
+      ]
     },
     {
       "id": "S2",
       "section": "Template Switch Procedure",
-      "source_text": "Incubate until the solution clears, about 2 minutes."
+      "source_text": "Incubate until the solution clears, about 2 minutes.",
+      "original_steps": [
+        "2.2, step 3"
+      ]
     },
     {
       "id": "S3",
       "section": "Template Switch Procedure",
-      "source_text": "While still on the magnetic rack, remove and discard the supernatant."
+      "source_text": "While still on the magnetic rack, remove and discard the supernatant.",
+      "original_steps": [
+        "2.2, step 4"
+      ]
     },
     {
       "id": "S4",
       "section": "Template Switch Procedure",
-      "source_text": "While still on the magnetic rack, add 125 uL of Wash Buffer 3 to each tube. Do not discard the Wash Buffer 3 until directed, because it is used in another step."
+      "source_text": "While still on the magnetic rack, add 125 uL of Wash Buffer 3 to each tube. Do not discard the Wash Buffer 3 until directed, because it is used in another step.",
+      "original_steps": [
+        "2.2, step 5"
+      ]
     },
     {
       "id": "S5",
       "section": "Template Switch Procedure",
-      "source_text": "Incubate for 1 minute at room temperature."
+      "source_text": "Incubate for 1 minute at room temperature.",
+      "original_steps": [
+        "2.2, step 6"
+      ]
     },
     {
       "id": "S6",
       "section": "Template Switch Procedure",
-      "source_text": "While still on the magnetic rack, remove and discard Wash Buffer 3."
+      "source_text": "While still on the magnetic rack, remove and discard Wash Buffer 3.",
+      "original_steps": [
+        "2.2, step 7"
+      ]
     },
     {
       "id": "S7",
       "section": "Template Switch Procedure",
-      "source_text": "Remove the tube(s) from the magnetic rack."
+      "source_text": "Remove the tube(s) from the magnetic rack.",
+      "original_steps": [
+        "2.2, step 8"
+      ]
     },
     {
       "id": "S8",
       "section": "Template Switch Procedure",
-      "source_text": "Fully resuspend each bead pellet with 100 uL of the Template Switch Master Mix. Because the mix is viscous, full resuspension may take time."
+      "source_text": "Fully resuspend each bead pellet with 100 uL of the Template Switch Master Mix. Because the mix is viscous, full resuspension may take time.",
+      "original_steps": [
+        "2.2, step 8"
+      ]
     },
     {
       "id": "S9",
       "section": "Template Switch Procedure",
-      "source_text": "Briefly centrifuge without letting beads collect at the bottom of the tube(s)."
+      "source_text": "Briefly centrifuge without letting beads collect at the bottom of the tube(s).",
+      "original_steps": [
+        "2.2, step 9"
+      ]
     },
     {
       "id": "S10",
       "section": "Template Switch Procedure",
-      "source_text": "Incubate for 30 minutes at room temperature."
+      "source_text": "Incubate for 30 minutes at room temperature.",
+      "original_steps": [
+        "2.2, step 10"
+      ]
     },
     {
       "id": "S11",
       "section": "Template Switch Procedure",
-      "source_text": "Fully resuspend each bead pellet by mixing 5x with a P200 set to 75 uL."
+      "source_text": "Fully resuspend each bead pellet by mixing 5x with a P200 set to 75 uL.",
+      "original_steps": [
+        "2.2, step 11"
+      ]
     },
     {
       "id": "S12",
       "section": "Template Switch Procedure",
-      "source_text": "Place the tube(s) into a thermocycler and run the Template Switch program."
+      "source_text": "Place the tube(s) into a thermocycler and run the Template Switch program.",
+      "original_steps": [
+        "2.2, step 12"
+      ]
     },
     {
       "id": "S13",
       "section": "Template Switch Procedure",
-      "source_text": "Continue immediately to the cDNA amplification module, or proceed to the storage steps below before cDNA amplification."
+      "source_text": "Proceed immediately to Section 2.3, or proceed to original step 14 below for storage before cDNA amplification.",
+      "original_steps": [
+        "2.2, step 13"
+      ]
     },
     {
       "id": "S14",
       "section": "Template Switch Procedure",
-      "source_text": "For optional storage, place the tube(s) on the high position of the magnetic rack and incubate until the solution clears, about 2 minutes. Beads may need to be resuspended if settled."
+      "source_text": "For optional storage, place the tube(s) on the high position of the magnetic rack and incubate until the solution clears, about 2 minutes. Beads may need to be resuspended if settled.",
+      "original_steps": [
+        "2.2, step 14"
+      ]
     },
     {
       "id": "S15",
       "section": "Template Switch Procedure",
-      "source_text": "While still on the magnetic rack, remove and discard the supernatant."
+      "source_text": "While still on the magnetic rack, remove and discard the supernatant.",
+      "original_steps": [
+        "2.2, step 15"
+      ]
     },
     {
       "id": "S16",
       "section": "Template Switch Procedure",
-      "source_text": "Remove the tube(s) from the magnetic rack."
+      "source_text": "Remove the tube(s) from the magnetic rack.",
+      "original_steps": [
+        "2.2, step 16"
+      ]
     },
     {
       "id": "S17",
       "section": "Template Switch Procedure",
-      "source_text": "Fully resuspend each bead pellet with 125 uL Wash Buffer 2."
+      "source_text": "Fully resuspend each bead pellet with 125 uL Wash Buffer 2.",
+      "original_steps": [
+        "2.2, step 16"
+      ]
     },
     {
       "id": "S18",
       "section": "Template Switch Procedure",
-      "source_text": "Template-switched cDNA can be stored at 4C for up to 18 hours. Do not freeze."
+      "source_text": "Template-switched cDNA can be stored at 4C for up to 18 hours. Do not freeze.",
+      "original_steps": [
+        "2.2, Safe stopping point after step 16"
+      ]
     }
-  ]
+  ],
+  "original_section": "2.2",
+  "source_url": "https://support.parsebiosciences.com/hc/en-us/article_attachments/31841833600532",
+  "source_version": "Evercode WT Mega v3; UMWT3500; version 1.5; November 2024"
 }
