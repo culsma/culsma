@@ -65,5 +65,8 @@
   ],
   "MAT-REPLACE-01": [
     "tests/test_material_replace_integration.py"
+  ],
+  "MAT-BOUND-01": [
+    "tests/test_material_precision.py"
   ]
 }

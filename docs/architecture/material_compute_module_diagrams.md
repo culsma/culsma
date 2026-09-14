@@ -1032,6 +1032,7 @@ as helper functions embedded in operation modules:
 | `partition.py` | unknown-input compatibility shell plus preexisting direct Python symbols | provider calls, typed-effect projection, authoritative registered separation behavior |
 | `contents_state.py` | `MaterialIndexedPartsStateManager`, indexed part records, selection, sep/frac partition/index application, narrow preservation impact, invalidation, and mixed-state impact | top-level material-state change planning, full runtime step dispatch, broad protocol semantics |
 | `ledger.py` | volume, mass, component, and metadata mutation primitives | source-expression interpretation |
+| `precision.py` | ULP-scaled availability/capacity comparisons and resolving near-total continuous requests to actual stock | expression rounding, experimental tolerances, unit conversion, integer count rules |
 | `diagnostics.py` | material diagnostic result construction | material state mutation |
 | `refs.py` | material reference resolution and binding | allocation ID selection, ledger mutation, capacity validation, transfer policy |
 | `args.py` | operation argument extraction and normalization | semantic operation behavior |

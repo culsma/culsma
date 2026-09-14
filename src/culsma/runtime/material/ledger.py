@@ -23,6 +23,7 @@ from culsma.runtime.material.component_entries import (
     retain_component_entry_ratio,
 )
 from culsma.runtime.material.diagnostics import diagnostic_result
+from culsma.runtime.material.precision import material_limit_exceeded
 from culsma.runtime.material.result import MaterialUpdateResult
 from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_UL
 
@@ -623,7 +624,7 @@ def check_capacity_guard(
     if capacity_uL <= 0:
         return diagnostic_result(step, state, "MAT_INVALID_CAPACITY", f"Invalid capacity value for '{container_id}'")
     current_uL = container_physical_volume_uL(target)
-    if current_uL + float(added_uL) > capacity_uL + 1e-12:
+    if material_limit_exceeded(current_uL + float(added_uL), capacity_uL):
         return diagnostic_result(
             step,
             state,

@@ -41,6 +41,7 @@ from culsma.runtime.material.refs import (
     resolve_target_ref,
 )
 from culsma.runtime.material.result import MaterialUpdateResult
+from culsma.runtime.material.precision import resolve_available_amount
 from culsma.runtime.material.movement import apply_material_movement
 from culsma.runtime.material.scientific_model_adapter import (
     ScientificModelMaterialAdapter,
@@ -624,7 +625,7 @@ def apply_transfer_by_qty(
     value = float(qty["value"])
     if unit in VOLUME_TO_UL:
         requested_uL = value * VOLUME_TO_UL[unit]
-        return _apply_transfer_volume(
+        return apply_transfer_volume(
             step,
             state,
             src_id,
@@ -634,7 +635,7 @@ def apply_transfer_by_qty(
         )
     if unit in MASS_TO_MG:
         requested_mg = value * MASS_TO_MG[unit]
-        return _apply_transfer_mass(
+        return apply_transfer_mass(
             step,
             state,
             src_id,
@@ -702,7 +703,7 @@ def _partition_fallback_diagnostics(step: PlanStep, partition: dict[str, Any]) -
     return diagnostics
 
 
-def _apply_transfer_volume(
+def apply_transfer_volume(
     step: PlanStep,
     state: dict[str, Any],
     src_id: str,
@@ -716,11 +717,17 @@ def _apply_transfer_volume(
 
     if requested_uL < 0:
         return diagnostic_result(step, state, "MAT_UNSUPPORTED_UNIT", "Negative transfer amount is not allowed")
-    cap_diag = check_capacity_guard(step=step, state=state, container_id=dst_id, added_uL=requested_uL)
+    authored_uL = requested_uL
+    resolved_uL = resolve_available_amount(requested_uL, src_volume)
+    cap_diag = check_capacity_guard(
+        step=step, state=state, container_id=dst_id,
+        added_uL=resolved_uL if resolved_uL is not None else requested_uL,
+    )
     if cap_diag is not None:
         return cap_diag
 
-    if src_volume >= requested_uL:
+    if resolved_uL is not None:
+        requested_uL = resolved_uL
         ratio = 0.0 if src_volume == 0 else requested_uL / src_volume
         moved_cells = container_count_cells(src) * ratio
         moved_cell_state = transferred_cell_material_state(src, moved_cells=moved_cells)
@@ -756,6 +763,7 @@ def _apply_transfer_volume(
                 "mode": "volume",
                 "source": src_id,
                 "dest": dst_id,
+                "requested_uL": authored_uL,
                 "moved_uL": requested_uL,
                 "moved_cells": moved_cells,
             },
@@ -774,9 +782,11 @@ def _apply_transfer_volume(
     src_mass = container_component_quantity_total(src, "mass")
     effective_src_mass = max(src_mass, src_volume * density)
     effective_src_volume = max(src_volume, effective_src_mass / density)
-    if effective_src_mass < requested_mg:
+    resolved_mg = resolve_available_amount(requested_mg, effective_src_mass)
+    if resolved_mg is None:
         return diagnostic_result(step, state, "MAT_INSUFFICIENT_MASS", f"Insufficient source mass in '{src_id}'")
 
+    requested_mg = resolved_mg
     component_ratio = 0.0 if effective_src_mass == 0 else requested_mg / effective_src_mass
     moved_cells = container_count_cells(src) * component_ratio
     moved_cell_state = transferred_cell_material_state(src, moved_cells=moved_cells)
@@ -814,13 +824,14 @@ def _apply_transfer_volume(
             "dest": dst_id,
             "requested_uL": requested_uL,
             "converted_mg": requested_mg,
+            "component_ratio": component_ratio,
             "moved_cells": moved_cells,
             "density_mg_per_uL": density,
         },
     )
 
 
-def _apply_transfer_mass(
+def apply_transfer_mass(
     step: PlanStep,
     state: dict[str, Any],
     src_id: str,
@@ -837,7 +848,10 @@ def _apply_transfer_mass(
     if requested_mg < 0:
         return diagnostic_result(step, state, "MAT_UNSUPPORTED_UNIT", "Negative transfer amount is not allowed")
 
-    if src_mass >= requested_mg:
+    authored_mg = requested_mg
+    resolved_mg = resolve_available_amount(requested_mg, src_mass)
+    if resolved_mg is not None:
+        requested_mg = resolved_mg
         ratio = 0.0 if src_mass == 0 else requested_mg / src_mass
         moved_uL = ratio * float(src.get("volume_uL", 0.0))
         moved_cells = container_count_cells(src) * ratio
@@ -877,6 +891,7 @@ def _apply_transfer_mass(
                 "mode": "mass",
                 "source": src_id,
                 "dest": dst_id,
+                "requested_mg": authored_mg,
                 "moved_mg": requested_mg,
                 "moved_cells": moved_cells,
             },
@@ -898,9 +913,11 @@ def _apply_transfer_mass(
     src_volume = float(src.get("volume_uL", 0.0))
     effective_src_volume = max(src_volume, src_mass / density)
     effective_src_mass = max(src_mass, effective_src_volume * density)
-    if effective_src_volume < requested_uL:
+    resolved_uL = resolve_available_amount(requested_uL, effective_src_volume)
+    if resolved_uL is None:
         return diagnostic_result(step, state, "MAT_INSUFFICIENT_VOLUME", f"Insufficient source volume in '{src_id}'")
 
+    requested_uL = resolved_uL
     component_ratio = 0.0 if effective_src_volume == 0 else requested_uL / effective_src_volume
     moved_cells = container_count_cells(src) * component_ratio
     moved_cell_state = transferred_cell_material_state(src, moved_cells=moved_cells)
@@ -938,6 +955,7 @@ def _apply_transfer_mass(
             "dest": dst_id,
             "requested_mg": requested_mg,
             "converted_uL": requested_uL,
+            "component_ratio": component_ratio,
             "moved_cells": moved_cells,
             "density_mg_per_uL": density,
         },

@@ -20,6 +20,7 @@ from culsma.runtime.material.component_entries import (
     subtract_component_entries,
 )
 from culsma.runtime.material.diagnostics import diagnostic_result
+from culsma.runtime.material.precision import resolve_available_amount
 from culsma.runtime.material.ledger import (
     check_capacity_guard,
     container,
@@ -164,7 +165,10 @@ def moved_snapshot_from_delta(source_before: Any, delta: dict[str, Any]) -> dict
     mode = delta.get("mode")
     source_volume = float(source_before.get("volume_uL", 0.0))
     source_mass = float(source_before.get("mass_mg", 0.0))
-    if mode == "volume":
+    if mode in {"bridge_volume_to_mass", "bridge_mass_to_volume"} and "component_ratio" in delta:
+        # The bridge has already resolved the authored request to actual stock.
+        ratio = float(delta["component_ratio"])
+    elif mode == "volume":
         moved_uL = float(delta.get("moved_uL", 0.0))
         ratio = 0.0 if source_volume == 0.0 else moved_uL / source_volume
         moved_mg = source_mass * ratio
@@ -658,7 +662,7 @@ class MaterialIndexedPartsStateManager:
                 },
             )
 
-        amount = _contents_transfer_amount(step=step, state=state, selection=selection, qty=qty)
+        amount = contents_transfer_amount(step=step, state=state, selection=selection, qty=qty)
         if isinstance(amount, MaterialUpdateResult):
             return amount
         moved_uL, moved_mg, moved_cells, ratio, mode, count_resolution = amount
@@ -1314,7 +1318,7 @@ def _env_payload_has_value(env: Any, key: str, expected: str) -> bool:
     return value == expected
 
 
-def _contents_transfer_amount(
+def contents_transfer_amount(
     *,
     step: PlanStep,
     state: dict[str, Any],
@@ -1340,13 +1344,15 @@ def _contents_transfer_amount(
     part_mass = float(part.get("mass_mg", 0.0))
     if unit in VOLUME_TO_UL:
         moved_uL = value * VOLUME_TO_UL[unit]
-        if part_volume < moved_uL:
+        resolved_uL = resolve_available_amount(moved_uL, part_volume)
+        if resolved_uL is None:
             return diagnostic_result(
                 step,
                 state,
                 "MAT_INSUFFICIENT_VOLUME",
                 f"Insufficient contents-state volume in '{selection.source_id}'",
             )
+        moved_uL = resolved_uL
         ratio = 0.0 if part_volume == 0 else moved_uL / part_volume
         moved_mg = part_mass * ratio
         return moved_uL, moved_mg, container_count_cells(part) * ratio, ratio, "contents_state_volume", {}
@@ -1354,13 +1360,15 @@ def _contents_transfer_amount(
         if container_has_unknown(part):
             return diagnostic_result(step, state, "MAT_QUANTITY_UNKNOWN", "Mass-based contents transfer requires known component mass")
         moved_mg = value * MASS_TO_MG[unit]
-        if part_mass < moved_mg:
+        resolved_mg = resolve_available_amount(moved_mg, part_mass)
+        if resolved_mg is None:
             return diagnostic_result(
                 step,
                 state,
                 "MAT_INSUFFICIENT_MASS",
                 f"Insufficient contents-state mass in '{selection.source_id}'",
             )
+        moved_mg = resolved_mg
         ratio = 0.0 if part_mass == 0 else moved_mg / part_mass
         moved_uL = part_volume * ratio
         return moved_uL, moved_mg, container_count_cells(part) * ratio, ratio, "contents_state_mass", {}
