@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from culsma.driver.stub import StubDriver
-from culsma.frontend.resolver import resolve_program
+from culsma.frontend.resolver import resolve_files, resolve_program
 from culsma.parser.parser import parse
 from culsma.pipeline.compile import compile_ast
 from culsma.pipeline.plan import lower_ir_to_plan
@@ -28,7 +28,8 @@ SOURCE = '''protocol T {
 
 
 def compile_source(source):
-    compiled = compile_ast(resolve_program(parse(source)).prepared_program)
+    bundle = resolve_files([source]) if isinstance(source, Path) else resolve_program(parse(source))
+    compiled = compile_ast(bundle.prepared_program)
     sem = validate(compiled.ir, analysis=compiled.analysis)
     return compiled, sem
 
@@ -168,10 +169,11 @@ def test_in_place_separation_retains_dry_unknown_material_and_return_payload():
     retained = material(result, 'Source')
     assert retained['volume_uL'] == 0
     assert list(protein(retained)['quantity']['shares'].values()) == [1]
-    from culsma.runtime.values import _container_ref_payload, _runtime_protocol_output_serialize
+    from culsma.runtime.values import RuntimeValueResolver
     state = result.state.artifacts['material_state']
     cid = next(k for k, v in state['containers'].items() if v == retained)
-    payload = _runtime_protocol_output_serialize(_container_ref_payload(state, cid))
+    resolver = RuntimeValueResolver()
+    payload = resolver.protocol_output_serialize(resolver.container_ref_payload(state, cid))
     assert payload['mass_mg'] is None
     assert payload['component_quantities']['PROTEIN']['status'] == 'unknown'
     assert next(e for e in payload['component_entries'] if e['content_ref'] == 'PROTEIN')['provenance']['source_entry_id'] == 'CELLS'
@@ -197,7 +199,7 @@ def test_second_invalid_product_rolls_back_entire_replacement():
 
 def test_case09_full_pipeline_keeps_protein_without_fabricated_yield():
     case = Path(__file__).parents[1] / 'benchmarks/cases/09/protocol.culs'
-    result = run(plan=plan_source(case.read_text()), driver=StubDriver())
+    result = run(plan=plan_source(case), driver=StubDriver())
     assert result.ok, [d.to_dict() for d in result.diagnostics]
     state = result.state.artifacts['material_state']
     proteins = [e for c in state['containers'].values() for e in c['component_entries']

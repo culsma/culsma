@@ -6,6 +6,7 @@ from copy import deepcopy
 from typing import Any
 
 from culsma.common.content_contracts import CONTENT_ENUM_TYPES, parse_serialized_content_enum, serialize_content_enum
+from culsma.common.quantity_arithmetic import QuantityArithmeticError, quantity_binary
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.state import RuntimeState
 
@@ -21,7 +22,7 @@ def evaluate_content_enum(expr: Any) -> Any:
 
 class RuntimeValueResolver:
     def eval_expr(self, expr: Any, state: RuntimeState) -> Any:
-        return _eval_runtime_expr(expr, state)
+        return evaluate_runtime_expression(expr, state)
 
     def eval_local_value(self, target: str, expr: Any, state: RuntimeState) -> Any:
         return _eval_runtime_local_value(target, expr, state)
@@ -60,7 +61,7 @@ class RuntimeValueResolver:
         return _container_ref_payload(material_state, container_id)
 
     def eval_protocol_output_expr(self, expr: Any, state: RuntimeState) -> Any:
-        value = _eval_runtime_expr(expr, state)
+        value = evaluate_runtime_expression(expr, state)
         if value is not UNRESOLVED:
             return value
         material_value = _resolve_runtime_material_output_value(state.artifacts.get("material_state"), expr)
@@ -69,7 +70,7 @@ class RuntimeValueResolver:
         return UNRESOLVED
 
 
-def _eval_runtime_expr(expr: Any, state: RuntimeState) -> Any:
+def evaluate_runtime_expression(expr: Any, state: RuntimeState) -> Any:
     if isinstance(expr, dict):
         kind = expr.get("kind")
         if kind == "ContentEnum":
@@ -89,7 +90,7 @@ def _eval_runtime_expr(expr: Any, state: RuntimeState) -> Any:
                 return UNRESOLVED
             out: list[Any] = []
             for item in elements:
-                resolved = _eval_runtime_expr(item, state)
+                resolved = evaluate_runtime_expression(item, state)
                 if resolved is UNRESOLVED:
                     return UNRESOLVED
                 out.append(resolved)
@@ -99,7 +100,7 @@ def _eval_runtime_expr(expr: Any, state: RuntimeState) -> Any:
         if kind == "IRIndex":
             return _resolve_runtime_index(expr, state)
         if kind == "IRMember":
-            base = _eval_runtime_expr(expr.get("base"), state)
+            base = evaluate_runtime_expression(expr.get("base"), state)
             if base is UNRESOLVED or not isinstance(base, dict):
                 return UNRESOLVED
             member = expr.get("member")
@@ -109,14 +110,17 @@ def _eval_runtime_expr(expr: Any, state: RuntimeState) -> Any:
         if kind == "IRCall":
             return _eval_runtime_call(expr, state)
         if kind == "IRUnary":
-            operand = _eval_runtime_expr(expr.get("operand"), state)
+            operand = evaluate_runtime_expression(expr.get("operand"), state)
             if operand is UNRESOLVED:
                 return UNRESOLVED
-            if expr.get("op") == "-" and isinstance(operand, (int, float)):
-                return -operand
+            if expr.get("op") == "-":
+                try:
+                    return quantity_binary("*", -1, operand)
+                except QuantityArithmeticError:
+                    return UNRESOLVED
             return UNRESOLVED
         if kind == "IRBinary":
-            return _eval_runtime_binary(expr, state)
+            return evaluate_runtime_binary(expr, state)
     if isinstance(expr, (bool, int, float, str)):
         return expr
     return UNRESOLVED
@@ -163,7 +167,7 @@ def _eval_runtime_local_value(target: str, expr: Any, state: RuntimeState) -> An
         name = expr.get("name")
         if isinstance(name, str) and name in _LOCAL_RUNTIME_CONSTRUCTORS:
             return _eval_local_runtime_constructor(expr, state, target_name=target)
-    return _eval_runtime_expr(expr, state)
+    return evaluate_runtime_expression(expr, state)
 
 
 def _eval_local_runtime_constructor(
@@ -266,7 +270,7 @@ def _eval_runtime_constructor_arg(expr: Any, state: RuntimeState) -> Any:
             if not isinstance(elements, list):
                 return []
             return [_eval_runtime_constructor_arg(item, state) for item in elements]
-    value = _eval_runtime_expr(expr, state)
+    value = evaluate_runtime_expression(expr, state)
     if value is not UNRESOLVED:
         return value
     return expr
@@ -357,7 +361,7 @@ def _eval_runtime_method_arg(expr: Any, state: RuntimeState) -> Any:
         name = expr.get("name")
         if isinstance(name, str):
             return name
-    return _eval_runtime_expr(expr, state)
+    return evaluate_runtime_expression(expr, state)
 
 
 def _eval_runtime_detects(expr: dict[str, Any], state: RuntimeState) -> Any:
@@ -391,7 +395,7 @@ def _eval_runtime_detects(expr: dict[str, Any], state: RuntimeState) -> Any:
 
 
 def _eval_runtime_repeat_items(expr: Any, state: RuntimeState) -> Any:
-    value = _eval_runtime_expr(expr, state)
+    value = evaluate_runtime_expression(expr, state)
     if value is UNRESOLVED:
         return UNRESOLVED
     if isinstance(value, list):
@@ -423,7 +427,7 @@ def _runtime_detect_key_candidates(expr: Any, state: RuntimeState) -> list[str]:
                 if isinstance(bound_id, str) and bound_id not in candidates:
                     candidates.append(bound_id)
         return candidates
-    resolved = _eval_runtime_expr(expr, state)
+    resolved = evaluate_runtime_expression(expr, state)
     if isinstance(resolved, dict):
         ref_id = resolved.get("id")
         if isinstance(ref_id, str):
@@ -545,10 +549,10 @@ def _resolve_runtime_mutable_path(expr: Any, state: RuntimeState) -> Any:
     return current if isinstance(current, dict) else UNRESOLVED
 
 
-def _eval_runtime_binary(expr: dict[str, Any], state: RuntimeState) -> Any:
+def evaluate_runtime_binary(expr: dict[str, Any], state: RuntimeState) -> Any:
     op = expr.get("op")
-    left = _eval_runtime_expr(expr.get("left"), state)
-    right = _eval_runtime_expr(expr.get("right"), state)
+    left = evaluate_runtime_expression(expr.get("left"), state)
+    right = evaluate_runtime_expression(expr.get("right"), state)
     if left is UNRESOLVED or right is UNRESOLVED:
         return UNRESOLVED
     if op == "and":
@@ -573,22 +577,10 @@ def _eval_runtime_binary(expr: dict[str, Any], state: RuntimeState) -> Any:
             return left_cmp >= right_cmp
         except TypeError:
             return UNRESOLVED
-    quantity_result = _eval_runtime_quantity_binary(op=op, left=left, right=right)
-    if quantity_result is not UNRESOLVED:
-        return quantity_result
-    if not isinstance(left, (int, float)) or not isinstance(right, (int, float)):
+    try:
+        return quantity_binary(op, left, right)
+    except QuantityArithmeticError:
         return UNRESOLVED
-    if op == "+":
-        return left + right
-    if op == "-":
-        return left - right
-    if op == "*":
-        return left * right
-    if op == "/":
-        if right == 0:
-            return UNRESOLVED
-        return left / right
-    return UNRESOLVED
 
 
 def _runtime_comparable_pair(left: Any, right: Any) -> tuple[Any, Any]:
@@ -599,24 +591,6 @@ def _runtime_comparable_pair(left: Any, right: Any) -> tuple[Any, Any]:
     if isinstance(left, tuple) or isinstance(right, tuple):
         return UNRESOLVED, UNRESOLVED
     return left, right
-
-
-def _eval_runtime_quantity_binary(*, op: Any, left: Any, right: Any) -> Any:
-    if not isinstance(left, tuple) or not isinstance(right, tuple):
-        return UNRESOLVED
-    if len(left) != 2 or len(right) != 2:
-        return UNRESOLVED
-    left_value, left_unit = left
-    right_value, right_unit = right
-    if left_unit != right_unit:
-        return UNRESOLVED
-    if not isinstance(left_value, (int, float)) or not isinstance(right_value, (int, float)):
-        return UNRESOLVED
-    if op == "+":
-        return (left_value + right_value, left_unit)
-    if op == "-":
-        return (left_value - right_value, left_unit)
-    return UNRESOLVED
 
 
 def _runtime_bound_value(value: Any, state: RuntimeState) -> Any:
@@ -630,7 +604,7 @@ def _runtime_bound_value(value: Any, state: RuntimeState) -> Any:
             return UNRESOLVED
         if not isinstance(kind, str) or not kind.startswith("IR"):
             return value
-        return _eval_runtime_expr(value, state)
+        return evaluate_runtime_expression(value, state)
     return value
 
 
@@ -708,7 +682,7 @@ def resolve_runtime_arg_value(value: Any, state: RuntimeState) -> Any:
             if isinstance(name, str) and isinstance(local_bindings, dict) and name in local_bindings:
                 return local_bindings[name]
         if isinstance(kind, str) and kind in {"IRBinary", "IRUnary", "IRMember"}:
-            evaluated = _eval_runtime_expr(value, state)
+            evaluated = evaluate_runtime_expression(value, state)
             if evaluated is not UNRESOLVED:
                 return serialize_runtime_value(evaluated)
         return {key: resolve_runtime_arg_value(item, state) for key, item in value.items()}

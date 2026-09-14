@@ -58,5 +58,12 @@
   ],
   "FIELD-CONTROL-04": [
     "tests/test_kernel_plan.py::test_plan_let_bound_electrophoresis_stdlib_has_no_legacy_electrophoresis_step"
+  ],
+  "QTY-ARITH-01": [
+    "tests/test_quantity_arithmetic.py",
+    "tests/test_quantity_arithmetic_integration.py"
+  ],
+  "MAT-REPLACE-01": [
+    "tests/test_material_replace_integration.py"
   ]
 }

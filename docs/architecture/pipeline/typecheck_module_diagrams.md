@@ -1,6 +1,6 @@
 # Typecheck Module Diagrams
 
-Last updated: 2026-04-23
+Last updated: 2026-09-14
 
 Related IR document:
 
@@ -97,6 +97,7 @@ sequenceDiagram
     participant H as "typecheck/statements.py::BaseTypecheckStatementHandler subclass"
     participant Expr as "typecheck/expressions.py::TypecheckExpressionServices"
     participant Ctx as "typecheck/context.py::TypecheckContext"
+    participant Quantity as "common.quantity_arithmetic"
     participant Registry as "program_registry.py"
     participant Diag as "common.diagnostics::Diagnostic"
 
@@ -107,6 +108,9 @@ sequenceDiagram
     H->>H: check_child_expressions(stmt, ctx, state)
     H->>Expr: typecheck_program_calls_in_expr(...) / validate_quantity_dimensions(...)
     Expr->>Expr: resolve_bound_expr(...) / classify_local_expr_type(...)
+    Expr->>Expr: evaluate_quantity(expr, bindings); defer unresolved parameters
+    Expr->>Quantity: quantity_result_unit(...) for deferred values; quantity_binary(...) for known values
+    Note over Expr,Quantity: Shared with runtime/values.py: unit conversion, scalar arithmetic, no display rounding
     Expr->>Registry: get_program_spec(...) when program calls appear
     Expr-->>H: expression-level diagnostics
     H->>Ctx: extend(diagnostics)

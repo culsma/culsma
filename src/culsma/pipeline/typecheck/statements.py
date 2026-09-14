@@ -22,7 +22,8 @@ from culsma.pipeline.ir_nodes import (
 from culsma.pipeline.program_registry import is_known_program_kind
 
 from .context import TypecheckContext
-from .expressions import DEFAULT_TYPECHECK_EXPRESSION_SERVICES, TypecheckExpressionServices
+
+from .expressions import DEFAULT_TYPECHECK_EXPRESSION_SERVICES, DeferredNumeric, TypecheckExpressionServices
 
 
 @dataclass
@@ -85,7 +86,7 @@ class BaseTypecheckStatementHandler:
         _state: TypecheckStatementState,
     ) -> None:
         if isinstance(_stmt, IRRepeat):
-            self.defer_content_assignments(_stmt, _ctx)
+            self.defer_assignments(_stmt, _ctx)
 
     def check_child_expressions(
         self,
@@ -117,13 +118,17 @@ class BaseTypecheckStatementHandler:
         _ctx: TypecheckContext,
         _state: TypecheckStatementState,
     ) -> None:
-        if isinstance(_stmt, (IRConditional, IRRepeat)):
-            self.defer_content_assignments(_stmt, _ctx)
+        if isinstance(_stmt, (IRConditional, IRRepeat, IRWithEnv, IRWithConstraint)):
+            self.defer_assignments(_stmt, _ctx)
 
-    def defer_content_assignments(self, stmt: IRStatement, ctx: TypecheckContext) -> None:
+    def defer_assignments(self, stmt: IRStatement, ctx: TypecheckContext) -> None:
         if ctx.scope_query is not None:
             names = [effect.name for effect in ctx.scope_query.assignment_effects(stmt.id)]
             ctx.expr_bindings.update(deferred_content_enum_bindings(names, ctx.content_scope()))
+            for name in names:
+                kind = self.services.classify_local_expr_type(ctx.expr_bindings.get(name), expr_bindings=ctx.expr_bindings)
+                if kind in {"int", "quantity"}:
+                    ctx.expr_bindings[name] = DeferredNumeric(kind)
 
     def recurse(self, child: ChildStatementBlock, ctx: TypecheckContext) -> None:
         if ctx.statement_typechecker is None:
@@ -142,6 +147,10 @@ class LetTypecheckHandler(BaseTypecheckStatementHandler):
         stmt = cast(IRLet, stmt)
         if stmt.value is None:
             ctx.expr_bindings.pop(stmt.name, None)
+            return
+        numeric = self.services.numeric_binding(stmt.value, ctx.expr_bindings)
+        if numeric is not None:
+            ctx.expr_bindings[stmt.name] = numeric
             return
         result = ContentArgumentResolver.resolve_argument(stmt.value, None, ctx.content_scope())
         ctx.expr_bindings[stmt.name] = result.value if result.source is ContentInputSource.ENUM and (result.token is not None or isinstance(result.value, DeferredContentEnum)) else stmt.value
@@ -216,6 +225,11 @@ class AssignTypecheckHandler(BaseTypecheckStatementHandler):
         result = ContentArgumentResolver.resolve_argument(stmt.value, None, ctx.content_scope())
         if isinstance(stmt.target, IRIdentifier) and result.source is ContentInputSource.ENUM and (result.token is not None or isinstance(result.value, DeferredContentEnum)):
             ctx.expr_bindings[stmt.target.name] = result.value
+        elif isinstance(stmt.target, IRIdentifier) and stmt.target.name in ctx.expr_bindings:
+            kind = self.services.classify_local_expr_type(stmt.value, expr_bindings=ctx.expr_bindings)
+            if kind in {"int", "quantity"}:
+                numeric = self.services.numeric_binding(stmt.value, ctx.expr_bindings)
+                ctx.expr_bindings[stmt.target.name] = numeric if numeric is not None else DeferredNumeric(kind)
 
 
 class WithEnvTypecheckHandler(BaseTypecheckStatementHandler):
@@ -334,6 +348,7 @@ class StepTypecheckHandler(BaseTypecheckStatementHandler):
             ctx.extend(
                 self.services.validate_quantity_dimensions(
                     arg.value,
+                    expr_bindings=ctx.expr_bindings,
                     expected=list(expected),
                     non_quantity_code="TYPE_UNIT_NOT_ALLOWED",
                     mismatch_code="TYPE_DIMENSION_MISMATCH",

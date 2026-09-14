@@ -44,6 +44,7 @@ def typecheck(
     """Check quantity dimensions against per-operation argument expectations."""
     diagnostics: list[Diagnostic] = []
     statement_typechecker = StatementTypechecker()
+    expression_services = TypecheckExpressionServices()
     scope_model = analysis.scope if analysis is not None else ScopeAnalyzer().analyze(ir)
     scope_query = ScopeQueryService.from_model(scope_model)
 
@@ -63,7 +64,7 @@ def typecheck(
             operation_specs=operation_specs,
             diagnostics=diagnostics,
             expr_bindings={
-                param.name: param.default
+                param.name: expression_services.parameter_default_binding(param.default)
                 for param in protocol.params
                 if param.default is not None
             },

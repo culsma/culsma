@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any
 
 from culsma.common.content_contracts import CONTENT_ENUM_TYPES, parse_content_classification, parse_content_kind
 from culsma.common.diagnostics import Diagnostic
+from culsma.common.quantity_arithmetic import UNIT_TO_DIMENSION, QuantityArithmeticError, quantity_binary, quantity_parts, quantity_result_unit
 from culsma.pipeline.content_inputs import (
     ContentArgumentResolver, ContentArgumentScope, ContentInputSource, ContentResolutionIssue, DeferredContentEnum,
 )
@@ -35,35 +37,32 @@ from culsma.pipeline.ir_nodes import (
 from culsma.pipeline.program_registry import get_program_spec, is_known_program_kind
 
 
-_UNIT_TO_DIMENSION: dict[str, str] = {
-    "%": "percent",
-    "s": "time",
-    "ms": "time",
-    "sec": "time",
-    "min": "time",
-    "hr": "time",
-    "h": "time",
-    "day": "time",
-    "C": "temperature",
-    "K": "temperature",
-    "pct": "percent",
-    "uL": "volume",
-    "ul": "volume",
-    "mL": "volume",
-    "ml": "volume",
-    "L": "volume",
-    "ug": "mass",
-    "mg": "mass",
-    "g": "mass",
-    "kg": "mass",
-    "cells": "count",
-    "V": "electric_potential",
-    "mV": "electric_potential",
-    "A": "electric_current",
-    "mA": "electric_current",
-    "uA": "electric_current",
-    "rpm": "rotation_rate",
-}
+_UNIT_TO_DIMENSION = UNIT_TO_DIMENSION
+
+
+@dataclass(frozen=True)
+class DeferredNumeric:
+    """Numeric kind retained when control flow prevents static value inference."""
+
+    kind: str
+    unit: str | None = None
+    span: Any = None
+
+
+@dataclass(frozen=True)
+class InvalidNumeric:
+    """A known invalid calculation retained for the consuming slot's diagnostic."""
+
+    kind: str
+    error: QuantityArithmeticError
+
+
+class DeferredQuantity(Exception):
+    """A quantity has a known kind/dimension but no statically known value."""
+
+    def __init__(self, numeric: DeferredNumeric | None = None):
+        self.numeric = numeric or DeferredNumeric("unknown")
+
 
 _LEGACY_UNIT_ALIASES: dict[str, str] = {
     "sec": "s",
@@ -85,11 +84,12 @@ class TypecheckExpressionServices:
             resolved = self.resolve_bound_expr(arg.value, expr_bindings)
             if arg.name == "thermal":
                 if isinstance(resolved, IRCall) and resolved.name == "thermal_program":
-                    diagnostics.extend(self.typecheck_thermal_program_call(resolved, node_id=stmt.id))
+                    diagnostics.extend(self.typecheck_thermal_program_call(resolved, node_id=stmt.id, expr_bindings=expr_bindings))
                     continue
                 diagnostics.extend(
                     self.validate_quantity_dimensions(
                         resolved,
+                        expr_bindings=expr_bindings,
                         expected=["temperature"],
                         non_quantity_code="TYPE_ENV_THERMAL_DIMENSION_MISMATCH",
                         mismatch_code="TYPE_ENV_THERMAL_DIMENSION_MISMATCH",
@@ -103,6 +103,7 @@ class TypecheckExpressionServices:
                 diagnostics.extend(
                     self.validate_quantity_dimensions(
                         resolved,
+                        expr_bindings=expr_bindings,
                         expected=["time"],
                         non_quantity_code="TYPE_ENV_DURATION_DIMENSION_MISMATCH",
                         mismatch_code="TYPE_ENV_DURATION_DIMENSION_MISMATCH",
@@ -116,6 +117,7 @@ class TypecheckExpressionServices:
                 diagnostics.extend(
                     self.validate_quantity_dimensions(
                         resolved,
+                        expr_bindings=expr_bindings,
                         expected=["percent"],
                         non_quantity_code="TYPE_ENV_PERCENT_DIMENSION_MISMATCH",
                         mismatch_code="TYPE_ENV_PERCENT_DIMENSION_MISMATCH",
@@ -162,6 +164,7 @@ class TypecheckExpressionServices:
             diagnostics.extend(
                 self.validate_quantity_dimensions(
                     amount,
+                    expr_bindings=expr_bindings,
                     expected=["volume", "mass", "count"],
                     non_quantity_code="TYPE_MUTATION_QUANTITY_UNIT_REQUIRED",
                     mismatch_code="TYPE_MUTATION_QUANTITY_DIMENSION_MISMATCH",
@@ -172,6 +175,7 @@ class TypecheckExpressionServices:
                     node_id=stmt.id,
                 )
             )
+            amount = self.coerce_quantity_like(amount, expr_bindings)
             if isinstance(amount, IRQuantity) and amount.unit == "cells" and (
                 amount.value < 0 or not float(amount.value).is_integer()
             ):
@@ -196,7 +200,7 @@ class TypecheckExpressionServices:
     ) -> list[Diagnostic]:
         scope = scope or ContentArgumentScope(expr_bindings=expr_bindings)
         if call.name == "thermal_program":
-            return self.typecheck_thermal_program_call(call, node_id=node_id)
+            return self.typecheck_thermal_program_call(call, node_id=node_id, expr_bindings=expr_bindings)
         diagnostics = self.typecheck_call_container_target_view_positions(
             call,
             node_id=node_id,
@@ -217,6 +221,7 @@ class TypecheckExpressionServices:
                 diagnostics.extend(
                     self.validate_quantity_dimensions(
                         self.resolve_bound_expr(arg.value, expr_bindings),
+                        expr_bindings=expr_bindings,
                         expected=["volume"],
                         non_quantity_code="TYPE_CONTAINER_CAPACITY_DIMENSION_MISMATCH",
                         mismatch_code="TYPE_CONTAINER_CAPACITY_DIMENSION_MISMATCH",
@@ -301,13 +306,14 @@ class TypecheckExpressionServices:
             )
         ]
 
-    def typecheck_thermal_program_call(self, call: IRCall, *, node_id: str) -> list[Diagnostic]:
+    def typecheck_thermal_program_call(self, call: IRCall, *, node_id: str, expr_bindings: dict[str, Any] | None = None) -> list[Diagnostic]:
         diagnostics: list[Diagnostic] = []
         for arg in call.args:
             if arg.name in {"from", "to"}:
                 diagnostics.extend(
                     self.validate_quantity_dimensions(
                         arg.value,
+                        expr_bindings=expr_bindings,
                         expected=["temperature"],
                         non_quantity_code="TYPE_ENV_THERMAL_DIMENSION_MISMATCH",
                         mismatch_code="TYPE_ENV_THERMAL_DIMENSION_MISMATCH",
@@ -321,6 +327,7 @@ class TypecheckExpressionServices:
                 diagnostics.extend(
                     self.validate_quantity_dimensions(
                         arg.value,
+                        expr_bindings=expr_bindings,
                         expected=["time"],
                         non_quantity_code="TYPE_ENV_DURATION_DIMENSION_MISMATCH",
                         mismatch_code="TYPE_ENV_DURATION_DIMENSION_MISMATCH",
@@ -346,6 +353,7 @@ class TypecheckExpressionServices:
             diagnostics.extend(
                 self.validate_quantity_dimensions(
                     amount,
+                    expr_bindings=expr_bindings,
                     expected=["volume", "mass", "count"],
                     non_quantity_code="TYPE_LOAD_QUANTITY_UNIT_REQUIRED",
                     mismatch_code="TYPE_LOAD_QUANTITY_DIMENSION_MISMATCH",
@@ -356,6 +364,7 @@ class TypecheckExpressionServices:
                     node_id=node_id,
                 )
             )
+            amount = self.coerce_quantity_like(amount, expr_bindings)
             if isinstance(amount, IRQuantity) and amount.unit == "cells":
                 if amount.value < 0 or not float(amount.value).is_integer():
                     diagnostics.append(
@@ -403,10 +412,22 @@ class TypecheckExpressionServices:
         label: str,
         span,
         node_id: str | None,
+        expr_bindings: dict[str, Any] | None = None,
     ) -> list[Diagnostic]:
-        resolved = self.coerce_quantity_like(value)
-        if isinstance(value, IRIdentifier):
-            return []
+        try:
+            resolved = self.evaluate_quantity(value, expr_bindings or {})
+        except DeferredQuantity as exc:
+            resolved = exc.numeric
+            if resolved.kind == "unknown" or (resolved.kind == "quantity" and resolved.unit is None):
+                return []
+        except QuantityArithmeticError as exc:
+            code = {
+                "zero": "TYPE_QUANTITY_DIVISION_BY_ZERO",
+                "unit": unknown_code,
+                "nonfinite": "TYPE_QUANTITY_VALUE_NONFINITE",
+                "dimension": mismatch_code,
+            }.get(exc.reason, non_quantity_code)
+            return [Diagnostic(code=code, message=f"{label}: {exc}", span=span, node_id=node_id)]
         if resolved is None:
             return [
                 Diagnostic(
@@ -463,19 +484,73 @@ class TypecheckExpressionServices:
             ]
         return []
 
-    def coerce_quantity_like(self, value: Any) -> IRQuantity | None:
+    def evaluate_quantity(self, value: Any, expr_bindings: dict[str, Any], seen: frozenset[str] = frozenset()) -> IRQuantity | None:
+        if isinstance(value, InvalidNumeric):
+            raise value.error
+        if isinstance(value, DeferredNumeric):
+            raise DeferredQuantity(value)
+        if isinstance(value, IRIdentifier):
+            if value.name not in expr_bindings or value.name in seen:
+                raise DeferredQuantity()
+            return self.evaluate_quantity(expr_bindings[value.name], expr_bindings, seen | {value.name})
         if isinstance(value, IRQuantity):
+            quantity_parts((value.value, value.unit) if value.unit is not None else value.value)
             return value
         if isinstance(value, IRUnary) and value.op == "-":
-            inner = self.coerce_quantity_like(value.operand)
+            inner = self.evaluate_quantity(value.operand, expr_bindings, seen)
             if inner is None:
                 return None
-            return IRQuantity(
-                value=-float(inner.value),
-                unit=inner.unit,
-                span=value.span or inner.span,
+            return IRQuantity(value=-inner.value, unit=inner.unit, span=value.span or inner.span)
+        if isinstance(value, IRBinary) and value.op in {"+", "-", "*", "/"}:
+            operands = []
+            for operand in (value.left, value.right):
+                try:
+                    operands.append(self.evaluate_quantity(operand, expr_bindings, seen))
+                except DeferredQuantity as exc:
+                    operands.append(exc.numeric)
+            left, right = operands
+            if left is None or right is None:
+                return None
+            if value.op == "/" and isinstance(right, IRQuantity) and right.value == 0:
+                raise QuantityArithmeticError("zero", "Division by zero in quantity expression")
+            deferred = [operand for operand in operands if isinstance(operand, DeferredNumeric)]
+            if deferred:
+                if any(operand.kind == "unknown" or (operand.kind == "quantity" and operand.unit is None)
+                       for operand in deferred):
+                    raise DeferredQuantity()
+                unit = quantity_result_unit(value.op, left.unit, right.unit)
+                raise DeferredQuantity(DeferredNumeric("quantity" if unit is not None else "int", unit))
+            result = quantity_binary(
+                value.op,
+                (left.value, left.unit) if left.unit is not None else left.value,
+                (right.value, right.unit) if right.unit is not None else right.value,
             )
+            number, unit = result if isinstance(result, tuple) else (result, None)
+            return IRQuantity(value=number, unit=unit, span=value.span)
         return None
+
+    def numeric_binding(self, value: Any, expr_bindings: dict[str, Any]) -> IRQuantity | DeferredNumeric | InvalidNumeric | None:
+        """Capture known values, defer unknown values, and preserve known errors."""
+        try:
+            return self.evaluate_quantity(value, expr_bindings)
+        except DeferredQuantity as exc:
+            return exc.numeric if exc.numeric.kind in {"int", "quantity"} else None
+        except QuantityArithmeticError as exc:
+            kind = self.classify_local_expr_type(value, expr_bindings=expr_bindings)
+            return InvalidNumeric(kind, exc)
+
+    def parameter_default_binding(self, value: Any) -> Any:
+        """Retain the default's numeric dimension, without assuming its value at every call."""
+        quantity = self.coerce_quantity_like(value)
+        if quantity is None:
+            return value
+        return DeferredNumeric("quantity" if quantity.unit is not None else "int", quantity.unit)
+
+    def coerce_quantity_like(self, value: Any, expr_bindings: dict[str, Any] | None = None) -> IRQuantity | None:
+        try:
+            return self.evaluate_quantity(value, expr_bindings or {})
+        except (DeferredQuantity, QuantityArithmeticError):
+            return None
 
     def resolve_bound_expr(self, expr: Any, expr_bindings: dict[str, Any]) -> Any:
         seen: set[str] = set()
@@ -579,6 +654,8 @@ class TypecheckExpressionServices:
         if enum_result.source is ContentInputSource.ENUM and enum_result.token is not None:
             return type(enum_result.value).__name__
         resolved = self.resolve_bound_expr(expr, expr_bindings)
+        if isinstance(resolved, (DeferredNumeric, InvalidNumeric)):
+            return resolved.kind
         if isinstance(resolved, IRBoolean):
             return "bool"
         if isinstance(resolved, IRString):
@@ -633,11 +710,17 @@ class TypecheckExpressionServices:
             right = self.classify_local_expr_type(resolved.right, expr_bindings=expr_bindings)
             if resolved.op in {"and", "or", "==", "!=", "<", ">", "<=", ">="}:
                 return "bool"
-            if resolved.op in {"+", "-", "*", "/"}:
-                if left == right and left in {"int", "quantity"}:
-                    return left
-                if {left, right} == {"int", "quantity"} and resolved.op in {"*", "/"}:
+            if left == right == "int" and resolved.op in {"+", "-", "*", "/"}:
+                return "int"
+            if left == right == "quantity":
+                if resolved.op in {"+", "-"}:
                     return "quantity"
+                if resolved.op == "/":
+                    return "int"
+            if resolved.op == "*" and {left, right} == {"int", "quantity"}:
+                return "quantity"
+            if resolved.op == "/" and left == "quantity" and right == "int":
+                return "quantity"
         return "unknown"
 
     def typecheck_content_enum_argument(self, arg, expected_enum, node_id, scope: ContentArgumentScope) -> list[Diagnostic]:
@@ -857,6 +940,7 @@ class TypecheckExpressionServices:
                 diagnostics.extend(
                     self.validate_program_quantity_field(
                         resolved,
+                        expr_bindings=expr_bindings,
                         field_name=arg.name,
                         program_name=call.name,
                         dimension=field_spec.dimension,
@@ -876,6 +960,8 @@ class TypecheckExpressionServices:
                 )
                 continue
             if field_spec.value_kind == "int":
+                if isinstance(resolved, DeferredNumeric) and resolved.kind == "int":
+                    continue
                 if not isinstance(resolved, IRQuantity) or resolved.unit is not None or int(resolved.value) != resolved.value:
                     diagnostics.append(
                         Diagnostic(
@@ -916,6 +1002,7 @@ class TypecheckExpressionServices:
         dimension: str | None,
         span,
         node_id: str,
+        expr_bindings: dict[str, Any] | None = None,
     ) -> list[Diagnostic]:
         if dimension == "centrifuge_speed":
             return self.validate_centrifuge_speed_quantity(
@@ -929,6 +1016,7 @@ class TypecheckExpressionServices:
             return []
         return self.validate_quantity_dimensions(
             value,
+            expr_bindings=expr_bindings,
             expected=[dimension],
             non_quantity_code="TYPE_PROGRAM_FIELD_KIND_MISMATCH",
             mismatch_code="TYPE_PROGRAM_FIELD_DIMENSION_MISMATCH",
@@ -940,7 +1028,7 @@ class TypecheckExpressionServices:
         )
 
     def validate_centrifuge_speed_quantity(self, value: Any, *, field_name: str, program_name: str, span, node_id: str) -> list[Diagnostic]:
-        if not isinstance(value, IRQuantity):
+        if not isinstance(value, IRQuantity) and not (isinstance(value, DeferredNumeric) and value.kind == "quantity"):
             return [
                 Diagnostic(
                     code="TYPE_PROGRAM_FIELD_KIND_MISMATCH",
