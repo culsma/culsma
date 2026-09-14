@@ -53,6 +53,11 @@ class _RequirementSpec:
 
 
 REQUIREMENT_REGISTRY: dict[str, _RequirementSpec] = {
+    "dropwise": _RequirementSpec(
+        category="delivery_mode",
+        allowed_on=frozenset({"mutation"}),
+        scopes=frozenset({"stmt", "block"}),
+    ),
     "preserve_boundary": _RequirementSpec(
         category="structure_preservation",
         allowed_on=frozenset({"mutation", "sep", "frac"}),
@@ -410,11 +415,11 @@ def dedupe_requirement_names(names: tuple[str, ...] | list[str]) -> list[str]:
     return out
 
 
-def _classify_constraint_action_family(stmt: IRStatement) -> str | None:
+def classify_constraint_action_family(stmt: IRStatement) -> str | None:
     if isinstance(stmt, IRMutation):
         return "mutation"
     if isinstance(stmt, IRStep):
-        if stmt.name in {"sep", "frac", "img", "ecp", "phy"}:
+        if stmt.name in {"sep", "frac", "img", "ecp", "phy", "agit"}:
             return stmt.name
         return None
     if isinstance(stmt, IRLet) and isinstance(stmt.value, IRCall):
@@ -429,7 +434,7 @@ def validate_active_constraint_compatibility(
     active_requirements: tuple[str, ...],
 ) -> list[Diagnostic]:
     diagnostics: list[Diagnostic] = []
-    family = _classify_constraint_action_family(stmt)
+    family = classify_constraint_action_family(stmt)
     if family is None:
         return diagnostics
     for name in dedupe_requirement_names(active_requirements):

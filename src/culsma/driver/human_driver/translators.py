@@ -84,7 +84,7 @@ class EnvironmentHoldTranslator:
 class SeparationTranslator:
     def translate(self, record: HumanMappingRecord, binding: dict[str, Any]) -> HumanProjection:
         sample = value_to_text(record.semantic_args.get("sample"))
-        summary = _render_program_aware_separation_summary(record, sample)
+        summary = render_program_aware_separation_summary(record, sample)
         details = [*_requirement_details(binding), *_env_detail(binding)]
         return HumanProjection(
             step_id=record.step_id,
@@ -191,7 +191,7 @@ def _env_detail(binding: dict[str, Any]) -> list[str]:
     return []
 
 
-def _render_program_aware_separation_summary(record: HumanMappingRecord, sample: str) -> str:
+def render_program_aware_separation_summary(record: HumanMappingRecord, sample: str) -> str:
     program_args = record.program_args
     if record.semantic_op == "sep" and record.program_kind == "centrifuge_program":
         drive = value_to_text(program_args.get("drive"))
@@ -202,6 +202,8 @@ def _render_program_aware_separation_summary(record: HumanMappingRecord, sample:
     if record.semantic_op == "sep" and record.program_kind == "filtration_program":
         membrane = value_to_text(program_args.get("membrane"))
         drive = value_to_text(program_args.get("drive"))
+        if membrane == "adherent_cell_surface" and drive == "cell_lifter":
+            return f"Lift cells from the surface of {sample} into the liquid using a cell lifter."
         return f"Separate {sample} across a {membrane} membrane using {drive} drive."
     if record.semantic_op == "sep" and record.program_kind == "centrifugal_filtration_program":
         membrane = value_to_text(program_args.get("membrane"))

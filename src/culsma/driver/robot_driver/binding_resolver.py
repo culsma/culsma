@@ -47,7 +47,7 @@ _ACTION_BY_READOUT_QUANTITY = {
 class RobotBindingResolver:
     def bind(self, record: MappingRecord, context: DriverContext | None = None) -> dict[str, Any]:
         return {
-            "action": _action_for_record(record),
+            "action": action_for_record(record),
             "requirement_flags": list(record.requirements),
             "env_summary": (
                 {key: value_to_text(value) for key, value in sorted(record.env.items())}
@@ -59,7 +59,14 @@ class RobotBindingResolver:
         }
 
 
-def _action_for_record(record: MappingRecord) -> str:
+def action_for_record(record: MappingRecord) -> str:
+    if (
+        record.semantic_op == "sep"
+        and record.program_kind == "filtration_program"
+        and value_to_text(record.program_args.get("membrane")) == "adherent_cell_surface"
+        and value_to_text(record.program_args.get("drive")) == "cell_lifter"
+    ):
+        return "material.separate.surface_release"
     program_action = _ACTION_BY_PROGRAM_KIND.get(record.program_kind or "")
     if program_action is not None:
         return program_action

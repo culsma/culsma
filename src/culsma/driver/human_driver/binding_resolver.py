@@ -11,6 +11,7 @@ from .models import HumanMappingRecord
 from .mutation_strategy import resolve_mutation_strategy
 
 _REQUIREMENT_NOTES = {
+    "dropwise": "Add the transferred liquid drop by drop into the destination.",
     "gentle": "Handle gently and avoid abrupt disturbance.",
     "aseptic": "Maintain aseptic handling throughout this step.",
     "low_loss": "Minimize transfer loss during handling.",
@@ -64,7 +65,7 @@ class HumanBindingResolver:
     """Resolve human-readable binding hints from normalized records."""
 
     def bind(self, record: HumanMappingRecord, context: DriverContext | None = None) -> dict[str, Any]:
-        tool_label = _tool_label_for_record(record)
+        tool_label = tool_label_for_record(record)
         requirement_notes = tuple(
             _REQUIREMENT_NOTES.get(requirement, f"Honor requirement '{requirement}'.")
             for requirement in record.requirements
@@ -86,7 +87,14 @@ class HumanBindingResolver:
         return binding
 
 
-def _tool_label_for_record(record: HumanMappingRecord) -> str:
+def tool_label_for_record(record: HumanMappingRecord) -> str:
+    if (
+        record.semantic_op == "sep"
+        and record.program_kind == "filtration_program"
+        and value_to_text(record.program_args.get("membrane")) == "adherent_cell_surface"
+        and value_to_text(record.program_args.get("drive")) == "cell_lifter"
+    ):
+        return "cell lifter"
     program_label = _TOOL_BY_PROGRAM_KIND.get(record.program_kind or "")
     if program_label is not None:
         return program_label

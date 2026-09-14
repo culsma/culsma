@@ -68,5 +68,11 @@
   ],
   "MAT-BOUND-01": [
     "tests/test_material_precision.py"
+  ],
+  "DELIVERY-DROPWISE-01": [
+    "tests/test_dropwise_constraint.py"
+  ],
+  "MAT-SURFACE-RELEASE-01": [
+    "tests/test_case09_surface_release.py"
   ]
 }
