@@ -1,28 +1,33 @@
-protocol EvercodeWTMegaV3_RunSection2_1Batch(selected_lysate_count = 1) {
+protocol EvercodeWTMegaV3_RunSection2_1Batch(selected_lysate_count = 1, use_fixture_inputs = true, fixture_reagents_ready = true, fixture_equipment_ready = true, fixture_precipitate_present = false, fixture_precipitate_after_reheat = false, fixture_beads_suspended = true, fixture_beads_suspended_after_speedup = true, fixture_unclear_check = 0, fixture_clear_after_retry = true) {
   // Batch execution wrapper: run the single-lysate Section 2.1 module once per
   // selected lysate. Batch reagent preparation tables are handled separately.
   repeat lysate_capture in schedule(start = 1, end = selected_lysate_count, step = 1) {
-    EvercodeWTMegaV3_Section2_1_cDNACapture_Reviewed();
+    EvercodeWTMegaV3_Section2_1_cDNACapture_Reviewed(use_fixture_inputs = use_fixture_inputs, fixture_reagents_ready = fixture_reagents_ready, fixture_equipment_ready = fixture_equipment_ready, fixture_precipitate_present = fixture_precipitate_present, fixture_precipitate_after_reheat = fixture_precipitate_after_reheat, fixture_beads_suspended = fixture_beads_suspended, fixture_beads_suspended_after_speedup = fixture_beads_suspended_after_speedup, fixture_unclear_check = fixture_unclear_check, fixture_clear_after_retry = fixture_clear_after_retry);
   }
 }
 
-protocol EvercodeWTMegaV3_Section2_1_cDNACapture_Reviewed {
+protocol EvercodeWTMegaV3_Section2_1_cDNACapture_Reviewed(use_fixture_inputs = true, fixture_reagents_ready = true, fixture_equipment_ready = true, fixture_precipitate_present = false, fixture_precipitate_after_reheat = false, fixture_beads_suspended = true, fixture_beads_suspended_after_speedup = true, fixture_unclear_check = 0, fixture_clear_after_retry = true) {
   // Source preparation: Prepare ice, ethanol, room-temperature SPRI beads,
   // magnetic racks, vortex adapter, and Section 2.1 reagents.
-  // Source step S1: Use one tube of barcoded lysate input material continuing
+  // Source step S1: Lysate pretreatment.
+  // Original step 6: Use one tube of barcoded lysate input material continuing
   // from lysate preparation or storage.
   let lysate = tube(
     label = "BarcodedCDNALysate",
+    // Source hardware is a 0.2 mL PCR tube. This retained computational limit
+    // accommodates the existing volume-based DNA/bead inputs (see source.md);
+    // their reported volume is not a measured final liquid volume.
     capacity = 250uL,
     // Source Section 1 produces 55 uL of lysate per sublibrary.
-    load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.DNA, code = "LYSATE1", attrs = {state: lysate}):55uL]
+    load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.DNA, code = "LYSATE1", attrs = {state: "lysate"}):55uL]
   );
   let capture_enhancer = tube(
     label = "CaptureEnhancer",
     capacity = 50uL,
     load = [content(kind = ContentKind.CHEMICAL, type = ContentType.OTHER_CHEMICAL, code = "CE", attrs = {original_type: "custom_capture_enhancer"}):20uL]
   );
-  // Source step S13: prepare the working bead tube with the specified initial load.
+  // Source step S2: working bead input, allocated before stage execution.
+  // Original step 15: prepare the working bead tube with the specified initial load.
   let streptavidin_beads = tube(
     label = "StreptavidinBeads",
     capacity = 1500uL,
@@ -51,180 +56,397 @@ protocol EvercodeWTMegaV3_Section2_1_cDNACapture_Reviewed {
   );
   let waste = tube(label = "Section2_1Waste", capacity = 5000uL);
 
-  // Source step S2: If previously frozen, incubate lysate at 37C for 5 min,
-  // confirm no precipitation, briefly centrifuge, and keep at room temperature.
-  // If precipitation remains, the 37C incubation may be extended by 5 min.
-  with env(thermal = 37C, duration = 5min) {
-    hold(sample = lysate);
+  // Independent benchmark boundary: ethanol and SPRI beads are prepared in
+  // the later purification case. Inputs here are supplied thawed; no thaw
+  // duration or actual inventory concentration is invented.
+  // Fixture results are scenario inputs, not observations or device feedback.
+  // Set use_fixture_inputs=false to consume driver/operator readout results.
+  let status_schema = data_schema(label = "CaptureWorkflowStatus",
+    fields = [can_continue, capture_complete, needs_attention]);
+  let status = phy(sample = lysate, quantity = customized, schema_ref = status_schema);
+  // Set needs_attention before disabling can_continue in failure branches:
+  // enclosing runtime conditions are evaluated for each subsequent action.
+  status.result.can_continue = true;
+  status.result.capture_complete = false;
+  status.result.needs_attention = false;
+  let reagents_ready = ConfirmCaptureHandling(sample = lysate, status = status,
+    label = "Confirm buffers thawed at room temperature and stored on ice; Capture Enhancer on ice; streptavidin beads at room temperature",
+    fixture_confirmed = fixture_reagents_ready, use_fixture_inputs = use_fixture_inputs);
+  if reagents_ready == false {
+    status.result.needs_attention = true;
+    status.result.can_continue = false;
   }
-  // Source step S3: precipitation check; no separate executable construct.
-  // Source step S4: brief spin-down; annotation-only in this program.
-  // Continued implementation for S4 includes a brief centrifuge. Authoring convention for brief
-  // spin-down: 3000g for 5s; not represented as sep because no material
-  // partition is intended.
-
-  // Source step S5: Briefly centrifuge Capture Enhancer and gently mix by
-  // pipetting 2x with a P20 set to 15 uL. The pipette mix is represented as
-  // self-transfer. Brief spin-down convention: 3000g for 5s; not represented as
-  // sep because no material partition is intended.
-  repeat capture_enhancer_mix in schedule(start = 1, end = 2, step = 1) {
-    capture_enhancer << [capture_enhancer:15uL];
-  }
-
-  // Source step S6: Add 2.5 uL Capture Enhancer to each tube of lysate.
-  lysate << [capture_enhancer:2.5uL];
-
-  // Source step S7: Secure tubes in the PCR rack, vortex on 100% power for
-  // 1 min, then briefly centrifuge. Percent power is preserved in annotation;
-  // brief spin-down convention: 3000g for 5s, not represented as sep.
-  // Source step S8: secure the rack on the mixer; annotation-only.
-  // Source step S9: vortex.
-  agit(sample = lysate, mode = "vortex", duration = 1min);
-  // Source step S10: remove and briefly centrifuge; annotation-only.
-
-  // Source step S11: Incubate for 10 min at room temperature. Source permits
-  // extension by 5 additional minutes, up to 15 min total.
-  with env(thermal = 25C, duration = 10min) {
-    hold(sample = lysate);
-  }
-
-  // Source step S12: Vortex Streptavidin Beads until fully mixed; for one
-  // lysate, add 44 uL beads to a new 1.5 mL tube. The working bead tube was
-  // initialized with 44 uL above for the one-lysate mainline.
-  agit(sample = streptavidin_beads, mode = "vortex", duration = 15s);
-
-  // Source step S14: Place beads on the 1.5 mL magnetic rack until clear,
-  // about 2 min, then remove and discard the supernatant.
-  with env(field = magnetic_rack) {
-    sep(
-      sample = streptavidin_beads,
-      program = magnetic_program(duration = 2min)
-    );
-    // Source step S15: discard supernatant.
-    waste << [streptavidin_beads.contents[1]];
-  }
-
-  // Source step S19: Wash bead pellet with 50 uL Bead Wash Buffer and repeat
-  // for a total of 3 washes, discarding each supernatant and retaining beads.
-  repeat bead_wash_cycle in schedule(start = 1, end = 3, step = 1) {
-    // Source step S16: remove tube from magnet and fully resuspend bead pellet.
-    streptavidin_beads << [bead_wash_buffer:50uL];
-    // Authoring convention for source-only "fully resuspend": pipette 10x at
-    // 80% of the 50 uL resuspension volume.
-    repeat bead_resuspension_mix in schedule(start = 1, end = 10, step = 1) {
-      streptavidin_beads << [streptavidin_beads:40uL];
-    }
-
-    // Source step S17: return to the magnetic rack until clear, about 2 min,
-    // then discard supernatant.
-    with env(field = magnetic_rack) {
-      sep(
-        sample = streptavidin_beads,
-        program = magnetic_program(duration = 2min)
-      );
-      // Source step S18: discard the wash supernatant.
-      waste << [streptavidin_beads.contents[1]];
+  if status.result.can_continue == true {
+    with env(thermal = 0C) {
+      agit(sample = bead_wash_buffer, mode = "invert", cycles = 3);
+      agit(sample = binding_buffer, mode = "invert", cycles = 3);
+      agit(sample = wash_buffer_1, mode = "invert", cycles = 3);
+      agit(sample = wash_buffer_2, mode = "invert", cycles = 3);
     }
   }
 
-  // Source step S20: Remove tube from magnet and resuspend washed bead
-  // pellet in 55 uL Binding Buffer for one lysate. Keep the same tube binding;
-  // do not alias it as a new prepared tube. The unspecified full resuspension
-  // uses the agreed 10x pipette mix at 80% of 55 uL.
-  // Source step S21: resuspend in binding buffer.
-  streptavidin_beads << [binding_buffer:55uL];
-  repeat bead_binding_buffer_resuspension in schedule(start = 1, end = 10, step = 1) {
-    streptavidin_beads << [streptavidin_beads:44uL];
-  }
+  // Benchmark scheduling choice: prepare beads before lysate pretreatment.
+  // Original step 22 permits keeping prepared beads at room temperature.
+  // This avoids adding bead-preparation time after the step 14 incubation;
+  // the source instead prepares beads during that incubation.
+  // Source step S2: Streptavidin bead washing.
+  if status.result.can_continue == true {
+    // Original step 15: Vortex Streptavidin Beads until fully mixed; for one
+    // lysate, add 44 uL beads to a new 1.5 mL tube. The working bead tube was
+    // initialized with 44 uL above for the one-lysate mainline.
+    agit(sample = streptavidin_beads, mode = "vortex", duration = 15s);
 
-  // Source step S22: Add 50 uL Streptavidin Beads in Binding Buffer to each tube
-  // of lysate.
-  lysate << [streptavidin_beads:50uL];
+    // Original steps 16-17: clear on the 1.5 mL rack, confirm, then discard.
+    let initial_beads_clear = ClearCaptureSupernatant(sample = streptavidin_beads, waste = waste, status = status,
+      check_number = 1, capture_target = false, high_position = false,
+      fixture_equipment_ready = fixture_equipment_ready,
+      fixture_unclear_check = fixture_unclear_check,
+      fixture_clear_after_retry = fixture_clear_after_retry, use_fixture_inputs = use_fixture_inputs);
+    if initial_beads_clear == false {
+      status.result.needs_attention = true;
+      status.result.can_continue = false;
+    }
 
-  // Source step S23: Secure tubes in PCR rack and vortex on 100% power for
-  // 1 min. Percent power is preserved in annotation.
-  // Source step S24: attach rack to mixer; annotation-only.
-  // Source step S25: vortex.
-  agit(sample = lysate, mode = "vortex", duration = 1min);
+    // Original step 21: Wash bead pellet with 50 uL Bead Wash Buffer and repeat
+    // for a total of 3 washes, discarding each supernatant and retaining beads.
+    repeat bead_wash_cycle in schedule(start = 1, end = 3, step = 1) {
+      if status.result.can_continue == true {
+        // Original step 18: remove tube from magnet and fully resuspend bead pellet.
+        streptavidin_beads << [bead_wash_buffer:50uL];
+        // Authoring convention for source-only "fully resuspend": pipette 10x at
+        // 80% of the 50 uL resuspension volume.
+        repeat bead_resuspension_mix in schedule(start = 1, end = 10, step = 1) {
+          streptavidin_beads << [streptavidin_beads:40uL];
+        }
 
-  // Source step S26: Vortex on 20% power, about 800-1000 rpm, for 30 min at
-  // room temperature. Encoded at the lower bound, 800 rpm. The 10 min check
-  // for settled beads is retained in annotation.
-  with env(thermal = 25C, duration = 30min) {
-    agit(sample = lysate, mode = "vortex", duration = 30min, rate = 800rpm);
-  }
-
-  // Source step S27: Remove tubes from vortex, briefly vortex on a standard
-  // adapter, then briefly centrifuge without letting beads collect at the
-  // bottom. Protocol-specific tested spin-down condition: 100g for 8s; this is
-  // not represented as sep because no bead/liquid partition is intended.
-  // Source step S28: vortex on the standard adapter.
-  agit(sample = lysate, mode = "vortex");
-  // Source step S29: brief centrifugation; annotation-only.
-
-  // Source step S30: Place tubes on the high magnet position until the
-  // solution clears, about 2 min. Ensure supernatant is clear. While still on
-  // the magnetic rack, remove and discard supernatant. This is one magnetic
-  // separation action; high magnet position is execution-layer mapping.
-  with env(field = magnetic_rack) {
-    sep(
-      sample = lysate,
-      program = magnetic_program(duration = 2min),
-      component_fates = {
-        CE: { bound: 0%, flowthrough: 100% },
-        LYSATE1: { bound: 100%, flowthrough: 0% }
+        // Original steps 19-20: clear before removing each wash supernatant.
+        let bead_wash_clear = ClearCaptureSupernatant(sample = streptavidin_beads, waste = waste, status = status,
+          check_number = bead_wash_cycle + 1, capture_target = false, high_position = false,
+          fixture_equipment_ready = fixture_equipment_ready,
+          fixture_unclear_check = fixture_unclear_check,
+          fixture_clear_after_retry = fixture_clear_after_retry, use_fixture_inputs = use_fixture_inputs);
+        if bead_wash_clear == false {
+          status.result.needs_attention = true;
+          status.result.can_continue = false;
+        }
       }
-    );
-    // Source step S31: ensure clear supernatant; annotation-only.
-    // Source step S32: discard supernatant.
-    waste << [lysate.contents[1]];
+    }
   }
 
-  // Source step S33: Remove tubes from magnet, fully resuspend bead pellet
-  // with 125 uL Wash Buffer 1, incubate 1 min at room temperature, return to
-  // high magnet until clear about 2 min, discard supernatant while still on the
-  // rack, and repeat once for 2 total Wash Buffer 1 washes.
-  // Source step S38: repeat the wash cycle.
-  repeat captured_cdna_wash_cycle in schedule(start = 1, end = 2, step = 1) {
-    // Source step S34: resuspend with Wash Buffer 1.
-    lysate << [wash_buffer_1:125uL];
-    // Authoring convention for source-only "fully resuspend": pipette 10x at
-    // 80% of the 125 uL resuspension volume.
-    repeat captured_cdna_resuspension_mix in schedule(start = 1, end = 10, step = 1) {
+  // Source step S3: Preparation of beads in Binding Buffer.
+  if status.result.can_continue == true {
+    // Original step 22: Remove tube from magnet and resuspend washed bead
+    // pellet in 55 uL Binding Buffer for one lysate. Keep the same tube binding;
+    // do not alias it as a new prepared tube. The unspecified full resuspension
+    // uses the agreed 10x pipette mix at 80% of 55 uL.
+    streptavidin_beads << [binding_buffer:55uL];
+    repeat bead_binding_buffer_resuspension in schedule(start = 1, end = 10, step = 1) {
+      streptavidin_beads << [streptavidin_beads:44uL];
+    }
+  }
+
+  // Source step S1: Lysate pretreatment after the capture beads are ready.
+  if status.result.can_continue == true {
+    // Original step 7: If previously frozen, incubate lysate at 37C for 5 min,
+    // confirm no precipitation, briefly centrifuge, and keep at room temperature.
+    // If precipitation remains, the 37C incubation may be extended by 5 min.
+    with env(thermal = 37C, duration = 5min) {
+      hold(sample = lysate);
+    }
+    let precipitate_schema = data_schema(label = "LysatePrecipitationCheck",
+      fields = [precipitate_present]);
+    let precipitate_check = img(sample = lysate, quantity = customized, schema_ref = precipitate_schema);
+    if use_fixture_inputs {
+      precipitate_check.result.precipitate_present = fixture_precipitate_present;
+    }
+    if precipitate_check.result.precipitate_present == true {
+      with env(thermal = 37C, duration = 5min) { hold(lysate); }
+      let recheck = img(sample = lysate, quantity = customized, schema_ref = precipitate_schema);
+      if use_fixture_inputs { recheck.result.precipitate_present = fixture_precipitate_after_reheat; }
+      if recheck.result.precipitate_present == false {
+        precipitate_check.result.precipitate_present = false;
+      }
+    }
+    if precipitate_check.result.precipitate_present == false {
+      // Proceed only after a negative precipitation check.
+    } else {
+      status.result.needs_attention = true;
+      status.result.can_continue = false;
+    }
+  }
+
+  // Original step 8: briefly centrifuge and keep at room temperature.
+  if status.result.can_continue == true {
+    // Benchmark settings for the unspecified brief spins: 3000g, 5s, 25C.
+    // Standalone sep establishes indexed contents in the same tube; neither
+    // portion is withdrawn or discarded.
+    with env(thermal = 25C, duration = 5s) {
+      sep(sample = lysate, program = centrifuge_program(drive = 3000g));
+    }
+
+    // Original step 9: Briefly centrifuge Capture Enhancer and gently mix by
+    // pipetting 2x with a P20 set to 15 uL. The pipette mix is represented as
+    // self-transfer. The brief spin uses the same benchmark settings as step 8.
+    with env(thermal = 25C, duration = 5s) {
+      // Capture Enhancer is a proprietary formulation. Declare its liquid-phase
+      // routing for this brief spin; this is a modeling assumption, not a yield.
+      sep(
+        sample = capture_enhancer,
+        program = centrifuge_program(drive = 3000g),
+        component_fates = { CE: { supernatant: 100%, pellet: 0% } }
+      );
+    }
+    repeat capture_enhancer_mix in schedule(start = 1, end = 2, step = 1) {
+      capture_enhancer << [capture_enhancer:15uL] with constraint(gentle);
+    }
+
+    // Original step 10: Add 2.5 uL Capture Enhancer to each tube of lysate.
+    lysate << [capture_enhancer:2.5uL];
+
+    // Original steps 11-12: operator sets 100% power and secures tube/rack.
+    let pretreatment_vortex_ready = ConfirmCaptureHandling(sample = lysate, status = status,
+      label = "Confirm PCR tubes secured, caps closed, rack lid on, plate adapter fixed, vortex power set to 100 percent",
+      fixture_confirmed = fixture_equipment_ready, use_fixture_inputs = use_fixture_inputs);
+    if pretreatment_vortex_ready == false {
+      status.result.needs_attention = true;
+      status.result.can_continue = false;
+    }
+    if status.result.can_continue == true {
+      agit(sample = lysate, mode = "vortex", duration = 1min);
+    }
+  }
+
+  // Original step 13: briefly centrifuge, using the same settings as step 8.
+  if status.result.can_continue == true {
+    // Retain all material in this tube.
+    with env(thermal = 25C, duration = 5s) {
+      sep(
+        sample = lysate,
+        program = centrifuge_program(drive = 3000g),
+        component_fates = { CE: { supernatant: 100%, pellet: 0% } }
+      );
+    }
+
+    // Original step 14: Incubate for 10 min at room temperature. Source permits
+    // extension by 5 additional minutes, up to 15 min total. Prepared beads
+    // are added immediately after this hold, with no intervening preparation.
+    with env(thermal = 25C, duration = 10min) {
+      hold(sample = lysate);
+    }
+  }
+
+  // Source step S4: cDNA capture.
+  if status.result.can_continue == true {
+    // Original step 23: Add 50 uL Streptavidin Beads in Binding Buffer to each tube
+    // of lysate.
+    lysate << [streptavidin_beads:50uL];
+
+    // Original steps 24-25: repeat secured-rack setup at 100% power.
+    let capture_vortex_ready = ConfirmCaptureHandling(sample = lysate, status = status,
+      label = "Confirm PCR tubes secured, caps closed, rack lid on, plate adapter fixed, vortex power set to 100 percent",
+      fixture_confirmed = fixture_equipment_ready, use_fixture_inputs = use_fixture_inputs);
+    if capture_vortex_ready == false {
+      status.result.needs_attention = true;
+      status.result.can_continue = false;
+    }
+    if status.result.can_continue == true {
+      agit(sample = lysate, mode = "vortex", duration = 1min);
+      // Original step 26: check at 10 minutes within the 30-minute incubation.
+      let capture_speed_ready = ConfirmCaptureHandling(sample = lysate, status = status,
+        label = "Confirm vortex power set to 20 percent, approximately 800-1000 rpm",
+        fixture_confirmed = fixture_equipment_ready, use_fixture_inputs = use_fixture_inputs);
+      if capture_speed_ready == false {
+        status.result.needs_attention = true;
+        status.result.can_continue = false;
+      }
+    }
+    if status.result.can_continue == true {
+      with env(thermal = 25C, duration = 10min) {
+        agit(sample = lysate, mode = "vortex", duration = 10min, rate = 800rpm);
+      }
+      let suspension_schema = data_schema(label = "CaptureBeadSuspensionCheck",
+        fields = [beads_suspended]);
+      let suspension = img(sample = lysate, quantity = customized, schema_ref = suspension_schema);
+      if use_fixture_inputs { suspension.result.beads_suspended = fixture_beads_suspended; }
+      if suspension.result.beads_suspended == true {
+        with env(thermal = 25C, duration = 20min) {
+          agit(sample = lysate, mode = "vortex", duration = 20min, rate = 800rpm);
+        }
+      } else {
+        // Author-selected increased rate: 1000 rpm. One minute at the new
+        // setting precedes rechecking; 19 more minutes complete the original 30.
+        with env(thermal = 25C, duration = 1min) {
+          agit(sample = lysate, mode = "vortex", duration = 1min, rate = 1000rpm);
+        }
+        let suspension_recheck = img(sample = lysate, quantity = customized, schema_ref = suspension_schema);
+        if use_fixture_inputs { suspension_recheck.result.beads_suspended = fixture_beads_suspended_after_speedup; }
+        if suspension_recheck.result.beads_suspended == true {
+          with env(thermal = 25C, duration = 19min) {
+            agit(sample = lysate, mode = "vortex", duration = 19min, rate = 1000rpm);
+          }
+        } else {
+          status.result.needs_attention = true;
+          status.result.can_continue = false;
+        }
+      }
+    }
+
+    // Original steps 27-28: remove from plate adapter, briefly vortex on the
+    // standard adapter, then spin without letting beads collect at the bottom.
+    // Author-selected brief settings: vortex 5s; centrifuge 100g, 8s at 25C.
+    let standard_adapter_ready = ConfirmCaptureHandling(sample = lysate, status = status,
+      label = "Confirm tubes removed from plate adapter and placed on standard vortex adapter",
+      fixture_confirmed = fixture_equipment_ready, use_fixture_inputs = use_fixture_inputs);
+    if standard_adapter_ready == false {
+      status.result.needs_attention = true;
+      status.result.can_continue = false;
+    }
+    if status.result.can_continue == true {
+      agit(sample = lysate, mode = "vortex", duration = 5s);
+      with env(thermal = 25C, duration = 8s) {
+        sep(sample = lysate, program = centrifuge_program(drive = 100g),
+          component_fates = {
+            CE: {supernatant: 100%, pellet: 0%},
+            LYSATE1: {supernatant: 100%, pellet: 0%},
+            STREP_BEADS: {supernatant: 100%, pellet: 0%}
+          }
+        );
+      }
+    }
+  }
+
+  // Source step S5: Magnetic collection of captured cDNA.
+  if status.result.can_continue == true {
+    // Original steps 29-30: high magnet position; discard only when clear.
+    let capture_clear = ClearCaptureSupernatant(sample = lysate, waste = waste, status = status,
+      check_number = 5, capture_target = true, high_position = true,
+      fixture_equipment_ready = fixture_equipment_ready,
+      fixture_unclear_check = fixture_unclear_check,
+      fixture_clear_after_retry = fixture_clear_after_retry, use_fixture_inputs = use_fixture_inputs);
+    if capture_clear == false {
+      status.result.needs_attention = true;
+      status.result.can_continue = false;
+    }
+  }
+
+  // Source step S6: Wash Buffer 1 washes.
+  if status.result.can_continue == true {
+    // Original step 31: Remove tubes from magnet, fully resuspend bead pellet
+    // with 125 uL Wash Buffer 1, incubate 1 min at room temperature, return to
+    // high magnet until clear about 2 min, discard supernatant while still on the
+    // rack, and repeat once for 2 total Wash Buffer 1 washes.
+    // Original step 35: repeat the wash cycle.
+    repeat captured_cdna_wash_cycle in schedule(start = 1, end = 2, step = 1) {
+      if status.result.can_continue == true {
+        // Original step 31: resuspend with Wash Buffer 1.
+        lysate << [wash_buffer_1:125uL];
+        // Authoring convention for source-only "fully resuspend": pipette 10x at
+        // 80% of the 125 uL resuspension volume.
+        repeat captured_cdna_resuspension_mix in schedule(start = 1, end = 10, step = 1) {
+          lysate << [lysate:100uL];
+        }
+        // Original step 32: incubate the wash.
+        with env(thermal = 25C, duration = 1min) {
+          hold(sample = lysate);
+        }
+        // Original steps 33-34: high position, then confirm clear before discarding.
+        let capture_wash_clear = ClearCaptureSupernatant(sample = lysate, waste = waste, status = status,
+          check_number = captured_cdna_wash_cycle + 5, capture_target = false, high_position = true,
+          fixture_equipment_ready = fixture_equipment_ready,
+          fixture_unclear_check = fixture_unclear_check,
+          fixture_clear_after_retry = fixture_clear_after_retry, use_fixture_inputs = use_fixture_inputs);
+        if capture_wash_clear == false {
+          status.result.needs_attention = true;
+          status.result.can_continue = false;
+        }
+      }
+    }
+  }
+
+  // Source step S7: Final resuspension and handoff.
+  if status.result.can_continue == true {
+    // Original step 36: Remove tubes from magnet, fully resuspend each bead
+    // pellet with 125 uL Wash Buffer 2, save Wash Buffer 2 for optional storage,
+    // incubate 1 min at room temperature, then continue to the template-switch
+    // reaction module. The unspecified full resuspension uses 10x pipette mix at 80% of 125 uL.
+    // Original step 36: resuspend with Wash Buffer 2.
+    lysate << [wash_buffer_2:125uL];
+    repeat wash2_resuspension_mix in schedule(start = 1, end = 10, step = 1) {
       lysate << [lysate:100uL];
     }
-    // Source step S35: incubate the wash.
+    // Original step 37: incubate Wash Buffer 2.
     with env(thermal = 25C, duration = 1min) {
       hold(sample = lysate);
     }
-    // Source step S36: clear on the magnetic rack.
-    with env(field = magnetic_rack) {
-      sep(
-        sample = lysate,
-        program = magnetic_program(duration = 2min)
-      );
-      // Source step S37: discard wash supernatant.
-      waste << [lysate.contents[1]];
-    }
   }
 
-  // Source step S39: Remove tubes from magnet, fully resuspend each bead
-  // pellet with 125 uL Wash Buffer 2, save Wash Buffer 2 for optional storage,
-  // incubate 1 min at room temperature, then continue to the template-switch
-  // reaction module. The
-  // unspecified full resuspension uses 10x pipette mix at 80% of 125 uL.
-  // Source step S40: resuspend with Wash Buffer 2.
-  lysate << [wash_buffer_2:125uL];
-  repeat wash2_resuspension_mix in schedule(start = 1, end = 10, step = 1) {
-    lysate << [lysate:100uL];
-  }
-  // Source step S41: incubate Wash Buffer 2.
-  with env(thermal = 25C, duration = 1min) {
-    hold(sample = lysate);
-  }
-
-  // Source step S42: continue with the returned material.
+  if status.result.can_continue == true { status.result.capture_complete = true; }
+  // Original step 38: independent case output remains in the material report.
+  // A failed check leaves partial material; capture_complete is then false.
   return lysate;
 }
 
+
+// These unmarked helpers inherit the caller's benchmark stage.
+protocol ConfirmCaptureHandling(sample, status, label, fixture_confirmed, use_fixture_inputs) {
+  let ready = false;
+  if status.result.can_continue == true {
+    let schema = data_schema(label = label, fields = [confirmed]);
+    let confirmation = phy(sample = sample, quantity = customized, schema_ref = schema);
+    if use_fixture_inputs { confirmation.result.confirmed = fixture_confirmed; }
+    if confirmation.result.confirmed == true {
+      ready = true;
+    }
+  }
+  return ready;
+}
+
+protocol ClearCaptureSupernatant(sample, waste, status, check_number, capture_target,
+  high_position, fixture_equipment_ready, fixture_unclear_check,
+  fixture_clear_after_retry, use_fixture_inputs) {
+  let cleared = false;
+  let rack_label = "Confirm tube on magnetic rack for 1.5 mL tubes";
+  if high_position { rack_label = "Confirm Parse 0.2 mL magnetic rack in high position"; }
+  let equipment_ready = ConfirmCaptureHandling(sample = sample, status = status,
+    label = rack_label, fixture_confirmed = fixture_equipment_ready,
+    use_fixture_inputs = use_fixture_inputs);
+  if equipment_ready == true {
+    with env(field = magnetic_rack) {
+      if capture_target {
+        sep(sample = sample, program = magnetic_program(duration = 2min),
+          component_fates = {
+            CE: {bound: 0%, flowthrough: 100%},
+            LYSATE1: {bound: 100%, flowthrough: 0%}
+          });
+      } else {
+        sep(sample = sample, program = magnetic_program(duration = 2min));
+      }
+      let clear_schema = data_schema(label = "MagneticSupernatantClarity",
+        fields = [check_number, supernatant_clear]);
+      let clarity = img(sample = sample, quantity = customized, schema_ref = clear_schema);
+      clarity.result.check_number = check_number;
+      if use_fixture_inputs { clarity.result.supernatant_clear = fixture_unclear_check != check_number; }
+      if clarity.result.supernatant_clear == true {
+        // The initial clearing interval was sufficient.
+      } else {
+        // Bounded benchmark recovery: wait one additional minute and recheck.
+        // If still unclear, leave all contents on the magnet for intervention.
+        with env(thermal = 25C, duration = 1min) { hold(sample); }
+        let clarity_recheck = img(sample = sample, quantity = customized, schema_ref = clear_schema);
+        clarity_recheck.result.check_number = check_number;
+        if use_fixture_inputs { clarity_recheck.result.supernatant_clear = fixture_clear_after_retry; }
+        if clarity_recheck.result.supernatant_clear == true {
+          clarity.result.supernatant_clear = true;
+        }
+      }
+      if clarity.result.supernatant_clear == true {
+        waste << [sample.contents[1]];
+        cleared = true;
+      }
+    }
+  }
+  return cleared;
+}
+
+// Deterministic benchmark fixture; these defaults are not experimental observations.
 EvercodeWTMegaV3_RunSection2_1Batch();

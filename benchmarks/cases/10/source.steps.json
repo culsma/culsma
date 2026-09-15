@@ -2,302 +2,97 @@
   "protocol_id": "10",
   "title": "Magnetic-Bead cDNA Capture from Barcoded Lysate",
   "source_class": "vendor_manual_excerpt",
-  "review_revision": "2026-06-13",
+  "review_revision": "2026-09-14",
   "source_file": "source.md",
   "steps": [
     {
       "id": "S1",
-      "source_text": "Remove the desired tube(s) of lysate from the thermocycler if continuing directly from Section 1, or from storage at -80C.",
+      "title": "Lysate pretreatment",
       "original_steps": [
-        "2.1, step 6"
-      ]
+        "2.1, step 6",
+        "2.1, step 7",
+        "2.1, step 8",
+        "2.1, step 9",
+        "2.1, step 10",
+        "2.1, step 11",
+        "2.1, step 12",
+        "2.1, step 13",
+        "2.1, step 14"
+      ],
+      "source_text": "Thaw previously frozen lysate, check for precipitation, briefly centrifuge, prepare and add 2.5 uL Capture Enhancer, secure and vortex the tubes, briefly centrifuge, and incubate at room temperature. Begin bead preparation during this incubation as directed by the source.",
+      "execution_notes": "Benchmark scheduling choice: prepare beads (S2-S3) before lysate pretreatment, then add the prepared beads in S4 immediately after the 10-minute incubation. The source specifies bead preparation during that incubation. Existing standalone sep brief spins are retained. Preparation/equipment confirmations, gentle enhancer pipetting, and precipitation check plus one 5-minute 37C retry gate downstream processing."
     },
     {
       "id": "S2",
-      "source_text": "If previously frozen, incubate the tube(s) in a water bath or thermocycler at 37C for 5 minutes.",
+      "title": "Streptavidin bead washing",
       "original_steps": [
-        "2.1, step 7"
-      ]
+        "2.1, step 15",
+        "2.1, step 16",
+        "2.1, step 17",
+        "2.1, step 18",
+        "2.1, step 19",
+        "2.1, step 20",
+        "2.1, step 21"
+      ],
+      "source_text": "Mix and aliquot Streptavidin Beads, magnetically separate and discard the supernatant, then perform three Bead Wash Buffer washes with full resuspension, magnetic clearing, and supernatant removal.",
+      "execution_notes": "Each of four magnetic removals requires a clear-supernatant readout; one authored 1-minute magnetic wait/recheck is allowed, then failed checks stop dependent operations without discarding contents."
     },
     {
       "id": "S3",
-      "source_text": "Ensure there is no precipitation before proceeding. If precipitation remains, incubate for an additional 5 minutes at 37C.",
+      "title": "Preparation of beads in Binding Buffer",
       "original_steps": [
-        "2.1, step 7"
-      ]
+        "2.1, step 22"
+      ],
+      "source_text": "Remove the washed beads from the magnet, fully resuspend in Binding Buffer, and store at room temperature.",
+      "execution_notes": "Prepared beads remain at the room-temperature input/handling boundary; the existing volume representation is retained, as documented in source.md."
     },
     {
       "id": "S4",
-      "source_text": "Briefly centrifuge and store at room temperature.",
+      "title": "cDNA capture",
       "original_steps": [
-        "2.1, step 8"
-      ]
+        "2.1, step 23",
+        "2.1, step 24",
+        "2.1, step 25",
+        "2.1, step 26",
+        "2.1, step 27",
+        "2.1, step 28"
+      ],
+      "source_text": "Add 50 uL beads in Binding Buffer to each lysate, secure and vortex the tubes, then mix for 30 minutes at room temperature with the specified bead-suspension check. Remove the tubes, briefly vortex, and briefly centrifuge without pelleting the beads.",
+      "execution_notes": "Suspension is checked at minute 10. Successful mixing is 10+20 minutes at 800rpm or 10 minutes at 800rpm plus 1+19 minutes at 1000rpm with a passing retry. An authored 5-second vortex and 100g/8-second standalone sep model the final brief operations without pelleting beads."
     },
     {
       "id": "S5",
-      "source_text": "Briefly centrifuge Capture Enhancer and gently mix by pipetting 2x with a P20 set to 15 uL.",
+      "title": "Magnetic collection of captured cDNA",
       "original_steps": [
-        "2.1, step 9"
-      ]
+        "2.1, step 29",
+        "2.1, step 30"
+      ],
+      "source_text": "Place the tubes at the high magnet position until the supernatant is completely clear, then remove and discard the supernatant while retaining the beads.",
+      "execution_notes": "Preserve the existing bound/flowthrough fates for cDNA capture. High-position setup and clear-supernatant readouts gate discard, with one authored 1-minute wait/recheck."
     },
     {
       "id": "S6",
-      "source_text": "Add 2.5 uL of Capture Enhancer to each tube of lysate.",
+      "title": "Wash Buffer 1 washes",
       "original_steps": [
-        "2.1, step 10"
-      ]
+        "2.1, step 31",
+        "2.1, step 32",
+        "2.1, step 33",
+        "2.1, step 34",
+        "2.1, step 35"
+      ],
+      "source_text": "Perform two Wash Buffer 1 washes, each with removal from the magnet, full resuspension in 125 uL buffer, a 1-minute room-temperature incubation, magnetic clearing, and supernatant removal.",
+      "execution_notes": "Both magnetic wash removals require high-position setup and clear-supernatant readouts, with one authored 1-minute wait/recheck each; failed checks prevent further washing."
     },
     {
       "id": "S7",
-      "source_text": "Place the tube(s) into a 96-well PCR tube rack, press to secure, ensure the caps are secured tightly, and place the lid on the rack.",
+      "title": "Final resuspension and handoff",
       "original_steps": [
-        "2.1, step 11"
-      ]
-    },
-    {
-      "id": "S8",
-      "source_text": "Place the rack onto a vortex mixer with a plate adapter. Push to secure.",
-      "original_steps": [
-        "2.1, step 12"
-      ]
-    },
-    {
-      "id": "S9",
-      "source_text": "Vortex the plastic holder on 100% power for 1 minute.",
-      "original_steps": [
-        "2.1, step 12"
-      ]
-    },
-    {
-      "id": "S10",
-      "source_text": "Remove the tube(s) from the vortex mixer and briefly centrifuge.",
-      "original_steps": [
-        "2.1, step 13"
-      ]
-    },
-    {
-      "id": "S11",
-      "source_text": "Incubate for 10 minutes at room temperature. Proceed immediately to the next step during the incubation. This incubation can be extended by 5 additional minutes, up to a total of 15 minutes, without negatively impacting performance.",
-      "original_steps": [
-        "2.1, step 14"
-      ]
-    },
-    {
-      "id": "S12",
-      "source_text": "Vortex Streptavidin Beads until fully mixed.",
-      "original_steps": [
-        "2.1, step 15"
-      ]
-    },
-    {
-      "id": "S13",
-      "source_text": "Add the appropriate volume of Streptavidin Beads to a new 1.5 mL tube:",
-      "original_steps": [
-        "2.1, step 15"
-      ]
-    },
-    {
-      "id": "S14",
-      "source_text": "Place the tube on the magnetic rack for 1.5 mL tubes until the solution clears, about 2 minutes.",
-      "original_steps": [
-        "2.1, step 16"
-      ]
-    },
-    {
-      "id": "S15",
-      "source_text": "Remove and discard the supernatant.",
-      "original_steps": [
-        "2.1, step 17"
-      ]
-    },
-    {
-      "id": "S16",
-      "source_text": "Remove the tube from the magnetic rack and fully resuspend the bead pellet in the appropriate volume of Bead Wash Buffer. Ensure no beads are stuck to the sides of the 1.5 mL tube.",
-      "original_steps": [
-        "2.1, step 18"
-      ]
-    },
-    {
-      "id": "S17",
-      "source_text": "Place the tube on the magnetic rack for 1.5 mL tubes until the solution clears, about 2 minutes.",
-      "original_steps": [
-        "2.1, step 19"
-      ]
-    },
-    {
-      "id": "S18",
-      "source_text": "Remove and discard the supernatant.",
-      "original_steps": [
-        "2.1, step 20"
-      ]
-    },
-    {
-      "id": "S19",
-      "source_text": "Repeat the bead wash twice more for a total of 3 washes.",
-      "original_steps": [
-        "2.1, step 21"
-      ]
-    },
-    {
-      "id": "S20",
-      "source_text": "Remove the tube from the magnetic rack.",
-      "original_steps": [
-        "2.1, step 22"
-      ]
-    },
-    {
-      "id": "S21",
-      "source_text": "Fully resuspend the pellet in the appropriate volume of Binding Buffer and store at room temperature.",
-      "original_steps": [
-        "2.1, step 22"
-      ]
-    },
-    {
-      "id": "S22",
-      "source_text": "Add 50 uL of Streptavidin Beads in Binding Buffer to each tube of lysate.",
-      "original_steps": [
-        "2.1, step 23"
-      ]
-    },
-    {
-      "id": "S23",
-      "source_text": "Place the tube(s) into a 96-well PCR tube rack, press to secure, ensure the caps are secured tightly, and place the lid on the rack.",
-      "original_steps": [
-        "2.1, step 24"
-      ]
-    },
-    {
-      "id": "S24",
-      "source_text": "Place the rack onto a vortex mixer with a plate adapter. Push to secure.",
-      "original_steps": [
-        "2.1, step 25"
-      ]
-    },
-    {
-      "id": "S25",
-      "source_text": "Vortex the plastic holder on 100% power for 1 minute.",
-      "original_steps": [
-        "2.1, step 25"
-      ]
-    },
-    {
-      "id": "S26",
-      "source_text": "Vortex on 20% power, about 800-1000 RPM, for 30 minutes at room temperature. Check 10 minutes into incubation that the beads are in solution. If settled, increase vortex speed to keep beads in solution.",
-      "original_steps": [
-        "2.1, step 26"
-      ]
-    },
-    {
-      "id": "S27",
-      "source_text": "Remove the tube(s) from the vortex mixer.",
-      "original_steps": [
-        "2.1, step 27"
-      ]
-    },
-    {
-      "id": "S28",
-      "source_text": "Briefly vortex the tube(s) on a standard vortex adapter.",
-      "original_steps": [
-        "2.1, step 28"
-      ]
-    },
-    {
-      "id": "S29",
-      "source_text": "Briefly centrifuge without letting beads collect at the bottom of the tube(s).",
-      "original_steps": [
-        "2.1, step 28"
-      ]
-    },
-    {
-      "id": "S30",
-      "source_text": "Place the tube(s) on the high position of the magnetic rack, so the magnet is closer to the top of the 0.2 mL tubes. Incubate until the solution clears, about 2 minutes.",
-      "original_steps": [
-        "2.1, step 29"
-      ]
-    },
-    {
-      "id": "S31",
-      "source_text": "Ensure the supernatant is completely clear before proceeding. Discarding beads in the supernatant can reduce transcripts and genes detected per cell. See the manual's \"Magnetic Racks and Bead Cleanups\" guidelines for representative images.",
-      "original_steps": [
-        "2.1, step 29"
-      ]
-    },
-    {
-      "id": "S32",
-      "source_text": "While still on the magnetic rack, remove and discard the supernatant.",
-      "original_steps": [
-        "2.1, step 30"
-      ]
-    },
-    {
-      "id": "S33",
-      "source_text": "Remove the tube(s) from the magnetic rack.",
-      "original_steps": [
-        "2.1, step 31"
-      ]
-    },
-    {
-      "id": "S34",
-      "source_text": "Fully resuspend each bead pellet with 125 uL Wash Buffer 1.",
-      "original_steps": [
-        "2.1, step 31"
-      ]
-    },
-    {
-      "id": "S35",
-      "source_text": "Incubate for 1 minute at room temperature.",
-      "original_steps": [
-        "2.1, step 32"
-      ]
-    },
-    {
-      "id": "S36",
-      "source_text": "Return the tube(s) to the high position of the magnetic rack and incubate until the solution clears, about 2 minutes.",
-      "original_steps": [
-        "2.1, step 33"
-      ]
-    },
-    {
-      "id": "S37",
-      "source_text": "While still on the magnetic rack, remove and discard the supernatant.",
-      "original_steps": [
-        "2.1, step 34"
-      ]
-    },
-    {
-      "id": "S38",
-      "source_text": "Repeat the Wash Buffer 1 wash once more for a total of 2 washes.",
-      "original_steps": [
-        "2.1, step 35"
-      ]
-    },
-    {
-      "id": "S39",
-      "source_text": "Remove the tube(s) from the magnetic rack.",
-      "original_steps": [
-        "2.1, step 36"
-      ]
-    },
-    {
-      "id": "S40",
-      "source_text": "Fully resuspend each bead pellet with 125 uL Wash Buffer 2. Save Wash Buffer 2 for optional storage before cDNA amplification.",
-      "original_steps": [
-        "2.1, step 36"
-      ]
-    },
-    {
-      "id": "S41",
-      "source_text": "Incubate for 1 minute at room temperature.",
-      "original_steps": [
-        "2.1, step 37"
-      ]
-    },
-    {
-      "id": "S42",
-      "source_text": "Proceed immediately to Section 2.2.",
-      "original_steps": [
+        "2.1, step 36",
+        "2.1, step 37",
         "2.1, step 38"
-      ]
+      ],
+      "source_text": "Remove the tubes from the magnet, fully resuspend each bead pellet in 125 uL Wash Buffer 2, incubate for 1 minute at room temperature, and proceed immediately to Section 2.2. Save Wash Buffer 2 for optional storage before amplification.",
+      "execution_notes": "Runs only after prior checks pass. CaptureWorkflowStatus distinguishes completed capture from partial material; this standalone case does not execute Section 2.2."
     }
   ],
   "original_section": "2.1",

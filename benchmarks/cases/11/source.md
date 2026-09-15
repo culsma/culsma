@@ -39,7 +39,7 @@ Incubate until the solution clears, about 2 minutes.
 
 **4. (S3)** While still on the magnetic rack, remove and discard the supernatant.
 
-**5. (S4)** While still on the magnetic rack, add 125 uL of Wash Buffer 3 to each tube. Do not discard the Wash Buffer 3 until directed, because it is used in another step.
+**5. (S4)** While still on the magnetic rack, add 125 uL of Wash Buffer 3 to each tube. Do not discard the Wash Buffer 3 as it will be used in another step.
 
 **6. (S5)** Incubate for 1 minute at room temperature.
 
@@ -80,8 +80,49 @@ Fully resuspend each bead pellet with 125 uL Wash Buffer 2.
 
 ## Benchmark mapping and execution choices (not original instructions)
 
-The standalone program supplies an input representing captured cDNA from Section
-2.1; RV02 is a program identifier, not a manual designation. Input quantities,
-unspecified mixing settings, partition ratios, and finite representations of Hold
-are execution choices. Original steps 14-16 and the safe stopping point describe
-the optional storage branch and remain separate from immediate continuation.
+The standalone program supplies captured cDNA from Section 2.1. The declared
+0.4mg bead and 0.1ug cDNA inputs are benchmark assumptions, not measured yields.
+The DNA keeps its `CAPTURED_CDNA` identity. `TemplateSwitchWorkflowStatus` records
+the source section, material code and completed processing stage; completing the
+thermal program does not establish biochemical conversion or a new DNA identity.
+Case12 remains an independent input boundary rather than an automatic handoff.
+
+The WB3 reminder above follows the manual. The program separately interprets it
+as retaining unused WB3 reagent for the later step; the WB3 wash in the sample
+is still discarded at original step 7. This interpretation is not inserted into
+the original reminder as an invented “until directed” instruction.
+
+| Reviewed requirement | Executable treatment / boundary |
+| --- | --- |
+| Prepared reagents and cold handling | Inputs are supplied thawed. A readout confirms WB3 at room temperature and the buffer, primer, enzyme and prepared master mix on ice. The three specified inversions and brief reagent spins are executable; the source gives no thaw or spin durations. Ice is modeled at 0C, refrigerated spins at 4C, and room temperature at 25C. |
+| Brief reagent centrifugation | Three standalone spins at authored 3000g for 5s retain all reagent in the same tube. No fraction is withdrawn. |
+| Buffer precipitate | `TemplateSwitchBufferPrecipitation` must report no precipitate before making master mix. The source gives no recovery recipe, so a failed check stops dependent operations for intervention. |
+| Magnetic clearing | Initial clearing, WB3 wash removal and storage clearing each require `TemplateSwitchSupernatantClarity`. An authored extra one-minute magnetic wait and recheck is allowed; persistent cloudiness prevents discard. The WB3 wash check is an additional execution safeguard rather than an additional source instruction. |
+| Full resuspension | Four `TemplateSwitchBeadSuspension` checks cover master-mix resuspension, post-room-temperature mixing, pre-storage separation and WB2 resuspension. A failed check triggers one authored ten-stroke mix and recheck; continued failure stops dependent steps. Stroke volumes are 80, 75, 80 and 100uL, respectively. |
+| Sample brief centrifugation | S9 uses authored 100g for 8s with all material in the supernatant and `keep_source = "supernatant"`. Explicit relationships release beads from field retention while retaining cDNA as bead-bound. The empty pellet output is not withdrawn. These settings and relationships are authored assumptions, not experimental validation. |
+| Rack position and thermal lid | Explicit confirmation records gate high-position magnetic handling, removal from the rack, and the 70C thermocycler lid with the 100uL sample setting. No unsupported lid parameter is added to `thermal_program`. |
+| Common 4C Hold | The thermal program ends with 4C Hold before either immediate continuation or optional storage. The finite ten-minute hold is an author choice, not a source-specified dwell time. |
+| Storage | The storage branch includes magnetic cleanup and 125uL WB2, followed by 4C for the source maximum of 18 hours. A confirmation preserves the “do not freeze” requirement. |
+| Output accounting | Initial magnetic separation operates in the original physical tube, with capacity aligned to the source 0.2mL specification. Explicit bound fates and existing material rules preserve the cDNA-bead relation. The return points to that allocated tube and is included by the existing final-material-record extractor; no change to metric counting rules was needed. |
+| Volume projection | Liquid recipe volumes remain 100/125uL. Runtime totals remain 100.4001/125.4001uL because declared masses also contribute to the current volume projection. Recipes and input masses are not adjusted to force integer totals. |
+
+Self-transfers encode pipetting actions; they are not a physical suspension model.
+The recorded suspension observations govern continuation. In particular, the
+storage output can retain the runtime `field_retained` label after its final
+pipette mix even though the suspension check passes; this remains a model boundary.
+
+The default invocation uses explicitly declared passing fixture inputs. Set
+`use_fixture_inputs = false` to consume driver/operator results without fixture
+overrides. `fixture_precipitate_present`, `fixture_unclear_check` (1-3),
+`fixture_clear_after_retry`, `fixture_unsettled_check` (1-4), and
+`fixture_suspended_after_retry` exercise failed checks and recovery. Preparation
+and equipment confirmations use `fixture_reagents_ready` and
+`fixture_equipment_ready`. Status flags distinguish completed thermal processing,
+readiness for amplification, successful storage, and a need for intervention.
+
+The review and step-map notes were updated on 2026-09-14; S1-S18 are retained.
+The three checked-in metric JSON files and archived runtime evidence describe
+the earlier program. Regeneration remains pending in the matching locked
+environment under [PM #115](https://github.com/culsma/culsma-pm/issues/115).
+The local editable distribution reports 0.1.0, whereas the benchmark lock requires
+1.0.7rc1. Local source tests are not published as pinned benchmark evidence.

@@ -1,13 +1,17 @@
-protocol CDNATemplateSwitch(bead_mass, cdna_mass, proceed_immediately) returns (captured_cdna) {
-  // Source setup: Template Switch reagents are thawed, inverted, briefly
-  // centrifuged where specified, and checked for precipitate before use.
+protocol CDNATemplateSwitch(bead_mass, cdna_mass, proceed_immediately,
+  use_fixture_inputs = true, fixture_reagents_ready = true, fixture_equipment_ready = true,
+  fixture_precipitate_present = false, fixture_unclear_check = 0,
+  fixture_clear_after_retry = true, fixture_unsettled_check = 0,
+  fixture_suspended_after_retry = true) returns (captured_cdna) {
+  // Source setup: inputs are supplied thawed; preparation is confirmed below.
+  // Inversion, brief centrifugation and precipitation checks are executable.
   // This case begins at Section 2.2. The bead-bound cDNA from the preceding
   // capture workflow is therefore a declared benchmark input rather than a
   // replay of Section 2.1. The masses below are benchmark assumptions, not
   // measurements or yields reported by the vendor manual.
   let bead_bound_cdna_input = tube(
     label = "BeadBoundCapturedCDNAInput",
-    capacity = 250uL,
+    capacity = 200uL,
     load = [
       content(kind = ContentKind.PARTICULATE, type = ContentType.BEADS, code = "STREPTAVIDIN_BEADS", attrs = {bead_property: "magnetic"}):bead_mass,
       content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.DNA, code = "CAPTURED_CDNA"):cdna_mass,
@@ -40,140 +44,344 @@ protocol CDNATemplateSwitch(bead_mass, cdna_mass, proceed_immediately) returns (
   let template_switch_master_mix = tube(label = "TemplateSwitchMasterMix", capacity = 2000uL);
   let waste = tube(label = "Section2_2Waste", capacity = 2000uL);
 
-  // Source preparation: reagent handling by source-defined inversion. Brief
-  // centrifuge remains non-fractionating handling rather than sep.
-  agit(sample = wash_buffer_3, mode = "invert", cycles = 3);
-  agit(sample = template_switch_buffer, mode = "invert", cycles = 3);
-  agit(sample = template_switch_primer, mode = "invert", cycles = 3);
+  let captured_cdna = bead_bound_cdna_input;
+  let status_schema = data_schema(label = "TemplateSwitchWorkflowStatus",
+    fields = [can_continue, needs_attention, processing_stage, source_section, input_material_code,
+      template_switch_program_completed, ready_for_amplification, storage_complete]);
+  let status = phy(sample = bead_bound_cdna_input, quantity = customized, schema_ref = status_schema);
+  status.result.can_continue = true;
+  status.result.needs_attention = false;
+  status.result.template_switch_program_completed = false;
+  status.result.ready_for_amplification = false;
+  status.result.storage_complete = false;
+  status.result.processing_stage = "captured_cdna_input";
+  status.result.source_section = "2.1";
+  status.result.input_material_code = "CAPTURED_CDNA";
 
-  // Source master-mix table: for one sample, combine 101.75 uL Template Switch
-  // Buffer, 2.75 uL Template Switch Primer, and 5.5 uL Template Switch Enzyme.
-  // Source says mix by pipetting 10x but not stroke volume; use 80% of the
-  // 110 uL working volume, 88 uL, under cold-chain handling.
-  with constraint(cold_chain) {
-    template_switch_master_mix << [template_switch_buffer:101.75uL];
-    template_switch_master_mix << [template_switch_primer:2.75uL];
-    template_switch_master_mix << [template_switch_enzyme:5.5uL];
-    repeat template_switch_master_mix_pipette_mix in schedule(start = 1, end = 10, step = 1) {
-      template_switch_master_mix << [template_switch_master_mix:88uL];
+  // Fixture values are test inputs, not experimental observations. Set
+  // use_fixture_inputs=false to use driver/operator-provided readout results.
+  let reagents_ready = ConfirmTemplateSwitch(sample = template_switch_buffer,
+    label = "Confirm thawed reagents: WB3 at room temperature; Template Switch Buffer, Primer and Enzyme on ice; master mix stored on ice until use",
+    fixture_passed = fixture_reagents_ready, use_fixture_inputs = use_fixture_inputs);
+  if reagents_ready == false {
+    status.result.needs_attention = true;
+    status.result.can_continue = false;
+  }
+  if status.result.can_continue == true {
+    agit(sample = wash_buffer_3, mode = "invert", cycles = 3);
+    with env(thermal = 0C) {
+      agit(sample = template_switch_buffer, mode = "invert", cycles = 3);
+      agit(sample = template_switch_primer, mode = "invert", cycles = 3);
+      // Original step 1 specifies brief spins before use. Numerical settings are
+      // authored, not measured: 3000g for 5s; no material is discarded.
+      with env(thermal = 4C, duration = 5s) {
+        sep(sample = template_switch_buffer, program = centrifuge_program(drive = 3000g),
+          component_fates = {TSB: {supernatant: 100%, pellet: 0%}});
+        sep(sample = template_switch_primer, program = centrifuge_program(drive = 3000g),
+          component_fates = {TSP: {supernatant: 100%, pellet: 0%}});
+        sep(sample = template_switch_enzyme, program = centrifuge_program(drive = 3000g),
+          component_fates = {TSE: {supernatant: 100%, pellet: 0%}});
+      }
+    }
+    let precipitate_schema = data_schema(label = "TemplateSwitchBufferPrecipitation",
+      fields = [precipitate_present]);
+    let precipitation = img(sample = template_switch_buffer, quantity = customized, schema_ref = precipitate_schema);
+    if use_fixture_inputs { precipitation.result.precipitate_present = fixture_precipitate_present; }
+    if precipitation.result.precipitate_present == false {
+      // The source supplies no recovery recipe for this buffer.
+    } else {
+      status.result.needs_attention = true;
+      status.result.can_continue = false;
     }
   }
-
-  // Source step S1: keep captured cDNA on the high magnetic-rack position,
-  // clear about 2 min, remove supernatant, add 125 uL Wash Buffer 3 while still
-  // on the rack, incubate 1 min, then remove and discard Wash Buffer 3.
-  // Source step S2: clear the bead-bound input.
-  let prewash_split = sep(
-    sample = bead_bound_cdna_input,
-    program = magnetic_program(duration = 2min),
-    component_fates = {
-      STREPTAVIDIN_BEADS: { bound: 100%, flowthrough: 0% },
-      CAPTURED_CDNA: { bound: 100%, flowthrough: 0% },
-      WB2: { bound: 0%, flowthrough: 100% }
-    },
-    transitions = [
-      transition(subject = bead_bound_cdna_input.materials[1], output = MagneticProgramOutput.BOUND,
-        to = MaterialRelation.BEAD_BOUND, associated_with = bead_bound_cdna_input.materials[0])
-    ]
-  );
-  let captured_cdna = prewash_split[0];
-  // Source step S3: discard initial supernatant on the rack.
-  with env(field = magnetic_rack) {
-    waste << [prewash_split[1]];
-    // Source step S4: add Wash Buffer 3.
-    captured_cdna << [wash_buffer_3:125uL];
-    // Source step S5: incubate the wash at room temperature.
-    with env(thermal = 25C) {
-      sep(
-        sample = captured_cdna,
-        program = magnetic_program(duration = 1min),
-        component_fates = {
-          STREPTAVIDIN_BEADS: { bound: 100%, flowthrough: 0% },
-          CAPTURED_CDNA: { bound: 100%, flowthrough: 0% },
-          WB3: { bound: 0%, flowthrough: 100% }
+  if status.result.can_continue == true {
+    // Source one-sample recipe totals 110uL. Mixing stroke: authored 80% (88uL).
+    with env(thermal = 0C) {
+      with constraint(cold_chain) {
+        template_switch_master_mix << [template_switch_buffer:101.75uL];
+        template_switch_master_mix << [template_switch_primer:2.75uL];
+        template_switch_master_mix << [template_switch_enzyme:5.5uL];
+        repeat master_mix_stroke in schedule(start = 1, end = 10, step = 1) {
+          template_switch_master_mix << [template_switch_master_mix:88uL];
         }
-      );
-      // Source step S6: discard Wash Buffer 3.
-      waste << [captured_cdna.contents[1]];
+      }
     }
   }
 
-  // Source step S7: remove the tube(s) from the magnetic rack.
-
-  // Source step S8: fully resuspend bead pellets with 100 uL Template Switch
-  // Master Mix. The source says viscous full resuspension may take time but
-  // gives no cycle count; use 10 cycles at 80% working volume.
-  captured_cdna << [template_switch_master_mix:100uL];
-  repeat template_switch_resuspension_mix in schedule(start = 1, end = 10, step = 1) {
-    captured_cdna << [captured_cdna:80uL];
-  }
-  // Source step S9: briefly centrifuge without letting beads collect at the
-  // bottom. This remains non-fractionating bead-safe handling, not sep.
-
-  // Source step S10: incubate for 30 min at room temperature.
-  with env(thermal = 25C, duration = 30min) {
-    hold(sample = captured_cdna);
-  }
-
-  // Source step S11: fully resuspend each bead pellet by mixing 5x with a P200
-  // set to 75 uL.
-  repeat post_rt_template_switch_mix in schedule(start = 1, end = 5, step = 1) {
-    captured_cdna << [captured_cdna:75uL];
-  }
-
-  // Source step S12: run the Template Switch thermocycler program.
-  with env(thermal = thermal_program(from = 42C, duration = 60min)) {
-    hold(sample = captured_cdna);
-  }
-
-  // Source step S13: continue immediately to the cDNA amplification module, or
-  // execute the optional storage branch before cDNA amplification. The reviewed mainline
-  // chooses immediate continuation.
-  if proceed_immediately {
-    with env(thermal = 4C, duration = 10min) {
-      hold(sample = captured_cdna);
+  // Source step S1: place captured cDNA at the high magnetic-rack position.
+  if status.result.can_continue == true {
+    let rack_ready = ConfirmTemplateSwitch(sample = bead_bound_cdna_input,
+      label = "Confirm 0.2 mL PCR tubes on the high position of the magnetic rack",
+      fixture_passed = fixture_equipment_ready, use_fixture_inputs = use_fixture_inputs);
+    if rack_ready == false {
+      status.result.needs_attention = true;
+      status.result.can_continue = false;
     }
-  } else {
-    // Source step S14: for optional storage, place tube(s) on the high magnetic
-    // rack and clear about 2 min; settled beads may need resuspension.
+  }
+  // Source step S2: clear for about 2 minutes in the original physical tube.
+  // Explicit bound fates plus the existing magnetic material rules preserve
+  // CAPTURED_CDNA as bead_bound; regression tests verify this through both branches.
+  if status.result.can_continue == true {
     with env(field = magnetic_rack) {
-      sep(
-        sample = captured_cdna,
+      sep(sample = bead_bound_cdna_input,
         program = magnetic_program(duration = 2min),
         component_fates = {
-          STREPTAVIDIN_BEADS: { bound: 100%, flowthrough: 0% },
-          CAPTURED_CDNA: { bound: 100%, flowthrough: 0% },
-          TSB: { bound: 0%, flowthrough: 100% },
-          TSP: { bound: 0%, flowthrough: 100% },
-          TSE: { bound: 0%, flowthrough: 100% }
+          STREPTAVIDIN_BEADS: {bound: 100%, flowthrough: 0%},
+          CAPTURED_CDNA: {bound: 100%, flowthrough: 0%},
+          WB2: {bound: 0%, flowthrough: 100%}
         }
       );
-      // Source step S15: remove and discard the storage supernatant.
-      waste << [captured_cdna.contents[1]];
-    }
-
-
-    // Source step S16: remove the tube(s) from the magnetic rack.
-
-    // Source step S17: fully resuspend each bead pellet with 125 uL Wash Buffer
-    // 2; use 10 cycles at 80% working volume.
-    captured_cdna << [wash_buffer_2:125uL];
-    repeat storage_resuspension_mix in schedule(start = 1, end = 10, step = 1) {
-      captured_cdna << [captured_cdna:100uL];
-    }
-
-    // Source step S18: template-switched cDNA can be stored at 4C for up to
-    // 18 h; do not freeze.
-    with env(thermal = 4C, duration = 18h) {
-      hold(sample = captured_cdna);
+      let initial_clear = TemplateSwitchClarity(sample = captured_cdna, check_number = 1,
+        fixture_unclear_check = fixture_unclear_check, fixture_clear_after_retry = fixture_clear_after_retry,
+        use_fixture_inputs = use_fixture_inputs);
+      if initial_clear == false {
+        status.result.needs_attention = true;
+        status.result.can_continue = false;
+      }
+      // Source step S3: discard initial supernatant only after a passing check.
+      if status.result.can_continue == true { waste << [captured_cdna.contents[1]]; }
     }
   }
+  // Source step S4: add 125uL WB3 while still on the rack.
+  if status.result.can_continue == true {
+    with env(field = magnetic_rack) {
+      captured_cdna << [wash_buffer_3:125uL];
+      // Source step S5: incubate the wash for 1 minute at room temperature.
+      with env(thermal = 25C) {
+        sep(sample = captured_cdna, program = magnetic_program(duration = 1min),
+          component_fates = {
+            STREPTAVIDIN_BEADS: {bound: 100%, flowthrough: 0%},
+            CAPTURED_CDNA: {bound: 100%, flowthrough: 0%},
+            WB3: {bound: 0%, flowthrough: 100%}
+          });
+      }
+      let wash_clear = TemplateSwitchClarity(sample = captured_cdna, check_number = 2,
+        fixture_unclear_check = fixture_unclear_check, fixture_clear_after_retry = fixture_clear_after_retry,
+        use_fixture_inputs = use_fixture_inputs);
+      if wash_clear == false {
+        status.result.needs_attention = true;
+        status.result.can_continue = false;
+      }
+      // Source step S6: remove WB3 wash; reserve unused WB3 reagent for later use.
+      if status.result.can_continue == true { waste << [captured_cdna.contents[1]]; }
+    }
+  }
+
+  // Source step S7: remove tubes from the magnetic rack.
+  // Source step S8: fully resuspend in 100uL viscous master mix.
+  if status.result.can_continue == true {
+    let off_rack = ConfirmTemplateSwitch(sample = captured_cdna,
+      label = "Confirm tubes removed from magnetic rack for resuspension",
+      fixture_passed = fixture_equipment_ready, use_fixture_inputs = use_fixture_inputs);
+    if off_rack == false {
+      status.result.needs_attention = true;
+      status.result.can_continue = false;
+    }
+  }
+  if status.result.can_continue == true {
+    captured_cdna << [template_switch_master_mix:100uL];
+    repeat master_mix_resuspension in schedule(start = 1, end = 10, step = 1) {
+      captured_cdna << [captured_cdna:80uL];
+    }
+    let mixed = TemplateSwitchSuspension(sample = captured_cdna, check_number = 1, stroke_volume = 80uL,
+      fixture_unsettled_check = fixture_unsettled_check, fixture_suspended_after_retry = fixture_suspended_after_retry,
+      use_fixture_inputs = use_fixture_inputs);
+    if mixed == false {
+      status.result.needs_attention = true;
+      status.result.can_continue = false;
+    }
+  }
+  // Source step S9: brief spin without pelleting beads. Authored 100g, 8s.
+  if status.result.can_continue == true {
+    with env(thermal = 25C, duration = 8s) {
+      let brief_spin = sep(sample = captured_cdna,
+        program = centrifuge_program(drive = 100g, keep_source = "supernatant"),
+        component_fates = {
+          STREPTAVIDIN_BEADS: {supernatant: 100%, pellet: 0%},
+          CAPTURED_CDNA: {supernatant: 100%, pellet: 0%},
+          TSB: {supernatant: 100%, pellet: 0%},
+          TSP: {supernatant: 100%, pellet: 0%},
+          TSE: {supernatant: 100%, pellet: 0%}
+        },
+        // Live-entry order here: beads, captured cDNA, then master-mix reagents.
+        // Retain the supernatant in this tube; the empty pellet is not withdrawn.
+        transitions = [
+          transition(subject = captured_cdna.materials[0], output = CentrifugeProgramOutput.SUPERNATANT,
+            to = MaterialRelation.FREE),
+          transition(subject = captured_cdna.materials[1], output = CentrifugeProgramOutput.SUPERNATANT,
+            to = MaterialRelation.BEAD_BOUND, associated_with = captured_cdna.materials[0])
+        ]);
+    }
+  }
+  // Source step S10: incubate at room temperature for 30 minutes.
+  if status.result.can_continue == true {
+    with env(thermal = 25C, duration = 30min) { hold(captured_cdna); }
+  }
+  // Source step S11: fully resuspend with five 75uL P200 strokes.
+  if status.result.can_continue == true {
+    repeat post_rt_mix in schedule(start = 1, end = 5, step = 1) {
+      captured_cdna << [captured_cdna:75uL];
+    }
+    let post_rt_suspended = TemplateSwitchSuspension(sample = captured_cdna, check_number = 2, stroke_volume = 75uL,
+      fixture_unsettled_check = fixture_unsettled_check, fixture_suspended_after_retry = fixture_suspended_after_retry,
+      use_fixture_inputs = use_fixture_inputs);
+    if post_rt_suspended == false {
+      status.result.needs_attention = true;
+      status.result.can_continue = false;
+    }
+  }
+  // Source step S12: thermal program with confirmed 70C lid; 4C Hold is common.
+  if status.result.can_continue == true {
+    let thermocycler_ready = ConfirmTemplateSwitch(sample = captured_cdna,
+      label = "Confirm thermocycler lid set to 70C and sample-volume setting 100uL",
+      fixture_passed = fixture_equipment_ready, use_fixture_inputs = use_fixture_inputs);
+    if thermocycler_ready == false {
+      status.result.needs_attention = true;
+      status.result.can_continue = false;
+    }
+  }
+  if status.result.can_continue == true {
+    with env(thermal = thermal_program(from = 42C, duration = 60min)) { hold(captured_cdna); }
+    // Source says Hold at 4C, not a fixed time. 10min is a finite benchmark choice.
+    with env(thermal = 4C, duration = 10min) { hold(captured_cdna); }
+    status.result.processing_stage = "template_switch_program_completed";
+    status.result.template_switch_program_completed = true;
+  }
+  // Source step S13: immediate amplification or optional storage, after 4C Hold.
+  if status.result.can_continue == true {
+    if proceed_immediately {
+      status.result.ready_for_amplification = true;
+    } else {
+      // Source step S14: check settled beads before high-position magnetic clearing.
+      let before_storage_suspended = TemplateSwitchSuspension(sample = captured_cdna, check_number = 3, stroke_volume = 80uL,
+        fixture_unsettled_check = fixture_unsettled_check, fixture_suspended_after_retry = fixture_suspended_after_retry,
+        use_fixture_inputs = use_fixture_inputs);
+      if before_storage_suspended == false {
+        status.result.needs_attention = true;
+        status.result.can_continue = false;
+      }
+      if status.result.can_continue == true {
+        let storage_rack_ready = ConfirmTemplateSwitch(sample = captured_cdna,
+          label = "Confirm tubes on high magnetic-rack position for storage cleanup",
+          fixture_passed = fixture_equipment_ready, use_fixture_inputs = use_fixture_inputs);
+        if storage_rack_ready == false {
+          status.result.needs_attention = true;
+          status.result.can_continue = false;
+        }
+      }
+      if status.result.can_continue == true {
+        with env(field = magnetic_rack) {
+          sep(sample = captured_cdna, program = magnetic_program(duration = 2min),
+            component_fates = {
+              STREPTAVIDIN_BEADS: {bound: 100%, flowthrough: 0%},
+              CAPTURED_CDNA: {bound: 100%, flowthrough: 0%},
+              TSB: {bound: 0%, flowthrough: 100%},
+              TSP: {bound: 0%, flowthrough: 100%},
+              TSE: {bound: 0%, flowthrough: 100%}
+            });
+          let storage_clear = TemplateSwitchClarity(sample = captured_cdna, check_number = 3,
+            fixture_unclear_check = fixture_unclear_check, fixture_clear_after_retry = fixture_clear_after_retry,
+            use_fixture_inputs = use_fixture_inputs);
+          if storage_clear == false {
+            status.result.needs_attention = true;
+            status.result.can_continue = false;
+          }
+          // Source step S15: discard only after storage supernatant clears.
+          if status.result.can_continue == true { waste << [captured_cdna.contents[1]]; }
+        }
+      }
+      // Source step S16: remove tubes from the magnetic rack.
+      // Source step S17: resuspend in 125uL WB2; authored 10x100uL strokes.
+      if status.result.can_continue == true {
+        let storage_off_rack = ConfirmTemplateSwitch(sample = captured_cdna,
+          label = "Confirm tubes removed from magnetic rack before WB2 resuspension",
+          fixture_passed = fixture_equipment_ready, use_fixture_inputs = use_fixture_inputs);
+        if storage_off_rack == false {
+          status.result.needs_attention = true;
+          status.result.can_continue = false;
+        }
+      }
+      if status.result.can_continue == true {
+        captured_cdna << [wash_buffer_2:125uL];
+        repeat storage_resuspension in schedule(start = 1, end = 10, step = 1) {
+          captured_cdna << [captured_cdna:100uL];
+        }
+        let storage_suspended = TemplateSwitchSuspension(sample = captured_cdna, check_number = 4, stroke_volume = 100uL,
+          fixture_unsettled_check = fixture_unsettled_check, fixture_suspended_after_retry = fixture_suspended_after_retry,
+          use_fixture_inputs = use_fixture_inputs);
+        if storage_suspended == false {
+          status.result.needs_attention = true;
+          status.result.can_continue = false;
+        }
+      }
+      // Source step S18: store at 4C for at most 18h; do not freeze.
+      if status.result.can_continue == true {
+        let storage_ready = ConfirmTemplateSwitch(sample = captured_cdna,
+          label = "Confirm storage at 4C for no more than 18 hours; do not freeze",
+          fixture_passed = fixture_equipment_ready, use_fixture_inputs = use_fixture_inputs);
+        if storage_ready == false {
+          status.result.needs_attention = true;
+          status.result.can_continue = false;
+        }
+      }
+      if status.result.can_continue == true {
+        with env(thermal = 4C, duration = 18h) { hold(captured_cdna); }
+        status.result.processing_stage = "template_switch_stored_in_wb2";
+        status.result.storage_complete = true;
+      }
+    }
+  }
+  // Keep the same DNA identity and provenance. Program completion is not proof
+  // of biochemical conversion; no new yield or DNA-to-DNA replacement is claimed.
   return captured_cdna;
+}
+
+protocol ConfirmTemplateSwitch(sample, label, fixture_passed, use_fixture_inputs) {
+  let schema = data_schema(label = label, fields = [passed]);
+  let check = phy(sample = sample, quantity = customized, schema_ref = schema);
+  if use_fixture_inputs { check.result.passed = fixture_passed; }
+  return check.result.passed == true;
+}
+
+protocol TemplateSwitchClarity(sample, check_number, fixture_unclear_check, fixture_clear_after_retry, use_fixture_inputs) {
+  let schema = data_schema(label = "TemplateSwitchSupernatantClarity", fields = [check_number, supernatant_clear]);
+  let check = img(sample = sample, quantity = customized, schema_ref = schema);
+  check.result.check_number = check_number;
+  if use_fixture_inputs { check.result.supernatant_clear = fixture_unclear_check != check_number; }
+  if check.result.supernatant_clear == true {
+    // Clear: the caller may discard the supernatant.
+  } else {
+    // Authored bounded recovery: remain on magnet one more minute, then recheck.
+    with env(thermal = 25C, duration = 1min) { hold(sample); }
+    let retry = img(sample = sample, quantity = customized, schema_ref = schema);
+    retry.result.check_number = check_number;
+    if use_fixture_inputs { retry.result.supernatant_clear = fixture_clear_after_retry; }
+    if retry.result.supernatant_clear == true { check.result.supernatant_clear = true; }
+  }
+  return check.result.supernatant_clear == true;
+}
+
+protocol TemplateSwitchSuspension(sample, check_number, stroke_volume,
+  fixture_unsettled_check, fixture_suspended_after_retry, use_fixture_inputs) {
+  let schema = data_schema(label = "TemplateSwitchBeadSuspension", fields = [check_number, beads_suspended]);
+  let check = img(sample = sample, quantity = customized, schema_ref = schema);
+  check.result.check_number = check_number;
+  if use_fixture_inputs { check.result.beads_suspended = fixture_unsettled_check != check_number; }
+  if check.result.beads_suspended == true {
+    // Observation, not an inferred physical state from a self-transfer.
+  } else {
+    // One authored 10-stroke recovery, then intervention if still not suspended.
+    repeat retry_mix in schedule(start = 1, end = 10, step = 1) { sample << [sample:stroke_volume]; }
+    let retry = img(sample = sample, quantity = customized, schema_ref = schema);
+    retry.result.check_number = check_number;
+    if use_fixture_inputs { retry.result.beads_suspended = fixture_suspended_after_retry; }
+    if retry.result.beads_suspended == true { check.result.beads_suspended = true; }
+  }
+  return check.result.beads_suspended == true;
 }
 
 // Benchmark-declared inputs, not measured yields from the vendor manual.
 let cdna_template_switch_result = CDNATemplateSwitch(
-  bead_mass = 0.4mg, cdna_mass = 0.1ug,
-  proceed_immediately = true
+  bead_mass = 0.4mg, cdna_mass = 0.1ug, proceed_immediately = true
 );
 return cdna_template_switch_result;
