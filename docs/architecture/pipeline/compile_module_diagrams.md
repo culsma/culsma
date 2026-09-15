@@ -329,6 +329,10 @@ flowchart TB
 | `apply_state_after_lowering` | Update compile-time context after nested lowering decisions. | invalidate runtime-mutated names after repeat/if |
 | `return_ir` | Return `list[IRStatement]` to the statement-list dispatcher. | all handlers |
 
+| Repeat binding invariant | Owner / diagnostic stage | Conformance hook |
+| --- | --- | --- |
+| A declaration is visible to subsequent statements in the same expanded iteration, including readout member assignments; loop-local declarations do not escape to the enclosing block. | `RepeatControlLowerer`: share iteration-local name state. `AssignStatement` validation still rejects undeclared targets at compile time. | `COMPILE-REPEAT-LOCAL-01` → `test_repeat_local_declaration_supports_following_assignment` and `test_repeat_local_declaration_does_not_escape` |
+
 ## Class And Module Diagram
 
 ```mermaid

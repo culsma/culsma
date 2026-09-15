@@ -112,6 +112,7 @@ class RepeatControlLowerer:
             nested_const_env = dict(loop_const_env)
             nested_let_bindings = dict(loop_let_bindings)
             nested_local_names = set(loop_local_names)
+            nested_local_names.add(stmt.binding)
             nested_let_bindings[stmt.binding] = point
             runtime_control = any(
                 lowering_ctx.schedule_evaluator.statement_requires_runtime_control(
@@ -127,7 +128,7 @@ class RepeatControlLowerer:
                     scope_id=f"{lowering_ctx.stmt_id}.i{iteration_index}" if runtime_control else lowering_ctx.ctx.scope_id,
                     const_env=nested_const_env,
                     let_bindings=nested_let_bindings,
-                    local_names=nested_local_names | {stmt.binding},
+                    local_names=nested_local_names,
                 )
                 compiled_nested = lowering_ctx.statement_compiler.compile(
                     nested_stmt,
@@ -145,6 +146,7 @@ class RepeatControlLowerer:
                         break
             nested_let_bindings.pop(stmt.binding, None)
             nested_const_env.pop(stmt.binding, None)
+            nested_local_names.discard(stmt.binding)
             loop_const_env = nested_const_env
             loop_let_bindings = nested_let_bindings
             loop_local_names = nested_local_names

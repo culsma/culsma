@@ -1496,3 +1496,25 @@ def test_compile_agit_step_lowers_to_irstep():
     assert stmt.__class__.__name__ == "IRStep"
     assert stmt.name == "agit"
     assert [arg.name for arg in stmt.args] == ["sample", "mode", "duration", "rate"]
+
+
+@pytest.mark.parametrize('iterable', ['[1, 2]', 'schedule(start = 1, end = 2, step = 1)'])
+def test_repeat_local_declaration_supports_following_assignment(iterable):
+    ir = compile_to_ir(parse(f'''protocol T {{
+      repeat i in {iterable} {{
+        let read = data_ref(kind = sequence_read);
+        read.result.hit = true;
+        let count = 0;
+        count = count + 1;
+      }}
+    }}'''))
+    assignments = [s for s in ir.protocols[0].statements if s.__class__.__name__ == 'IRAssign']
+    assert len(assignments) == 4
+
+
+def test_repeat_local_declaration_does_not_escape():
+    with pytest.raises(ValueError, match='previously declared'):
+        compile_to_ir(parse('''protocol T {
+          repeat i in schedule(start = 1, end = 2, step = 1) { let inner = 0; }
+          inner = 1;
+        }'''))
