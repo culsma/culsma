@@ -52,6 +52,11 @@ def case_dir(case):
     return ROOT / "cases" / case
 
 
+def baseline_dir(case):
+    moved = ROOT / "expected" / "cases" / case
+    return moved if moved.is_dir() else case_dir(case)
+
+
 def generated_counts(directory):
     """Validate and aggregate the three automatically extracted metric files."""
     d = read_json(directory / "action_descriptors.json")
@@ -124,7 +129,7 @@ def record_projection(output, run=None):
 def derive(results=None):
     rows = {}
     for case in discover_cases():
-        row = generated_counts(case_dir(case) if results is None else results / case / "evaluation")
+        row = generated_counts(baseline_dir(case) if results is None else results / case / "evaluation")
         if results is not None:
             trace = read_json(results / case / "evaluation/result_traceability.json")
             run = read_json(results / case / "input/artifacts/run.json") if "final_material_records" in trace else None
@@ -176,7 +181,7 @@ def compare(rows, results=None):
             wanted = expected["cases"][case][field]
             if value != wanted:
                 differences.append(f"Case {case} {field}: observed {value}, expected {wanted}")
-        baseline = read_json(case_dir(case) / "result_traceability.json")
+        baseline = read_json(baseline_dir(case) / "result_traceability.json")
         actual = baseline if results is None else read_json(results / case / "evaluation/result_traceability.json")
         actual_record, expected_record = trace_projection(actual), trace_projection(baseline)
         for field in actual_record:
@@ -227,17 +232,43 @@ def run_all(results):
         print(f"Case {case}: captured and automatically extracted", flush=True)
 
 
+def run_source_coverage(cases, python, implementation=None):
+    available = discover_cases()
+    if not cases or len(cases) != len(set(cases)) or any(case not in available for case in cases):
+        raise ValueError('Choose distinct existing case IDs, for example --case 00')
+    failed = False
+    for case in cases:
+        directory = case_dir(case)
+        command = [sys.executable, str(ROOT / 'tools/source_comment_coverage.py'),
+                   '--source', str(directory / 'source.md'),
+                   '--program', str(directory / 'protocol.culs'), '--python', str(python)]
+        if implementation:
+            command += ['--implementation', implementation]
+        result = subprocess.run(command)
+        failed = failed or result.returncode != 0
+    return 1 if failed else 0
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("all", "summarize", "check-baseline"))
-    parser.add_argument("--results", type=Path, default=ROOT / "results")
+    parser.add_argument("command", choices=("all", "summarize", "check-baseline", "coverage"))
+    parser.add_argument("--results", type=Path)
+    parser.add_argument("--case", nargs="+", dest="cases")
+    parser.add_argument("--python", default=sys.executable)
+    parser.add_argument("--implementation")
     args = parser.parse_args()
     try:
+        if args.command == "coverage":
+            if not args.cases:
+                parser.error('coverage requires --case, for example --case 00')
+            if args.results is not None:
+                parser.error('coverage writes each case/coverage.json; --results applies to legacy runtime commands only')
+            return run_source_coverage(args.cases, args.python, args.implementation)
         if args.command == "check-baseline":
             differences = compare(derive())
             print("\n".join(differences) if differences else "PASS: per-case plain JSON counts match the expected tables.")
             return 1 if differences else 0
-        results = args.results.resolve()
+        results = (args.results or ROOT / "results").resolve()
         if args.command == "all":
             run_all(results)
         rows = derive(results)

@@ -16,20 +16,41 @@ separate worked example (00), with their source files and expected results.
 | `requirements.lock` | Exact dependency versions and installation-package hashes. |
 | `SOURCES.md` | Source provenance and complete case references. |
 
-Every case has the same six files:
+Migrated cases use three files (Case 00 currently):
 
 | File | Contents |
 | --- | --- |
-| `protocol.culs` | Executable Culsma program. |
-| `source.md` | Original experimental description. |
-| `source.steps.json` | Reviewed step titles and inputs/outputs for navigation; not a counting input. |
-| `action_descriptors.json` | Section 3.2: per-step descriptors and evidence. |
-| `material_state_continuity.json` | Section 3.3: objects, later uses and execution completion. |
-| `result_traceability.json` | Section 3.4: consumption, touched containers and final material states. |
+| `source.md` | Context, one numbered `## Steps` section, and optional notes. |
+| `protocol.culs` | Program with each source step copied above its corresponding code. |
+| `coverage.json` | Script-generated step correspondence results; never edited manually. |
 
-The supplied JSON files are expected results. The scripts regenerate them from
-source and fresh CLI exports without reading them as counting inputs.
-No per-case configuration or compressed archive is needed.
+The shared format is defined in `schemas/source-coverage.schema.json` and
+`tools/source_comment_coverage.py`. Only the Steps section is counted. Context
+and notes can preserve source provenance and additional protocol information.
+Unmigrated cases retain the earlier layout. Historical Case 00 descriptor,
+continuity and traceability baselines now live in `expected/cases/00/` and remain
+available to `reproduce.py check-baseline`.
+
+## Generate coverage in each case
+
+```sh
+python reproduce.py coverage --case 00 \
+  --python /path/to/culsma-environment/bin/python \
+  --implementation IMPLEMENTATION_COMMIT
+```
+
+This writes `cases/00/coverage.json`. Multiple explicit case IDs generate one
+file in each selected case, never a shared report directory. Cases must first
+adopt the numbered Steps/comment format. The score measures source-step
+correspondence, not numerical or semantic correctness.
+The result records counts and issues only; matched steps are not repeated.
+See [PRESENTATION.md](PRESENTATION.md) for website and publication rules.
+
+The retired numerical/semantic review system and local pilot captures have been
+moved outside the checkout to a local backup. They are not inputs to this command.
+Migration and evidence follow-up are tracked in
+[PM #116](https://github.com/culsma/culsma-pm/issues/116). Historical runtime commands
+below retain their v9 baselines in `expected/`.
 
 ## Install the matching environment
 
@@ -160,3 +181,12 @@ updating expected results. Do not change expected results just to make a failing
 comparison pass. Programs and sources are maintained here; the website and
 manuscript are publication copies. Public releases should identify the Git
 commit/tag used so readers can obtain the same files.
+
+## Instruction source format
+
+Use one `## Steps` section with consecutive numbers starting at 1. Preparation
+belongs in the same sequence. Optional `## Context` and `## Notes` sections retain
+provenance, background and additional source information outside the denominator.
+Copy each complete step into `protocol.culs` as `// 1. ...` above its code.
+Generate `coverage.json` with the shared checker; do not maintain extra per-case
+step indexes, report tables or hand-written coverage values.

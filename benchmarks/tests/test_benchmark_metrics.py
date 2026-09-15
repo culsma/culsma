@@ -18,7 +18,8 @@ SPEC = importlib.util.spec_from_file_location("benchmark_metrics", SCRIPT)
 metrics = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = metrics
 SPEC.loader.exec_module(metrics)
-CASE = SCRIPT.parent.parent / "cases" / "00"
+# Keep the seven-step legacy metric fixture independent of current annotations.
+CASE = Path(__file__).parent / "fixtures" / "00"
 PLATE_CASE = SCRIPT.parent.parent / "cases" / "04"
 
 

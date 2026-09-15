@@ -1,0 +1,15 @@
+{
+  "schema": "source-coverage-v2",
+  "rules": "steps-section-correspondence-v1",
+  "metric": "source_step_correspondence",
+  "case_id": "00",
+  "implementation": "ab06a04446b51d208b6a8b6eb2b36853e67d0d7b",
+  "language_version": "1.0.7rc1",
+  "source_sha256": "c40f339607c679da8c43088d4c5a638a16078ce2123989ed0f8d34033df7da8b",
+  "program_sha256": "13acb5e4790f84220b199cf0640bbad020a4cdf9df9a6e488360ac2631ef2829",
+  "total_steps": 12,
+  "matched_steps": 12,
+  "coverage_percent": 100.0,
+  "status": "pass",
+  "issues": []
+}
