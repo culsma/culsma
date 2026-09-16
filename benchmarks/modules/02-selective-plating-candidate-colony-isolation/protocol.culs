@@ -1,0 +1,122 @@
+protocol Module02_PickAndExpandCandidateColony(selected_colony) returns (candidate_culture) {
+  // Source step S9: Use eight culture tubes, each preloaded with 4 mL LB broth supplemented with 100 ug/mL ampicillin.
+  let candidate_culture = tube(label = "CandidateColonyCulture", capacity = 5mL, load = [
+    content(kind = "chemical", type = "culture_medium", code = "LB_AMPICILLIN", attrs = { ampicillin_concentration: 100ug_per_mL }):4mL
+  ]);
+
+  // Source step S10: Pick each selected white colony with a separate sterile pipette tip and transfer one complete colony into its assigned culture tube while preserving its `colony_id`.
+  // COVERAGE GAP: the transfer preserves the manually assigned colony-position
+  // handle, but Culsma cannot verify that it arose from the S8 data.
+  candidate_culture << [selected_colony];
+  return candidate_culture;
+}
+
+protocol Module02_SelectivePlatingAndCandidateColonyIsolation() returns (candidate_colony_cultures) {
+  // Source step S1: Use 100 uL of each of five recovered DH5alpha transformation suspensions: recombinant ligation, vector-only ligation control, no-ligase vector control, uncut pUC19 positive transformation control, and no-DNA control.
+  let recombinant_ligation_suspension = tube(label = "RecombinantLigationSuspension", load = [
+    content(kind = "biosample", type = "microbial_cells", code = "DH5A_RECOMBINANT_LIGATION", attrs = { state: recovered_transformation_suspension }):100uL
+  ]);
+  let vector_only_suspension = tube(label = "VectorOnlyLigationControlSuspension", load = [
+    content(kind = "biosample", type = "microbial_cells", code = "DH5A_VECTOR_ONLY_LIGATION_CONTROL", attrs = { state: recovered_transformation_suspension }):100uL
+  ]);
+  let no_ligase_suspension = tube(label = "NoLigaseVectorControlSuspension", load = [
+    content(kind = "biosample", type = "microbial_cells", code = "DH5A_NO_LIGASE_VECTOR_CONTROL", attrs = { state: recovered_transformation_suspension }):100uL
+  ]);
+  let positive_control_suspension = tube(label = "UncutPuc19PositiveControlSuspension", load = [
+    content(kind = "biosample", type = "microbial_cells", code = "DH5A_UNCUT_PUC19_POSITIVE_CONTROL", attrs = { state: recovered_transformation_suspension }):100uL
+  ]);
+  let no_dna_suspension = tube(label = "NoDnaControlSuspension", load = [
+    content(kind = "biosample", type = "microbial_cells", code = "DH5A_NO_DNA_CONTROL", attrs = { state: recovered_transformation_suspension }):100uL
+  ]);
+
+  // Source step S2: Use five pre-poured 90 mm selective plates. Each plate contains 25 mL LB agar supplemented with 100 ug/mL ampicillin, 40 ug/mL X-gal, and 50 ug/mL IPTG.
+  let recombinant_ligation_plate = surface(label = "RecombinantLigationSelectivePlate", spec = "90mm_25mL_lb_agar_ampicillin_100ug_per_mL_xgal_40ug_per_mL_iptg_50ug_per_mL", carrier_id = "RecombinantLigationSelectivePlate");
+  let vector_only_plate = surface(label = "VectorOnlySelectivePlate", spec = "90mm_25mL_lb_agar_ampicillin_100ug_per_mL_xgal_40ug_per_mL_iptg_50ug_per_mL", carrier_id = "VectorOnlySelectivePlate");
+  let no_ligase_plate = surface(label = "NoLigaseSelectivePlate", spec = "90mm_25mL_lb_agar_ampicillin_100ug_per_mL_xgal_40ug_per_mL_iptg_50ug_per_mL", carrier_id = "NoLigaseSelectivePlate");
+  let positive_control_plate = surface(label = "UncutPuc19PositiveControlPlate", spec = "90mm_25mL_lb_agar_ampicillin_100ug_per_mL_xgal_40ug_per_mL_iptg_50ug_per_mL", carrier_id = "UncutPuc19PositiveControlPlate");
+  let no_dna_plate = surface(label = "NoDnaControlPlate", spec = "90mm_25mL_lb_agar_ampicillin_100ug_per_mL_xgal_40ug_per_mL_iptg_50ug_per_mL", carrier_id = "NoDnaControlPlate");
+
+  // Source step S3: Label one selective plate for each transformation suspension.
+  let selective_plate_group = group([recombinant_ligation_plate, vector_only_plate, no_ligase_plate, positive_control_plate, no_dna_plate]);
+
+  // Source step S4: Transfer 100 uL of each recovered transformation suspension onto its corresponding selective plate.
+  recombinant_ligation_plate << [recombinant_ligation_suspension:100uL];
+  vector_only_plate << [vector_only_suspension:100uL];
+  no_ligase_plate << [no_ligase_suspension:100uL];
+  positive_control_plate << [positive_control_suspension:100uL];
+  no_dna_plate << [no_dna_suspension:100uL];
+
+  // Source step S5: Spread each suspension evenly across the agar surface using a sterile spreading tool.
+  // COVERAGE GAP: current Culsma has no verified action for mechanically
+  // spreading a liquid inoculum evenly across a solid culture surface.
+
+  // Source step S6: Incubate the selective plates at 37 C for 16 h.
+  with env(thermal = 37C, duration = 16h) {
+    hold(sample = selective_plate_group);
+  }
+
+  // Source step S7: Inspect each plate manually. Record the plate identity and transformation group, then count the total, white, and blue colonies on the plate.
+  let plate_result_schema = data_schema(
+    label = "SelectivePlateResult",
+    fields = [plate_id, transformation_group, total_colony_count, white_colony_count, blue_colony_count]
+  );
+  let plate_results = img(
+    sample = selective_plate_group,
+    quantity = customized,
+    schema_ref = plate_result_schema,
+    save_raw = true
+  );
+
+  // Source step S8: On the recombinant-ligation plate, identify white colonies that are well isolated and do not touch neighboring colonies. Assign each candidate colony a unique identifier and select eight colonies for expansion.
+  let colony_result_schema = data_schema(
+    label = "CandidateColonyResult",
+    fields = [
+      colony_id,
+      plate_id,
+      colony_color,
+      touches_neighboring_colony,
+      selected_for_expansion,
+      selection_rank,
+      assigned_culture_id
+    ]
+  );
+  let candidate_colony_results = img(
+    sample = recombinant_ligation_plate,
+    quantity = customized,
+    schema_ref = colony_result_schema,
+    save_raw = true
+  );
+  // The schema records the eight selected colonies, their selection order,
+  // and their assigned culture identities. MANUAL REVIEW BOUNDARY: selected
+  // data-schema rows cannot currently resolve into material references. These
+  // eight sub-surfaces record the operator-selected colony positions on the
+  // original recombinant-ligation plate.
+  let selected_colony_1 = surface(label = "SelectedColony1", carrier_id = "RecombinantLigationSelectivePlate", carrier_position = "candidate_1");
+  let selected_colony_2 = surface(label = "SelectedColony2", carrier_id = "RecombinantLigationSelectivePlate", carrier_position = "candidate_2");
+  let selected_colony_3 = surface(label = "SelectedColony3", carrier_id = "RecombinantLigationSelectivePlate", carrier_position = "candidate_3");
+  let selected_colony_4 = surface(label = "SelectedColony4", carrier_id = "RecombinantLigationSelectivePlate", carrier_position = "candidate_4");
+  let selected_colony_5 = surface(label = "SelectedColony5", carrier_id = "RecombinantLigationSelectivePlate", carrier_position = "candidate_5");
+  let selected_colony_6 = surface(label = "SelectedColony6", carrier_id = "RecombinantLigationSelectivePlate", carrier_position = "candidate_6");
+  let selected_colony_7 = surface(label = "SelectedColony7", carrier_id = "RecombinantLigationSelectivePlate", carrier_position = "candidate_7");
+  let selected_colony_8 = surface(label = "SelectedColony8", carrier_id = "RecombinantLigationSelectivePlate", carrier_position = "candidate_8");
+
+  let candidate_culture_1 = Module02_PickAndExpandCandidateColony(selected_colony = selected_colony_1);
+  let candidate_culture_2 = Module02_PickAndExpandCandidateColony(selected_colony = selected_colony_2);
+  let candidate_culture_3 = Module02_PickAndExpandCandidateColony(selected_colony = selected_colony_3);
+  let candidate_culture_4 = Module02_PickAndExpandCandidateColony(selected_colony = selected_colony_4);
+  let candidate_culture_5 = Module02_PickAndExpandCandidateColony(selected_colony = selected_colony_5);
+  let candidate_culture_6 = Module02_PickAndExpandCandidateColony(selected_colony = selected_colony_6);
+  let candidate_culture_7 = Module02_PickAndExpandCandidateColony(selected_colony = selected_colony_7);
+  let candidate_culture_8 = Module02_PickAndExpandCandidateColony(selected_colony = selected_colony_8);
+
+  // Source step S11: Incubate the eight candidate-colony cultures at 37 C for 16 h with shaking at 200 rpm.
+  let candidate_colony_cultures = group([candidate_culture_1, candidate_culture_2, candidate_culture_3, candidate_culture_4, candidate_culture_5, candidate_culture_6, candidate_culture_7, candidate_culture_8]);
+  with env(thermal = 37C, duration = 16h) {
+    agit(sample = candidate_colony_cultures, mode = "shake", duration = 16h, rate = 200rpm);
+  }
+
+  // Source step S12: Return the eight candidate-colony cultures with their colony identifiers for downstream screening. The cultures are candidates and are not considered confirmed recombinant clones.
+  return candidate_colony_cultures;
+}
+
+Module02_SelectivePlatingAndCandidateColonyIsolation();
