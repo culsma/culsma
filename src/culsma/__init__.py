@@ -1,3 +1,3 @@
 """Culsma package root."""
 
-__version__ = "1.0.7rc1"
+__version__ = "1.0.7rc2"

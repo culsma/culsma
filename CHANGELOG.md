@@ -2,6 +2,30 @@
 
 ## Unreleased
 
+## 1.0.7rc2 — 2026-09-16
+
+Internal prerelease for repeat-expansion correctness and benchmark source
+correspondence. Published as GitHub prerelease `internal-1.0.7rc2` with wheel
+and source archives.
+
+### Added
+
+- A case-local source-step correspondence record for migrated benchmark cases.
+  Each numbered source instruction is copied above its implementing code and
+  checked for verbatim text, order, and a meaningful adjacent code region.
+- A dedicated `Source step S<n>:` annotation prefix and explicit continuation
+  syntax distinguish source correspondence from ordinary program comments.
+
+### Fixed
+
+- Repeat expansion preserves declarations within each generated iteration, so
+  later statements in the same iteration can resolve their local bindings.
+- Benchmark Cases 10 and 11 preserve materials across brief centrifugation and
+  gate dependent continuation on precipitation, bead suspension, clarity, and
+  equipment checks while retaining source instructions and review decisions.
+- Grouped and returned benchmark outputs count as meaningful code regions for
+  source-step correspondence.
+
 ## 1.0.7rc1 — 2026-09-11
 
 Internal prerelease for content enum validation, execution, and conformance.
