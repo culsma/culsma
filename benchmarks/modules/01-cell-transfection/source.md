@@ -1,5 +1,7 @@
 # Module 01: Cell Transfection Using Cas9 RNP
 
+## Steps
+
 1. Seed HEK293T-GENE-X-positive cells into a 24-well plate as three groups: WT control in well A1, non-targeting control in well A2, and deletion-RNP treatment in well A3.
 2. Use 1.0 x 10^5 cells in 1 mL DMEM supplemented with 10% (v/v) FBS per well.
 3. Culture the cells in the 24-well plate for 72 h at 37 C with 5% CO2.
