@@ -1,0 +1,24 @@
+{
+  "schema": "source-coverage-v2",
+  "rules": "steps-section-correspondence-v2",
+  "metric": "source_step_correspondence",
+  "case_id": "02-selective-plating-candidate-colony-isolation",
+  "implementation": "0a6c98405cec902d8ea380114b3818c9e2ee1d69",
+  "language_version": "1.0.7rc2",
+  "source_sha256": "e5435bd242807c625302bf0680c4c6b12904ae22b075675cedad2ce35eb63dfb",
+  "program_sha256": "38d6909f668f6c1a43bac244e46dc65aab2aeef29c41d4f3e54c1d7edff26d5a",
+  "total_steps": 12,
+  "matched_steps": 11,
+  "coverage_percent": 91.666667,
+  "status": "incomplete",
+  "issues": [
+    {
+      "step": 5,
+      "reason": "no_code_region"
+    },
+    {
+      "step": null,
+      "reason": "order_changed"
+    }
+  ]
+}

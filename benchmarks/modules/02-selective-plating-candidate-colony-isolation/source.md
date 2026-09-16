@@ -1,5 +1,7 @@
 # Module 02: Selective Plating and Candidate Colony Isolation
 
+## Steps
+
 1. Use 100 uL of each of five recovered DH5alpha transformation suspensions: recombinant ligation, vector-only ligation control, no-ligase vector control, uncut pUC19 positive transformation control, and no-DNA control.
 2. Use five pre-poured 90 mm selective plates. Each plate contains 25 mL LB agar supplemented with 100 ug/mL ampicillin, 40 ug/mL X-gal, and 50 ug/mL IPTG.
 3. Label one selective plate for each transformation suspension.
