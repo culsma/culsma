@@ -1270,6 +1270,32 @@ protocol T {
     assert "SEM_AGIT_ARG_CONFLICT" in _codes(result)
 
 
+def test_validate_agit_accepts_flick_with_optional_cycles():
+    for cycle_arg in ("", ", cycles = 3"):
+        src = f"""
+protocol T {{
+  let tube = tube(label = "Tube", capacity = 100uL);
+  agit(sample = tube, mode = flick{cycle_arg});
+}}
+"""
+        ir = _compile_source(src)
+        result = validate(ir)
+        assert "SEM_AGIT_MODE_UNKNOWN" not in _codes(result)
+        assert "SEM_AGIT_ARG_CONFLICT" not in _codes(result)
+
+
+def test_validate_agit_rejects_flick_with_duration_or_rate():
+    src = """
+protocol T {
+  let tube = tube(label = "Tube", capacity = 100uL);
+  agit(sample = tube, mode = flick, duration = 3s, rate = 60rpm);
+}
+"""
+    ir = _compile_source(src)
+    result = validate(ir)
+    assert [d.code for d in result.diagnostics].count("SEM_AGIT_ARG_CONFLICT") == 2
+
+
 def test_validate_agit_rejects_shake_with_cycles():
     src = """
 protocol T {

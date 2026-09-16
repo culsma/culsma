@@ -103,6 +103,10 @@ and verify the installed versions. Actual Python, Culsma and Lark versions are
 recorded with the run. The runner accepts stable Python 3.11–3.13. Source and
 artifact hashes are generated automatically in the capture receipt and checked
 when extracting; there is no separate file-hash list to maintain at the root.
+Local `include` dependencies are copied recursively into the capture bundle.
+Library `import` dependencies can be captured with repeatable
+`--library-root /path/to/library` arguments. Every copied source is hash-bound,
+and source evidence retains its bundle-relative filename.
 
 Recompute comparisons without rerunning Culsma:
 
@@ -134,9 +138,11 @@ S1, gaps, malformed/ranged markers and ambiguous mappings fail. Without a
 separate step list, an entirely deleted final marker cannot be detected solely
 from remaining source; expected tables provide an independent comparison.
 
-The fixed `patterns-metrics-nested-v9` rules deduplicate identical descriptors
-within a step. Loop iterations do not multiply static descriptors; distinct
-explicit calls retain their object context. Groups require program-defined
+The supplied historical baselines use `patterns-metrics-nested-v9`. The current
+`patterns-metrics-nested-v10` extractor adds dependency sources and multi-source
+evidence while retaining the same descriptor rules. It deduplicates identical
+descriptors within a step. Loop iterations do not multiply static descriptors;
+distinct explicit calls retain their object context. Groups require program-defined
 membership, a common introduction step and identical later-use steps;
 overlapping eligible groups are split. Later uses are compared by source-step
 number, while runtime events establish actual use. Traceability counts preserve

@@ -46,6 +46,12 @@ _PLATE_FORMAT_DIMENSIONS = {
     "384well": (16, 24),
 }
 
+# Format defaults describe total per-well capacity. Authors can override these
+# when a plate family uses a different well geometry.
+_PLATE_FORMAT_DEFAULT_WELL_CAPACITY = {
+    "24well": (3.4, "mL"),
+}
+
 
 @dataclass(frozen=True)
 class EnvHoldMarkerSplit:
@@ -525,6 +531,9 @@ def _resolve_plate_descriptor(name: str, let_bindings: dict[str, Expression]) ->
     capacity = capacity_arg.value if capacity_arg is not None else None
     if capacity is not None and not isinstance(capacity, Quantity):
         raise ValueError(f"plate capacity for '{name}' must be a quantity")
+    if capacity is None and format_value in _PLATE_FORMAT_DEFAULT_WELL_CAPACITY:
+        value, unit = _PLATE_FORMAT_DEFAULT_WELL_CAPACITY[format_value]
+        capacity = Quantity(value=value, unit=unit, span=bound.span)
 
     return {
         "rows": rows,

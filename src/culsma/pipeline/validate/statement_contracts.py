@@ -35,7 +35,7 @@ from .separation import validate_component_fates_contract
 BUILTIN_METHOD_STEPS = {"append", "replace"}
 CONSTRAINT_CUSTOMIZED = "customized"
 COLD_CHAIN_MAX_C = 8.0
-AGIT_MODES = {"vortex", "invert", "shake", "stir"}
+AGIT_MODES = {"vortex", "invert", "flick", "shake", "stir"}
 READOUT_QUANTITY_SETS = {
     "img": frozenset({"uv_absorbance", "fluorescence", "colorimetric", "customized"}),
     "ecp": frozenset({"ph", "conductivity", "dissolved_oxygen", "orp", "customized"}),
@@ -203,7 +203,7 @@ def validate_agit_contract(step: IRStep, *, literal_bindings: dict[str, Any]) ->
         diagnostics.append(
             Diagnostic(
                 code="SEM_AGIT_MODE_UNKNOWN",
-                message="agit(...): mode must be one of vortex, invert, shake, stir",
+                message="agit(...): mode must be one of vortex, invert, flick, shake, stir",
                 span=mode_arg.span or step.span,
                 node_id=step.id,
             )
@@ -214,12 +214,12 @@ def validate_agit_contract(step: IRStep, *, literal_bindings: dict[str, Any]) ->
     rate_arg = _find_arg(step, "rate")
     cycles_arg = _find_arg(step, "cycles")
 
-    if mode_value == "invert":
+    if mode_value in {"invert", "flick"}:
         if duration_arg is not None:
             diagnostics.append(
                 Diagnostic(
                     code="SEM_AGIT_ARG_CONFLICT",
-                    message="agit(mode = invert): duration is not allowed; use cycles",
+                    message=f"agit(mode = {mode_value}): duration is not allowed; use cycles",
                     span=duration_arg.span or step.span,
                     node_id=step.id,
                 )
@@ -228,7 +228,7 @@ def validate_agit_contract(step: IRStep, *, literal_bindings: dict[str, Any]) ->
             diagnostics.append(
                 Diagnostic(
                     code="SEM_AGIT_ARG_CONFLICT",
-                    message="agit(mode = invert): rate is not allowed; use cycles",
+                    message=f"agit(mode = {mode_value}): rate is not allowed; use cycles",
                     span=rate_arg.span or step.span,
                     node_id=step.id,
                 )

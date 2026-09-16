@@ -1794,6 +1794,30 @@ protocol T {
     assert contents_state["invalid_reason"] == "explicit_mixing"
 
 
+def test_runtime_flick_agitation_marks_contents_state_mixed():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let sample = tube(label = "Sample", capacity = 500uL, load = [
+    content(kind = "particulate", code = "BEADS", type = "beads", attrs = { bead_property: magnetic }):20uL,
+    buffer(code = "BIND", type = "buffer"):180uL
+  ]);
+  sep(sample = sample, program = magnetic_program(duration = 5min));
+  agit(sample = sample, mode = flick, cycles = 3);
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    material_state = result.state.artifacts["material_state"]
+    sample_id = _container_id_by_label(material_state["containers"], "Sample")
+    contents_state = material_state["contents_states"][sample_id]
+    assert contents_state["kind"] == "mixed"
+    assert contents_state["invalid_reason"] == "explicit_mixing"
+
+
 def test_runtime_agit_applies_to_each_explicit_group_sample():
     plan = _build_plan_from_source(
         """
@@ -2508,6 +2532,30 @@ protocol T {
     containers = result.state.artifacts["material_state"]["containers"]
     well = _container_by_label(containers, "Editing_A1")
     assert well["metadata"]["capacity_uL"] == 3000.0
+    assert well["volume_uL"] == 1000.0
+
+
+def test_runtime_24well_format_default_accepts_one_milliliter_transfer():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let plate24 = plate(label = "Culture", format = "24well", carrier_id = "Culture24");
+  let source = tube(
+    label = "Source",
+    capacity = 2mL,
+    load = [content(kind = chemical, type = solvent, code = "WATER"):1mL]
+  );
+  plate24[A1] << [source:1mL];
+}
+"""
+    )
+
+    result = run(plan=plan, driver=StubDriver())
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    containers = result.state.artifacts["material_state"]["containers"]
+    well = _container_by_label(containers, "Culture_A1")
+    assert well["metadata"]["capacity_uL"] == 3400.0
     assert well["volume_uL"] == 1000.0
 
 
@@ -3899,6 +3947,34 @@ protocol T {
     assert all(item["kind"] == "unit_ref" for item in events["items"])
     assert all(item["stream_ref"] == "events" for item in events["items"])
     assert all(item["unit_kind"] == "single_cell" for item in events["items"])
+
+
+def test_runtime_materializes_sequencing_stream_units():
+    plan = _build_plan_from_source(
+        """
+protocol T {
+  let sequencing_output = tube(label = "SequencingOutput", capacity = 100uL);
+  let reads = stream(sample = sequencing_output, unit = sequence_read);
+}
+"""
+    )
+    state = init_state(plan)
+    state.artifacts["stream_units"] = {"reads": [{"id": "read_1", "sequence": "ACTG"}]}
+
+    result = run(plan=plan, driver=StubDriver(), state=state)
+
+    assert result.ok
+    reads = result.state.artifacts["local_bindings"]["reads"]
+    assert reads["kind"] == "unit_stream_ref"
+    assert reads["unit_kind"] == "sequence_read"
+    assert reads["items"] == [{
+        "kind": "unit_ref",
+        "id": "read_1",
+        "stream_ref": "reads",
+        "source_ref": reads["source_ref"],
+        "unit_kind": "sequence_read",
+        "sequence": "ACTG",
+    }]
 
 
 def test_runtime_repeat_bind_executes_body_once_per_seeded_unit():

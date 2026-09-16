@@ -56,6 +56,58 @@ class ScopeTests(unittest.TestCase):
             metrics.discover_scope("", dict(protocols=[dict(name="Main")],
                                            statements=[dict(name="Main", args=[])] * 2))
 
+    def test_scope_discovers_markers_across_captured_sources(self):
+        sources = {
+            "/capture/protocol.culs": "// Source step S1: root\n",
+            "/capture/helper.culs": "// Source step S2: helper\n",
+        }
+        ast = {
+            "protocols": [
+                {"name": "Main", "source_path": "/capture/protocol.culs",
+                 "span": {"start": 0, "end": len(sources["/capture/protocol.culs"])},
+                 "statements": [{"name": "Helper", "args": []}]},
+                {"name": "Helper", "source_path": "/capture/helper.culs",
+                 "span": {"start": 0, "end": len(sources["/capture/helper.culs"])},
+                 "statements": []},
+            ],
+            "statements": [{"name": "result", "value": {"name": "Main", "args": []}}],
+        }
+        result = metrics.discover_scope(sources, ast)
+        self.assertEqual(result["expected_steps"], ["S1", "S2"])
+
+
+class DependencyCaptureTests(unittest.TestCase):
+    def test_collects_recursive_includes_and_library_imports(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            case = root / "case"
+            library = root / "library"
+            (case / "parts").mkdir(parents=True)
+            library.mkdir()
+            (case / "protocol.culs").write_text(
+                'include "parts/helper.culs";\nimport Shared;\n', encoding="utf-8"
+            )
+            (case / "parts" / "helper.culs").write_text("protocol Helper {}\n", encoding="utf-8")
+            (library / "Shared.culs").write_text("protocol SharedProtocol {}\n", encoding="utf-8")
+
+            captured = metrics._capture_sources(case / "protocol.culs", [library])
+
+            self.assertEqual(
+                set(captured),
+                {Path("protocol.culs"), Path("parts/helper.culs"), Path("libraries/0/Shared.culs")},
+            )
+
+    def test_include_cannot_escape_source_root(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            case = root / "case"
+            case.mkdir()
+            (root / "outside.culs").write_text("protocol Outside {}\n", encoding="utf-8")
+            (case / "protocol.culs").write_text('include "../outside.culs";\n', encoding="utf-8")
+
+            with self.assertRaisesRegex(metrics.EvidenceError, "escapes"):
+                metrics._capture_sources(case / "protocol.culs", [])
+
 
 class SourceCaptureTests(unittest.TestCase):
     def test_real_source_capture_and_three_outputs_without_config(self):
@@ -87,3 +139,30 @@ Main();
             outputs = metrics.extract(bundle, root / "evaluation")
             self.assertEqual(set(outputs), set(metrics.FILES))
             self.assertEqual(outputs["action_descriptors.json"]["source_steps"], 2)
+
+    def test_real_source_capture_with_include_preserves_dependency_evidence(self):
+        python = os.environ.get("CULSMA_TEST_PYTHON")
+        if not python:
+            self.skipTest("Set CULSMA_TEST_PYTHON for source capture integration")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            case = root / "02"
+            case.mkdir()
+            source = case / "protocol.culs"
+            source.write_text('''include "helper.culs";
+protocol Main {
+  // Source step S1: allocate through a dependency protocol.
+  Helper();
+}
+Main();
+''', encoding="utf-8")
+            (case / "helper.culs").write_text('''protocol Helper {
+  let a = tube(label = "A", capacity = 1mL);
+}
+''', encoding="utf-8")
+
+            bundle = metrics.capture(source, python, root / "input")
+            receipt = metrics.read_json(bundle / "receipt.json")
+            self.assertIn("helper.culs", receipt["files"])
+            outputs = metrics.extract(bundle, root / "evaluation")
+            self.assertIn('"source_file":"helper.culs"', metrics.canonical(outputs))
