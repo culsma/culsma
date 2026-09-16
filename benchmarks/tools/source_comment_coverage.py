@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Report numbered source-step correspondence with verbatim comments and AST code regions.
+"""Report source-step correspondence from prefixed verbatim comments and AST code regions.
 
 This metric is not numerical fidelity, semantic completeness or language capability.
 """
@@ -12,7 +12,7 @@ import re
 import subprocess
 import sys
 
-RULES = 'steps-section-correspondence-v1'
+RULES = 'steps-section-correspondence-v2'
 PARSER = '''import dataclasses,hashlib,importlib.metadata,json,pathlib,sys
 from culsma.parser import parse
 import culsma.parser.parser as parser_module
@@ -25,7 +25,8 @@ def encode(x):
 ast=parse(sys.stdin.read())
 print(json.dumps({'ast':encode(ast),'environment':{'culsma':importlib.metadata.version('culsma'),'lark':importlib.metadata.version('lark'),'parser_file_sha256':hashlib.sha256(pathlib.Path(parser_module.__file__).read_bytes()).hexdigest()}},default=str))
 '''
-MARKER = re.compile(r'^[ \t]*//[ \t]+([1-9]\d*)\.[ \t]+(.+)$')
+MARKER = re.compile(r'^[ \t]*//[ \t]+Source step S([1-9]\d*):[ \t]+(.+)$')
+CONTINUATION = re.compile(r'^[ \t]*//[ \t]{2,}(.+)$')
 
 
 def digest(value):
@@ -34,6 +35,11 @@ def digest(value):
 
 def normalize(text):
     return ' '.join(text.split())
+
+
+def comments_and_whitespace(text):
+    return all(not line.strip() or line.lstrip().startswith('//')
+               for line in text.splitlines())
 
 
 def source_steps(source):
@@ -70,7 +76,7 @@ def parse_program(program, python):
 
 def meaningful(node):
     if isinstance(node,dict):
-        if node.get('_type') in ('MutationStmt','StepCall','CallExpr'): return True
+        if node.get('_type') in ('MutationStmt','StepCall','CallExpr','GroupExpr','ReturnStatement'): return True
         return any(meaningful(v) for k,v in node.items() if k!='span')
     return isinstance(node,list) and any(meaningful(v) for v in node)
 
@@ -99,9 +105,10 @@ def assess(source, program, ast):
         m=MARKER.fullmatch(line.rstrip('\r\n'))
         if not m:continue
         parts=[m[2]];end=i+1
-        while end<len(lines) and re.match(r'^[ \t]*//',lines[end]):
-            if MARKER.fullmatch(lines[end].rstrip('\r\n')):break
-            parts.append(re.sub(r'^[ \t]*//[ \t]?', '', lines[end]).strip());end+=1
+        while end<len(lines):
+            continuation=CONTINUATION.fullmatch(lines[end].rstrip('\r\n'))
+            if not continuation:break
+            parts.append(continuation[1]);end+=1
         markers.append({'step':int(m[1]),'text':normalize(' '.join(parts)), 'comment_line':i+1,
                         'offset':offsets[i],'end':offsets[end] if end<len(lines) else len(program)})
     candidates=statements(ast); rows=[]
@@ -127,7 +134,7 @@ def assess(source, program, ast):
                     regions.append(dict(pointer=p,node_type=s['_type'],line=span['line'],start=span['start'],end=span['end']))
                 # The first statement must follow the comment directly, not an intervening brace/placeholder.
                 between=program[m['end']:regions[0]['start']] if regions else ''
-                if regions and not between.strip():
+                if regions and comments_and_whitespace(between):
                     row.update(status='matched',code_regions=regions)
                 else:row['status']='no_code_region'
         rows.append(row)

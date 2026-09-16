@@ -5,7 +5,9 @@
 `Culsma/benchmarks` is the sole maintained source. Each migrated case contains
 `source.md`, `protocol.culs` and generated `coverage.json`. Context and Notes
 preserve background and source information; only the numbered Steps section
-is the correspondence denominator. Do not hand-edit coverage results.
+is the correspondence denominator. In the program, each copied instruction is
+identified by the dedicated `// Source step S<n>:` prefix so ordinary comments
+remain outside the metric. Do not hand-edit coverage results.
 
 The compact record stores the checked version, input hashes, total/matched counts,
 percentage, status and issues. Successful steps are implicit; only unmatched steps

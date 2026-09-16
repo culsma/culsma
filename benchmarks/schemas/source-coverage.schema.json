@@ -23,7 +23,7 @@
       "const": "source-coverage-v2"
     },
     "rules": {
-      "const": "steps-section-correspondence-v1"
+      "const": "steps-section-correspondence-v2"
     },
     "metric": {
       "const": "source_step_correspondence"

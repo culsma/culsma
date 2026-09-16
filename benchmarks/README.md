@@ -21,7 +21,7 @@ Migrated cases use three files (Case 00 currently):
 | File | Contents |
 | --- | --- |
 | `source.md` | Context, one numbered `## Steps` section, and optional notes. |
-| `protocol.culs` | Program with each source step copied above its corresponding code. |
+| `protocol.culs` | Program with each source step copied under a `Source step S<n>:` prefix above its corresponding code. |
 | `coverage.json` | Script-generated step correspondence results; never edited manually. |
 
 The shared format is defined in `schemas/source-coverage.schema.json` and
@@ -187,6 +187,7 @@ commit/tag used so readers can obtain the same files.
 Use one `## Steps` section with consecutive numbers starting at 1. Preparation
 belongs in the same sequence. Optional `## Context` and `## Notes` sections retain
 provenance, background and additional source information outside the denominator.
-Copy each complete step into `protocol.culs` as `// 1. ...` above its code.
+Copy each complete step into `protocol.culs` as `// Source step S1: ...` above
+its code. Continue wrapped source text with `//   ...`; other comments are ignored.
 Generate `coverage.json` with the shared checker; do not maintain extra per-case
 step indexes, report tables or hand-written coverage values.
