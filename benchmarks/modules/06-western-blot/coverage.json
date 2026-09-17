@@ -1,0 +1,20 @@
+{
+  "schema": "source-coverage-v2",
+  "rules": "steps-section-correspondence-v2",
+  "metric": "source_step_correspondence",
+  "case_id": "06-western-blot",
+  "implementation": "2fb6ef6fda40a60db5405a7951c15857998542b1",
+  "language_version": "1.0.7rc2",
+  "source_sha256": "7d56da32ad704ae13cc62c2e0fc8d152b390ad49212fd5b0ae00c0a6712bf1fb",
+  "program_sha256": "6ebabfd58efb0acb356d37f1affe9ee74b9a36a6bb0e362e05991da132a9ca0f",
+  "total_steps": 32,
+  "matched_steps": 31,
+  "coverage_percent": 96.875,
+  "status": "incomplete",
+  "issues": [
+    {
+      "step": 16,
+      "reason": "no_code_region"
+    }
+  ]
+}
