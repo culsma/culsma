@@ -1,12 +1,10 @@
 protocol Module02_PickAndExpandCandidateColony(selected_colony) returns (candidate_culture) {
-  // Source step S9: Use eight culture tubes, each preloaded with 4 mL LB broth supplemented with 100 ug/mL ampicillin.
+  // Allocate one culture tube for the operator-selected colony reference.
   let candidate_culture = tube(label = "CandidateColonyCulture", capacity = 5mL, load = [
     content(kind = "chemical", type = "culture_medium", code = "LB_AMPICILLIN", attrs = { ampicillin_concentration: 100ug_per_mL }):4mL
   ]);
 
-  // Source step S10: Pick each selected white colony with a separate sterile pipette tip and transfer one complete colony into its assigned culture tube while preserving its `colony_id`.
-  // COVERAGE GAP: the transfer preserves the manually assigned colony-position
-  // handle, but Culsma cannot verify that it arose from the S8 data.
+  // Transfer the supplied colony-position handle into its culture.
   candidate_culture << [selected_colony];
   return candidate_culture;
 }
@@ -40,15 +38,12 @@ protocol Module02_SelectivePlatingAndCandidateColonyIsolation() returns (candida
   let selective_plate_group = group([recombinant_ligation_plate, vector_only_plate, no_ligase_plate, positive_control_plate, no_dna_plate]);
 
   // Source step S4: Transfer 100 uL of each recovered transformation suspension onto its corresponding selective plate.
-  recombinant_ligation_plate << [recombinant_ligation_suspension:100uL];
-  vector_only_plate << [vector_only_suspension:100uL];
-  no_ligase_plate << [no_ligase_suspension:100uL];
-  positive_control_plate << [positive_control_suspension:100uL];
-  no_dna_plate << [no_dna_suspension:100uL];
-
   // Source step S5: Spread each suspension evenly across the agar surface using a sterile spreading tool.
-  // COVERAGE GAP: current Culsma has no verified action for mechanically
-  // spreading a liquid inoculum evenly across a solid culture surface.
+  recombinant_ligation_plate << [recombinant_ligation_suspension:100uL] with constraint(spread, aseptic);
+  vector_only_plate << [vector_only_suspension:100uL] with constraint(spread, aseptic);
+  no_ligase_plate << [no_ligase_suspension:100uL] with constraint(spread, aseptic);
+  positive_control_plate << [positive_control_suspension:100uL] with constraint(spread, aseptic);
+  no_dna_plate << [no_dna_suspension:100uL] with constraint(spread, aseptic);
 
   // Source step S6: Incubate the selective plates at 37 C for 16 h.
   with env(thermal = 37C, duration = 16h) {
@@ -87,10 +82,10 @@ protocol Module02_SelectivePlatingAndCandidateColonyIsolation() returns (candida
     save_raw = true
   );
   // The schema records the eight selected colonies, their selection order,
-  // and their assigned culture identities. MANUAL REVIEW BOUNDARY: selected
-  // data-schema rows cannot currently resolve into material references. These
-  // eight sub-surfaces record the operator-selected colony positions on the
-  // original recombinant-ligation plate.
+  // and their assigned culture identities.
+  // Language gap S8: Selected data rows cannot currently resolve into material references for later transfer.
+  // These eight sub-surfaces record the operator-selected colony positions on
+  // the original recombinant-ligation plate.
   let selected_colony_1 = surface(label = "SelectedColony1", carrier_id = "RecombinantLigationSelectivePlate", carrier_position = "candidate_1");
   let selected_colony_2 = surface(label = "SelectedColony2", carrier_id = "RecombinantLigationSelectivePlate", carrier_position = "candidate_2");
   let selected_colony_3 = surface(label = "SelectedColony3", carrier_id = "RecombinantLigationSelectivePlate", carrier_position = "candidate_3");
@@ -100,6 +95,8 @@ protocol Module02_SelectivePlatingAndCandidateColonyIsolation() returns (candida
   let selected_colony_7 = surface(label = "SelectedColony7", carrier_id = "RecombinantLigationSelectivePlate", carrier_position = "candidate_7");
   let selected_colony_8 = surface(label = "SelectedColony8", carrier_id = "RecombinantLigationSelectivePlate", carrier_position = "candidate_8");
 
+  // Source step S9: Use eight culture tubes, each preloaded with 4 mL LB broth supplemented with 100 ug/mL ampicillin.
+  // Source step S10: Pick each selected white colony with a separate sterile pipette tip and transfer one complete colony into its assigned culture tube while preserving its `colony_id`.
   let candidate_culture_1 = Module02_PickAndExpandCandidateColony(selected_colony = selected_colony_1);
   let candidate_culture_2 = Module02_PickAndExpandCandidateColony(selected_colony = selected_colony_2);
   let candidate_culture_3 = Module02_PickAndExpandCandidateColony(selected_colony = selected_colony_3);

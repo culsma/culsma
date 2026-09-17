@@ -7,7 +7,9 @@
 preserve background and source information; only the numbered Steps section
 is the correspondence denominator. In the program, each copied instruction is
 identified by the dedicated `// Source step S<n>:` prefix so ordinary comments
-remain outside the metric. Do not hand-edit coverage results.
+remain outside the metric. Consecutive source-step markers may share the next
+code region when one constrained operation implements more than one source
+instruction. Do not hand-edit coverage results.
 
 The compact record stores the checked version, input hashes, total/matched counts,
 percentage, status and issues. Successful steps are implicit; only unmatched steps
@@ -42,6 +44,40 @@ hashes before displaying scores. Use revision-pinned links and show the benchmar
 revision/date separately from the language implementation version. A case without
 a current-format record is pending, not 0% or implicitly 100%. An incomplete or
 error status must remain visible even if matched/total happens to be 100%.
+
+## Versioned display model
+
+Publish three views from each immutable coverage snapshot:
+
+1. **Current benchmark overview.** Show the benchmark snapshot, Culsma version,
+   total step correspondence, open language-gap count, and one row per case.
+   A case row uses matched/total plus a separate gap count; never combine them
+   into one score.
+2. **Case page.** Keep a stable case URL with its current result and a short
+   version history. Each version links to revision-pinned source.md,
+   protocol.culs, and coverage.json. Full source and code stay in the benchmark
+   repository; the page does not maintain another copy.
+3. **Snapshot page.** Preserve one immutable page per benchmark version. Show
+   resolved, introduced, and still-open correspondence issues and language gaps
+   relative to the previous comparable snapshot.
+
+The paper should cite one snapshot and use one compact case overview table:
+case, workflow, step correspondence, open language gaps, and status. It should
+not carry the evolving history. The website presents the current snapshot and
+history; Git remains the auditable evidence store.
+
+A manually reviewed missing language capability is declared beside the affected
+program region as `// Language gap S<n>: ...`. This declaration is not part of
+the automatic correspondence percentage. Translation mistakes, ambiguous source
+instructions, and added domain detail are not language gaps. Remove the marker
+only when a later implementation expresses the instruction and the case has
+been reviewed again.
+
+`tools/build_coverage_snapshot.py` verifies the case hashes and writes the
+versioned aggregate defined by
+`schemas/benchmark-coverage-snapshot.schema.json`. Comparisons are made only
+when a case's source hash is unchanged; otherwise the case is labeled
+source-changed instead of reporting a misleading improvement.
 
 ## Basis in the inspected files
 

@@ -44,6 +44,25 @@ class CoverageTests(unittest.TestCase):
         p=PROGRAM.replace('// Source step S2: Hold at 37 C.\n',
                           '// Source step S2: Hold at 37 C.\n// COVERAGE GAP: explanatory only.\n')
         self.assertTrue(assess(SOURCE,p,ast(p))['passed'])
+    def test_consecutive_source_steps_can_share_one_code_region(self):
+        source='## Steps\n1. Transfer the sample.\n2. Spread it evenly.\n'
+        p=('protocol Test() {\n'
+           '// Source step S1: Transfer the sample.\n'
+           '// Source step S2: Spread it evenly.\n'
+           'let sample = tube();\n'
+           '}\nTest();\n')
+        result=assess(source,p,ast(p))
+        self.assertTrue(result['passed'])
+        self.assertEqual(result['steps'][0]['code_regions'],result['steps'][1]['code_regions'])
+    def test_shared_markers_still_fail_without_a_following_code_region(self):
+        source='## Steps\n1. Transfer the sample.\n2. Spread it evenly.\n'
+        p=('protocol Test() {\n'
+           '// Source step S1: Transfer the sample.\n'
+           '// Source step S2: Spread it evenly.\n'
+           '}\nTest();\n')
+        result=assess(source,p,ast(p))
+        self.assertEqual([row['status'] for row in result['steps']],
+                         ['no_code_region','no_code_region'])
     def test_return_statement_can_implement_an_output_instruction(self):
         source='## Steps\n1. Return the sample.\n'
         p='protocol Test() {\n// Source step S1: Return the sample.\nreturn sample;\n}\nTest();\n'

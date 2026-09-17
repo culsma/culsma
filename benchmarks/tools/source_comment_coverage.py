@@ -123,7 +123,15 @@ def assess(source, program, ast):
             else:
                 owners=[p['span'] for p in ast.get('protocols',[]) if p.get('span') and p['span']['start'] <= m['offset'] < p['span']['end']]
                 scope_end=min((p['end'] for p in owners),default=len(program))
-                end=min([scope_end]+[n['offset'] for n in markers if n['offset']>m['offset']])
+                # Consecutive source markers may deliberately share the next
+                # code region when one operation implements multiple source
+                # instructions. Stop at the first later marker that has code
+                # before it; comment-only marker runs remain one region.
+                end=scope_end
+                for n in markers:
+                    if not m['offset'] < n['offset'] < scope_end:continue
+                    if not comments_and_whitespace(program[m['end']:n['offset']]):
+                        end=n['offset'];break
                 eligible=[(p,s) for p,s in candidates if m['end']<=s['span']['start'] and s['span']['end']<=end]
                 eligible.sort(key=lambda x:(x[1]['span']['start'],-x[1]['span']['end']))
                 # Exclude nested duplicates; include all statements belonging to this instruction region.

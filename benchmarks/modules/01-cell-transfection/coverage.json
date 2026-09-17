@@ -6,7 +6,7 @@
   "implementation": "0a6c98405cec902d8ea380114b3818c9e2ee1d69",
   "language_version": "1.0.7rc2",
   "source_sha256": "f6469969054b859cc804859008213dbde21ddb00d7dba4cc04c0502ec4f73ec0",
-  "program_sha256": "8d41432d25b48fb0243da6894c4a94cea9c2823ab5da62f3e8211ffa5df7fd19",
+  "program_sha256": "55c92f25daec466e25b72ed9820905a25ba2b2afb3bb99b7e0141dfd227171a8",
   "total_steps": 13,
   "matched_steps": 13,
   "coverage_percent": 100.0,

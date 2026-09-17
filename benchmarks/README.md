@@ -21,7 +21,7 @@ Migrated cases use three files (Case 00 currently):
 | File | Contents |
 | --- | --- |
 | `source.md` | Context, one numbered `## Steps` section, and optional notes. |
-| `protocol.culs` | Program with each source step copied under a `Source step S<n>:` prefix above its corresponding code. |
+| `protocol.culs` | Program with each source step copied under a `Source step S<n>:` prefix above its corresponding code. Consecutive markers may share one code region when one operation implements multiple source steps. |
 | `coverage.json` | Script-generated step correspondence results; never edited manually. |
 
 The shared format is defined in `schemas/source-coverage.schema.json` and
@@ -44,6 +44,11 @@ file in each selected case, never a shared report directory. Cases must first
 adopt the numbered Steps/comment format. The score measures source-step
 correspondence, not numerical or semantic correctness.
 The result records counts and issues only; matched steps are not repeated.
+A reviewed missing language capability may be declared next to the affected
+program region as `// Language gap S<n>: ...`. The static correspondence score
+does not absorb this judgment. Versioned release summaries keep the two results
+separate and are generated with `tools/build_coverage_snapshot.py`; see
+[`releases/README.md`](releases/README.md).
 See [PRESENTATION.md](PRESENTATION.md) for website and publication rules.
 
 The retired numerical/semantic review system and local pilot captures have been
@@ -195,5 +200,9 @@ belongs in the same sequence. Optional `## Context` and `## Notes` sections reta
 provenance, background and additional source information outside the denominator.
 Copy each complete step into `protocol.culs` as `// Source step S1: ...` above
 its code. Continue wrapped source text with `//   ...`; other comments are ignored.
+When one Culsma operation implements multiple source instructions, place their
+markers consecutively above that operation; the checker assigns the shared code
+region to each step. Do not duplicate an experimental operation to create a
+one-to-one textual mapping.
 Generate `coverage.json` with the shared checker; do not maintain extra per-case
 step indexes, report tables or hand-written coverage values.
