@@ -136,8 +136,8 @@ from the authoritative component-detail ledger.
 ```mermaid
 flowchart LR
     Front["container.materials.replace<br/>selector: material map"] --> Resolve["Resolve every index/ID selector<br/>against one pre-change snapshot"]
-    Resolve --> Validate["Require same receiver, unique targets,<br/>one content:quantity value per key"]
-    Validate --> Candidate["Copy state<br/>replace entries in place<br/>retain source history"]
+    Resolve --> Validate["Require same receiver, unique targets,<br/>one material or nonempty material list per key"]
+    Validate --> Candidate["Copy state<br/>splice replacements at source positions<br/>retain source history"]
     Candidate --> Commit["Validate complete entry set<br/>atomic internal commit"]
     Commit --> Route["Explicit separation fates<br/>volume aliquots + collection"]
     Route --> Shares["Preserve unknown mass<br/>conserve symbolic shares"]
@@ -146,27 +146,31 @@ flowchart LR
 
 ```culs
 lysate.materials.replace({
-    lysate.materials.get("HEK293T"):
+    lysate.materials.get("TOTAL_PROTEIN"): [
         content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
                 type = ContentType.PROTEIN,
-                code = "HEK293T_TOTAL_PROTEIN"):unknown(dimension = mass)
+                code = "TARGET_PROTEIN"):unknown(dimension = mass),
+        content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+                type = ContentType.PROTEIN,
+                code = "BACKGROUND_PROTEINS"):unknown(dimension = mass)
+    ]
 });
 ```
 
 | Boundary | Behavior |
 | --- | --- |
-| Scope | Any live material with tracked quantity → exactly one newly represented material; a declaration after processing, not a hardware operation or yield prediction |
+| Scope | Any live material with tracked quantity → one or more newly represented materials; a declaration after processing, not a hardware operation or yield prediction |
 | Keys | Each key is `container.materials[index]` or `container.materials.get(entry_id)`; string IDs remain distinct from numeric indexes |
 | Batch | All keys resolve against the pre-change snapshot; duplicate targets, missing targets, and cross-container selectors reject the whole map |
-| Values | Each value is exactly one `content(...):quantity`; arrays and one-to-many replacement are not part of this operation |
-| Retirement | Replace each selected entry at its existing position; retain its full snapshot and declaration/dependency IDs in `material_replacements` |
+| Values | Each value is one `content(...):quantity` material or a nonempty list of materials; the single form is shorthand for a one-item list |
+| Retirement | Splice each selected entry's replacements at its existing position; retain its full snapshot and declaration/dependency IDs in `material_replacements` |
 | Quantities | Known mass, volume, and whole-number count are accepted; `unknown(dimension = mass)` remains symbolic and never inherits the old quantity |
 | Routing | Products are declared free and participate in the existing proportional volume-transfer convention; separation requires explicit component fates; zero fractions create no unknown-material entry |
 | Conservation | Known numerical subtotals and symbolic origin shares are checked separately; conserving shares does not verify protein mass balance |
 | Aggregates | Internal compatibility mass is a known subtotal, marked `known_subtotals_only`; public container returns and report rows expose unknown total mass as null |
 | Failures | Missing or duplicate source, duplicate resulting content ID, unsupported quantity/state, and dangling association reject atomically; collect active indexed parts before replacement |
-| Deferred | One-to-many transformations, partial replacement, known/unknown merges, and relationship transitions on unknown entries |
-| Regression | `tests/test_material_replace_integration.py`, including full Case 09; existing relationship-transition tests remain applicable |
+| Deferred | Coupled multi-source transformations, partial replacement, known/unknown merges, and relationship transitions on unknown entries |
+| Regression | `tests/test_material_replace_integration.py` covers one-to-one Case 09 and one-to-many PM #119; Module 03 exercises one-to-many replacement end to end |
 
 ## Proposed Scientific Model API Contract
 

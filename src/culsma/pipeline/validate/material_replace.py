@@ -1,4 +1,4 @@
-"""Semantic contract for selector-keyed, one-to-one material replacement."""
+"""Semantic contract for selector-keyed material replacement."""
 
 from __future__ import annotations
 
@@ -50,7 +50,9 @@ def validate_material_replace(
         return issue("replacement map must contain at least one selector-to-material entry")
     for replacement in replacements.elements:
         if not isinstance(replacement, IRPair):
-            return issue("replacement map entries must be material-selector:content(...):quantity")
+            return issue(
+                "replacement map entries must map a selector to material value(s)"
+            )
         selector = (
             resolve_materials_index(replacement.left, expr_bindings=bindings)
             or resolve_materials_get(replacement.left, expr_bindings=bindings)
@@ -61,10 +63,24 @@ def validate_material_replace(
             or selector.container.name != receiver.base.name
         ):
             return issue("replacement keys must select entries from the receiver's materials")
-        error = _validate_replacement_material(replacement.right)
-        if error is not None:
-            return issue(error)
+        products = _replacement_products(replacement.right)
+        if products is None:
+            return issue(
+                "each replacement value must be one material or a nonempty material list"
+            )
+        for product in products:
+            error = _validate_replacement_material(product)
+            if error is not None:
+                return issue(error)
     return []
+
+
+def _replacement_products(value: Any) -> list[Any] | None:
+    if isinstance(value, IRPair):
+        return [value]
+    if isinstance(value, IRList) and value.elements:
+        return list(value.elements)
+    return None
 
 
 def _validate_replacement_material(value: Any) -> str | None:

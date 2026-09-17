@@ -57,9 +57,8 @@ protocol Module03_AdherentCellLysatePreparation() returns (clarified_protein_lys
   }
 
   // Source step S6: Transfer the complete crude lysate from the well to a clean 1.5 mL microcentrifuge tube.
-  cultured_cell_well.materials.replace(
-    subject = cultured_cell_well.materials[0],
-    products = [
+  cultured_cell_well.materials.replace({
+    cultured_cell_well.materials[0]: [
       content(
         kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
         type = ContentType.PROTEIN,
@@ -73,7 +72,7 @@ protocol Module03_AdherentCellLysatePreparation() returns (clarified_protein_lys
         attrs = { source_cell_count: "5e6", preparation: ripa_lysis, fraction_role: insoluble_debris }
       ):unknown(dimension = mass)
     ]
-  );
+  });
   let crude_lysate = tube(label = "CrudeCellLysate", capacity = 1.5mL);
   crude_lysate << [cultured_cell_well];
 

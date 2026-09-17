@@ -1,4 +1,4 @@
-"""Atomic selector-keyed, one-to-one material replacement."""
+"""Atomic selector-keyed material replacement with one-to-many expansion."""
 
 from __future__ import annotations
 
@@ -59,7 +59,7 @@ def apply_material_replace(step: PlanStep, state: dict[str, Any]) -> MaterialUpd
 
     receiver_ref = arg_string(receiver.get("base"))
     entries = normalize_component_entries(source, state=state, container_id=source_id)
-    resolved: list[tuple[dict[str, Any], dict[str, Any]]] = []
+    resolved: list[tuple[dict[str, Any], list[dict[str, Any]]]] = []
     retired_ids: set[str] = set()
     for mapping in replacement_map["elements"]:
         if not isinstance(mapping, dict) or mapping.get("kind") != "IRPair":
@@ -93,89 +93,101 @@ def apply_material_replace(step: PlanStep, state: dict[str, Any]) -> MaterialUpd
                 "MAT_MATERIAL_REPLACE_SOURCE_UNSUPPORTED",
                 "Replacement subject must have a tracked quantity",
             )
-        replacement = mapping.get("right")
-        if not isinstance(replacement, dict) or replacement.get("kind") != "IRPair":
+        products = _serialized_replacement_products(mapping.get("right"))
+        if products is None:
             return fail(
                 "MAT_MATERIAL_REPLACE_INVALID",
-                "Replacement value must be one content:quantity material",
+                "Replacement value must be one material or a nonempty material list",
             )
         retired_ids.add(selected.entry.entry_id)
-        resolved.append((original, replacement))
+        resolved.append((original, products))
 
     candidate = deepcopy(state)
     kept_entries = [deepcopy(entry) for entry in entries if entry["entry_id"] not in retired_ids]
     used_content_refs = {str(entry.get("content_ref")) for entry in kept_entries}
-    replacements_by_entry_id: dict[str, dict[str, Any]] = {}
+    replacements_by_entry_id: dict[str, list[dict[str, Any]]] = {}
 
-    for ordinal, (original, replacement) in enumerate(resolved):
-        descriptor, raw_quantity = replacement.get("left"), replacement.get("right")
-        if (
-            not isinstance(descriptor, dict)
-            or descriptor.get("kind") != "IRCall"
-            or descriptor.get("name") != "DefineContent"
-        ):
-            return fail(
-                "MAT_MATERIAL_REPLACE_INVALID",
-                "Replacement value requires a content descriptor",
+    for replacement_ordinal, (original, products) in enumerate(resolved):
+        new_entries: list[dict[str, Any]] = []
+        for product_ordinal, product in enumerate(products):
+            descriptor, raw_quantity = product.get("left"), product.get("right")
+            if (
+                not isinstance(descriptor, dict)
+                or descriptor.get("kind") != "IRCall"
+                or descriptor.get("name") != "DefineContent"
+            ):
+                return fail(
+                    "MAT_MATERIAL_REPLACE_INVALID",
+                    "Replacement value requires a content descriptor",
+                )
+            definition = PlanStep(
+                step_id=(
+                    f"{step.step_id}:replacement:{replacement_ordinal}:"
+                    f"product:{product_ordinal}"
+                ),
+                op="DefineContent",
+                args={arg["name"]: arg["value"] for arg in descriptor.get("args", [])},
+                deps=[],
+                span=step.span,
             )
-        definition = PlanStep(
-            step_id=f"{step.step_id}:replacement:{ordinal}",
-            op="DefineContent",
-            args={arg["name"]: arg["value"] for arg in descriptor.get("args", [])},
-            deps=[],
-            span=step.span,
-        )
-        defined = apply_define_content(definition, candidate)
-        if not defined.ok:
-            return fail(defined.diagnostics[0].code, defined.diagnostics[0].message)
-        content_id = defined.delta["content_id"]
-        if content_id in used_content_refs:
-            return fail(
-                "MAT_MATERIAL_REPLACE_DUPLICATE_PRODUCT",
-                f"Replacement content '{content_id}' already exists in the resulting container",
+            defined = apply_define_content(definition, candidate)
+            if not defined.ok:
+                return fail(defined.diagnostics[0].code, defined.diagnostics[0].message)
+            content_id = defined.delta["content_id"]
+            if content_id in used_content_refs:
+                return fail(
+                    "MAT_MATERIAL_REPLACE_DUPLICATE_PRODUCT",
+                    f"Replacement content '{content_id}' already exists in the resulting container",
+                )
+            quantity = _replacement_quantity(
+                raw_quantity,
+                origin=(
+                    f"{source_id}:{step.step_id}:{replacement_ordinal}:"
+                    f"{product_ordinal}"
+                ),
             )
-        quantity = _replacement_quantity(
-            raw_quantity,
-            origin=f"{source_id}:{step.step_id}:{ordinal}",
-        )
-        if quantity is None:
-            return fail(
-                "MAT_MATERIAL_REPLACE_INVALID",
-                "Replacement quantity must be unit-bearing or unknown(dimension = mass)",
-            )
-        content = candidate.get("content_registry", {}).get(content_id, {})
-        if quantity.get("dimension") == "count" and content.get("content_kind") != "bio_cellular":
-            return fail(
-                "MAT_MATERIAL_REPLACE_INVALID",
-                "A count replacement requires bio_cellular content",
-            )
-        new_entry = {
-            "entry_id": content_id,
-            "content_ref": content_id,
-            "amount": quantity.get("value"),
-            "quantity": quantity,
-            "relation": "free",
-            "associated_with": None,
-            "association_target_kind": None,
-            "relationship_source": "author_replace",
-            "material_state_source": "author_replace",
-            "provenance": {
-                "source": "author",
-                "operation_id": step.step_id,
-                "source_container_id": source_id,
-                "source_entry_id": original["entry_id"],
-            },
-        }
-        partition_class = content_registry_partition_class(candidate, content_id)
-        if isinstance(partition_class, str):
-            new_entry["partition_class"] = partition_class
-        replacements_by_entry_id[original["entry_id"]] = new_entry
-        used_content_refs.add(content_id)
+            if quantity is None:
+                return fail(
+                    "MAT_MATERIAL_REPLACE_INVALID",
+                    "Replacement quantity must be unit-bearing or unknown(dimension = mass)",
+                )
+            content = candidate.get("content_registry", {}).get(content_id, {})
+            if (
+                quantity.get("dimension") == "count"
+                and content.get("content_kind") != "bio_cellular"
+            ):
+                return fail(
+                    "MAT_MATERIAL_REPLACE_INVALID",
+                    "A count replacement requires bio_cellular content",
+                )
+            new_entry = {
+                "entry_id": content_id,
+                "content_ref": content_id,
+                "amount": quantity.get("value"),
+                "quantity": quantity,
+                "relation": "free",
+                "associated_with": None,
+                "association_target_kind": None,
+                "relationship_source": "author_replace",
+                "material_state_source": "author_replace",
+                "provenance": {
+                    "source": "author",
+                    "operation_id": step.step_id,
+                    "source_container_id": source_id,
+                    "source_entry_id": original["entry_id"],
+                },
+            }
+            partition_class = content_registry_partition_class(candidate, content_id)
+            if isinstance(partition_class, str):
+                new_entry["partition_class"] = partition_class
+            new_entries.append(new_entry)
+            used_content_refs.add(content_id)
+        replacements_by_entry_id[original["entry_id"]] = new_entries
 
-    updated = [
-        replacements_by_entry_id.get(entry["entry_id"], deepcopy(entry))
-        for entry in entries
-    ]
+    updated = []
+    for entry in entries:
+        replacements = replacements_by_entry_id.get(entry["entry_id"])
+        updated.extend(replacements if replacements is not None else [deepcopy(entry)])
     try:
         validate_component_entry_set(updated, owner="Material replacement")
     except ValueError as error:
@@ -184,14 +196,14 @@ def apply_material_replace(step: PlanStep, state: dict[str, Any]) -> MaterialUpd
 
     records = []
     retired_quantities = {}
-    for original, _replacement in resolved:
-        new_entry = replacements_by_entry_id[original["entry_id"]]
+    for original, _products in resolved:
+        new_entries = replacements_by_entry_id[original["entry_id"]]
         record = {
             "operation_id": step.step_id,
             "container_id": source_id,
             "source": "author",
             "retired_entry": deepcopy(original),
-            "product_entry_ids": [new_entry["entry_id"]],
+            "product_entry_ids": [entry["entry_id"] for entry in new_entries],
             "unlisted_constituents": "not_enumerated",
             "mass_balance": "not_quantified",
             "after_step_ids": list(step.deps),
@@ -213,6 +225,22 @@ def apply_material_replace(step: PlanStep, state: dict[str, Any]) -> MaterialUpd
             "retired_quantities": retired_quantities,
         },
     )
+
+
+def _serialized_replacement_products(value: Any) -> list[dict[str, Any]] | None:
+    if isinstance(value, dict) and value.get("kind") == "IRPair":
+        return [value]
+    if not isinstance(value, dict) or value.get("kind") != "IRList":
+        return None
+    elements = value.get("elements")
+    if not isinstance(elements, list) or not elements:
+        return None
+    if not all(
+        isinstance(element, dict) and element.get("kind") == "IRPair"
+        for element in elements
+    ):
+        return None
+    return elements
 
 
 def _replacement_quantity(value: Any, *, origin: str) -> dict[str, Any] | None:

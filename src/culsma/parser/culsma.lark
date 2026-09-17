@@ -80,7 +80,9 @@ assign_statement.1: IDENTIFIER "=" expression -> assign_identifier_statement
     | ref_expr "." IDENTIFIER "=" expression -> assign_member_statement
 material_replace_statement.3: ref_expr "." "replace" "(" replacement_map ")" -> material_replace_statement
 replacement_map: "{" replacement_item ("," replacement_item)* "}"
-replacement_item: material_selector ":" pair_expr
+replacement_item: material_selector ":" replacement_value
+?replacement_value: pair_expr
+    | list_literal
 ?material_selector: ref_expr
     | method_call_expr
 

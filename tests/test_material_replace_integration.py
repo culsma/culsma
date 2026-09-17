@@ -139,10 +139,11 @@ def test_old_named_argument_surface_is_not_accepted():
         parse(source(replacement=replacement))
 
 
-def test_replacement_value_cannot_be_a_list():
-    replacement = f'sample.materials.replace({{sample.materials[0]: [{PRODUCT}]}});'
-    with pytest.raises(UnexpectedInput):
-        parse(source(replacement=replacement))
+def test_replacement_list_must_not_be_empty():
+    replacement = 'sample.materials.replace({sample.materials[0]: []});'
+    _, sem = compile_source(source(replacement=replacement))
+    assert not sem.ok
+    assert 'SEM_MATERIAL_REPLACE_INVALID' in [d.code for d in sem.diagnostics]
 
 
 def test_missing_source_does_not_mutate_registry_or_material():
@@ -211,6 +212,26 @@ def test_duplicate_product_rolls_back_entire_batch():
             state = result.material_state
 
 
+def test_duplicate_product_inside_one_to_many_rolls_back():
+    duplicate = f'''sample.materials.replace({{
+        sample.materials[0]: [{PRODUCT}, {PRODUCT}]
+    }});'''
+    plan = plan_source(source(replacement=duplicate))
+    state = {'containers': {}}
+    compute = MaterialCompute()
+    for step in plan.plans[0].steps:
+        before = deepcopy(state)
+        result = compute.apply_step(step, state)
+        if step.op == 'replace':
+            assert not result.ok
+            assert result.diagnostics[0].code == 'MAT_MATERIAL_REPLACE_DUPLICATE_PRODUCT'
+            assert result.material_state == before
+            assert 'PROTEIN' not in result.material_state['content_registry']
+        else:
+            assert result.ok
+            state = result.material_state
+
+
 def test_index_and_id_selectors_replace_two_entries_from_one_snapshot():
     replacement = '''sample.materials.replace({
         sample.materials[0]: content(
@@ -234,6 +255,103 @@ def test_index_and_id_selectors_replace_two_entries_from_one_snapshot():
     assert sample['component_entries'][1]['quantity'] == {
         'dimension': 'volume', 'unit': 'uL', 'value': 25.0,
     }
+
+
+def test_one_source_expands_to_multiple_entries_at_its_original_position():
+    replacement = '''sample.materials.replace({
+        sample.materials[0]: [
+            content(
+                kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+                type = ContentType.PROTEIN,
+                code = "TARGET_PROTEIN"
+            ):unknown(dimension = mass),
+            content(
+                kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+                type = ContentType.PROTEIN,
+                code = "BACKGROUND_PROTEINS"
+            ):unknown(dimension = mass)
+        ]
+    });'''
+    result = run(
+        plan=plan_source(source(replacement=replacement)),
+        driver=StubDriver(),
+    )
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    sample = material(result, 'Source')
+    assert [entry['entry_id'] for entry in sample['component_entries']] == [
+        'TARGET_PROTEIN',
+        'BACKGROUND_PROTEINS',
+        'BUFFER',
+    ]
+    record = result.state.artifacts['material_state']['material_replacements'][0]
+    assert record['product_entry_ids'] == [
+        'TARGET_PROTEIN',
+        'BACKGROUND_PROTEINS',
+    ]
+
+
+def test_known_mass_composite_expands_to_unknown_mass_products_for_pm119():
+    text = '''protocol PM119 {
+        let ip_reaction = tube(label = "IpReaction", load = [
+            content(
+                kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+                type = ContentType.PROTEIN,
+                code = "CLARIFIED_LYSATE_TOTAL_PROTEIN"
+            ):1mg,
+            content(
+                kind = ContentKind.FORMULATION,
+                type = ContentType.BUFFER,
+                code = "IP_LYSIS_BUFFER"
+            ):500uL
+        ]);
+        ip_reaction.materials.replace({
+            ip_reaction.materials.get("CLARIFIED_LYSATE_TOTAL_PROTEIN"): [
+                content(
+                    kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+                    type = ContentType.PROTEIN,
+                    code = "GFP_TARGET_PROTEIN"
+                ):unknown(dimension = mass),
+                content(
+                    kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+                    type = ContentType.PROTEIN,
+                    code = "LYSATE_BACKGROUND_PROTEINS"
+                ):unknown(dimension = mass)
+            ]
+        });
+        let capture = sep(
+            sample = ip_reaction,
+            program = magnetic_program(duration = 2min),
+            component_fates = {
+                GFP_TARGET_PROTEIN: {bound: 100%, flowthrough: 0%},
+                LYSATE_BACKGROUND_PROTEINS: {bound: 0%, flowthrough: 100%},
+                IP_LYSIS_BUFFER: {bound: 0%, flowthrough: 100%}
+            }
+        );
+    }'''
+    result = run(plan=plan_source(text), driver=StubDriver())
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    state = result.state.artifacts['material_state']
+    replacement = state['material_replacements'][0]
+    assert replacement['retired_entry']['quantity'] == {
+        'dimension': 'mass', 'unit': 'mg', 'value': 1.0,
+    }
+    assert replacement['product_entry_ids'] == [
+        'GFP_TARGET_PROTEIN', 'LYSATE_BACKGROUND_PROTEINS',
+    ]
+    products = [
+        entry
+        for container in state['containers'].values()
+        for entry in container['component_entries']
+        if entry['content_ref'] in replacement['product_entry_ids']
+    ]
+    assert {entry['content_ref'] for entry in products} == {
+        'GFP_TARGET_PROTEIN', 'LYSATE_BACKGROUND_PROTEINS',
+    }
+    assert all(entry['quantity']['status'] == 'unknown' for entry in products)
+    assert all(
+        entry['provenance']['source_entry_id'] == 'CLARIFIED_LYSATE_TOTAL_PROTEIN'
+        for entry in products
+    )
 
 
 def test_batch_selectors_use_pre_change_snapshot_when_identities_swap():
