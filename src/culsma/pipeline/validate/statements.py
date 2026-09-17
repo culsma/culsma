@@ -746,6 +746,7 @@ class MutationHandler(BaseStatementHandler):
                 literal_bindings=ctx.literal_bindings,
                 expr_bindings=ctx.expr_bindings,
                 group_bindings=ctx.group_bindings,
+                active_requirements=ctx.active_requirements,
             ),
         )
 

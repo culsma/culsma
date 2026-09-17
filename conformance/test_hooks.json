@@ -72,6 +72,9 @@
   "DELIVERY-DROPWISE-01": [
     "tests/test_dropwise_constraint.py"
   ],
+  "DELIVERY-SPREAD-01": [
+    "tests/test_spread_constraint.py"
+  ],
   "MAT-SURFACE-RELEASE-01": [
     "tests/test_case09_surface_release.py"
   ]

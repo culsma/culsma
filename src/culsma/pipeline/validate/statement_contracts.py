@@ -58,6 +58,11 @@ REQUIREMENT_REGISTRY: dict[str, _RequirementSpec] = {
         allowed_on=frozenset({"mutation"}),
         scopes=frozenset({"stmt", "block"}),
     ),
+    "spread": _RequirementSpec(
+        category="delivery_mode",
+        allowed_on=frozenset({"mutation"}),
+        scopes=frozenset({"stmt", "block"}),
+    ),
     "preserve_boundary": _RequirementSpec(
         category="structure_preservation",
         allowed_on=frozenset({"mutation", "sep", "frac"}),
@@ -489,8 +494,9 @@ def validate_mutation_contract(
     literal_bindings: dict[str, Any],
     expr_bindings: dict[str, Any],
     group_bindings: dict[str, _GroupBinding],
+    active_requirements: tuple[str, ...] = (),
 ) -> list[Diagnostic]:
-    del literal_bindings, expr_bindings, group_bindings
+    del group_bindings
     diagnostics: list[Diagnostic] = []
     has_quantified = any(isinstance(source, IRPair) for source in stmt.sources)
     has_unquantified = any(not isinstance(source, IRPair) for source in stmt.sources)
@@ -504,6 +510,25 @@ def validate_mutation_contract(
             )
         )
         return diagnostics
+
+    if "spread" in active_requirements and stmt.target is not None:
+        target = ExprResolver.resolve_bound_expr(stmt.target, expr_bindings)
+        if isinstance(target, IRCall) and target.name == "AllocContainer":
+            kind_arg = _find_arg_by_name(target.args, "kind")
+            kind = (
+                ExprResolver.to_text_token(kind_arg.value, literal_bindings)
+                if kind_arg is not None
+                else None
+            )
+            if kind is not None and kind != "surface":
+                diagnostics.append(
+                    Diagnostic(
+                        code="SEM_SPREAD_TARGET_NOT_SURFACE",
+                        message="Requirement 'spread' requires a surface transfer target",
+                        span=stmt.target.span or stmt.span,
+                        node_id=stmt.id,
+                    )
+                )
     return diagnostics
 
 

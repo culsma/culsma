@@ -12,6 +12,7 @@ from .mutation_strategy import resolve_mutation_strategy
 
 _REQUIREMENT_NOTES = {
     "dropwise": "Add the transferred liquid drop by drop into the destination.",
+    "spread": "Spread the transferred material evenly across the receiving surface.",
     "gentle": "Handle gently and avoid abrupt disturbance.",
     "aseptic": "Maintain aseptic handling throughout this step.",
     "low_loss": "Minimize transfer loss during handling.",
