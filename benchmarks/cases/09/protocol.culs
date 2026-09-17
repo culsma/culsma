@@ -123,16 +123,13 @@ protocol CellCultureWesternBlot returns (blot_image) {
         agit(sample = lysate, mode = shake, duration = 15min);
     }
     // Author-declared representation after chemical lysis; no protein yield is supplied.
-    lysate.materials.replace(
-        subject = lysate.materials.get("HEK293T"),
-        products = [
-            content(
+    lysate.materials.replace({
+        lysate.materials.get("HEK293T"): content(
                 kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
                 type = ContentType.PROTEIN,
                 code = "HEK293T_TOTAL_PROTEIN"
             ):unknown(dimension = mass)
-        ]
-    );
+    });
     let clarified_lysate = tube(label = "ClarifiedLysate", capacity = 1000uL);
     with env(thermal = 4C, duration = 15min) {
         let clarified_group = sep(

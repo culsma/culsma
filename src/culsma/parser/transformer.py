@@ -87,6 +87,15 @@ class CulsmaTransformer(Transformer):
     def method_call_statement(self, meta, items):
         return self._dispatch("method_call_statement", meta, items)
 
+    def material_replace_statement(self, meta, items):
+        return self._dispatch("material_replace_statement", meta, items)
+
+    def replacement_map(self, meta, items):
+        return self._dispatch("replacement_map", meta, items)
+
+    def replacement_item(self, meta, items):
+        return self._dispatch("replacement_item", meta, items)
+
     def step_call(self, meta, items):
         return self._dispatch("step_call", meta, items)
 

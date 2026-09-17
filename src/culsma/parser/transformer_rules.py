@@ -354,6 +354,38 @@ class MethodCallStatementHandler(StatementRuleHandler):
         return ExprStatement(value=MethodCallExpr(base=items[0], method=str(items[1]), args=args, span=state.span), span=state.span)
 
 
+class MaterialReplaceStatementHandler(StatementRuleHandler):
+    def construct_ast(
+        self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState
+    ) -> ExprStatement:
+        del meta, ctx
+        return ExprStatement(
+            value=MethodCallExpr(
+                base=items[0],
+                method="replace",
+                args=[items[1]],
+                span=state.span,
+            ),
+            span=state.span,
+        )
+
+
+class ReplacementItemHandler(ExpressionRuleHandler):
+    def construct_ast(
+        self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState
+    ) -> PairExpr:
+        del meta, ctx
+        return PairExpr(left=items[0], right=items[1], span=state.span)
+
+
+class ReplacementMapHandler(ExpressionRuleHandler):
+    def construct_ast(
+        self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState
+    ) -> ListLiteral:
+        del meta, ctx
+        return ListLiteral(elements=list(items), span=state.span)
+
+
 class StepCallHandler(StatementRuleHandler):
     def construct_ast(self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState) -> StepCall:
         del meta, ctx
@@ -687,6 +719,9 @@ def create_parse_rule_dispatcher() -> ParseRuleDispatcher:
             "call_statement_arg_list": list_handler,
             "call_statement": CallStatementHandler(),
             "method_call_statement": MethodCallStatementHandler(),
+            "material_replace_statement": MaterialReplaceStatementHandler(),
+            "replacement_map": ReplacementMapHandler(),
+            "replacement_item": ReplacementItemHandler(),
             "step_call": StepCallHandler(),
             "step_arg_list": list_handler,
             "env_arg_block": EmptyArgBlockHandler(),

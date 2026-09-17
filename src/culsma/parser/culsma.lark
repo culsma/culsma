@@ -42,6 +42,7 @@ return_name_list: IDENTIFIER ("," IDENTIFIER)*
 
 statement: constrained_simple_statement ";"
     | include_statement ";"
+    | material_replace_statement ";"
     | call_statement ";"
     | let_statement ";"
     | return_statement ";"
@@ -57,6 +58,7 @@ statement: constrained_simple_statement ";"
 
 constrained_simple_statement: simple_statement "with" "constraint" "(" constraint_item_block ")" -> constrained_simple_statement
 ?simple_statement: include_statement
+    | material_replace_statement
     | call_statement
     | let_statement
     | return_statement
@@ -76,6 +78,12 @@ named_return_binding_list: named_return_binding ("," named_return_binding)*
 named_return_binding: IDENTIFIER "=" expression -> named_return_binding
 assign_statement.1: IDENTIFIER "=" expression -> assign_identifier_statement
     | ref_expr "." IDENTIFIER "=" expression -> assign_member_statement
+material_replace_statement.3: ref_expr "." "replace" "(" replacement_map ")" -> material_replace_statement
+replacement_map: "{" replacement_item ("," replacement_item)* "}"
+replacement_item: material_selector ":" pair_expr
+?material_selector: ref_expr
+    | method_call_expr
+
 call_statement.2: ref_expr "." IDENTIFIER "(" call_statement_arg_list? ")" -> call_statement
 call_statement_arg_list: call_statement_arg ("," call_statement_arg)*
 ?call_statement_arg: arg | expression
