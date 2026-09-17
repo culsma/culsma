@@ -2,6 +2,7 @@ from copy import deepcopy
 from pathlib import Path
 
 import pytest
+from lark.exceptions import UnexpectedInput
 
 from culsma.driver.stub import StubDriver
 from culsma.frontend.resolver import resolve_files, resolve_program
@@ -16,7 +17,7 @@ from culsma.runtime.material.component_entries import split_component_entry, com
 from culsma.runtime.material.unknown_quantity import is_unknown
 
 PRODUCT = 'content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "PROTEIN"):unknown(dimension = mass)'
-REPLACE = f'sample.materials.replace(subject = sample.materials[0], products = [{PRODUCT}]);'
+REPLACE = f'sample.materials.replace({{sample.materials[0]: {PRODUCT}}});'
 SOURCE = '''protocol T {
     let sample = tube(label = "Source", load = [
         content(kind = ContentKind.BIO_CELLULAR, type = ContentType.CELL_LINE, code = "CELLS"):200000cells,
@@ -123,15 +124,25 @@ def test_unknown_is_not_zero_on_empty_split():
 
 @pytest.mark.parametrize('replacement', [
     REPLACE.replace('sample.materials[0]', 'missing.materials[0]'),
-    REPLACE.replace('products =', 'wrong ='),
     REPLACE.replace('unknown(dimension = mass)', 'unknown(dimension = volume)'),
-    REPLACE.replace('unknown(dimension = mass)', '40ug'),
-    'sample.materials.replace(subject = sample.materials[0], products = []);',
+    REPLACE.replace('unknown(dimension = mass)', '1min'),
 ])
 def test_invalid_replacement_contract(replacement):
     _, sem = compile_source(source(replacement=replacement))
     assert not sem.ok
     assert 'SEM_MATERIAL_REPLACE_INVALID' in [d.code for d in sem.diagnostics]
+
+
+def test_old_named_argument_surface_is_not_accepted():
+    replacement = 'sample.materials.replace(subject = sample.materials[0], products = []);'
+    with pytest.raises(UnexpectedInput):
+        parse(source(replacement=replacement))
+
+
+def test_replacement_value_cannot_be_a_list():
+    replacement = f'sample.materials.replace({{sample.materials[0]: [{PRODUCT}]}});'
+    with pytest.raises(UnexpectedInput):
+        parse(source(replacement=replacement))
 
 
 def test_missing_source_does_not_mutate_registry_or_material():
@@ -179,8 +190,11 @@ def test_in_place_separation_retains_dry_unknown_material_and_return_payload():
     assert next(e for e in payload['component_entries'] if e['content_ref'] == 'PROTEIN')['provenance']['source_entry_id'] == 'CELLS'
 
 
-def test_second_invalid_product_rolls_back_entire_replacement():
-    duplicate = REPLACE.replace(f'[{PRODUCT}]', f'[{PRODUCT}, {PRODUCT}]')
+def test_duplicate_product_rolls_back_entire_batch():
+    duplicate = f'''sample.materials.replace({{
+        sample.materials[0]: {PRODUCT},
+        sample.materials.get("BUFFER"): {PRODUCT}
+    }});'''
     plan = plan_source(source(replacement=duplicate))
     state = {'containers': {}}
     compute = MaterialCompute()
@@ -195,6 +209,103 @@ def test_second_invalid_product_rolls_back_entire_replacement():
         else:
             assert result.ok
             state = result.material_state
+
+
+def test_index_and_id_selectors_replace_two_entries_from_one_snapshot():
+    replacement = '''sample.materials.replace({
+        sample.materials[0]: content(
+            kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+            type = ContentType.PROTEIN,
+            code = "PROTEIN"
+        ):1mg,
+        sample.materials.get("BUFFER"): content(
+            kind = ContentKind.FORMULATION,
+            type = ContentType.BUFFER,
+            code = "NEW_BUFFER"
+        ):25uL
+    });'''
+    result = run(plan=plan_source(source(replacement=replacement)), driver=StubDriver())
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    sample = material(result, 'Source')
+    assert [entry['entry_id'] for entry in sample['component_entries']] == ['PROTEIN', 'NEW_BUFFER']
+    assert sample['component_entries'][0]['quantity'] == {
+        'dimension': 'mass', 'unit': 'mg', 'value': 1.0,
+    }
+    assert sample['component_entries'][1]['quantity'] == {
+        'dimension': 'volume', 'unit': 'uL', 'value': 25.0,
+    }
+
+
+def test_batch_selectors_use_pre_change_snapshot_when_identities_swap():
+    replacement = '''sample.materials.replace({
+        sample.materials[0]: content(
+            kind = ContentKind.FORMULATION,
+            type = ContentType.BUFFER,
+            code = "BUFFER"
+        ):25uL,
+        sample.materials.get("BUFFER"): content(
+            kind = ContentKind.BIO_CELLULAR,
+            type = ContentType.CELL_LINE,
+            code = "CELLS"
+        ):10cells
+    });'''
+    result = run(plan=plan_source(source(replacement=replacement)), driver=StubDriver())
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    sample = material(result, 'Source')
+    assert [entry['entry_id'] for entry in sample['component_entries']] == ['BUFFER', 'CELLS']
+    assert [entry['provenance']['source_entry_id'] for entry in sample['component_entries']] == [
+        'CELLS', 'BUFFER',
+    ]
+
+
+def test_index_and_id_for_same_entry_are_duplicate_and_roll_back():
+    replacement = f'''sample.materials.replace({{
+        sample.materials[0]: {PRODUCT},
+        sample.materials.get("CELLS"): content(
+            kind = ContentKind.BIO_CELLULAR,
+            type = ContentType.CELL_LINE,
+            code = "OTHER_CELLS"
+        ):10cells
+    }});'''
+    plan = plan_source(source(replacement=replacement))
+    state = {'containers': {}}
+    compute = MaterialCompute()
+    for step in plan.plans[0].steps:
+        before = deepcopy(state)
+        result = compute.apply_step(step, state)
+        if step.op == 'replace':
+            assert not result.ok
+            assert result.diagnostics[0].code == 'MAT_MATERIAL_REPLACE_DUPLICATE_SUBJECT'
+            assert result.material_state == before
+            assert 'PROTEIN' not in result.material_state['content_registry']
+        else:
+            assert result.ok
+            state = result.material_state
+
+
+def test_numeric_entry_id_is_unambiguous_from_index_selector():
+    text = '''protocol T {
+        let sample = tube(label = "Source", load = [
+            content(kind = ContentKind.CHEMICAL, type = ContentType.OTHER_CHEMICAL, code = "1"):1mg,
+            content(kind = ContentKind.CHEMICAL, type = ContentType.OTHER_CHEMICAL, code = "SECOND"):2mg
+        ]);
+        sample.materials.replace({
+            sample.materials.get("1"): content(
+                kind = ContentKind.CHEMICAL,
+                type = ContentType.OTHER_CHEMICAL,
+                code = "BY_ID"
+            ):3mg,
+            sample.materials[1]: content(
+                kind = ContentKind.CHEMICAL,
+                type = ContentType.OTHER_CHEMICAL,
+                code = "BY_INDEX"
+            ):4mg
+        });
+    }'''
+    result = run(plan=plan_source(text), driver=StubDriver())
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    sample = material(result, 'Source')
+    assert [entry['entry_id'] for entry in sample['component_entries']] == ['BY_ID', 'BY_INDEX']
 
 
 def test_case09_full_pipeline_keeps_protein_without_fabricated_yield():
