@@ -173,7 +173,8 @@ arg: IDENTIFIER "=" expression
 
 markers_expr: "markers" "(" list_literal ")" -> markers_expr
 call_expr: IDENTIFIER "(" arg_list? ")" -> call_expr
-method_call_arg_list: expression ("," expression)*
+method_call_arg_list: method_call_arg ("," method_call_arg)*
+?method_call_arg: arg | expression
 method_call_expr: ref_expr "." IDENTIFIER "(" method_call_arg_list? ")" -> method_call_expr
 group_expr: "group" "(" "[" ref_expr ("," ref_expr)* "]" ")" -> group_expr
 selector_region: WELL_POS (":" WELL_POS)? -> selector_region

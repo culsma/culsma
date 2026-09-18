@@ -17,6 +17,7 @@ from culsma.parser.ast_nodes import (
     PairExpr,
     ParamDecl,
     PlateSelectorExpr,
+    ProtocolCallExpr,
     Quantity,
     RecordLiteral,
     SourcePartitionExpr,
@@ -83,6 +84,10 @@ class ExprCompiler:
                 name=lowered_name,
                 args=[self.compile_arg(arg) for arg in lowered_args],
                 span=expr.span,
+            )
+        if isinstance(expr, ProtocolCallExpr):
+            raise ValueError(
+                f"Qualified protocol call '{expr.module}.{expr.protocol}' was not resolved before IR compilation"
             )
         if isinstance(expr, PlateSelectorExpr):
             return IRPlateSelector(

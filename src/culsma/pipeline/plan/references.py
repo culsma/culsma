@@ -71,29 +71,33 @@ class PlanReferenceResolver:
                 bound[name] = self.serializer.serialize_expr(value)
         else:
             seen_arg_names: set[str] = set()
-            for arg in call_args:
-                if arg.name in seen_arg_names:
+            for index, arg in enumerate(call_args):
+                arg_name = arg.name
+                if arg_name == f"arg{index}" and arg_name not in param_by_name:
+                    if index < len(target_protocol.params):
+                        arg_name = target_protocol.params[index].name
+                if arg_name in seen_arg_names:
                     diagnostics.append(
                         Diagnostic(
                             code="PLAN_CALL_ARG_DUPLICATE",
-                            message=f"Duplicate argument '{arg.name}' for protocol '{target_protocol.name}'",
+                            message=f"Duplicate argument '{arg_name}' for protocol '{target_protocol.name}'",
                             span=arg.span,
                             node_id=call_node_id,
                         )
                     )
                     continue
-                seen_arg_names.add(arg.name)
-                if arg.name not in param_by_name:
+                seen_arg_names.add(arg_name)
+                if arg_name not in param_by_name:
                     diagnostics.append(
                         Diagnostic(
                             code="PLAN_CALL_ARG_UNKNOWN",
-                            message=f"Unknown argument '{arg.name}' for protocol '{target_protocol.name}'",
+                            message=f"Unknown argument '{arg_name}' for protocol '{target_protocol.name}'",
                             span=arg.span,
                             node_id=call_node_id,
                         )
                     )
                     continue
-                bound[arg.name] = self.serializer.serialize_expr(arg.value, caller_env)
+                bound[arg_name] = self.serializer.serialize_expr(arg.value, caller_env)
 
         local_env: dict[str, Any] = {}
         for param in target_protocol.params:

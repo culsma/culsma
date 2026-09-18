@@ -211,6 +211,7 @@ classDiagram
     class QuantityHandler
     class CallExprHandler
     class MethodCallExprHandler
+    class ProtocolCallExpr
 
     class Program
     class ProtocolDecl
@@ -237,6 +238,7 @@ classDiagram
     ExpressionRuleHandler <|-- QuantityHandler
     ExpressionRuleHandler <|-- CallExprHandler
     ExpressionRuleHandler <|-- MethodCallExprHandler
+    MethodCallExprHandler --> ProtocolCallExpr : constructs qualified protocol calls
     TopLevelRuleHandler --> Program : constructs
     TopLevelRuleHandler --> ProtocolDecl : constructs
     TopLevelRuleHandler --> Statement : constructs script statements

@@ -28,6 +28,7 @@ from culsma.parser.ast_nodes import (
     ParamDecl,
     PlateSelectorExpr,
     Program,
+    ProtocolCallExpr,
     ProtocolDecl,
     ProtocolRefStatement,
     Quantity,
@@ -88,8 +89,11 @@ def _build_component_lookup(
     *,
     external_protocols: Iterable[ProtocolDecl],
 ) -> dict[str, ProtocolDecl]:
-    lookup = {protocol.name: protocol for protocol in external_protocols}
-    lookup.update({protocol.name: protocol for protocol in program.protocols})
+    lookup: dict[str, ProtocolDecl] = {}
+    for protocol in [*external_protocols, *program.protocols]:
+        lookup[protocol.name] = protocol
+        if protocol.module is not None:
+            lookup[f"{protocol.module}.{protocol.name}"] = protocol
     return lookup
 
 
@@ -126,16 +130,26 @@ def _expand_statement(
     token_seed: str,
 ) -> list[object]:
     if isinstance(stmt, LetStatement):
-        if isinstance(stmt.value, CallExpr) and stmt.value.name in lookup and _should_inline_protocol(lookup[stmt.value.name], stmt.value.args):
+        call_name = None
+        call_args: list[Arg] = []
+        if isinstance(stmt.value, CallExpr):
+            call_name = stmt.value.name
+            call_args = stmt.value.args
+        elif isinstance(stmt.value, ProtocolCallExpr):
+            call_name = f"{stmt.value.module}.{stmt.value.protocol}"
+            call_args = stmt.value.args
+        if call_name is not None and call_name in lookup and _should_inline_protocol(lookup[call_name], call_args):
             return _inline_component_call(
-                protocol=lookup[stmt.value.name],
-                call_args=stmt.value.args,
+                protocol=lookup[call_name],
+                call_args=call_args,
                 result_name=stmt.name,
                 lookup=lookup,
                 call_stack=call_stack,
                 token_seed=token_seed,
                 call_span=stmt.span,
             )
+        if isinstance(stmt.value, ProtocolCallExpr):
+            raise ValueError(f"Unknown qualified protocol call '{call_name}'")
         _assert_no_nested_component_calls(stmt.value, lookup, owner=f"let {stmt.name}")
         return [stmt]
 
@@ -164,10 +178,73 @@ def _expand_statement(
         return [stmt]
 
     if isinstance(stmt, ReturnStatement):
+        if stmt.value is not None and isinstance(stmt.value, (CallExpr, ProtocolCallExpr)):
+            call_name = (
+                stmt.value.name
+                if isinstance(stmt.value, CallExpr)
+                else f"{stmt.value.module}.{stmt.value.protocol}"
+            )
+            if call_name in lookup:
+                result_name = f"__cmp_{token_seed}_return"
+                expanded = _inline_component_call(
+                    protocol=lookup[call_name],
+                    call_args=stmt.value.args,
+                    result_name=result_name,
+                    lookup=lookup,
+                    call_stack=call_stack,
+                    token_seed=token_seed,
+                    call_span=stmt.span,
+                )
+                expanded.append(
+                    ReturnStatement(
+                        value=Identifier(name=result_name, span=stmt.value.span),
+                        span=stmt.span,
+                    )
+                )
+                return expanded
+            if isinstance(stmt.value, ProtocolCallExpr):
+                raise ValueError(f"Unknown qualified protocol call '{call_name}'")
+
+        expanded_prefix: list[object] = []
+        expanded_bindings: list[ReturnBinding] = []
+        for index, binding in enumerate(stmt.bindings):
+            if isinstance(binding.value, (CallExpr, ProtocolCallExpr)):
+                call_name = (
+                    binding.value.name
+                    if isinstance(binding.value, CallExpr)
+                    else f"{binding.value.module}.{binding.value.protocol}"
+                )
+                if call_name in lookup:
+                    result_name = f"__cmp_{token_seed}_return_{index}"
+                    expanded_prefix.extend(
+                        _inline_component_call(
+                            protocol=lookup[call_name],
+                            call_args=binding.value.args,
+                            result_name=result_name,
+                            lookup=lookup,
+                            call_stack=call_stack,
+                            token_seed=f"{token_seed}_return_{index}",
+                            call_span=binding.span or stmt.span,
+                        )
+                    )
+                    expanded_bindings.append(
+                        ReturnBinding(
+                            name=binding.name,
+                            value=Identifier(name=result_name, span=binding.value.span),
+                            span=binding.span,
+                        )
+                    )
+                    continue
+                if isinstance(binding.value, ProtocolCallExpr):
+                    raise ValueError(f"Unknown qualified protocol call '{call_name}'")
+            _assert_no_nested_component_calls(binding.value, lookup, owner=f"return {binding.name}")
+            expanded_bindings.append(binding)
+        if expanded_prefix:
+            expanded_prefix.append(ReturnStatement(bindings=expanded_bindings, span=stmt.span))
+            return expanded_prefix
+
         if stmt.value is not None:
             _assert_no_nested_component_calls(stmt.value, lookup, owner="return")
-        for binding in stmt.bindings:
-            _assert_no_nested_component_calls(binding.value, lookup, owner=f"return {binding.name}")
         return [stmt]
 
     if isinstance(stmt, WithEnvStmt):
@@ -394,13 +471,18 @@ def _bind_component_params(
     seen: set[str] = set()
     provided: dict[str, Expression] = {}
     param_by_name = {param.name: param for param in protocol.params}
-    for arg in call_args:
-        if arg.name in seen:
-            raise ValueError(f"Component '{protocol.name}' received duplicate argument '{arg.name}'")
-        if arg.name not in param_by_name:
-            raise ValueError(f"Component '{protocol.name}' does not accept argument '{arg.name}'")
-        seen.add(arg.name)
-        provided[arg.name] = arg.value
+    for index, arg in enumerate(call_args):
+        arg_name = arg.name
+        if arg_name == f"arg{index}" and arg_name not in param_by_name:
+            if index >= len(protocol.params):
+                raise ValueError(f"Component '{protocol.name}' received too many positional arguments")
+            arg_name = protocol.params[index].name
+        if arg_name in seen:
+            raise ValueError(f"Component '{protocol.name}' received duplicate argument '{arg_name}'")
+        if arg_name not in param_by_name:
+            raise ValueError(f"Component '{protocol.name}' does not accept argument '{arg_name}'")
+        seen.add(arg_name)
+        provided[arg_name] = arg.value
 
     prefix: list[LetStatement] = []
     for param in protocol.params:
@@ -476,7 +558,17 @@ def _rename_statement(stmt: object, rename_map: dict[str, str]) -> object:
             else_statements=[_rename_statement(nested, rename_map) for nested in stmt.else_statements],
             span=stmt.span,
         )
-    if isinstance(stmt, (IncludeStatement, ProtocolRefStatement, BreakStmt, ContinueStmt)):
+    if isinstance(stmt, ProtocolRefStatement):
+        return ProtocolRefStatement(
+            module=stmt.module,
+            protocol=stmt.protocol,
+            args=[
+                Arg(name=arg.name, value=_rename_expr(arg.value, rename_map), span=arg.span)
+                for arg in stmt.args
+            ],
+            span=stmt.span,
+        )
+    if isinstance(stmt, (IncludeStatement, BreakStmt, ContinueStmt)):
         return stmt
     raise TypeError(f"Unsupported AST statement for renaming: {type(stmt).__name__}")
 
@@ -501,6 +593,16 @@ def _rename_expr(expr: Expression, rename_map: dict[str, str]) -> Expression:
         return CallExpr(
             name=expr.name,
             args=[Arg(name=arg.name, value=_rename_expr(arg.value, rename_map), span=arg.span) for arg in expr.args],
+            span=expr.span,
+        )
+    if isinstance(expr, ProtocolCallExpr):
+        return ProtocolCallExpr(
+            module=expr.module,
+            protocol=expr.protocol,
+            args=[
+                Arg(name=arg.name, value=_rename_expr(arg.value, rename_map), span=arg.span)
+                for arg in expr.args
+            ],
             span=expr.span,
         )
     if isinstance(expr, PlateSelectorExpr):
@@ -543,6 +645,10 @@ def _assert_no_nested_component_calls(expr: Expression, lookup: dict[str, Protoc
 def _contains_component_call(expr: Expression, lookup: dict[str, ProtocolDecl]) -> bool:
     if isinstance(expr, CallExpr):
         if expr.name in lookup:
+            return True
+        return any(_contains_component_call(arg.value, lookup) for arg in expr.args)
+    if isinstance(expr, ProtocolCallExpr):
+        if f"{expr.module}.{expr.protocol}" in lookup:
             return True
         return any(_contains_component_call(arg.value, lookup) for arg in expr.args)
     if isinstance(expr, BinaryOp):

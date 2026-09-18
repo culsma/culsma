@@ -30,6 +30,7 @@ from culsma.parser.ast_nodes import (
     ParamDecl,
     PlateSelectorExpr,
     Program,
+    ProtocolCallExpr,
     ProtocolDecl,
     ProtocolRefStatement,
     Quantity,
@@ -646,10 +647,27 @@ class MemberExprHandler(ExpressionRuleHandler):
 class MethodCallExprHandler(ExpressionRuleHandler):
     def construct_ast(
         self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState
-    ) -> MethodCallExpr:
+    ) -> MethodCallExpr | ProtocolCallExpr:
         del meta, ctx
         args = items[2] if len(items) > 2 else []
-        return MethodCallExpr(base=items[0], method=str(items[1]), args=args, span=state.span)
+        base = items[0]
+        method = str(items[1])
+        if isinstance(base, Identifier) and method and method[0].isupper():
+            normalized_args = [
+                arg
+                if isinstance(arg, Arg)
+                else Arg(name=f"arg{index}", value=arg, span=getattr(arg, "span", None))
+                for index, arg in enumerate(args)
+            ]
+            return ProtocolCallExpr(
+                module=base.name,
+                protocol=method,
+                args=normalized_args,
+                span=state.span,
+            )
+        if any(isinstance(arg, Arg) for arg in args):
+            raise ValueError("method call expressions only accept positional arguments")
+        return MethodCallExpr(base=base, method=method, args=args, span=state.span)
 
 
 class SourcePartitionExprHandler(ExpressionRuleHandler):

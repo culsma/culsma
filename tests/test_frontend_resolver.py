@@ -5,7 +5,13 @@ from pathlib import Path
 import pytest
 
 from culsma.frontend.resolver import resolve_files, resolve_program
-from culsma.parser.ast_nodes import CallExpr, LetStatement, ProtocolDecl
+from culsma.parser.ast_nodes import (
+    CallExpr,
+    LetStatement,
+    ProtocolCallExpr,
+    ProtocolDecl,
+    ReturnStatement,
+)
 from culsma.parser.parser import parse
 
 
@@ -56,6 +62,140 @@ protocol T(sample) {
 
     bundle = resolve_files([main], library_roots=[tmp_path])
     assert any(protocol.name == "Helper" and protocol.module == "Bio" for protocol in bundle.parsed_program.protocols)
+
+
+def test_resolve_files_expands_qualified_import_call_with_return_value(tmp_path: Path):
+    library = tmp_path / "Bio.culs"
+    library.write_text(
+        "protocol Helper(sample) returns (prepared) { return prepared = sample; }",
+        encoding="utf-8",
+    )
+    main = tmp_path / "main.culs"
+    main.write_text(
+        """
+import Bio;
+protocol T(sample) returns (prepared) {
+  let prepared = Bio.Helper(sample = sample);
+  return prepared = prepared;
+}
+""",
+        encoding="utf-8",
+    )
+
+    bundle = resolve_files(
+        [main],
+        library_roots=[tmp_path],
+        include_bundled_stdlib=False,
+    )
+    protocol = next(item for item in bundle.prepared_program.protocols if item.name == "T")
+
+    assert not any(
+        isinstance(statement, LetStatement)
+        and isinstance(statement.value, ProtocolCallExpr)
+        for statement in protocol.statements
+    )
+    assert isinstance(protocol.statements[0], LetStatement)
+    assert protocol.statements[0].name == "__cmp_T_s0_sample"
+    assert isinstance(protocol.statements[-1], ReturnStatement)
+
+
+def test_resolve_files_expands_qualified_import_call_in_return_expression(tmp_path: Path):
+    library = tmp_path / "Bio.culs"
+    library.write_text(
+        "protocol Helper(sample) returns (prepared) { return prepared = sample; }",
+        encoding="utf-8",
+    )
+    main = tmp_path / "main.culs"
+    main.write_text(
+        """
+import Bio;
+protocol T(sample) returns (prepared) {
+  return Bio.Helper(sample = sample);
+}
+""",
+        encoding="utf-8",
+    )
+
+    bundle = resolve_files(
+        [main],
+        library_roots=[tmp_path],
+        include_bundled_stdlib=False,
+    )
+    protocol = next(item for item in bundle.prepared_program.protocols if item.name == "T")
+
+    assert isinstance(protocol.statements[0], LetStatement)
+    assert isinstance(protocol.statements[-1], ReturnStatement)
+    let_names = {
+        statement.name
+        for statement in protocol.statements
+        if isinstance(statement, LetStatement)
+    }
+    assert protocol.statements[-1].value.name in let_names
+
+
+def test_resolve_files_expands_qualified_import_call_in_named_return_binding(tmp_path: Path):
+    library = tmp_path / "Bio.culs"
+    library.write_text(
+        "protocol Helper(sample) returns (prepared) { return prepared = sample; }",
+        encoding="utf-8",
+    )
+    main = tmp_path / "main.culs"
+    main.write_text(
+        """
+import Bio;
+protocol T(sample) returns (prepared) {
+  return prepared = Bio.Helper(sample = sample);
+}
+""",
+        encoding="utf-8",
+    )
+
+    bundle = resolve_files(
+        [main],
+        library_roots=[tmp_path],
+        include_bundled_stdlib=False,
+    )
+    protocol = next(item for item in bundle.prepared_program.protocols if item.name == "T")
+    return_statement = protocol.statements[-1]
+
+    assert isinstance(return_statement, ReturnStatement)
+    assert return_statement.value is None
+    assert return_statement.bindings[0].name == "prepared"
+    assert return_statement.bindings[0].value.name in {
+        statement.name
+        for statement in protocol.statements
+        if isinstance(statement, LetStatement)
+    }
+
+
+def test_resolve_files_binds_qualified_import_positional_args_by_parameter_order(tmp_path: Path):
+    library = tmp_path / "Bio.culs"
+    library.write_text(
+        "protocol Helper(sample) { return sample; }",
+        encoding="utf-8",
+    )
+    main = tmp_path / "main.culs"
+    main.write_text(
+        "import Bio; protocol T(sample) { let prepared = Bio.Helper(sample); }",
+        encoding="utf-8",
+    )
+
+    bundle = resolve_files(
+        [main],
+        library_roots=[tmp_path],
+        include_bundled_stdlib=False,
+    )
+    protocol = next(item for item in bundle.prepared_program.protocols if item.name == "T")
+
+    assert isinstance(protocol.statements[0], LetStatement)
+    assert protocol.statements[0].name == "prepared"
+
+
+def test_resolve_program_rejects_unknown_qualified_protocol_expression():
+    program = parse("protocol T { let prepared = Missing.Prepare(); }")
+
+    with pytest.raises(ValueError, match="Unknown qualified protocol call 'Missing.Prepare'"):
+        resolve_program(program, include_bundled_stdlib=False)
 
 
 def test_resolve_files_reports_missing_library_import_root(tmp_path: Path):

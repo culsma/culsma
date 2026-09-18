@@ -286,6 +286,15 @@ class CallExpr:
 
 
 @dataclass
+class ProtocolCallExpr:
+    """<module>.<protocol>([args]) used as a value-producing expression."""
+    module: str
+    protocol: str
+    args: list[Arg] = field(default_factory=list)
+    span: Span | None = None
+
+
+@dataclass
 class PlateSelectorExpr:
     """<plate_ref>[A1:A12, C1:C12]"""
     base: Identifier
@@ -372,6 +381,7 @@ Expression = (
     | GroupExpr
     | PlateSelectorExpr
     | CallExpr
+    | ProtocolCallExpr
     | IndexExpr
     | MemberExpr
     | MethodCallExpr

@@ -309,13 +309,15 @@ invariants:
 9. Expression positions contain only `IRExpr` union members.
 10. `ReturnStatement` does not survive as an `IRStatement`; protocol return data lives on `IRProtocol.return_value` and `IRProtocol.return_bindings`.
 11. `ProtocolRefStatement` does not survive as a distinct IR node; protocol references lower to `IRInclude`.
-12. `BreakStmt` and `ContinueStmt` do not survive as distinct IR nodes; they lower to `IRControl(action=...)`.
-13. Standalone method-call statements lower to `IRStep`.
-14. Method-call expressions do not survive as a dedicated IR expression node.
-15. `with env` IR carries explicit `targets` and `explicit_hold`; direct
+12. `ProtocolCallExpr` does not survive into IR; qualified value-producing
+    protocol calls are expanded by the frontend component expander.
+13. `BreakStmt` and `ContinueStmt` do not survive as distinct IR nodes; they lower to `IRControl(action=...)`.
+14. Standalone method-call statements lower to `IRStep`.
+15. Method-call expressions do not survive as a dedicated IR expression node.
+16. `with env` IR carries explicit `targets` and `explicit_hold`; direct
     source `hold(...)` markers have already been collected into `targets` and
     are not executable `IRWithEnv.statements`.
-16. Nested statement bodies are represented through explicit statement-list fields only.
+17. Nested statement bodies are represented through explicit statement-list fields only.
 
 Compile-side analysis is separate from these IR invariants. It may record
 resolved include targets and runtime-visible protocol exports, but those facts
@@ -331,6 +333,7 @@ schema is explicitly revised.
 | `ReturnStatement(...)` | `IRProtocol.return_value` / `IRProtocol.return_bindings` |
 | `IncludeStatement(name)` | `IRInclude(id, name, args=[])` |
 | `ProtocolRefStatement(module, protocol, args)` | `IRInclude(id, name=<resolved protocol name>, args)` |
+| `ProtocolCallExpr(module, protocol, args)` | expanded component statements plus the caller's result binding |
 | `StepCall(name, args)` | `IRStep(id, name, args)` |
 | standalone `MethodCallExpr` statement | `IRStep(id, name=<method>, args=<method call args>)` |
 | `WithEnvStmt(env_args, statements)` | `IRWithEnv(id, env_args, targets, statements, explicit_hold)` |

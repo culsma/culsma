@@ -39,6 +39,7 @@ from culsma.parser.ast_nodes import (
     ParamDecl,
     PairExpr,
     PlateSelectorExpr,
+    ProtocolCallExpr,
     ProtocolRefStatement,
     Program,
     ProtocolDecl,
@@ -632,6 +633,17 @@ class TestIncludeStatement:
         assert stmt.module == "module_core"
         assert stmt.protocol == "LysisAndExtraction"
         assert [a.name for a in stmt.args] == ["buffer", "temp"]
+
+    def test_protocol_ref_expression_python_style_with_named_args(self):
+        ast = parse(
+            "protocol T(sample) { let prepared = module_core.Prepare(sample = sample); }"
+        )
+        stmt = ast.protocols[0].statements[0]
+        assert isinstance(stmt, LetStatement)
+        assert isinstance(stmt.value, ProtocolCallExpr)
+        assert stmt.value.module == "module_core"
+        assert stmt.value.protocol == "Prepare"
+        assert [arg.name for arg in stmt.value.args] == ["sample"]
 
 
 class TestProtocolParams:

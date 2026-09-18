@@ -357,6 +357,65 @@ return sample;
     assert "__script__" not in json.dumps(output)
 
 
+def test_run_qualified_import_return_preserves_nested_container_identity(tmp_path):
+    core = tmp_path / "Core.culs"
+    core.write_text(
+        """
+protocol Fill(sample, source) {
+  sample << [source:25uL];
+}
+""",
+        encoding="utf-8",
+    )
+    wrapper = tmp_path / "Wrapper.culs"
+    wrapper.write_text(
+        """
+import Core;
+protocol Prepare(sample, control, source) returns (samples) {
+  Core.Fill(sample = sample, source = source);
+  let samples = group([sample, control]);
+  return samples = samples;
+}
+""",
+        encoding="utf-8",
+    )
+    flow = tmp_path / "Flow.culs"
+    flow.write_text(
+        """
+protocol Add(sample, source) {
+  sample << [source:5uL];
+}
+""",
+        encoding="utf-8",
+    )
+    source = tmp_path / "run.culs"
+    source.write_text(
+        """
+import Wrapper;
+import Flow;
+let stock = tube(label = "Stock", capacity = 100uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):100uL]);
+let output = tube(label = "Output", capacity = 100uL);
+let control = tube(label = "Control", capacity = 100uL);
+let samples = Wrapper.Prepare(sample = output, control = control, source = stock);
+let first = samples[0];
+Flow.Add(first, stock);
+return first;
+""",
+        encoding="utf-8",
+    )
+
+    bundle = execute_pipeline([source], library_roots=[tmp_path])
+    output = bundle["output"]
+    returned = output["returns"]["entry"]["value"]
+    containers = bundle["run"]["state"]["artifacts"]["material_state"]["containers"]
+
+    assert output["ok"]
+    assert returned["label"] == "Output"
+    assert returned["volume_uL"] == 30
+    assert containers[returned["id"]]["components"] == {"S1": 30.0}
+    assert not any(diagnostic["code"] == "RT_LOCAL_ASSIGN_UNRESOLVED" for diagnostic in bundle["run"]["diagnostics"])
+
+
 def test_cli_accepts_top_level_input_path_shorthand(tmp_path, monkeypatch, capsys):
     source = _write_smoke_source(tmp_path)
     monkeypatch.setattr(sys, "argv", ["culsma", str(source)])

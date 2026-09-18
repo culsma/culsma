@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+### Fixed
+
+- Qualified imported protocol calls can be used in `let` and `return`
+  expressions. Their returned groups remain indexable, and caller-owned
+  containers retain identity through nested imported protocol calls.
+
 ## 1.0.7rc3 — 2026-09-18
 
 Internal prerelease for explicit execution results, expanded material
