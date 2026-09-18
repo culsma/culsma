@@ -92,8 +92,8 @@ Then run it:
 culsma /tmp/culsma-smoke.culs
 ```
 
-This prints a compact terminal result, including the returned tube/container
-state.
+This prints three compact sections: material use, resources (including
+container capacities), and the explicit protocol return.
 
 The explicit run form is equivalent:
 
@@ -101,7 +101,25 @@ The explicit run form is equivalent:
 culsma run /tmp/culsma-smoke.culs
 ```
 
-If you want the machine-readable run output on stdout:
+To save those results as JSON:
+
+```bash
+culsma run /tmp/culsma-smoke.culs --results results.json
+```
+
+The file has exactly three fields: `materials`, `resources`, and `returns`.
+Material rows contain `name`, `amount`, and `unit`; processed samples use their
+declared input amount, while stock reagents use the amount withdrawn at runtime.
+Container resource rows contain `kind`, `capacity_uL`, and `count`. Explicit
+device references use `kind`, `name`, and `count`. `returns` preserves the complete protocol return
+objects, including fields omitted from the console preview.
+
+For multiple input files, `--results` saves an array of these result objects
+in input order. A failed run writes partial results, reports the failure on
+stderr, and exits with status 1. `--results` requires a file path and cannot
+be combined with `--json` or `--output`.
+
+The existing complete run-output format remains available on stdout:
 
 ```bash
 culsma run /tmp/culsma-smoke.culs --json

@@ -670,6 +670,67 @@ accounting. `LabReport.to_dict()` projects them to the compatible
 formal protocol return value.
 
 ```mermaid
+flowchart TB
+    subgraph RuntimeEvidence[Runtime evidence keyed by stable identity]
+        Loads[Initial state and LoadContent] --> Lots[InputLot<br/>lot_id / container_id / declared quantity]
+        Steps[Completed material steps] --> Movements[Normalized movements]
+        Movements --> Accounting[Consumption by lot_id]
+        Plan[Resolved plan] --> CompletedRefs[References in completed steps]
+        State[Final runtime state and step status] --> CompletedRefs
+        CompletedRefs --> Roles[Container roles by container_id]
+        CompletedRefs --> Devices[Explicit device references]
+        State --> Allocations[Completed container allocations]
+        Returns[Public protocol returns] --> ReturnedRefs[Returned container references]
+    end
+
+    subgraph UserProjection[Compact user-result projection]
+        Lots --> Select{Role of this lot's<br/>origin container}
+        Roles --> Select
+        Accounting --> Select
+        Select -->|processed sample| Declared[Use declared input quantity]
+        Select -->|stock reagent| Withdrawn[Use withdrawn quantity]
+        Declared --> Aggregate[Aggregate only now<br/>by display name and unit]
+        Withdrawn --> Aggregate
+        Allocations --> Carriers[Coalesce positions by carrier_id]
+        Carriers --> UsedContainers[Used physical containers]
+        Roles --> UsedContainers
+        Accounting --> UsedContainers
+        ReturnedRefs --> UsedContainers
+        UsedContainers --> CapacityGroups[Group by kind and capacity]
+        Devices --> DeviceRows[Unique devices by explicit reference]
+        Aggregate --> Materials[materials]
+        CapacityGroups --> Resources[resources]
+        DeviceRows --> Resources
+        Returns --> ReturnValues[returns]
+    end
+
+    Materials --> Compact[Compact results]
+    Resources --> Compact
+    ReturnValues --> Compact
+    Compact --> Console[Default CLI]
+    Compact --> File[--results FILE.json]
+    Accounting --> Report[LabReport / lab_report_v1]
+    Report --> Legacy[--json / --output]
+    Returns --> Legacy
+```
+
+Compact-result review rules:
+
+1. Quantity selection happens per input lot while `lot_id` and `container_id`
+   are still available. Display names are never used as join keys.
+2. A processed sample contributes its declared input quantity. A stock reagent
+   contributes only the quantity withdrawn during the run.
+3. Lots with the same display name are combined only after rule 2 has selected
+   their quantities.
+4. Only completed steps provide role and device evidence. Container resources
+   comprise completed allocations plus supplied containers
+   evidenced by a role, a withdrawal, or an explicit return. Unreferenced
+   containers in an external state snapshot are excluded. Positional
+   allocations such as wells are coalesced by `carrier_id` before counting.
+5. Protocol returns pass through unchanged. Console shortening never truncates
+   the JSON return value.
+
+```mermaid
 classDiagram
     class LabReport {
         +execution

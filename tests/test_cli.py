@@ -44,7 +44,7 @@ def test_cli_run_prints_human_summary_to_stdout_by_default(tmp_path, monkeypatch
     main()
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("CliSmoke ok")
+    assert captured.out.startswith("materials:\n")
     assert "return:" in captured.out
     assert "AcquisitionSample (tube)" in captured.out
     assert "volume: 1000 uL" in captured.out
@@ -87,7 +87,7 @@ def test_cli_accepts_legacy_value_less_inventory_check_option(tmp_path, monkeypa
     main()
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("CliSmoke ok")
+    assert captured.out.startswith("materials:\n")
     assert captured.err == ""
 
 
@@ -264,15 +264,13 @@ def test_cli_multi_input_prints_batch_human_summary(tmp_path, monkeypatch, capsy
     main()
 
     captured = capsys.readouterr()
-    assert captured.out == (
-        "Culsma batch ok\n"
-        "\n"
-        "runs:\n"
-        "  first.culs: entry ok\n"
-        "  second.culs: entry ok\n"
-        "\n"
-        "execution: 2/2 runs ok\n"
-    )
+    assert captured.out.startswith(f"{first}:\nmaterials:\n")
+    assert f"{second}:\nmaterials:\n" in captured.out
+    assert " ok\n" not in captured.out
+    assert captured.out.count("materials:\n") == 2
+    assert captured.out.count("resources:\n") == 2
+    assert "return:\n  first\n" in captured.out
+    assert "return:\n  second\n" in captured.out
     assert captured.err == ""
 
 
@@ -366,7 +364,7 @@ def test_cli_accepts_top_level_input_path_shorthand(tmp_path, monkeypatch, capsy
     main()
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("CliSmoke ok")
+    assert captured.out.startswith("materials:\n")
     assert "AcquisitionSample (tube)" in captured.out
     assert captured.err == ""
 
@@ -379,14 +377,15 @@ def test_cli_human_summary_includes_returned_container_state(tmp_path, monkeypat
 
     captured = capsys.readouterr()
     assert captured.out == (
-        "CliSmoke ok\n"
+        "materials:\n"
+        "  (none recorded)\n"
+        "\n"
+        "resources:\n"
+        "  1 x tube (2 mL)\n"
         "\n"
         "return:\n"
         "  AcquisitionSample (tube)\n"
         "    volume: 1000 uL\n"
-        "    mass: 1000 mg\n"
-        "\n"
-        "execution: 3/3 steps completed, 1 diagnostics\n"
         "alerts:\n"
         "  ENTRY_LEGACY_IMPLICIT_PROTOCOL: Implicitly running protocol 'CliSmoke' is deprecated; add top-level script statements\n"
     )
@@ -400,7 +399,7 @@ def test_cli_human_summary_includes_scalar_return(tmp_path, monkeypatch, capsys)
     main()
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("ScalarReturn ok")
+    assert captured.out.startswith("materials:\n")
     assert "return:\n  ready" in captured.out
 
 
@@ -412,7 +411,7 @@ def test_cli_human_summary_includes_quantity_return(tmp_path, monkeypatch, capsy
     main()
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("QuantityReturn ok")
+    assert captured.out.startswith("materials:\n")
     assert "return:\n  12 uL" in captured.out
 
 
@@ -424,7 +423,7 @@ def test_cli_human_summary_includes_list_return(tmp_path, monkeypatch, capsys):
     main()
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("ListReturn ok")
+    assert captured.out.startswith("materials:\n")
     assert "return:\n  [" in captured.out
     assert "alpha," in captured.out
     assert "2," in captured.out
@@ -442,7 +441,7 @@ def test_cli_human_summary_includes_named_multi_return(tmp_path, monkeypatch, ca
     main()
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("NamedReturn ok")
+    assert captured.out.startswith("materials:\n")
     assert "return:" in captured.out
     assert "status:\n    ready" in captured.out
     assert "volume:\n    7 uL" in captured.out
@@ -550,7 +549,7 @@ protocol GroupReturn returns (wells) {
     main()
 
     captured = capsys.readouterr()
-    assert captured.out.startswith("GroupReturn ok")
+    assert captured.out.startswith("materials:\n")
     assert "return:" in captured.out
     assert "wells:\n    container group: 2 wells" in captured.out
     assert "A1 (well)" in captured.out

@@ -16,7 +16,7 @@ from culsma.scientific_model import (
 from culsma.runtime.event_log import EventLog, RuntimeEvent
 from culsma.runtime.finalize import RuntimeFinalizer
 from culsma.runtime.gates import GateEvaluator
-from culsma.runtime.material.accounting import MaterialAccountingRecorder
+from culsma.runtime.material.accounting import MaterialAccounting, MaterialAccountingRecorder
 from culsma.runtime.material.compute import MaterialCompute
 from culsma.runtime.observation import ObservationRecorder
 from culsma.runtime.protocol_outputs import ProtocolOutputRecorder
@@ -33,6 +33,7 @@ class RunResult:
     events: list[RuntimeEvent] = field(default_factory=list)
     diagnostics: list[Diagnostic] = field(default_factory=list)
     user_result: dict[str, Any] | None = None
+    material_accounting: MaterialAccounting | None = None
 
     @property
     def ok(self) -> bool:
@@ -186,6 +187,7 @@ class RuntimeExecutor:
             events=events,
             diagnostics=session.diagnostics,
             user_result=user_result,
+            material_accounting=session.material_accounting,
         )
 
 

@@ -8,6 +8,7 @@ from culsma.pipeline.content_vocab import ContentKind, ContentType
 from culsma.pipeline.program_registry import program_tool_label
 from culsma.runtime.material.accounting import MaterialAccounting, MaterialAccountingRecorder
 from culsma.runtime.material.ledger import container_count_cells
+from culsma.runtime.material.roles import collect_container_roles
 from culsma.runtime.report import (
     ContainerKindCount,
     ContainerResourceSummary,
@@ -167,7 +168,11 @@ def _build_report(
                 environment_steps=calculations.environment_steps,
                 readout_steps=max(calculations.readout_steps, len(data_objects)),
             )
-    roles = _collect_container_roles(plan=plan, final_material_state=final_material_state)
+    roles = collect_container_roles(
+        plan=plan,
+        final_material_state=final_material_state,
+        step_status=state.step_status,
+    )
     input_inventory = _input_inventory(material_accounting)
     content_registry = final_material_state.get("content_registry", {})
     content_registry = content_registry if isinstance(content_registry, dict) else {}
@@ -282,62 +287,6 @@ def _arg_string_from_plan(value: Any) -> str | None:
         inner = value.get("value")
         return inner if isinstance(inner, str) else None
     return None
-
-
-def _collect_container_roles(*, plan: Any, final_material_state: dict[str, Any] | None) -> dict[str, set[str]]:
-    roles: dict[str, set[str]] = {}
-    bindings = {}
-    containers = {}
-    if isinstance(final_material_state, dict):
-        raw_bindings = final_material_state.get("bindings")
-        raw_containers = final_material_state.get("containers")
-        bindings = raw_bindings if isinstance(raw_bindings, dict) else {}
-        containers = raw_containers if isinstance(raw_containers, dict) else {}
-    for protocol in getattr(plan, "plans", []):
-        for step in getattr(protocol, "steps", []):
-            args = getattr(step, "args", {})
-            if not isinstance(args, dict):
-                continue
-            if getattr(step, "op", "") == "Mutation":
-                target = _normalize_container_ref(
-                    _arg_string_from_plan(args.get("target")),
-                    bindings=bindings,
-                    containers=containers,
-                )
-                if target:
-                    roles.setdefault(target, set()).add("dest")
-                sources = args.get("sources")
-                if isinstance(sources, list):
-                    for source in sources:
-                        if not isinstance(source, dict):
-                            continue
-                        left = source.get("left")
-                        ref = _normalize_container_ref(
-                            _arg_string_from_plan(left),
-                            bindings=bindings,
-                            containers=containers,
-                        )
-                        if ref:
-                            roles.setdefault(ref, set()).add("source")
-            sample = _normalize_container_ref(
-                _arg_string_from_plan(args.get("sample")),
-                bindings=bindings,
-                containers=containers,
-            )
-            if sample:
-                roles.setdefault(sample, set()).add("sample")
-    return roles
-
-
-def _normalize_container_ref(name: str | None, *, bindings: dict[str, Any], containers: dict[str, Any]) -> str | None:
-    if not isinstance(name, str) or not name:
-        return None
-    resolved = bindings.get(name)
-    if isinstance(resolved, str) and resolved:
-        return resolved
-    if name in containers:
-        return name
-    return name
 
 
 def _final_products(

@@ -19,6 +19,7 @@ from culsma.pipeline.plan import lower_ir_to_plan
 from culsma.runtime.replay import replay_events
 from culsma.runtime.executor import run
 from culsma.runtime.inventory import reconcile_external_inventory
+from culsma.runtime.results import build_results
 from culsma.runtime.state import init_state
 from culsma.runtime.user_result import build_unexecuted_report
 from culsma.pipeline.typecheck import typecheck
@@ -95,26 +96,12 @@ def _format_container_state(value: dict[str, Any], *, indent: str = "  ") -> lis
     label = value.get("label") or value.get("id") or "container"
     container_kind = value.get("container_kind") or value.get("kind") or "container"
     lines = [f"{indent}{label} ({container_kind})"]
-    if "volume_uL" in value:
+    if value.get("volume_uL") is not None:
         lines.append(f"{indent}  volume: {_format_number(value.get('volume_uL'))} uL")
-    if "mass_mg" in value:
+    elif value.get("mass_mg") is not None:
         lines.append(f"{indent}  mass: {_format_number(value.get('mass_mg'))} mg")
     if float(value.get("count_cells", 0.0) or 0.0) > 0.0:
         lines.append(f"{indent}  cells: {_format_number(value.get('count_cells'))}")
-    components = value.get("components")
-    if isinstance(components, dict) and components:
-        lines.append(f"{indent}  components:")
-        for name, amount in sorted(components.items()):
-            lines.append(f"{indent}    {name}: {_format_number(amount)}")
-    component_quantities = value.get("component_quantities")
-    if isinstance(component_quantities, dict) and component_quantities:
-        lines.append(f"{indent}  component quantities:")
-        for name, quantity in sorted(component_quantities.items()):
-            if not isinstance(quantity, dict):
-                continue
-            lines.append(
-                f"{indent}    {name}: {_format_number(quantity.get('value'))}{quantity.get('unit') or ''}"
-            )
     return lines
 
 
@@ -128,7 +115,7 @@ def _format_container_group_state(value: dict[str, Any], *, indent: str = "  ", 
     summary = f"{member_count} {member_kind}" if member_kind is not None else f"{member_count} containers"
     lines = [f"{indent}container group: {summary}"]
     for member in members[:preview_limit]:
-        if isinstance(member, dict):
+        if isinstance(member, dict) and (member.get("label") or member.get("container_kind")):
             lines.extend(_format_container_state(member, indent=indent))
     if member_count > preview_limit:
         lines.append(f"{indent}...")
@@ -147,11 +134,57 @@ def _container_group_member_kind(members: list[Any]) -> str | None:
     return kind if kind.endswith("s") else f"{kind}s"
 
 
+def _format_data_state(value: dict[str, Any], *, indent: str) -> list[str]:
+    subject = value.get("subject_ref")
+    subject = subject if isinstance(subject, dict) else {}
+    unit = subject.get("unit_kind")
+    description = value.get("contract_kind") or value.get("program_kind") or value.get("data_kind") or "data"
+    if unit == "single_cell":
+        description = "single-cell acquisition"
+    lines = [f"{indent}data: {description}"]
+    if unit:
+        lines.append(f"{indent}  unit: {unit}")
+    else:
+        subject_name = subject.get("label") or subject.get("name") or value.get("subject_ref")
+        if isinstance(subject_name, str):
+            lines.append(f"{indent}  subject: {subject_name}")
+    panel = subject.get("panel_ref")
+    if isinstance(panel, dict) and isinstance(panel.get("items"), list):
+        lines.append(f"{indent}  panel: {', '.join(str(item) for item in panel['items'])}")
+    result = value.get("result")
+    if isinstance(result, dict):
+        populated = [(key, item) for key, item in result.items() if item is not None]
+        for key, item in populated[:8]:
+            if isinstance(item, (list, dict)):
+                rendered = f"{len(item)} items"
+            else:
+                rendered = str(item)
+            lines.append(f"{indent}  {key}: {rendered}")
+        if len(populated) > 8:
+            lines.append(f"{indent}  ... {len(populated) - 8} more fields")
+    return lines
+
+
 def _format_return_value(value: Any, *, indent: str = "  ") -> list[str]:
     if isinstance(value, dict) and value.get("kind") == "container_group_ref":
         return _format_container_group_state(value, indent=indent)
     if isinstance(value, dict) and value.get("kind") == "container_ref":
         return _format_container_state(value, indent=indent)
+    if isinstance(value, dict) and value.get("kind") == "data_ref":
+        return _format_data_state(value, indent=indent)
+    if isinstance(value, dict) and value.get("kind") == "data_group_ref":
+        items = value.get("items")
+        items = items if isinstance(items, list) else []
+        item_ids = value.get("item_ids")
+        item_ids = item_ids if isinstance(item_ids, list) else []
+        count = len(items) if items else len(item_ids)
+        noun = "observations" if item_ids else "items"
+        lines = [f"{indent}data group: {count} {noun}"]
+        for item in items[:3]:
+            lines.extend(_format_return_value(item, indent=indent + "  "))
+        if len(items) > 3:
+            lines.append(f"{indent}... {len(items) - 3} more items")
+        return lines
     if isinstance(value, dict) and value.get("kind") == "IRQuantity":
         return [f"{indent}{_format_number(value.get('value'))} {value.get('unit')}"]
     if isinstance(value, list):
@@ -184,19 +217,36 @@ def format_terminal_result(bundle: dict[str, Any]) -> str:
     if bundle.get("batch"):
         return format_batch_terminal_result(bundle)
 
-    result = bundle.get("result", {})
-    execution = result.get("execution", {}) if isinstance(result, dict) else {}
-    ok = bool(execution.get("ok"))
-    outputs = bundle.get("returns", {})
-    outputs = outputs if isinstance(outputs, dict) else {}
+    result = bundle["output"]["report"]
+    ok = bundle["output"]["ok"]
+    results = bundle["results"]
+    outputs = results["returns"]
 
     names = list(outputs.keys())
     title = names[0] if len(names) == 1 else "Culsma run"
-    lines = [f"{title} {'ok' if ok else 'failed'}"]
+    lines = [] if ok else [f"{title} failed", ""]
 
+    lines.append("materials:")
+    for row in results["materials"]:
+        lines.append(f"  {row['name']}: {_format_number(row['amount'])} {row['unit']}")
+    if not results["materials"]:
+        lines.append("  (none recorded)")
+
+    lines.extend(["", "resources:"])
+    for row in results["resources"]:
+        description = row["kind"]
+        if "name" in row:
+            description += f" {row['name']}"
+        elif row.get("capacity_uL") is not None:
+            capacity = row["capacity_uL"]
+            quantity = f"{_format_number(capacity / 1000)} mL" if capacity >= 1000 else f"{_format_number(capacity)} uL"
+            description += f" ({quantity})"
+        lines.append(f"  {row['count']} x {description}")
+    if not results["resources"]:
+        lines.append("  (none recorded)")
+
+    lines.extend(["", "return:"])
     if outputs:
-        lines.append("")
-        lines.append("return:")
         for protocol_name, payload in outputs.items():
             if len(outputs) > 1:
                 lines.append(f"  {protocol_name}:")
@@ -215,32 +265,7 @@ def format_terminal_result(bundle: dict[str, Any]) -> str:
             else:
                 lines.append(f"{indent}(no explicit return value)")
     else:
-        final_products = []
-        if isinstance(result, dict):
-            materials = result.get("materials", {})
-            if isinstance(materials, dict) and isinstance(materials.get("final_products"), list):
-                final_products = materials["final_products"]
-        if final_products:
-            lines.append("")
-            lines.append("final products:")
-            for item in final_products:
-                if not isinstance(item, dict):
-                    continue
-                label = item.get("name", "product")
-                lines.append(f"  {label}")
-                if "volume_uL" in item:
-                    lines.append(f"    volume: {_format_number(item.get('volume_uL'))} uL")
-                component = item.get("primary_component")
-                if isinstance(component, str):
-                    lines.append(f"    primary_component: {component}")
-
-    lines.append("")
-    lines.append(
-        "execution: "
-        f"{_format_number(execution.get('completed_steps', 0))}/"
-        f"{_format_number(execution.get('total_steps', 0))} steps completed, "
-        f"{_format_number(execution.get('diagnostic_count', 0))} diagnostics"
-    )
+        lines.append("  (no explicit return value)")
     inventory = result.get("external_inventory", {}) if isinstance(result, dict) else {}
     if isinstance(inventory, dict) and inventory.get("checked") is True:
         shortages = inventory.get("shortages")
@@ -258,26 +283,12 @@ def format_terminal_result(bundle: dict[str, Any]) -> str:
 
 
 def format_batch_terminal_result(bundle: dict[str, Any]) -> str:
-    output = bundle.get("output", {})
-    runs = output.get("runs", []) if isinstance(output, dict) else []
-    runs = runs if isinstance(runs, list) else []
-    ok = bool(output.get("ok")) if isinstance(output, dict) else False
-
-    lines = [f"Culsma batch {'ok' if ok else 'failed'}", "", "runs:"]
-    for run_item in runs:
-        if not isinstance(run_item, dict):
-            continue
-        input_path = Path(str(run_item.get("input", "")))
-        run_output = run_item.get("output", {})
-        run_ok = bool(run_item.get("ok"))
-        returns = run_output.get("returns", {}) if isinstance(run_output, dict) else {}
-        names = list(returns) if isinstance(returns, dict) else []
-        title = names[0] if len(names) == 1 else input_path.name
-        lines.append(f"  {input_path.name}: {title} {'ok' if run_ok else 'failed'}")
-
-    completed = sum(1 for run_item in runs if isinstance(run_item, dict) and run_item.get("ok"))
-    lines.append("")
-    lines.append(f"execution: {completed}/{len(runs)} runs ok")
+    ok = bundle["output"]["ok"]
+    lines = [] if ok else ["Culsma batch failed"]
+    for run_item in bundle["runs"]:
+        if lines:
+            lines.append("")
+        lines.extend([f"{run_item['input']}:", format_terminal_result(run_item["bundle"]).rstrip()])
     return "\n".join(lines) + "\n"
 
 
@@ -346,6 +357,7 @@ def execute_pipeline(
             diagnostics=list(plan.diagnostics),
             state=state,
             events=[],
+            material_accounting=None,
         )
         user_result = build_unexecuted_report(
             ok=run_result.ok,
@@ -390,6 +402,12 @@ def execute_pipeline(
         "run": run_payload,
         "returns": returns,
         "output": output,
+        "results": build_results(
+            state=run_result.state,
+            returns=returns,
+            plan=plan,
+            material_accounting=run_result.material_accounting,
+        ),
         "result": user_result,
         "summary": summary,
     }
@@ -433,6 +451,7 @@ def execute_batch_pipeline(
         "batch": True,
         "runs": run_items,
         "output": output,
+        "results": [item["bundle"]["results"] for item in run_items],
         "summary": {
             "inputs": [str(path) for path in input_paths],
             "run_count": len(run_items),
@@ -501,6 +520,11 @@ def main() -> None:
         help="Optional path for machine-readable run output JSON.",
     )
     run_cmd.add_argument(
+        "--results",
+        metavar="FILE.json",
+        help="Save materials, resources, and protocol returns as compact JSON instead of printing them.",
+    )
+    run_cmd.add_argument(
         "--artifacts-dir",
         default=None,
         help="Optional directory for debug and intermediate JSON artifacts.",
@@ -540,6 +564,8 @@ def main() -> None:
 
     args = parser.parse_args(_argv_for_parser(sys.argv[1:]))
     if args.command == "run":
+        if args.results and (args.json or args.output):
+            parser.error("--results cannot be combined with --json or --output")
         input_values = [*args.input, *args.paths]
         if not input_values:
             parser.error("run requires at least one input path")
@@ -554,7 +580,15 @@ def main() -> None:
             ),
             library_roots=[Path(p) for p in args.library_root],
         )
-        if args.output:
+        if args.results:
+            _write_json(Path(args.results), bundle["results"])
+            if not bundle["output"]["ok"]:
+                print("Run failed; the results file contains partial results.", file=sys.stderr)
+                runs = bundle["runs"] if bundle.get("batch") else [{"bundle": bundle}]
+                for item in runs:
+                    for alert in item["bundle"]["output"]["report"]["alerts"]:
+                        print(alert, file=sys.stderr)
+        elif args.output:
             _write_json(Path(args.output), bundle["output"])
         else:
             if args.json:
