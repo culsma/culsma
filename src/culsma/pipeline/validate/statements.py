@@ -504,6 +504,13 @@ class WithEnvHandler(BaseStatementHandler):
         stmt = cast(IRWithEnv, stmt)
         self.append_diagnostics(
             ctx,
+            validate_active_constraint_compatibility(
+                stmt,
+                active_requirements=ctx.active_requirements,
+            ),
+        )
+        self.append_diagnostics(
+            ctx,
             validate_active_env_constraint_compatibility(
                 stmt,
                 expr_bindings=ctx.expr_bindings,

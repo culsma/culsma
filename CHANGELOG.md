@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Added
+
+- `sealed` as a standard environment-hold requirement. Validation limits it to
+  `env_hold`, plans retain it as an execution constraint, human and robot
+  drivers receive explicit sealing instructions or flags, and unsupported
+  drivers fail before the hold. Sandwich ELISA Case 04 now marks its five
+  plate-sealed incubations directly.
+
 ## 1.0.7rc2 — 2026-09-16
 
 Internal prerelease for repeat-expansion correctness and benchmark source

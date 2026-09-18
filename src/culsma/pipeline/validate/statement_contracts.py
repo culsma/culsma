@@ -95,7 +95,7 @@ REQUIREMENT_REGISTRY: dict[str, _RequirementSpec] = {
     ),
     "gentle": _RequirementSpec(
         category="material_integrity",
-        allowed_on=frozenset({"mutation", "sep", "frac", "stream"}),
+        allowed_on=frozenset({"mutation", "sep", "frac", "stream", "env_hold"}),
         scopes=frozenset({"stmt", "block"}),
     ),
     "avoid_resuspension": _RequirementSpec(
@@ -115,17 +115,22 @@ REQUIREMENT_REGISTRY: dict[str, _RequirementSpec] = {
     ),
     "cold_chain": _RequirementSpec(
         category="environmental_protection",
-        allowed_on=frozenset({"mutation", "sep", "frac", "img", "ecp", "phy", "stream"}),
+        allowed_on=frozenset({"mutation", "sep", "frac", "img", "ecp", "phy", "stream", "env_hold"}),
         scopes=frozenset({"stmt", "block"}),
     ),
     "dark_protected": _RequirementSpec(
         category="environmental_protection",
-        allowed_on=frozenset({"mutation", "img", "ecp", "phy", "stream"}),
+        allowed_on=frozenset({"mutation", "img", "ecp", "phy", "stream", "env_hold"}),
+        scopes=frozenset({"stmt", "block"}),
+    ),
+    "sealed": _RequirementSpec(
+        category="environmental_protection",
+        allowed_on=frozenset({"env_hold"}),
         scopes=frozenset({"stmt", "block"}),
     ),
     "controlled_atmosphere": _RequirementSpec(
         category="environmental_protection",
-        allowed_on=frozenset({"mutation", "img", "ecp", "phy", "stream"}),
+        allowed_on=frozenset({"mutation", "img", "ecp", "phy", "stream", "env_hold"}),
         scopes=frozenset({"stmt", "block"}),
     ),
     "high_precision": _RequirementSpec(
@@ -423,6 +428,8 @@ def dedupe_requirement_names(names: tuple[str, ...] | list[str]) -> list[str]:
 def classify_constraint_action_family(stmt: IRStatement) -> str | None:
     if isinstance(stmt, IRMutation):
         return "mutation"
+    if isinstance(stmt, IRWithEnv) and stmt.explicit_hold and not stmt.statements:
+        return "env_hold"
     if isinstance(stmt, IRStep):
         if stmt.name in {"sep", "frac", "img", "ecp", "phy", "agit"}:
             return stmt.name

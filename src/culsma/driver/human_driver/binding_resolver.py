@@ -18,6 +18,7 @@ _REQUIREMENT_NOTES = {
     "low_loss": "Minimize transfer loss during handling.",
     "cold_chain": "Keep material within the required cold-chain conditions.",
     "avoid_resuspension": "Avoid disturbing settled material while handling.",
+    "sealed": "Keep the target sealed throughout the hold.",
 }
 
 _DEFAULT_TOOL_BY_OP = {

@@ -31,10 +31,12 @@ protocol SandwichELISA returns (elisa_result) {
   let stop_solution = tube(label = "StopSolution", capacity = 2mL, load = [content(kind = ContentKind.CHEMICAL, type = ContentType.INORGANIC_COMPOUND, code = "STOP", attrs = { role: stop_solution }):1mL]);
   let waste = tube(label = "ELISAWashWaste", capacity = 150mL);
 
-  // Source step S2: Add capture antibody to the assay wells and incubate overnight.
+  // Source step S2: Add capture antibody, seal the plate, and incubate overnight.
   assay_wells << [capture_antibody:100uL] with constraint(high_precision, low_carryover);
-  with env(thermal = 25C, duration = 18h) {
-    hold(sample = assay_wells);
+  with constraint(sealed) {
+    with env(thermal = 25C, duration = 18h) {
+      hold(elisa_plate);
+    }
   }
 
   // Source step S3: Aspirate the coating solution and wash the assay wells three times.
@@ -59,10 +61,12 @@ protocol SandwichELISA returns (elisa_result) {
     }
   }
 
-  // Source step S4: Block assay wells, incubate, aspirate, and wash three times.
+  // Source step S4: Block assay wells, seal and incubate the plate, aspirate, and wash three times.
   assay_wells << [blocking_buffer:300uL] with constraint(high_precision, low_carryover);
-  with env(thermal = 25C, duration = 1h) {
-    hold(sample = assay_wells);
+  with constraint(sealed) {
+    with env(thermal = 25C, duration = 1h) {
+      hold(elisa_plate);
+    }
   }
   repeat blocking_well_index in schedule(start = 0, end = 15, step = 1) {
     waste << [
@@ -98,9 +102,11 @@ protocol SandwichELISA returns (elisa_result) {
   negative_control_well << [negative_control:100uL] with constraint(high_precision, low_carryover);
   blank_wells << [reagent_diluent:100uL] with constraint(high_precision, low_carryover);
 
-  // Source step S6: Incubate loaded wells, aspirate, and wash three times.
-  with env(thermal = 25C, duration = 2h) {
-    hold(sample = assay_wells);
+  // Source step S6: Seal and incubate the loaded plate, aspirate, and wash three times.
+  with constraint(sealed) {
+    with env(thermal = 25C, duration = 2h) {
+      hold(elisa_plate);
+    }
   }
   repeat sample_well_index in schedule(start = 0, end = 15, step = 1) {
     waste << [
@@ -121,10 +127,12 @@ protocol SandwichELISA returns (elisa_result) {
     }
   }
 
-  // Source step S7: Add detection antibody, incubate, aspirate, and wash three times.
+  // Source step S7: Add detection antibody, seal and incubate the plate, aspirate, and wash three times.
   assay_wells << [detection_antibody:100uL] with constraint(high_precision, low_carryover);
-  with env(thermal = 25C, duration = 2h) {
-    hold(sample = assay_wells);
+  with constraint(sealed) {
+    with env(thermal = 25C, duration = 2h) {
+      hold(elisa_plate);
+    }
   }
   repeat detection_well_index in schedule(start = 0, end = 15, step = 1) {
     waste << [
@@ -145,11 +153,11 @@ protocol SandwichELISA returns (elisa_result) {
     }
   }
 
-  // Source step S8: Add streptavidin-HRP, incubate protected from light, aspirate, and wash three times.
+  // Source step S8: Add streptavidin-HRP, seal and incubate protected from light, aspirate, and wash three times.
   assay_wells << [streptavidin_hrp:100uL] with constraint(high_precision, low_carryover);
-  with constraint(dark_protected) {
+  with constraint(sealed, dark_protected) {
     with env(thermal = 25C, duration = 20min) {
-      hold(sample = assay_wells);
+      hold(elisa_plate);
     }
   }
   repeat hrp_well_index in schedule(start = 0, end = 15, step = 1) {
