@@ -62,10 +62,10 @@ protocol Module07_SandwichELISA() returns (elisa_result) {
   assay_wells << [capture_antibody:100uL] with constraint(high_precision, low_carryover);
 
   // Source step S11: Seal the plate and incubate for 18 h at room temperature.
-  // COVERAGE GAP: the incubation is represented below, but current Culsma has
-  // no verified statement that records application of a plate seal.
-  with env(thermal = 22C, duration = 18h) {
-    hold(sample = assay_wells);
+  with constraint(sealed) {
+    with env(thermal = 22C, duration = 18h) {
+      hold(sample = assay_wells);
+    }
   }
 
   // Source step S12: Aspirate liquid from each assay well without scratching the bottom of the well.
@@ -87,10 +87,10 @@ protocol Module07_SandwichELISA() returns (elisa_result) {
   assay_wells << [blocking_buffer:300uL] with constraint(high_precision, low_carryover);
 
   // Source step S15: Seal the plate and incubate for 1 h at room temperature.
-  // COVERAGE GAP: plate sealing remains annotation-only; the incubation is
-  // represented explicitly.
-  with env(thermal = 22C, duration = 1h) {
-    hold(sample = assay_wells);
+  with constraint(sealed) {
+    with env(thermal = 22C, duration = 1h) {
+      hold(sample = assay_wells);
+    }
   }
 
   // Source step S16: Aspirate blocking buffer from each assay well.
@@ -130,10 +130,10 @@ protocol Module07_SandwichELISA() returns (elisa_result) {
   blank_wells << [reagent_diluent:100uL] with constraint(high_precision, low_carryover);
 
   // Source step S23: Seal the plate and incubate for 2 h at room temperature.
-  // COVERAGE GAP: plate sealing remains annotation-only; the incubation is
-  // represented explicitly.
-  with env(thermal = 22C, duration = 2h) {
-    hold(sample = assay_wells);
+  with constraint(sealed) {
+    with env(thermal = 22C, duration = 2h) {
+      hold(sample = assay_wells);
+    }
   }
 
   // Source step S24: Aspirate liquid from each assay well.
@@ -153,10 +153,10 @@ protocol Module07_SandwichELISA() returns (elisa_result) {
   assay_wells << [detection_antibody:100uL] with constraint(high_precision, low_carryover);
 
   // Source step S27: Seal the plate and incubate for 2 h at room temperature.
-  // COVERAGE GAP: plate sealing remains annotation-only; the incubation is
-  // represented explicitly.
-  with env(thermal = 22C, duration = 2h) {
-    hold(sample = assay_wells);
+  with constraint(sealed) {
+    with env(thermal = 22C, duration = 2h) {
+      hold(sample = assay_wells);
+    }
   }
 
   // Source step S28: Aspirate liquid from each assay well.
@@ -176,9 +176,7 @@ protocol Module07_SandwichELISA() returns (elisa_result) {
   assay_wells << [streptavidin_hrp:100uL] with constraint(high_precision, low_carryover);
 
   // Source step S31: Seal the plate and incubate for 20 min at room temperature protected from direct light.
-  // COVERAGE GAP: plate sealing remains annotation-only; dark protection and
-  // incubation are represented explicitly.
-  with constraint(dark_protected) {
+  with constraint(sealed, dark_protected) {
     with env(thermal = 22C, duration = 20min) {
       hold(sample = assay_wells);
     }
