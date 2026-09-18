@@ -2,15 +2,15 @@
   "schema": "modular-source-coverage-v1",
   "rules": "modular-source-step-correspondence-v1",
   "metric": "source_step_correspondence",
-  "artifact": "06-western-blot",
+  "artifact": "01-cell-transfection",
   "implementation": "42b562bce488d25bdc00af82c62fdb5d4cc52b8b",
   "language_version": "1.0.7rc2",
-  "source_sha256": "7d56da32ad704ae13cc62c2e0fc8d152b390ad49212fd5b0ae00c0a6712bf1fb",
+  "source_sha256": "f6469969054b859cc804859008213dbde21ddb00d7dba4cc04c0502ec4f73ec0",
   "program_sha256": {
-    "protocol.culs": "6ebabfd58efb0acb356d37f1affe9ee74b9a36a6bb0e362e05991da132a9ca0f"
+    "protocol.culs": "8d41432d25b48fb0243da6894c4a94cea9c2823ab5da62f3e8211ffa5df7fd19"
   },
-  "total_steps": 32,
-  "matched_steps": 32,
+  "total_steps": 13,
+  "matched_steps": 13,
   "coverage_percent": 100.0,
   "status": "pass",
   "issues": []

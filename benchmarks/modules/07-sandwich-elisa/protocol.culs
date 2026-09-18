@@ -70,8 +70,23 @@ protocol Module07_SandwichELISA() returns (elisa_result) {
 
   // Source step S12: Aspirate liquid from each assay well without scratching the bottom of the well.
   repeat aspiration_s12_index in schedule(start = 0, end = 15, step = 1) {
+    let coating_well = assay_wells[aspiration_s12_index];
     with constraint(gentle) {
-      liquid_waste << [assay_wells[aspiration_s12_index].partition(filtration_program(membrane = "well_surface", drive = "aspiration"))[0]];
+      let coating_split = sep(
+        sample = coating_well,
+        program = filtration_program(membrane = "well_surface", drive = "aspiration"),
+        component_fates = {
+          CAPTURE_ANTIBODY_WORKING_SOLUTION: { filtrate: 0%, retentate: 100% }
+        },
+        transitions = [
+          transition(
+            subject = coating_well.materials[0],
+            output = FiltrationProgramOutput.RETENTATE,
+            to = MaterialRelation.CONTAINER_SURFACE
+          )
+        ]
+      );
+      liquid_waste << [coating_split[0]];
     }
   }
 
@@ -137,7 +152,16 @@ protocol Module07_SandwichELISA() returns (elisa_result) {
   }
 
   // Source step S24: Aspirate liquid from each assay well.
-  repeat aspiration_s24_index in schedule(start = 0, end = 15, step = 1) {
+  let standard_2000_split = sep(sample = standard_wells[0], program = filtration_program(membrane = "well_surface", drive = "aspiration"), component_fates = { STD_2000: { filtrate: 100%, retentate: 0% } });
+  let standard_1000_split = sep(sample = standard_wells[1], program = filtration_program(membrane = "well_surface", drive = "aspiration"), component_fates = { STD_1000: { filtrate: 100%, retentate: 0% } });
+  let standard_500_split = sep(sample = standard_wells[2], program = filtration_program(membrane = "well_surface", drive = "aspiration"), component_fates = { STD_500: { filtrate: 100%, retentate: 0% } });
+  let standard_250_split = sep(sample = standard_wells[3], program = filtration_program(membrane = "well_surface", drive = "aspiration"), component_fates = { STD_250: { filtrate: 100%, retentate: 0% } });
+  let standard_125_split = sep(sample = standard_wells[4], program = filtration_program(membrane = "well_surface", drive = "aspiration"), component_fates = { STD_125: { filtrate: 100%, retentate: 0% } });
+  let standard_62_5_split = sep(sample = standard_wells[5], program = filtration_program(membrane = "well_surface", drive = "aspiration"), component_fates = { STD_62P5: { filtrate: 100%, retentate: 0% } });
+  let standard_31_25_split = sep(sample = standard_wells[6], program = filtration_program(membrane = "well_surface", drive = "aspiration"), component_fates = { STD_31P25: { filtrate: 100%, retentate: 0% } });
+  let zero_standard_split = sep(sample = standard_wells[7], program = filtration_program(membrane = "well_surface", drive = "aspiration"), component_fates = { STD_0: { filtrate: 100%, retentate: 0% } });
+  liquid_waste << [standard_2000_split[0], standard_1000_split[0], standard_500_split[0], standard_250_split[0], standard_125_split[0], standard_62_5_split[0], standard_31_25_split[0], zero_standard_split[0]];
+  repeat aspiration_s24_index in schedule(start = 8, end = 15, step = 1) {
     liquid_waste << [assay_wells[aspiration_s24_index].partition(filtration_program(membrane = "well_surface", drive = "aspiration"))[0]];
   }
 
@@ -161,7 +185,15 @@ protocol Module07_SandwichELISA() returns (elisa_result) {
 
   // Source step S28: Aspirate liquid from each assay well.
   repeat aspiration_s28_index in schedule(start = 0, end = 15, step = 1) {
-    liquid_waste << [assay_wells[aspiration_s28_index].partition(filtration_program(membrane = "well_surface", drive = "aspiration"))[0]];
+    let detection_well = assay_wells[aspiration_s28_index];
+    let detection_split = sep(
+      sample = detection_well,
+      program = filtration_program(membrane = "well_surface", drive = "aspiration"),
+      component_fates = {
+        DETECTION_ANTIBODY_WORKING_SOLUTION: { filtrate: 100%, retentate: 0% }
+      }
+    );
+    liquid_waste << [detection_split[0]];
   }
 
   // Source step S29: Wash each assay well 3 times with 400 uL wash buffer per wash.
@@ -184,7 +216,15 @@ protocol Module07_SandwichELISA() returns (elisa_result) {
 
   // Source step S32: Aspirate liquid from each assay well.
   repeat aspiration_s32_index in schedule(start = 0, end = 15, step = 1) {
-    liquid_waste << [assay_wells[aspiration_s32_index].partition(filtration_program(membrane = "well_surface", drive = "aspiration"))[0]];
+    let hrp_well = assay_wells[aspiration_s32_index];
+    let hrp_split = sep(
+      sample = hrp_well,
+      program = filtration_program(membrane = "well_surface", drive = "aspiration"),
+      component_fates = {
+        STREPTAVIDIN_HRP_WORKING_SOLUTION: { filtrate: 100%, retentate: 0% }
+      }
+    );
+    liquid_waste << [hrp_split[0]];
   }
 
   // Source step S33: Wash each assay well 3 times with 400 uL wash buffer per wash.

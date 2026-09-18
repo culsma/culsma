@@ -31,6 +31,25 @@ The supplied JSON files are expected results. The scripts regenerate them from
 source and fresh CLI exports without reading them as counting inputs.
 No per-case configuration or compressed archive is needed.
 
+## Modular benchmark
+
+The experimental `modules/` collection contains seven reusable source--program
+pairs, and `composites/` contains a workflow that imports Module 04. Generate
+the correspondence record for one artifact with:
+
+```sh
+python3 tools/modular_source_coverage.py modules/01-cell-transfection \
+  --implementation <interpreter-commit> --language-version <version>
+```
+
+The modular rule accepts source-step annotations across all `.culs` files in
+the artifact directory because a module may place its entry call and reusable
+protocol definitions in separate files. A source step is matched when its
+numbered text occurs exactly once and has a program statement; a reference-only
+placeholder does not count. This is structural correspondence, not proof that
+the statement captures every experimental detail or that the modeled operation
+is biologically valid.
+
 ## Install the matching environment
 
 This working candidate requires **Culsma 1.0.7rc1**, Lark 1.3.1 and Python

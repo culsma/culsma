@@ -2,15 +2,15 @@
   "schema": "modular-source-coverage-v1",
   "rules": "modular-source-step-correspondence-v1",
   "metric": "source_step_correspondence",
-  "artifact": "06-western-blot",
+  "artifact": "05-magnetic-bead-immunoprecipitation",
   "implementation": "42b562bce488d25bdc00af82c62fdb5d4cc52b8b",
   "language_version": "1.0.7rc2",
-  "source_sha256": "7d56da32ad704ae13cc62c2e0fc8d152b390ad49212fd5b0ae00c0a6712bf1fb",
+  "source_sha256": "268fc45b4f2f01698c2d833a0389046e55c1bb5c4b71d191f6962103da2476b2",
   "program_sha256": {
-    "protocol.culs": "6ebabfd58efb0acb356d37f1affe9ee74b9a36a6bb0e362e05991da132a9ca0f"
+    "protocol.culs": "6e9b545d28c5f9dd8c966b8f8971eb33a1016fb037683c95b58ec279f005b567"
   },
-  "total_steps": 32,
-  "matched_steps": 32,
+  "total_steps": 23,
+  "matched_steps": 23,
   "coverage_percent": 100.0,
   "status": "pass",
   "issues": []
