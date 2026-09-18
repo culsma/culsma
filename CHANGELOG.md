@@ -2,13 +2,27 @@
 
 ## Unreleased
 
+## 1.0.7rc3 — 2026-09-18
+
+Internal prerelease for explicit execution results, expanded material
+replacement, execution requirements, and benchmark coverage.
+
 ### Added
 
-- `sealed` as a standard environment-hold requirement. Validation limits it to
-  `env_hold`, plans retain it as an execution constraint, human and robot
-  drivers receive explicit sealing instructions or flags, and unsupported
-  drivers fail before the hold. Sandwich ELISA Case 04 now marks its five
-  plate-sealed incubations directly.
+- Compact CLI execution results show materials used, resources used, and
+  returned values. `--results PATH` writes the same result as JSON.
+- `spread` for surface-delivery transfers and `sealed` for environment holds
+  are standard execution requirements retained through plan and driver
+  projection, including capability checks and explicit human instructions.
+  Sandwich ELISA Case 04 marks its five plate-sealed incubations directly.
+- Four standalone benchmark modules and versioned source-coverage snapshots,
+  with dependency-aware evidence capture.
+
+### Changed
+
+- Author-declared material replacement uses selector-keyed mappings, resolves
+  targets atomically against the pre-change state, and supports one-to-many
+  products with known or unknown quantities.
 
 ## 1.0.7rc2 — 2026-09-16
 
