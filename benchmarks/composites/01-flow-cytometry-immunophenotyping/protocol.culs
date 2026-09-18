@@ -1,0 +1,110 @@
+import Module04;
+
+protocol Composite01_FlowCytometryImmunophenotyping() returns (acquisition_result_group) {
+  let anti_cd45_fitc = tube(label = "AntiCD45FITC", capacity = 100uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ANTI_CD45", attrs = { role: antibody, stock_concentration_mg_per_mL: 5, marker: CD45, fluorophore: FITC }):10uL]);
+  let anti_cd3_pe = tube(label = "AntiCD3PE", capacity = 100uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ANTI_CD3", attrs = { role: antibody, stock_concentration_mg_per_mL: 5, marker: CD3, fluorophore: PE }):10uL]);
+  let anti_cd4_cy5 = tube(label = "AntiCD4Cy5", capacity = 100uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ANTI_CD4", attrs = { role: antibody, stock_concentration_mg_per_mL: 5, marker: CD4, fluorophore: Cy5 }):10uL]);
+
+  let fully_stained_tube = tube(label = "FullyStainedSample", capacity = 5mL);
+  let unstained_tube = tube(label = "UnstainedControl", capacity = 5mL);
+  let isotype_tube = tube(label = "IsotypeControlPanel", capacity = 5mL);
+  let single_cd45_tube = tube(label = "SingleAntibodyControlCD45", capacity = 5mL);
+  let single_cd3_tube = tube(label = "SingleAntibodyControlCD3", capacity = 5mL);
+  let single_cd4_tube = tube(label = "SingleAntibodyControlCD4", capacity = 5mL);
+
+  // Source step S1: Run Module 04 with anti-CD45-FITC, anti-CD3-PE, and anti-CD4-Cy5 to prepare six fixed cell suspensions: a fully stained sample, an unstained control, an isotype-control panel, and one single-antibody control for each antibody.
+  let stained_cell_suspensions = Module04.Module04_SuspensionCellAntibodyStaining(
+    antibody_1 = anti_cd45_fitc,
+    antibody_2 = anti_cd3_pe,
+    antibody_3 = anti_cd4_cy5,
+    full_stain_tube = fully_stained_tube,
+    unstained_tube = unstained_tube,
+    isotype_tube = isotype_tube,
+    single_control_tube_1 = single_cd45_tube,
+    single_control_tube_2 = single_cd3_tube,
+    single_control_tube_3 = single_cd4_tube
+  );
+  let fully_stained_sample = stained_cell_suspensions[0];
+  let unstained_control = stained_cell_suspensions[1];
+  let isotype_control = stained_cell_suspensions[2];
+  let single_cd45_control = stained_cell_suspensions[3];
+  let single_cd3_control = stained_cell_suspensions[4];
+  let single_cd4_control = stained_cell_suspensions[5];
+
+  // Source step S2: Define one acquisition panel containing CD45-FITC, CD3-PE, CD4-Cy5, and the viability signal, and use the same acquisition configuration for all six tubes.
+  let acquisition_panel = markers([CD45, CD3, CD4, LiveDead]);
+  let acquisition_schema = data_schema(
+    label = "FlowCytometryAcquisition",
+    fields = [
+      event_id,
+      sample_id,
+      control_role,
+      fsc_a,
+      fsc_h,
+      ssc_a,
+      cd45_raw_signal,
+      cd3_raw_signal,
+      cd4_raw_signal,
+      viability_raw_signal,
+      acquisition_config_id,
+      acquisition_qc_pass
+    ]
+  );
+
+  // Source step S3: Assign each tube a stable sample identity and one of the following control roles: experimental sample, autofluorescence control, isotype control, or single-stained control.
+  let acquisition_labels = data_ref(kind = custom);
+  acquisition_labels.result.fully_stained = "fully_stained";
+  acquisition_labels.result.unstained = "unstained";
+  acquisition_labels.result.isotype_panel = "isotype_panel";
+  acquisition_labels.result.single_cd45 = "single_cd45";
+  acquisition_labels.result.single_cd3 = "single_cd3";
+  acquisition_labels.result.single_cd4 = "single_cd4";
+  acquisition_labels.result.experimental_sample = "experimental_sample";
+  acquisition_labels.result.autofluorescence_control = "autofluorescence_control";
+  acquisition_labels.result.isotype_control = "isotype_control";
+  acquisition_labels.result.single_stained_control = "single_stained_control";
+
+  // Source step S4: Acquire each tube as a single-cell event stream and record event identity, sample identity, control role, FSC-A, FSC-H, SSC-A, raw CD45, CD3, CD4, and viability signals, acquisition configuration identity, and acquisition quality status.
+  let fully_stained_readout = AcquireOneSample(input_sample = fully_stained_sample, panel_definition = acquisition_panel, acquisition_schema = acquisition_schema, acquisition_sample_id = acquisition_labels.result.fully_stained, acquisition_control_role = acquisition_labels.result.experimental_sample);
+  let unstained_readout = AcquireOneSample(input_sample = unstained_control, panel_definition = acquisition_panel, acquisition_schema = acquisition_schema, acquisition_sample_id = acquisition_labels.result.unstained, acquisition_control_role = acquisition_labels.result.autofluorescence_control);
+  let isotype_readout = AcquireOneSample(input_sample = isotype_control, panel_definition = acquisition_panel, acquisition_schema = acquisition_schema, acquisition_sample_id = acquisition_labels.result.isotype_panel, acquisition_control_role = acquisition_labels.result.isotype_control);
+  let single_cd45_readout = AcquireOneSample(input_sample = single_cd45_control, panel_definition = acquisition_panel, acquisition_schema = acquisition_schema, acquisition_sample_id = acquisition_labels.result.single_cd45, acquisition_control_role = acquisition_labels.result.single_stained_control);
+  let single_cd3_readout = AcquireOneSample(input_sample = single_cd3_control, panel_definition = acquisition_panel, acquisition_schema = acquisition_schema, acquisition_sample_id = acquisition_labels.result.single_cd3, acquisition_control_role = acquisition_labels.result.single_stained_control);
+  let single_cd4_readout = AcquireOneSample(input_sample = single_cd4_control, panel_definition = acquisition_panel, acquisition_schema = acquisition_schema, acquisition_sample_id = acquisition_labels.result.single_cd4, acquisition_control_role = acquisition_labels.result.single_stained_control);
+
+  // Source step S5: Return the six acquisition readouts as one ordered result group for downstream compensation, gating, and population analysis; do not perform those downstream analyses in this protocol.
+  let acquisition_result_group = data_group_ref(kind = flow_cytometry_acquisition);
+  acquisition_result_group.items.append(fully_stained_readout);
+  acquisition_result_group.items.append(unstained_readout);
+  acquisition_result_group.items.append(isotype_readout);
+  acquisition_result_group.items.append(single_cd45_readout);
+  acquisition_result_group.items.append(single_cd3_readout);
+  acquisition_result_group.items.append(single_cd4_readout);
+  return acquisition_result_group;
+}
+
+protocol AcquireOneSample(
+  input_sample,
+  panel_definition,
+  acquisition_schema,
+  acquisition_sample_id,
+  acquisition_control_role
+) returns (acquisition_readout) {
+  let event_stream = stream(
+    sample = input_sample,
+    unit = single_cell,
+    panel = panel_definition
+  );
+  let acquisition_readout = img(
+    sample = event_stream,
+    quantity = customized,
+    schema_ref = acquisition_schema,
+    save_raw = true
+  );
+  acquisition_readout.result.sample_id = acquisition_sample_id;
+  acquisition_readout.result.control_role = acquisition_control_role;
+  return acquisition_readout;
+}
+
+let composite01_acquisition_results = Composite01_FlowCytometryImmunophenotyping();
+return composite01_acquisition_results;
