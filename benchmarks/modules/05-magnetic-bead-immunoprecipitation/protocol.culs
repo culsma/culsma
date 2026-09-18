@@ -9,15 +9,7 @@ protocol Module05_CaptureTargetProtein(sample, liquid_waste) returns (captured_i
       LYSATE_BACKGROUND_PROTEINS: { bound: 0%, flowthrough: 100% },
       IP_LYSIS_BUFFER: { bound: 0%, flowthrough: 100% },
       ANTIBODY_BINDING_WASH_BUFFER: { bound: 0%, flowthrough: 100% }
-    },
-    transitions = [
-      transition(
-        subject = sample.materials[2],
-        output = MagneticProgramOutput.BOUND,
-        to = MaterialRelation.BEAD_BOUND,
-        associated_with = sample.materials[1]
-      )
-    ]
+    }
   );
   liquid_waste << [target_capture_split[1]];
   let captured_ip_beads = target_capture_split[0];
@@ -34,19 +26,7 @@ protocol Module05_ReleaseDenaturingEluate(sample, eluate_destination) returns (i
       GFP_TARGET_PROTEIN: { bound: 0%, flowthrough: 100% },
       DENATURING_ELUTION_BUFFER: { bound: 0%, flowthrough: 100% },
       LDS_REDUCING_BUFFER_4X: { bound: 0%, flowthrough: 100% }
-    },
-    transitions = [
-      transition(
-        subject = sample.materials[1],
-        output = MagneticProgramOutput.FLOWTHROUGH,
-        to = MaterialRelation.FREE
-      ),
-      transition(
-        subject = sample.materials[2],
-        output = MagneticProgramOutput.FLOWTHROUGH,
-        to = MaterialRelation.FREE
-      )
-    ]
+    }
   );
   eluate_destination << [elution_split[1]] with constraint(low_carryover);
   let ip_eluate = eluate_destination;
@@ -217,9 +197,8 @@ protocol Module05_MagneticBeadImmunoprecipitation() returns (ip_result_group) {
   // The source gives 1 mg total protein but no target/background ratio. After
   // binding incubation, expose those constituents with unknown masses. Their
   // bound/flowthrough states are assigned by the following magnetic separation.
-  antibody_conjugated_beads.materials.replace(
-    subject = antibody_conjugated_beads.materials[2],
-    products = [
+  antibody_conjugated_beads.materials.replace({
+    antibody_conjugated_beads.materials.get("CLARIFIED_LYSATE_TOTAL_PROTEIN"): [
       content(
         kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
         type = ContentType.PROTEIN,
@@ -233,7 +212,7 @@ protocol Module05_MagneticBeadImmunoprecipitation() returns (ip_result_group) {
         attrs = { role: sample_background, state: free }
       ):unknown(dimension = mass)
     ]
-  );
+  });
 
   // Source step S13: Place the tube on the magnetic rack for 2 min at 4 C.
   // Source step S14: Remove and discard the complete flowthrough without disturbing the retained beads.
