@@ -11,7 +11,8 @@
       "matched_steps": 13,
       "total_steps": 13,
       "issues": [],
-      "completed_steps": 63
+      "completed_steps": 63,
+      "name": "Module 01: Cell transfection"
     },
     {
       "path": "modules/02-selective-plating-candidate-colony-isolation",
@@ -23,35 +24,40 @@
           "reason": "no_code_region"
         }
       ],
-      "completed_steps": 71
+      "completed_steps": 71,
+      "name": "Module 02: Selective plating and colony isolation"
     },
     {
       "path": "modules/03-cell-lysate-preparation",
       "matched_steps": 10,
       "total_steps": 10,
       "issues": [],
-      "completed_steps": 44
+      "completed_steps": 44,
+      "name": "Module 03: Cell lysate preparation"
     },
     {
       "path": "modules/04-suspension-cell-staining",
       "matched_steps": 29,
       "total_steps": 29,
       "issues": [],
-      "completed_steps": 552
+      "completed_steps": 552,
+      "name": "Module 04: Suspension-cell staining"
     },
     {
       "path": "modules/05-magnetic-bead-immunoprecipitation",
       "matched_steps": 23,
       "total_steps": 23,
       "issues": [],
-      "completed_steps": 114
+      "completed_steps": 114,
+      "name": "Module 05: Magnetic-bead immunoprecipitation"
     },
     {
       "path": "modules/06-western-blot",
       "matched_steps": 32,
       "total_steps": 32,
       "issues": [],
-      "completed_steps": 144
+      "completed_steps": 144,
+      "name": "Module 06: Western blot"
     },
     {
       "path": "modules/07-sandwich-elisa",
@@ -63,14 +69,16 @@
           "reason": "no_code_region"
         }
       ],
-      "completed_steps": 810
+      "completed_steps": 810,
+      "name": "Module 07: Sandwich ELISA"
     },
     {
       "path": "composites/01-flow-cytometry-immunophenotyping",
       "matched_steps": 5,
       "total_steps": 5,
       "issues": [],
-      "completed_steps": 608
+      "completed_steps": 608,
+      "name": "Composite 01: Flow-cytometry immunophenotyping"
     }
   ],
   "input_sha256": {
@@ -91,7 +99,6 @@
     "modules/06-western-blot/protocol.culs": "6ebabfd58efb0acb356d37f1affe9ee74b9a36a6bb0e362e05991da132a9ca0f",
     "modules/06-western-blot/source.md": "7d56da32ad704ae13cc62c2e0fc8d152b390ad49212fd5b0ae00c0a6712bf1fb",
     "modules/07-sandwich-elisa/protocol.culs": "834562c60321a00877d428c16243e30beab512cabf4e9f413d2814cef2f6f207",
-    "modules/07-sandwich-elisa/source.md": "fbd40a4f9851eff8f3817396f80c77951b10a7ad9ac75d43e21e8e9910482192",
-    "tools/modular_source_coverage.py": "7e769b2440c0a67d2372093f897ee6c63367ab2884e1693e01d846107ab27dbe"
+    "modules/07-sandwich-elisa/source.md": "fbd40a4f9851eff8f3817396f80c77951b10a7ad9ac75d43e21e8e9910482192"
   }
 }

@@ -8,8 +8,8 @@
     "lark": "1.3.1"
   },
   "table_version": "1.0.7",
-  "manifest_sha256": "84957a894ea9f0f7ce46eca0edff01ba0940f5fccc62d5c2bfb840ad4a3d92ed",
-  "runner_sha256": "6497cd82628b3c696defe7b4da96d71c0ea6752490f2b8b6469c597d5fb7ec7a",
+  "manifest_sha256": "4e094a17b1bdf1fc93c0d6da7934509ef699dbe7d377a0978f44949c0f902089",
+  "runner_sha256": "a412eb11cd7ab4b7189419036def8a07b8bf1314ae1e4081fab852a0510888be",
   "input_sha256": {
     "composites/01-flow-cytometry-immunophenotyping/protocol.culs": "8d5a0abdc324a49abe132ccf6b4fb5eb8f29375a8da214ff40f5aeffd79e52b0",
     "composites/01-flow-cytometry-immunophenotyping/source.md": "b4df60eece954847ea3a727564d273bfa2ca6f91ffeab016ff58e67de21508a1",
@@ -28,8 +28,7 @@
     "modules/06-western-blot/protocol.culs": "6ebabfd58efb0acb356d37f1affe9ee74b9a36a6bb0e362e05991da132a9ca0f",
     "modules/06-western-blot/source.md": "7d56da32ad704ae13cc62c2e0fc8d152b390ad49212fd5b0ae00c0a6712bf1fb",
     "modules/07-sandwich-elisa/protocol.culs": "834562c60321a00877d428c16243e30beab512cabf4e9f413d2814cef2f6f207",
-    "modules/07-sandwich-elisa/source.md": "fbd40a4f9851eff8f3817396f80c77951b10a7ad9ac75d43e21e8e9910482192",
-    "tools/modular_source_coverage.py": "7e769b2440c0a67d2372093f897ee6c63367ab2884e1693e01d846107ab27dbe"
+    "modules/07-sandwich-elisa/source.md": "fbd40a4f9851eff8f3817396f80c77951b10a7ad9ac75d43e21e8e9910482192"
   },
   "matched_steps": 164,
   "total_steps": 166,
@@ -38,6 +37,7 @@
   "artifacts": [
     {
       "artifact": "modules/01-cell-transfection",
+      "name": "Module 01: Cell transfection",
       "coverage": {
         "schema": "modular-source-coverage-v1",
         "rules": "modular-source-step-correspondence-v1",
@@ -65,16 +65,14 @@
       },
       "matches_paper": true,
       "output_sha256": {
-        "stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "results.json": "358ffb24dad611e7e3f0af82e167adf24c2fe0db567ec9b98d4ed0fbe4899cfb",
-        "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "coverage.json": "37f5e3602f4430f31f745f61ec5adc9870cfe796f6532d31e42ea221a7f912d1",
-        "results.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "run.json": "a4ffa3b717d93c6511ace912def998c7050d00422d9950422ade52d90f8e3910"
       }
     },
     {
       "artifact": "modules/02-selective-plating-candidate-colony-isolation",
+      "name": "Module 02: Selective plating and colony isolation",
       "coverage": {
         "schema": "modular-source-coverage-v1",
         "rules": "modular-source-step-correspondence-v1",
@@ -107,16 +105,14 @@
       },
       "matches_paper": true,
       "output_sha256": {
-        "stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "results.json": "2f8c431dbaa5ba8eeea0d7e275c58f41c3184b1d92e2ff3a9b8ef20911353555",
-        "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "coverage.json": "6e9c167addf5b03e4efcf8f4e7f4943132915d39b4e7aef1720374c017f260b4",
-        "results.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "run.json": "b70758f90defe6417776c0d56f7eff02a9801e4b076f8ddf0bc2da2abefa3f77"
       }
     },
     {
       "artifact": "modules/03-cell-lysate-preparation",
+      "name": "Module 03: Cell lysate preparation",
       "coverage": {
         "schema": "modular-source-coverage-v1",
         "rules": "modular-source-step-correspondence-v1",
@@ -144,16 +140,14 @@
       },
       "matches_paper": true,
       "output_sha256": {
-        "stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "results.json": "175800a772ac30c1f7e2a48ed599f598dc41ed985267075701bbf6172d9cee26",
-        "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "coverage.json": "d44bcba68a781fcfe13c8f3dd7f9b8c3a1dccc389ca607b6b198ab273dd50233",
-        "results.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "run.json": "e215b09d9553bb71417b2f98036618d1545ef308aae39155234353c45ff4acfd"
       }
     },
     {
       "artifact": "modules/04-suspension-cell-staining",
+      "name": "Module 04: Suspension-cell staining",
       "coverage": {
         "schema": "modular-source-coverage-v1",
         "rules": "modular-source-step-correspondence-v1",
@@ -182,16 +176,14 @@
       },
       "matches_paper": true,
       "output_sha256": {
-        "stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "results.json": "5079fd65cb0328153628526ef22f5894e94bce4aac1d80f39ee39cff9fa15abe",
-        "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "coverage.json": "e5c239c94a0fefb51716b24e3364a03377599912aaa0a9bd104d6df33a74c41d",
-        "results.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "run.json": "2378bac6f916879329472ec17ef3c91fb1fccc369f0f1df3428f8ae5f6bd78bd"
       }
     },
     {
       "artifact": "modules/05-magnetic-bead-immunoprecipitation",
+      "name": "Module 05: Magnetic-bead immunoprecipitation",
       "coverage": {
         "schema": "modular-source-coverage-v1",
         "rules": "modular-source-step-correspondence-v1",
@@ -219,16 +211,14 @@
       },
       "matches_paper": true,
       "output_sha256": {
-        "stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "results.json": "fe39c31babb94c1a2e2afa00c52d15faf9f1c2e2bc9c387c97a68649ca8a875a",
-        "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "coverage.json": "8448c684f69e364293f07d44dd6ac1c41b561811eef1d7fff32b3dfa9dc44987",
-        "results.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "run.json": "a8130a4549900625d62b7bbc008dff8164a35c983fd00487b5debf8f85740642"
       }
     },
     {
       "artifact": "modules/06-western-blot",
+      "name": "Module 06: Western blot",
       "coverage": {
         "schema": "modular-source-coverage-v1",
         "rules": "modular-source-step-correspondence-v1",
@@ -256,16 +246,14 @@
       },
       "matches_paper": true,
       "output_sha256": {
-        "stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "results.json": "6f10615bc9fd147b5f6cd8566a01622bdd300e918f16dfaf4efef7845e4931e8",
-        "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "coverage.json": "71f35059bcf2127c102530db9f3f3d9415243e3d5eb695a4062b4aee8c9aeb4d",
-        "results.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "run.json": "86d205c2a966f44405a8ca01b14ab8c1e74949e167b32b02b3a5d61cc92f9c77"
       }
     },
     {
       "artifact": "modules/07-sandwich-elisa",
+      "name": "Module 07: Sandwich ELISA",
       "coverage": {
         "schema": "modular-source-coverage-v1",
         "rules": "modular-source-step-correspondence-v1",
@@ -298,16 +286,14 @@
       },
       "matches_paper": true,
       "output_sha256": {
-        "stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "results.json": "2075a3d27ad8aec9a3c0fe632bb72e0eafcdd6498e9d27e270cebd6922c50a4c",
-        "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "coverage.json": "02340e5cc79a7174fd06423dff875537b170b3a63b0819da406641308cb80fb2",
-        "results.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "run.json": "346581883349c5e25c931597543ffc6ca87a8ae8a26527463400a156d3d805f7"
       }
     },
     {
       "artifact": "composites/01-flow-cytometry-immunophenotyping",
+      "name": "Composite 01: Flow-cytometry immunophenotyping",
       "coverage": {
         "schema": "modular-source-coverage-v1",
         "rules": "modular-source-step-correspondence-v1",
@@ -335,11 +321,8 @@
       },
       "matches_paper": true,
       "output_sha256": {
-        "stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "results.json": "9967f5ce4b7d40fa12433869f19c43ddfd7518007b653fdcf53bbd894a32a08c",
-        "stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "coverage.json": "42eca13ed9abe32da38b5a9b5240712a6dfb086cd2f34d009d0a80295234f500",
-        "results.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
         "run.json": "a917bf426016c4fac5a6da760af5f15e0e8984a77c1ea63b9bca4d35e9d50d77"
       }
     }

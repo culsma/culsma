@@ -1,75 +1,58 @@
 # Patterns workflow benchmark
 
-This directory is the canonical public benchmark for Section 3.5 of
+This is the canonical public benchmark for Section 3.5 of
 *Culsma: An Executable Specification Language for Laboratory Protocols*.
-GitHub holds the source procedures, Culsma programs, coverage rules, and
-reproduction instructions together. Documentation sites may link here; they
-are not a second version of the benchmark.
+It contains seven experimental modules and one composite workflow. Source
+procedures, programs, results, and reproduction instructions are maintained
+here together; no documentation-site export is needed.
 
-## Collection and paper results
+## Results reported in the paper
 
+<!-- paper-table:start -->
 | Module | Coverage | Version |
 | --- | ---: | --- |
-| [01: Cell transfection](modules/01-cell-transfection/) | 100% | 1.0.7 |
-| [02: Selective plating and colony isolation](modules/02-selective-plating-candidate-colony-isolation/) | 91.7% | 1.0.7 |
-| [03: Cell lysate preparation](modules/03-cell-lysate-preparation/) | 100% | 1.0.7 |
-| [04: Suspension-cell staining](modules/04-suspension-cell-staining/) | 100% | 1.0.7 |
-| [05: Magnetic-bead immunoprecipitation](modules/05-magnetic-bead-immunoprecipitation/) | 100% | 1.0.7 |
-| [06: Western blot](modules/06-western-blot/) | 100% | 1.0.7 |
-| [07: Sandwich ELISA](modules/07-sandwich-elisa/) | 97.6% | 1.0.7 |
-| [Composite 01: Flow-cytometry immunophenotyping](composites/01-flow-cytometry-immunophenotyping/) | 100% | 1.0.7 |
+| Module 01: Cell transfection | 100% | 1.0.7 |
+| Module 02: Selective plating and colony isolation | 91.7% | 1.0.7 |
+| Module 03: Cell lysate preparation | 100% | 1.0.7 |
+| Module 04: Suspension-cell staining | 100% | 1.0.7 |
+| Module 05: Magnetic-bead immunoprecipitation | 100% | 1.0.7 |
+| Module 06: Western blot | 100% | 1.0.7 |
+| Module 07: Sandwich ELISA | 97.6% | 1.0.7 |
+| Composite 01: Flow-cytometry immunophenotyping | 100% | 1.0.7 |
+<!-- paper-table:end -->
 
-The seven modules cover 159/161 numbered source steps (98.76%). Including the
-five-step composite gives 164/166 (98.80%). The composite imports Module 04
-through `libraries/Module04.culs`; its five steps describe the composition,
-not another count of the module's source instructions.
+The seven modules cover **159/161** numbered source steps (98.76%). Including
+the composite gives **164/166** (98.80%). All eight entry programs complete:
+**2406/2406** generated execution steps, with no failed or skipped steps and
+no runtime diagnostics. Source steps and execution steps are different
+counts; expanded loop iterations do not increase source-step coverage.
 
-All eight entry programs complete under deterministic software execution:
-2,406/2,406 generated steps, with no failed or skipped steps and no runtime
-diagnostics. Generated execution steps and numbered source steps are different
-denominators; execution counts are not the coverage metric.
+The two uncovered steps are Module 02 S5 (spreading inoculum on agar) and
+Module 07 S37 (tap-mixing a plate). These remain explicit gaps. Coverage
+measures structural source–program correspondence, not complete semantic
+fidelity, biological success, or hardware execution. In particular, a transfer
+may match a source step while a finer detail such as dropwise delivery remains
+only in its annotation.
 
-The two unmatched source steps are Module 02 S5 (spreading an inoculum on agar)
-and Module 07 S37 (tap-mixing a plate). They remain visible in the source and
-annotations. Reproducing these two gaps is a successful comparison with the
-paper; the runner does not require every artifact to have 100% coverage.
+## Directory and execution entry points
 
-## Files and interpretation
+| Path | Contents |
+| --- | --- |
+| [`modules/`](modules/) | Seven modules; each has `source.md` and a `protocol.culs` entry program. |
+| [`composites/`](composites/) | One composite, also with `source.md` and a `protocol.culs` entry. |
+| [`libraries/`](libraries/) | Import entry for Module 04, reused by the composite. |
+| [`reproduce.py`](reproduce.py) | Single script for coverage, execution, comparison, and table generation. |
+| [`manifest.json`](manifest.json) | Fixed versions, source hashes, expected counts and known gaps. |
+| [`results/`](results/) | One checked set of coverage, execution, and material/observation results. |
 
-Each linked directory contains `source.md`, a `protocol.culs` entry program,
-and `coverage.json`. Module 04 also contains its reusable `module.culs`.
-Source descriptions retain their references and contextual notes. The checker
-matches complete numbered source instructions to unique annotations with an
-associated statement across the artifact's program files. A reference-only
-placeholder does not count.
+Module 04 also contains its reusable `module.culs`. Its `protocol.culs` runs
+that module independently. The composite imports the same definition through
+`libraries/Module04.culs`; it does not copy the staining procedure.
+Each `source.md` retains the procedure's source references and context.
 
-Coverage measures structural correspondence, not full semantic fidelity,
-biological success, or physical execution. For example, a transfer can represent
-the main action while a finer instruction such as dropwise delivery remains
-only in an annotation. Calculated material states follow the declared inputs
-and material rules; readout records do not establish measured signals.
+## Reproduce
 
-## Fixed versions
-
-[`patterns-manifest.json`](patterns-manifest.json) records the paper inputs,
-expected coverage and execution counts, and SHA-256 hashes for source files,
-programs, the shared library, and the checker.
-
-- Benchmark input snapshot: `e65e56cfe4de10b21d890fe2724210dfde1c9c84`.
-- Runtime implementation: `42b562bce488d25bdc00af82c62fdb5d4cc52b8b`.
-- Paper table version: `1.0.7` (release family).
-- Actual package metadata at the runtime commit: `1.0.7rc3`.
-- Dependency: Lark `1.3.1`; Python 3.12 was used for the preparation check.
-
-The older artifact-local `coverage.json` files retain the original manually
-supplied `1.0.7rc2` label. The implementation hash is unchanged. Fresh outputs
-record the actual runtime version, `1.0.7rc3`; the table retains `1.0.7`.
-Use the commit below, not a similarly named installed package, to reproduce
-this snapshot. The benchmark source and runtime are pinned separately.
-
-## Reproduce from GitHub
-
-Run from a new working directory with Git and Python 3.12 installed:
+With Git and Python 3.12 installed, run from a new working directory:
 
 ```sh
 git clone --branch codex/benchmark-publication https://github.com/culsma/culsma.git culsma-benchmark
@@ -77,48 +60,53 @@ git clone https://github.com/culsma/culsma.git culsma-runtime
 git -C culsma-runtime checkout 42b562bce488d25bdc00af82c62fdb5d4cc52b8b
 python3.12 -m venv .venv
 .venv/bin/python -m pip install lark==1.3.1
-.venv/bin/python culsma-benchmark/benchmarks/reproduce_modular.py \
+.venv/bin/python culsma-benchmark/benchmarks/reproduce.py \
   --runtime-repo culsma-runtime --output results/patterns-run-01
 ```
 
-On Windows use `.venv/Scripts/python.exe`. No private wheel or document-site
-export is required. The runner imports Culsma directly from the pinned runtime
-checkout, verifies its identity and dependencies, checks every benchmark input
-hash, and uses the same interpreter for all runs. Existing output directories
-are rejected; use a new path for each run.
+For the exact paper snapshot, also check out the benchmark-package commit
+cited in the paper before running. On Windows use `.venv/Scripts/python.exe`.
+The runner imports the pinned runtime directly; no private wheel is required.
+Use a new output directory for every run. For local work inside this repository,
+use `benchmarks/local-results/<run-name>/`, which is ignored by Git.
 
-The command returns zero only when all eight coverage records (including the
-two expected gaps) and execution counts match the paper and every run has zero
-failed steps, skipped steps, and diagnostics. Input changes, version mismatches,
-or result mismatches give a nonzero exit status. Runtime validation failures
-are retained in the run outputs.
+The input snapshot is `e65e56cfe4de10b21d890fe2724210dfde1c9c84`; the runtime
+is `42b562bce488d25bdc00af82c62fdb5d4cc52b8b`. The paper's version column uses
+**1.0.7**; package metadata at the pinned runtime is **1.0.7rc3**. The manifest
+and generated summary retain that distinction. The preparation environment is
+Python 3.12.8 with Lark 1.3.1.
 
-Outputs include:
+A zero exit status requires the pinned runtime and input hashes, matching
+coverage counts and gap records, and successful completion of all eight
+programs with the expected execution counts and zero failures, skips, or
+runtime diagnostics. Reproducing the two known gaps is a successful comparison.
+The checker and its counting rule are included in the single script.
 
-- `table.md`: the three-column table used in Section 3.5.
-- `summary.json`: aggregate coverage, per-artifact comparisons, versions,
-  manifest/runner/input hashes, and hashes of generated output files.
-- `<modules-or-composites>/<name>/coverage.json`: freshly computed coverage.
-- `run.json`: execution report with completion and diagnostic counts.
-- `results.json`: material, resource, and return records from the compact CLI.
-- Captured console output and error logs.
+Each output directory contains `summary.json`, `table.md`, and per-artifact
+`coverage.json`, `run.json`, and `results.json`. Nonempty console/error logs
+are retained when present. Report and compact-result exports use separate
+deterministic CLI invocations. Input, script, environment, and output identities
+are recorded. The automatic comparison checks coverage and execution counts;
+material and observation records are preserved for inspection, not treated as
+independent experimental validation. No second copy of coverage is stored in
+the source directories.
 
-The execution report and compact results are exported in two deterministic
-invocations because the CLI exposes them as separate output modes. The runner
-compares structural coverage and execution status/counts; it preserves material
-and observation results for inspection without treating them as independent
-experimental validation.
+## Maintain the benchmark and paper together
 
-[`evidence/patterns/summary.json`](evidence/patterns/summary.json) and
-[`evidence/patterns/table.md`](evidence/patterns/table.md) retain the checked
-preparation result. Complete run reports and compact results are alongside them.
-Future changes must regenerate and review this evidence, then update the
-paper's cited revision deliberately.
+1. Revise source procedures and programs together. Keep complete source-step
+   annotations and source references; retain gaps explicitly.
+2. Review the expected counts, gap records, input hashes, and runtime identity
+   in `manifest.json`. Update them only for an intended, reviewed change;
+   do not replace expectations merely to make a failing comparison pass.
+3. Run `reproduce.py` into a new directory. Add `--update-readme` to regenerate
+   the marked three-column table above after all comparisons pass. The same
+   table is written to `table.md`, using the paper's module names and rounding.
+4. Review the resulting records, then replace the single checked `results/`
+   set. Update the aggregate figures above and the paper's table and Methods
+   if the evidence changes. Commit inputs, manifest, README, and results
+   together, and cite the new package commit in the paper.
 
-## Separate material
-
-The four manuscript illustrations are checked separately and are not included
-in this benchmark denominator. `cases/00/` is the separate lysate-clarification
-correspondence example. Older `cases/01/`–`cases/14/`, metrics, and baselines
-belong to a previous evaluation design, documented in
-[README.legacy.md](README.legacy.md); they are not the Section 3.5 benchmark.
+Historical Cases 00–14 and their original tools are preserved outside this
+active directory in [`archive/benchmarks-legacy/`](../archive/benchmarks-legacy/).
+They are excluded from this runner and the paper's current coverage totals.
+The four manuscript illustrations are also evaluated separately.
