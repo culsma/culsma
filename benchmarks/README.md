@@ -6,19 +6,21 @@ It contains seven experimental modules and one composite workflow. Source
 procedures, programs, results, and reproduction instructions are maintained
 here together; no documentation-site export is needed.
 
-## Results reported in the paper
+## Current results (paper Section 3.5)
 
 <!-- paper-table:start -->
-| Module | Coverage | Version |
-| --- | ---: | --- |
-| Module 01: Cell transfection | 100% | 1.0.7 |
-| Module 02: Selective plating and colony isolation | 91.7% | 1.0.7 |
-| Module 03: Cell lysate preparation | 100% | 1.0.7 |
-| Module 04: Suspension-cell staining | 100% | 1.0.7 |
-| Module 05: Magnetic-bead immunoprecipitation | 100% | 1.0.7 |
-| Module 06: Western blot | 100% | 1.0.7 |
-| Module 07: Sandwich ELISA | 97.6% | 1.0.7 |
-| Composite 01: Flow-cytometry immunophenotyping | 100% | 1.0.7 |
+Evaluated with Culsma 1.0.7.
+
+| Module | Coverage |
+| --- | ---: |
+| Module 01: Cell transfection | 100% |
+| Module 02: Selective plating and colony isolation | 91.7% |
+| Module 03: Cell lysate preparation | 100% |
+| Module 04: Suspension-cell staining | 100% |
+| Module 05: Magnetic-bead immunoprecipitation | 100% |
+| Module 06: Western blot | 100% |
+| Module 07: Sandwich ELISA | 97.6% |
+| Composite 01: Flow-cytometry immunophenotyping | 100% |
 <!-- paper-table:end -->
 
 The seven modules cover **159/161** numbered source steps (98.76%). Including
@@ -71,7 +73,7 @@ Use a new output directory for every run. For local work inside this repository,
 use `benchmarks/local-results/<run-name>/`, which is ignored by Git.
 
 The input snapshot is `e65e56cfe4de10b21d890fe2724210dfde1c9c84`; the runtime
-is `42b562bce488d25bdc00af82c62fdb5d4cc52b8b`. The paper's version column uses
+is `42b562bce488d25bdc00af82c62fdb5d4cc52b8b`. The paper's benchmark version is
 **1.0.7**; package metadata at the pinned runtime is **1.0.7rc3**. The manifest
 and generated summary retain that distinction. The preparation environment is
 Python 3.12.8 with Lark 1.3.1.
@@ -99,10 +101,13 @@ the source directories.
    in `manifest.json`. Update them only for an intended, reviewed change;
    do not replace expectations merely to make a failing comparison pass.
 3. Run `reproduce.py` into a new directory. Add `--update-readme` to regenerate
-   the marked three-column table above after all comparisons pass. The same
-   table is written to `table.md`, using the paper's module names and rounding.
-4. Review the resulting records, then replace the single checked `results/`
-   set. Update the aggregate figures above and the paper's table and Methods
+   the marked two-column table above after all comparisons pass. The same
+   table is written to `table.md`, using the paper's module names and rounding,
+   with one version label for the entire run.
+4. Review the resulting records. When advancing to a new runtime version,
+   rerun the full collection and archive the previous complete `results/` set
+   under `archive/benchmark-results/<version>-<commit>/` before replacing it.
+   Update the aggregate figures above and the paper's table and Methods
    if the evidence changes. Commit inputs, manifest, README, and results
    together, and cite the new package commit in the paper.
 
