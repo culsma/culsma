@@ -1,0 +1,10 @@
+| Module | Coverage | Version |
+| --- | ---: | --- |
+| modules/01-cell-transfection | 100% | 1.0.7 |
+| modules/02-selective-plating-candidate-colony-isolation | 91.7% | 1.0.7 |
+| modules/03-cell-lysate-preparation | 100% | 1.0.7 |
+| modules/04-suspension-cell-staining | 100% | 1.0.7 |
+| modules/05-magnetic-bead-immunoprecipitation | 100% | 1.0.7 |
+| modules/06-western-blot | 100% | 1.0.7 |
+| modules/07-sandwich-elisa | 97.6% | 1.0.7 |
+| composites/01-flow-cytometry-immunophenotyping | 100% | 1.0.7 |

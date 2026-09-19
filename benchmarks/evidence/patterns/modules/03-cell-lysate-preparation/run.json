@@ -1,0 +1,163 @@
+{
+  "ok": true,
+  "report": {
+    "alerts": [],
+    "execution": {
+      "completed_steps": 44,
+      "diagnostic_count": 0,
+      "failed_steps": 0,
+      "ok": true,
+      "skipped_steps": 0,
+      "total_steps": 44
+    },
+    "external_inventory": {
+      "checked": false,
+      "items": [],
+      "reason": "inventory_not_supplied",
+      "schema": "culsma_inventory_reconciliation_v1",
+      "shortages": [],
+      "sufficient": null
+    },
+    "headline": "Experiment completed successfully with no runtime errors.",
+    "materials": {
+      "final_products": [
+        {
+          "mass_mg": 4000.0,
+          "name": "Module03LiquidWaste",
+          "primary_component": "COMPLETE_CULTURE_MEDIUM",
+          "volume_mL": 4.0,
+          "volume_uL": 4000.0
+        },
+        {
+          "mass_mg": null,
+          "name": "ClarifiedProteinLysate",
+          "primary_component": "CRUDE_CELL_LYSATE_PROTEIN",
+          "volume_mL": 0.3,
+          "volume_uL": 300.0
+        },
+        {
+          "mass_mg": null,
+          "name": "CrudeCellLysate",
+          "primary_component": "INSOLUBLE_CELL_DEBRIS",
+          "volume_mL": 0.0,
+          "volume_uL": 0.0
+        }
+      ],
+      "has_material_state": true,
+      "input_inventory": [
+        {
+          "initial_cells": 5000000.0,
+          "initial_mL": 2.0,
+          "initial_mg": 0.0,
+          "initial_uL": 2000.0,
+          "name": "AdherentMammalianCellWell"
+        },
+        {
+          "initial_mL": 2.0,
+          "initial_mg": 0.0,
+          "initial_uL": 2000.0,
+          "name": "ColdPBS1X"
+        },
+        {
+          "initial_mL": 0.297,
+          "initial_mg": 0.0,
+          "initial_uL": 297.0,
+          "name": "ColdRIPABuffer"
+        },
+        {
+          "initial_mL": 0.003,
+          "initial_mg": 0.0,
+          "initial_uL": 3.0,
+          "name": "ProteasePhosphataseInhibitorCocktail100X"
+        }
+      ],
+      "intermediate_materials": [],
+      "reagent_consumption": [
+        {
+          "consumed_mL": 2.0,
+          "consumed_mg": null,
+          "consumed_uL": 2000.0,
+          "name": "AdherentMammalianCellWell",
+          "roles": [
+            "dest",
+            "sample"
+          ]
+        },
+        {
+          "consumed_mL": 2.0,
+          "consumed_mg": null,
+          "consumed_uL": 2000.0,
+          "name": "ColdPBS1X",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.297,
+          "consumed_mg": null,
+          "consumed_uL": 297.0,
+          "name": "ColdRIPABuffer",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.003,
+          "consumed_mg": null,
+          "consumed_uL": 3.0,
+          "name": "ProteasePhosphataseInhibitorCocktail100X",
+          "roles": [
+            "source"
+          ]
+        }
+      ]
+    },
+    "process_summary": {
+      "environment_steps": 1,
+      "mutation_steps": 19,
+      "readout_steps": 0,
+      "separation_steps": 4
+    },
+    "qc_results": [],
+    "resource_summary": {
+      "containers": {
+        "allocated_count": 8,
+        "container_kinds": [
+          {
+            "count": 7,
+            "kind": "tube"
+          },
+          {
+            "count": 1,
+            "kind": "well"
+          }
+        ],
+        "touched_count": 8,
+        "touched_names": [
+          "AdherentMammalianCellWell",
+          "ClarifiedProteinLysate",
+          "ColdPBS1X",
+          "ColdRIPABuffer",
+          "CompleteRIPABuffer1X",
+          "CrudeCellLysate",
+          "Module03LiquidWaste",
+          "ProteasePhosphataseInhibitorCocktail100X"
+        ]
+      },
+      "instruments": {
+        "devices": [],
+        "tools": []
+      }
+    },
+    "schema": "lab_report_v1"
+  },
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": []
+    }
+  },
+  "schema": "culsma_run_output_v1"
+}

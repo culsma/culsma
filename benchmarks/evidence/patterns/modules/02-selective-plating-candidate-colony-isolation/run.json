@@ -1,0 +1,270 @@
+{
+  "ok": true,
+  "report": {
+    "alerts": [],
+    "execution": {
+      "completed_steps": 71,
+      "diagnostic_count": 0,
+      "failed_steps": 0,
+      "ok": true,
+      "skipped_steps": 0,
+      "total_steps": 71
+    },
+    "external_inventory": {
+      "checked": false,
+      "items": [],
+      "reason": "inventory_not_supplied",
+      "schema": "culsma_inventory_reconciliation_v1",
+      "shortages": [],
+      "sufficient": null
+    },
+    "headline": "Experiment completed successfully with no runtime errors.",
+    "materials": {
+      "final_products": [
+        {
+          "mass_mg": 4000.0,
+          "name": "CandidateColonyCulture",
+          "primary_component": "LB_AMPICILLIN",
+          "volume_mL": 4.0,
+          "volume_uL": 4000.0
+        },
+        {
+          "mass_mg": 4000.0,
+          "name": "CandidateColonyCulture",
+          "primary_component": "LB_AMPICILLIN",
+          "volume_mL": 4.0,
+          "volume_uL": 4000.0
+        },
+        {
+          "mass_mg": 4000.0,
+          "name": "CandidateColonyCulture",
+          "primary_component": "LB_AMPICILLIN",
+          "volume_mL": 4.0,
+          "volume_uL": 4000.0
+        },
+        {
+          "mass_mg": 4000.0,
+          "name": "CandidateColonyCulture",
+          "primary_component": "LB_AMPICILLIN",
+          "volume_mL": 4.0,
+          "volume_uL": 4000.0
+        },
+        {
+          "mass_mg": 4000.0,
+          "name": "CandidateColonyCulture",
+          "primary_component": "LB_AMPICILLIN",
+          "volume_mL": 4.0,
+          "volume_uL": 4000.0
+        },
+        {
+          "mass_mg": 4000.0,
+          "name": "CandidateColonyCulture",
+          "primary_component": "LB_AMPICILLIN",
+          "volume_mL": 4.0,
+          "volume_uL": 4000.0
+        },
+        {
+          "mass_mg": 4000.0,
+          "name": "CandidateColonyCulture",
+          "primary_component": "LB_AMPICILLIN",
+          "volume_mL": 4.0,
+          "volume_uL": 4000.0
+        },
+        {
+          "mass_mg": 4000.0,
+          "name": "CandidateColonyCulture",
+          "primary_component": "LB_AMPICILLIN",
+          "volume_mL": 4.0,
+          "volume_uL": 4000.0
+        },
+        {
+          "mass_mg": 100.0,
+          "name": "RecombinantLigationSelectivePlate",
+          "primary_component": "DH5A_RECOMBINANT_LIGATION",
+          "volume_mL": 0.1,
+          "volume_uL": 100.0
+        },
+        {
+          "mass_mg": 100.0,
+          "name": "VectorOnlySelectivePlate",
+          "primary_component": "DH5A_VECTOR_ONLY_LIGATION_CONTROL",
+          "volume_mL": 0.1,
+          "volume_uL": 100.0
+        },
+        {
+          "mass_mg": 100.0,
+          "name": "NoLigaseSelectivePlate",
+          "primary_component": "DH5A_NO_LIGASE_VECTOR_CONTROL",
+          "volume_mL": 0.1,
+          "volume_uL": 100.0
+        },
+        {
+          "mass_mg": 100.0,
+          "name": "UncutPuc19PositiveControlPlate",
+          "primary_component": "DH5A_UNCUT_PUC19_POSITIVE_CONTROL",
+          "volume_mL": 0.1,
+          "volume_uL": 100.0
+        },
+        {
+          "mass_mg": 100.0,
+          "name": "NoDnaControlPlate",
+          "primary_component": "DH5A_NO_DNA_CONTROL",
+          "volume_mL": 0.1,
+          "volume_uL": 100.0
+        }
+      ],
+      "has_material_state": true,
+      "input_inventory": [
+        {
+          "initial_mL": 32.0,
+          "initial_mg": 0.0,
+          "initial_uL": 32000.0,
+          "name": "CandidateColonyCulture"
+        },
+        {
+          "initial_mL": 0.1,
+          "initial_mg": 0.0,
+          "initial_uL": 100.0,
+          "name": "NoDnaControlSuspension"
+        },
+        {
+          "initial_mL": 0.1,
+          "initial_mg": 0.0,
+          "initial_uL": 100.0,
+          "name": "NoLigaseVectorControlSuspension"
+        },
+        {
+          "initial_mL": 0.1,
+          "initial_mg": 0.0,
+          "initial_uL": 100.0,
+          "name": "RecombinantLigationSuspension"
+        },
+        {
+          "initial_mL": 0.1,
+          "initial_mg": 0.0,
+          "initial_uL": 100.0,
+          "name": "UncutPuc19PositiveControlSuspension"
+        },
+        {
+          "initial_mL": 0.1,
+          "initial_mg": 0.0,
+          "initial_uL": 100.0,
+          "name": "VectorOnlyLigationControlSuspension"
+        }
+      ],
+      "intermediate_materials": [],
+      "reagent_consumption": [
+        {
+          "consumed_mL": 0.1,
+          "consumed_mg": null,
+          "consumed_uL": 100.0,
+          "name": "NoDnaControlSuspension",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.1,
+          "consumed_mg": null,
+          "consumed_uL": 100.0,
+          "name": "NoLigaseVectorControlSuspension",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.1,
+          "consumed_mg": null,
+          "consumed_uL": 100.0,
+          "name": "RecombinantLigationSuspension",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.1,
+          "consumed_mg": null,
+          "consumed_uL": 100.0,
+          "name": "UncutPuc19PositiveControlSuspension",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.1,
+          "consumed_mg": null,
+          "consumed_uL": 100.0,
+          "name": "VectorOnlyLigationControlSuspension",
+          "roles": [
+            "source"
+          ]
+        }
+      ]
+    },
+    "process_summary": {
+      "environment_steps": 1,
+      "mutation_steps": 13,
+      "readout_steps": 6,
+      "separation_steps": 0
+    },
+    "qc_results": [],
+    "resource_summary": {
+      "containers": {
+        "allocated_count": 26,
+        "container_kinds": [
+          {
+            "count": 13,
+            "kind": "surface"
+          },
+          {
+            "count": 13,
+            "kind": "tube"
+          }
+        ],
+        "touched_count": 26,
+        "touched_names": [
+          "CandidateColonyCulture",
+          "CandidateColonyCulture",
+          "CandidateColonyCulture",
+          "CandidateColonyCulture",
+          "CandidateColonyCulture",
+          "CandidateColonyCulture",
+          "CandidateColonyCulture",
+          "CandidateColonyCulture",
+          "NoDnaControlPlate",
+          "NoDnaControlSuspension",
+          "NoLigaseSelectivePlate",
+          "NoLigaseVectorControlSuspension",
+          "RecombinantLigationSelectivePlate",
+          "RecombinantLigationSuspension",
+          "SelectedColony1",
+          "SelectedColony2",
+          "SelectedColony3",
+          "SelectedColony4",
+          "SelectedColony5",
+          "SelectedColony6",
+          "SelectedColony7",
+          "SelectedColony8",
+          "UncutPuc19PositiveControlPlate",
+          "UncutPuc19PositiveControlSuspension",
+          "VectorOnlyLigationControlSuspension",
+          "VectorOnlySelectivePlate"
+        ]
+      },
+      "instruments": {
+        "devices": [],
+        "tools": []
+      }
+    },
+    "schema": "lab_report_v1"
+  },
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": []
+    }
+  },
+  "schema": "culsma_run_output_v1"
+}
