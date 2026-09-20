@@ -1,0 +1,121 @@
+{
+  "schema": "lab_report_v1",
+  "execution": {
+    "ok": true,
+    "diagnostic_count": 0,
+    "total_steps": 52,
+    "completed_steps": 52,
+    "failed_steps": 0,
+    "skipped_steps": 0
+  },
+  "headline": "Experiment completed successfully with no runtime errors.",
+  "materials": {
+    "has_material_state": true,
+    "input_inventory": [
+      {
+        "name": "Wash buffer",
+        "initial_uL": 2500.0,
+        "initial_mL": 2.5,
+        "initial_mg": 0.0
+      },
+      {
+        "name": "Cells for staining",
+        "initial_uL": 70.0,
+        "initial_mL": 0.07,
+        "initial_mg": 0.0
+      },
+      {
+        "name": "Six-stain panel",
+        "initial_uL": 30.0,
+        "initial_mL": 0.03,
+        "initial_mg": 0.0
+      }
+    ],
+    "final_products": [
+      {
+        "name": "Wash waste",
+        "volume_uL": 2000.0,
+        "volume_mL": 2.0,
+        "mass_mg": 2000.0,
+        "primary_component": "FSB"
+      },
+      {
+        "name": "Cells for staining",
+        "volume_uL": 600.0,
+        "volume_mL": 0.6,
+        "mass_mg": 600.0,
+        "primary_component": "PBMC"
+      }
+    ],
+    "intermediate_materials": [],
+    "reagent_consumption": [
+      {
+        "name": "Wash buffer",
+        "roles": [
+          "source"
+        ],
+        "consumed_uL": 2500.0,
+        "consumed_mL": 2.5,
+        "consumed_mg": null
+      },
+      {
+        "name": "Cells for staining",
+        "roles": [
+          "dest",
+          "sample",
+          "source"
+        ],
+        "consumed_uL": 66.667,
+        "consumed_mL": 0.066667,
+        "consumed_mg": null
+      },
+      {
+        "name": "Six-stain panel",
+        "roles": [
+          "source"
+        ],
+        "consumed_uL": 30.0,
+        "consumed_mL": 0.03,
+        "consumed_mg": null
+      }
+    ]
+  },
+  "qc_results": [],
+  "resource_summary": {
+    "containers": {
+      "allocated_count": 4,
+      "touched_count": 4,
+      "container_kinds": [
+        {
+          "kind": "tube",
+          "count": 4
+        }
+      ],
+      "touched_names": [
+        "Cells for staining",
+        "Six-stain panel",
+        "Wash buffer",
+        "Wash waste"
+      ]
+    },
+    "instruments": {
+      "tools": [],
+      "devices": []
+    }
+  },
+  "process_summary": {
+    "mutation_steps": 24,
+    "separation_steps": 1,
+    "environment_steps": 1,
+    "readout_steps": 1
+  },
+  "alerts": [],
+  "external_inventory": {
+    "schema": "culsma_inventory_reconciliation_v1",
+    "checked": false,
+    "sufficient": null,
+    "reason": "inventory_not_supplied",
+    "items": [],
+    "shortages": []
+  }
+}

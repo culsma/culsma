@@ -214,11 +214,11 @@ def reproduce(runtime, output, update_readme=False):
         'matched_steps': matched, 'total_steps': total, 'coverage_percent': 100 * matched / total,
         'matches_paper': all(r['matches_paper'] for r in rows), 'artifacts': rows}
     write_json(output / 'summary.json', summary)
-    table = [f"Evaluated with Culsma {manifest['table_version']}.", '', '| Module | Coverage |', '| --- | ---: |']
+    table = [f"Evaluated with Culsma {manifest['table_version']}.", '', '| Module | Source steps | Coverage |', '| --- | ---: | ---: |']
     for r in rows:
         percent = r['coverage']['coverage_percent']
         label = '100%' if percent == 100 else f'{percent:.1f}%'
-        table.append(f"| {r['name']} | {label} |")
+        table.append(f"| {r['name']} | {r['coverage']['matched_steps']}/{r['coverage']['total_steps']} | {label} |")
     (output / 'table.md').write_text('\n'.join(table) + '\n')
     if update_readme:
         if not summary['matches_paper']:

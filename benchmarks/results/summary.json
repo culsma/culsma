@@ -9,7 +9,7 @@
   },
   "table_version": "1.0.7",
   "manifest_sha256": "4e094a17b1bdf1fc93c0d6da7934509ef699dbe7d377a0978f44949c0f902089",
-  "runner_sha256": "17682d83e83385ffdbd2bf6210f2f24f09f787f7422141d85c7503d577898857",
+  "runner_sha256": "6cbb34f0385f49a851a77294ea62a879eec574d57470a236bcbf5292cea1e1c8",
   "input_sha256": {
     "composites/01-flow-cytometry-immunophenotyping/protocol.culs": "8d5a0abdc324a49abe132ccf6b4fb5eb8f29375a8da214ff40f5aeffd79e52b0",
     "composites/01-flow-cytometry-immunophenotyping/source.md": "b4df60eece954847ea3a727564d273bfa2ca6f91ffeab016ff58e67de21508a1",

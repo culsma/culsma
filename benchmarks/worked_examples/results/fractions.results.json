@@ -1,0 +1,273 @@
+{
+  "materials": [
+    {
+      "amount": 1200.0,
+      "name": "Reagent",
+      "unit": "uL"
+    },
+    {
+      "amount": 470.0,
+      "name": "Diluent",
+      "unit": "uL"
+    },
+    {
+      "amount": 300.0,
+      "name": "Fraction sample A",
+      "unit": "uL"
+    },
+    {
+      "amount": 300.0,
+      "name": "Fraction sample B",
+      "unit": "uL"
+    },
+    {
+      "amount": 70.0,
+      "name": "Standard",
+      "unit": "uL"
+    }
+  ],
+  "resources": [
+    {
+      "capacity_uL": null,
+      "count": 2,
+      "kind": "plate"
+    },
+    {
+      "capacity_uL": 5000.0,
+      "count": 5,
+      "kind": "tube"
+    }
+  ],
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": [],
+      "value": [
+        {
+          "binding": "result_A",
+          "contract_kind": "fluorescence",
+          "data_group_id": "entry.s25::data_group",
+          "data_kind": "observation",
+          "family": "img",
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "item_ids": [
+            "entry.s25::data::0",
+            "entry.s25::data::1",
+            "entry.s25::data::2",
+            "entry.s25::data::3",
+            "entry.s25::data::4",
+            "entry.s25::data::5"
+          ],
+          "kind": "data_group_ref",
+          "observation_group_id": "entry.s25::data_group",
+          "observation_ids": [
+            "entry.s25::data::0",
+            "entry.s25::data::1",
+            "entry.s25::data::2",
+            "entry.s25::data::3",
+            "entry.s25::data::4",
+            "entry.s25::data::5"
+          ],
+          "program_kind": null,
+          "resolved_samples": [
+            "container/entry/entry.s11%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A1",
+            "container/entry/entry.s11%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A2",
+            "container/entry/entry.s11%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A3",
+            "container/entry/entry.s18%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B1",
+            "container/entry/entry.s18%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B2",
+            "container/entry/entry.s18%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B3"
+          ],
+          "sample_group": {
+            "elements": [
+              {
+                "kind": "IRIdentifier",
+                "name": "__lw_plate___cmp_entry_s5_assay_A1",
+                "span": {
+                  "col": 30,
+                  "end": 630,
+                  "line": 13,
+                  "start": 618
+                }
+              },
+              {
+                "kind": "IRIdentifier",
+                "name": "__lw_plate___cmp_entry_s5_assay_A2",
+                "span": {
+                  "col": 30,
+                  "end": 630,
+                  "line": 13,
+                  "start": 618
+                }
+              },
+              {
+                "kind": "IRIdentifier",
+                "name": "__lw_plate___cmp_entry_s5_assay_A3",
+                "span": {
+                  "col": 30,
+                  "end": 630,
+                  "line": 13,
+                  "start": 618
+                }
+              },
+              {
+                "kind": "IRIdentifier",
+                "name": "__lw_plate___cmp_entry_s5_assay_B1",
+                "span": {
+                  "col": 30,
+                  "end": 630,
+                  "line": 13,
+                  "start": 618
+                }
+              },
+              {
+                "kind": "IRIdentifier",
+                "name": "__lw_plate___cmp_entry_s5_assay_B2",
+                "span": {
+                  "col": 30,
+                  "end": 630,
+                  "line": 13,
+                  "start": 618
+                }
+              },
+              {
+                "kind": "IRIdentifier",
+                "name": "__lw_plate___cmp_entry_s5_assay_B3",
+                "span": {
+                  "col": 30,
+                  "end": 630,
+                  "line": 13,
+                  "start": 618
+                }
+              }
+            ],
+            "kind": "IRGroup",
+            "span": {
+              "col": 30,
+              "end": 630,
+              "line": 13,
+              "start": 618
+            }
+          },
+          "status": "ok",
+          "step_id": "entry.s25"
+        },
+        {
+          "binding": "result_B",
+          "contract_kind": "fluorescence",
+          "data_group_id": "entry.s46::data_group",
+          "data_kind": "observation",
+          "family": "img",
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "item_ids": [
+            "entry.s46::data::0",
+            "entry.s46::data::1",
+            "entry.s46::data::2",
+            "entry.s46::data::3",
+            "entry.s46::data::4",
+            "entry.s46::data::5"
+          ],
+          "kind": "data_group_ref",
+          "observation_group_id": "entry.s46::data_group",
+          "observation_ids": [
+            "entry.s46::data::0",
+            "entry.s46::data::1",
+            "entry.s46::data::2",
+            "entry.s46::data::3",
+            "entry.s46::data::4",
+            "entry.s46::data::5"
+          ],
+          "program_kind": null,
+          "resolved_samples": [
+            "container/entry/entry.s32%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A1",
+            "container/entry/entry.s32%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A2",
+            "container/entry/entry.s32%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A3",
+            "container/entry/entry.s39%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B1",
+            "container/entry/entry.s39%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B2",
+            "container/entry/entry.s39%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B3"
+          ],
+          "sample_group": {
+            "elements": [
+              {
+                "kind": "IRIdentifier",
+                "name": "__lw_plate___cmp_entry_s6_assay_A1",
+                "span": {
+                  "col": 30,
+                  "end": 630,
+                  "line": 13,
+                  "start": 618
+                }
+              },
+              {
+                "kind": "IRIdentifier",
+                "name": "__lw_plate___cmp_entry_s6_assay_A2",
+                "span": {
+                  "col": 30,
+                  "end": 630,
+                  "line": 13,
+                  "start": 618
+                }
+              },
+              {
+                "kind": "IRIdentifier",
+                "name": "__lw_plate___cmp_entry_s6_assay_A3",
+                "span": {
+                  "col": 30,
+                  "end": 630,
+                  "line": 13,
+                  "start": 618
+                }
+              },
+              {
+                "kind": "IRIdentifier",
+                "name": "__lw_plate___cmp_entry_s6_assay_B1",
+                "span": {
+                  "col": 30,
+                  "end": 630,
+                  "line": 13,
+                  "start": 618
+                }
+              },
+              {
+                "kind": "IRIdentifier",
+                "name": "__lw_plate___cmp_entry_s6_assay_B2",
+                "span": {
+                  "col": 30,
+                  "end": 630,
+                  "line": 13,
+                  "start": 618
+                }
+              },
+              {
+                "kind": "IRIdentifier",
+                "name": "__lw_plate___cmp_entry_s6_assay_B3",
+                "span": {
+                  "col": 30,
+                  "end": 630,
+                  "line": 13,
+                  "start": 618
+                }
+              }
+            ],
+            "kind": "IRGroup",
+            "span": {
+              "col": 30,
+              "end": 630,
+              "line": 13,
+              "start": 618
+            }
+          },
+          "status": "ok",
+          "step_id": "entry.s46"
+        }
+      ]
+    }
+  }
+}

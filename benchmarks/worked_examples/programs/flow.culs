@@ -1,0 +1,64 @@
+protocol FlowCytometryWorkflow {
+  let cell_sample = tube(label = "Cells for staining", capacity = 5mL, load = [
+    content(kind = ContentKind.BIO_CELLULAR, type = ContentType.CELL_POPULATION, code = "PBMC",
+      attrs = { state: suspension }):70uL]);
+  let stain = tube(label = "Six-stain panel", capacity = 100uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN,
+      code = "ANTI_CD45", attrs = { role: antibody }):5uL,
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN,
+      code = "ANTI_CD3", attrs = { role: antibody }):5uL,
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN,
+      code = "ANTI_CD4", attrs = { role: antibody }):5uL,
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN,
+      code = "ANTI_CD8", attrs = { role: antibody }):5uL,
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN,
+      code = "ANTI_CD19", attrs = { role: antibody }):5uL,
+    content(kind = ContentKind.CHEMICAL, type = ContentType.DYE, code = "VIABILITY_DYE"):5uL]);
+  let buffer = tube(label = "Wash buffer", capacity = 5mL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "FSB"):2.5mL]);
+  let waste = tube(label = "Wash waste", capacity = 5mL);
+  cell_sample << [stain:30uL] with constraint(dark_protected);
+  repeat mix in schedule(start = 1, end = 10, step = 1) {
+    cell_sample << [cell_sample:80uL];
+  }
+  with constraint(dark_protected) {
+    with env(thermal = 0C, duration = 30min) { hold(sample = cell_sample); }
+  }
+  cell_sample << [buffer:2mL];
+  with env(thermal = 4C, duration = 5min) {
+    let separated = sep(sample = cell_sample,
+      program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+      component_fates = {
+        PBMC: { supernatant: 0%, pellet: 100% },
+        FSB: { supernatant: 100%, pellet: 0% },
+        ANTI_CD45: { supernatant: 0%, pellet: 100% },
+        ANTI_CD3: { supernatant: 0%, pellet: 100% },
+        ANTI_CD4: { supernatant: 0%, pellet: 100% },
+        ANTI_CD8: { supernatant: 0%, pellet: 100% },
+        ANTI_CD19: { supernatant: 0%, pellet: 100% },
+        VIABILITY_DYE: { supernatant: 0%, pellet: 100% }
+      });
+    waste << [separated[0]] with constraint(gentle);
+  }
+  cell_sample << [buffer:500uL];
+  repeat resuspend in schedule(start = 1, end = 10, step = 1) {
+    cell_sample << [cell_sample:400uL];
+  }
+  let panel = markers([CD45, CD3, CD4, CD8, CD19, LiveDead]);
+  let events = stream(sample = cell_sample, unit = single_cell, panel = panel);
+  let acquisition_schema = data_schema(label = "Flow acquisition", fields = [
+    event_id, sample_id, control_role, fsc_a, fsc_h, ssc_a,
+    cd45_raw_signal, cd3_raw_signal, cd4_raw_signal,
+    cd8_raw_signal, cd19_raw_signal, viability_raw_signal,
+    acquisition_config_id, acquisition_qc_pass
+  ]);
+  let acquisition_sample_id = "sample_A";
+  let acquisition_control_role = "fully_stained";
+  let readout = img(sample = events, quantity = customized,
+    schema_ref = acquisition_schema, save_raw = true);
+  readout.result.sample_id = acquisition_sample_id;
+  readout.result.control_role = acquisition_control_role;
+  return readout;
+}
+let flow_result = FlowCytometryWorkflow();
+return flow_result;

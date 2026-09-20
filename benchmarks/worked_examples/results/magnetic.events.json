@@ -1,0 +1,1429 @@
+[
+  {
+    "seq": 1,
+    "kind": "STEP_STARTED",
+    "step_id": "entry.s0::alloc",
+    "payload": {
+      "op": "AllocContainer",
+      "gate": {
+        "entry_kind": "script",
+        "entry_name": "entry"
+      }
+    },
+    "span": {
+      "line": 2,
+      "col": 3,
+      "start": 28,
+      "end": 438
+    }
+  },
+  {
+    "seq": 2,
+    "kind": "STEP_COMPLETED",
+    "step_id": "entry.s0::alloc",
+    "payload": {
+      "driver_code": "DRV_OK",
+      "driver_payload": {
+        "step_id": "entry.s0::alloc",
+        "op": "AllocContainer"
+      },
+      "gate": {
+        "entry_kind": "script",
+        "entry_name": "entry"
+      },
+      "material_delta": {
+        "op": "AllocContainer",
+        "container_id": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+        "kind": "tube",
+        "bind": "__cmp_entry_s0_sample"
+      },
+      "material_state_snapshot": {
+        "containers": {
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": {
+            "volume_uL": 0.0,
+            "mass_mg": 0.0,
+            "components": {},
+            "metadata": {
+              "kind": "tube",
+              "label": "Magnetic input",
+              "allocation_namespace": "entry",
+              "allocation_name": "__cmp_entry_s0_sample",
+              "allocation_step_id": "entry.s0::alloc",
+              "capacity_uL": 1500.0
+            }
+          }
+        },
+        "bindings": {
+          "tube::container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+          "__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample"
+        },
+        "indexed_bindings": {}
+      }
+    },
+    "span": {
+      "line": 2,
+      "col": 3,
+      "start": 28,
+      "end": 438
+    }
+  },
+  {
+    "seq": 3,
+    "kind": "STEP_STARTED",
+    "step_id": "entry.s0::load0::define",
+    "payload": {
+      "op": "DefineContent",
+      "gate": {
+        "entry_kind": "script",
+        "entry_name": "entry"
+      }
+    },
+    "span": {
+      "line": 3,
+      "col": 5,
+      "start": 85,
+      "end": 218
+    }
+  },
+  {
+    "seq": 4,
+    "kind": "STEP_COMPLETED",
+    "step_id": "entry.s0::load0::define",
+    "payload": {
+      "driver_code": "DRV_OK",
+      "driver_payload": {
+        "step_id": "entry.s0::load0::define",
+        "op": "DefineContent"
+      },
+      "gate": {
+        "entry_kind": "script",
+        "entry_name": "entry"
+      },
+      "material_delta": {
+        "op": "DefineContent",
+        "content_id": "MAGNETIC_BEADS"
+      },
+      "material_state_snapshot": {
+        "containers": {
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": {
+            "volume_uL": 0.0,
+            "mass_mg": 0.0,
+            "components": {},
+            "metadata": {
+              "kind": "tube",
+              "label": "Magnetic input",
+              "allocation_namespace": "entry",
+              "allocation_name": "__cmp_entry_s0_sample",
+              "allocation_step_id": "entry.s0::alloc",
+              "capacity_uL": 1500.0
+            },
+            "component_quantities": {},
+            "component_entries": [],
+            "material_relationships": []
+          }
+        },
+        "bindings": {
+          "tube::container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+          "__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample"
+        },
+        "indexed_bindings": {},
+        "content_registry": {
+          "MAGNETIC_BEADS": {
+            "content_kind": "particulate",
+            "content_type": "beads",
+            "content_code": "MAGNETIC_BEADS",
+            "content_name": null,
+            "content_attrs": {
+              "bead_property": "magnetic"
+            }
+          }
+        },
+        "content_bindings": {
+          "MAGNETIC_BEADS": "MAGNETIC_BEADS"
+        }
+      }
+    },
+    "span": {
+      "line": 3,
+      "col": 5,
+      "start": 85,
+      "end": 218
+    }
+  },
+  {
+    "seq": 5,
+    "kind": "STEP_STARTED",
+    "step_id": "entry.s0::load0::load",
+    "payload": {
+      "op": "LoadContent",
+      "gate": {
+        "entry_kind": "script",
+        "entry_name": "entry"
+      }
+    },
+    "span": {
+      "line": 3,
+      "col": 5,
+      "start": 85,
+      "end": 223
+    }
+  },
+  {
+    "seq": 6,
+    "kind": "STEP_COMPLETED",
+    "step_id": "entry.s0::load0::load",
+    "payload": {
+      "driver_code": "DRV_OK",
+      "driver_payload": {
+        "step_id": "entry.s0::load0::load",
+        "op": "LoadContent"
+      },
+      "gate": {
+        "entry_kind": "script",
+        "entry_name": "entry"
+      },
+      "material_delta": {
+        "op": "LoadContent",
+        "container": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+        "content_id": "MAGNETIC_BEADS",
+        "axis": "mass",
+        "amount": 10.0,
+        "unit": "mg"
+      },
+      "material_state_snapshot": {
+        "containers": {
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": {
+            "volume_uL": 10.0,
+            "mass_mg": 10.0,
+            "components": {
+              "MAGNETIC_BEADS": 10.0
+            },
+            "metadata": {
+              "kind": "tube",
+              "label": "Magnetic input",
+              "allocation_namespace": "entry",
+              "allocation_name": "__cmp_entry_s0_sample",
+              "allocation_step_id": "entry.s0::alloc",
+              "capacity_uL": 1500.0
+            },
+            "component_quantities": {
+              "MAGNETIC_BEADS": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 10.0
+              }
+            },
+            "component_entries": [
+              {
+                "entry_id": "MAGNETIC_BEADS",
+                "content_ref": "MAGNETIC_BEADS",
+                "amount": 10.0,
+                "quantity": {
+                  "dimension": "mass",
+                  "unit": "mg",
+                  "value": 10.0
+                },
+                "relation": "free",
+                "associated_with": null,
+                "association_target_kind": null,
+                "preservation": null,
+                "label": null,
+                "relationship_source": null,
+                "material_state_source": "content_registry",
+                "partition_class": null
+              }
+            ],
+            "material_relationships": []
+          }
+        },
+        "bindings": {
+          "tube::container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+          "__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample"
+        },
+        "indexed_bindings": {},
+        "content_registry": {
+          "MAGNETIC_BEADS": {
+            "content_kind": "particulate",
+            "content_type": "beads",
+            "content_code": "MAGNETIC_BEADS",
+            "content_name": null,
+            "content_attrs": {
+              "bead_property": "magnetic"
+            }
+          }
+        },
+        "content_bindings": {
+          "MAGNETIC_BEADS": "MAGNETIC_BEADS"
+        },
+        "container_content_index": {
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": {
+            "MAGNETIC_BEADS": {
+              "volume_uL": 10.0,
+              "mass_mg": 10.0,
+              "count_cells": 0.0,
+              "axis": "mass",
+              "unit": "mg"
+            }
+          }
+        }
+      }
+    },
+    "span": {
+      "line": 3,
+      "col": 5,
+      "start": 85,
+      "end": 223
+    }
+  },
+  {
+    "seq": 7,
+    "kind": "STEP_STARTED",
+    "step_id": "entry.s0::load1::define",
+    "payload": {
+      "op": "DefineContent",
+      "gate": {
+        "entry_kind": "script",
+        "entry_name": "entry"
+      }
+    },
+    "span": {
+      "line": 5,
+      "col": 5,
+      "start": 229,
+      "end": 337
+    }
+  },
+  {
+    "seq": 8,
+    "kind": "STEP_COMPLETED",
+    "step_id": "entry.s0::load1::define",
+    "payload": {
+      "driver_code": "DRV_OK",
+      "driver_payload": {
+        "step_id": "entry.s0::load1::define",
+        "op": "DefineContent"
+      },
+      "gate": {
+        "entry_kind": "script",
+        "entry_name": "entry"
+      },
+      "material_delta": {
+        "op": "DefineContent",
+        "content_id": "TARGET_PROTEIN"
+      },
+      "material_state_snapshot": {
+        "containers": {
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": {
+            "volume_uL": 10.0,
+            "mass_mg": 10.0,
+            "components": {
+              "MAGNETIC_BEADS": 10.0
+            },
+            "metadata": {
+              "kind": "tube",
+              "label": "Magnetic input",
+              "allocation_namespace": "entry",
+              "allocation_name": "__cmp_entry_s0_sample",
+              "allocation_step_id": "entry.s0::alloc",
+              "capacity_uL": 1500.0
+            },
+            "component_quantities": {
+              "MAGNETIC_BEADS": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 10.0
+              }
+            },
+            "component_entries": [
+              {
+                "entry_id": "MAGNETIC_BEADS",
+                "content_ref": "MAGNETIC_BEADS",
+                "amount": 10.0,
+                "quantity": {
+                  "dimension": "mass",
+                  "unit": "mg",
+                  "value": 10.0
+                },
+                "relation": "free",
+                "associated_with": null,
+                "association_target_kind": null,
+                "preservation": null,
+                "label": null,
+                "relationship_source": null,
+                "material_state_source": "content_registry",
+                "partition_class": null
+              }
+            ],
+            "material_relationships": []
+          }
+        },
+        "bindings": {
+          "tube::container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+          "__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample"
+        },
+        "indexed_bindings": {},
+        "content_registry": {
+          "MAGNETIC_BEADS": {
+            "content_kind": "particulate",
+            "content_type": "beads",
+            "content_code": "MAGNETIC_BEADS",
+            "content_name": null,
+            "content_attrs": {
+              "bead_property": "magnetic"
+            }
+          },
+          "TARGET_PROTEIN": {
+            "content_kind": "bio_molecule_or_virus",
+            "content_type": "protein",
+            "content_code": "TARGET_PROTEIN",
+            "content_name": null
+          }
+        },
+        "content_bindings": {
+          "MAGNETIC_BEADS": "MAGNETIC_BEADS",
+          "TARGET_PROTEIN": "TARGET_PROTEIN"
+        },
+        "container_content_index": {
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": {
+            "MAGNETIC_BEADS": {
+              "volume_uL": 10.0,
+              "mass_mg": 10.0,
+              "count_cells": 0.0,
+              "axis": "mass",
+              "unit": "mg"
+            }
+          }
+        }
+      }
+    },
+    "span": {
+      "line": 5,
+      "col": 5,
+      "start": 229,
+      "end": 337
+    }
+  },
+  {
+    "seq": 9,
+    "kind": "STEP_STARTED",
+    "step_id": "entry.s0::load1::load",
+    "payload": {
+      "op": "LoadContent",
+      "gate": {
+        "entry_kind": "script",
+        "entry_name": "entry"
+      }
+    },
+    "span": {
+      "line": 5,
+      "col": 5,
+      "start": 229,
+      "end": 341
+    }
+  },
+  {
+    "seq": 10,
+    "kind": "STEP_COMPLETED",
+    "step_id": "entry.s0::load1::load",
+    "payload": {
+      "driver_code": "DRV_OK",
+      "driver_payload": {
+        "step_id": "entry.s0::load1::load",
+        "op": "LoadContent"
+      },
+      "gate": {
+        "entry_kind": "script",
+        "entry_name": "entry"
+      },
+      "material_delta": {
+        "op": "LoadContent",
+        "container": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+        "content_id": "TARGET_PROTEIN",
+        "axis": "mass",
+        "amount": 1.0,
+        "unit": "ug"
+      },
+      "material_state_snapshot": {
+        "containers": {
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": {
+            "volume_uL": 10.001,
+            "mass_mg": 10.001,
+            "components": {
+              "MAGNETIC_BEADS": 10.0,
+              "TARGET_PROTEIN": 0.001
+            },
+            "metadata": {
+              "kind": "tube",
+              "label": "Magnetic input",
+              "allocation_namespace": "entry",
+              "allocation_name": "__cmp_entry_s0_sample",
+              "allocation_step_id": "entry.s0::alloc",
+              "capacity_uL": 1500.0
+            },
+            "component_quantities": {
+              "MAGNETIC_BEADS": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 10.0
+              },
+              "TARGET_PROTEIN": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.001
+              }
+            },
+            "component_entries": [
+              {
+                "entry_id": "MAGNETIC_BEADS",
+                "content_ref": "MAGNETIC_BEADS",
+                "amount": 10.0,
+                "quantity": {
+                  "dimension": "mass",
+                  "unit": "mg",
+                  "value": 10.0
+                },
+                "relation": "free",
+                "associated_with": null,
+                "association_target_kind": null,
+                "preservation": null,
+                "label": null,
+                "relationship_source": null,
+                "material_state_source": "content_registry",
+                "partition_class": null
+              },
+              {
+                "entry_id": "TARGET_PROTEIN",
+                "content_ref": "TARGET_PROTEIN",
+                "amount": 0.001,
+                "quantity": {
+                  "dimension": "mass",
+                  "unit": "mg",
+                  "value": 0.001
+                },
+                "relation": "free",
+                "associated_with": null,
+                "association_target_kind": null,
+                "preservation": null,
+                "label": null,
+                "relationship_source": null,
+                "material_state_source": "content_registry",
+                "partition_class": null
+              }
+            ],
+            "material_relationships": []
+          }
+        },
+        "bindings": {
+          "tube::container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+          "__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample"
+        },
+        "indexed_bindings": {},
+        "content_registry": {
+          "MAGNETIC_BEADS": {
+            "content_kind": "particulate",
+            "content_type": "beads",
+            "content_code": "MAGNETIC_BEADS",
+            "content_name": null,
+            "content_attrs": {
+              "bead_property": "magnetic"
+            }
+          },
+          "TARGET_PROTEIN": {
+            "content_kind": "bio_molecule_or_virus",
+            "content_type": "protein",
+            "content_code": "TARGET_PROTEIN",
+            "content_name": null
+          }
+        },
+        "content_bindings": {
+          "MAGNETIC_BEADS": "MAGNETIC_BEADS",
+          "TARGET_PROTEIN": "TARGET_PROTEIN"
+        },
+        "container_content_index": {
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": {
+            "MAGNETIC_BEADS": {
+              "volume_uL": 10.0,
+              "mass_mg": 10.0,
+              "count_cells": 0.0,
+              "axis": "mass",
+              "unit": "mg"
+            },
+            "TARGET_PROTEIN": {
+              "volume_uL": 0.001,
+              "mass_mg": 0.001,
+              "count_cells": 0.0,
+              "axis": "mass",
+              "unit": "mg"
+            }
+          }
+        }
+      }
+    },
+    "span": {
+      "line": 5,
+      "col": 5,
+      "start": 229,
+      "end": 341
+    }
+  },
+  {
+    "seq": 11,
+    "kind": "STEP_STARTED",
+    "step_id": "entry.s0::load2::define",
+    "payload": {
+      "op": "DefineContent",
+      "gate": {
+        "entry_kind": "script",
+        "entry_name": "entry"
+      }
+    },
+    "span": {
+      "line": 7,
+      "col": 5,
+      "start": 347,
+      "end": 430
+    }
+  },
+  {
+    "seq": 12,
+    "kind": "STEP_COMPLETED",
+    "step_id": "entry.s0::load2::define",
+    "payload": {
+      "driver_code": "DRV_OK",
+      "driver_payload": {
+        "step_id": "entry.s0::load2::define",
+        "op": "DefineContent"
+      },
+      "gate": {
+        "entry_kind": "script",
+        "entry_name": "entry"
+      },
+      "material_delta": {
+        "op": "DefineContent",
+        "content_id": "BUFFER"
+      },
+      "material_state_snapshot": {
+        "containers": {
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": {
+            "volume_uL": 10.001,
+            "mass_mg": 10.001,
+            "components": {
+              "MAGNETIC_BEADS": 10.0,
+              "TARGET_PROTEIN": 0.001
+            },
+            "metadata": {
+              "kind": "tube",
+              "label": "Magnetic input",
+              "allocation_namespace": "entry",
+              "allocation_name": "__cmp_entry_s0_sample",
+              "allocation_step_id": "entry.s0::alloc",
+              "capacity_uL": 1500.0
+            },
+            "component_quantities": {
+              "MAGNETIC_BEADS": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 10.0
+              },
+              "TARGET_PROTEIN": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.001
+              }
+            },
+            "component_entries": [
+              {
+                "entry_id": "MAGNETIC_BEADS",
+                "content_ref": "MAGNETIC_BEADS",
+                "amount": 10.0,
+                "quantity": {
+                  "dimension": "mass",
+                  "unit": "mg",
+                  "value": 10.0
+                },
+                "relation": "free",
+                "associated_with": null,
+                "association_target_kind": null,
+                "preservation": null,
+                "label": null,
+                "relationship_source": null,
+                "material_state_source": "content_registry",
+                "partition_class": null
+              },
+              {
+                "entry_id": "TARGET_PROTEIN",
+                "content_ref": "TARGET_PROTEIN",
+                "amount": 0.001,
+                "quantity": {
+                  "dimension": "mass",
+                  "unit": "mg",
+                  "value": 0.001
+                },
+                "relation": "free",
+                "associated_with": null,
+                "association_target_kind": null,
+                "preservation": null,
+                "label": null,
+                "relationship_source": null,
+                "material_state_source": "content_registry",
+                "partition_class": null
+              }
+            ],
+            "material_relationships": []
+          }
+        },
+        "bindings": {
+          "tube::container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+          "__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample"
+        },
+        "indexed_bindings": {},
+        "content_registry": {
+          "MAGNETIC_BEADS": {
+            "content_kind": "particulate",
+            "content_type": "beads",
+            "content_code": "MAGNETIC_BEADS",
+            "content_name": null,
+            "content_attrs": {
+              "bead_property": "magnetic"
+            }
+          },
+          "TARGET_PROTEIN": {
+            "content_kind": "bio_molecule_or_virus",
+            "content_type": "protein",
+            "content_code": "TARGET_PROTEIN",
+            "content_name": null
+          },
+          "BUFFER": {
+            "content_kind": "formulation",
+            "content_type": "buffer",
+            "content_code": "BUFFER",
+            "content_name": null
+          }
+        },
+        "content_bindings": {
+          "MAGNETIC_BEADS": "MAGNETIC_BEADS",
+          "TARGET_PROTEIN": "TARGET_PROTEIN",
+          "BUFFER": "BUFFER"
+        },
+        "container_content_index": {
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": {
+            "MAGNETIC_BEADS": {
+              "volume_uL": 10.0,
+              "mass_mg": 10.0,
+              "count_cells": 0.0,
+              "axis": "mass",
+              "unit": "mg"
+            },
+            "TARGET_PROTEIN": {
+              "volume_uL": 0.001,
+              "mass_mg": 0.001,
+              "count_cells": 0.0,
+              "axis": "mass",
+              "unit": "mg"
+            }
+          }
+        }
+      }
+    },
+    "span": {
+      "line": 7,
+      "col": 5,
+      "start": 347,
+      "end": 430
+    }
+  },
+  {
+    "seq": 13,
+    "kind": "STEP_STARTED",
+    "step_id": "entry.s0::load2::load",
+    "payload": {
+      "op": "LoadContent",
+      "gate": {
+        "entry_kind": "script",
+        "entry_name": "entry"
+      }
+    },
+    "span": {
+      "line": 7,
+      "col": 5,
+      "start": 347,
+      "end": 436
+    }
+  },
+  {
+    "seq": 14,
+    "kind": "STEP_COMPLETED",
+    "step_id": "entry.s0::load2::load",
+    "payload": {
+      "driver_code": "DRV_OK",
+      "driver_payload": {
+        "step_id": "entry.s0::load2::load",
+        "op": "LoadContent"
+      },
+      "gate": {
+        "entry_kind": "script",
+        "entry_name": "entry"
+      },
+      "material_delta": {
+        "op": "LoadContent",
+        "container": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+        "content_id": "BUFFER",
+        "axis": "volume",
+        "amount": 100.0,
+        "unit": "uL"
+      },
+      "material_state_snapshot": {
+        "containers": {
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": {
+            "volume_uL": 110.001,
+            "mass_mg": 110.001,
+            "components": {
+              "MAGNETIC_BEADS": 10.0,
+              "TARGET_PROTEIN": 0.001,
+              "BUFFER": 100.0
+            },
+            "metadata": {
+              "kind": "tube",
+              "label": "Magnetic input",
+              "allocation_namespace": "entry",
+              "allocation_name": "__cmp_entry_s0_sample",
+              "allocation_step_id": "entry.s0::alloc",
+              "capacity_uL": 1500.0
+            },
+            "component_quantities": {
+              "MAGNETIC_BEADS": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 10.0
+              },
+              "TARGET_PROTEIN": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.001
+              },
+              "BUFFER": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              }
+            },
+            "component_entries": [
+              {
+                "entry_id": "MAGNETIC_BEADS",
+                "content_ref": "MAGNETIC_BEADS",
+                "amount": 10.0,
+                "quantity": {
+                  "dimension": "mass",
+                  "unit": "mg",
+                  "value": 10.0
+                },
+                "relation": "free",
+                "associated_with": null,
+                "association_target_kind": null,
+                "preservation": null,
+                "label": null,
+                "relationship_source": null,
+                "material_state_source": "content_registry",
+                "partition_class": null
+              },
+              {
+                "entry_id": "TARGET_PROTEIN",
+                "content_ref": "TARGET_PROTEIN",
+                "amount": 0.001,
+                "quantity": {
+                  "dimension": "mass",
+                  "unit": "mg",
+                  "value": 0.001
+                },
+                "relation": "free",
+                "associated_with": null,
+                "association_target_kind": null,
+                "preservation": null,
+                "label": null,
+                "relationship_source": null,
+                "material_state_source": "content_registry",
+                "partition_class": null
+              },
+              {
+                "entry_id": "BUFFER",
+                "content_ref": "BUFFER",
+                "amount": 100.0,
+                "quantity": {
+                  "dimension": "volume",
+                  "unit": "uL",
+                  "value": 100.0
+                },
+                "relation": "free",
+                "associated_with": null,
+                "association_target_kind": null,
+                "preservation": null,
+                "label": null,
+                "relationship_source": null,
+                "material_state_source": "content_registry",
+                "partition_class": null
+              }
+            ],
+            "material_relationships": []
+          }
+        },
+        "bindings": {
+          "tube::container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+          "__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample"
+        },
+        "indexed_bindings": {},
+        "content_registry": {
+          "MAGNETIC_BEADS": {
+            "content_kind": "particulate",
+            "content_type": "beads",
+            "content_code": "MAGNETIC_BEADS",
+            "content_name": null,
+            "content_attrs": {
+              "bead_property": "magnetic"
+            }
+          },
+          "TARGET_PROTEIN": {
+            "content_kind": "bio_molecule_or_virus",
+            "content_type": "protein",
+            "content_code": "TARGET_PROTEIN",
+            "content_name": null
+          },
+          "BUFFER": {
+            "content_kind": "formulation",
+            "content_type": "buffer",
+            "content_code": "BUFFER",
+            "content_name": null
+          }
+        },
+        "content_bindings": {
+          "MAGNETIC_BEADS": "MAGNETIC_BEADS",
+          "TARGET_PROTEIN": "TARGET_PROTEIN",
+          "BUFFER": "BUFFER"
+        },
+        "container_content_index": {
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": {
+            "MAGNETIC_BEADS": {
+              "volume_uL": 10.0,
+              "mass_mg": 10.0,
+              "count_cells": 0.0,
+              "axis": "mass",
+              "unit": "mg"
+            },
+            "TARGET_PROTEIN": {
+              "volume_uL": 0.001,
+              "mass_mg": 0.001,
+              "count_cells": 0.0,
+              "axis": "mass",
+              "unit": "mg"
+            },
+            "BUFFER": {
+              "volume_uL": 100.0,
+              "mass_mg": 100.0,
+              "count_cells": 0.0,
+              "axis": "volume",
+              "unit": "uL"
+            }
+          }
+        }
+      }
+    },
+    "span": {
+      "line": 7,
+      "col": 5,
+      "start": 347,
+      "end": 436
+    }
+  },
+  {
+    "seq": 15,
+    "kind": "STEP_STARTED",
+    "step_id": "entry.s1",
+    "payload": {
+      "op": "sep",
+      "gate": {
+        "entry_kind": "script",
+        "entry_name": "entry"
+      }
+    },
+    "span": {
+      "line": 8,
+      "col": 3,
+      "start": 442,
+      "end": 954
+    }
+  },
+  {
+    "seq": 16,
+    "kind": "STEP_COMPLETED",
+    "step_id": "entry.s1",
+    "payload": {
+      "driver_code": "DRV_OK",
+      "driver_payload": {
+        "step_id": "entry.s1",
+        "op": "sep"
+      },
+      "gate": {
+        "entry_kind": "script",
+        "entry_name": "entry"
+      },
+      "material_delta": {
+        "op": "sep",
+        "program_kind": "magnetic_program",
+        "source": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+        "bind": "magnetic_result",
+        "slots": {
+          "0": "entry.s1::0",
+          "1": "entry.s1::1"
+        },
+        "keep_source": null,
+        "partition": {
+          "mode": "program_partition",
+          "strategy": "magnetic_program",
+          "slot_contract": {
+            "0": "bound",
+            "1": "flowthrough"
+          },
+          "classes": {},
+          "ratios_by_class": {},
+          "ratios_by_component": {
+            "MAGNETIC_BEADS": {
+              "0": 1.0,
+              "1": 0.0
+            },
+            "TARGET_PROTEIN": {
+              "0": 1.0,
+              "1": 0.0
+            },
+            "BUFFER": {
+              "0": 0.0,
+              "1": 1.0
+            }
+          },
+          "fates_by_component": {
+            "MAGNETIC_BEADS": {
+              "ratios": {
+                "0": 1.0,
+                "1": 0.0
+              },
+              "source": "author_explicit_fate",
+              "association": "free",
+              "accessibility": "accessible",
+              "preservation_state": "derived",
+              "provenance": null
+            },
+            "TARGET_PROTEIN": {
+              "ratios": {
+                "0": 1.0,
+                "1": 0.0
+              },
+              "source": "author_explicit_fate",
+              "association": "free",
+              "accessibility": "accessible",
+              "preservation_state": "derived",
+              "provenance": null
+            },
+            "BUFFER": {
+              "ratios": {
+                "0": 0.0,
+                "1": 1.0
+              },
+              "source": "author_explicit_fate",
+              "association": "free",
+              "accessibility": "accessible",
+              "preservation_state": "derived",
+              "provenance": null
+            }
+          },
+          "transitions_by_component": {
+            "MAGNETIC_BEADS": {
+              "0": {
+                "next_relation": "field_retained",
+                "next_label": "bound_output",
+                "next_association_target": {
+                  "kind": "container",
+                  "id": "entry.s1::0"
+                },
+                "retire_quantity": false,
+                "replacement_quantity": null,
+                "source": "scientific_model_provider",
+                "provenance": {
+                  "provider_id": "culsma.builtin.material_rulebook",
+                  "provider_version": "1.0",
+                  "model_id": null,
+                  "model_version": null,
+                  "configuration": {}
+                }
+              }
+            },
+            "TARGET_PROTEIN": {
+              "0": {
+                "next_relation": "bead_bound",
+                "next_label": null,
+                "next_association_target": {
+                  "kind": "component_entry",
+                  "id": "MAGNETIC_BEADS"
+                },
+                "retire_quantity": false,
+                "replacement_quantity": null,
+                "source": "author_transition",
+                "provenance": null
+              }
+            },
+            "BUFFER": {
+              "1": {
+                "next_relation": "free",
+                "next_label": "flowthrough_output",
+                "next_association_target": null,
+                "retire_quantity": false,
+                "replacement_quantity": null,
+                "source": "scientific_model_provider",
+                "provenance": {
+                  "provider_id": "culsma.builtin.material_rulebook",
+                  "provider_version": "1.0",
+                  "model_id": null,
+                  "model_version": null,
+                  "configuration": {}
+                }
+              }
+            }
+          },
+          "retired_quantities": {},
+          "fallback_components": [],
+          "bulk_quantity_policy": {
+            "volume": "detail_ledger_projection",
+            "mass": "detail_ledger_projection"
+          },
+          "operation_contract": {
+            "program_kind": "magnetic_program",
+            "effect_kind": "separation_fate",
+            "program_args": {
+              "duration": {
+                "value": 2.0,
+                "unit": "min",
+                "span": {
+                  "line": 9,
+                  "col": 43,
+                  "start": 521,
+                  "end": 525
+                },
+                "kind": "IRQuantity"
+              }
+            },
+            "slot_contract": {
+              "0": "bound",
+              "1": "flowthrough"
+            },
+            "preserved_association_slots": {
+              "bead": "0"
+            },
+            "released_associations": [],
+            "free_phase_passes": false,
+            "preservation_contract": {
+              "kind": "field_retention",
+              "field": "magnetic_rack",
+              "retained_slot": "0",
+              "default_incoming_slot": "1"
+            }
+          },
+          "preservation_contract": {
+            "kind": "field_retention",
+            "field": "magnetic_rack",
+            "retained_slot": "0",
+            "default_incoming_slot": "1"
+          }
+        },
+        "binding_events": []
+      },
+      "material_state_snapshot": {
+        "containers": {
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": {
+            "volume_uL": 0.0,
+            "mass_mg": 0.0,
+            "components": {},
+            "metadata": {
+              "kind": "tube",
+              "label": "Magnetic input",
+              "allocation_namespace": "entry",
+              "allocation_name": "__cmp_entry_s0_sample",
+              "allocation_step_id": "entry.s0::alloc",
+              "capacity_uL": 1500.0
+            },
+            "component_quantities": {},
+            "component_entries": [],
+            "material_relationships": []
+          },
+          "entry.s1::0": {
+            "volume_uL": 10.001,
+            "mass_mg": 10.001,
+            "components": {
+              "MAGNETIC_BEADS": 10.0,
+              "TARGET_PROTEIN": 0.001,
+              "BUFFER": 0.0
+            },
+            "metadata": {},
+            "component_entries": [
+              {
+                "entry_id": "MAGNETIC_BEADS",
+                "content_ref": "MAGNETIC_BEADS",
+                "amount": 10.0,
+                "quantity": {
+                  "dimension": "mass",
+                  "unit": "mg",
+                  "value": 10.0
+                },
+                "relation": "field_retained",
+                "associated_with": "entry.s1::0",
+                "association_target_kind": "container",
+                "preservation": "derived",
+                "label": "bound_output",
+                "relationship_source": "scientific_model",
+                "material_state_source": "scientific_model_provider",
+                "provenance": {
+                  "provider_id": "culsma.builtin.material_rulebook",
+                  "provider_version": "1.0",
+                  "model_id": null,
+                  "model_version": null,
+                  "configuration": {}
+                }
+              },
+              {
+                "entry_id": "TARGET_PROTEIN",
+                "content_ref": "TARGET_PROTEIN",
+                "amount": 0.001,
+                "quantity": {
+                  "dimension": "mass",
+                  "unit": "mg",
+                  "value": 0.001
+                },
+                "relation": "bead_bound",
+                "associated_with": "MAGNETIC_BEADS",
+                "association_target_kind": "component_entry",
+                "preservation": null,
+                "label": null,
+                "relationship_source": "author_transition",
+                "material_state_source": "author_transition"
+              },
+              {
+                "entry_id": "BUFFER",
+                "content_ref": "BUFFER",
+                "amount": 0.0,
+                "quantity": {
+                  "dimension": "volume",
+                  "unit": "uL",
+                  "value": 0.0
+                },
+                "relation": "free",
+                "associated_with": null,
+                "association_target_kind": null,
+                "preservation": "derived",
+                "label": null,
+                "relationship_source": "scientific_model",
+                "material_state_source": "scientific_model_provider"
+              }
+            ],
+            "component_quantities": {
+              "MAGNETIC_BEADS": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 10.0
+              },
+              "TARGET_PROTEIN": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.001
+              },
+              "BUFFER": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              }
+            },
+            "material_relationships": [
+              {
+                "kind": "association",
+                "subtype": "scientific_model_relation",
+                "dispersed_component_ids": [
+                  "MAGNETIC_BEADS"
+                ],
+                "material_state": "field_retained",
+                "associated_with": "entry.s1::0",
+                "material_state_source": "scientific_model_provider",
+                "label": "bound_output",
+                "provenance": {
+                  "provider_id": "culsma.builtin.material_rulebook",
+                  "provider_version": "1.0",
+                  "model_id": null,
+                  "model_version": null,
+                  "configuration": {}
+                }
+              }
+            ]
+          },
+          "entry.s1::1": {
+            "volume_uL": 100.0,
+            "mass_mg": 100.0,
+            "components": {
+              "MAGNETIC_BEADS": 0.0,
+              "TARGET_PROTEIN": 0.0,
+              "BUFFER": 100.0
+            },
+            "metadata": {},
+            "component_entries": [
+              {
+                "entry_id": "MAGNETIC_BEADS",
+                "content_ref": "MAGNETIC_BEADS",
+                "amount": 0.0,
+                "quantity": {
+                  "dimension": "mass",
+                  "unit": "mg",
+                  "value": 0.0
+                },
+                "relation": "free",
+                "associated_with": null,
+                "association_target_kind": null,
+                "preservation": "derived",
+                "label": null,
+                "relationship_source": "scientific_model",
+                "material_state_source": "scientific_model_provider"
+              },
+              {
+                "entry_id": "TARGET_PROTEIN",
+                "content_ref": "TARGET_PROTEIN",
+                "amount": 0.0,
+                "quantity": {
+                  "dimension": "mass",
+                  "unit": "mg",
+                  "value": 0.0
+                },
+                "relation": "free",
+                "associated_with": null,
+                "association_target_kind": null,
+                "preservation": "derived",
+                "label": null,
+                "relationship_source": "scientific_model",
+                "material_state_source": "scientific_model_provider"
+              },
+              {
+                "entry_id": "BUFFER",
+                "content_ref": "BUFFER",
+                "amount": 100.0,
+                "quantity": {
+                  "dimension": "volume",
+                  "unit": "uL",
+                  "value": 100.0
+                },
+                "relation": "free",
+                "associated_with": null,
+                "association_target_kind": null,
+                "preservation": "derived",
+                "label": "flowthrough_output",
+                "relationship_source": "scientific_model",
+                "material_state_source": "scientific_model_provider",
+                "provenance": {
+                  "provider_id": "culsma.builtin.material_rulebook",
+                  "provider_version": "1.0",
+                  "model_id": null,
+                  "model_version": null,
+                  "configuration": {}
+                }
+              }
+            ],
+            "component_quantities": {
+              "MAGNETIC_BEADS": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.0
+              },
+              "TARGET_PROTEIN": {
+                "dimension": "mass",
+                "unit": "mg",
+                "value": 0.0
+              },
+              "BUFFER": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              }
+            },
+            "material_relationships": []
+          }
+        },
+        "bindings": {
+          "tube::container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+          "__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample"
+        },
+        "indexed_bindings": {
+          "magnetic_result": {
+            "0": "entry.s1::0",
+            "1": "entry.s1::1"
+          }
+        },
+        "content_registry": {
+          "MAGNETIC_BEADS": {
+            "content_kind": "particulate",
+            "content_type": "beads",
+            "content_code": "MAGNETIC_BEADS",
+            "content_name": null,
+            "content_attrs": {
+              "bead_property": "magnetic"
+            }
+          },
+          "TARGET_PROTEIN": {
+            "content_kind": "bio_molecule_or_virus",
+            "content_type": "protein",
+            "content_code": "TARGET_PROTEIN",
+            "content_name": null
+          },
+          "BUFFER": {
+            "content_kind": "formulation",
+            "content_type": "buffer",
+            "content_code": "BUFFER",
+            "content_name": null
+          }
+        },
+        "content_bindings": {
+          "MAGNETIC_BEADS": "MAGNETIC_BEADS",
+          "TARGET_PROTEIN": "TARGET_PROTEIN",
+          "BUFFER": "BUFFER"
+        },
+        "container_content_index": {
+          "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample": {
+            "MAGNETIC_BEADS": {
+              "volume_uL": 10.0,
+              "mass_mg": 10.0,
+              "count_cells": 0.0,
+              "axis": "mass",
+              "unit": "mg"
+            },
+            "TARGET_PROTEIN": {
+              "volume_uL": 0.001,
+              "mass_mg": 0.001,
+              "count_cells": 0.0,
+              "axis": "mass",
+              "unit": "mg"
+            },
+            "BUFFER": {
+              "volume_uL": 100.0,
+              "mass_mg": 100.0,
+              "count_cells": 0.0,
+              "axis": "volume",
+              "unit": "uL"
+            }
+          }
+        }
+      }
+    },
+    "span": {
+      "line": 8,
+      "col": 3,
+      "start": 442,
+      "end": 954
+    }
+  }
+]

@@ -1,0 +1,51 @@
+{
+  "materials": [
+    {
+      "amount": 25.0,
+      "name": "Master mix",
+      "unit": "uL"
+    },
+    {
+      "amount": 19.0,
+      "name": "Water",
+      "unit": "uL"
+    },
+    {
+      "amount": 2.5,
+      "name": "Forward primer",
+      "unit": "uL"
+    },
+    {
+      "amount": 2.5,
+      "name": "Reverse primer",
+      "unit": "uL"
+    },
+    {
+      "amount": 1.0,
+      "name": "Template",
+      "unit": "uL"
+    }
+  ],
+  "resources": [
+    {
+      "capacity_uL": 200.0,
+      "count": 6,
+      "kind": "tube"
+    }
+  ],
+  "returns": {
+    "PCRWorkflow": {
+      "protocol_id": "p0",
+      "protocol_name": "PCRWorkflow",
+      "returns": [],
+      "value": {
+        "container_kind": "tube",
+        "id": "container/pcr.PCRWorkflow/p0.s5%3A%3Aalloc/product",
+        "kind": "container_ref",
+        "label": "PCR reaction",
+        "mass_mg": 50,
+        "volume_uL": 50
+      }
+    }
+  }
+}

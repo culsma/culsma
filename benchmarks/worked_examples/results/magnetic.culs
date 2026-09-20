@@ -1,0 +1,23 @@
+protocol CaptureOnBeads {
+  let sample = tube(label = "Magnetic input", load = [
+    content(kind = ContentKind.PARTICULATE, type = ContentType.BEADS, code = "MAGNETIC_BEADS",
+      attrs = { bead_property: magnetic }):10mg,
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN,
+      code = "TARGET_PROTEIN"):1ug,
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "BUFFER"):100uL]);
+  let fractions = sep(sample = sample,
+    program = magnetic_program(duration = 2min),
+    component_fates = {
+      MAGNETIC_BEADS: { bound: 100%, flowthrough: 0% },
+      TARGET_PROTEIN: { bound: 100%, flowthrough: 0% },
+      BUFFER: { bound: 0%, flowthrough: 100% }
+    },
+    transitions = [transition(
+      subject = sample.materials.get("TARGET_PROTEIN"),
+      output = MagneticProgramOutput.BOUND,
+      to = MaterialRelation.BEAD_BOUND,
+      associated_with = sample.materials.get("MAGNETIC_BEADS"))]);
+  return fractions;
+}
+let magnetic_result = CaptureOnBeads();
+return magnetic_result;

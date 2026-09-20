@@ -1,0 +1,71 @@
+{
+  "schema": "lab_report_v1",
+  "execution": {
+    "ok": true,
+    "diagnostic_count": 0,
+    "total_steps": 8,
+    "completed_steps": 8,
+    "failed_steps": 0,
+    "skipped_steps": 0
+  },
+  "headline": "Experiment completed successfully with no runtime errors.",
+  "materials": {
+    "has_material_state": true,
+    "input_inventory": [
+      {
+        "name": "Magnetic input",
+        "initial_uL": 100.0,
+        "initial_mL": 0.1,
+        "initial_mg": 10.001
+      }
+    ],
+    "final_products": [],
+    "intermediate_materials": [],
+    "reagent_consumption": [
+      {
+        "name": "Magnetic input",
+        "roles": [
+          "sample"
+        ],
+        "consumed_uL": 100.0,
+        "consumed_mL": 0.1,
+        "consumed_mg": 10.001
+      }
+    ]
+  },
+  "qc_results": [],
+  "resource_summary": {
+    "containers": {
+      "allocated_count": 1,
+      "touched_count": 1,
+      "container_kinds": [
+        {
+          "kind": "tube",
+          "count": 1
+        }
+      ],
+      "touched_names": [
+        "Magnetic input"
+      ]
+    },
+    "instruments": {
+      "tools": [],
+      "devices": []
+    }
+  },
+  "process_summary": {
+    "mutation_steps": 0,
+    "separation_steps": 1,
+    "environment_steps": 0,
+    "readout_steps": 0
+  },
+  "alerts": [],
+  "external_inventory": {
+    "schema": "culsma_inventory_reconciliation_v1",
+    "checked": false,
+    "sufficient": null,
+    "reason": "inventory_not_supplied",
+    "items": [],
+    "shortages": []
+  }
+}

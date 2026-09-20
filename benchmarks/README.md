@@ -11,16 +11,16 @@ here together; no documentation-site export is needed.
 <!-- paper-table:start -->
 Evaluated with Culsma 1.0.7.
 
-| Module | Coverage |
-| --- | ---: |
-| Module 01: Cell transfection | 100% |
-| Module 02: Selective plating and colony isolation | 91.7% |
-| Module 03: Cell lysate preparation | 100% |
-| Module 04: Suspension-cell staining | 100% |
-| Module 05: Magnetic-bead immunoprecipitation | 100% |
-| Module 06: Western blot | 100% |
-| Module 07: Sandwich ELISA | 97.6% |
-| Composite 01: Flow-cytometry immunophenotyping | 100% |
+| Module | Source steps | Coverage |
+| --- | ---: | ---: |
+| Module 01: Cell transfection | 13/13 | 100% |
+| Module 02: Selective plating and colony isolation | 11/12 | 91.7% |
+| Module 03: Cell lysate preparation | 10/10 | 100% |
+| Module 04: Suspension-cell staining | 29/29 | 100% |
+| Module 05: Magnetic-bead immunoprecipitation | 23/23 | 100% |
+| Module 06: Western blot | 32/32 | 100% |
+| Module 07: Sandwich ELISA | 41/42 | 97.6% |
+| Composite 01: Flow-cytometry immunophenotyping | 5/5 | 100% |
 <!-- paper-table:end -->
 
 The seven modules cover **159/161** numbered source steps (98.76%). Including
@@ -36,12 +36,33 @@ fidelity, biological success, or hardware execution. In particular, a transfer
 may match a source step while a finer detail such as dropwise delivery remains
 only in its annotation.
 
+## Known gaps and extension targets
+
+The results above describe the fixed evaluated version, not an exhaustive
+inventory of laboratory operations. The collection can grow as additional
+workflows are added; compare versions using the same source inventory and
+coverage rules when assessing improvements in operation support.
+
+| Source step | Current gap | Candidate extension and verification |
+| --- | --- | --- |
+| [Module 02 S5](modules/02-selective-plating-candidate-colony-isolation/source.md) | Evenly spreading each inoculum across agar with a sterile spreading tool is retained as an annotation; the preceding transfer does not represent surface spreading. | Define how the surface-spreading action, sample, destination surface, and procedural requirements are represented, then provide execution support. Verify the original step's program counterpart and preservation of sample/destination identity. |
+| [Module 07 S37](modules/07-sandwich-elisa/source.md) | Gentle plate tapping to mix the stopped reaction has no verified action in the evaluated program. | Define plate tap-mixing and its target and requirements, then provide execution support. Verify that it occurs after stopping the reaction and before readout, without substituting a different mixing method. |
+
+These are extension proposals, not implemented fixes or commitments that a
+driver change alone is sufficient. Language representation and execution
+support need to be assessed together. Keep the original numbered source steps
+and gap records until support is implemented and checked. A later result should
+record the revised program/runtime versions and rerun coverage and execution;
+successful software execution alone does not demonstrate physical performance.
+The current values (11/12 for Module 02 and 41/42 for Module 07) remain unchanged.
+
 ## Directory and execution entry points
 
 | Path | Contents |
 | --- | --- |
 | [`modules/`](modules/) | Seven modules; each has `source.md` and a `protocol.culs` entry program. |
 | [`composites/`](composites/) | One composite, also with `source.md` and a `protocol.culs` entry. |
+| [`worked_examples/`](worked_examples/) | Four manuscript examples, independent checker, and recorded results; excluded from coverage totals. |
 | [`libraries/`](libraries/) | Import entry for Module 04, reused by the composite. |
 | [`reproduce.py`](reproduce.py) | Single script for coverage, execution, comparison, and table generation. |
 | [`manifest.json`](manifest.json) | Fixed versions, source hashes, expected counts and known gaps. |
@@ -101,7 +122,7 @@ the source directories.
    in `manifest.json`. Update them only for an intended, reviewed change;
    do not replace expectations merely to make a failing comparison pass.
 3. Run `reproduce.py` into a new directory. Add `--update-readme` to regenerate
-   the marked two-column table above after all comparisons pass. The same
+   the marked three-column table above after all comparisons pass. The same
    table is written to `table.md`, using the paper's module names and rounding,
    with one version label for the entire run.
 4. Review the resulting records. When advancing to a new runtime version,
@@ -114,4 +135,6 @@ the source directories.
 Historical Cases 00–14 and their original tools are preserved outside this
 active directory in [`archive/benchmarks-legacy/`](../archive/benchmarks-legacy/).
 They are excluded from this runner and the paper's current coverage totals.
-The four manuscript illustrations are also evaluated separately.
+The four manuscript illustrations and their independent reproduction script are
+provided in [`worked_examples/`](worked_examples/). They are evaluated separately
+and do not contribute to the coverage totals above.
