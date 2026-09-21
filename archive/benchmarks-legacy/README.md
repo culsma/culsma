@@ -16,39 +16,46 @@ separate worked example (00), with their source files and expected results.
 | `requirements.lock` | Exact dependency versions and installation-package hashes. |
 | `SOURCES.md` | Source provenance and complete case references. |
 
-Every case has the same six files:
+Migrated cases use three files (Case 00 currently):
 
 | File | Contents |
 | --- | --- |
-| `protocol.culs` | Executable Culsma program. |
-| `source.md` | Original experimental description. |
-| `source.steps.json` | Reviewed step titles and inputs/outputs for navigation; not a counting input. |
-| `action_descriptors.json` | Section 3.2: per-step descriptors and evidence. |
-| `material_state_continuity.json` | Section 3.3: objects, later uses and execution completion. |
-| `result_traceability.json` | Section 3.4: consumption, touched containers and final material states. |
+| `source.md` | Context, one numbered `## Steps` section, and optional notes. |
+| `protocol.culs` | Program with each source step copied under a `Source step S<n>:` prefix above its corresponding code. Consecutive markers may share one code region when one operation implements multiple source steps. |
+| `coverage.json` | Script-generated step correspondence results; never edited manually. |
 
-The supplied JSON files are expected results. The scripts regenerate them from
-source and fresh CLI exports without reading them as counting inputs.
-No per-case configuration or compressed archive is needed.
+The shared format is defined in `schemas/source-coverage.schema.json` and
+`tools/source_comment_coverage.py`. Only the Steps section is counted. Context
+and notes can preserve source provenance and additional protocol information.
+Unmigrated cases retain the earlier layout. Historical Case 00 descriptor,
+continuity and traceability baselines now live in `expected/cases/00/` and remain
+available to `reproduce.py check-baseline`.
 
-## Modular benchmark
-
-The experimental `modules/` collection contains seven reusable source--program
-pairs, and `composites/` contains a workflow that imports Module 04. Generate
-the correspondence record for one artifact with:
+## Generate coverage in each case
 
 ```sh
-python3 tools/modular_source_coverage.py modules/01-cell-transfection \
-  --implementation <interpreter-commit> --language-version <version>
+python reproduce.py coverage --case 00 \
+  --python /path/to/culsma-environment/bin/python \
+  --implementation IMPLEMENTATION_COMMIT
 ```
 
-The modular rule accepts source-step annotations across all `.culs` files in
-the artifact directory because a module may place its entry call and reusable
-protocol definitions in separate files. A source step is matched when its
-numbered text occurs exactly once and has a program statement; a reference-only
-placeholder does not count. This is structural correspondence, not proof that
-the statement captures every experimental detail or that the modeled operation
-is biologically valid.
+This writes `cases/00/coverage.json`. Multiple explicit case IDs generate one
+file in each selected case, never a shared report directory. Cases must first
+adopt the numbered Steps/comment format. The score measures source-step
+correspondence, not numerical or semantic correctness.
+The result records counts and issues only; matched steps are not repeated.
+A reviewed missing language capability may be declared next to the affected
+program region as `// Language gap S<n>: ...`. The static correspondence score
+does not absorb this judgment. Versioned release summaries keep the two results
+separate and are generated with `tools/build_coverage_snapshot.py`; see
+[`releases/README.md`](releases/README.md).
+See [PRESENTATION.md](PRESENTATION.md) for website and publication rules.
+
+The retired numerical/semantic review system and local pilot captures have been
+moved outside the checkout to a local backup. They are not inputs to this command.
+Migration and evidence follow-up are tracked in
+[PM #116](https://github.com/culsma/culsma-pm/issues/116). Historical runtime commands
+below retain their v9 baselines in `expected/`.
 
 ## Install the matching environment
 
@@ -101,6 +108,10 @@ and verify the installed versions. Actual Python, Culsma and Lark versions are
 recorded with the run. The runner accepts stable Python 3.11–3.13. Source and
 artifact hashes are generated automatically in the capture receipt and checked
 when extracting; there is no separate file-hash list to maintain at the root.
+Local `include` dependencies are copied recursively into the capture bundle.
+Library `import` dependencies can be captured with repeatable
+`--library-root /path/to/library` arguments. Every copied source is hash-bound,
+and source evidence retains its bundle-relative filename.
 
 Recompute comparisons without rerunning Culsma:
 
@@ -132,9 +143,11 @@ S1, gaps, malformed/ranged markers and ambiguous mappings fail. Without a
 separate step list, an entirely deleted final marker cannot be detected solely
 from remaining source; expected tables provide an independent comparison.
 
-The fixed `patterns-metrics-nested-v9` rules deduplicate identical descriptors
-within a step. Loop iterations do not multiply static descriptors; distinct
-explicit calls retain their object context. Groups require program-defined
+The supplied historical baselines use `patterns-metrics-nested-v9`. The current
+`patterns-metrics-nested-v10` extractor adds dependency sources and multi-source
+evidence while retaining the same descriptor rules. It deduplicates identical
+descriptors within a step. Loop iterations do not multiply static descriptors;
+distinct explicit calls retain their object context. Groups require program-defined
 membership, a common introduction step and identical later-use steps;
 overlapping eligible groups are split. Later uses are compared by source-step
 number, while runtime events establish actual use. Traceability counts preserve
@@ -179,3 +192,17 @@ updating expected results. Do not change expected results just to make a failing
 comparison pass. Programs and sources are maintained here; the website and
 manuscript are publication copies. Public releases should identify the Git
 commit/tag used so readers can obtain the same files.
+
+## Instruction source format
+
+Use one `## Steps` section with consecutive numbers starting at 1. Preparation
+belongs in the same sequence. Optional `## Context` and `## Notes` sections retain
+provenance, background and additional source information outside the denominator.
+Copy each complete step into `protocol.culs` as `// Source step S1: ...` above
+its code. Continue wrapped source text with `//   ...`; other comments are ignored.
+When one Culsma operation implements multiple source instructions, place their
+markers consecutively above that operation; the checker assigns the shared code
+region to each step. Do not duplicate an experimental operation to create a
+one-to-one textual mapping.
+Generate `coverage.json` with the shared checker; do not maintain extra per-case
+step indexes, report tables or hand-written coverage values.

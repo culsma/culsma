@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Source step correspondence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "rules",
+    "metric",
+    "case_id",
+    "implementation",
+    "language_version",
+    "source_sha256",
+    "program_sha256",
+    "total_steps",
+    "matched_steps",
+    "coverage_percent",
+    "status",
+    "issues"
+  ],
+  "properties": {
+    "schema": {
+      "const": "source-coverage-v2"
+    },
+    "rules": {
+      "const": "steps-section-correspondence-v2"
+    },
+    "metric": {
+      "const": "source_step_correspondence"
+    },
+    "case_id": {
+      "type": "string"
+    },
+    "implementation": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "language_version": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "program_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "total_steps": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "matched_steps": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "coverage_percent": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 100
+    },
+    "status": {
+      "enum": [
+        "pass",
+        "incomplete",
+        "error"
+      ]
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "step",
+          "reason"
+        ],
+        "properties": {
+          "step": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1
+          },
+          "reason": {
+            "enum": [
+              "missing_comment",
+              "duplicate_comment",
+              "text_mismatch",
+              "no_code_region",
+              "unexpected_comment",
+              "order_changed",
+              "check_error"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

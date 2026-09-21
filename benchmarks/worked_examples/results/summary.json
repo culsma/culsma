@@ -1,9 +1,9 @@
 {
-  "implementation_commit": "ab06a04446b51d208b6a8b6eb2b36853e67d0d7b",
+  "implementation_commit": "5364676bc2437b4981a00ce0133c730af243e469",
   "python": "3.12.8",
   "execution_backend": "deterministic_reference",
-  "runner_sha256": "a0ae2e1228155f269dfbb47607b42a6e372c9cf249501a97ede70482e24cd412",
-  "source_archive_sha256": "1d5f249f09af52e72f0978078da3afbf0e8941ab9ef832f376140b9d2b39ef7f",
+  "runner_sha256": "7a94db1496dfabf78dc71d10d67aa2abc8b6d71e4ac417c5fa5ef59d0101ac34",
+  "source_archive_sha256": "01736ba0a38c61ae0e75c78e24794028d7bb4ac98eed247fab9bd020b8c49107",
   "input_mode": "exported_programs",
   "examples": {
     "pcr": {
@@ -116,7 +116,7 @@
   },
   "lark": "1.3.1",
   "compact_results": {
-    "culsma_version": "1.0.7rc2",
+    "culsma_version": "1.0.7",
     "fields": [
       "materials",
       "resources",

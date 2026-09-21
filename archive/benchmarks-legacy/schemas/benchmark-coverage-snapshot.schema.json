@@ -1,0 +1,244 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Versioned benchmark coverage snapshot",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "benchmark_version",
+    "benchmark_revision",
+    "released_at",
+    "language_version",
+    "implementation",
+    "totals",
+    "cases",
+    "changes"
+  ],
+  "properties": {
+    "schema": {"const": "benchmark-coverage-snapshot-v1"},
+    "benchmark_version": {"type": "string", "minLength": 1},
+    "benchmark_revision": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "released_at": {"type": "string", "format": "date"},
+    "language_version": {"type": "string", "minLength": 1},
+    "implementation": {"type": "string", "minLength": 1},
+    "totals": {"$ref": "#/$defs/totals"},
+    "cases": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/case"}
+    },
+    "changes": {"$ref": "#/$defs/changes"}
+  },
+  "$defs": {
+    "totals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cases",
+        "covered_cases",
+        "cases_with_language_gaps",
+        "incomplete_cases",
+        "error_cases",
+        "cases_with_unavailable_counts",
+        "matched_steps",
+        "total_steps",
+        "step_correspondence_percent",
+        "open_correspondence_issues",
+        "open_language_gaps"
+      ],
+      "properties": {
+        "cases": {"type": "integer", "minimum": 0},
+        "covered_cases": {"type": "integer", "minimum": 0},
+        "cases_with_language_gaps": {"type": "integer", "minimum": 0},
+        "incomplete_cases": {"type": "integer", "minimum": 0},
+        "error_cases": {"type": "integer", "minimum": 0},
+        "cases_with_unavailable_counts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "matched_steps": {"type": "integer", "minimum": 0},
+        "total_steps": {"type": "integer", "minimum": 0},
+        "step_correspondence_percent": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "open_correspondence_issues": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "open_language_gaps": {"type": "integer", "minimum": 0}
+      }
+    },
+    "issue": {
+      "type": "object",
+      "required": ["step", "reason"],
+      "properties": {
+        "case_id": {"type": "string"},
+        "step": {"type": ["integer", "null"], "minimum": 1},
+        "reason": {"type": "string"},
+        "message": {"type": "string"}
+      }
+    },
+    "gap": {
+      "type": "object",
+      "required": ["step", "summary"],
+      "properties": {
+        "case_id": {"type": "string"},
+        "step": {"type": "integer", "minimum": 1},
+        "summary": {"type": "string", "minLength": 1}
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "case_id",
+        "status",
+        "correspondence",
+        "language_gaps",
+        "language_version",
+        "implementation",
+        "evidence"
+      ],
+      "properties": {
+        "case_id": {"type": "string"},
+        "status": {
+          "enum": ["covered", "language_gap", "incomplete", "error"]
+        },
+        "correspondence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "matched_steps",
+            "total_steps",
+            "coverage_percent",
+            "status",
+            "issues"
+          ],
+          "properties": {
+            "matched_steps": {
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "total_steps": {
+              "type": ["integer", "null"],
+              "minimum": 0
+            },
+            "coverage_percent": {
+              "type": ["number", "null"],
+              "minimum": 0,
+              "maximum": 100
+            },
+            "status": {"enum": ["pass", "incomplete", "error"]},
+            "issues": {
+              "type": "array",
+              "items": {"$ref": "#/$defs/issue"}
+            }
+          }
+        },
+        "language_gaps": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/gap"}
+        },
+        "language_version": {"type": "string"},
+        "implementation": {"type": "string"},
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_sha256",
+            "program_sha256",
+            "source",
+            "program",
+            "coverage"
+          ],
+          "properties": {
+            "source_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "program_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "source": {"type": "string"},
+            "program": {"type": "string"},
+            "coverage": {"type": "string"}
+          }
+        }
+      }
+    },
+    "changes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "compared_to",
+        "comparable_cases",
+        "source_changed_cases",
+        "added_cases",
+        "removed_cases",
+        "resolved_correspondence_issues",
+        "introduced_correspondence_issues",
+        "resolved_language_gaps",
+        "introduced_language_gaps",
+        "updated_language_gaps"
+      ],
+      "properties": {
+        "compared_to": {"type": ["string", "null"]},
+        "comparable_cases": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "source_changed_cases": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "added_cases": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "removed_cases": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "resolved_correspondence_issues": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/issue"}
+        },
+        "introduced_correspondence_issues": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/issue"}
+        },
+        "resolved_language_gaps": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/gap"}
+        },
+        "introduced_language_gaps": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/gap"}
+        },
+        "updated_language_gaps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "case_id",
+              "step",
+              "previous_summary",
+              "summary"
+            ],
+            "properties": {
+              "case_id": {"type": "string"},
+              "step": {"type": "integer", "minimum": 1},
+              "previous_summary": {"type": "string"},
+              "summary": {"type": "string"}
+            }
+          }
+        }
+      }
+    }
+  }
+}

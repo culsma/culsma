@@ -4,8 +4,8 @@ protocol GfpLysateClarification(
   lysis_buffer_volume = 80uL,
   clarified_volume = 100uL
 ) {
-  // Prepare a washed GFP-expressing microbial-cell suspension
-  // in a lysis-compatible resuspension buffer.
+  // Source step S1: Prepare 100000 washed GFP-expressing microbial cells in 80 uL lysis-compatible
+  //   resuspension buffer.
   let cell_suspension = tube(
     label = "GfpCellSuspension",
     capacity = 1.5mL,
@@ -24,6 +24,7 @@ protocol GfpLysateClarification(
     ]
   );
 
+  // Source step S2: Prepare at least 80 uL 2x lysis buffer.
   let lysis_buffer_2x = tube(
     label = "LysisBuffer2x",
     capacity = 1.5mL,
@@ -37,41 +38,44 @@ protocol GfpLysateClarification(
     ]
   );
 
+  // Source step S3: Prepare one 1.5 mL lysis tube.
   let lysis_tube = tube(label = "LysisTube", capacity = 1.5mL);
+  // Source step S4: Prepare one 1.0 mL clarified-lysate output tube.
   let clarified_lysate = tube(label = "ClarifiedLysate", capacity = 1mL);
+  // Source step S5: Prepare one 1.0 mL debris-waste tube.
   let debris_waste = tube(label = "DebrisWaste", capacity = 1mL);
 
-  // Source step S1: Combine equal volumes of cell suspension and 2x lysis
-  // buffer to produce a 1x final lysis condition.
+  // Source step S6: Transfer 80 uL washed GFP-expressing microbial-cell suspension containing 100000 cells and
+  //   80 uL 2x lysis buffer into the 1.5 mL lysis tube to produce a 1x final lysis condition.
   lysis_tube << [
     cell_suspension:cell_suspension_volume,
     lysis_buffer_2x:lysis_buffer_volume
   ];
 
-  // Source step S2: Pipette mix 10 times using 80% of the 160 uL mixture.
+  // Source step S7: Mix the lysis mixture by pipetting 10 times.
   repeat lysis_pipette_mix in schedule(start = 1, end = 10, step = 1) {
     lysis_tube << [lysis_tube:128uL];
   }
 
-  // Source step S3: Incubate at 37 C for 30 min.
+  // Source step S8: Incubate the lysis mixture at 37 C for 30 min.
   with env(thermal = 37C, duration = 30min) {
     hold(sample = lysis_tube);
   }
 
-  // Source step S4: Clarify at 12000 x g and 22 C for 10 min,
-  // retain 100 uL supernatant, and route the debris-pellet fraction to waste.
+  // Source step S9: Centrifuge the lysate at 12000 x g and 22 C for 10 min to resolve a clarified supernatant
+  //   fraction and a debris-pellet fraction.
   with env(thermal = 22C, duration = 10min) {
     sep(
       sample = lysis_tube,
       program = centrifuge_program(drive = 12000g)
     );
   }
-  // Source step S5: Transfer the clarified fraction.
+  // Source step S10: Transfer 100 uL clarified supernatant fraction to the clarified-lysate output tube.
   clarified_lysate << [lysis_tube.contents[0]:clarified_volume];
-  // Source step S6: Route the debris fraction to waste.
+  // Source step S11: Discard the debris-pellet fraction.
   debris_waste << [lysis_tube.contents[1]];
 
-  // Source step S7: Record fluorescence from the clarified lysate.
+  // Source step S12: Record a fluorescence readout from the clarified lysate.
   let lysate_readout = img(
     sample = clarified_lysate,
     quantity = fluorescence,

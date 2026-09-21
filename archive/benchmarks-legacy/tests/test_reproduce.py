@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,8 +15,8 @@ spec.loader.exec_module(r)
 
 def runtime_fixture(case):
     """Minimal CLI-shaped fixture built from the plain published metric records."""
-    c = r.read_json(r.case_dir(case) / "material_state_continuity.json")
-    t = r.read_json(r.case_dir(case) / "result_traceability.json")
+    c = r.read_json(r.baseline_dir(case) / "material_state_continuity.json")
+    t = r.read_json(r.baseline_dir(case) / "result_traceability.json")
     return {"ok": True, "returns": t["formal_returns"]["value"], "report": {
         "execution": copy.deepcopy(c["execution"]), "external_inventory": {"checked": False},
         "resource_summary": {"containers": {"touched_count": t["touched_containers"],
@@ -26,6 +27,24 @@ def runtime_fixture(case):
 
 
 class ReproductionTests(unittest.TestCase):
+    def test_coverage_dispatches_only_selected_case_inputs(self):
+        with patch.object(r.subprocess, 'run', return_value=SimpleNamespace(returncode=0)) as run:
+            self.assertEqual(r.run_source_coverage(['00', '09'], '/env/python', 'revision'), 0)
+        self.assertEqual(run.call_count, 2)
+        for call, case in zip(run.call_args_list, ['00', '09']):
+            command = call.args[0]
+            self.assertIn(str(r.case_dir(case) / 'source.md'), command)
+            self.assertIn(str(r.case_dir(case) / 'protocol.culs'), command)
+            self.assertNotIn('--out', command)
+            self.assertNotIn('--reviews', command)
+
+    def test_coverage_rejects_invalid_cases_and_propagates_failure(self):
+        with patch.object(r.subprocess, 'run', return_value=SimpleNamespace(returncode=1)) as run:
+            for cases in ([], ['00', '00'], ['../00']):
+                with self.assertRaises(ValueError):r.run_source_coverage(cases, '/env/python')
+            run.assert_not_called()
+            self.assertEqual(r.run_source_coverage(['00'], '/env/python'), 1)
+
     def test_plain_case_metrics_reproduce_manuscript_counts(self):
         rows = r.derive()
         expected = r.read_json(ROOT / "expected/tables.json")
@@ -41,7 +60,7 @@ class ReproductionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             dest = Path(tmp)
             for name in ("action_descriptors.json", "material_state_continuity.json", "result_traceability.json"):
-                r.write_json(dest / name, r.read_json(ROOT / "cases/00" / name))
+                r.write_json(dest / name, r.read_json(r.baseline_dir("00") / name))
             counts = r.generated_counts(dest)
             self.assertEqual(counts["descriptor_items"], 25)
             obj = r.read_json(dest / "action_descriptors.json")
@@ -54,7 +73,7 @@ class ReproductionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             dest = Path(tmp)
             for name in ("action_descriptors.json", "material_state_continuity.json", "result_traceability.json"):
-                r.write_json(dest / name, r.read_json(ROOT / "cases/00" / name))
+                r.write_json(dest / name, r.read_json(r.baseline_dir("00") / name))
             obj = r.read_json(dest / "material_state_continuity.json")
             obj["rows"][0]["used_in"][0] = obj["rows"][0]["introduced_at"]
             r.write_json(dest / "material_state_continuity.json", obj)
@@ -157,7 +176,7 @@ class ReproductionTests(unittest.TestCase):
 
     def test_plain_trace_projection_matches_runtime_records(self):
         for case in ("00", "01", "05"):
-            trace = r.read_json(r.case_dir(case) / "result_traceability.json")
+            trace = r.read_json(r.baseline_dir(case) / "result_traceability.json")
             run = {"ok": True, "state": {"artifacts": {"material_state": {"containers": {
                 row["container_id"]: row["record"]["material_state"]
                 for row in trace["final_material_records"]}}}}}
@@ -170,15 +189,21 @@ class ReproductionTests(unittest.TestCase):
         for removed in ("manifest.json", "checksums.json", "references.bib", "tools/prepare_snapshot.py"):
             self.assertFalse((ROOT / removed).exists())
         for case in r.discover_cases():
-            self.assertEqual({p.name for p in r.case_dir(case).iterdir()}
-                             - ({"antibody_preparation.culs"} if str(case) == "09" else set()), {
+            if case == "00":
+                self.assertEqual({p.name for p in r.case_dir(case).iterdir()}, {"source.md", "protocol.culs", "coverage.json"})
+                continue
+            expected_files = {
                 "protocol.culs", "source.md", "source.steps.json",
                 "action_descriptors.json", "material_state_continuity.json",
-                "result_traceability.json"})
+                "result_traceability.json"}
+            if case == "09":
+                # This is an executable include, not a duplicate audit file.
+                expected_files.add("antibody_preparation.culs")
+            self.assertEqual({p.name for p in r.case_dir(case).iterdir()}, expected_files)
         self.assertFalse((ROOT / "patterns").exists())
         self.assertFalse((ROOT / "docs").exists())
         self.assertEqual({p.name for p in (ROOT / "expected").iterdir()},
-                         {"tables.json", "tables.md"})
+                         {"tables.json", "tables.md", "cases"})
 
     def test_real_case_discovery(self):
         self.assertEqual(r.discover_cases(), [f"{i:02}" for i in range(15)])

@@ -14,7 +14,7 @@ the seven modules and composite used for Section 3.5 coverage.
 ## Reproduce
 
 Use Python 3.12 and Lark 1.3.1. Follow the parent README to obtain a runtime
-checkout at `42b562bce488d25bdc00af82c62fdb5d4cc52b8b`, then install its CLI:
+checkout at `5364676bc2437b4981a00ce0133c730af243e469`, then install its CLI:
 
 ```sh
 python3.12 -m venv /path/to/culsma-runtime/.venv
@@ -32,12 +32,10 @@ From this directory, use a fresh output directory:
   --tex-output-dir /tmp/culsma-worked-example-results/listings
 ```
 
-The material-state and relationship checks use the archived implementation
-`ab06a04446b51d208b6a8b6eb2b36853e67d0d7b`, an ancestor retained in the runtime
-repository. The compact outputs use the installed CLI at `42b562b`. These are
-two explicitly identified execution paths; the four-example checks are not the
-modular benchmark runner. A full clone retains the required implementation
-history; if using a shallow clone, fetch that history before running.
+The material-state checks and compact CLI exports use the same implementation,
+`5364676bc2437b4981a00ce0133c730af243e469` (package version 1.0.7).
+The four-example checks remain separate from the modular benchmark runner.
+A full clone retains the pinned implementation required by the checker.
 
 `results/summary.json` records implementation, dependency and source identities,
 completed-step counts, and the checked outcomes. Per-example files retain

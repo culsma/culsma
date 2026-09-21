@@ -3,8 +3,8 @@
   "rules": "modular-source-step-correspondence-v1",
   "metric": "source_step_correspondence",
   "artifact": "04-suspension-cell-staining",
-  "implementation": "42b562bce488d25bdc00af82c62fdb5d4cc52b8b",
-  "language_version": "1.0.7rc3",
+  "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
+  "language_version": "1.0.7",
   "source_sha256": "af891f53ec8aeb3a4c35ac34d5ade079cde2ed5ed115f1cf6ef23bad50c73444",
   "program_sha256": {
     "module.culs": "d313d40ca63ca452cffc7957c608469aa769a3a9c2c6fd668a21842ecda590c0",

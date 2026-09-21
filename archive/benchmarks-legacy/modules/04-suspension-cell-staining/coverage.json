@@ -1,0 +1,20 @@
+{
+  "schema": "source-coverage-v2",
+  "rules": "steps-section-correspondence-v2",
+  "metric": "source_step_correspondence",
+  "case_id": "04-suspension-cell-staining",
+  "implementation": "0a6c98405cec902d8ea380114b3818c9e2ee1d69",
+  "language_version": "1.0.7rc2",
+  "source_sha256": "af891f53ec8aeb3a4c35ac34d5ade079cde2ed5ed115f1cf6ef23bad50c73444",
+  "program_sha256": "1a598df7ac4d54825f96bb84825061db8fe8ad6ee31563f88d03278c8c573353",
+  "total_steps": 29,
+  "matched_steps": 29,
+  "coverage_percent": 100.0,
+  "status": "incomplete",
+  "issues": [
+    {
+      "step": null,
+      "reason": "order_changed"
+    }
+  ]
+}

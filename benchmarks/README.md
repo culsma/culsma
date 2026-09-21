@@ -14,7 +14,7 @@ Evaluated with Culsma 1.0.7.
 | Module | Source steps | Coverage |
 | --- | ---: | ---: |
 | Module 01: Cell transfection | 13/13 | 100% |
-| Module 02: Selective plating and colony isolation | 11/12 | 91.7% |
+| Module 02: Selective plating and colony isolation | 12/12 | 100% |
 | Module 03: Cell lysate preparation | 10/10 | 100% |
 | Module 04: Suspension-cell staining | 29/29 | 100% |
 | Module 05: Magnetic-bead immunoprecipitation | 23/23 | 100% |
@@ -23,14 +23,14 @@ Evaluated with Culsma 1.0.7.
 | Composite 01: Flow-cytometry immunophenotyping | 5/5 | 100% |
 <!-- paper-table:end -->
 
-The seven modules cover **159/161** numbered source steps (98.76%). Including
-the composite gives **164/166** (98.80%). All eight entry programs complete:
+The seven modules cover **160/161** numbered source steps (99.38%). Including
+the composite gives **165/166** (99.40%). All eight entry programs complete:
 **2406/2406** generated execution steps, with no failed or skipped steps and
 no runtime diagnostics. Source steps and execution steps are different
 counts; expanded loop iterations do not increase source-step coverage.
 
-The two uncovered steps are Module 02 S5 (spreading inoculum on agar) and
-Module 07 S37 (tap-mixing a plate). These remain explicit gaps. Coverage
+The uncovered step is Module 07 S37 (tap-mixing a plate). Module 02 now
+represents surface spreading with `constraint(spread, aseptic)`. Coverage
 measures structural source–program correspondence, not complete semantic
 fidelity, biological success, or hardware execution. In particular, a transfer
 may match a source step while a finer detail such as dropwise delivery remains
@@ -45,7 +45,6 @@ coverage rules when assessing improvements in operation support.
 
 | Source step | Current gap | Candidate extension and verification |
 | --- | --- | --- |
-| [Module 02 S5](modules/02-selective-plating-candidate-colony-isolation/source.md) | Evenly spreading each inoculum across agar with a sterile spreading tool is retained as an annotation; the preceding transfer does not represent surface spreading. | Define how the surface-spreading action, sample, destination surface, and procedural requirements are represented, then provide execution support. Verify the original step's program counterpart and preservation of sample/destination identity. |
 | [Module 07 S37](modules/07-sandwich-elisa/source.md) | Gentle plate tapping to mix the stopped reaction has no verified action in the evaluated program. | Define plate tap-mixing and its target and requirements, then provide execution support. Verify that it occurs after stopping the reaction and before readout, without substituting a different mixing method. |
 
 These are extension proposals, not implemented fixes or commitments that a
@@ -54,7 +53,9 @@ support need to be assessed together. Keep the original numbered source steps
 and gap records until support is implemented and checked. A later result should
 record the revised program/runtime versions and rerun coverage and execution;
 successful software execution alone does not demonstrate physical performance.
-The current values (11/12 for Module 02 and 41/42 for Module 07) remain unchanged.
+Module 02 is 12/12; Module 07 remains 41/42. Module 02 still requires an
+operator-supplied mapping from selected observation rows to colony material
+references; structural correspondence does not establish that automatic link.
 
 ## Directory and execution entry points
 
@@ -78,9 +79,9 @@ Each `source.md` retains the procedure's source references and context.
 With Git and Python 3.12 installed, run from a new working directory:
 
 ```sh
-git clone --branch codex/benchmark-publication https://github.com/culsma/culsma.git culsma-benchmark
+git clone --branch codex/release-1.0.7-preparation https://github.com/culsma/culsma.git culsma-benchmark
 git clone https://github.com/culsma/culsma.git culsma-runtime
-git -C culsma-runtime checkout 42b562bce488d25bdc00af82c62fdb5d4cc52b8b
+git -C culsma-runtime checkout 5364676bc2437b4981a00ce0133c730af243e469
 python3.12 -m venv .venv
 .venv/bin/python -m pip install lark==1.3.1
 .venv/bin/python culsma-benchmark/benchmarks/reproduce.py \
@@ -93,16 +94,15 @@ The runner imports the pinned runtime directly; no private wheel is required.
 Use a new output directory for every run. For local work inside this repository,
 use `benchmarks/local-results/<run-name>/`, which is ignored by Git.
 
-The input snapshot is `e65e56cfe4de10b21d890fe2724210dfde1c9c84`; the runtime
-is `42b562bce488d25bdc00af82c62fdb5d4cc52b8b`. The paper's benchmark version is
-**1.0.7**; package metadata at the pinned runtime is **1.0.7rc3**. The manifest
-and generated summary retain that distinction. The preparation environment is
+The input snapshot is `5364676bc2437b4981a00ce0133c730af243e469`; the runtime
+is `5364676bc2437b4981a00ce0133c730af243e469`. The paper's benchmark version is
+**1.0.7**; package metadata at the pinned runtime is **1.0.7**. The release-preparation branch has not yet been tagged or published to PyPI. The preparation environment is
 Python 3.12.8 with Lark 1.3.1.
 
 A zero exit status requires the pinned runtime and input hashes, matching
 coverage counts and gap records, and successful completion of all eight
 programs with the expected execution counts and zero failures, skips, or
-runtime diagnostics. Reproducing the two known gaps is a successful comparison.
+runtime diagnostics. Reproducing the remaining known gap is a successful comparison.
 The checker and its counting rule are included in the single script.
 
 Each output directory contains `summary.json`, `table.md`, and per-artifact

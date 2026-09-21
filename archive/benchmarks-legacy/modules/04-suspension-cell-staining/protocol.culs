@@ -1,0 +1,470 @@
+let anti_cd45_stock = tube(label = "AntiCD45FITC", capacity = 100uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ANTI_CD45", attrs = { role: antibody, stock_concentration_mg_per_mL: 5, marker: CD45, fluorophore: FITC }):10uL]);
+let anti_cd3_stock = tube(label = "AntiCD3PE", capacity = 100uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ANTI_CD3", attrs = { role: antibody, stock_concentration_mg_per_mL: 5, marker: CD3, fluorophore: PE }):10uL]);
+let anti_cd4_stock = tube(label = "AntiCD4Cy5", capacity = 100uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ANTI_CD4", attrs = { role: antibody, stock_concentration_mg_per_mL: 5, marker: CD4, fluorophore: Cy5 }):10uL]);
+// Source step S2: Assign six 5 mL staining tubes: one fully stained sample, one unstained control, one isotype-control panel, and three single-antibody controls corresponding to the three antibody fluorophores in the full panel.
+let fully_stained_sample_tube = tube(label = "FullyStainedSample", capacity = 5mL);
+let unstained_control_tube = tube(label = "UnstainedControl", capacity = 5mL);
+let isotype_control_tube = tube(label = "IsotypeControlPanel", capacity = 5mL);
+let single_cd45_control_tube = tube(label = "SingleAntibodyControlCD45", capacity = 5mL);
+let single_cd3_control_tube = tube(label = "SingleAntibodyControlCD3", capacity = 5mL);
+let single_cd4_control_tube = tube(label = "SingleAntibodyControlCD4", capacity = 5mL);
+
+protocol Module04_SuspensionCellAntibodyStaining(
+  antibody_1,
+  antibody_2,
+  antibody_3,
+  full_stain_tube,
+  unstained_tube,
+  isotype_tube,
+  single_control_tube_1,
+  single_control_tube_2,
+  single_control_tube_3
+) returns (stained_cell_suspensions) {
+  // Source step S1: Start with a prepared PBMC suspension in flow-cytometry staining buffer and adjust it to 1 x 10^7 cells/mL.
+  let input_pbmc = tube(
+    label = "InputPBMCSuspension",
+    capacity = 1mL,
+    load = [
+      content(
+        kind = ContentKind.BIO_CELLULAR,
+        type = ContentType.CELL_POPULATION,
+        code = "PBMC",
+        attrs = { state: suspension, concentration_cells_per_mL: 10000000 }
+      ):6000000cells,
+      content(
+        kind = ContentKind.FORMULATION,
+        type = ContentType.BUFFER,
+        code = "FSB",
+        attrs = { role: suspension_buffer }
+      ):600uL
+    ]
+  );
+
+  let staining_buffer = tube(
+    label = "FlowStainingBuffer",
+    capacity = 60mL,
+    load = [content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "FSB", attrs = { role: wash }):51.515mL]
+  );
+  let fc_block = tube(
+    label = "HumanFcBlock",
+    capacity = 100uL,
+    load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "FC_BLOCK", attrs = { role: blocking }):30uL]
+  );
+  let fixation_buffer_stock = tube(label = "FixationBuffer10X", capacity = 500uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "FIXATION_BUFFER_10X", attrs = { role: fixative, concentration: "10x" }):180uL
+  ]);
+  let fixation_pbs = tube(label = "FixationPBS", capacity = 2mL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "PBS_1X", attrs = { role: diluent }):1.62mL
+  ]);
+  let fixation_buffer = tube(label = "FixationBuffer1X", capacity = 2mL);
+  fixation_buffer << [fixation_buffer_stock:180uL, fixation_pbs:1.62mL];
+
+  let anti_cd45 = antibody_1;
+  let anti_cd3 = antibody_2;
+  let anti_cd4 = antibody_3;
+  let antibody_panel = group([anti_cd45, anti_cd3, anti_cd4]);
+  let viability_dye = tube(
+    label = "LiveDeadViabilityDye",
+    capacity = 20uL,
+    load = [content(kind = ContentKind.CHEMICAL, type = ContentType.DYE, code = "VIABILITY_DYE", attrs = { role: live_dead_stain }):10uL]
+  );
+
+  let isotype_cd45 = tube(label = "IsotypeFITC", capacity = 100uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ISOTYPE_CD45", attrs = { role: antibody, stock_concentration_mg_per_mL: 5, control_role: isotype, marker: CD45, fluorophore: FITC }):5uL]);
+  let isotype_cd3 = tube(label = "IsotypePE", capacity = 100uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ISOTYPE_CD3", attrs = { role: antibody, stock_concentration_mg_per_mL: 5, control_role: isotype, marker: CD3, fluorophore: PE }):5uL]);
+  let isotype_cd4 = tube(label = "IsotypeCy5", capacity = 100uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ISOTYPE_CD4", attrs = { role: antibody, stock_concentration_mg_per_mL: 5, control_role: isotype, marker: CD4, fluorophore: Cy5 }):5uL]);
+
+  // Source step S9: Use anti-CD45-FITC, anti-CD3-PE, and anti-CD4-Cy5 stocks at 5 mg/mL each. Prepare 30 uL full staining panel containing 5 uL of each antibody stock, 5 uL viability dye, and 10 uL staining buffer.
+  let full_panel_mix = PrepareFullPanel(
+    antibody_1 = anti_cd45,
+    antibody_2 = anti_cd3,
+    antibody_3 = anti_cd4,
+    viability_dye = viability_dye,
+    staining_buffer = staining_buffer
+  );
+  // Source step S10: Use FITC-, PE-, and Cy5-matched isotype-control antibody stocks at 5 mg/mL. Prepare 30 uL isotype-control panel containing 5 uL of each of the three isotype-control stocks, 5 uL viability dye, and 10 uL staining buffer.
+  let isotype_panel_mix = PrepareIsotypePanel(
+    isotype_1 = isotype_cd45,
+    isotype_2 = isotype_cd3,
+    isotype_3 = isotype_cd4,
+    viability_dye = viability_dye,
+    staining_buffer = staining_buffer
+  );
+  // Source step S11: For each of the three single-antibody controls, prepare 30 uL staining reagent containing 5 uL of the assigned 5 mg/mL antibody stock and 25 uL staining buffer.
+  let single_cd45_tube = tube(label = "SingleCD45Reagent", capacity = 100uL);
+  let single_cd45_mix = PrepareSingleAntibodyControl(single_antibody = anti_cd45, staining_buffer = staining_buffer, output_tube = single_cd45_tube);
+  let single_cd3_tube = tube(label = "SingleCD3Reagent", capacity = 100uL);
+  let single_cd3_mix = PrepareSingleAntibodyControl(single_antibody = anti_cd3, staining_buffer = staining_buffer, output_tube = single_cd3_tube);
+  let single_cd4_tube = tube(label = "SingleCD4Reagent", capacity = 100uL);
+  let single_cd4_mix = PrepareSingleAntibodyControl(single_antibody = anti_cd4, staining_buffer = staining_buffer, output_tube = single_cd4_tube);
+  // Source step S12: Prepare 30 uL unstained-control reagent containing staining buffer only.
+  let unstained_reagent = PrepareUnstainedControl(staining_buffer = staining_buffer);
+
+  let staining_tube_group = group([full_stain_tube, unstained_tube, isotype_tube, single_control_tube_1, single_control_tube_2, single_control_tube_3]);
+  let shared_waste = tube(label = "SuspensionCellStainingWaste", capacity = 60mL);
+
+  // Source step S13: Add the complete 30 uL full staining panel to the fully stained sample tube.
+  let fully_stained_sample = StainAndFixOneTube(input_cell_sample = input_pbmc, staining_reagent = full_panel_mix, sample_tube = full_stain_tube, staining_profile = 1, staining_buffer = staining_buffer, fc_block = fc_block, fixation_buffer = fixation_buffer, final_resuspension_buffer = staining_buffer, waste = shared_waste);
+  // Source step S16: Add 30 uL staining buffer to the unstained-control tube.
+  let unstained_control = StainAndFixOneTube(input_cell_sample = input_pbmc, staining_reagent = unstained_reagent, sample_tube = unstained_tube, staining_profile = 0, staining_buffer = staining_buffer, fc_block = fc_block, fixation_buffer = fixation_buffer, final_resuspension_buffer = staining_buffer, waste = shared_waste);
+  // Source step S14: Add the complete 30 uL isotype-control panel to the isotype-control tube.
+  let isotype_control = StainAndFixOneTube(input_cell_sample = input_pbmc, staining_reagent = isotype_panel_mix, sample_tube = isotype_tube, staining_profile = 2, staining_buffer = staining_buffer, fc_block = fc_block, fixation_buffer = fixation_buffer, final_resuspension_buffer = staining_buffer, waste = shared_waste);
+  // Source step S15: Add each complete 30 uL single-antibody reagent to its assigned single-antibody control tube.
+  let single_control_sample_1 = StainAndFixOneTube(input_cell_sample = input_pbmc, staining_reagent = single_cd45_mix, sample_tube = single_control_tube_1, staining_profile = 3, staining_buffer = staining_buffer, fc_block = fc_block, fixation_buffer = fixation_buffer, final_resuspension_buffer = staining_buffer, waste = shared_waste);
+  let single_control_sample_2 = StainAndFixOneTube(input_cell_sample = input_pbmc, staining_reagent = single_cd3_mix, sample_tube = single_control_tube_2, staining_profile = 4, staining_buffer = staining_buffer, fc_block = fc_block, fixation_buffer = fixation_buffer, final_resuspension_buffer = staining_buffer, waste = shared_waste);
+  let single_control_sample_3 = StainAndFixOneTube(input_cell_sample = input_pbmc, staining_reagent = single_cd4_mix, sample_tube = single_control_tube_3, staining_profile = 5, staining_buffer = staining_buffer, fc_block = fc_block, fixation_buffer = fixation_buffer, final_resuspension_buffer = staining_buffer, waste = shared_waste);
+
+  // Source step S29: Return the fully stained sample, unstained control, isotype-control panel, and three single-antibody controls as six separate stained cell suspensions while preserving their sample and control identities.
+  let stained_cell_suspensions = group([fully_stained_sample, unstained_control, isotype_control, single_control_sample_1, single_control_sample_2, single_control_sample_3]);
+  return stained_cell_suspensions;
+}
+
+protocol PrepareFullPanel(
+  antibody_1,
+  antibody_2,
+  antibody_3,
+  viability_dye,
+  staining_buffer
+) returns (full_panel_mix) {
+  // Prepare the full antibody and viability staining panel.
+  let full_panel_mix = tube(label = "FullAntibodyPanel", capacity = 100uL);
+  full_panel_mix << [
+    antibody_1:5uL,
+    antibody_2:5uL,
+    antibody_3:5uL,
+    viability_dye:5uL,
+    staining_buffer:10uL
+  ];
+  return full_panel_mix;
+}
+
+protocol PrepareIsotypePanel(
+  isotype_1,
+  isotype_2,
+  isotype_3,
+  viability_dye,
+  staining_buffer
+) returns (isotype_panel_mix) {
+  // Prepare the isotype control panel.
+  let isotype_panel_mix = tube(label = "IsotypeControlPanel", capacity = 100uL);
+  isotype_panel_mix << [
+    isotype_1:5uL,
+    isotype_2:5uL,
+    isotype_3:5uL,
+    viability_dye:5uL,
+    staining_buffer:10uL
+  ];
+  return isotype_panel_mix;
+}
+
+protocol PrepareSingleAntibodyControl(
+  single_antibody,
+  staining_buffer,
+  output_tube
+) returns (single_antibody_mix) {
+  let single_antibody_mix = output_tube;
+  single_antibody_mix << [single_antibody:5uL, staining_buffer:25uL];
+  return single_antibody_mix;
+}
+
+protocol PrepareUnstainedControl(staining_buffer) returns (unstained_reagent) {
+  let unstained_reagent = tube(label = "UnstainedControlReagent", capacity = 100uL);
+  unstained_reagent << [staining_buffer:30uL];
+  return unstained_reagent;
+}
+
+protocol FirstStainingWash(sample, waste, staining_profile) returns (retained_sample) {
+  // Perform the first post-staining centrifugation and supernatant removal.
+  // Material-accounting fates use the benchmark separation defaults; they are
+  // not recovery-yield claims from the natural-language source.
+  // Profiles: 0 unstained, 1 full panel, 2 isotypes, 3-5 single CD45/CD3/CD4.
+  // Full/isotype input order: PBMC[0], FSB[1], FC_BLOCK[2], three antibodies[3-5], dye[6], panel FSB[7].
+  // Isotype cell_bound denotes assumed nonspecific association, not target recognition.
+  with env(thermal = 4C, duration = 5min) {
+    if staining_profile == 1 {
+      let wash_split_1 = sep(
+        sample = sample,
+        program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+        component_fates = {
+          FC_BLOCK: { supernatant: 99%, pellet: 1% },
+          ANTI_CD45: { supernatant: 99%, pellet: 1% },
+          ANTI_CD3: { supernatant: 99%, pellet: 1% },
+          ANTI_CD4: { supernatant: 99%, pellet: 1% },
+          VIABILITY_DYE: { supernatant: 99%, pellet: 1% }
+        },
+        transitions = [
+          transition(subject = sample.materials[2], output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = sample.materials[0]),
+          transition(subject = sample.materials[3], output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = sample.materials[0]),
+          transition(subject = sample.materials[4], output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = sample.materials[0]),
+          transition(subject = sample.materials[5], output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = sample.materials[0]),
+          transition(subject = sample.materials[6], output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = sample.materials[0])
+        ]
+      );
+      waste << [wash_split_1[0]] with constraint(gentle);
+    }
+    if staining_profile == 2 {
+      let wash_split_2 = sep(
+        sample = sample,
+        program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+        component_fates = {
+          FC_BLOCK: { supernatant: 99%, pellet: 1% },
+          ISOTYPE_CD45: { supernatant: 99%, pellet: 1% },
+          ISOTYPE_CD3: { supernatant: 99%, pellet: 1% },
+          ISOTYPE_CD4: { supernatant: 99%, pellet: 1% },
+          VIABILITY_DYE: { supernatant: 99%, pellet: 1% }
+        },
+        transitions = [
+          transition(subject = sample.materials[2], output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = sample.materials[0]),
+          transition(subject = sample.materials[3], output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = sample.materials[0]),
+          transition(subject = sample.materials[4], output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = sample.materials[0]),
+          transition(subject = sample.materials[5], output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = sample.materials[0]),
+          transition(subject = sample.materials[6], output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = sample.materials[0])
+        ]
+      );
+      waste << [wash_split_2[0]] with constraint(gentle);
+    }
+    if staining_profile == 3 {
+      let wash_split_3 = sep(
+        sample = sample,
+        program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+        component_fates = {
+          FC_BLOCK: { supernatant: 99%, pellet: 1% },
+          ANTI_CD45: { supernatant: 99%, pellet: 1% }
+        },
+        transitions = [
+          transition(subject = sample.materials[2], output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = sample.materials[0]),
+          transition(subject = sample.materials[3], output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = sample.materials[0])
+        ]
+      );
+      waste << [wash_split_3[0]] with constraint(gentle);
+    }
+    if staining_profile == 4 {
+      let wash_split_4 = sep(
+        sample = sample,
+        program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+        component_fates = {
+          FC_BLOCK: { supernatant: 99%, pellet: 1% },
+          ANTI_CD3: { supernatant: 99%, pellet: 1% }
+        },
+        transitions = [
+          transition(subject = sample.materials[2], output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = sample.materials[0]),
+          transition(subject = sample.materials[3], output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = sample.materials[0])
+        ]
+      );
+      waste << [wash_split_4[0]] with constraint(gentle);
+    }
+    if staining_profile == 5 {
+      let wash_split_5 = sep(
+        sample = sample,
+        program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+        component_fates = {
+          FC_BLOCK: { supernatant: 99%, pellet: 1% },
+          ANTI_CD4: { supernatant: 99%, pellet: 1% }
+        },
+        transitions = [
+          transition(subject = sample.materials[2], output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = sample.materials[0]),
+          transition(subject = sample.materials[3], output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = sample.materials[0])
+        ]
+      );
+      waste << [wash_split_5[0]] with constraint(gentle);
+    }
+    if staining_profile == 0 {
+      let plain_wash_split_0 = sep(
+        sample = sample,
+        program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+        component_fates = {
+          FC_BLOCK: { supernatant: 99%, pellet: 1% }
+        },
+        transitions = [
+          transition(subject = sample.materials[2], output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = sample.materials[0])
+        ]
+      );
+      waste << [plain_wash_split_0[0]] with constraint(gentle);
+    }
+  }
+  return retained_sample = sample;
+}
+
+protocol WashRetainedStains(sample, waste, staining_profile) returns (retained_sample) {
+  // Retain all previously cell-bound stain; do not reapply initial binding yields.
+  with env(thermal = 4C, duration = 5min) {
+    if staining_profile == 1 {
+      let wash_split_1 = sep(
+        sample = sample,
+        program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+        component_fates = {
+          FC_BLOCK: { supernatant: 0%, pellet: 100% },
+          ANTI_CD45: { supernatant: 0%, pellet: 100% },
+          ANTI_CD3: { supernatant: 0%, pellet: 100% },
+          ANTI_CD4: { supernatant: 0%, pellet: 100% },
+          VIABILITY_DYE: { supernatant: 0%, pellet: 100% }
+        }
+      );
+      waste << [wash_split_1[0]] with constraint(gentle);
+    }
+    if staining_profile == 2 {
+      let wash_split_2 = sep(
+        sample = sample,
+        program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+        component_fates = {
+          FC_BLOCK: { supernatant: 0%, pellet: 100% },
+          ISOTYPE_CD45: { supernatant: 0%, pellet: 100% },
+          ISOTYPE_CD3: { supernatant: 0%, pellet: 100% },
+          ISOTYPE_CD4: { supernatant: 0%, pellet: 100% },
+          VIABILITY_DYE: { supernatant: 0%, pellet: 100% }
+        }
+      );
+      waste << [wash_split_2[0]] with constraint(gentle);
+    }
+    if staining_profile == 3 {
+      let wash_split_3 = sep(
+        sample = sample,
+        program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+        component_fates = {
+          FC_BLOCK: { supernatant: 0%, pellet: 100% },
+          ANTI_CD45: { supernatant: 0%, pellet: 100% }
+        }
+      );
+      waste << [wash_split_3[0]] with constraint(gentle);
+    }
+    if staining_profile == 4 {
+      let wash_split_4 = sep(
+        sample = sample,
+        program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+        component_fates = {
+          FC_BLOCK: { supernatant: 0%, pellet: 100% },
+          ANTI_CD3: { supernatant: 0%, pellet: 100% }
+        }
+      );
+      waste << [wash_split_4[0]] with constraint(gentle);
+    }
+    if staining_profile == 5 {
+      let wash_split_5 = sep(
+        sample = sample,
+        program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+        component_fates = {
+          FC_BLOCK: { supernatant: 0%, pellet: 100% },
+          ANTI_CD4: { supernatant: 0%, pellet: 100% }
+        }
+      );
+      waste << [wash_split_5[0]] with constraint(gentle);
+    }
+    if staining_profile == 0 {
+      let plain_wash_split_0 = sep(
+        sample = sample,
+        program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+        component_fates = {
+          FC_BLOCK: { supernatant: 0%, pellet: 100% }
+        }
+      );
+      waste << [plain_wash_split_0[0]] with constraint(gentle);
+    }
+  }
+  return retained_sample = sample;
+}
+
+protocol StainAndFixOneTube(
+  input_cell_sample,
+  staining_reagent,
+  sample_tube,
+  staining_buffer,
+  fc_block,
+  fixation_buffer,
+  final_resuspension_buffer,
+  waste,
+  staining_profile = 0
+) returns (acquisition_sample) {
+  // Source step S3: Aliquot 100 uL PBMC suspension, corresponding to 1 x 10^6 cells, into each of the six staining tubes.
+  sample_tube << [input_cell_sample:100uL];
+
+  // Source step S4: Add 2 mL staining buffer to each tube.
+  sample_tube << [staining_buffer:2mL];
+  // Source step S5: Centrifuge all tubes at 300 x g for 5 min at 4 C, then remove and discard each supernatant without disturbing the cell pellet.
+  with env(thermal = 4C, duration = 5min) {
+    let initial_wash_split = sep(sample = sample_tube, program = centrifuge_program(drive = 300g, keep_source = "pellet"));
+    waste << [initial_wash_split[0]] with constraint(gentle);
+  }
+  let initial_cell_pellet = sample_tube;
+
+  // Source step S6: Add 65 uL staining buffer to each cell pellet and pipette 10 times using 52 uL per stroke to fully resuspend the cells.
+  initial_cell_pellet << [staining_buffer:65uL];
+  repeat initial_resuspension in schedule(start = 1, end = 10, step = 1) {
+    initial_cell_pellet << [initial_cell_pellet:52uL];
+  }
+  // Source step S7: Add 5 uL human Fc receptor blocking reagent to each tube.
+  initial_cell_pellet << [fc_block:5uL];
+  // Source step S8: Pipette each 70 uL suspension 10 times using 56 uL per stroke, then incubate for 10 min on ice.
+  repeat fc_block_mix in schedule(start = 1, end = 10, step = 1) {
+    initial_cell_pellet << [initial_cell_pellet:56uL];
+  }
+  with env(thermal = 0C, duration = 10min) {
+    hold(sample = initial_cell_pellet);
+  }
+
+  // Source steps S13-S16: Add the assigned complete 30 uL full-panel, isotype-panel, single-antibody, or unstained-control reagent to its designated tube.
+  initial_cell_pellet << [staining_reagent:30uL];
+  // Source step S17: Pipette each 100 uL staining suspension 10 times using 80 uL per stroke, then incubate for 30 min on ice protected from light.
+  repeat staining_mix in schedule(start = 1, end = 10, step = 1) {
+    initial_cell_pellet << [initial_cell_pellet:80uL];
+  }
+  with constraint(dark_protected) {
+    with env(thermal = 0C, duration = 30min) {
+      hold(sample = initial_cell_pellet);
+    }
+  }
+
+  // Source step S18: Add 2 mL staining buffer to each tube.
+  initial_cell_pellet << [staining_buffer:2mL];
+  // Source step S19: Centrifuge all tubes at 300 x g for 5 min at 4 C, then remove and discard each supernatant without disturbing the cell pellet.
+  let wash1_cell_pellet = FirstStainingWash(sample = initial_cell_pellet, waste = waste, staining_profile = staining_profile);
+
+  // Source step S20: Add 2 mL fresh staining buffer to each tube.
+  wash1_cell_pellet << [staining_buffer:2mL];
+  // Source step S21: Pipette each 2 mL cell suspension 10 times using 1.6 mL per stroke to fully resuspend the cells.
+  repeat wash2_resuspension in schedule(start = 1, end = 10, step = 1) {
+    wash1_cell_pellet << [wash1_cell_pellet:1.6mL];
+  }
+  // Source step S22: Centrifuge all tubes at 300 x g for 5 min at 4 C, then remove and discard each supernatant without disturbing the cell pellet.
+  let stained_cell_pellet = WashRetainedStains(sample = wash1_cell_pellet, waste = waste, staining_profile = staining_profile);
+
+  // Source step S23: Prepare 1.8 mL 1x fixation buffer for the six samples by combining 180 uL 10x fixation-buffer stock with 1.62 mL PBS. Add 300 uL 1x fixation buffer to each cell pellet.
+  stained_cell_pellet << [fixation_buffer:300uL];
+  // Source step S24: Pipette each 300 uL suspension 10 times using 240 uL per stroke, then incubate for 10 min at 22 C protected from light.
+  repeat fixation_resuspension in schedule(start = 1, end = 10, step = 1) {
+    stained_cell_pellet << [stained_cell_pellet:240uL];
+  }
+  with constraint(dark_protected) {
+    with env(thermal = 22C, duration = 10min) {
+      hold(sample = stained_cell_pellet);
+    }
+  }
+
+  // Source step S25: Add 2 mL staining buffer to each tube.
+  stained_cell_pellet << [staining_buffer:2mL];
+  // Source step S26: Centrifuge all tubes at 300 x g for 5 min at 4 C, then remove and discard each supernatant without disturbing the cell pellet.
+  let acquisition_sample = WashRetainedStains(sample = stained_cell_pellet, waste = waste, staining_profile = staining_profile);
+  // Source step S27: Add 500 uL staining buffer to each fixed cell pellet and pipette 10 times using 400 uL per stroke to fully resuspend the cells.
+  acquisition_sample << [final_resuspension_buffer:500uL];
+  repeat acquisition_resuspension in schedule(start = 1, end = 10, step = 1) {
+    acquisition_sample << [acquisition_sample:400uL];
+  }
+  // Source step S28: Keep all six stained cell suspensions at 4 C protected from light for no longer than 24 h before transfer to a downstream acquisition module.
+  with constraint(dark_protected) {
+    with env(thermal = 4C, duration = 24h) {
+      hold(sample = acquisition_sample);
+    }
+  }
+
+  return acquisition_sample;
+}
+
+Module04_SuspensionCellAntibodyStaining(
+  antibody_1 = anti_cd45_stock,
+  antibody_2 = anti_cd3_stock,
+  antibody_3 = anti_cd4_stock,
+  full_stain_tube = fully_stained_sample_tube,
+  unstained_tube = unstained_control_tube,
+  isotype_tube = isotype_control_tube,
+  single_control_tube_1 = single_cd45_control_tube,
+  single_control_tube_2 = single_cd3_control_tube,
+  single_control_tube_3 = single_cd4_control_tube
+);

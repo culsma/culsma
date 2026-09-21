@@ -19,7 +19,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-COMMIT = "ab06a04446b51d208b6a8b6eb2b36853e67d0d7b"
+COMMIT = "5364676bc2437b4981a00ce0133c730af243e469"
 
 
 def listing(text, label):

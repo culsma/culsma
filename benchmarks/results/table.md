@@ -3,7 +3,7 @@ Evaluated with Culsma 1.0.7.
 | Module | Source steps | Coverage |
 | --- | ---: | ---: |
 | Module 01: Cell transfection | 13/13 | 100% |
-| Module 02: Selective plating and colony isolation | 11/12 | 91.7% |
+| Module 02: Selective plating and colony isolation | 12/12 | 100% |
 | Module 03: Cell lysate preparation | 10/10 | 100% |
 | Module 04: Suspension-cell staining | 29/29 | 100% |
 | Module 05: Magnetic-bead immunoprecipitation | 23/23 | 100% |

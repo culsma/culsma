@@ -70,14 +70,23 @@ def object_associations(facts):
 
 
 class NestedExtractor(Extractor):
-    rules_version = "patterns-metrics-nested-v9"
-    support_scope = "Nested AST calls, result members, declared plate groups/selectors, grouped readouts and conditional execution; unresolved JSON joins fail"
+    rules_version = "patterns-metrics-nested-v10"
+    support_scope = "Nested and dependency AST calls, result members, declared plate groups/selectors, grouped readouts and conditional execution; unresolved JSON joins fail"
 
     def __init__(self, root):
         self.root = Path(root).resolve()
         self.config, self.receipt, self.data, self.paths = load_bundle(self.root)
         self.adapter_sha256 = digest(__file__)
-        self.source = (self.root / "protocol.culs").read_text()
+        captured_paths = self.receipt.get(
+            "captured_source_paths",
+            {self.receipt["captured_source_path"]: "protocol.culs"},
+        )
+        self.source_files = dict(captured_paths)
+        self.sources = {
+            captured_path: (self.root / relative).read_text(encoding="utf-8")
+            for captured_path, relative in captured_paths.items()
+        }
+        self.source = (self.root / "protocol.culs").read_text(encoding="utf-8")
         self.rows, self.objects, self.runtime_uses = {}, {}, {}
         self.parameters, self.covered_plan_ids = {}, set()
         self.facts, self.declarations, self.domains = [], {}, {}
@@ -89,13 +98,13 @@ class NestedExtractor(Extractor):
         self.extra_coverage = set()
         self.main_seen = False
         ast = self.data["ast"]
-        require(not ast.get("source_includes") and not ast.get("library_imports"),
-                "UNSUPPORTED_FRONTEND: nested adapter requires a single exported file")
         self.procedures = {}
+        self.protocol_source_files = {}
         for i, proc in enumerate(ast["protocols"]):
             require(proc["name"] not in self.procedures, "AMBIGUOUS_PROTOCOL")
-            require(proc["source_path"] == self.receipt["captured_source_path"], "INPUT_SOURCE_PATH")
+            require(proc["source_path"] in self.sources, "INPUT_SOURCE_PATH")
             self.procedures[proc["name"]] = (f"/protocols/{i}", proc)
+            self.protocol_source_files[i] = self.source_files[proc["source_path"]]
         self.step_protocol = self.config.get("step_protocol", self.config["protocol"])
         require(self.step_protocol in self.procedures, "STEP_PROTOCOL: definition missing")
         self.protocol_pointer, self.protocol = self.procedures[self.step_protocol]
@@ -148,6 +157,17 @@ class NestedExtractor(Extractor):
                 require(target not in values and target not in self.panel_aliases, 'PARAMETER_ALIAS: reassigned target')
                 self.panel_aliases[target] = (source, i, ei)
             values[target] = value
+
+    def ev(self, artifact, pointer, node=None):
+        evidence = {"file": self.paths[artifact], "json_pointer": pointer}
+        if node and "span" in node:
+            source_file = "protocol.culs"
+            if artifact in {"ast", "ir"}:
+                match = re.match(r"/protocols/(\d+)(?:/|$)", pointer)
+                if match:
+                    source_file = self.protocol_source_files.get(int(match[1]), source_file)
+            evidence.update(source_file=source_file, source_span=node["span"])
+        return evidence
 
     def declaration_role(self, node):
         """Roles come from exported allocation/producer/assignment evidence."""
@@ -216,50 +236,57 @@ class NestedExtractor(Extractor):
         visit(self.step_protocol, [])
         scopes = []
 
-        def scope(statements, pointer, span, depth, procedure):
+        def scope(statements, pointer, span, depth, procedure, source_path):
             scopes.append(dict(pointer=pointer, span=span, depth=depth,
-                               procedure=procedure, statements=statements))
+                               procedure=procedure, statements=statements,
+                               source_path=source_path,
+                               source_file=self.source_files[source_path]))
             for i, node in enumerate(statements):
                 path = f"{pointer}/{i}"
                 if "statements" in node:
-                    scope(node["statements"], path + "/statements", node["span"], depth+1, procedure)
+                    scope(node["statements"], path + "/statements", node["span"], depth+1, procedure, source_path)
                 if "then_statements" in node:
                     # Exported arm statements delimit the two lists. A marker in
                     # the inter-arm gap belongs to the next arm, never both.
                     then, other = node["then_statements"], node["else_statements"]
                     boundary = then[-1]["span"]["end"] if then else node["span"]["start"]
-                    scope(then, path + "/then_statements", dict(node["span"], end=boundary), depth+1, procedure)
-                    scope(other, path + "/else_statements", dict(node["span"], start=boundary), depth+1, procedure)
+                    scope(then, path + "/then_statements", dict(node["span"], end=boundary), depth+1, procedure, source_path)
+                    scope(other, path + "/else_statements", dict(node["span"], start=boundary), depth+1, procedure, source_path)
 
         for name in sorted(reachable):
             pointer, proc = self.procedures[name]
-            scope(proc["statements"], pointer + "/statements", proc["span"], 0, name)
+            source = self.sources[proc["source_path"]]
+            scope(proc["statements"], pointer + "/statements", proc["span"], 0, name, proc["source_path"])
             for _, node in nodes(proc):
                 if "span" in node:
                     sp = node["span"]
-                    require(0 <= sp["start"] < sp["end"] <= len(self.source), "SOURCE_SPAN")
-                    require(self.source.count("\n", 0, sp["start"])+1 == sp["line"], "SOURCE_SPAN: line mismatch")
+                    require(0 <= sp["start"] < sp["end"] <= len(source), "SOURCE_SPAN")
+                    require(source.count("\n", 0, sp["start"])+1 == sp["line"], "SOURCE_SPAN: line mismatch")
         self.scope_markers = {s["pointer"]: [] for s in scopes}
         all_markers = []
-        offset = 0
-        for line_no, line in enumerate(self.source.splitlines(keepends=True), 1):
-            position = offset + len(line) - len(line.lstrip())
-            offset += len(line)
-            containing = [s for s in scopes if s["span"]["start"] <= position < s["span"]["end"]]
-            if not containing or not re.match(r"\s*//\s*Source step", line):
-                continue
-            match = re.fullmatch(r"\s*//\s*Source step (S[1-9]\d*):[^\r\n]*[\r\n]*", line)
-            require(match is not None, f"STEP_MARKER: invalid/ranged marker at line {line_no}")
-            require(match[1] in expected, f"STEP_MARKER: out of range at line {line_no}")
-            owner = max(containing, key=lambda s: s["depth"])
-            for statement in owner["statements"]:
-                sp = statement["span"]
-                require(not sp["start"] < position < sp["end"],
-                        f"STEP_MAPPING: marker inside indivisible statement at line {line_no}")
-            marker = dict(step=match[1], marker_line=line_no, marker_offset=position,
-                          scope=owner["pointer"], procedure=owner["procedure"])
-            self.scope_markers[owner["pointer"]].append(marker)
-            all_markers.append(marker)
+        for source_path in sorted({s["source_path"] for s in scopes}):
+            offset = 0
+            for line_no, line in enumerate(self.sources[source_path].splitlines(keepends=True), 1):
+                position = offset + len(line) - len(line.lstrip())
+                offset += len(line)
+                containing = [s for s in scopes
+                              if s["source_path"] == source_path
+                              and s["span"]["start"] <= position < s["span"]["end"]]
+                if not containing or not re.match(r"\s*//\s*Source step", line):
+                    continue
+                match = re.fullmatch(r"\s*//\s*Source step (S[1-9]\d*):[^\r\n]*[\r\n]*", line)
+                require(match is not None, f"STEP_MARKER: invalid/ranged marker at line {line_no}")
+                require(match[1] in expected, f"STEP_MARKER: out of range at line {line_no}")
+                owner = max(containing, key=lambda s: s["depth"])
+                for statement in owner["statements"]:
+                    sp = statement["span"]
+                    require(not sp["start"] < position < sp["end"],
+                            f"STEP_MAPPING: marker inside indivisible statement at line {line_no}")
+                marker = dict(step=match[1], marker_line=line_no, marker_offset=position,
+                              scope=owner["pointer"], procedure=owner["procedure"],
+                              source_file=owner["source_file"])
+                self.scope_markers[owner["pointer"]].append(marker)
+                all_markers.append(marker)
         found = {m["step"] for m in all_markers}
         require(found == set(expected), f"STEP_MARKER: expected {expected}, found {sorted(found)}")
         return [{"step": s, "markers": [m for m in all_markers if m["step"] == s]} for s in expected]
@@ -314,6 +341,8 @@ class NestedExtractor(Extractor):
         require(result["execution"]["ok"] and result["execution"]["diagnostic_count"] == 0, "RUN_FAILED")
 
     def expression(self, node, pointer, env, tokens=False):
+        if isinstance(node, (str, int, float, bool)) or node is None:
+            return node
         require(isinstance(node, dict), "UNSUPPORTED_EXPRESSION: " + pointer)
         fields = shape(node)
         ev = self.ev("ast", pointer, node)
@@ -332,6 +361,15 @@ class NestedExtractor(Extractor):
         if fields == {"name", "args"}:
             return {"call": node["name"], "args": self.args(node["args"], pointer + "/args", env, tokens),
                     "_source": ev}
+        if fields == {"base", "method", "args"}:
+            return {
+                "call": node["method"],
+                "args": {
+                    "self": self.expression(node["base"], pointer + "/base", env, tokens),
+                    **self.args(node["args"], pointer + "/args", env, tokens),
+                },
+                "_source": ev,
+            }
         if fields == {"elements"}:
             return {"elements": [self.expression(n, f"{pointer}/elements/{i}", env, tokens)
                                  for i, n in enumerate(node["elements"])]}
@@ -366,7 +404,7 @@ class NestedExtractor(Extractor):
     def args(self, args, pointer, env, tokens=False):
         result = {}
         for i, arg in enumerate(args):
-            key = arg["name"] if arg["name"] is not None else f"arg{i}"
+            key = arg.get("name") or f"arg{i}"
             require(key not in result, "UNSUPPORTED_ARGUMENT: " + pointer)
             result[key] = self.expression(arg["value"], f"{pointer}/{i}/value", env,
                                           tokens or key in {"quantity", "mode"})
@@ -624,8 +662,9 @@ class NestedExtractor(Extractor):
                 method = node["value"]
                 require(shape(method) == {"base", "method", "args"}, "STRUCTURE_UNADAPTED: method " + path)
                 payload = {"self": self.expression(method["base"], path + "/value/base", env),
-                           **{f"arg{j}": self.expression(a, f"{path}/value/args/{j}", env)
-                              for j, a in enumerate(method["args"])}}
+                           **{(a.get("name") or f"arg{j}"): self.expression(
+                               a["value"], f"{path}/value/args/{j}/value", env
+                           ) for j, a in enumerate(method["args"])}}
                 self.record(step, "annotation", method["method"], payload, path, node, frame)
                 self.facts.append({"op": method["method"], "slots": {"/args/" + k: v for k,v in payload.items()},
                                    "span": node["span"], "pointer": path, "frame": frame, "step": step,
@@ -833,6 +872,8 @@ class NestedExtractor(Extractor):
                 result.extend(match)
             return result
         if not isinstance(expected, dict):
+            if isinstance(actual, dict) and actual.get("value") == expected:
+                return []
             return [] if expected == actual else None
         if "object_id" in expected:
             if not isinstance(actual, dict) or actual.get("kind") != "IRIdentifier":
@@ -863,8 +904,12 @@ class NestedExtractor(Extractor):
             return [] if expected == actual else None
         if "token" in expected:
             return [] if actual.get("name", actual.get("value")) == expected["token"] else None
+        enum_base = expected.get("base", {}).get("token")
+        if enum_base and "enum" in actual and set(content(expected)) == {"base", "member"}:
+            return [] if actual.get("enum") == enum_base and actual.get("member") == expected["member"] else None
         if "call" in expected:
-            if actual.get("name") != expected["call"]:
+            expected_call = {"content": "DefineContent"}.get(expected["call"], expected["call"])
+            if actual.get("name") != expected_call:
                 return None
             args = {a["name"] if a["name"] is not None else f"arg{i}": (i, a["value"])
                     for i,a in enumerate(actual.get("args", []))}
@@ -1012,7 +1057,8 @@ class NestedExtractor(Extractor):
             for fact in self.facts:
                 matches = self.candidates(fact)
                 if not matches:
-                    require(fact["conditional"], "EXECUTION_MAPPING: " + fact["pointer"])
+                    require(fact["conditional"] or fact.get("metadata"),
+                            "EXECUTION_MAPPING: " + fact["pointer"])
                     continue
                 allowed = {}
                 for _, _, refs in matches:

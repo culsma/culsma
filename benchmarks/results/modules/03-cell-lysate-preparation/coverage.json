@@ -3,8 +3,8 @@
   "rules": "modular-source-step-correspondence-v1",
   "metric": "source_step_correspondence",
   "artifact": "03-cell-lysate-preparation",
-  "implementation": "42b562bce488d25bdc00af82c62fdb5d4cc52b8b",
-  "language_version": "1.0.7rc3",
+  "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
+  "language_version": "1.0.7",
   "source_sha256": "82b74d75d92bbeaae835c7196c39b7c50dbbe252172591d8c75860e92afc0249",
   "program_sha256": {
     "protocol.culs": "13f04c12560f152aeeaf0c19466869b81b22637889e1ea5eaeef6d6f09ab809f"

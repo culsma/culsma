@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Deterministic benchmark metrics from existing Culsma JSON artifacts.
 
-The pilot supports the source shapes exercised by Cases 00 and 04. Unsupported shapes
-fail explicitly. No Culsma parser is imported; only step comment lines are read.
-capture invokes the existing CLI to establish a hash-bound artifact bundle.
-extract reads that bundle and emits exactly three per-case evaluation files.
+Unsupported shapes fail explicitly. No Culsma parser is imported; capture follows
+source include/import directives, then invokes the CLI to establish a hash-bound
+artifact bundle. Extract reads that bundle and emits three per-case evaluation files.
 """
 from __future__ import annotations
 
@@ -56,13 +55,22 @@ def final_material_records(run):
         values = [raw[k] for k in ("volume_uL", "mass_mg", "count_cells") if k in raw]
         quantities = raw.get("component_quantities", {})
         require(isinstance(quantities, dict), "FINAL_MATERIAL_STATE: invalid component quantities")
+        has_unknown_quantity = False
         for quantity in quantities.values():
             require(isinstance(quantity, dict) and "value" in quantity,
                     "FINAL_MATERIAL_STATE: invalid component quantity")
-            values.append(quantity["value"])
-        require(values and all(type(v) in (int, float) and math.isfinite(v) and v >= -1e-9
-                               for v in values), "FINAL_MATERIAL_STATE: invalid or missing quantity")
-        if not any(v > 1e-9 for v in values):
+            value = quantity["value"]
+            if value is None:
+                require(quantity.get("status") == "unknown",
+                        "FINAL_MATERIAL_STATE: null quantity must be explicitly unknown")
+                has_unknown_quantity = True
+            else:
+                values.append(value)
+        require((values or has_unknown_quantity)
+                and all(type(v) in (int, float) and math.isfinite(v) and v >= -1e-9
+                        for v in values),
+                "FINAL_MATERIAL_STATE: invalid or missing quantity")
+        if not has_unknown_quantity and not any(v > 1e-9 for v in values):
             continue
         metadata = raw.get("metadata", {})
         require(isinstance(metadata, dict), "FINAL_MATERIAL_STATE: invalid metadata")
@@ -149,10 +157,16 @@ def locked_versions(path=None):
     return versions
 
 
-def discover_scope(source, ast):
+def _source_for_protocol(sources, protocol):
+    if isinstance(sources, str):
+        return sources
+    source_path = protocol.get("source_path")
+    require(source_path in sources, "INPUT_SOURCE_PATH: protocol source was not captured")
+    return sources[source_path]
+
+
+def discover_scope(sources, ast):
     """Read step comments; obtain entries, calls and boundaries from exported AST."""
-    require(not ast.get("source_includes") and not ast.get("library_imports"),
-            "UNSUPPORTED_FRONTEND: expected a single source file")
     procedures = {p["name"]: p for p in ast["protocols"]}
     require(len(procedures) == len(ast["protocols"]), "AMBIGUOUS_PROTOCOL")
     calls = [n for _, n in nodes(ast["statements"])
@@ -174,18 +188,25 @@ def discover_scope(source, ast):
 
     visit(entry, [])
     labels = {name: set() for name in reachable}
-    offset = 0
-    for line_no, line in enumerate(source.splitlines(keepends=True), 1):
-        position = offset + len(line) - len(line.lstrip())
-        offset += len(line)
-        owners = [name for name in reachable
-                  if procedures[name]["span"]["start"] <= position < procedures[name]["span"]["end"]]
-        if not owners or not re.match(r"\s*//\s*Source step", line):
-            continue
-        require(len(owners) == 1, "STEP_MAPPING: ambiguous protocol owner")
-        match = re.fullmatch(r"\s*//\s*Source step (S[1-9]\d*):[^\r\n]*[\r\n]*", line)
-        require(match is not None, f"STEP_MARKER: invalid/ranged marker at line {line_no}")
-        labels[owners[0]].add(match[1])
+    source_paths = {procedures[name].get("source_path") for name in reachable}
+    for source_path in source_paths:
+        source = _source_for_protocol(sources, next(
+            procedures[name] for name in reachable
+            if procedures[name].get("source_path") == source_path
+        ))
+        offset = 0
+        for line_no, line in enumerate(source.splitlines(keepends=True), 1):
+            position = offset + len(line) - len(line.lstrip())
+            offset += len(line)
+            owners = [name for name in reachable
+                      if procedures[name].get("source_path") == source_path
+                      and procedures[name]["span"]["start"] <= position < procedures[name]["span"]["end"]]
+            if not owners or not re.match(r"\s*//\s*Source step", line):
+                continue
+            require(len(owners) == 1, "STEP_MAPPING: ambiguous protocol owner")
+            match = re.fullmatch(r"\s*//\s*Source step (S[1-9]\d*):[^\r\n]*[\r\n]*", line)
+            require(match is not None, f"STEP_MARKER: invalid/ranged marker at line {line_no}")
+            labels[owners[0]].add(match[1])
     found = set().union(*labels.values())
     require(found, "STEP_MARKER: no source steps found")
     expected = sorted(found, key=lambda s: int(s[1:]))
@@ -199,7 +220,44 @@ def discover_scope(source, ast):
     return dict(protocol=entry, step_protocol=scope, expected_steps=expected)
 
 
-def capture(config_path, python, destination):
+_INCLUDE_DIRECTIVE = re.compile(r'^\s*include\s+"([^"\r\n]+)"\s*;', re.MULTILINE)
+_IMPORT_DIRECTIVE = re.compile(r"^\s*import\s+([A-Za-z_][A-Za-z0-9_]*)\s*;", re.MULTILINE)
+
+
+def _capture_sources(entry, library_roots):
+    """Resolve source dependencies without importing the Culsma parser."""
+    entry = Path(entry).resolve()
+    roots = [Path(root).resolve() for root in library_roots]
+    pending = [(entry, Path("protocol.culs"), entry.parent)]
+    captured = {}
+    seen = set()
+    while pending:
+        source, relative, namespace_root = pending.pop()
+        source = source.resolve()
+        relative = Path(os.path.normpath(relative))
+        require(source.is_relative_to(namespace_root), "INPUT_PATH: include escapes its source root")
+        require(not relative.is_absolute() and ".." not in relative.parts,
+                "INPUT_PATH: dependency escapes bundle")
+        if source in seen:
+            continue
+        require(source.is_file(), f"INPUT_SOURCE: dependency not found: {source}")
+        seen.add(source)
+        require(relative not in captured, f"INPUT_SOURCE: dependency path collision: {relative}")
+        captured[relative] = source
+        text = source.read_text(encoding="utf-8")
+        for include in _INCLUDE_DIRECTIVE.findall(text):
+            included = (source.parent / include).resolve()
+            pending.append((included, relative.parent / include, namespace_root))
+        for module in _IMPORT_DIRECTIVE.findall(text):
+            matches = [(index, root / f"{module}.culs") for index, root in enumerate(roots)
+                       if (root / f"{module}.culs").is_file()]
+            require(matches, f"LIB_IMPORT_NOT_FOUND: {module}")
+            index, imported = matches[0]
+            pending.append((imported, Path("libraries") / str(index) / imported.name, roots[index]))
+    return captured
+
+
+def capture(config_path, python, destination, library_roots=()):
     """Run the existing compiler, without parsing or altering the input source."""
     config_path, destination = Path(config_path).resolve(), Path(destination).resolve()
     automatic = config_path.suffix == ".culs"
@@ -235,11 +293,20 @@ def capture(config_path, python, destination):
     destination.parent.mkdir(parents=True, exist_ok=True)
     temp = Path(tempfile.mkdtemp(prefix=".capture-", dir=destination.parent))
     try:
-        shutil.copyfile(source, temp / "protocol.culs")
+        captured_sources = _capture_sources(source, library_roots)
+        for relative, original in captured_sources.items():
+            target = temp / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(original, target)
         require(digest(temp / "protocol.culs") == config["source_sha256"],
                 "INPUT_SOURCE_HASH: changed while copying")
         command = [python, "-I", "-m", "culsma.cli", "run",
                    "protocol.culs", "--json", "--artifacts-dir", "artifacts"]
+        library_destinations = sorted({str(Path(*relative.parts[:2]))
+                                       for relative in captured_sources
+                                       if len(relative.parts) >= 3 and relative.parts[0] == "libraries"})
+        for root in library_destinations:
+            command.extend(["--library-root", root])
         with (temp / "stdout.txt").open("w") as out, (temp / "stderr.txt").open("w") as err:
             result = subprocess.run(command, cwd=temp, stdout=out, stderr=err)
         require(result.returncode == 0,
@@ -249,8 +316,9 @@ def capture(config_path, python, destination):
         for name in ARTIFACT_NAMES:
             artifact_path(temp, name)
         if automatic:
-            config.update(discover_scope((temp / "protocol.culs").read_text(),
-                                         read_json(artifact_path(temp, "ast"))))
+            captured_text = {str(temp / relative): (temp / relative).read_text(encoding="utf-8")
+                             for relative in captured_sources}
+            config.update(discover_scope(captured_text, read_json(artifact_path(temp, "ast"))))
         # This is generated capture metadata, not a maintained case input.
         write_json(temp / "case.json", dict(config, source="protocol.culs"))
         # Record the generated absolute source path before atomically moving.
@@ -259,6 +327,8 @@ def capture(config_path, python, destination):
             "schema": BUNDLE_SCHEMA, "environment": env,
             "command": command, "exit_code": result.returncode,
             "captured_source_path": str(temp / "protocol.culs"),
+            "captured_source_paths": {str(temp / relative): str(relative)
+                                      for relative in sorted(captured_sources)},
             "files": {str(p.relative_to(temp)): digest(p)
                       for p in sorted(temp.rglob("*")) if p.is_file()},
         }
@@ -287,6 +357,16 @@ def load_bundle(root):
                 f"INPUT_HASH: {relative} differs from captured input")
     require(all(n in files for n in ("case.json", "protocol.culs")),
             "INPUT_HASH: source/config not covered")
+    captured_sources = receipt.get(
+        "captured_source_paths",
+        {receipt.get("captured_source_path"): "protocol.culs"},
+    )
+    require(isinstance(captured_sources, dict) and captured_sources,
+            "INPUT_SCHEMA: captured source paths")
+    for captured_path, relative in captured_sources.items():
+        require(isinstance(captured_path, str) and isinstance(relative, str),
+                "INPUT_SCHEMA: captured source path")
+        require(relative in files, f"INPUT_HASH: {relative} source not covered")
     config = read_json(root / "case.json")
     require(config["source"] == "protocol.culs", "INPUT_SOURCE: unsupported path")
     require(digest(root / "protocol.culs") == config["source_sha256"],
@@ -1227,13 +1307,17 @@ def main():
     inputs.add_argument("--case", help="Historical configuration input (regression compatibility)")
     capture_parser.add_argument("--python", required=True)
     capture_parser.add_argument("--bundle", required=True)
+    capture_parser.add_argument(
+        "--library-root", action="append", default=[],
+        help="Directory containing importable library modules (repeatable)",
+    )
     extract_parser = sub.add_parser("extract", help="Derive three evaluation JSONs")
     extract_parser.add_argument("--bundle", required=True)
     extract_parser.add_argument("--out", required=True)
     args = parser.parse_args()
     try:
         if args.command == "capture":
-            print(capture(args.source or args.case, args.python, args.bundle))
+            print(capture(args.source or args.case, args.python, args.bundle, args.library_root))
         else:
             output = extract(args.bundle, args.out)
             print(json.dumps({name: {k: v for k, v in row.items() if k in {

@@ -43,6 +43,13 @@ class FinalMaterialStateTests(unittest.TestCase):
             "containers": {"stock": {"volume_uL": 100}}}}}]
         self.assertEqual(final_material_records(run), [])
 
+    def test_explicit_unknown_component_quantity_is_preserved(self):
+        raw = {"volume_uL": 20, "component_quantities": {
+            "protein": {"dimension": "mass", "unit": "mg", "value": None, "status": "unknown"}
+        }}
+        rows = final_material_records(run_with({"sample": raw}))
+        self.assertEqual(rows[0]["record"]["material_state"], raw)
+
     def test_missing_state_and_failed_run_rejected(self):
         for run in ({"ok": True}, {**run_with({}), "ok": False}):
             with self.assertRaises(EvidenceError):
