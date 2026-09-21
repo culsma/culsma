@@ -6,20 +6,7 @@ It contains seven experimental modules and one composite workflow. Source
 procedures, programs, results, and reproduction instructions are maintained
 here together; no documentation-site export is needed.
 
-## Evaluation overview
-
-This collection is a work in progress. The paper cites a fixed evaluation;
-historical runs and subsequent improvements are tracked separately.
-
-| Evaluation | Runtime status | Completed programs | Details |
-| --- | --- | ---: | --- |
-| Paper snapshot | 1.0.7 development; package metadata 1.0.7rc3, final release pending | 8/8 | [Coverage and results](#paper-evaluation-snapshot) |
-| 1.0.6 retrospective run | Released 1.0.6 tested against the same programs | 1/8 | [Historical results](history/1.0.6/README.md) |
-
-[Version history and ongoing work](history/README.md) records what changed,
-what remains open, and how to reproduce each evaluation.
-
-## Paper evaluation snapshot
+## Current results (paper Section 3.5)
 
 <!-- paper-table:start -->
 Evaluated with Culsma 1.0.7.
@@ -43,9 +30,7 @@ no runtime diagnostics. Source steps and execution steps are different
 counts; expanded loop iterations do not increase source-step coverage.
 
 The two uncovered steps are Module 02 S5 (spreading inoculum on agar) and
-Module 07 S37 (tap-mixing a plate). These remain explicit gaps in this fixed input snapshot. Surface spreading
-has since been represented in an updated Module 02 program; see the
-[development status](history/README.md#work-toward-the-next-snapshot). Coverage
+Module 07 S37 (tap-mixing a plate). These remain explicit gaps. Coverage
 measures structural source–program correspondence, not complete semantic
 fidelity, biological success, or hardware execution. In particular, a transfer
 may match a source step while a finer detail such as dropwise delivery remains
@@ -58,13 +43,13 @@ inventory of laboratory operations. The collection can grow as additional
 workflows are added; compare versions using the same source inventory and
 coverage rules when assessing improvements in operation support.
 
-| Source step | Gap in the paper snapshot | Development status and next verification |
+| Source step | Current gap | Candidate extension and verification |
 | --- | --- | --- |
-| [Module 02 S5](modules/02-selective-plating-candidate-colony-isolation/source.md) | Evenly spreading each inoculum across agar with a sterile spreading tool is retained as an annotation; the preceding transfer does not represent surface spreading. | `spread` is implemented in the development runtime. The updated Module 02 has checked at 12/12 and runs 71/71; adoption into a new paper snapshot and full-suite regeneration remain pending. |
+| [Module 02 S5](modules/02-selective-plating-candidate-colony-isolation/source.md) | Evenly spreading each inoculum across agar with a sterile spreading tool is retained as an annotation; the preceding transfer does not represent surface spreading. | Define how the surface-spreading action, sample, destination surface, and procedural requirements are represented, then provide execution support. Verify the original step's program counterpart and preservation of sample/destination identity. |
 | [Module 07 S37](modules/07-sandwich-elisa/source.md) | Gentle plate tapping to mix the stopped reaction has no verified action in the evaluated program. | Define plate tap-mixing and its target and requirements, then provide execution support. Verify that it occurs after stopping the reaction and before readout, without substituting a different mixing method. |
 
-Surface spreading is an implemented change awaiting snapshot synchronization;
-plate tap-mixing remains an extension target. Language representation and execution
+These are extension proposals, not implemented fixes or commitments that a
+driver change alone is sufficient. Language representation and execution
 support need to be assessed together. Keep the original numbered source steps
 and gap records until support is implemented and checked. A later result should
 record the revised program/runtime versions and rerun coverage and execution;
@@ -81,7 +66,6 @@ The current values (11/12 for Module 02 and 41/42 for Module 07) remain unchange
 | [`libraries/`](libraries/) | Import entry for Module 04, reused by the composite. |
 | [`reproduce.py`](reproduce.py) | Single script for coverage, execution, comparison, and table generation. |
 | [`manifest.json`](manifest.json) | Fixed versions, source hashes, expected counts and known gaps. |
-| [`history/`](history/) | Version index, retrospective evaluations, diagnostic records and reproduction script. |
 | [`results/`](results/) | One checked set of coverage, execution, and material/observation results. |
 
 Module 04 also contains its reusable `module.culs`. Its `protocol.culs` runs
