@@ -79,7 +79,7 @@ Each `source.md` retains the procedure's source references and context.
 With Git and Python 3.12 installed, run from a new working directory:
 
 ```sh
-git clone --branch codex/release-1.0.7-preparation https://github.com/culsma/culsma.git culsma-benchmark
+git clone --branch v1.0.7 https://github.com/culsma/culsma.git culsma-benchmark
 git clone https://github.com/culsma/culsma.git culsma-runtime
 git -C culsma-runtime checkout 5364676bc2437b4981a00ce0133c730af243e469
 python3.12 -m venv .venv
@@ -96,8 +96,10 @@ use `benchmarks/local-results/<run-name>/`, which is ignored by Git.
 
 The input snapshot is `5364676bc2437b4981a00ce0133c730af243e469`; the runtime
 is `5364676bc2437b4981a00ce0133c730af243e469`. The paper's benchmark version is
-**1.0.7**; package metadata at the pinned runtime is **1.0.7**. The release-preparation branch has not yet been tagged or published to PyPI. The preparation environment is
-Python 3.12.8 with Lark 1.3.1.
+**1.0.7**; package metadata at the pinned runtime is **1.0.7**. Release tag
+`v1.0.7` includes the benchmark package and the same implementation source as
+this evaluated runtime. The recorded evaluation environment is Python 3.12.8
+with Lark 1.3.1.
 
 A zero exit status requires the pinned runtime and input hashes, matching
 coverage counts and gap records, and successful completion of all eight
