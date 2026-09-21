@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.0.7 — release candidate prepared for publication
+## 1.0.7 — 2026-09-21
 
 ### Added
 
