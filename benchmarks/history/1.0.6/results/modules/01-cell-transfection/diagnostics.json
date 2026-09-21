@@ -1,0 +1,944 @@
+{
+  "validate": [
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "entry.s8",
+      "severity": "error",
+      "span": {
+        "col": 46,
+        "end": 726,
+        "line": 11,
+        "start": 698
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "entry.s8",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 844,
+        "line": 12,
+        "start": 819
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "entry.s9",
+      "severity": "error",
+      "span": {
+        "col": 46,
+        "end": 1088,
+        "line": 15,
+        "start": 1060
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "entry.s9",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 1206,
+        "line": 16,
+        "start": 1181
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "entry.s10",
+      "severity": "error",
+      "span": {
+        "col": 46,
+        "end": 1441,
+        "line": 19,
+        "start": 1413
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "entry.s10",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 1559,
+        "line": 20,
+        "start": 1534
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "entry.s15",
+      "severity": "error",
+      "span": {
+        "col": 55,
+        "end": 2311,
+        "line": 33,
+        "start": 2285
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "entry.s16",
+      "severity": "error",
+      "span": {
+        "col": 55,
+        "end": 2522,
+        "line": 36,
+        "start": 2500
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "entry.s17",
+      "severity": "error",
+      "span": {
+        "col": 55,
+        "end": 2728,
+        "line": 39,
+        "start": 2706
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "entry.s18",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 2945,
+        "line": 42,
+        "start": 2920
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "entry.s21",
+      "severity": "error",
+      "span": {
+        "col": 55,
+        "end": 3525,
+        "line": 49,
+        "start": 3503
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "entry.s25",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 4349,
+        "line": 61,
+        "start": 4313
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "entry.s26",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 4543,
+        "line": 64,
+        "start": 4518
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "p0.s8",
+      "severity": "error",
+      "span": {
+        "col": 46,
+        "end": 726,
+        "line": 11,
+        "start": 698
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "p0.s8",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 844,
+        "line": 12,
+        "start": 819
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "p0.s9",
+      "severity": "error",
+      "span": {
+        "col": 46,
+        "end": 1088,
+        "line": 15,
+        "start": 1060
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "p0.s9",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 1206,
+        "line": 16,
+        "start": 1181
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "p0.s10",
+      "severity": "error",
+      "span": {
+        "col": 46,
+        "end": 1441,
+        "line": 19,
+        "start": 1413
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "p0.s10",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 1559,
+        "line": 20,
+        "start": 1534
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "p0.s15",
+      "severity": "error",
+      "span": {
+        "col": 55,
+        "end": 2311,
+        "line": 33,
+        "start": 2285
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "p0.s16",
+      "severity": "error",
+      "span": {
+        "col": 55,
+        "end": 2522,
+        "line": 36,
+        "start": 2500
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "p0.s17",
+      "severity": "error",
+      "span": {
+        "col": 55,
+        "end": 2728,
+        "line": 39,
+        "start": 2706
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "p0.s18",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 2945,
+        "line": 42,
+        "start": 2920
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "p0.s21",
+      "severity": "error",
+      "span": {
+        "col": 55,
+        "end": 3525,
+        "line": 49,
+        "start": 3503
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "p0.s25",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 4349,
+        "line": 61,
+        "start": 4313
+      }
+    },
+    {
+      "code": "SEM_INVALID_CONTENT_TYPE_FORMAT",
+      "message": "content_type is required and must be a lowercase snake_case token",
+      "node_id": "p0.s26",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 4543,
+        "line": 64,
+        "start": 4518
+      }
+    }
+  ],
+  "typecheck": [
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "entry.s8",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 696,
+        "line": 11,
+        "start": 665
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "entry.s8",
+      "severity": "error",
+      "span": {
+        "col": 46,
+        "end": 726,
+        "line": 11,
+        "start": 698
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "entry.s8",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 817,
+        "line": 12,
+        "start": 787
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "entry.s8",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 844,
+        "line": 12,
+        "start": 819
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "entry.s9",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 1058,
+        "line": 15,
+        "start": 1027
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "entry.s9",
+      "severity": "error",
+      "span": {
+        "col": 46,
+        "end": 1088,
+        "line": 15,
+        "start": 1060
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "entry.s9",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 1179,
+        "line": 16,
+        "start": 1149
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "entry.s9",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 1206,
+        "line": 16,
+        "start": 1181
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "entry.s10",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 1411,
+        "line": 19,
+        "start": 1380
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "entry.s10",
+      "severity": "error",
+      "span": {
+        "col": 46,
+        "end": 1441,
+        "line": 19,
+        "start": 1413
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "entry.s10",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 1532,
+        "line": 20,
+        "start": 1502
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "entry.s10",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 1559,
+        "line": 20,
+        "start": 1534
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "entry.s15",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 2283,
+        "line": 33,
+        "start": 2243
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "entry.s15",
+      "severity": "error",
+      "span": {
+        "col": 55,
+        "end": 2311,
+        "line": 33,
+        "start": 2285
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "entry.s16",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 2498,
+        "line": 36,
+        "start": 2458
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "entry.s16",
+      "severity": "error",
+      "span": {
+        "col": 55,
+        "end": 2522,
+        "line": 36,
+        "start": 2500
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "entry.s17",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 2704,
+        "line": 39,
+        "start": 2664
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "entry.s17",
+      "severity": "error",
+      "span": {
+        "col": 55,
+        "end": 2728,
+        "line": 39,
+        "start": 2706
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "entry.s18",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 2918,
+        "line": 42,
+        "start": 2888
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "entry.s18",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 2945,
+        "line": 42,
+        "start": 2920
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "entry.s21",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 3501,
+        "line": 49,
+        "start": 3461
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "entry.s21",
+      "severity": "error",
+      "span": {
+        "col": 55,
+        "end": 3525,
+        "line": 49,
+        "start": 3503
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "entry.s25",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 4311,
+        "line": 61,
+        "start": 4281
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "entry.s25",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 4349,
+        "line": 61,
+        "start": 4313
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "entry.s26",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 4516,
+        "line": 64,
+        "start": 4486
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "entry.s26",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 4543,
+        "line": 64,
+        "start": 4518
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "p0.s8",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 696,
+        "line": 11,
+        "start": 665
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "p0.s8",
+      "severity": "error",
+      "span": {
+        "col": 46,
+        "end": 726,
+        "line": 11,
+        "start": 698
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "p0.s8",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 817,
+        "line": 12,
+        "start": 787
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "p0.s8",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 844,
+        "line": 12,
+        "start": 819
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "p0.s9",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 1058,
+        "line": 15,
+        "start": 1027
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "p0.s9",
+      "severity": "error",
+      "span": {
+        "col": 46,
+        "end": 1088,
+        "line": 15,
+        "start": 1060
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "p0.s9",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 1179,
+        "line": 16,
+        "start": 1149
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "p0.s9",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 1206,
+        "line": 16,
+        "start": 1181
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "p0.s10",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 1411,
+        "line": 19,
+        "start": 1380
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "p0.s10",
+      "severity": "error",
+      "span": {
+        "col": 46,
+        "end": 1441,
+        "line": 19,
+        "start": 1413
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "p0.s10",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 1532,
+        "line": 20,
+        "start": 1502
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "p0.s10",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 1559,
+        "line": 20,
+        "start": 1534
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "p0.s15",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 2283,
+        "line": 33,
+        "start": 2243
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "p0.s15",
+      "severity": "error",
+      "span": {
+        "col": 55,
+        "end": 2311,
+        "line": 33,
+        "start": 2285
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "p0.s16",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 2498,
+        "line": 36,
+        "start": 2458
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "p0.s16",
+      "severity": "error",
+      "span": {
+        "col": 55,
+        "end": 2522,
+        "line": 36,
+        "start": 2500
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "p0.s17",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 2704,
+        "line": 39,
+        "start": 2664
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "p0.s17",
+      "severity": "error",
+      "span": {
+        "col": 55,
+        "end": 2728,
+        "line": 39,
+        "start": 2706
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "p0.s18",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 2918,
+        "line": 42,
+        "start": 2888
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "p0.s18",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 2945,
+        "line": 42,
+        "start": 2920
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "p0.s21",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 3501,
+        "line": 49,
+        "start": 3461
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "p0.s21",
+      "severity": "error",
+      "span": {
+        "col": 55,
+        "end": 3525,
+        "line": 49,
+        "start": 3503
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "p0.s25",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 4311,
+        "line": 61,
+        "start": 4281
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "p0.s25",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 4349,
+        "line": 61,
+        "start": 4313
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_KIND_NOT_TEXT",
+      "message": "DefineContent arg 'kind' must be text-like",
+      "node_id": "p0.s26",
+      "severity": "error",
+      "span": {
+        "col": 13,
+        "end": 4516,
+        "line": 64,
+        "start": 4486
+      }
+    },
+    {
+      "code": "TYPE_CONTENT_TYPE_NOT_TEXT",
+      "message": "DefineContent arg 'type' must be text-like",
+      "node_id": "p0.s26",
+      "severity": "error",
+      "span": {
+        "col": 45,
+        "end": 4543,
+        "line": 64,
+        "start": 4518
+      }
+    }
+  ],
+  "plan": [],
+  "run": []
+}

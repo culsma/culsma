@@ -1,0 +1,17 @@
+{
+  "schema": "modular-source-coverage-v1",
+  "rules": "modular-source-step-correspondence-v1",
+  "metric": "source_step_correspondence",
+  "artifact": "01-flow-cytometry-immunophenotyping",
+  "implementation": "0a5393c33151663566fe3d81d4fe01f29f98e274",
+  "language_version": "1.0.6",
+  "source_sha256": "b4df60eece954847ea3a727564d273bfa2ca6f91ffeab016ff58e67de21508a1",
+  "program_sha256": {
+    "protocol.culs": "8d5a0abdc324a49abe132ccf6b4fb5eb8f29375a8da214ff40f5aeffd79e52b0"
+  },
+  "total_steps": 5,
+  "matched_steps": 5,
+  "coverage_percent": 100.0,
+  "status": "pass",
+  "issues": []
+}

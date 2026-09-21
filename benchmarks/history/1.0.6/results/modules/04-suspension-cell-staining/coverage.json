@@ -1,0 +1,18 @@
+{
+  "schema": "modular-source-coverage-v1",
+  "rules": "modular-source-step-correspondence-v1",
+  "metric": "source_step_correspondence",
+  "artifact": "04-suspension-cell-staining",
+  "implementation": "0a5393c33151663566fe3d81d4fe01f29f98e274",
+  "language_version": "1.0.6",
+  "source_sha256": "af891f53ec8aeb3a4c35ac34d5ade079cde2ed5ed115f1cf6ef23bad50c73444",
+  "program_sha256": {
+    "module.culs": "d313d40ca63ca452cffc7957c608469aa769a3a9c2c6fd668a21842ecda590c0",
+    "protocol.culs": "b723eb71ded52913dc730c639ef472da28a909f83b28e5ef57ff95420c9185eb"
+  },
+  "total_steps": 29,
+  "matched_steps": 29,
+  "coverage_percent": 100.0,
+  "status": "pass",
+  "issues": []
+}

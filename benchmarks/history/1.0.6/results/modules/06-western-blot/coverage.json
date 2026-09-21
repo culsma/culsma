@@ -1,0 +1,17 @@
+{
+  "schema": "modular-source-coverage-v1",
+  "rules": "modular-source-step-correspondence-v1",
+  "metric": "source_step_correspondence",
+  "artifact": "06-western-blot",
+  "implementation": "0a5393c33151663566fe3d81d4fe01f29f98e274",
+  "language_version": "1.0.6",
+  "source_sha256": "7d56da32ad704ae13cc62c2e0fc8d152b390ad49212fd5b0ae00c0a6712bf1fb",
+  "program_sha256": {
+    "protocol.culs": "6ebabfd58efb0acb356d37f1affe9ee74b9a36a6bb0e362e05991da132a9ca0f"
+  },
+  "total_steps": 32,
+  "matched_steps": 32,
+  "coverage_percent": 100.0,
+  "status": "pass",
+  "issues": []
+}
