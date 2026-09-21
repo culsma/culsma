@@ -427,7 +427,7 @@ def test_numeric_entry_id_is_unambiguous_from_index_selector():
 
 
 def test_case09_full_pipeline_keeps_protein_without_fabricated_yield():
-    case = Path(__file__).parents[1] / 'benchmarks/cases/09/protocol.culs'
+    case = Path(__file__).parents[1] / 'archive/benchmarks-legacy/cases/09/protocol.culs'
     result = run(plan=plan_source(case), driver=StubDriver())
     assert result.ok, [d.to_dict() for d in result.diagnostics]
     state = result.state.artifacts['material_state']

@@ -15,7 +15,7 @@ from culsma.pipeline.validate import validate
 from culsma.runtime.executor import run
 
 
-CASE_04 = Path(__file__).resolve().parents[1] / "benchmarks/cases/04/protocol.culs"
+CASE_04 = Path(__file__).resolve().parents[1] / "archive/benchmarks-legacy/cases/04/protocol.culs"
 
 
 def compile_sealed_source(body: str):

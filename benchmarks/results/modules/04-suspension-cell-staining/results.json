@@ -1,0 +1,114 @@
+{
+  "materials": [
+    {
+      "amount": 6000000.0,
+      "name": "InputPBMCSuspension",
+      "unit": "cells"
+    },
+    {
+      "amount": 51515.0,
+      "name": "FlowStainingBuffer",
+      "unit": "uL"
+    },
+    {
+      "amount": 1620.0,
+      "name": "FixationPBS",
+      "unit": "uL"
+    },
+    {
+      "amount": 600.0,
+      "name": "InputPBMCSuspension",
+      "unit": "uL"
+    },
+    {
+      "amount": 180.0,
+      "name": "FixationBuffer10X",
+      "unit": "uL"
+    },
+    {
+      "amount": 30.0,
+      "name": "HumanFcBlock",
+      "unit": "uL"
+    },
+    {
+      "amount": 10.0,
+      "name": "AntiCD3PE",
+      "unit": "uL"
+    },
+    {
+      "amount": 10.0,
+      "name": "AntiCD45FITC",
+      "unit": "uL"
+    },
+    {
+      "amount": 10.0,
+      "name": "AntiCD4Cy5",
+      "unit": "uL"
+    },
+    {
+      "amount": 10.0,
+      "name": "LiveDeadViabilityDye",
+      "unit": "uL"
+    },
+    {
+      "amount": 5.0,
+      "name": "IsotypeCy5",
+      "unit": "uL"
+    },
+    {
+      "amount": 5.0,
+      "name": "IsotypeFITC",
+      "unit": "uL"
+    },
+    {
+      "amount": 5.0,
+      "name": "IsotypePE",
+      "unit": "uL"
+    }
+  ],
+  "resources": [
+    {
+      "capacity_uL": 20.0,
+      "count": 1,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 100.0,
+      "count": 13,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 500.0,
+      "count": 1,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 1000.0,
+      "count": 1,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 2000.0,
+      "count": 2,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 5000.0,
+      "count": 6,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 60000.0,
+      "count": 2,
+      "kind": "tube"
+    }
+  ],
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": []
+    }
+  }
+}

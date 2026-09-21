@@ -1,0 +1,154 @@
+{
+  "materials": [
+    {
+      "amount": 96000.0,
+      "name": "WashBuffer",
+      "unit": "uL"
+    },
+    {
+      "amount": 4800.0,
+      "name": "BlockingBuffer",
+      "unit": "uL"
+    },
+    {
+      "amount": 1600.0,
+      "name": "CaptureAntibodyWorkingSolution",
+      "unit": "uL"
+    },
+    {
+      "amount": 1600.0,
+      "name": "DetectionAntibodyWorkingSolution",
+      "unit": "uL"
+    },
+    {
+      "amount": 1600.0,
+      "name": "StreptavidinHRPWorkingSolution",
+      "unit": "uL"
+    },
+    {
+      "amount": 1600.0,
+      "name": "TMBSubstrate",
+      "unit": "uL"
+    },
+    {
+      "amount": 800.0,
+      "name": "StopSolution",
+      "unit": "uL"
+    },
+    {
+      "amount": 400.0,
+      "name": "ReagentDiluent",
+      "unit": "uL"
+    },
+    {
+      "amount": 100.0,
+      "name": "NegativeControl",
+      "unit": "uL"
+    },
+    {
+      "amount": 100.0,
+      "name": "PositiveControl",
+      "unit": "uL"
+    },
+    {
+      "amount": 100.0,
+      "name": "Standard1000pgmL",
+      "unit": "uL"
+    },
+    {
+      "amount": 100.0,
+      "name": "Standard125pgmL",
+      "unit": "uL"
+    },
+    {
+      "amount": 100.0,
+      "name": "Standard2000pgmL",
+      "unit": "uL"
+    },
+    {
+      "amount": 100.0,
+      "name": "Standard250pgmL",
+      "unit": "uL"
+    },
+    {
+      "amount": 100.0,
+      "name": "Standard31p25pgmL",
+      "unit": "uL"
+    },
+    {
+      "amount": 100.0,
+      "name": "Standard500pgmL",
+      "unit": "uL"
+    },
+    {
+      "amount": 100.0,
+      "name": "Standard62p5pgmL",
+      "unit": "uL"
+    },
+    {
+      "amount": 100.0,
+      "name": "UnknownSample1",
+      "unit": "uL"
+    },
+    {
+      "amount": 100.0,
+      "name": "UnknownSample2",
+      "unit": "uL"
+    },
+    {
+      "amount": 100.0,
+      "name": "ZeroStandard",
+      "unit": "uL"
+    }
+  ],
+  "resources": [
+    {
+      "capacity_uL": null,
+      "count": 1,
+      "kind": "plate"
+    },
+    {
+      "capacity_uL": 500.0,
+      "count": 11,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 1000.0,
+      "count": 1,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 2000.0,
+      "count": 1,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 3000.0,
+      "count": 4,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 5000.0,
+      "count": 1,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 6000.0,
+      "count": 1,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 150000.0,
+      "count": 2,
+      "kind": "unknown"
+    }
+  ],
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": []
+    }
+  }
+}

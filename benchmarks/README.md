@@ -1,208 +1,140 @@
-# Reproduce the Patterns benchmark
+# Patterns workflow benchmark
 
-This directory contains the 14 workflows evaluated in the paper and the
-separate worked example (00), with their source files and expected results.
+This is the canonical public benchmark for Section 3.5 of
+*Culsma: An Executable Specification Language for Laboratory Protocols*.
+It contains seven experimental modules and one composite workflow. Source
+procedures, programs, results, and reproduction instructions are maintained
+here together; no documentation-site export is needed.
 
-## Read the files
+## Current results (paper Section 3.5)
 
-| Path | Purpose |
+<!-- paper-table:start -->
+Evaluated with Culsma 1.0.7.
+
+| Module | Source steps | Coverage |
+| --- | ---: | ---: |
+| Module 01: Cell transfection | 13/13 | 100% |
+| Module 02: Selective plating and colony isolation | 11/12 | 91.7% |
+| Module 03: Cell lysate preparation | 10/10 | 100% |
+| Module 04: Suspension-cell staining | 29/29 | 100% |
+| Module 05: Magnetic-bead immunoprecipitation | 23/23 | 100% |
+| Module 06: Western blot | 32/32 | 100% |
+| Module 07: Sandwich ELISA | 41/42 | 97.6% |
+| Composite 01: Flow-cytometry immunophenotyping | 5/5 | 100% |
+<!-- paper-table:end -->
+
+The seven modules cover **159/161** numbered source steps (98.76%). Including
+the composite gives **164/166** (98.80%). All eight entry programs complete:
+**2406/2406** generated execution steps, with no failed or skipped steps and
+no runtime diagnostics. Source steps and execution steps are different
+counts; expanded loop iterations do not increase source-step coverage.
+
+The two uncovered steps are Module 02 S5 (spreading inoculum on agar) and
+Module 07 S37 (tap-mixing a plate). These remain explicit gaps. Coverage
+measures structural source–program correspondence, not complete semantic
+fidelity, biological success, or hardware execution. In particular, a transfer
+may match a source step while a finer detail such as dropwise delivery remains
+only in its annotation.
+
+## Known gaps and extension targets
+
+The results above describe the fixed evaluated version, not an exhaustive
+inventory of laboratory operations. The collection can grow as additional
+workflows are added; compare versions using the same source inventory and
+coverage rules when assessing improvements in operation support.
+
+| Source step | Current gap | Candidate extension and verification |
+| --- | --- | --- |
+| [Module 02 S5](modules/02-selective-plating-candidate-colony-isolation/source.md) | Evenly spreading each inoculum across agar with a sterile spreading tool is retained as an annotation; the preceding transfer does not represent surface spreading. | Define how the surface-spreading action, sample, destination surface, and procedural requirements are represented, then provide execution support. Verify the original step's program counterpart and preservation of sample/destination identity. |
+| [Module 07 S37](modules/07-sandwich-elisa/source.md) | Gentle plate tapping to mix the stopped reaction has no verified action in the evaluated program. | Define plate tap-mixing and its target and requirements, then provide execution support. Verify that it occurs after stopping the reaction and before readout, without substituting a different mixing method. |
+
+These are extension proposals, not implemented fixes or commitments that a
+driver change alone is sufficient. Language representation and execution
+support need to be assessed together. Keep the original numbered source steps
+and gap records until support is implemented and checked. A later result should
+record the revised program/runtime versions and rerun coverage and execution;
+successful software execution alone does not demonstrate physical performance.
+The current values (11/12 for Module 02 and 41/42 for Module 07) remain unchanged.
+
+## Directory and execution entry points
+
+| Path | Contents |
 | --- | --- |
-| `cases/01/` through `cases/14/` | The 14 benchmark cases. |
-| `cases/00/` | Worked example, excluded from corpus totals. |
-| `reproduce.py` | Run, extract metrics, and compare with the paper tables. |
-| `tools/` | Extraction scripts. |
-| `expected/` | `tables.json` for automatic comparison; `tables.md` for reading the same totals. |
-| `tests/` | Regression tests; not required to run the benchmark. |
-| `requirements.lock` | Exact dependency versions and installation-package hashes. |
-| `SOURCES.md` | Source provenance and complete case references. |
+| [`modules/`](modules/) | Seven modules; each has `source.md` and a `protocol.culs` entry program. |
+| [`composites/`](composites/) | One composite, also with `source.md` and a `protocol.culs` entry. |
+| [`worked_examples/`](worked_examples/) | Four manuscript examples, independent checker, and recorded results; excluded from coverage totals. |
+| [`libraries/`](libraries/) | Import entry for Module 04, reused by the composite. |
+| [`reproduce.py`](reproduce.py) | Single script for coverage, execution, comparison, and table generation. |
+| [`manifest.json`](manifest.json) | Fixed versions, source hashes, expected counts and known gaps. |
+| [`results/`](results/) | One checked set of coverage, execution, and material/observation results. |
 
-Migrated cases use three files (Case 00 currently):
+Module 04 also contains its reusable `module.culs`. Its `protocol.culs` runs
+that module independently. The composite imports the same definition through
+`libraries/Module04.culs`; it does not copy the staining procedure.
+Each `source.md` retains the procedure's source references and context.
 
-| File | Contents |
-| --- | --- |
-| `source.md` | Context, one numbered `## Steps` section, and optional notes. |
-| `protocol.culs` | Program with each source step copied under a `Source step S<n>:` prefix above its corresponding code. Consecutive markers may share one code region when one operation implements multiple source steps. |
-| `coverage.json` | Script-generated step correspondence results; never edited manually. |
+## Reproduce
 
-The shared format is defined in `schemas/source-coverage.schema.json` and
-`tools/source_comment_coverage.py`. Only the Steps section is counted. Context
-and notes can preserve source provenance and additional protocol information.
-Unmigrated cases retain the earlier layout. Historical Case 00 descriptor,
-continuity and traceability baselines now live in `expected/cases/00/` and remain
-available to `reproduce.py check-baseline`.
-
-## Generate coverage in each case
+With Git and Python 3.12 installed, run from a new working directory:
 
 ```sh
-python reproduce.py coverage --case 00 \
-  --python /path/to/culsma-environment/bin/python \
-  --implementation IMPLEMENTATION_COMMIT
+git clone --branch codex/benchmark-publication https://github.com/culsma/culsma.git culsma-benchmark
+git clone https://github.com/culsma/culsma.git culsma-runtime
+git -C culsma-runtime checkout 42b562bce488d25bdc00af82c62fdb5d4cc52b8b
+python3.12 -m venv .venv
+.venv/bin/python -m pip install lark==1.3.1
+.venv/bin/python culsma-benchmark/benchmarks/reproduce.py \
+  --runtime-repo culsma-runtime --output results/patterns-run-01
 ```
 
-This writes `cases/00/coverage.json`. Multiple explicit case IDs generate one
-file in each selected case, never a shared report directory. Cases must first
-adopt the numbered Steps/comment format. The score measures source-step
-correspondence, not numerical or semantic correctness.
-The result records counts and issues only; matched steps are not repeated.
-A reviewed missing language capability may be declared next to the affected
-program region as `// Language gap S<n>: ...`. The static correspondence score
-does not absorb this judgment. Versioned release summaries keep the two results
-separate and are generated with `tools/build_coverage_snapshot.py`; see
-[`releases/README.md`](releases/README.md).
-See [PRESENTATION.md](PRESENTATION.md) for website and publication rules.
+For the exact paper snapshot, also check out the benchmark-package commit
+cited in the paper before running. On Windows use `.venv/Scripts/python.exe`.
+The runner imports the pinned runtime directly; no private wheel is required.
+Use a new output directory for every run. For local work inside this repository,
+use `benchmarks/local-results/<run-name>/`, which is ignored by Git.
 
-The retired numerical/semantic review system and local pilot captures have been
-moved outside the checkout to a local backup. They are not inputs to this command.
-Migration and evidence follow-up are tracked in
-[PM #116](https://github.com/culsma/culsma-pm/issues/116). Historical runtime commands
-below retain their v9 baselines in `expected/`.
+The input snapshot is `e65e56cfe4de10b21d890fe2724210dfde1c9c84`; the runtime
+is `42b562bce488d25bdc00af82c62fdb5d4cc52b8b`. The paper's benchmark version is
+**1.0.7**; package metadata at the pinned runtime is **1.0.7rc3**. The manifest
+and generated summary retain that distinction. The preparation environment is
+Python 3.12.8 with Lark 1.3.1.
 
-## Install the matching environment
+A zero exit status requires the pinned runtime and input hashes, matching
+coverage counts and gap records, and successful completion of all eight
+programs with the expected execution counts and zero failures, skips, or
+runtime diagnostics. Reproducing the two known gaps is a successful comparison.
+The checker and its counting rule are included in the single script.
 
-This working candidate requires **Culsma 1.0.7rc1**, Lark 1.3.1 and Python
-3.11–3.13 (validated with 3.12.8). The implementation is an internal prerelease:
-public end-to-end installation remains pending a release decision. No wheel
-is bundled or redistributed here.
+Each output directory contains `summary.json`, `table.md`, and per-artifact
+`coverage.json`, `run.json`, and `results.json`. Nonempty console/error logs
+are retained when present. Report and compact-result exports use separate
+deterministic CLI invocations. Input, script, environment, and output identities
+are recorded. The automatic comparison checks coverage and execution counts;
+material and observation records are preserved for inspection, not treated as
+independent experimental validation. No second copy of coverage is stored in
+the source directories.
 
-With authorized access, obtain `culsma-1.0.7rc1-py3-none-any.whl` from
-`internal-1.0.7rc1` and put it in a local wheel directory. Its SHA-256 is
-`ba049c3217e45d500dbf1cf848667ab268a218f7373a20bc90b884a88fa7cffe`.
-From this directory:
+## Maintain the benchmark and paper together
 
-```sh
-python3 -m venv .venv
-.venv/bin/python -m pip install --find-links /path/to/authorized/wheels --require-hashes -r requirements.lock
-```
+1. Revise source procedures and programs together. Keep complete source-step
+   annotations and source references; retain gaps explicitly.
+2. Review the expected counts, gap records, input hashes, and runtime identity
+   in `manifest.json`. Update them only for an intended, reviewed change;
+   do not replace expectations merely to make a failing comparison pass.
+3. Run `reproduce.py` into a new directory. Add `--update-readme` to regenerate
+   the marked three-column table above after all comparisons pass. The same
+   table is written to `table.md`, using the paper's module names and rounding,
+   with one version label for the entire run.
+4. Review the resulting records. When advancing to a new runtime version,
+   rerun the full collection and archive the previous complete `results/` set
+   under `archive/benchmark-results/<version>-<commit>/` before replacing it.
+   Update the aggregate figures above and the paper's table and Methods
+   if the evidence changes. Commit inputs, manifest, README, and results
+   together, and cite the new package commit in the paper.
 
-On Windows, use `.venv/Scripts/python.exe`. Python hosts the installed Culsma
-CLI and runs the metric scripts; the extractor does not import language internals.
-
-## Run and compare
-
-```sh
-.venv/bin/python reproduce.py all --results results/my-run
-```
-
-The runner discovers the two-digit subdirectories of `cases/` in numeric order,
-requires a `protocol.culs` in each, invokes the installed Culsma CLI and extracts
-three metric files per case. No separately maintained case list is read.
-Use a new results directory each time. Allow several minutes and a few GB
-for intermediate exports. External inventory reconciliation is not enabled.
-
-New metric files appear in `results/my-run/<case>/evaluation/`.
-The adjacent `input/` holds the source copy, AST/IR/Plan/Run/Result/Output JSON
-and automatically generated capture metadata. These are local reproduction
-evidence, not additional committed case files.
-
-At the run root, `tables.json` and `tables.md` contain regenerated tables;
-`comparison.json` records differences. Comparison checks all nine counts
-against `expected/tables.json`, plus complete material and return records
-against each supplied `result_traceability.json` and the new raw output.
-A mismatch or failed run gives a nonzero exit status.
-The discovered case set must also match the expected table: missing or extra
-cases fail comparison. Case 00 stays outside corpus totals regardless of its
-directory location.
-
-Both capture and the runner read dependency versions from `requirements.lock`
-and verify the installed versions. Actual Python, Culsma and Lark versions are
-recorded with the run. The runner accepts stable Python 3.11–3.13. Source and
-artifact hashes are generated automatically in the capture receipt and checked
-when extracting; there is no separate file-hash list to maintain at the root.
-Local `include` dependencies are copied recursively into the capture bundle.
-Library `import` dependencies can be captured with repeatable
-`--library-root /path/to/library` arguments. Every copied source is hash-bound,
-and source evidence retains its bundle-relative filename.
-
-Recompute comparisons without rerunning Culsma:
-
-```sh
-.venv/bin/python reproduce.py summarize --results results/my-run
-```
-
-Check the supplied JSON against the tables without installing Culsma:
-
-```sh
-python3 reproduce.py check-baseline
-```
-
-Run one case and generate its three files:
-
-```sh
-.venv/bin/python tools/benchmark_metrics.py capture --source cases/01/protocol.culs --python .venv/bin/python --bundle results/single/01/input
-.venv/bin/python tools/benchmark_metrics.py extract --bundle results/single/01/input --out results/single/01/evaluation
-```
-
-## How the metrics are extracted
-
-The entry and call relationships come from exported AST JSON. Numbered
-`// Source step S<n>:` comments may occur in main or subprotocols. Local
-markers take precedence; otherwise a subprotocol inherits the calling step.
-Initial main-protocol declarations belong to S1. An unmarked batch wrapper
-with one distinct protocol callee inherits that callee's step scope. Missing
-S1, gaps, malformed/ranged markers and ambiguous mappings fail. Without a
-separate step list, an entirely deleted final marker cannot be detected solely
-from remaining source; expected tables provide an independent comparison.
-
-The supplied historical baselines use `patterns-metrics-nested-v9`. The current
-`patterns-metrics-nested-v10` extractor adds dependency sources and multi-source
-evidence while retaining the same descriptor rules. It deduplicates identical
-descriptors within a step. Loop iterations do not multiply static descriptors;
-distinct explicit calls retain their object context. Groups require program-defined
-membership, a common introduction step and identical later-use steps;
-overlapping eligible groups are split. Later uses are compared by source-step
-number, while runtime events establish actual use. Traceability counts preserve
-distinct records even when display names repeat.
-
-The committed baseline for the 14 cases totals 208 source steps, 3929 descriptors, 299 reused objects,
-680 later-use links and 4672/4672 completed/active steps. Section 3.4 totals
-are 229 reagent records, 633 touched-container records and 482 final states.
-These describe modeled execution, not biological validation or device execution.
-Static compatibility warnings are distinct from runtime diagnostics.
-Capture paths/hashes and evidence-list ordering may differ between runs without
-changing metric content.
-
-### Final-state scope
-
-New extractions count nonempty physical containers directly from
-`run.json` at `/state/artifacts/material_state/containers`, including residual
-source stocks, assay containers and waste. Each `final_material_records` entry
-preserves the runtime container ID, full material state and a JSON pointer.
-Empty containers and internal fraction handles (`::`) are excluded; event
-snapshots are not accumulated. Positive quantities use a tolerance of `1e-9`.
-The runtime's narrower `final_products` summary remains available separately
-under its original name and is not the basis of the revised final-state count.
-
-All 15 cases have been rerun with this scope. Cases 01–14 contain 482 final
-material records in total, compared with 287 records in the former summary-only
-scope. Case 00 remains separate with three records. Descriptor and continuity
-counts are unchanged. The case JSONs and expected tables use the revised scope.
-
-## Maintainer checks
-
-```sh
-CULSMA_TEST_PYTHON="$PWD/.venv/bin/python" .venv/bin/python -m unittest discover -s tests -q
-```
-
-Integration tests skip without an implementation interpreter; a skipped run
-is not full validation. Historical profile inputs in `tests/fixtures/` are
-test-only; production capture reads `protocol.culs` directly.
-
-After a program change, regenerate its metrics and review differences before
-updating expected results. Do not change expected results just to make a failing
-comparison pass. Programs and sources are maintained here; the website and
-manuscript are publication copies. Public releases should identify the Git
-commit/tag used so readers can obtain the same files.
-
-## Instruction source format
-
-Use one `## Steps` section with consecutive numbers starting at 1. Preparation
-belongs in the same sequence. Optional `## Context` and `## Notes` sections retain
-provenance, background and additional source information outside the denominator.
-Copy each complete step into `protocol.culs` as `// Source step S1: ...` above
-its code. Continue wrapped source text with `//   ...`; other comments are ignored.
-When one Culsma operation implements multiple source instructions, place their
-markers consecutively above that operation; the checker assigns the shared code
-region to each step. Do not duplicate an experimental operation to create a
-one-to-one textual mapping.
-Generate `coverage.json` with the shared checker; do not maintain extra per-case
-step indexes, report tables or hand-written coverage values.
+Historical Cases 00–14 and their original tools are preserved outside this
+active directory in [`archive/benchmarks-legacy/`](../archive/benchmarks-legacy/).
+They are excluded from this runner and the paper's current coverage totals.
+The four manuscript illustrations and their independent reproduction script are
+provided in [`worked_examples/`](worked_examples/). They are evaluated separately
+and do not contribute to the coverage totals above.

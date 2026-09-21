@@ -1,0 +1,214 @@
+{
+  "protocol_id": "PIO-80356",
+  "source_url": "https://www.protocols.io/view/cell-culture-and-western-blot-csqcwdsw.pdf",
+  "source_license": "Creative Commons Attribution",
+  "steps": [
+    {
+      "id": "S1",
+      "section": "Cell culture and transfection",
+      "source_text": "Split 293T cells in 6-well dishes 24 h before transfection at 200K cells per well in 2 mL DMEM.",
+      "operation": "cell_seeding",
+      "inputs": [
+        "HEK293T cells",
+        "DMEM"
+      ],
+      "outputs": [
+        "seeded HEK293T cells"
+      ],
+      "containers": [
+        "6-well dish"
+      ],
+      "parameters": [
+        "200000 cells per well",
+        "2 mL DMEM",
+        "24 h before transfection"
+      ],
+      "equipment": [
+        "cell culture incubator"
+      ],
+      "readout": "",
+      "notes": ""
+    },
+    {
+      "id": "S2",
+      "section": "Cell culture and transfection",
+      "source_text": "Warm PEI and Opti-MEM, mix GFP-Rab7 and LRRK1 DNA in Opti-MEM, add PEI, incubate 15 min, replace media, and add mixture dropwise.",
+      "operation": "pei_transfection",
+      "inputs": [
+        "GFP-Rab7 plasmid",
+        "LRRK1 construct",
+        "Opti-MEM",
+        "PEI",
+        "HEK293T cells"
+      ],
+      "outputs": [
+        "transfected HEK293T cells"
+      ],
+      "containers": [
+        "tube",
+        "6-well dish"
+      ],
+      "parameters": [
+        "500 ng GFP-Rab7",
+        "1 ug LRRK1",
+        "150 uL Opti-MEM",
+        "3 uL PEI",
+        "15 min room-temperature incubation"
+      ],
+      "equipment": [
+        "biosafety hood",
+        "incubator"
+      ],
+      "readout": "",
+      "notes": ""
+    },
+    {
+      "id": "S3",
+      "section": "Cell lysis",
+      "source_text": "After 36 h, wash on ice with cold PBS, add 300 uL RIPA buffer with inhibitors, lift cells, shake lysate 15 min in cold room, and centrifuge 15 min at 4 C.",
+      "operation": "cell_lysis_and_clarification",
+      "inputs": [
+        "transfected cells",
+        "PBS",
+        "RIPA buffer",
+        "protease inhibitors",
+        "phosphatase inhibitors"
+      ],
+      "outputs": [
+        "clarified lysate"
+      ],
+      "containers": [
+        "6-well dish",
+        "Eppendorf tube"
+      ],
+      "parameters": [
+        "36 h post-transfection",
+        "300 uL RIPA",
+        "15 min cold-room shake",
+        "15 min centrifuge at 4 C"
+      ],
+      "equipment": [
+        "cell lifter",
+        "cold room shaker",
+        "centrifuge"
+      ],
+      "readout": "",
+      "notes": ""
+    },
+    {
+      "id": "S4",
+      "section": "Cell lysis",
+      "source_text": "Prepare sample by boiling lysate with reducing agent and LDS sample buffer at 95 C for 10 min.",
+      "operation": "sample_preparation",
+      "inputs": [
+        "clarified lysate",
+        "reducing agent",
+        "LDS sample buffer"
+      ],
+      "outputs": [
+        "prepared protein sample"
+      ],
+      "containers": [
+        "tube"
+      ],
+      "parameters": [
+        "65 uL lysate",
+        "10 uL reducing agent",
+        "25 uL LDS buffer",
+        "95 C 10 min"
+      ],
+      "equipment": [
+        "heat block"
+      ],
+      "readout": "",
+      "notes": ""
+    },
+    {
+      "id": "S5",
+      "section": "Western blot",
+      "source_text": "Load 25 uL prepared lysate on a 4-12 percent Bis-Tris gel and run at 180 V for about 50 min.",
+      "operation": "sds_page",
+      "inputs": [
+        "prepared protein sample",
+        "Bis-Tris gel",
+        "MOPS running buffer"
+      ],
+      "outputs": [
+        "separated protein bands"
+      ],
+      "containers": [
+        "gel lane"
+      ],
+      "parameters": [
+        "25 uL sample",
+        "4-12 percent gel",
+        "180 V",
+        "50 min"
+      ],
+      "equipment": [
+        "gel electrophoresis apparatus"
+      ],
+      "readout": "",
+      "notes": ""
+    },
+    {
+      "id": "S6",
+      "section": "Western blot",
+      "source_text": "Activate PVDF membrane, transfer proteins in Tris/Glycine buffer with 20 percent methanol at 200 mA for 4 h at 4 C, then rinse and dry membrane.",
+      "operation": "membrane_transfer",
+      "inputs": [
+        "separated protein bands",
+        "PVDF membrane",
+        "transfer buffer",
+        "methanol"
+      ],
+      "outputs": [
+        "protein membrane"
+      ],
+      "containers": [
+        "membrane"
+      ],
+      "parameters": [
+        "200 mA",
+        "4 h",
+        "4 C",
+        "20 percent methanol"
+      ],
+      "equipment": [
+        "western transfer apparatus"
+      ],
+      "readout": "",
+      "notes": "Current Culsma translation does not model current-driven membrane transfer directly."
+    },
+    {
+      "id": "S7",
+      "section": "Western blot",
+      "source_text": "Block membrane, incubate overnight at 4 C with primary antibodies, wash, incubate 1 h with LiCor secondary antibodies, wash, and image on LiCor Odyssey CLx.",
+      "operation": "immunoblot_detection",
+      "inputs": [
+        "protein membrane",
+        "milk blocking buffer",
+        "primary antibodies",
+        "secondary antibodies"
+      ],
+      "outputs": [
+        "Western blot image"
+      ],
+      "containers": [
+        "membrane"
+      ],
+      "parameters": [
+        "5 percent milk",
+        "overnight 4 C",
+        "3x TBST 5 min washes",
+        "1 h secondary antibody"
+      ],
+      "equipment": [
+        "rocker",
+        "LiCor Odyssey CLx"
+      ],
+      "readout": "fluorescent Western blot image",
+      "notes": ""
+    }
+  ]
+}

@@ -13,7 +13,7 @@ from culsma.pipeline.typecheck import typecheck
 from culsma.pipeline.validate import validate
 from culsma.runtime.executor import run
 
-CASE = Path(__file__).resolve().parents[1] / 'benchmarks/cases/09/protocol.culs'
+CASE = Path(__file__).resolve().parents[1] / 'archive/benchmarks-legacy/cases/09/protocol.culs'
 
 
 def execute_case(stage, driver_type=HumanDriver):

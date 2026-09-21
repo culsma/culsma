@@ -80,10 +80,13 @@ protocol Module01_CellTransfection() returns (cell_group) {
   }
 
   // Source step S10: Add the full non-targeting delivery mixture from step 8 dropwise to the non-targeting control well A2.
-  non_targeting_cells << [non_targeting_delivery_mix] with constraint(dropwise);
+  // COVERAGE GAP: transfer below encodes destination and full amount, not
+  // dropwise delivery. No verified dropwise syntax is substituted.
+  non_targeting_cells << [non_targeting_delivery_mix];
 
   // Source step S11: Add the full deletion delivery mixture from step 7 dropwise to the deletion-RNP treatment well A3.
-  deletion_cells << [deletion_delivery_mix] with constraint(dropwise);
+  // COVERAGE GAP: dropwise delivery remains annotation only, as in step 12.
+  deletion_cells << [deletion_delivery_mix];
 
   // Source step S12: Incubate the WT control, non-targeting control, and deletion-RNP-treated cells for 72 h at 37 C with 5% CO2.
   with env(thermal = 37C, co2 = 5%, duration = 72h) {

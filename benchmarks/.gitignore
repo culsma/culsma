@@ -1,8 +1,4 @@
 .venv*/
-results/
-dist/
+local-results/
 __pycache__/
 *.pyc
-*.gz
-*.zip
-*.whl

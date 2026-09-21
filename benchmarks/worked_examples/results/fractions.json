@@ -1,0 +1,3557 @@
+{
+  "step_status": {
+    "entry.s0::alloc": "completed",
+    "entry.s0::load0::define": "completed",
+    "entry.s0::load0::load": "completed",
+    "entry.s1::alloc": "completed",
+    "entry.s1::load0::define": "completed",
+    "entry.s1::load0::load": "completed",
+    "entry.s2::alloc": "completed",
+    "entry.s2::load0::define": "completed",
+    "entry.s2::load0::load": "completed",
+    "entry.s3::alloc": "completed",
+    "entry.s3::load0::define": "completed",
+    "entry.s3::load0::load": "completed",
+    "entry.s4::alloc": "completed",
+    "entry.s4::load0::define": "completed",
+    "entry.s4::load0::load": "completed",
+    "entry.s9": "completed",
+    "entry.s11::well::A1::alloc": "completed",
+    "entry.s11::well::A2::alloc": "completed",
+    "entry.s11::well::A3::alloc": "completed",
+    "entry.s15": "completed",
+    "entry.s16": "completed",
+    "entry.s17": "completed",
+    "entry.s18::well::B1::alloc": "completed",
+    "entry.s18::well::B2::alloc": "completed",
+    "entry.s18::well::B3::alloc": "completed",
+    "entry.s18.g0": "completed",
+    "entry.s18.g1": "completed",
+    "entry.s18.g2": "completed",
+    "entry.s24.b.s0.g0": "completed",
+    "entry.s24.b.s0.g1": "completed",
+    "entry.s24.b.s0.g2": "completed",
+    "entry.s24.b.s0.g3": "completed",
+    "entry.s24.b.s0.g4": "completed",
+    "entry.s24.b.s0.g5": "completed",
+    "entry.s25": "completed",
+    "entry.s30": "completed",
+    "entry.s32::well::A1::alloc": "completed",
+    "entry.s32::well::A2::alloc": "completed",
+    "entry.s32::well::A3::alloc": "completed",
+    "entry.s36": "completed",
+    "entry.s37": "completed",
+    "entry.s38": "completed",
+    "entry.s39::well::B1::alloc": "completed",
+    "entry.s39::well::B2::alloc": "completed",
+    "entry.s39::well::B3::alloc": "completed",
+    "entry.s39.g0": "completed",
+    "entry.s39.g1": "completed",
+    "entry.s39.g2": "completed",
+    "entry.s45.b.s0.g0": "completed",
+    "entry.s45.b.s0.g1": "completed",
+    "entry.s45.b.s0.g2": "completed",
+    "entry.s45.b.s0.g3": "completed",
+    "entry.s45.b.s0.g4": "completed",
+    "entry.s45.b.s0.g5": "completed",
+    "entry.s46": "completed"
+  },
+  "artifacts": {
+    "data_objects": {
+      "entry.s25::data::0": {
+        "kind": "data_ref",
+        "data_id": "entry.s25::data::0",
+        "observation_id": "entry.s25::data::0",
+        "data_kind": "observation",
+        "family": "img",
+        "op": "img",
+        "step_id": "entry.s25",
+        "binding": null,
+        "subject_ref": {
+          "name": "__lw_plate___cmp_entry_s5_assay_A1",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample_ref": {
+          "name": "__lw_plate___cmp_entry_s5_assay_A1",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample": {
+          "name": "__lw_plate___cmp_entry_s5_assay_A1",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "resolved_sample": "container/entry/entry.s11%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A1",
+        "contract_kind": "fluorescence",
+        "program_kind": null,
+        "program": null,
+        "status": "ok",
+        "result": {
+          "signal": null,
+          "channel": null
+        },
+        "save_raw": false,
+        "driver_payload": {
+          "step_id": "entry.s25",
+          "op": "img"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "export_refs": {
+          "driver_profile": {
+            "export_id": "entry.s25::data::0::driver_profile",
+            "kind": "img",
+            "format": "json",
+            "profile": "driver:DRV_OK"
+          }
+        }
+      },
+      "entry.s25::data::1": {
+        "kind": "data_ref",
+        "data_id": "entry.s25::data::1",
+        "observation_id": "entry.s25::data::1",
+        "data_kind": "observation",
+        "family": "img",
+        "op": "img",
+        "step_id": "entry.s25",
+        "binding": null,
+        "subject_ref": {
+          "name": "__lw_plate___cmp_entry_s5_assay_A2",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample_ref": {
+          "name": "__lw_plate___cmp_entry_s5_assay_A2",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample": {
+          "name": "__lw_plate___cmp_entry_s5_assay_A2",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "resolved_sample": "container/entry/entry.s11%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A2",
+        "contract_kind": "fluorescence",
+        "program_kind": null,
+        "program": null,
+        "status": "ok",
+        "result": {
+          "signal": null,
+          "channel": null
+        },
+        "save_raw": false,
+        "driver_payload": {
+          "step_id": "entry.s25",
+          "op": "img"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "export_refs": {
+          "driver_profile": {
+            "export_id": "entry.s25::data::1::driver_profile",
+            "kind": "img",
+            "format": "json",
+            "profile": "driver:DRV_OK"
+          }
+        }
+      },
+      "entry.s25::data::2": {
+        "kind": "data_ref",
+        "data_id": "entry.s25::data::2",
+        "observation_id": "entry.s25::data::2",
+        "data_kind": "observation",
+        "family": "img",
+        "op": "img",
+        "step_id": "entry.s25",
+        "binding": null,
+        "subject_ref": {
+          "name": "__lw_plate___cmp_entry_s5_assay_A3",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample_ref": {
+          "name": "__lw_plate___cmp_entry_s5_assay_A3",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample": {
+          "name": "__lw_plate___cmp_entry_s5_assay_A3",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "resolved_sample": "container/entry/entry.s11%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A3",
+        "contract_kind": "fluorescence",
+        "program_kind": null,
+        "program": null,
+        "status": "ok",
+        "result": {
+          "signal": null,
+          "channel": null
+        },
+        "save_raw": false,
+        "driver_payload": {
+          "step_id": "entry.s25",
+          "op": "img"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "export_refs": {
+          "driver_profile": {
+            "export_id": "entry.s25::data::2::driver_profile",
+            "kind": "img",
+            "format": "json",
+            "profile": "driver:DRV_OK"
+          }
+        }
+      },
+      "entry.s25::data::3": {
+        "kind": "data_ref",
+        "data_id": "entry.s25::data::3",
+        "observation_id": "entry.s25::data::3",
+        "data_kind": "observation",
+        "family": "img",
+        "op": "img",
+        "step_id": "entry.s25",
+        "binding": null,
+        "subject_ref": {
+          "name": "__lw_plate___cmp_entry_s5_assay_B1",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample_ref": {
+          "name": "__lw_plate___cmp_entry_s5_assay_B1",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample": {
+          "name": "__lw_plate___cmp_entry_s5_assay_B1",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "resolved_sample": "container/entry/entry.s18%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B1",
+        "contract_kind": "fluorescence",
+        "program_kind": null,
+        "program": null,
+        "status": "ok",
+        "result": {
+          "signal": null,
+          "channel": null
+        },
+        "save_raw": false,
+        "driver_payload": {
+          "step_id": "entry.s25",
+          "op": "img"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "export_refs": {
+          "driver_profile": {
+            "export_id": "entry.s25::data::3::driver_profile",
+            "kind": "img",
+            "format": "json",
+            "profile": "driver:DRV_OK"
+          }
+        }
+      },
+      "entry.s25::data::4": {
+        "kind": "data_ref",
+        "data_id": "entry.s25::data::4",
+        "observation_id": "entry.s25::data::4",
+        "data_kind": "observation",
+        "family": "img",
+        "op": "img",
+        "step_id": "entry.s25",
+        "binding": null,
+        "subject_ref": {
+          "name": "__lw_plate___cmp_entry_s5_assay_B2",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample_ref": {
+          "name": "__lw_plate___cmp_entry_s5_assay_B2",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample": {
+          "name": "__lw_plate___cmp_entry_s5_assay_B2",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "resolved_sample": "container/entry/entry.s18%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B2",
+        "contract_kind": "fluorescence",
+        "program_kind": null,
+        "program": null,
+        "status": "ok",
+        "result": {
+          "signal": null,
+          "channel": null
+        },
+        "save_raw": false,
+        "driver_payload": {
+          "step_id": "entry.s25",
+          "op": "img"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "export_refs": {
+          "driver_profile": {
+            "export_id": "entry.s25::data::4::driver_profile",
+            "kind": "img",
+            "format": "json",
+            "profile": "driver:DRV_OK"
+          }
+        }
+      },
+      "entry.s25::data::5": {
+        "kind": "data_ref",
+        "data_id": "entry.s25::data::5",
+        "observation_id": "entry.s25::data::5",
+        "data_kind": "observation",
+        "family": "img",
+        "op": "img",
+        "step_id": "entry.s25",
+        "binding": null,
+        "subject_ref": {
+          "name": "__lw_plate___cmp_entry_s5_assay_B3",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample_ref": {
+          "name": "__lw_plate___cmp_entry_s5_assay_B3",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample": {
+          "name": "__lw_plate___cmp_entry_s5_assay_B3",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "resolved_sample": "container/entry/entry.s18%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B3",
+        "contract_kind": "fluorescence",
+        "program_kind": null,
+        "program": null,
+        "status": "ok",
+        "result": {
+          "signal": null,
+          "channel": null
+        },
+        "save_raw": false,
+        "driver_payload": {
+          "step_id": "entry.s25",
+          "op": "img"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "export_refs": {
+          "driver_profile": {
+            "export_id": "entry.s25::data::5::driver_profile",
+            "kind": "img",
+            "format": "json",
+            "profile": "driver:DRV_OK"
+          }
+        }
+      },
+      "entry.s46::data::0": {
+        "kind": "data_ref",
+        "data_id": "entry.s46::data::0",
+        "observation_id": "entry.s46::data::0",
+        "data_kind": "observation",
+        "family": "img",
+        "op": "img",
+        "step_id": "entry.s46",
+        "binding": null,
+        "subject_ref": {
+          "name": "__lw_plate___cmp_entry_s6_assay_A1",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample_ref": {
+          "name": "__lw_plate___cmp_entry_s6_assay_A1",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample": {
+          "name": "__lw_plate___cmp_entry_s6_assay_A1",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "resolved_sample": "container/entry/entry.s32%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A1",
+        "contract_kind": "fluorescence",
+        "program_kind": null,
+        "program": null,
+        "status": "ok",
+        "result": {
+          "signal": null,
+          "channel": null
+        },
+        "save_raw": false,
+        "driver_payload": {
+          "step_id": "entry.s46",
+          "op": "img"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "export_refs": {
+          "driver_profile": {
+            "export_id": "entry.s46::data::0::driver_profile",
+            "kind": "img",
+            "format": "json",
+            "profile": "driver:DRV_OK"
+          }
+        }
+      },
+      "entry.s46::data::1": {
+        "kind": "data_ref",
+        "data_id": "entry.s46::data::1",
+        "observation_id": "entry.s46::data::1",
+        "data_kind": "observation",
+        "family": "img",
+        "op": "img",
+        "step_id": "entry.s46",
+        "binding": null,
+        "subject_ref": {
+          "name": "__lw_plate___cmp_entry_s6_assay_A2",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample_ref": {
+          "name": "__lw_plate___cmp_entry_s6_assay_A2",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample": {
+          "name": "__lw_plate___cmp_entry_s6_assay_A2",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "resolved_sample": "container/entry/entry.s32%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A2",
+        "contract_kind": "fluorescence",
+        "program_kind": null,
+        "program": null,
+        "status": "ok",
+        "result": {
+          "signal": null,
+          "channel": null
+        },
+        "save_raw": false,
+        "driver_payload": {
+          "step_id": "entry.s46",
+          "op": "img"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "export_refs": {
+          "driver_profile": {
+            "export_id": "entry.s46::data::1::driver_profile",
+            "kind": "img",
+            "format": "json",
+            "profile": "driver:DRV_OK"
+          }
+        }
+      },
+      "entry.s46::data::2": {
+        "kind": "data_ref",
+        "data_id": "entry.s46::data::2",
+        "observation_id": "entry.s46::data::2",
+        "data_kind": "observation",
+        "family": "img",
+        "op": "img",
+        "step_id": "entry.s46",
+        "binding": null,
+        "subject_ref": {
+          "name": "__lw_plate___cmp_entry_s6_assay_A3",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample_ref": {
+          "name": "__lw_plate___cmp_entry_s6_assay_A3",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample": {
+          "name": "__lw_plate___cmp_entry_s6_assay_A3",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "resolved_sample": "container/entry/entry.s32%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A3",
+        "contract_kind": "fluorescence",
+        "program_kind": null,
+        "program": null,
+        "status": "ok",
+        "result": {
+          "signal": null,
+          "channel": null
+        },
+        "save_raw": false,
+        "driver_payload": {
+          "step_id": "entry.s46",
+          "op": "img"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "export_refs": {
+          "driver_profile": {
+            "export_id": "entry.s46::data::2::driver_profile",
+            "kind": "img",
+            "format": "json",
+            "profile": "driver:DRV_OK"
+          }
+        }
+      },
+      "entry.s46::data::3": {
+        "kind": "data_ref",
+        "data_id": "entry.s46::data::3",
+        "observation_id": "entry.s46::data::3",
+        "data_kind": "observation",
+        "family": "img",
+        "op": "img",
+        "step_id": "entry.s46",
+        "binding": null,
+        "subject_ref": {
+          "name": "__lw_plate___cmp_entry_s6_assay_B1",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample_ref": {
+          "name": "__lw_plate___cmp_entry_s6_assay_B1",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample": {
+          "name": "__lw_plate___cmp_entry_s6_assay_B1",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "resolved_sample": "container/entry/entry.s39%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B1",
+        "contract_kind": "fluorescence",
+        "program_kind": null,
+        "program": null,
+        "status": "ok",
+        "result": {
+          "signal": null,
+          "channel": null
+        },
+        "save_raw": false,
+        "driver_payload": {
+          "step_id": "entry.s46",
+          "op": "img"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "export_refs": {
+          "driver_profile": {
+            "export_id": "entry.s46::data::3::driver_profile",
+            "kind": "img",
+            "format": "json",
+            "profile": "driver:DRV_OK"
+          }
+        }
+      },
+      "entry.s46::data::4": {
+        "kind": "data_ref",
+        "data_id": "entry.s46::data::4",
+        "observation_id": "entry.s46::data::4",
+        "data_kind": "observation",
+        "family": "img",
+        "op": "img",
+        "step_id": "entry.s46",
+        "binding": null,
+        "subject_ref": {
+          "name": "__lw_plate___cmp_entry_s6_assay_B2",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample_ref": {
+          "name": "__lw_plate___cmp_entry_s6_assay_B2",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample": {
+          "name": "__lw_plate___cmp_entry_s6_assay_B2",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "resolved_sample": "container/entry/entry.s39%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B2",
+        "contract_kind": "fluorescence",
+        "program_kind": null,
+        "program": null,
+        "status": "ok",
+        "result": {
+          "signal": null,
+          "channel": null
+        },
+        "save_raw": false,
+        "driver_payload": {
+          "step_id": "entry.s46",
+          "op": "img"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "export_refs": {
+          "driver_profile": {
+            "export_id": "entry.s46::data::4::driver_profile",
+            "kind": "img",
+            "format": "json",
+            "profile": "driver:DRV_OK"
+          }
+        }
+      },
+      "entry.s46::data::5": {
+        "kind": "data_ref",
+        "data_id": "entry.s46::data::5",
+        "observation_id": "entry.s46::data::5",
+        "data_kind": "observation",
+        "family": "img",
+        "op": "img",
+        "step_id": "entry.s46",
+        "binding": null,
+        "subject_ref": {
+          "name": "__lw_plate___cmp_entry_s6_assay_B3",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample_ref": {
+          "name": "__lw_plate___cmp_entry_s6_assay_B3",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "sample": {
+          "name": "__lw_plate___cmp_entry_s6_assay_B3",
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRIdentifier"
+        },
+        "resolved_sample": "container/entry/entry.s39%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B3",
+        "contract_kind": "fluorescence",
+        "program_kind": null,
+        "program": null,
+        "status": "ok",
+        "result": {
+          "signal": null,
+          "channel": null
+        },
+        "save_raw": false,
+        "driver_payload": {
+          "step_id": "entry.s46",
+          "op": "img"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "export_refs": {
+          "driver_profile": {
+            "export_id": "entry.s46::data::5::driver_profile",
+            "kind": "img",
+            "format": "json",
+            "profile": "driver:DRV_OK"
+          }
+        }
+      }
+    },
+    "data_bindings": {},
+    "data_groups": {
+      "entry.s25::data_group": {
+        "kind": "data_group_ref",
+        "data_group_id": "entry.s25::data_group",
+        "observation_group_id": "entry.s25::data_group",
+        "data_kind": "observation",
+        "family": "img",
+        "step_id": "entry.s25",
+        "binding": "result_A",
+        "sample_group": {
+          "elements": [
+            {
+              "name": "__lw_plate___cmp_entry_s5_assay_A1",
+              "span": {
+                "line": 13,
+                "col": 30,
+                "start": 618,
+                "end": 630
+              },
+              "kind": "IRIdentifier"
+            },
+            {
+              "name": "__lw_plate___cmp_entry_s5_assay_A2",
+              "span": {
+                "line": 13,
+                "col": 30,
+                "start": 618,
+                "end": 630
+              },
+              "kind": "IRIdentifier"
+            },
+            {
+              "name": "__lw_plate___cmp_entry_s5_assay_A3",
+              "span": {
+                "line": 13,
+                "col": 30,
+                "start": 618,
+                "end": 630
+              },
+              "kind": "IRIdentifier"
+            },
+            {
+              "name": "__lw_plate___cmp_entry_s5_assay_B1",
+              "span": {
+                "line": 13,
+                "col": 30,
+                "start": 618,
+                "end": 630
+              },
+              "kind": "IRIdentifier"
+            },
+            {
+              "name": "__lw_plate___cmp_entry_s5_assay_B2",
+              "span": {
+                "line": 13,
+                "col": 30,
+                "start": 618,
+                "end": 630
+              },
+              "kind": "IRIdentifier"
+            },
+            {
+              "name": "__lw_plate___cmp_entry_s5_assay_B3",
+              "span": {
+                "line": 13,
+                "col": 30,
+                "start": 618,
+                "end": 630
+              },
+              "kind": "IRIdentifier"
+            }
+          ],
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRGroup"
+        },
+        "resolved_samples": [
+          "container/entry/entry.s11%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A1",
+          "container/entry/entry.s11%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A2",
+          "container/entry/entry.s11%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A3",
+          "container/entry/entry.s18%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B1",
+          "container/entry/entry.s18%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B2",
+          "container/entry/entry.s18%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B3"
+        ],
+        "item_ids": [
+          "entry.s25::data::0",
+          "entry.s25::data::1",
+          "entry.s25::data::2",
+          "entry.s25::data::3",
+          "entry.s25::data::4",
+          "entry.s25::data::5"
+        ],
+        "observation_ids": [
+          "entry.s25::data::0",
+          "entry.s25::data::1",
+          "entry.s25::data::2",
+          "entry.s25::data::3",
+          "entry.s25::data::4",
+          "entry.s25::data::5"
+        ],
+        "contract_kind": "fluorescence",
+        "program_kind": null,
+        "status": "ok",
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        }
+      },
+      "entry.s46::data_group": {
+        "kind": "data_group_ref",
+        "data_group_id": "entry.s46::data_group",
+        "observation_group_id": "entry.s46::data_group",
+        "data_kind": "observation",
+        "family": "img",
+        "step_id": "entry.s46",
+        "binding": "result_B",
+        "sample_group": {
+          "elements": [
+            {
+              "name": "__lw_plate___cmp_entry_s6_assay_A1",
+              "span": {
+                "line": 13,
+                "col": 30,
+                "start": 618,
+                "end": 630
+              },
+              "kind": "IRIdentifier"
+            },
+            {
+              "name": "__lw_plate___cmp_entry_s6_assay_A2",
+              "span": {
+                "line": 13,
+                "col": 30,
+                "start": 618,
+                "end": 630
+              },
+              "kind": "IRIdentifier"
+            },
+            {
+              "name": "__lw_plate___cmp_entry_s6_assay_A3",
+              "span": {
+                "line": 13,
+                "col": 30,
+                "start": 618,
+                "end": 630
+              },
+              "kind": "IRIdentifier"
+            },
+            {
+              "name": "__lw_plate___cmp_entry_s6_assay_B1",
+              "span": {
+                "line": 13,
+                "col": 30,
+                "start": 618,
+                "end": 630
+              },
+              "kind": "IRIdentifier"
+            },
+            {
+              "name": "__lw_plate___cmp_entry_s6_assay_B2",
+              "span": {
+                "line": 13,
+                "col": 30,
+                "start": 618,
+                "end": 630
+              },
+              "kind": "IRIdentifier"
+            },
+            {
+              "name": "__lw_plate___cmp_entry_s6_assay_B3",
+              "span": {
+                "line": 13,
+                "col": 30,
+                "start": 618,
+                "end": 630
+              },
+              "kind": "IRIdentifier"
+            }
+          ],
+          "span": {
+            "line": 13,
+            "col": 30,
+            "start": 618,
+            "end": 630
+          },
+          "kind": "IRGroup"
+        },
+        "resolved_samples": [
+          "container/entry/entry.s32%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A1",
+          "container/entry/entry.s32%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A2",
+          "container/entry/entry.s32%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A3",
+          "container/entry/entry.s39%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B1",
+          "container/entry/entry.s39%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B2",
+          "container/entry/entry.s39%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B3"
+        ],
+        "item_ids": [
+          "entry.s46::data::0",
+          "entry.s46::data::1",
+          "entry.s46::data::2",
+          "entry.s46::data::3",
+          "entry.s46::data::4",
+          "entry.s46::data::5"
+        ],
+        "observation_ids": [
+          "entry.s46::data::0",
+          "entry.s46::data::1",
+          "entry.s46::data::2",
+          "entry.s46::data::3",
+          "entry.s46::data::4",
+          "entry.s46::data::5"
+        ],
+        "contract_kind": "fluorescence",
+        "program_kind": null,
+        "status": "ok",
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        }
+      }
+    },
+    "data_group_bindings": {
+      "result_A": "entry.s25::data_group",
+      "result_B": "entry.s46::data_group"
+    },
+    "data_group_indexed_bindings": {
+      "result_A": {
+        "0": "entry.s25::data::0",
+        "1": "entry.s25::data::1",
+        "2": "entry.s25::data::2",
+        "3": "entry.s25::data::3",
+        "4": "entry.s25::data::4",
+        "5": "entry.s25::data::5"
+      },
+      "result_B": {
+        "0": "entry.s46::data::0",
+        "1": "entry.s46::data::1",
+        "2": "entry.s46::data::2",
+        "3": "entry.s46::data::3",
+        "4": "entry.s46::data::4",
+        "5": "entry.s46::data::5"
+      }
+    },
+    "raw_data": {},
+    "data_exports": {
+      "entry.s25::data::0": {
+        "driver_profile": {
+          "export_id": "entry.s25::data::0::driver_profile",
+          "kind": "img",
+          "format": "json",
+          "profile": "driver:DRV_OK"
+        }
+      },
+      "entry.s25::data::1": {
+        "driver_profile": {
+          "export_id": "entry.s25::data::1::driver_profile",
+          "kind": "img",
+          "format": "json",
+          "profile": "driver:DRV_OK"
+        }
+      },
+      "entry.s25::data::2": {
+        "driver_profile": {
+          "export_id": "entry.s25::data::2::driver_profile",
+          "kind": "img",
+          "format": "json",
+          "profile": "driver:DRV_OK"
+        }
+      },
+      "entry.s25::data::3": {
+        "driver_profile": {
+          "export_id": "entry.s25::data::3::driver_profile",
+          "kind": "img",
+          "format": "json",
+          "profile": "driver:DRV_OK"
+        }
+      },
+      "entry.s25::data::4": {
+        "driver_profile": {
+          "export_id": "entry.s25::data::4::driver_profile",
+          "kind": "img",
+          "format": "json",
+          "profile": "driver:DRV_OK"
+        }
+      },
+      "entry.s25::data::5": {
+        "driver_profile": {
+          "export_id": "entry.s25::data::5::driver_profile",
+          "kind": "img",
+          "format": "json",
+          "profile": "driver:DRV_OK"
+        }
+      },
+      "entry.s46::data::0": {
+        "driver_profile": {
+          "export_id": "entry.s46::data::0::driver_profile",
+          "kind": "img",
+          "format": "json",
+          "profile": "driver:DRV_OK"
+        }
+      },
+      "entry.s46::data::1": {
+        "driver_profile": {
+          "export_id": "entry.s46::data::1::driver_profile",
+          "kind": "img",
+          "format": "json",
+          "profile": "driver:DRV_OK"
+        }
+      },
+      "entry.s46::data::2": {
+        "driver_profile": {
+          "export_id": "entry.s46::data::2::driver_profile",
+          "kind": "img",
+          "format": "json",
+          "profile": "driver:DRV_OK"
+        }
+      },
+      "entry.s46::data::3": {
+        "driver_profile": {
+          "export_id": "entry.s46::data::3::driver_profile",
+          "kind": "img",
+          "format": "json",
+          "profile": "driver:DRV_OK"
+        }
+      },
+      "entry.s46::data::4": {
+        "driver_profile": {
+          "export_id": "entry.s46::data::4::driver_profile",
+          "kind": "img",
+          "format": "json",
+          "profile": "driver:DRV_OK"
+        }
+      },
+      "entry.s46::data::5": {
+        "driver_profile": {
+          "export_id": "entry.s46::data::5::driver_profile",
+          "kind": "img",
+          "format": "json",
+          "profile": "driver:DRV_OK"
+        }
+      }
+    },
+    "protocol_outputs": {
+      "entry": {
+        "protocol_id": "entry",
+        "protocol_name": "entry",
+        "returns": [],
+        "entry_kind": "script",
+        "value": [
+          {
+            "kind": "data_group_ref",
+            "data_group_id": "entry.s25::data_group",
+            "observation_group_id": "entry.s25::data_group",
+            "data_kind": "observation",
+            "family": "img",
+            "step_id": "entry.s25",
+            "binding": "result_A",
+            "sample_group": {
+              "elements": [
+                {
+                  "name": "__lw_plate___cmp_entry_s5_assay_A1",
+                  "span": {
+                    "line": 13,
+                    "col": 30,
+                    "start": 618,
+                    "end": 630
+                  },
+                  "kind": "IRIdentifier"
+                },
+                {
+                  "name": "__lw_plate___cmp_entry_s5_assay_A2",
+                  "span": {
+                    "line": 13,
+                    "col": 30,
+                    "start": 618,
+                    "end": 630
+                  },
+                  "kind": "IRIdentifier"
+                },
+                {
+                  "name": "__lw_plate___cmp_entry_s5_assay_A3",
+                  "span": {
+                    "line": 13,
+                    "col": 30,
+                    "start": 618,
+                    "end": 630
+                  },
+                  "kind": "IRIdentifier"
+                },
+                {
+                  "name": "__lw_plate___cmp_entry_s5_assay_B1",
+                  "span": {
+                    "line": 13,
+                    "col": 30,
+                    "start": 618,
+                    "end": 630
+                  },
+                  "kind": "IRIdentifier"
+                },
+                {
+                  "name": "__lw_plate___cmp_entry_s5_assay_B2",
+                  "span": {
+                    "line": 13,
+                    "col": 30,
+                    "start": 618,
+                    "end": 630
+                  },
+                  "kind": "IRIdentifier"
+                },
+                {
+                  "name": "__lw_plate___cmp_entry_s5_assay_B3",
+                  "span": {
+                    "line": 13,
+                    "col": 30,
+                    "start": 618,
+                    "end": 630
+                  },
+                  "kind": "IRIdentifier"
+                }
+              ],
+              "span": {
+                "line": 13,
+                "col": 30,
+                "start": 618,
+                "end": 630
+              },
+              "kind": "IRGroup"
+            },
+            "resolved_samples": [
+              "container/entry/entry.s11%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A1",
+              "container/entry/entry.s11%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A2",
+              "container/entry/entry.s11%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A3",
+              "container/entry/entry.s18%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B1",
+              "container/entry/entry.s18%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B2",
+              "container/entry/entry.s18%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B3"
+            ],
+            "item_ids": [
+              "entry.s25::data::0",
+              "entry.s25::data::1",
+              "entry.s25::data::2",
+              "entry.s25::data::3",
+              "entry.s25::data::4",
+              "entry.s25::data::5"
+            ],
+            "observation_ids": [
+              "entry.s25::data::0",
+              "entry.s25::data::1",
+              "entry.s25::data::2",
+              "entry.s25::data::3",
+              "entry.s25::data::4",
+              "entry.s25::data::5"
+            ],
+            "contract_kind": "fluorescence",
+            "program_kind": null,
+            "status": "ok",
+            "gate": {
+              "entry_kind": "script",
+              "entry_name": "entry"
+            }
+          },
+          {
+            "kind": "data_group_ref",
+            "data_group_id": "entry.s46::data_group",
+            "observation_group_id": "entry.s46::data_group",
+            "data_kind": "observation",
+            "family": "img",
+            "step_id": "entry.s46",
+            "binding": "result_B",
+            "sample_group": {
+              "elements": [
+                {
+                  "name": "__lw_plate___cmp_entry_s6_assay_A1",
+                  "span": {
+                    "line": 13,
+                    "col": 30,
+                    "start": 618,
+                    "end": 630
+                  },
+                  "kind": "IRIdentifier"
+                },
+                {
+                  "name": "__lw_plate___cmp_entry_s6_assay_A2",
+                  "span": {
+                    "line": 13,
+                    "col": 30,
+                    "start": 618,
+                    "end": 630
+                  },
+                  "kind": "IRIdentifier"
+                },
+                {
+                  "name": "__lw_plate___cmp_entry_s6_assay_A3",
+                  "span": {
+                    "line": 13,
+                    "col": 30,
+                    "start": 618,
+                    "end": 630
+                  },
+                  "kind": "IRIdentifier"
+                },
+                {
+                  "name": "__lw_plate___cmp_entry_s6_assay_B1",
+                  "span": {
+                    "line": 13,
+                    "col": 30,
+                    "start": 618,
+                    "end": 630
+                  },
+                  "kind": "IRIdentifier"
+                },
+                {
+                  "name": "__lw_plate___cmp_entry_s6_assay_B2",
+                  "span": {
+                    "line": 13,
+                    "col": 30,
+                    "start": 618,
+                    "end": 630
+                  },
+                  "kind": "IRIdentifier"
+                },
+                {
+                  "name": "__lw_plate___cmp_entry_s6_assay_B3",
+                  "span": {
+                    "line": 13,
+                    "col": 30,
+                    "start": 618,
+                    "end": 630
+                  },
+                  "kind": "IRIdentifier"
+                }
+              ],
+              "span": {
+                "line": 13,
+                "col": 30,
+                "start": 618,
+                "end": 630
+              },
+              "kind": "IRGroup"
+            },
+            "resolved_samples": [
+              "container/entry/entry.s32%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A1",
+              "container/entry/entry.s32%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A2",
+              "container/entry/entry.s32%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A3",
+              "container/entry/entry.s39%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B1",
+              "container/entry/entry.s39%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B2",
+              "container/entry/entry.s39%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B3"
+            ],
+            "item_ids": [
+              "entry.s46::data::0",
+              "entry.s46::data::1",
+              "entry.s46::data::2",
+              "entry.s46::data::3",
+              "entry.s46::data::4",
+              "entry.s46::data::5"
+            ],
+            "observation_ids": [
+              "entry.s46::data::0",
+              "entry.s46::data::1",
+              "entry.s46::data::2",
+              "entry.s46::data::3",
+              "entry.s46::data::4",
+              "entry.s46::data::5"
+            ],
+            "contract_kind": "fluorescence",
+            "program_kind": null,
+            "status": "ok",
+            "gate": {
+              "entry_kind": "script",
+              "entry_name": "entry"
+            }
+          }
+        ]
+      }
+    },
+    "local_bindings": {},
+    "skip_reasons": {},
+    "ref_cache": {},
+    "material_state": {
+      "containers": {
+        "container/entry/entry.s0%3A%3Aalloc/sample_A": {
+          "volume_uL": 0.0,
+          "mass_mg": 0.0,
+          "components": {},
+          "metadata": {
+            "kind": "tube",
+            "label": "Fraction sample A",
+            "allocation_namespace": "entry",
+            "allocation_name": "sample_A",
+            "allocation_step_id": "entry.s0::alloc",
+            "capacity_uL": 5000.0
+          },
+          "component_quantities": {},
+          "component_entries": [],
+          "material_relationships": []
+        },
+        "container/entry/entry.s1%3A%3Aalloc/sample_B": {
+          "volume_uL": 0.0,
+          "mass_mg": 0.0,
+          "components": {},
+          "metadata": {
+            "kind": "tube",
+            "label": "Fraction sample B",
+            "allocation_namespace": "entry",
+            "allocation_name": "sample_B",
+            "allocation_step_id": "entry.s1::alloc",
+            "capacity_uL": 5000.0
+          },
+          "component_quantities": {},
+          "component_entries": [],
+          "material_relationships": []
+        },
+        "container/entry/entry.s2%3A%3Aalloc/standard": {
+          "volume_uL": 0.0,
+          "mass_mg": 0.0,
+          "components": {},
+          "metadata": {
+            "kind": "tube",
+            "label": "Standard",
+            "allocation_namespace": "entry",
+            "allocation_name": "standard",
+            "allocation_step_id": "entry.s2::alloc",
+            "capacity_uL": 5000.0
+          },
+          "component_quantities": {},
+          "component_entries": [],
+          "material_relationships": []
+        },
+        "container/entry/entry.s3%3A%3Aalloc/diluent": {
+          "volume_uL": 0.0,
+          "mass_mg": 0.0,
+          "components": {},
+          "metadata": {
+            "kind": "tube",
+            "label": "Diluent",
+            "allocation_namespace": "entry",
+            "allocation_name": "diluent",
+            "allocation_step_id": "entry.s3::alloc",
+            "capacity_uL": 5000.0
+          },
+          "component_quantities": {},
+          "component_entries": [],
+          "material_relationships": []
+        },
+        "container/entry/entry.s4%3A%3Aalloc/reagent": {
+          "volume_uL": 0.0,
+          "mass_mg": 0.0,
+          "components": {},
+          "metadata": {
+            "kind": "tube",
+            "label": "Reagent",
+            "allocation_namespace": "entry",
+            "allocation_name": "reagent",
+            "allocation_step_id": "entry.s4::alloc",
+            "capacity_uL": 5000.0
+          },
+          "component_quantities": {},
+          "component_entries": [],
+          "material_relationships": []
+        },
+        "entry.s9::0": {
+          "volume_uL": 90.0,
+          "mass_mg": 90.0,
+          "components": {
+            "SAMPLE_A": 90.0
+          },
+          "metadata": {},
+          "component_entries": [
+            {
+              "entry_id": "SAMPLE_A",
+              "content_ref": "SAMPLE_A",
+              "amount": 90.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 90.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "component_quantities": {
+            "SAMPLE_A": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 90.0
+            }
+          },
+          "material_relationships": []
+        },
+        "entry.s9::1": {
+          "volume_uL": 90.0,
+          "mass_mg": 90.0,
+          "components": {
+            "SAMPLE_A": 90.0
+          },
+          "metadata": {},
+          "component_entries": [
+            {
+              "entry_id": "SAMPLE_A",
+              "content_ref": "SAMPLE_A",
+              "amount": 90.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 90.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "component_quantities": {
+            "SAMPLE_A": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 90.0
+            }
+          },
+          "material_relationships": []
+        },
+        "entry.s9::2": {
+          "volume_uL": 90.0,
+          "mass_mg": 90.0,
+          "components": {
+            "SAMPLE_A": 90.0
+          },
+          "metadata": {},
+          "component_entries": [
+            {
+              "entry_id": "SAMPLE_A",
+              "content_ref": "SAMPLE_A",
+              "amount": 90.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 90.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "component_quantities": {
+            "SAMPLE_A": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 90.0
+            }
+          },
+          "material_relationships": []
+        },
+        "container/entry/entry.s11%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A1": {
+          "volume_uL": 150.0,
+          "mass_mg": 150.0,
+          "components": {
+            "SAMPLE_A": 10.0,
+            "DILUENT": 40.0,
+            "REAGENT": 100.0
+          },
+          "metadata": {
+            "kind": "well",
+            "label": "Fraction assay_A1",
+            "allocation_namespace": "entry",
+            "allocation_name": "__lw_plate___cmp_entry_s5_assay_A1",
+            "allocation_step_id": "entry.s11::well::A1::alloc",
+            "capacity_uL": 200.0
+          },
+          "component_quantities": {
+            "SAMPLE_A": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 10.0
+            },
+            "DILUENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 40.0
+            },
+            "REAGENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "component_entries": [
+            {
+              "entry_id": "SAMPLE_A",
+              "content_ref": "SAMPLE_A",
+              "amount": 10.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 10.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "DILUENT",
+              "content_ref": "DILUENT",
+              "amount": 40.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 40.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "REAGENT",
+              "content_ref": "REAGENT",
+              "amount": 100.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "material_relationships": []
+        },
+        "container/entry/entry.s11%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A2": {
+          "volume_uL": 150.0,
+          "mass_mg": 150.0,
+          "components": {
+            "SAMPLE_A": 10.0,
+            "DILUENT": 40.0,
+            "REAGENT": 100.0
+          },
+          "metadata": {
+            "kind": "well",
+            "label": "Fraction assay_A2",
+            "allocation_namespace": "entry",
+            "allocation_name": "__lw_plate___cmp_entry_s5_assay_A2",
+            "allocation_step_id": "entry.s11::well::A2::alloc",
+            "capacity_uL": 200.0
+          },
+          "component_quantities": {
+            "SAMPLE_A": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 10.0
+            },
+            "DILUENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 40.0
+            },
+            "REAGENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "component_entries": [
+            {
+              "entry_id": "SAMPLE_A",
+              "content_ref": "SAMPLE_A",
+              "amount": 10.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 10.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "DILUENT",
+              "content_ref": "DILUENT",
+              "amount": 40.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 40.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "REAGENT",
+              "content_ref": "REAGENT",
+              "amount": 100.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "material_relationships": []
+        },
+        "container/entry/entry.s11%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A3": {
+          "volume_uL": 150.0,
+          "mass_mg": 150.0,
+          "components": {
+            "SAMPLE_A": 10.0,
+            "DILUENT": 40.0,
+            "REAGENT": 100.0
+          },
+          "metadata": {
+            "kind": "well",
+            "label": "Fraction assay_A3",
+            "allocation_namespace": "entry",
+            "allocation_name": "__lw_plate___cmp_entry_s5_assay_A3",
+            "allocation_step_id": "entry.s11::well::A3::alloc",
+            "capacity_uL": 200.0
+          },
+          "component_quantities": {
+            "SAMPLE_A": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 10.0
+            },
+            "DILUENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 40.0
+            },
+            "REAGENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "component_entries": [
+            {
+              "entry_id": "SAMPLE_A",
+              "content_ref": "SAMPLE_A",
+              "amount": 10.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 10.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "DILUENT",
+              "content_ref": "DILUENT",
+              "amount": 40.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 40.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "REAGENT",
+              "content_ref": "REAGENT",
+              "amount": 100.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "material_relationships": []
+        },
+        "container/entry/entry.s18%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B1": {
+          "volume_uL": 150.0,
+          "mass_mg": 150.0,
+          "components": {
+            "STANDARD": 5.0,
+            "DILUENT": 44.99999999999999,
+            "REAGENT": 100.0
+          },
+          "metadata": {
+            "kind": "well",
+            "label": "Fraction assay_B1",
+            "allocation_namespace": "entry",
+            "allocation_name": "__lw_plate___cmp_entry_s5_assay_B1",
+            "allocation_step_id": "entry.s18::well::B1::alloc",
+            "capacity_uL": 200.0
+          },
+          "component_quantities": {
+            "STANDARD": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            },
+            "DILUENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 44.99999999999999
+            },
+            "REAGENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "component_entries": [
+            {
+              "entry_id": "STANDARD",
+              "content_ref": "STANDARD",
+              "amount": 5.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "DILUENT",
+              "content_ref": "DILUENT",
+              "amount": 44.99999999999999,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 44.99999999999999
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "REAGENT",
+              "content_ref": "REAGENT",
+              "amount": 100.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "material_relationships": []
+        },
+        "container/entry/entry.s18%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B2": {
+          "volume_uL": 150.0,
+          "mass_mg": 150.0,
+          "components": {
+            "STANDARD": 10.0,
+            "DILUENT": 40.0,
+            "REAGENT": 100.0
+          },
+          "metadata": {
+            "kind": "well",
+            "label": "Fraction assay_B2",
+            "allocation_namespace": "entry",
+            "allocation_name": "__lw_plate___cmp_entry_s5_assay_B2",
+            "allocation_step_id": "entry.s18::well::B2::alloc",
+            "capacity_uL": 200.0
+          },
+          "component_quantities": {
+            "STANDARD": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 10.0
+            },
+            "DILUENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 40.0
+            },
+            "REAGENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "component_entries": [
+            {
+              "entry_id": "STANDARD",
+              "content_ref": "STANDARD",
+              "amount": 10.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 10.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "DILUENT",
+              "content_ref": "DILUENT",
+              "amount": 40.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 40.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "REAGENT",
+              "content_ref": "REAGENT",
+              "amount": 100.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "material_relationships": []
+        },
+        "container/entry/entry.s18%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B3": {
+          "volume_uL": 150.0,
+          "mass_mg": 150.0,
+          "components": {
+            "STANDARD": 20.0,
+            "DILUENT": 30.0,
+            "REAGENT": 100.0
+          },
+          "metadata": {
+            "kind": "well",
+            "label": "Fraction assay_B3",
+            "allocation_namespace": "entry",
+            "allocation_name": "__lw_plate___cmp_entry_s5_assay_B3",
+            "allocation_step_id": "entry.s18::well::B3::alloc",
+            "capacity_uL": 200.0
+          },
+          "component_quantities": {
+            "STANDARD": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 20.0
+            },
+            "DILUENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 30.0
+            },
+            "REAGENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "component_entries": [
+            {
+              "entry_id": "STANDARD",
+              "content_ref": "STANDARD",
+              "amount": 20.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 20.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "DILUENT",
+              "content_ref": "DILUENT",
+              "amount": 30.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 30.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "REAGENT",
+              "content_ref": "REAGENT",
+              "amount": 100.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "material_relationships": []
+        },
+        "entry.s30::0": {
+          "volume_uL": 90.0,
+          "mass_mg": 90.0,
+          "components": {
+            "SAMPLE_B": 90.0
+          },
+          "metadata": {},
+          "component_entries": [
+            {
+              "entry_id": "SAMPLE_B",
+              "content_ref": "SAMPLE_B",
+              "amount": 90.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 90.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "component_quantities": {
+            "SAMPLE_B": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 90.0
+            }
+          },
+          "material_relationships": []
+        },
+        "entry.s30::1": {
+          "volume_uL": 90.0,
+          "mass_mg": 90.0,
+          "components": {
+            "SAMPLE_B": 90.0
+          },
+          "metadata": {},
+          "component_entries": [
+            {
+              "entry_id": "SAMPLE_B",
+              "content_ref": "SAMPLE_B",
+              "amount": 90.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 90.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "component_quantities": {
+            "SAMPLE_B": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 90.0
+            }
+          },
+          "material_relationships": []
+        },
+        "entry.s30::2": {
+          "volume_uL": 90.0,
+          "mass_mg": 90.0,
+          "components": {
+            "SAMPLE_B": 90.0
+          },
+          "metadata": {},
+          "component_entries": [
+            {
+              "entry_id": "SAMPLE_B",
+              "content_ref": "SAMPLE_B",
+              "amount": 90.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 90.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "component_quantities": {
+            "SAMPLE_B": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 90.0
+            }
+          },
+          "material_relationships": []
+        },
+        "container/entry/entry.s32%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A1": {
+          "volume_uL": 150.0,
+          "mass_mg": 150.0,
+          "components": {
+            "SAMPLE_B": 10.0,
+            "DILUENT": 40.0,
+            "REAGENT": 100.0
+          },
+          "metadata": {
+            "kind": "well",
+            "label": "Fraction assay_A1",
+            "allocation_namespace": "entry",
+            "allocation_name": "__lw_plate___cmp_entry_s6_assay_A1",
+            "allocation_step_id": "entry.s32::well::A1::alloc",
+            "capacity_uL": 200.0
+          },
+          "component_quantities": {
+            "SAMPLE_B": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 10.0
+            },
+            "DILUENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 40.0
+            },
+            "REAGENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "component_entries": [
+            {
+              "entry_id": "SAMPLE_B",
+              "content_ref": "SAMPLE_B",
+              "amount": 10.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 10.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "DILUENT",
+              "content_ref": "DILUENT",
+              "amount": 40.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 40.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "REAGENT",
+              "content_ref": "REAGENT",
+              "amount": 100.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "material_relationships": []
+        },
+        "container/entry/entry.s32%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A2": {
+          "volume_uL": 150.0,
+          "mass_mg": 150.0,
+          "components": {
+            "SAMPLE_B": 10.0,
+            "DILUENT": 40.0,
+            "REAGENT": 100.0
+          },
+          "metadata": {
+            "kind": "well",
+            "label": "Fraction assay_A2",
+            "allocation_namespace": "entry",
+            "allocation_name": "__lw_plate___cmp_entry_s6_assay_A2",
+            "allocation_step_id": "entry.s32::well::A2::alloc",
+            "capacity_uL": 200.0
+          },
+          "component_quantities": {
+            "SAMPLE_B": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 10.0
+            },
+            "DILUENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 40.0
+            },
+            "REAGENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "component_entries": [
+            {
+              "entry_id": "SAMPLE_B",
+              "content_ref": "SAMPLE_B",
+              "amount": 10.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 10.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "DILUENT",
+              "content_ref": "DILUENT",
+              "amount": 40.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 40.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "REAGENT",
+              "content_ref": "REAGENT",
+              "amount": 100.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "material_relationships": []
+        },
+        "container/entry/entry.s32%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A3": {
+          "volume_uL": 150.0,
+          "mass_mg": 150.0,
+          "components": {
+            "SAMPLE_B": 10.0,
+            "DILUENT": 40.0,
+            "REAGENT": 100.0
+          },
+          "metadata": {
+            "kind": "well",
+            "label": "Fraction assay_A3",
+            "allocation_namespace": "entry",
+            "allocation_name": "__lw_plate___cmp_entry_s6_assay_A3",
+            "allocation_step_id": "entry.s32::well::A3::alloc",
+            "capacity_uL": 200.0
+          },
+          "component_quantities": {
+            "SAMPLE_B": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 10.0
+            },
+            "DILUENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 40.0
+            },
+            "REAGENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "component_entries": [
+            {
+              "entry_id": "SAMPLE_B",
+              "content_ref": "SAMPLE_B",
+              "amount": 10.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 10.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "DILUENT",
+              "content_ref": "DILUENT",
+              "amount": 40.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 40.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "REAGENT",
+              "content_ref": "REAGENT",
+              "amount": 100.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "material_relationships": []
+        },
+        "container/entry/entry.s39%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B1": {
+          "volume_uL": 150.0,
+          "mass_mg": 150.0,
+          "components": {
+            "STANDARD": 5.0,
+            "DILUENT": 45.0,
+            "REAGENT": 100.0
+          },
+          "metadata": {
+            "kind": "well",
+            "label": "Fraction assay_B1",
+            "allocation_namespace": "entry",
+            "allocation_name": "__lw_plate___cmp_entry_s6_assay_B1",
+            "allocation_step_id": "entry.s39::well::B1::alloc",
+            "capacity_uL": 200.0
+          },
+          "component_quantities": {
+            "STANDARD": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            },
+            "DILUENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 45.0
+            },
+            "REAGENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "component_entries": [
+            {
+              "entry_id": "STANDARD",
+              "content_ref": "STANDARD",
+              "amount": 5.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "DILUENT",
+              "content_ref": "DILUENT",
+              "amount": 45.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 45.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "REAGENT",
+              "content_ref": "REAGENT",
+              "amount": 100.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "material_relationships": []
+        },
+        "container/entry/entry.s39%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B2": {
+          "volume_uL": 150.0,
+          "mass_mg": 150.0,
+          "components": {
+            "STANDARD": 10.0,
+            "DILUENT": 40.0,
+            "REAGENT": 100.0
+          },
+          "metadata": {
+            "kind": "well",
+            "label": "Fraction assay_B2",
+            "allocation_namespace": "entry",
+            "allocation_name": "__lw_plate___cmp_entry_s6_assay_B2",
+            "allocation_step_id": "entry.s39::well::B2::alloc",
+            "capacity_uL": 200.0
+          },
+          "component_quantities": {
+            "STANDARD": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 10.0
+            },
+            "DILUENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 40.0
+            },
+            "REAGENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "component_entries": [
+            {
+              "entry_id": "STANDARD",
+              "content_ref": "STANDARD",
+              "amount": 10.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 10.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "DILUENT",
+              "content_ref": "DILUENT",
+              "amount": 40.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 40.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "REAGENT",
+              "content_ref": "REAGENT",
+              "amount": 100.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "material_relationships": []
+        },
+        "container/entry/entry.s39%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B3": {
+          "volume_uL": 150.0,
+          "mass_mg": 150.0,
+          "components": {
+            "STANDARD": 20.0,
+            "DILUENT": 30.0,
+            "REAGENT": 100.0
+          },
+          "metadata": {
+            "kind": "well",
+            "label": "Fraction assay_B3",
+            "allocation_namespace": "entry",
+            "allocation_name": "__lw_plate___cmp_entry_s6_assay_B3",
+            "allocation_step_id": "entry.s39::well::B3::alloc",
+            "capacity_uL": 200.0
+          },
+          "component_quantities": {
+            "STANDARD": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 20.0
+            },
+            "DILUENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 30.0
+            },
+            "REAGENT": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            }
+          },
+          "component_entries": [
+            {
+              "entry_id": "STANDARD",
+              "content_ref": "STANDARD",
+              "amount": 20.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 20.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "DILUENT",
+              "content_ref": "DILUENT",
+              "amount": 30.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 30.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "REAGENT",
+              "content_ref": "REAGENT",
+              "amount": 100.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 100.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null,
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "material_relationships": []
+        }
+      },
+      "bindings": {
+        "tube::container/entry/entry.s0%3A%3Aalloc/sample_A": "container/entry/entry.s0%3A%3Aalloc/sample_A",
+        "sample_A": "container/entry/entry.s0%3A%3Aalloc/sample_A",
+        "container/entry/entry.s0%3A%3Aalloc/sample_A": "container/entry/entry.s0%3A%3Aalloc/sample_A",
+        "tube::container/entry/entry.s1%3A%3Aalloc/sample_B": "container/entry/entry.s1%3A%3Aalloc/sample_B",
+        "sample_B": "container/entry/entry.s1%3A%3Aalloc/sample_B",
+        "container/entry/entry.s1%3A%3Aalloc/sample_B": "container/entry/entry.s1%3A%3Aalloc/sample_B",
+        "tube::container/entry/entry.s2%3A%3Aalloc/standard": "container/entry/entry.s2%3A%3Aalloc/standard",
+        "standard": "container/entry/entry.s2%3A%3Aalloc/standard",
+        "container/entry/entry.s2%3A%3Aalloc/standard": "container/entry/entry.s2%3A%3Aalloc/standard",
+        "tube::container/entry/entry.s3%3A%3Aalloc/diluent": "container/entry/entry.s3%3A%3Aalloc/diluent",
+        "diluent": "container/entry/entry.s3%3A%3Aalloc/diluent",
+        "container/entry/entry.s3%3A%3Aalloc/diluent": "container/entry/entry.s3%3A%3Aalloc/diluent",
+        "tube::container/entry/entry.s4%3A%3Aalloc/reagent": "container/entry/entry.s4%3A%3Aalloc/reagent",
+        "reagent": "container/entry/entry.s4%3A%3Aalloc/reagent",
+        "container/entry/entry.s4%3A%3Aalloc/reagent": "container/entry/entry.s4%3A%3Aalloc/reagent",
+        "entry.s9::0": "entry.s9::0",
+        "entry.s9::1": "entry.s9::1",
+        "entry.s9::2": "entry.s9::2",
+        "well::container/entry/entry.s11%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A1": "container/entry/entry.s11%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A1",
+        "__lw_plate___cmp_entry_s5_assay_A1": "container/entry/entry.s11%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A1",
+        "container/entry/entry.s11%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A1": "container/entry/entry.s11%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A1",
+        "well::container/entry/entry.s11%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A2": "container/entry/entry.s11%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A2",
+        "__lw_plate___cmp_entry_s5_assay_A2": "container/entry/entry.s11%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A2",
+        "container/entry/entry.s11%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A2": "container/entry/entry.s11%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A2",
+        "well::container/entry/entry.s11%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A3": "container/entry/entry.s11%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A3",
+        "__lw_plate___cmp_entry_s5_assay_A3": "container/entry/entry.s11%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A3",
+        "container/entry/entry.s11%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A3": "container/entry/entry.s11%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_A3",
+        "well::container/entry/entry.s18%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B1": "container/entry/entry.s18%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B1",
+        "__lw_plate___cmp_entry_s5_assay_B1": "container/entry/entry.s18%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B1",
+        "container/entry/entry.s18%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B1": "container/entry/entry.s18%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B1",
+        "well::container/entry/entry.s18%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B2": "container/entry/entry.s18%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B2",
+        "__lw_plate___cmp_entry_s5_assay_B2": "container/entry/entry.s18%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B2",
+        "container/entry/entry.s18%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B2": "container/entry/entry.s18%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B2",
+        "well::container/entry/entry.s18%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B3": "container/entry/entry.s18%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B3",
+        "__lw_plate___cmp_entry_s5_assay_B3": "container/entry/entry.s18%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B3",
+        "container/entry/entry.s18%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B3": "container/entry/entry.s18%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s5_assay_B3",
+        "entry.s30::0": "entry.s30::0",
+        "entry.s30::1": "entry.s30::1",
+        "entry.s30::2": "entry.s30::2",
+        "well::container/entry/entry.s32%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A1": "container/entry/entry.s32%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A1",
+        "__lw_plate___cmp_entry_s6_assay_A1": "container/entry/entry.s32%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A1",
+        "container/entry/entry.s32%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A1": "container/entry/entry.s32%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A1",
+        "well::container/entry/entry.s32%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A2": "container/entry/entry.s32%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A2",
+        "__lw_plate___cmp_entry_s6_assay_A2": "container/entry/entry.s32%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A2",
+        "container/entry/entry.s32%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A2": "container/entry/entry.s32%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A2",
+        "well::container/entry/entry.s32%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A3": "container/entry/entry.s32%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A3",
+        "__lw_plate___cmp_entry_s6_assay_A3": "container/entry/entry.s32%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A3",
+        "container/entry/entry.s32%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A3": "container/entry/entry.s32%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_A3",
+        "well::container/entry/entry.s39%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B1": "container/entry/entry.s39%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B1",
+        "__lw_plate___cmp_entry_s6_assay_B1": "container/entry/entry.s39%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B1",
+        "container/entry/entry.s39%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B1": "container/entry/entry.s39%3A%3Awell%3A%3AB1%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B1",
+        "well::container/entry/entry.s39%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B2": "container/entry/entry.s39%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B2",
+        "__lw_plate___cmp_entry_s6_assay_B2": "container/entry/entry.s39%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B2",
+        "container/entry/entry.s39%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B2": "container/entry/entry.s39%3A%3Awell%3A%3AB2%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B2",
+        "well::container/entry/entry.s39%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B3": "container/entry/entry.s39%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B3",
+        "__lw_plate___cmp_entry_s6_assay_B3": "container/entry/entry.s39%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B3",
+        "container/entry/entry.s39%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B3": "container/entry/entry.s39%3A%3Awell%3A%3AB3%3A%3Aalloc/__lw_plate___cmp_entry_s6_assay_B3"
+      },
+      "indexed_bindings": {
+        "__cmp_entry_s5_fractions": {
+          "0": "entry.s9::0",
+          "1": "entry.s9::1",
+          "2": "entry.s9::2"
+        },
+        "__cmp_entry_s6_fractions": {
+          "0": "entry.s30::0",
+          "1": "entry.s30::1",
+          "2": "entry.s30::2"
+        }
+      },
+      "content_registry": {
+        "SAMPLE_A": {
+          "content_kind": "bio_molecule_or_virus",
+          "content_type": "protein",
+          "content_code": "SAMPLE_A",
+          "content_name": null
+        },
+        "SAMPLE_B": {
+          "content_kind": "bio_molecule_or_virus",
+          "content_type": "protein",
+          "content_code": "SAMPLE_B",
+          "content_name": null
+        },
+        "STANDARD": {
+          "content_kind": "bio_molecule_or_virus",
+          "content_type": "protein",
+          "content_code": "STANDARD",
+          "content_name": null
+        },
+        "DILUENT": {
+          "content_kind": "formulation",
+          "content_type": "buffer",
+          "content_code": "DILUENT",
+          "content_name": null
+        },
+        "REAGENT": {
+          "content_kind": "formulation",
+          "content_type": "buffer",
+          "content_code": "REAGENT",
+          "content_name": null
+        }
+      },
+      "content_bindings": {
+        "SAMPLE_A": "SAMPLE_A",
+        "SAMPLE_B": "SAMPLE_B",
+        "STANDARD": "STANDARD",
+        "DILUENT": "DILUENT",
+        "REAGENT": "REAGENT"
+      },
+      "container_content_index": {
+        "container/entry/entry.s0%3A%3Aalloc/sample_A": {
+          "SAMPLE_A": {
+            "volume_uL": 300.0,
+            "mass_mg": 300.0,
+            "count_cells": 0.0,
+            "axis": "volume",
+            "unit": "uL"
+          }
+        },
+        "container/entry/entry.s1%3A%3Aalloc/sample_B": {
+          "SAMPLE_B": {
+            "volume_uL": 300.0,
+            "mass_mg": 300.0,
+            "count_cells": 0.0,
+            "axis": "volume",
+            "unit": "uL"
+          }
+        },
+        "container/entry/entry.s2%3A%3Aalloc/standard": {
+          "STANDARD": {
+            "volume_uL": 70.0,
+            "mass_mg": 70.0,
+            "count_cells": 0.0,
+            "axis": "volume",
+            "unit": "uL"
+          }
+        },
+        "container/entry/entry.s3%3A%3Aalloc/diluent": {
+          "DILUENT": {
+            "volume_uL": 470.0,
+            "mass_mg": 470.0,
+            "count_cells": 0.0,
+            "axis": "volume",
+            "unit": "uL"
+          }
+        },
+        "container/entry/entry.s4%3A%3Aalloc/reagent": {
+          "REAGENT": {
+            "volume_uL": 1200.0,
+            "mass_mg": 1200.0,
+            "count_cells": 0.0,
+            "axis": "volume",
+            "unit": "uL"
+          }
+        }
+      }
+    }
+  },
+  "locks": {},
+  "history": [
+    {
+      "step_id": "entry.s0::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s0::load0::define",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s0::load0::load",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s1::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s1::load0::define",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s1::load0::load",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s2::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s2::load0::define",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s2::load0::load",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s3::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s3::load0::define",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s3::load0::load",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s4::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s4::load0::define",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s4::load0::load",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s9",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s11::well::A1::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s11::well::A2::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s11::well::A3::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s15",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s16",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s17",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s18::well::B1::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s18::well::B2::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s18::well::B3::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s18.g0",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s18.g1",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s18.g2",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s24.b.s0.g0",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s24.b.s0.g1",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s24.b.s0.g2",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s24.b.s0.g3",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s24.b.s0.g4",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s24.b.s0.g5",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s25",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s30",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s32::well::A1::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s32::well::A2::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s32::well::A3::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s36",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s37",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s38",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s39::well::B1::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s39::well::B2::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s39::well::B3::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s39.g0",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s39.g1",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s39.g2",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s45.b.s0.g0",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s45.b.s0.g1",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s45.b.s0.g2",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s45.b.s0.g3",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s45.b.s0.g4",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s45.b.s0.g5",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s46",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    }
+  ]
+}

@@ -1,0 +1,263 @@
+{
+  "ok": true,
+  "report": {
+    "alerts": [],
+    "execution": {
+      "completed_steps": 63,
+      "diagnostic_count": 0,
+      "failed_steps": 0,
+      "ok": true,
+      "skipped_steps": 0,
+      "total_steps": 63
+    },
+    "external_inventory": {
+      "checked": false,
+      "items": [],
+      "reason": "inventory_not_supplied",
+      "schema": "culsma_inventory_reconciliation_v1",
+      "shortages": [],
+      "sufficient": null
+    },
+    "headline": "Experiment completed successfully with no runtime errors.",
+    "materials": {
+      "final_products": [
+        {
+          "count_cells": 100000.0,
+          "mass_mg": 1073.6,
+          "name": "Module01EditingPlate_A2",
+          "primary_component": "HEK293T_GENE_X_POSITIVE",
+          "volume_mL": 1.0736,
+          "volume_uL": 1073.6
+        },
+        {
+          "count_cells": 100000.0,
+          "mass_mg": 1073.6,
+          "name": "Module01EditingPlate_A3",
+          "primary_component": "HEK293T_GENE_X_POSITIVE",
+          "volume_mL": 1.0736,
+          "volume_uL": 1073.6
+        },
+        {
+          "count_cells": 100000.0,
+          "mass_mg": 1000.0,
+          "name": "Module01EditingPlate_A1",
+          "primary_component": "HEK293T_GENE_X_POSITIVE",
+          "volume_mL": 1.0,
+          "volume_uL": 1000.0
+        }
+      ],
+      "has_material_state": true,
+      "input_inventory": [
+        {
+          "initial_cells": 100000.0,
+          "initial_mL": 1.0,
+          "initial_mg": 0.0,
+          "initial_uL": 1000.0,
+          "name": "DeletionCellSuspension"
+        },
+        {
+          "initial_cells": 100000.0,
+          "initial_mL": 1.0,
+          "initial_mg": 0.0,
+          "initial_uL": 1000.0,
+          "name": "NonTargetingCellSuspension"
+        },
+        {
+          "initial_cells": 100000.0,
+          "initial_mL": 1.0,
+          "initial_mg": 0.0,
+          "initial_uL": 1000.0,
+          "name": "WTCellSuspension"
+        },
+        {
+          "initial_mL": 0.12,
+          "initial_mg": 0.0,
+          "initial_uL": 120.0,
+          "name": "OptiMEMI"
+        },
+        {
+          "initial_mL": 0.008,
+          "initial_mg": 0.0,
+          "initial_uL": 8.0,
+          "name": "RNPAssemblyBuffer"
+        },
+        {
+          "initial_mL": 0.0072,
+          "initial_mg": 0.0,
+          "initial_uL": 7.2,
+          "name": "CRISPRMAX"
+        },
+        {
+          "initial_mL": 0.004,
+          "initial_mg": 0.0,
+          "initial_uL": 4.0,
+          "name": "Cas9ProteinStock"
+        },
+        {
+          "initial_mL": 0.004,
+          "initial_mg": 0.0,
+          "initial_uL": 4.0,
+          "name": "NonTargetingSgRNAStock"
+        },
+        {
+          "initial_mL": 0.002,
+          "initial_mg": 0.0,
+          "initial_uL": 2.0,
+          "name": "SgRNA1Stock"
+        },
+        {
+          "initial_mL": 0.002,
+          "initial_mg": 0.0,
+          "initial_uL": 2.0,
+          "name": "SgRNA2Stock"
+        }
+      ],
+      "intermediate_materials": [],
+      "reagent_consumption": [
+        {
+          "consumed_cells": 100000.0,
+          "consumed_mL": 1.0,
+          "consumed_mg": null,
+          "consumed_uL": 1000.0,
+          "name": "DeletionCellSuspension",
+          "roles": []
+        },
+        {
+          "consumed_cells": 100000.0,
+          "consumed_mL": 1.0,
+          "consumed_mg": null,
+          "consumed_uL": 1000.0,
+          "name": "NonTargetingCellSuspension",
+          "roles": []
+        },
+        {
+          "consumed_cells": 100000.0,
+          "consumed_mL": 1.0,
+          "consumed_mg": null,
+          "consumed_uL": 1000.0,
+          "name": "WTCellSuspension",
+          "roles": []
+        },
+        {
+          "consumed_mL": 0.12,
+          "consumed_mg": null,
+          "consumed_uL": 120.0,
+          "name": "OptiMEMI",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.008,
+          "consumed_mg": null,
+          "consumed_uL": 8.0,
+          "name": "RNPAssemblyBuffer",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.0072,
+          "consumed_mg": null,
+          "consumed_uL": 7.2,
+          "name": "CRISPRMAX",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.004,
+          "consumed_mg": null,
+          "consumed_uL": 4.0,
+          "name": "Cas9ProteinStock",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.004,
+          "consumed_mg": null,
+          "consumed_uL": 4.0,
+          "name": "NonTargetingSgRNAStock",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.002,
+          "consumed_mg": null,
+          "consumed_uL": 2.0,
+          "name": "SgRNA1Stock",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.002,
+          "consumed_mg": null,
+          "consumed_uL": 2.0,
+          "name": "SgRNA2Stock",
+          "roles": [
+            "source"
+          ]
+        }
+      ]
+    },
+    "process_summary": {
+      "environment_steps": 4,
+      "mutation_steps": 13,
+      "readout_steps": 0,
+      "separation_steps": 0
+    },
+    "qc_results": [],
+    "resource_summary": {
+      "containers": {
+        "allocated_count": 17,
+        "container_kinds": [
+          {
+            "count": 14,
+            "kind": "tube"
+          },
+          {
+            "count": 3,
+            "kind": "well"
+          }
+        ],
+        "touched_count": 17,
+        "touched_names": [
+          "CRISPRMAX",
+          "Cas9ProteinStock",
+          "DeletionCellSuspension",
+          "DeletionDeliveryMixture",
+          "DeletionRNP",
+          "Module01EditingPlate_A1",
+          "Module01EditingPlate_A2",
+          "Module01EditingPlate_A3",
+          "NonTargetingCellSuspension",
+          "NonTargetingDeliveryMixture",
+          "NonTargetingRNP",
+          "NonTargetingSgRNAStock",
+          "OptiMEMI",
+          "RNPAssemblyBuffer",
+          "SgRNA1Stock",
+          "SgRNA2Stock",
+          "WTCellSuspension"
+        ]
+      },
+      "instruments": {
+        "devices": [],
+        "tools": []
+      }
+    },
+    "schema": "lab_report_v1"
+  },
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": []
+    }
+  },
+  "schema": "culsma_run_output_v1"
+}

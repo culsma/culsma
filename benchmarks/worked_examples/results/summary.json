@@ -1,0 +1,144 @@
+{
+  "implementation_commit": "ab06a04446b51d208b6a8b6eb2b36853e67d0d7b",
+  "python": "3.12.8",
+  "execution_backend": "deterministic_reference",
+  "runner_sha256": "a0ae2e1228155f269dfbb47607b42a6e372c9cf249501a97ede70482e24cd412",
+  "source_archive_sha256": "1d5f249f09af52e72f0978078da3afbf0e8941ab9ef832f376140b9d2b39ef7f",
+  "input_mode": "exported_programs",
+  "examples": {
+    "pcr": {
+      "ok": true,
+      "checks": {
+        "reaction_volume_uL": 50,
+        "declared_inputs_fully_transferred": true,
+        "components_uL": {
+          "TEMPLATE": 1.0,
+          "FORWARD": 2.5,
+          "REVERSE": 2.5,
+          "MASTER_MIX": 25.0,
+          "WATER": 19.0
+        },
+        "declared_components_retained": true
+      },
+      "input_sha256": "f6539e62f14c14f9553ada6ad5bd9de096ff1e462712581eb0278e8af5f4a01f",
+      "completed_steps": 109
+    },
+    "flow": {
+      "ok": true,
+      "checks": {
+        "single_cell_subject_bound_to_processed_sample": true,
+        "six_marker_panel_retained": true,
+        "declared_component_totals_conserved": true,
+        "material_state_uL": {
+          "retained_sample": {
+            "PBMC": 70.0,
+            "FSB": 500.0,
+            "ANTI_CD45": 5.0,
+            "ANTI_CD3": 5.0,
+            "ANTI_CD4": 5.0,
+            "ANTI_CD8": 5.0,
+            "ANTI_CD19": 5.0,
+            "VIABILITY_DYE": 5.0
+          },
+          "waste": {
+            "PBMC": 0.0,
+            "FSB": 2000.0,
+            "ANTI_CD45": 0.0,
+            "ANTI_CD3": 0.0,
+            "ANTI_CD4": 0.0,
+            "ANTI_CD8": 0.0,
+            "ANTI_CD19": 0.0,
+            "VIABILITY_DYE": 0.0
+          },
+          "remaining_stock": {
+            "PBMC": 0.0,
+            "FSB": 0.0,
+            "ANTI_CD45": 0.0,
+            "ANTI_CD3": 0.0,
+            "ANTI_CD4": 0.0,
+            "ANTI_CD8": 0.0,
+            "ANTI_CD19": 0.0,
+            "VIABILITY_DYE": 0.0
+          }
+        },
+        "sample_and_control_fields_populated": true,
+        "measurement_fields_unset": true
+      },
+      "input_sha256": "ed902aa473b5a5c1612490426ff5d2d7d6cd649d2f6de1d2e5808c9061345a9e",
+      "completed_steps": 52
+    },
+    "magnetic": {
+      "ok": true,
+      "checks": {
+        "target_outputs_ug": [
+          1.0,
+          0.0
+        ],
+        "target_relation": "bead_bound",
+        "association": "MAGNETIC_BEADS",
+        "beads_retained_mg": 10,
+        "target_residual_ug": 0.0
+      },
+      "input_sha256": "d08029be6fd66f40ab61b3fee7298ad54d2d3ee655a65f57e0a2c1c63ec53a15",
+      "completed_steps": 8
+    },
+    "fractions": {
+      "ok": true,
+      "checks": {
+        "ordered_fraction_to_well_paths": [
+          "0 -> A1",
+          "1 -> A2",
+          "2 -> A3"
+        ],
+        "standard_doses_uL": [
+          5,
+          10,
+          20
+        ],
+        "assay_well_volumes_uL": [
+          150,
+          150,
+          150,
+          150,
+          150,
+          150
+        ],
+        "protocol_calls": 2,
+        "observation_groups": 2,
+        "well_observations": 12,
+        "constrained_additions": 12,
+        "all_measurement_fields_unset": true,
+        "component_totals_conserved": true
+      },
+      "input_sha256": "4e7843454c154e72fc6f77cc234636cac72405b97ee17d1f418840e7872a07b1",
+      "completed_steps": 55
+    }
+  },
+  "lark": "1.3.1",
+  "compact_results": {
+    "culsma_version": "1.0.7rc2",
+    "fields": [
+      "materials",
+      "resources",
+      "returns"
+    ],
+    "files": {
+      "pcr": {
+        "path": "pcr.results.json",
+        "sha256": "70a72ff15b6099fa533262e202e171aaf4f0b52c990740515c39ff742826a3ce"
+      },
+      "flow": {
+        "path": "flow.results.json",
+        "sha256": "3565e182a76c3c26c949dcea9320226a0720ae81592df04118797377d37804f9"
+      },
+      "magnetic": {
+        "path": "magnetic.results.json",
+        "sha256": "f818704815800904b3c89e7ca60e4595cbe1f88e5364ede494bf8e4f9276662a"
+      },
+      "fractions": {
+        "path": "fractions.results.json",
+        "sha256": "3bbd6a5d3f7cd5eca5969e5f2d9fd1bd8b5b5c638a58045cdf58f481a21d89b6"
+      }
+    }
+  }
+}

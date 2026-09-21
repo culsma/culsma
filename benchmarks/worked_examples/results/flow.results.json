@@ -1,0 +1,153 @@
+{
+  "materials": [
+    {
+      "amount": 2500.0,
+      "name": "Wash buffer",
+      "unit": "uL"
+    },
+    {
+      "amount": 70.0,
+      "name": "Cells for staining",
+      "unit": "uL"
+    },
+    {
+      "amount": 30.0,
+      "name": "Six-stain panel",
+      "unit": "uL"
+    }
+  ],
+  "resources": [
+    {
+      "capacity_uL": 100.0,
+      "count": 1,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 5000.0,
+      "count": 3,
+      "kind": "tube"
+    }
+  ],
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": [],
+      "value": {
+        "binding": "flow_result",
+        "contract_kind": "customized",
+        "data_id": "entry.s34::data",
+        "data_kind": "observation",
+        "driver_payload": {
+          "op": "img",
+          "step_id": "entry.s34"
+        },
+        "export_refs": {
+          "driver_profile": {
+            "artifact_id": "entry.s34::data::raw",
+            "export_id": "entry.s34::data::driver_profile",
+            "format": "json",
+            "kind": "img",
+            "profile": "driver:DRV_OK"
+          }
+        },
+        "family": "img",
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "kind": "data_ref",
+        "observation_id": "entry.s34::data",
+        "op": "img",
+        "program": null,
+        "program_kind": null,
+        "raw_artifact": {
+          "artifact_id": "entry.s34::data::raw",
+          "driver_code": "DRV_OK",
+          "op": "img",
+          "step_id": "entry.s34"
+        },
+        "resolved_sample": null,
+        "result": {
+          "acquisition_config_id": null,
+          "acquisition_qc_pass": null,
+          "cd19_raw_signal": null,
+          "cd3_raw_signal": null,
+          "cd45_raw_signal": null,
+          "cd4_raw_signal": null,
+          "cd8_raw_signal": null,
+          "channel": null,
+          "control_role": "fully_stained",
+          "event_id": null,
+          "fsc_a": null,
+          "fsc_h": null,
+          "sample_id": "sample_A",
+          "signal": null,
+          "ssc_a": null,
+          "viability_raw_signal": null
+        },
+        "sample": {
+          "id": "__cmp_entry_s0_events",
+          "items": [],
+          "kind": "unit_stream_ref",
+          "panel_ref": {
+            "items": [
+              "CD45",
+              "CD3",
+              "CD4",
+              "CD8",
+              "CD19",
+              "LiveDead"
+            ],
+            "kind": "marker_panel_ref",
+            "label": "__cmp_entry_s0_panel"
+          },
+          "source_ref": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample",
+          "unit_kind": "single_cell"
+        },
+        "sample_ref": {
+          "id": "__cmp_entry_s0_events",
+          "items": [],
+          "kind": "unit_stream_ref",
+          "panel_ref": {
+            "items": [
+              "CD45",
+              "CD3",
+              "CD4",
+              "CD8",
+              "CD19",
+              "LiveDead"
+            ],
+            "kind": "marker_panel_ref",
+            "label": "__cmp_entry_s0_panel"
+          },
+          "source_ref": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample",
+          "unit_kind": "single_cell"
+        },
+        "save_raw": true,
+        "status": "ok",
+        "step_id": "entry.s34",
+        "subject_ref": {
+          "id": "__cmp_entry_s0_events",
+          "items": [],
+          "kind": "unit_stream_ref",
+          "panel_ref": {
+            "items": [
+              "CD45",
+              "CD3",
+              "CD4",
+              "CD8",
+              "CD19",
+              "LiveDead"
+            ],
+            "kind": "marker_panel_ref",
+            "label": "__cmp_entry_s0_panel"
+          },
+          "source_ref": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample",
+          "unit_kind": "single_cell"
+        }
+      }
+    }
+  }
+}

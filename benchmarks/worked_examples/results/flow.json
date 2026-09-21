@@ -1,0 +1,1337 @@
+{
+  "step_status": {
+    "entry.s0::alloc": "completed",
+    "entry.s0::load0::define": "completed",
+    "entry.s0::load0::load": "completed",
+    "entry.s1::alloc": "completed",
+    "entry.s1::load0::define": "completed",
+    "entry.s1::load0::load": "completed",
+    "entry.s1::load1::define": "completed",
+    "entry.s1::load1::load": "completed",
+    "entry.s1::load2::define": "completed",
+    "entry.s1::load2::load": "completed",
+    "entry.s1::load3::define": "completed",
+    "entry.s1::load3::load": "completed",
+    "entry.s1::load4::define": "completed",
+    "entry.s1::load4::load": "completed",
+    "entry.s1::load5::define": "completed",
+    "entry.s1::load5::load": "completed",
+    "entry.s2::alloc": "completed",
+    "entry.s2::load0::define": "completed",
+    "entry.s2::load0::load": "completed",
+    "entry.s3::alloc": "completed",
+    "entry.s4.b.s0": "completed",
+    "entry.s5": "completed",
+    "entry.s6": "completed",
+    "entry.s7": "completed",
+    "entry.s8": "completed",
+    "entry.s9": "completed",
+    "entry.s10": "completed",
+    "entry.s11": "completed",
+    "entry.s12": "completed",
+    "entry.s13": "completed",
+    "entry.s14": "completed",
+    "entry.s15.b.s0": "completed",
+    "entry.s16": "completed",
+    "entry.s17.b.s0": "completed",
+    "entry.s17.b.s1.b.s0": "completed",
+    "entry.s18": "completed",
+    "entry.s19": "completed",
+    "entry.s20": "completed",
+    "entry.s21": "completed",
+    "entry.s22": "completed",
+    "entry.s23": "completed",
+    "entry.s24": "completed",
+    "entry.s25": "completed",
+    "entry.s26": "completed",
+    "entry.s27": "completed",
+    "entry.s28": "completed",
+    "entry.s29": "completed",
+    "entry.s30": "completed",
+    "entry.s31": "completed",
+    "entry.s34": "completed",
+    "entry.s35": "completed",
+    "entry.s36": "completed"
+  },
+  "artifacts": {
+    "data_objects": {
+      "entry.s34::data": {
+        "kind": "data_ref",
+        "data_id": "entry.s34::data",
+        "observation_id": "entry.s34::data",
+        "data_kind": "observation",
+        "family": "img",
+        "op": "img",
+        "step_id": "entry.s34",
+        "binding": "flow_result",
+        "subject_ref": {
+          "kind": "unit_stream_ref",
+          "id": "__cmp_entry_s0_events",
+          "source_ref": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample",
+          "unit_kind": "single_cell",
+          "panel_ref": {
+            "kind": "marker_panel_ref",
+            "label": "__cmp_entry_s0_panel",
+            "items": [
+              "CD45",
+              "CD3",
+              "CD4",
+              "CD8",
+              "CD19",
+              "LiveDead"
+            ]
+          },
+          "items": []
+        },
+        "sample_ref": {
+          "kind": "unit_stream_ref",
+          "id": "__cmp_entry_s0_events",
+          "source_ref": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample",
+          "unit_kind": "single_cell",
+          "panel_ref": {
+            "kind": "marker_panel_ref",
+            "label": "__cmp_entry_s0_panel",
+            "items": [
+              "CD45",
+              "CD3",
+              "CD4",
+              "CD8",
+              "CD19",
+              "LiveDead"
+            ]
+          },
+          "items": []
+        },
+        "sample": {
+          "kind": "unit_stream_ref",
+          "id": "__cmp_entry_s0_events",
+          "source_ref": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample",
+          "unit_kind": "single_cell",
+          "panel_ref": {
+            "kind": "marker_panel_ref",
+            "label": "__cmp_entry_s0_panel",
+            "items": [
+              "CD45",
+              "CD3",
+              "CD4",
+              "CD8",
+              "CD19",
+              "LiveDead"
+            ]
+          },
+          "items": []
+        },
+        "resolved_sample": null,
+        "contract_kind": "customized",
+        "program_kind": null,
+        "program": null,
+        "status": "ok",
+        "result": {
+          "signal": null,
+          "channel": null,
+          "event_id": null,
+          "sample_id": "sample_A",
+          "control_role": "fully_stained",
+          "fsc_a": null,
+          "fsc_h": null,
+          "ssc_a": null,
+          "cd45_raw_signal": null,
+          "cd3_raw_signal": null,
+          "cd4_raw_signal": null,
+          "cd8_raw_signal": null,
+          "cd19_raw_signal": null,
+          "viability_raw_signal": null,
+          "acquisition_config_id": null,
+          "acquisition_qc_pass": null
+        },
+        "save_raw": true,
+        "driver_payload": {
+          "step_id": "entry.s34",
+          "op": "img"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "raw_artifact": {
+          "artifact_id": "entry.s34::data::raw",
+          "step_id": "entry.s34",
+          "op": "img",
+          "driver_code": "DRV_OK"
+        },
+        "export_refs": {
+          "driver_profile": {
+            "export_id": "entry.s34::data::driver_profile",
+            "kind": "img",
+            "format": "json",
+            "profile": "driver:DRV_OK",
+            "artifact_id": "entry.s34::data::raw"
+          }
+        }
+      }
+    },
+    "data_bindings": {
+      "flow_result": "entry.s34::data"
+    },
+    "data_groups": {},
+    "data_group_bindings": {},
+    "data_group_indexed_bindings": {},
+    "raw_data": {
+      "entry.s34::data": {
+        "artifact_id": "entry.s34::data::raw",
+        "step_id": "entry.s34",
+        "op": "img",
+        "driver_code": "DRV_OK"
+      }
+    },
+    "data_exports": {
+      "entry.s34::data": {
+        "driver_profile": {
+          "export_id": "entry.s34::data::driver_profile",
+          "kind": "img",
+          "format": "json",
+          "profile": "driver:DRV_OK",
+          "artifact_id": "entry.s34::data::raw"
+        }
+      }
+    },
+    "protocol_outputs": {
+      "entry": {
+        "protocol_id": "entry",
+        "protocol_name": "entry",
+        "returns": [],
+        "entry_kind": "script",
+        "value": {
+          "kind": "data_ref",
+          "data_id": "entry.s34::data",
+          "observation_id": "entry.s34::data",
+          "data_kind": "observation",
+          "family": "img",
+          "op": "img",
+          "step_id": "entry.s34",
+          "binding": "flow_result",
+          "subject_ref": {
+            "kind": "unit_stream_ref",
+            "id": "__cmp_entry_s0_events",
+            "source_ref": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample",
+            "unit_kind": "single_cell",
+            "panel_ref": {
+              "kind": "marker_panel_ref",
+              "label": "__cmp_entry_s0_panel",
+              "items": [
+                "CD45",
+                "CD3",
+                "CD4",
+                "CD8",
+                "CD19",
+                "LiveDead"
+              ]
+            },
+            "items": []
+          },
+          "sample_ref": {
+            "kind": "unit_stream_ref",
+            "id": "__cmp_entry_s0_events",
+            "source_ref": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample",
+            "unit_kind": "single_cell",
+            "panel_ref": {
+              "kind": "marker_panel_ref",
+              "label": "__cmp_entry_s0_panel",
+              "items": [
+                "CD45",
+                "CD3",
+                "CD4",
+                "CD8",
+                "CD19",
+                "LiveDead"
+              ]
+            },
+            "items": []
+          },
+          "sample": {
+            "kind": "unit_stream_ref",
+            "id": "__cmp_entry_s0_events",
+            "source_ref": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample",
+            "unit_kind": "single_cell",
+            "panel_ref": {
+              "kind": "marker_panel_ref",
+              "label": "__cmp_entry_s0_panel",
+              "items": [
+                "CD45",
+                "CD3",
+                "CD4",
+                "CD8",
+                "CD19",
+                "LiveDead"
+              ]
+            },
+            "items": []
+          },
+          "resolved_sample": null,
+          "contract_kind": "customized",
+          "program_kind": null,
+          "program": null,
+          "status": "ok",
+          "result": {
+            "signal": null,
+            "channel": null,
+            "event_id": null,
+            "sample_id": "sample_A",
+            "control_role": "fully_stained",
+            "fsc_a": null,
+            "fsc_h": null,
+            "ssc_a": null,
+            "cd45_raw_signal": null,
+            "cd3_raw_signal": null,
+            "cd4_raw_signal": null,
+            "cd8_raw_signal": null,
+            "cd19_raw_signal": null,
+            "viability_raw_signal": null,
+            "acquisition_config_id": null,
+            "acquisition_qc_pass": null
+          },
+          "save_raw": true,
+          "driver_payload": {
+            "step_id": "entry.s34",
+            "op": "img"
+          },
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "raw_artifact": {
+            "artifact_id": "entry.s34::data::raw",
+            "step_id": "entry.s34",
+            "op": "img",
+            "driver_code": "DRV_OK"
+          },
+          "export_refs": {
+            "driver_profile": {
+              "export_id": "entry.s34::data::driver_profile",
+              "kind": "img",
+              "format": "json",
+              "profile": "driver:DRV_OK",
+              "artifact_id": "entry.s34::data::raw"
+            }
+          }
+        }
+      }
+    },
+    "local_bindings": {
+      "__cmp_entry_s0_panel": {
+        "kind": "marker_panel_ref",
+        "label": "__cmp_entry_s0_panel",
+        "items": [
+          "CD45",
+          "CD3",
+          "CD4",
+          "CD8",
+          "CD19",
+          "LiveDead"
+        ]
+      },
+      "__cmp_entry_s0_events": {
+        "kind": "unit_stream_ref",
+        "id": "__cmp_entry_s0_events",
+        "source_ref": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample",
+        "unit_kind": "single_cell",
+        "panel_ref": {
+          "kind": "marker_panel_ref",
+          "label": "__cmp_entry_s0_panel",
+          "items": [
+            "CD45",
+            "CD3",
+            "CD4",
+            "CD8",
+            "CD19",
+            "LiveDead"
+          ]
+        },
+        "items": []
+      },
+      "__cmp_entry_s0_acquisition_schema": {
+        "kind": "data_schema_ref",
+        "label": "Flow acquisition",
+        "fields": [
+          "event_id",
+          "sample_id",
+          "control_role",
+          "fsc_a",
+          "fsc_h",
+          "ssc_a",
+          "cd45_raw_signal",
+          "cd3_raw_signal",
+          "cd4_raw_signal",
+          "cd8_raw_signal",
+          "cd19_raw_signal",
+          "viability_raw_signal",
+          "acquisition_config_id",
+          "acquisition_qc_pass"
+        ]
+      }
+    },
+    "skip_reasons": {},
+    "ref_cache": {},
+    "material_state": {
+      "containers": {
+        "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample": {
+          "volume_uL": 600.0,
+          "mass_mg": 600.0,
+          "components": {
+            "PBMC": 70.0,
+            "ANTI_CD45": 5.0,
+            "ANTI_CD3": 5.0,
+            "ANTI_CD4": 5.0,
+            "ANTI_CD8": 5.0,
+            "ANTI_CD19": 5.0,
+            "VIABILITY_DYE": 5.0,
+            "FSB": 500.0
+          },
+          "metadata": {
+            "kind": "tube",
+            "label": "Cells for staining",
+            "allocation_namespace": "entry",
+            "allocation_name": "__cmp_entry_s0_cell_sample",
+            "allocation_step_id": "entry.s0::alloc",
+            "capacity_uL": 5000.0,
+            "component_partition_classes": {
+              "PBMC": "pelletable_cells"
+            }
+          },
+          "component_quantities": {
+            "PBMC": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 70.0
+            },
+            "ANTI_CD45": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            },
+            "ANTI_CD3": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            },
+            "ANTI_CD4": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            },
+            "ANTI_CD8": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            },
+            "ANTI_CD19": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            },
+            "VIABILITY_DYE": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 5.0
+            },
+            "FSB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 500.0
+            }
+          },
+          "component_entries": [
+            {
+              "entry_id": "PBMC",
+              "content_ref": "PBMC",
+              "amount": 70.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 70.0
+              },
+              "relation": "pellet",
+              "associated_with": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample",
+              "association_target_kind": "container",
+              "preservation": "derived",
+              "label": "pellet_output",
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": "pelletable_cells",
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "ANTI_CD45",
+              "content_ref": "ANTI_CD45",
+              "amount": 5.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": "derived",
+              "label": "pellet_output",
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "ANTI_CD3",
+              "content_ref": "ANTI_CD3",
+              "amount": 5.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": "derived",
+              "label": "pellet_output",
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "ANTI_CD4",
+              "content_ref": "ANTI_CD4",
+              "amount": 5.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": "derived",
+              "label": "pellet_output",
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "ANTI_CD8",
+              "content_ref": "ANTI_CD8",
+              "amount": 5.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": "derived",
+              "label": "pellet_output",
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "ANTI_CD19",
+              "content_ref": "ANTI_CD19",
+              "amount": 5.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": "derived",
+              "label": "pellet_output",
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "VIABILITY_DYE",
+              "content_ref": "VIABILITY_DYE",
+              "amount": 5.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 5.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": "derived",
+              "label": "pellet_output",
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            },
+            {
+              "entry_id": "FSB",
+              "content_ref": "FSB",
+              "amount": 500.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 500.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": "derived",
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null
+            }
+          ],
+          "material_relationships": [
+            {
+              "kind": "association",
+              "subtype": "scientific_model_relation",
+              "dispersed_component_ids": [
+                "PBMC"
+              ],
+              "material_state": "pellet",
+              "associated_with": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample",
+              "material_state_source": "scientific_model_provider",
+              "label": "pellet_output",
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ]
+        },
+        "container/entry/entry.s1%3A%3Aalloc/__cmp_entry_s0_stain": {
+          "volume_uL": 0.0,
+          "mass_mg": 0.0,
+          "components": {},
+          "metadata": {
+            "kind": "tube",
+            "label": "Six-stain panel",
+            "allocation_namespace": "entry",
+            "allocation_name": "__cmp_entry_s0_stain",
+            "allocation_step_id": "entry.s1::alloc",
+            "capacity_uL": 100.0
+          },
+          "component_quantities": {},
+          "component_entries": [],
+          "material_relationships": []
+        },
+        "container/entry/entry.s2%3A%3Aalloc/__cmp_entry_s0_buffer": {
+          "volume_uL": 0.0,
+          "mass_mg": 0.0,
+          "components": {},
+          "metadata": {
+            "kind": "tube",
+            "label": "Wash buffer",
+            "allocation_namespace": "entry",
+            "allocation_name": "__cmp_entry_s0_buffer",
+            "allocation_step_id": "entry.s2::alloc",
+            "capacity_uL": 5000.0
+          },
+          "component_quantities": {},
+          "component_entries": [],
+          "material_relationships": []
+        },
+        "container/entry/entry.s3%3A%3Aalloc/__cmp_entry_s0_waste": {
+          "volume_uL": 2000.0,
+          "mass_mg": 2000.0,
+          "components": {
+            "PBMC": 0.0,
+            "ANTI_CD45": 0.0,
+            "ANTI_CD3": 0.0,
+            "ANTI_CD4": 0.0,
+            "ANTI_CD8": 0.0,
+            "ANTI_CD19": 0.0,
+            "VIABILITY_DYE": 0.0,
+            "FSB": 2000.0
+          },
+          "metadata": {
+            "kind": "tube",
+            "label": "Wash waste",
+            "allocation_namespace": "entry",
+            "allocation_name": "__cmp_entry_s0_waste",
+            "allocation_step_id": "entry.s3::alloc",
+            "capacity_uL": 5000.0,
+            "component_partition_classes": {
+              "PBMC": "pelletable_cells"
+            }
+          },
+          "component_quantities": {
+            "PBMC": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "ANTI_CD45": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "ANTI_CD3": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "ANTI_CD4": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "ANTI_CD8": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "ANTI_CD19": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "VIABILITY_DYE": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "FSB": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 2000.0
+            }
+          },
+          "component_entries": [
+            {
+              "entry_id": "PBMC",
+              "content_ref": "PBMC",
+              "amount": 0.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": null,
+              "material_state_source": null,
+              "partition_class": "pelletable_cells"
+            },
+            {
+              "entry_id": "ANTI_CD45",
+              "content_ref": "ANTI_CD45",
+              "amount": 0.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": null,
+              "material_state_source": null
+            },
+            {
+              "entry_id": "ANTI_CD3",
+              "content_ref": "ANTI_CD3",
+              "amount": 0.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": null,
+              "material_state_source": null
+            },
+            {
+              "entry_id": "ANTI_CD4",
+              "content_ref": "ANTI_CD4",
+              "amount": 0.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": null,
+              "material_state_source": null
+            },
+            {
+              "entry_id": "ANTI_CD8",
+              "content_ref": "ANTI_CD8",
+              "amount": 0.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": null,
+              "material_state_source": null
+            },
+            {
+              "entry_id": "ANTI_CD19",
+              "content_ref": "ANTI_CD19",
+              "amount": 0.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": null,
+              "material_state_source": null
+            },
+            {
+              "entry_id": "VIABILITY_DYE",
+              "content_ref": "VIABILITY_DYE",
+              "amount": 0.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 0.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": null,
+              "material_state_source": null
+            },
+            {
+              "entry_id": "FSB",
+              "content_ref": "FSB",
+              "amount": 2000.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 2000.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": null,
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "provenance": {
+                "provider_id": "culsma.builtin.material_rulebook",
+                "provider_version": "1.0",
+                "model_id": null,
+                "model_version": null,
+                "configuration": {}
+              }
+            }
+          ],
+          "material_relationships": []
+        },
+        "entry.s17.b.s0::0": {
+          "volume_uL": 0.0,
+          "mass_mg": 0.0,
+          "components": {},
+          "metadata": {},
+          "component_entries": [],
+          "component_quantities": {},
+          "material_relationships": []
+        }
+      },
+      "bindings": {
+        "tube::container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample",
+        "__cmp_entry_s0_cell_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample",
+        "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample",
+        "tube::container/entry/entry.s1%3A%3Aalloc/__cmp_entry_s0_stain": "container/entry/entry.s1%3A%3Aalloc/__cmp_entry_s0_stain",
+        "__cmp_entry_s0_stain": "container/entry/entry.s1%3A%3Aalloc/__cmp_entry_s0_stain",
+        "container/entry/entry.s1%3A%3Aalloc/__cmp_entry_s0_stain": "container/entry/entry.s1%3A%3Aalloc/__cmp_entry_s0_stain",
+        "tube::container/entry/entry.s2%3A%3Aalloc/__cmp_entry_s0_buffer": "container/entry/entry.s2%3A%3Aalloc/__cmp_entry_s0_buffer",
+        "__cmp_entry_s0_buffer": "container/entry/entry.s2%3A%3Aalloc/__cmp_entry_s0_buffer",
+        "container/entry/entry.s2%3A%3Aalloc/__cmp_entry_s0_buffer": "container/entry/entry.s2%3A%3Aalloc/__cmp_entry_s0_buffer",
+        "tube::container/entry/entry.s3%3A%3Aalloc/__cmp_entry_s0_waste": "container/entry/entry.s3%3A%3Aalloc/__cmp_entry_s0_waste",
+        "__cmp_entry_s0_waste": "container/entry/entry.s3%3A%3Aalloc/__cmp_entry_s0_waste",
+        "container/entry/entry.s3%3A%3Aalloc/__cmp_entry_s0_waste": "container/entry/entry.s3%3A%3Aalloc/__cmp_entry_s0_waste",
+        "entry.s17.b.s0::0": "entry.s17.b.s0::0"
+      },
+      "indexed_bindings": {
+        "__cmp_entry_s0_separated": {
+          "0": "entry.s17.b.s0::0",
+          "1": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample"
+        }
+      },
+      "content_registry": {
+        "PBMC": {
+          "content_kind": "bio_cellular",
+          "content_type": "cell_population",
+          "content_code": "PBMC",
+          "content_name": null,
+          "content_attrs": {
+            "state": "suspension"
+          }
+        },
+        "ANTI_CD45": {
+          "content_kind": "bio_molecule_or_virus",
+          "content_type": "protein",
+          "content_code": "ANTI_CD45",
+          "content_name": null,
+          "content_attrs": {
+            "role": "antibody"
+          }
+        },
+        "ANTI_CD3": {
+          "content_kind": "bio_molecule_or_virus",
+          "content_type": "protein",
+          "content_code": "ANTI_CD3",
+          "content_name": null,
+          "content_attrs": {
+            "role": "antibody"
+          }
+        },
+        "ANTI_CD4": {
+          "content_kind": "bio_molecule_or_virus",
+          "content_type": "protein",
+          "content_code": "ANTI_CD4",
+          "content_name": null,
+          "content_attrs": {
+            "role": "antibody"
+          }
+        },
+        "ANTI_CD8": {
+          "content_kind": "bio_molecule_or_virus",
+          "content_type": "protein",
+          "content_code": "ANTI_CD8",
+          "content_name": null,
+          "content_attrs": {
+            "role": "antibody"
+          }
+        },
+        "ANTI_CD19": {
+          "content_kind": "bio_molecule_or_virus",
+          "content_type": "protein",
+          "content_code": "ANTI_CD19",
+          "content_name": null,
+          "content_attrs": {
+            "role": "antibody"
+          }
+        },
+        "VIABILITY_DYE": {
+          "content_kind": "chemical",
+          "content_type": "dye",
+          "content_code": "VIABILITY_DYE",
+          "content_name": null
+        },
+        "FSB": {
+          "content_kind": "formulation",
+          "content_type": "buffer",
+          "content_code": "FSB",
+          "content_name": null
+        }
+      },
+      "content_bindings": {
+        "PBMC": "PBMC",
+        "ANTI_CD45": "ANTI_CD45",
+        "ANTI_CD3": "ANTI_CD3",
+        "ANTI_CD4": "ANTI_CD4",
+        "ANTI_CD8": "ANTI_CD8",
+        "ANTI_CD19": "ANTI_CD19",
+        "VIABILITY_DYE": "VIABILITY_DYE",
+        "FSB": "FSB"
+      },
+      "container_content_index": {
+        "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample": {
+          "PBMC": {
+            "volume_uL": 70.0,
+            "mass_mg": 70.0,
+            "count_cells": 0.0,
+            "axis": "volume",
+            "unit": "uL"
+          }
+        },
+        "container/entry/entry.s1%3A%3Aalloc/__cmp_entry_s0_stain": {
+          "ANTI_CD45": {
+            "volume_uL": 5.0,
+            "mass_mg": 5.0,
+            "count_cells": 0.0,
+            "axis": "volume",
+            "unit": "uL"
+          },
+          "ANTI_CD3": {
+            "volume_uL": 5.0,
+            "mass_mg": 5.0,
+            "count_cells": 0.0,
+            "axis": "volume",
+            "unit": "uL"
+          },
+          "ANTI_CD4": {
+            "volume_uL": 5.0,
+            "mass_mg": 5.0,
+            "count_cells": 0.0,
+            "axis": "volume",
+            "unit": "uL"
+          },
+          "ANTI_CD8": {
+            "volume_uL": 5.0,
+            "mass_mg": 5.0,
+            "count_cells": 0.0,
+            "axis": "volume",
+            "unit": "uL"
+          },
+          "ANTI_CD19": {
+            "volume_uL": 5.0,
+            "mass_mg": 5.0,
+            "count_cells": 0.0,
+            "axis": "volume",
+            "unit": "uL"
+          },
+          "VIABILITY_DYE": {
+            "volume_uL": 5.0,
+            "mass_mg": 5.0,
+            "count_cells": 0.0,
+            "axis": "volume",
+            "unit": "uL"
+          }
+        },
+        "container/entry/entry.s2%3A%3Aalloc/__cmp_entry_s0_buffer": {
+          "FSB": {
+            "volume_uL": 2500.0,
+            "mass_mg": 2500.0,
+            "count_cells": 0.0,
+            "axis": "volume",
+            "unit": "uL"
+          }
+        }
+      }
+    }
+  },
+  "locks": {},
+  "history": [
+    {
+      "step_id": "entry.s0::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s0::load0::define",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s0::load0::load",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s1::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s1::load0::define",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s1::load0::load",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s1::load1::define",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s1::load1::load",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s1::load2::define",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s1::load2::load",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s1::load3::define",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s1::load3::load",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s1::load4::define",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s1::load4::load",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s1::load5::define",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s1::load5::load",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s2::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s2::load0::define",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s2::load0::load",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s3::alloc",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s4.b.s0",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s5",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s6",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s7",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s8",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s9",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s10",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s11",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s12",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s13",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s14",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s15.b.s0",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s16",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s17.b.s0",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s17.b.s1.b.s0",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s18",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s19",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s20",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s21",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s22",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s23",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s24",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s25",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s26",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s27",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s28",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s29",
+      "status": "completed",
+      "driver_code": "LOCAL_ASSIGN"
+    },
+    {
+      "step_id": "entry.s30",
+      "status": "completed",
+      "driver_code": "LOCAL_ASSIGN"
+    },
+    {
+      "step_id": "entry.s31",
+      "status": "completed",
+      "driver_code": "LOCAL_ASSIGN"
+    },
+    {
+      "step_id": "entry.s34",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s35",
+      "status": "completed",
+      "driver_code": "RUNTIME_MEMBER_ASSIGN"
+    },
+    {
+      "step_id": "entry.s36",
+      "status": "completed",
+      "driver_code": "RUNTIME_MEMBER_ASSIGN"
+    }
+  ]
+}

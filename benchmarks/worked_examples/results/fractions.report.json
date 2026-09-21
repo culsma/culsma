@@ -1,0 +1,236 @@
+{
+  "schema": "lab_report_v1",
+  "execution": {
+    "ok": true,
+    "diagnostic_count": 0,
+    "total_steps": 55,
+    "completed_steps": 55,
+    "failed_steps": 0,
+    "skipped_steps": 0
+  },
+  "headline": "Experiment completed successfully with no runtime errors.",
+  "materials": {
+    "has_material_state": true,
+    "input_inventory": [
+      {
+        "name": "Reagent",
+        "initial_uL": 1200.0,
+        "initial_mL": 1.2,
+        "initial_mg": 0.0
+      },
+      {
+        "name": "Diluent",
+        "initial_uL": 470.0,
+        "initial_mL": 0.47,
+        "initial_mg": 0.0
+      },
+      {
+        "name": "Fraction sample A",
+        "initial_uL": 300.0,
+        "initial_mL": 0.3,
+        "initial_mg": 0.0
+      },
+      {
+        "name": "Fraction sample B",
+        "initial_uL": 300.0,
+        "initial_mL": 0.3,
+        "initial_mg": 0.0
+      },
+      {
+        "name": "Standard",
+        "initial_uL": 70.0,
+        "initial_mL": 0.07,
+        "initial_mg": 0.0
+      }
+    ],
+    "final_products": [
+      {
+        "name": "Fraction assay_A1",
+        "volume_uL": 150.0,
+        "volume_mL": 0.15,
+        "mass_mg": 150.0,
+        "primary_component": "SAMPLE_A"
+      },
+      {
+        "name": "Fraction assay_A2",
+        "volume_uL": 150.0,
+        "volume_mL": 0.15,
+        "mass_mg": 150.0,
+        "primary_component": "SAMPLE_A"
+      },
+      {
+        "name": "Fraction assay_A3",
+        "volume_uL": 150.0,
+        "volume_mL": 0.15,
+        "mass_mg": 150.0,
+        "primary_component": "SAMPLE_A"
+      },
+      {
+        "name": "Fraction assay_B1",
+        "volume_uL": 150.0,
+        "volume_mL": 0.15,
+        "mass_mg": 150.0,
+        "primary_component": "STANDARD"
+      },
+      {
+        "name": "Fraction assay_B2",
+        "volume_uL": 150.0,
+        "volume_mL": 0.15,
+        "mass_mg": 150.0,
+        "primary_component": "STANDARD"
+      },
+      {
+        "name": "Fraction assay_B3",
+        "volume_uL": 150.0,
+        "volume_mL": 0.15,
+        "mass_mg": 150.0,
+        "primary_component": "STANDARD"
+      },
+      {
+        "name": "Fraction assay_A1",
+        "volume_uL": 150.0,
+        "volume_mL": 0.15,
+        "mass_mg": 150.0,
+        "primary_component": "SAMPLE_B"
+      },
+      {
+        "name": "Fraction assay_A2",
+        "volume_uL": 150.0,
+        "volume_mL": 0.15,
+        "mass_mg": 150.0,
+        "primary_component": "SAMPLE_B"
+      },
+      {
+        "name": "Fraction assay_A3",
+        "volume_uL": 150.0,
+        "volume_mL": 0.15,
+        "mass_mg": 150.0,
+        "primary_component": "SAMPLE_B"
+      },
+      {
+        "name": "Fraction assay_B1",
+        "volume_uL": 150.0,
+        "volume_mL": 0.15,
+        "mass_mg": 150.0,
+        "primary_component": "STANDARD"
+      },
+      {
+        "name": "Fraction assay_B2",
+        "volume_uL": 150.0,
+        "volume_mL": 0.15,
+        "mass_mg": 150.0,
+        "primary_component": "STANDARD"
+      },
+      {
+        "name": "Fraction assay_B3",
+        "volume_uL": 150.0,
+        "volume_mL": 0.15,
+        "mass_mg": 150.0,
+        "primary_component": "STANDARD"
+      }
+    ],
+    "intermediate_materials": [],
+    "reagent_consumption": [
+      {
+        "name": "Reagent",
+        "roles": [
+          "source"
+        ],
+        "consumed_uL": 1200.0,
+        "consumed_mL": 1.2,
+        "consumed_mg": null
+      },
+      {
+        "name": "Diluent",
+        "roles": [
+          "source"
+        ],
+        "consumed_uL": 470.0,
+        "consumed_mL": 0.47,
+        "consumed_mg": null
+      },
+      {
+        "name": "Fraction sample A",
+        "roles": [
+          "sample"
+        ],
+        "consumed_uL": 300.0,
+        "consumed_mL": 0.3,
+        "consumed_mg": null
+      },
+      {
+        "name": "Fraction sample B",
+        "roles": [
+          "sample"
+        ],
+        "consumed_uL": 300.0,
+        "consumed_mL": 0.3,
+        "consumed_mg": null
+      },
+      {
+        "name": "Standard",
+        "roles": [
+          "source"
+        ],
+        "consumed_uL": 70.0,
+        "consumed_mL": 0.07,
+        "consumed_mg": null
+      }
+    ]
+  },
+  "qc_results": [],
+  "resource_summary": {
+    "containers": {
+      "allocated_count": 17,
+      "touched_count": 17,
+      "container_kinds": [
+        {
+          "kind": "tube",
+          "count": 5
+        },
+        {
+          "kind": "well",
+          "count": 12
+        }
+      ],
+      "touched_names": [
+        "Diluent",
+        "Fraction assay_A1",
+        "Fraction assay_A1",
+        "Fraction assay_A2",
+        "Fraction assay_A2",
+        "Fraction assay_A3",
+        "Fraction assay_A3",
+        "Fraction assay_B1",
+        "Fraction assay_B1",
+        "Fraction assay_B2",
+        "Fraction assay_B2",
+        "Fraction assay_B3",
+        "Fraction assay_B3",
+        "Fraction sample A",
+        "Fraction sample B",
+        "Reagent",
+        "Standard"
+      ]
+    },
+    "instruments": {
+      "tools": [],
+      "devices": []
+    }
+  },
+  "process_summary": {
+    "mutation_steps": 24,
+    "separation_steps": 0,
+    "environment_steps": 0,
+    "readout_steps": 12
+  },
+  "alerts": [],
+  "external_inventory": {
+    "schema": "culsma_inventory_reconciliation_v1",
+    "checked": false,
+    "sufficient": null,
+    "reason": "inventory_not_supplied",
+    "items": [],
+    "shortages": []
+  }
+}

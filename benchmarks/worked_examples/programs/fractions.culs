@@ -1,0 +1,30 @@
+protocol AnalyzeFractions(sample, standard, diluent, reagent) {
+  let fractions = frac(sample = sample,
+    program = chromatography_program(
+      axis = retention_time, order = early_to_late, bins = 3));
+  let assay = plate(label = "Fraction assay", format = "96well");
+  let sample_wells = assay[A1:A3];
+  repeat i in schedule(start = 0, end = 2, step = 1) {
+    sample_wells[i] << [fractions[i]:10uL, diluent:40uL];
+  }
+  assay[B1:B3] << [series(standard, [5uL, 10uL, 20uL]),
+    series(diluent, [45uL, 40uL, 30uL])];
+  assay[A1:B3] << [reagent:100uL] with constraint(high_precision);
+  let signals = img(sample = assay[A1:B3], quantity = fluorescence);
+  return signals;
+}
+let sample_A = tube(label = "Fraction sample A", capacity = 5mL, load = [
+  content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "SAMPLE_A"):300uL]);
+let sample_B = tube(label = "Fraction sample B", capacity = 5mL, load = [
+  content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "SAMPLE_B"):300uL]);
+let standard = tube(label = "Standard", capacity = 5mL, load = [
+  content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "STANDARD"):70uL]);
+let diluent = tube(label = "Diluent", capacity = 5mL, load = [
+  content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "DILUENT"):470uL]);
+let reagent = tube(label = "Reagent", capacity = 5mL, load = [
+  content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "REAGENT"):1200uL]);
+let result_A = AnalyzeFractions(sample = sample_A, standard = standard,
+  diluent = diluent, reagent = reagent);
+let result_B = AnalyzeFractions(sample = sample_B, standard = standard,
+  diluent = diluent, reagent = reagent);
+return [result_A, result_B];

@@ -77,5 +77,17 @@
   ],
   "MAT-SURFACE-RELEASE-01": [
     "tests/test_case09_surface_release.py"
+  ],
+  "ENV-SEALED-01": [
+    "tests/test_sealed_constraint.py"
+  ],
+  "CALL-QUALIFIED-01": [
+    "tests/test_frontend_resolver.py::test_resolve_files_expands_qualified_import_call_with_return_value",
+    "tests/test_frontend_resolver.py::test_resolve_files_expands_qualified_import_call_in_return_expression",
+    "tests/test_frontend_resolver.py::test_resolve_files_expands_qualified_import_call_in_named_return_binding"
+  ],
+  "AGIT-FLICK-01": [
+    "tests/test_kernel_validate.py::test_validate_agit_accepts_flick_with_optional_cycles",
+    "tests/test_kernel_validate.py::test_validate_agit_rejects_flick_with_duration_or_rate"
   ]
 }

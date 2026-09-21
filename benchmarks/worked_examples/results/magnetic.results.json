@@ -1,0 +1,47 @@
+{
+  "materials": [
+    {
+      "amount": 100.0,
+      "name": "Magnetic input",
+      "unit": "uL"
+    },
+    {
+      "amount": 10.001,
+      "name": "Magnetic input",
+      "unit": "mg"
+    }
+  ],
+  "resources": [
+    {
+      "capacity_uL": 1500.0,
+      "count": 1,
+      "kind": "tube"
+    }
+  ],
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": [],
+      "value": {
+        "kind": "container_group_ref",
+        "member_count": 2,
+        "members": [
+          {
+            "id": "entry.s1::0",
+            "kind": "container_ref",
+            "mass_mg": 10.001,
+            "volume_uL": 10.001
+          },
+          {
+            "id": "entry.s1::1",
+            "kind": "container_ref",
+            "mass_mg": 100,
+            "volume_uL": 100
+          }
+        ]
+      }
+    }
+  }
+}

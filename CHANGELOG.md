@@ -1,6 +1,14 @@
 # Changelog
 
-## Unreleased
+## 1.0.7 — release candidate prepared for publication
+
+### Added
+
+- Canonical material enums and validation of material classification.
+- Author-declared, selector-keyed material replacement with one or more products.
+- Explicit surface spreading, dropwise delivery, scoped sealed holds, and tube flicking.
+- Compact CLI results and a source-linked benchmark with seven modules, one
+  composite, and four independently checked manuscript examples.
 
 ### Fixed
 

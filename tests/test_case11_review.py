@@ -3,7 +3,12 @@ from pathlib import Path
 
 import pytest
 
-from benchmarks.tools.benchmark_metrics import final_material_records
+import importlib.util
+_metrics_spec = importlib.util.spec_from_file_location("legacy_benchmark_metrics",
+    Path(__file__).resolve().parents[1] / "archive/benchmarks-legacy/tools/benchmark_metrics.py")
+_metrics = importlib.util.module_from_spec(_metrics_spec)
+_metrics_spec.loader.exec_module(_metrics)
+final_material_records = _metrics.final_material_records
 from culsma.cli import _to_jsonable
 from culsma.driver.human import HumanDriver
 from culsma.driver.robot import RobotDriver
@@ -15,7 +20,7 @@ from culsma.pipeline.typecheck import typecheck
 from culsma.pipeline.validate import validate
 from culsma.runtime.executor import run
 
-CASE = Path(__file__).resolve().parents[1] / 'benchmarks/cases/11/protocol.culs'
+CASE = Path(__file__).resolve().parents[1] / 'archive/benchmarks-legacy/cases/11/protocol.culs'
 
 
 def execute(driver=None, proceed_immediately=True, **inputs):

@@ -1,287 +1,248 @@
-#!/usr/bin/env python3
-"""Run the frozen corpus and derive tables with the fixed automatic metrics extractor."""
+"""Reproduce the versioned modular benchmark used in Patterns Section 3.5."""
 from __future__ import annotations
-
 import argparse
-import importlib.metadata
+import hashlib
 import json
+import os
 from pathlib import Path
 import platform
-import re
 import subprocess
 import sys
+import re
 
 ROOT = Path(__file__).resolve().parent
-sys.path.insert(0, str(ROOT / "tools"))
-from benchmark_metrics import locked_versions, final_material_records
 
-SUPPORTED_PYTHON_SERIES = ("3.11", "3.12", "3.13")
-FIELDS = (
-    "source_steps", "descriptor_items", "reused_objects", "later_use_links",
-    "active_steps", "completed_steps", "reagent_records", "touched_containers",
-    "final_material_states",
-)
+RULES = "modular-source-step-correspondence-v1"
+SOURCE_MARKER = re.compile(r"^\s*//\s+Source step S([1-9]\d*):\s+(.+)$")
+DIRECT_ALIAS = re.compile(r"^let\s+[A-Za-z_]\w*\s*=\s*[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*\s*;$")
+WRAPPER = re.compile(r"^(?:with\b|repeat\b|if\b|else\b)")
 
 
-def read_json(path):
-    path = Path(path)
-    with path.open("r", encoding="utf-8") as f:
-        return json.load(f)
+def normalize(value: str) -> str:
+    return " ".join(value.split())
 
 
-def write_json(path, value):
-    Path(path).write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
-
-
-def discover_cases():
-    cases = []
-    for path in sorted((ROOT / "cases").iterdir()):
-        if not path.is_dir() or path.name.startswith("."):
-            continue
-        if not re.fullmatch(r"[0-9]{2}", path.name):
-            raise ValueError(f"invalid case directory: {path.name}")
-        if not (path / "protocol.culs").is_file():
-            raise ValueError(f"Case {path.name}: missing protocol.culs")
-        cases.append(path.name)
-    if not cases:
-        raise ValueError("no case directories found")
-    return cases
-
-
-def case_dir(case):
-    return ROOT / "cases" / case
-
-
-def baseline_dir(case):
-    moved = ROOT / "expected" / "cases" / case
-    return moved if moved.is_dir() else case_dir(case)
-
-
-def generated_counts(directory):
-    """Validate and aggregate the three automatically extracted metric files."""
-    d = read_json(directory / "action_descriptors.json")
-    c = read_json(directory / "material_state_continuity.json")
-    t = read_json(directory / "result_traceability.json")
-    if len({x["extraction_id"] for x in (d,c,t)}) != 1:
-        raise ValueError("mixed extraction identities")
-    if d["descriptor_items"] != sum(len(row["descriptors"]) for row in d["rows"]):
-        raise ValueError("descriptor count differs from generated entries")
-    if c["reused_objects"] != len(c["rows"]) or c["later_use_links"] != sum(len(row["used_in"]) for row in c["rows"]):
-        raise ValueError("continuity count differs from generated relations")
-    steps = {row["step"] for row in d["rows"]}
-    if d["source_steps"] != len(steps) or len(steps) != len(d["rows"]):
-        raise ValueError("source-step count differs from unique rows")
-    for row in c["rows"]:
-        intro, uses = row["introduced_at"], row["used_in"]
-        if intro not in steps or not uses or len(uses) != len(set(uses)) or any(
-            step not in steps or int(step[1:]) <= int(intro[1:]) for step in uses
-        ):
-            raise ValueError("invalid later-use relation")
-    finals = t["final_material_records"] if "final_material_records" in t else t["final_products"]
-    if t["reagent_records"] != len(t["reagent_consumption"]) or t["touched_containers"] != len(t["touched_names"]) or t["final_material_states"] != len(finals):
-        raise ValueError("traceability count differs from generated records")
-    return {key: value for data in (d,c,t) for key,value in data.items() if key in FIELDS}
-
-
-def runtime_counts(output, run=None):
-    report = output["report"]
-    execution = report["execution"]
-    if not output["ok"] or not execution["ok"] or execution["failed_steps"] or execution["diagnostic_count"]:
-        raise ValueError(f"runtime did not pass cleanly: {execution}")
-    active = execution["total_steps"] - execution["skipped_steps"]
-    if active != execution["completed_steps"] or active < 0:
-        raise ValueError(f"incomplete active path: {execution}")
-    if report["external_inventory"]["checked"]:
-        raise ValueError("This snapshot uses no external inventory reconciliation")
-    containers = report["resource_summary"]["containers"]
-    if containers["touched_count"] != len(containers["touched_names"]):
-        raise ValueError("touched-container count/list mismatch")
-    materials = report["materials"]
-    if not materials["has_material_state"]:
-        raise ValueError("runtime material state missing")
-    # Count report rows, not unique display names. Distinct allocations may share a name.
-    return dict(active_steps=active, completed_steps=execution["completed_steps"],
-                reagent_records=len(materials["reagent_consumption"]),
-                touched_containers=len(containers["touched_names"]),
-                final_material_states=len(final_material_records(run)) if run is not None
-                else len(materials["final_products"]))
-
-
-def total(rows):
-    return {k: sum(row[k] for case, row in rows.items() if case != "00") for k in FIELDS}
-
-
-def record_projection(output, run=None):
-    """Compare full material rows and returns, not just their lengths."""
-    r = output["report"]
-    # Object key ordering is irrelevant; preserve duplicate rows using a sorted list.
-    def rows(values):
-        return sorted(json.dumps(v, sort_keys=True, separators=(",", ":")) for v in values)
-    return {
-        "consumption": rows(r["materials"]["reagent_consumption"]),
-        "final_materials": rows([x["record"] for x in final_material_records(run)]) if run is not None
-        else rows(r["materials"]["final_products"]),
-        "touched_names": sorted(r["resource_summary"]["containers"]["touched_names"]),
-        "returns": output["returns"],
-    }
-
-
-def derive(results=None):
-    rows = {}
-    for case in discover_cases():
-        row = generated_counts(baseline_dir(case) if results is None else results / case / "evaluation")
-        if results is not None:
-            trace = read_json(results / case / "evaluation/result_traceability.json")
-            run = read_json(results / case / "input/artifacts/run.json") if "final_material_records" in trace else None
-            runtime = runtime_counts(read_json(results / case / "input/artifacts/output.json"), run)
-            if any(row[k] != v for k,v in runtime.items()):
-                raise ValueError(f"Case {case}: generated metrics and runtime disagree")
-        rows[case] = row
+def read_source_steps(path: Path) -> dict[int, str]:
+    lines = path.read_text(encoding="utf-8").splitlines()
+    starts = [index for index, line in enumerate(lines) if line == "## Steps"]
+    if len(starts) != 1:
+        raise ValueError("source must contain exactly one ## Steps section")
+    rows: dict[int, str] = {}
+    for line in lines[starts[0] + 1 :]:
+        if line.startswith("## "):
+            break
+        match = re.fullmatch(r"([1-9]\d*)\.\s+(.+)", line)
+        if match:
+            rows[int(match.group(1))] = normalize(match.group(2))
+        elif line.strip():
+            if not rows:
+                raise ValueError("text precedes the first numbered source step")
+            rows[max(rows)] += " " + normalize(line)
+    if list(rows) != list(range(1, len(rows) + 1)):
+        raise ValueError("source steps must be consecutive from 1")
     return rows
 
 
-def render_tables(rows):
-    text = ["# Recomputed benchmark tables", "", "Case 00 is reported separately and excluded from every total.", ""]
-    tables = [
-        ("Structured experimental detail", FIELDS[:2]),
-        ("Material-state continuity", FIELDS[2:6]),
-        ("Result traceability", FIELDS[6:]),
-    ]
-    totals = total(rows)
-    for title, fields in tables:
-        text += [f"## {title}", "", "| Case | " + " | ".join(fields) + " |",
-                 "| --- | " + " | ".join("---:" for _ in fields) + " |"]
-        for case, row in rows.items():
-            if case != "00":
-                text.append(f"| {case} | " + " | ".join(str(row[k]) for k in fields) + " |")
-        text += ["| Total | " + " | ".join(str(totals[k]) for k in fields) + " |", "",
-                 "Worked example 00: " + ", ".join(f"{k}={rows['00'][k]}" for k in fields) + ".", ""]
-    return "\n".join(text)
+def meaningful_region(lines: list[str], marker_index: int) -> bool:
+    saw_gap = False
+    for raw in lines[marker_index + 1 :]:
+        if SOURCE_MARKER.match(raw):
+            if saw_gap:
+                return False
+            continue
+        stripped = raw.strip()
+        if not stripped:
+            continue
+        if stripped.startswith("//"):
+            saw_gap = saw_gap or "COVERAGE GAP:" in stripped
+            continue
+        if stripped in {"{", "}", "};"} or WRAPPER.match(stripped):
+            continue
+        if DIRECT_ALIAS.fullmatch(stripped):
+            return False
+        return True
+    return False
 
 
-def trace_projection(trace):
-    """Compare full result records from the plain section-3.4 metric file."""
-    def records(values):
-        return sorted(json.dumps(v["record"], sort_keys=True, separators=(",", ":")) for v in values)
-    return {"consumption": records(trace["reagent_consumption"]),
-            "final_materials": records(trace["final_material_records"] if "final_material_records" in trace else trace["final_products"]),
-            "touched_names": sorted(v["name"] for v in trace["touched_names"]),
-            "returns": trace["formal_returns"]["value"]}
+def assess(
+    artifact_dir: Path,
+    implementation: str | None,
+    language_version: str | None,
+) -> dict[str, object]:
+    source_path = artifact_dir / "source.md"
+    program_paths = sorted(artifact_dir.glob("*.culs"))
+    if not program_paths:
+        raise ValueError("artifact contains no .culs program files")
+    expected = read_source_steps(source_path)
+    occurrences: dict[int, list[dict[str, object]]] = {}
+    for program_path in program_paths:
+        lines = program_path.read_text(encoding="utf-8").splitlines()
+        for index, line in enumerate(lines):
+            match = SOURCE_MARKER.match(line)
+            if not match:
+                continue
+            step = int(match.group(1))
+            occurrences.setdefault(step, []).append(
+                {
+                    "file": program_path.name,
+                    "line": index + 1,
+                    "text": normalize(match.group(2)),
+                    "has_code_region": meaningful_region(lines, index),
+                }
+            )
+
+    steps = []
+    for step, source_text in expected.items():
+        found = occurrences.get(step, [])
+        if not found:
+            status = "missing_comment"
+        elif len(found) != 1:
+            status = "duplicate_comment"
+        elif found[0]["text"] != source_text:
+            status = "text_mismatch"
+        elif not found[0]["has_code_region"]:
+            status = "no_code_region"
+        else:
+            status = "matched"
+        steps.append(
+            {
+                "step": step,
+                "status": status,
+                "source_text": source_text,
+                "occurrences": found,
+            }
+        )
+    unknown = sorted(set(occurrences) - set(expected))
+    matched = sum(row["status"] == "matched" for row in steps)
+    total = len(steps)
+    issues = [
+        {"step": row["step"], "reason": row["status"]}
+        for row in steps
+        if row["status"] != "matched"
+    ] + [{"step": step, "reason": "unexpected_comment"} for step in unknown]
+    return {
+        "schema": "modular-source-coverage-v1",
+        "rules": RULES,
+        "metric": "source_step_correspondence",
+        "artifact": artifact_dir.name,
+        "implementation": implementation,
+        "language_version": language_version,
+        "source_sha256": digest(source_path),
+        "program_sha256": {path.name: digest(path) for path in program_paths},
+        "total_steps": total,
+        "matched_steps": matched,
+        "coverage_percent": round(100 * matched / total, 6),
+        "status": "pass" if matched == total and not unknown else "incomplete",
+        "issues": issues,
+    }
 
 
-def compare(rows, results=None):
-    expected = read_json(ROOT / "expected" / "tables.json")
-    if set(rows) != set(expected["cases"]):
-        raise ValueError("case set differs from expected tables: "
-                         f"missing={sorted(set(expected['cases']) - set(rows))}, "
-                         f"extra={sorted(set(rows) - set(expected['cases']))}")
-    differences = []
-    for case, row in rows.items():
-        for field, value in row.items():
-            wanted = expected["cases"][case][field]
-            if value != wanted:
-                differences.append(f"Case {case} {field}: observed {value}, expected {wanted}")
-        baseline = read_json(baseline_dir(case) / "result_traceability.json")
-        actual = baseline if results is None else read_json(results / case / "evaluation/result_traceability.json")
-        actual_record, expected_record = trace_projection(actual), trace_projection(baseline)
-        for field in actual_record:
-            if actual_record[field] != expected_record[field]:
-                differences.append(f"Case {case}: {field} records differ (see result_traceability.json)")
-        if results is not None:
-            run = read_json(results / case / "input/artifacts/run.json") if "final_material_records" in actual else None
-            runtime_record = record_projection(read_json(results / case / "input/artifacts/output.json"), run)
-            if actual_record != runtime_record:
-                differences.append(f"Case {case}: extracted traceability differs from raw runtime records")
-    for field, value in total(rows).items():
-        if value != expected["totals"][field]:
-            differences.append(f"Total {field}: observed {value}, expected {expected['totals'][field]}")
-    return differences
 
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
-def check_environment():
-    baseline = locked_versions(ROOT / "requirements.lock")
-    supported = SUPPORTED_PYTHON_SERIES
-    observed = {"python": platform.python_version(),
-                **{name: importlib.metadata.version(name) for name in ("culsma", "lark")}}
-    series = ".".join(observed["python"].split(".")[:2])
-    if series not in supported or sys.version_info.releaselevel != "final":
-        raise ValueError(f"unsupported Python {observed['python']}; use a stable release of "
-                         + ", ".join(supported))
-    mismatches = {name: observed[name] for name in ("culsma", "lark")
-                  if observed[name] != baseline[name]}
-    if mismatches:
-        raise ValueError(f"package version mismatch: {mismatches}; required "
-                         f"culsma={baseline['culsma']}, lark={baseline['lark']}")
-    return observed
+def write_json(path, value):
+    path.write_text(json.dumps(value, indent=2) + '\n')
 
+def git(repo, *args):
+    return subprocess.check_output(['git', '-C', str(repo), *args], text=True).strip()
 
-def run_all(results):
-    environment = check_environment()
-    results.mkdir(parents=True, exist_ok=False)
-    write_json(results / "environment.json", environment)
-    script = ROOT / "tools" / "benchmark_metrics.py"
-    for case in discover_cases():
-        dest = results / case
-        commands = [
-            [sys.executable, str(script), "capture", "--source", str(case_dir(case)/"protocol.culs"),
-             "--python", sys.executable, "--bundle", str(dest/"input")],
-            [sys.executable, str(script), "extract", "--bundle", str(dest/"input"), "--out", str(dest/"evaluation")],
-        ]
-        for command in commands:
-            subprocess.run(command, check=True)
-        print(f"Case {case}: captured and automatically extracted", flush=True)
-
-
-def run_source_coverage(cases, python, implementation=None):
-    available = discover_cases()
-    if not cases or len(cases) != len(set(cases)) or any(case not in available for case in cases):
-        raise ValueError('Choose distinct existing case IDs, for example --case 00')
-    failed = False
-    for case in cases:
-        directory = case_dir(case)
-        command = [sys.executable, str(ROOT / 'tools/source_comment_coverage.py'),
-                   '--source', str(directory / 'source.md'),
-                   '--program', str(directory / 'protocol.culs'), '--python', str(python)]
-        if implementation:
-            command += ['--implementation', implementation]
-        result = subprocess.run(command)
-        failed = failed or result.returncode != 0
-    return 1 if failed else 0
-
+def reproduce(runtime, output, update_readme=False):
+    manifest = json.loads((ROOT / 'manifest.json').read_text())
+    runtime = runtime.resolve()
+    if git(runtime, 'rev-parse', 'HEAD') != manifest['runtime_commit']:
+        raise ValueError('Runtime checkout must be at ' + manifest['runtime_commit'])
+    if git(runtime, 'status', '--porcelain', '--', 'src', 'pyproject.toml'):
+        raise ValueError('Runtime source or package metadata has local changes')
+    actual_files = {
+        str(p.relative_to(ROOT))
+        for group in ('modules', 'composites')
+        for d in (ROOT / group).iterdir() if d.is_dir()
+        for p in d.iterdir() if p.suffix in ('.culs', '.md')
+    } | {str(p.relative_to(ROOT)) for p in (ROOT / 'libraries').glob('*.culs')}
+    if actual_files != set(manifest['input_sha256']):
+        raise ValueError('Benchmark input inventory differs from the paper snapshot')
+    for name, expected in manifest['input_sha256'].items():
+        if digest(ROOT / name) != expected:
+            raise ValueError('Benchmark input differs from paper snapshot: ' + name)
+    env = dict(os.environ, PYTHONPATH=str(runtime / 'src'), PYTHONNOUSERSITE='1', PYTHONDONTWRITEBYTECODE='1')
+    versions = json.loads(subprocess.check_output([
+        sys.executable, '-c', 'import json,culsma,lark; print(json.dumps({"culsma":culsma.__version__,"lark":lark.__version__}))'
+    ], env=env, cwd=runtime, text=True))
+    if versions != {'culsma': manifest['runtime_package_version'], 'lark': manifest['lark_version']}:
+        raise ValueError('Dependency versions differ from the manifest: ' + str(versions))
+    output.mkdir(parents=True, exist_ok=False)
+    rows = []
+    for entry in manifest['artifacts']:
+        artifact = ROOT / entry['path']
+        target = output / entry['path']
+        target.mkdir(parents=True)
+        coverage = assess(artifact, manifest['runtime_commit'], versions['culsma'])
+        write_json(target / 'coverage.json', coverage)
+        command = [sys.executable, '-m', 'culsma', 'run', str(artifact / 'protocol.culs'),
+                   '--library-root', str(ROOT / 'libraries'), '--output', str(target / 'run.json')]
+        process = subprocess.run(command, env=env, cwd=runtime, text=True, capture_output=True)
+        if process.stdout.strip():
+            (target / 'stdout.txt').write_text(process.stdout)
+        if process.stderr.strip():
+            (target / 'stderr.txt').write_text(process.stderr)
+        compact = subprocess.run(command[:-2] + ['--results', str(target / 'results.json')],
+                                 env=env, cwd=runtime, text=True, capture_output=True)
+        if compact.stderr.strip():
+            (target / 'results.stderr.txt').write_text(compact.stderr)
+        run = json.loads((target / 'run.json').read_text()) if (target / 'run.json').exists() else {}
+        execution = run.get('report', {}).get('execution', {})
+        coverage_matches = all(coverage[k] == entry[k] for k in ('matched_steps', 'total_steps', 'issues'))
+        execution_matches = (process.returncode == 0 and compact.returncode == 0 and (target / 'results.json').is_file() and run.get('ok') is True and
+            execution.get('ok') is True and execution.get('completed_steps') == entry['completed_steps'] and
+            execution.get('total_steps') == entry['completed_steps'] and
+            all(execution.get(k) == 0 for k in ('failed_steps', 'skipped_steps', 'diagnostic_count')))
+        row = {'artifact': entry['path'], 'name': entry['name'], 'coverage': coverage, 'execution': execution,
+               'matches_paper': coverage_matches and execution_matches,
+               'output_sha256': {p.name: digest(p) for p in target.iterdir() if p.is_file()}}
+        rows.append(row)
+        print(f"{entry['path']}: {coverage['matched_steps']}/{coverage['total_steps']}; "
+              f"execution {execution.get('completed_steps', 0)}/{entry['completed_steps']}; "
+              f"{'PASS' if row['matches_paper'] else 'FAIL'}", flush=True)
+    matched = sum(r['coverage']['matched_steps'] for r in rows)
+    total = sum(r['coverage']['total_steps'] for r in rows)
+    summary = {'schema': 'patterns-modular-run-v1', 'source_commit': manifest['source_commit'],
+        'runtime_commit': manifest['runtime_commit'], 'python': platform.python_version(),
+        'versions': versions, 'table_version': manifest['table_version'],
+        'manifest_sha256': digest(ROOT / 'manifest.json'),
+        'runner_sha256': digest(Path(__file__)), 'input_sha256': manifest['input_sha256'],
+        'matched_steps': matched, 'total_steps': total, 'coverage_percent': 100 * matched / total,
+        'matches_paper': all(r['matches_paper'] for r in rows), 'artifacts': rows}
+    write_json(output / 'summary.json', summary)
+    table = [f"Evaluated with Culsma {manifest['table_version']}.", '', '| Module | Source steps | Coverage |', '| --- | ---: | ---: |']
+    for r in rows:
+        percent = r['coverage']['coverage_percent']
+        label = '100%' if percent == 100 else f'{percent:.1f}%'
+        table.append(f"| {r['name']} | {r['coverage']['matched_steps']}/{r['coverage']['total_steps']} | {label} |")
+    (output / 'table.md').write_text('\n'.join(table) + '\n')
+    if update_readme:
+        if not summary['matches_paper']:
+            raise ValueError('README is not updated because the run differs from the manifest')
+        readme = ROOT / 'README.md'
+        text = readme.read_text()
+        start, end = '<!-- paper-table:start -->', '<!-- paper-table:end -->'
+        if text.count(start) != 1 or text.count(end) != 1 or text.index(start) > text.index(end):
+            raise ValueError('README requires one ordered pair of paper-table markers')
+        before, rest = text.split(start)
+        _, after = rest.split(end)
+        readme.write_text(before + start + '\n' + '\n'.join(table) + '\n' + end + after)
+    return 0 if summary['matches_paper'] else 1
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("all", "summarize", "check-baseline", "coverage"))
-    parser.add_argument("--results", type=Path)
-    parser.add_argument("--case", nargs="+", dest="cases")
-    parser.add_argument("--python", default=sys.executable)
-    parser.add_argument("--implementation")
+    parser.add_argument('--runtime-repo', required=True, type=Path, help='Clean checkout of the pinned runtime commit')
+    parser.add_argument('--output', required=True, type=Path, help='New directory for results; existing directories are rejected')
+    parser.add_argument('--update-readme', action='store_true', help='Refresh the README table only after all comparisons pass')
     args = parser.parse_args()
     try:
-        if args.command == "coverage":
-            if not args.cases:
-                parser.error('coverage requires --case, for example --case 00')
-            if args.results is not None:
-                parser.error('coverage writes each case/coverage.json; --results applies to legacy runtime commands only')
-            return run_source_coverage(args.cases, args.python, args.implementation)
-        if args.command == "check-baseline":
-            differences = compare(derive())
-            print("\n".join(differences) if differences else "PASS: per-case plain JSON counts match the expected tables.")
-            return 1 if differences else 0
-        results = (args.results or ROOT / "results").resolve()
-        if args.command == "all":
-            run_all(results)
-        rows = derive(results)
-        write_json(results / "tables.json", {"cases": rows, "totals": total(rows)})
-        (results / "tables.md").write_text(render_tables(rows), encoding="utf-8")
-        differences = compare(rows, results)
-        write_json(results / "comparison.json", {"match": not differences, "differences": differences})
-        print("\n".join(differences) if differences else "PASS: all case counts, totals and frozen material/return records match.")
-        return 1 if differences else 0
-    except (ValueError, KeyError, FileNotFoundError, FileExistsError, importlib.metadata.PackageNotFoundError) as exc:
-        print(f"ERROR: {exc}", file=sys.stderr)
-        return 1
+        return reproduce(args.runtime_repo, args.output.resolve(), args.update_readme)
+    except (ValueError, OSError, subprocess.CalledProcessError) as error:
+        parser.exit(2, f'Reproduction failed: {error}\n')
 
-
-if __name__ == "__main__":
-    sys.exit(main())
+if __name__ == '__main__':
+    raise SystemExit(main())

@@ -14,7 +14,7 @@ from culsma.pipeline.validate import validate
 from culsma.runtime.executor import run
 
 
-CASE = Path(__file__).resolve().parents[1] / 'benchmarks/cases/10/protocol.culs'
+CASE = Path(__file__).resolve().parents[1] / 'archive/benchmarks-legacy/cases/10/protocol.culs'
 
 
 def execute(driver=None, **inputs):

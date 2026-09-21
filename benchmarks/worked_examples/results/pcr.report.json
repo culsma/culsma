@@ -1,0 +1,134 @@
+{
+  "schema": "lab_report_v1",
+  "execution": {
+    "ok": true,
+    "diagnostic_count": 0,
+    "total_steps": 109,
+    "completed_steps": 109,
+    "failed_steps": 0,
+    "skipped_steps": 0
+  },
+  "headline": "Experiment completed successfully with no runtime errors.",
+  "materials": {
+    "has_material_state": true,
+    "input_inventory": [
+      {
+        "name": "Master mix",
+        "initial_uL": 25.0,
+        "initial_mL": 0.025,
+        "initial_mg": 0.0
+      },
+      {
+        "name": "Water",
+        "initial_uL": 19.0,
+        "initial_mL": 0.019,
+        "initial_mg": 0.0
+      },
+      {
+        "name": "Forward primer",
+        "initial_uL": 2.5,
+        "initial_mL": 0.0025,
+        "initial_mg": 0.0
+      },
+      {
+        "name": "Reverse primer",
+        "initial_uL": 2.5,
+        "initial_mL": 0.0025,
+        "initial_mg": 0.0
+      },
+      {
+        "name": "Template",
+        "initial_uL": 1.0,
+        "initial_mL": 0.001,
+        "initial_mg": 0.0
+      }
+    ],
+    "final_products": [
+      {
+        "name": "PCR reaction",
+        "volume_uL": 50.0,
+        "volume_mL": 0.05,
+        "mass_mg": 50.0,
+        "primary_component": "MASTER_MIX"
+      }
+    ],
+    "intermediate_materials": [],
+    "reagent_consumption": [
+      {
+        "name": "Master mix",
+        "roles": [],
+        "consumed_uL": 25.0,
+        "consumed_mL": 0.025,
+        "consumed_mg": null
+      },
+      {
+        "name": "Water",
+        "roles": [],
+        "consumed_uL": 19.0,
+        "consumed_mL": 0.019,
+        "consumed_mg": null
+      },
+      {
+        "name": "Forward primer",
+        "roles": [],
+        "consumed_uL": 2.5,
+        "consumed_mL": 0.0025,
+        "consumed_mg": null
+      },
+      {
+        "name": "Reverse primer",
+        "roles": [],
+        "consumed_uL": 2.5,
+        "consumed_mL": 0.0025,
+        "consumed_mg": null
+      },
+      {
+        "name": "Template",
+        "roles": [],
+        "consumed_uL": 1.0,
+        "consumed_mL": 0.001,
+        "consumed_mg": null
+      }
+    ]
+  },
+  "qc_results": [],
+  "resource_summary": {
+    "containers": {
+      "allocated_count": 6,
+      "touched_count": 6,
+      "container_kinds": [
+        {
+          "kind": "tube",
+          "count": 6
+        }
+      ],
+      "touched_names": [
+        "Forward primer",
+        "Master mix",
+        "PCR reaction",
+        "Reverse primer",
+        "Template",
+        "Water"
+      ]
+    },
+    "instruments": {
+      "tools": [],
+      "devices": []
+    }
+  },
+  "process_summary": {
+    "mutation_steps": 1,
+    "separation_steps": 0,
+    "environment_steps": 92,
+    "readout_steps": 0
+  },
+  "alerts": [],
+  "external_inventory": {
+    "schema": "culsma_inventory_reconciliation_v1",
+    "checked": false,
+    "sufficient": null,
+    "reason": "inventory_not_supplied",
+    "items": [],
+    "shortages": []
+  }
+}
