@@ -1,0 +1,313 @@
+protocol Module06_TwoLaneGfpWesternBlot(
+  input_lane_sample,
+  ip_lane_sample,
+  primary_antibody_stock,
+  secondary_antibody_stock
+) returns (antibody_stained_membrane) {
+  let bis_tris_gel = chamber(label = "Composite02BisTrisGel", open = true, load = [
+    content(
+      kind = ContentKind.PARTICULATE,
+      type = ContentType.OTHER_PARTICULATE,
+      code = "BIS_TRIS_SDS_PAGE_GEL",
+      attrs = { role: separation_matrix, format: "4-12_percent" }
+    ):0uL
+  ]);
+  let electrophoresis_tank = chamber(label = "Composite02ElectrophoresisTank", capacity = 800mL, open = true);
+  let input_lane = well(
+    label = "InputFractionLane",
+    carrier_kind = "bis_tris_sds_page_gel",
+    carrier_id = "Composite02BisTrisGel",
+    carrier_position = "A1",
+    capacity = 50uL
+  );
+  let ip_lane = well(
+    label = "IpEluateLane",
+    carrier_kind = "bis_tris_sds_page_gel",
+    carrier_id = "Composite02BisTrisGel",
+    carrier_position = "A2",
+    capacity = 50uL
+  );
+  let ladder_lane = well(
+    label = "ProteinLadderLane",
+    carrier_kind = "bis_tris_sds_page_gel",
+    carrier_id = "Composite02BisTrisGel",
+    carrier_position = "A3",
+    capacity = 50uL
+  );
+
+  let running_buffer = container(label = "SDSPageRunningBuffer", capacity = 1L, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "SDS_PAGE_RUNNING_BUFFER_1X", attrs = { role: reaction_environment }):800mL
+  ]);
+  electrophoresis_tank << [running_buffer:800mL];
+  input_lane << [input_lane_sample];
+  ip_lane << [ip_lane_sample];
+
+  let prestained_protein_ladder = tube(label = "PrestainedProteinLadder", capacity = 100uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "PRESTAINED_PROTEIN_LADDER", attrs = { role: molecular_weight_marker }):100uL
+  ]);
+  ladder_lane << [prestained_protein_ladder:10uL];
+
+  let separated_input_lane = sep(
+    sample = input_lane,
+    program = field_program(voltage = 180V, duration = 30min),
+    component_fates = {
+      GFP_TARGET_PROTEIN: { target_band_fraction: 100%, non_target_fraction: 0% },
+      LYSATE_BACKGROUND_PROTEINS: { target_band_fraction: 100%, non_target_fraction: 0% },
+      IP_LYSIS_BUFFER: { target_band_fraction: 0%, non_target_fraction: 100% },
+      LDS_REDUCING_BUFFER_4X: { target_band_fraction: 0%, non_target_fraction: 100% },
+      DEIONIZED_WATER: { target_band_fraction: 0%, non_target_fraction: 100% }
+    }
+  );
+  let separated_ip_lane = sep(
+    sample = ip_lane,
+    program = field_program(voltage = 180V, duration = 30min),
+    component_fates = {
+      ANTI_GFP_CAPTURE_ANTIBODY: { target_band_fraction: 100%, non_target_fraction: 0% },
+      GFP_TARGET_PROTEIN: { target_band_fraction: 100%, non_target_fraction: 0% },
+      DENATURING_ELUTION_BUFFER: { target_band_fraction: 0%, non_target_fraction: 100% },
+      LDS_REDUCING_BUFFER_4X: { target_band_fraction: 0%, non_target_fraction: 100% }
+    }
+  );
+  let separated_ladder_lane = sep(
+    sample = ladder_lane,
+    program = field_program(voltage = 180V, duration = 30min),
+    component_fates = {
+      PRESTAINED_PROTEIN_LADDER: { target_band_fraction: 100%, non_target_fraction: 0% }
+    }
+  );
+
+  let deionized_water = container(label = "DeionizedWater", capacity = 1L, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "DEIONIZED_WATER", attrs = { role: rinse }):500mL
+  ]);
+  let transfer_buffer = container(label = "TransferBufferTwentyPercentMethanol", capacity = 1L, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "TRANSFER_BUFFER_20_PERCENT_METHANOL", attrs = { role: reaction_environment, methanol_fraction: "20_percent" }):500mL
+  ]);
+  let membrane_solution_waste = chamber(label = "WesternBlotLiquidWaste", capacity = 1L);
+  let membrane_equilibration_bath = chamber(label = "PVDFMembraneEquilibrationBath", capacity = 50mL, open = true, load = [
+    content(kind = ContentKind.BIO_SUBCELLULAR, type = ContentType.MEMBRANE, code = "PVDF_MEMBRANE", attrs = { role: transfer_substrate, count: "1_piece" }):0uL
+  ]);
+  membrane_equilibration_bath << [deionized_water:15mL];
+  with env(thermal = 25C, duration = 2min) {
+    hold(sample = membrane_equilibration_bath);
+  }
+  sep(
+    sample = membrane_equilibration_bath,
+    program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+    component_fates = {
+      PVDF_MEMBRANE: { filtrate: 0%, retentate: 100% },
+      DEIONIZED_WATER: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  membrane_solution_waste << [membrane_equilibration_bath.contents[0]];
+  membrane_equilibration_bath << [transfer_buffer:15mL];
+  with env(thermal = 25C, duration = 15min) {
+    hold(sample = membrane_equilibration_bath);
+  }
+
+  let gel_equilibration_bath = chamber(label = "GelEquilibrationBath", capacity = 50mL, open = true);
+  gel_equilibration_bath << [transfer_buffer:15mL];
+  let gel_equilibration_system = group([
+    gel_equilibration_bath,
+    bis_tris_gel,
+    separated_input_lane[0],
+    separated_ip_lane[0],
+    separated_ladder_lane[0]
+  ]);
+  with env(thermal = 25C, duration = 15min) {
+    hold(sample = gel_equilibration_system);
+  }
+
+  let gel_membrane_transfer_tank = chamber(label = "GelAndPvdfTransferTank", capacity = 50mL, open = true);
+  gel_membrane_transfer_tank << [bis_tris_gel];
+  gel_membrane_transfer_tank << [membrane_equilibration_bath];
+  gel_membrane_transfer_tank << [separated_input_lane[0]];
+  gel_membrane_transfer_tank << [separated_ip_lane[0]];
+  gel_membrane_transfer_tank << [separated_ladder_lane[0]];
+  gel_membrane_transfer_tank << [transfer_buffer:30mL];
+
+  let membrane_incubation_bath = chamber(label = "PVDFMembraneProcessingTank", capacity = 50mL, open = true);
+  with env(thermal = 4C, duration = 90min) {
+    let transfer_split = sep(
+      sample = gel_membrane_transfer_tank,
+      program = field_program(voltage = 100V, duration = 90min),
+      component_fates = {
+        BIS_TRIS_SDS_PAGE_GEL: { target_band_fraction: 0%, non_target_fraction: 100% },
+        PVDF_MEMBRANE: { target_band_fraction: 100%, non_target_fraction: 0% },
+        LYSATE_BACKGROUND_PROTEINS: { target_band_fraction: 100%, non_target_fraction: 0% },
+        ANTI_GFP_CAPTURE_ANTIBODY: { target_band_fraction: 100%, non_target_fraction: 0% },
+        GFP_TARGET_PROTEIN: { target_band_fraction: 100%, non_target_fraction: 0% },
+        PRESTAINED_PROTEIN_LADDER: { target_band_fraction: 100%, non_target_fraction: 0% },
+        TRANSFER_BUFFER_20_PERCENT_METHANOL: { target_band_fraction: 0%, non_target_fraction: 100% }
+      }
+    );
+    membrane_incubation_bath << [transfer_split[0]];
+  }
+
+  let tbst = container(label = "TBSTWashBuffer", capacity = 500mL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "TBST_CARRIER", attrs = { role: wash }):300mL
+  ]);
+  membrane_incubation_bath << [tbst:15mL];
+  sep(
+    sample = membrane_incubation_bath,
+    program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+    component_fates = {
+      TBST_CARRIER: { filtrate: 100%, retentate: 0% },
+      LYSATE_BACKGROUND_PROTEINS: { filtrate: 0%, retentate: 100% },
+      ANTI_GFP_CAPTURE_ANTIBODY: { filtrate: 0%, retentate: 100% },
+      GFP_TARGET_PROTEIN: { filtrate: 0%, retentate: 100% },
+      PRESTAINED_PROTEIN_LADDER: { filtrate: 0%, retentate: 100% }
+    }
+  );
+  membrane_solution_waste << [membrane_incubation_bath.contents[0]];
+
+  let nonfat_milk_powder = container(label = "NonfatMilkPowder", capacity = 50mL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "NONFAT_MILK_PROTEIN", attrs = { role: blocking_agent }):2g
+  ]);
+  let blocking_buffer = chamber(label = "FivePercentMilkBlockingBuffer", capacity = 30mL);
+  blocking_buffer << [nonfat_milk_powder:1.25g, tbst:25mL];
+  membrane_incubation_bath << [blocking_buffer:15mL];
+  with env(thermal = 25C, duration = 1h) {
+    agit(sample = membrane_incubation_bath, mode = "shake", duration = 1h, rate = 60rpm);
+  }
+  sep(
+    sample = membrane_incubation_bath,
+    program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+    component_fates = {
+      NONFAT_MILK_PROTEIN: { filtrate: 99%, retentate: 1% },
+      TBST_CARRIER: { filtrate: 100%, retentate: 0% },
+      LYSATE_BACKGROUND_PROTEINS: { filtrate: 0%, retentate: 100% },
+      ANTI_GFP_CAPTURE_ANTIBODY: { filtrate: 0%, retentate: 100% },
+      GFP_TARGET_PROTEIN: { filtrate: 0%, retentate: 100% },
+      PRESTAINED_PROTEIN_LADDER: { filtrate: 0%, retentate: 100% }
+    }
+  );
+  membrane_solution_waste << [membrane_incubation_bath.contents[0]];
+
+  repeat post_block_wash_cycle in schedule(start = 1, end = 3, step = 1) {
+    Module06_WashMembraneOnce(membrane_bath = membrane_incubation_bath, tbst = tbst);
+    sep(
+      sample = membrane_incubation_bath,
+      program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+      component_fates = {
+        TBST_CARRIER: { filtrate: 100%, retentate: 0% },
+        NONFAT_MILK_PROTEIN: { filtrate: 0%, retentate: 100% },
+        LYSATE_BACKGROUND_PROTEINS: { filtrate: 0%, retentate: 100% },
+        ANTI_GFP_CAPTURE_ANTIBODY: { filtrate: 0%, retentate: 100% },
+        GFP_TARGET_PROTEIN: { filtrate: 0%, retentate: 100% },
+        PRESTAINED_PROTEIN_LADDER: { filtrate: 0%, retentate: 100% }
+      }
+    );
+    membrane_solution_waste << [membrane_incubation_bath.contents[0]];
+  }
+
+  let bsa_powder = container(label = "BovineSerumAlbuminPowder", capacity = 50mL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "PRIMARY_DILUENT_BSA", attrs = { role: antibody_diluent }):2g
+  ]);
+  let primary_antibody_dilution_buffer = chamber(label = "FivePercentBsaPrimaryAntibodyDilutionBuffer", capacity = 15mL);
+  primary_antibody_dilution_buffer << [bsa_powder:0.5g, tbst:9.99mL];
+  let primary_antibody_solution = chamber(label = "AntiGfpPrimaryAntibodySolution", capacity = 15mL);
+  primary_antibody_solution << [primary_antibody_dilution_buffer:9.99mL, primary_antibody_stock:10uL];
+  membrane_incubation_bath << [primary_antibody_solution];
+  with env(thermal = 4C, duration = 18h) {
+    agit(sample = membrane_incubation_bath, mode = "shake", duration = 18h, rate = 60rpm);
+  }
+  let primary_binding_split = sep(
+    sample = membrane_incubation_bath,
+    program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+    component_fates = {
+      TBST_CARRIER: { filtrate: 100%, retentate: 0% },
+      NONFAT_MILK_PROTEIN: { filtrate: 0%, retentate: 100% },
+      PRIMARY_DILUENT_BSA: { filtrate: 99%, retentate: 1% },
+      RABBIT_ANTI_GFP_PRIMARY: { filtrate: 99%, retentate: 1% },
+      LYSATE_BACKGROUND_PROTEINS: { filtrate: 0%, retentate: 100% },
+      ANTI_GFP_CAPTURE_ANTIBODY: { filtrate: 0%, retentate: 100% },
+      GFP_TARGET_PROTEIN: { filtrate: 0%, retentate: 100% },
+      PRESTAINED_PROTEIN_LADDER: { filtrate: 0%, retentate: 100% }
+    },
+    transitions = [
+      transition(
+        subject = membrane_incubation_bath.materials.get("RABBIT_ANTI_GFP_PRIMARY"),
+        output = FiltrationProgramOutput.RETENTATE,
+        to = MaterialRelation.MEMBRANE_BOUND,
+        associated_with = membrane_incubation_bath.materials.get("GFP_TARGET_PROTEIN")
+      )
+    ]
+  );
+  membrane_solution_waste << [primary_binding_split[0]];
+  let primary_stained_membrane = primary_binding_split[1];
+
+  repeat post_primary_wash_cycle in schedule(start = 1, end = 3, step = 1) {
+    Module06_WashMembraneOnce(membrane_bath = primary_stained_membrane, tbst = tbst);
+    sep(
+      sample = primary_stained_membrane,
+      program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+      component_fates = {
+        TBST_CARRIER: { filtrate: 100%, retentate: 0% },
+        NONFAT_MILK_PROTEIN: { filtrate: 0%, retentate: 100% },
+        PRIMARY_DILUENT_BSA: { filtrate: 0%, retentate: 100% },
+        RABBIT_ANTI_GFP_PRIMARY: { filtrate: 0%, retentate: 100% },
+        LYSATE_BACKGROUND_PROTEINS: { filtrate: 0%, retentate: 100% },
+        ANTI_GFP_CAPTURE_ANTIBODY: { filtrate: 0%, retentate: 100% },
+        GFP_TARGET_PROTEIN: { filtrate: 0%, retentate: 100% },
+        PRESTAINED_PROTEIN_LADDER: { filtrate: 0%, retentate: 100% }
+      }
+    );
+    membrane_solution_waste << [primary_stained_membrane.contents[0]];
+  }
+
+  let secondary_antibody_solution = chamber(label = "AlexaFluor680SecondaryAntibodySolution", capacity = 15mL);
+  secondary_antibody_solution << [blocking_buffer:9.999mL, secondary_antibody_stock:1uL];
+  primary_stained_membrane << [secondary_antibody_solution];
+  with env(thermal = 25C, duration = 1h) {
+    agit(sample = primary_stained_membrane, mode = "shake", duration = 1h, rate = 60rpm);
+  }
+  let secondary_binding_split = sep(
+    sample = primary_stained_membrane,
+    program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+    component_fates = {
+      TBST_CARRIER: { filtrate: 100%, retentate: 0% },
+      NONFAT_MILK_PROTEIN: { filtrate: 99%, retentate: 1% },
+      PRIMARY_DILUENT_BSA: { filtrate: 0%, retentate: 100% },
+      RABBIT_ANTI_GFP_PRIMARY: { filtrate: 0%, retentate: 100% },
+      GOAT_ANTI_RABBIT_IGG_ALEXA_FLUOR_680: { filtrate: 99%, retentate: 1% },
+      LYSATE_BACKGROUND_PROTEINS: { filtrate: 0%, retentate: 100% },
+      ANTI_GFP_CAPTURE_ANTIBODY: { filtrate: 0%, retentate: 100% },
+      GFP_TARGET_PROTEIN: { filtrate: 0%, retentate: 100% },
+      PRESTAINED_PROTEIN_LADDER: { filtrate: 0%, retentate: 100% }
+    },
+    // Live material order at secondary separation: bound primary antibody [8],
+    // newly added secondary antibody [9].
+    transitions = [
+      transition(
+        subject = primary_stained_membrane.materials[9],
+        output = FiltrationProgramOutput.RETENTATE,
+        to = MaterialRelation.MEMBRANE_BOUND,
+        associated_with = primary_stained_membrane.materials[8]
+      )
+    ]
+  );
+  membrane_solution_waste << [secondary_binding_split[0]];
+  let antibody_stained_membrane = secondary_binding_split[1];
+
+  repeat post_secondary_wash_cycle in schedule(start = 1, end = 3, step = 1) {
+    Module06_WashMembraneOnce(membrane_bath = antibody_stained_membrane, tbst = tbst);
+    sep(
+      sample = antibody_stained_membrane,
+      program = filtration_program(membrane = "pvdf_membrane", drive = "aspiration"),
+      component_fates = {
+        TBST_CARRIER: { filtrate: 100%, retentate: 0% },
+        NONFAT_MILK_PROTEIN: { filtrate: 0%, retentate: 100% },
+        PRIMARY_DILUENT_BSA: { filtrate: 0%, retentate: 100% },
+        RABBIT_ANTI_GFP_PRIMARY: { filtrate: 0%, retentate: 100% },
+        GOAT_ANTI_RABBIT_IGG_ALEXA_FLUOR_680: { filtrate: 0%, retentate: 100% },
+        LYSATE_BACKGROUND_PROTEINS: { filtrate: 0%, retentate: 100% },
+        ANTI_GFP_CAPTURE_ANTIBODY: { filtrate: 0%, retentate: 100% },
+        GFP_TARGET_PROTEIN: { filtrate: 0%, retentate: 100% },
+        PRESTAINED_PROTEIN_LADDER: { filtrate: 0%, retentate: 100% }
+      }
+    );
+    membrane_solution_waste << [antibody_stained_membrane.contents[0]];
+  }
+
+  return antibody_stained_membrane = antibody_stained_membrane;
+}

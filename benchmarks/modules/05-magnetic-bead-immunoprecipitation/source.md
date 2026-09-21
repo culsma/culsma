@@ -3,7 +3,7 @@
 ## Steps
 
 1. Start with 500 uL clarified protein lysate containing 1 mg total protein in IP lysis buffer.
-2. Transfer 25 uL clarified lysate to a clean 1.5 mL tube as the input fraction and keep it at 0 C until the immunoprecipitation is complete.
+2. Transfer 25 uL clarified lysate to a clean 1.5 mL tube as the input fraction and keep it at 0 C until the immunoprecipitation is complete. Preserve both the GFP target protein and the lysate background proteins in this fraction without assigning either an inferred mass.
 3. Vortex Protein G magnetic-bead slurry for 30 s to obtain a homogeneous suspension.
 4. Transfer 50 uL homogeneous Protein G magnetic-bead slurry to a clean 1.5 mL tube.
 5. Place the bead tube on a magnetic rack for 2 min at 22 C, then remove and discard the storage supernatant while retaining the magnetic beads.
