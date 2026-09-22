@@ -1,4 +1,4 @@
-include "../../modules/04-suspension-cell-staining/module.culs";
+include "../../modules/04-suspension-cell-staining/Module04.culs";
 
 protocol Composite01_FlowCytometryImmunophenotyping() returns (acquisition_result_group) {
   let anti_cd45_fitc = tube(label = "AntiCD45FITC", capacity = 100uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ANTI_CD45", attrs = { role: antibody, stock_concentration_mg_per_mL: 5, marker: CD45, fluorophore: FITC }):10uL]);

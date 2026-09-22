@@ -1,3 +1,5 @@
+include "Module06.culs";
+
 protocol Module06_TwoLaneGfpWesternBlot(
   input_lane_sample,
   ip_lane_sample,

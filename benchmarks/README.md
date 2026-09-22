@@ -72,8 +72,8 @@ references; structural correspondence does not establish that automatic link.
 | [`examples-summary.json`](examples-summary.json) | Aggregate checks for Examples 01–04, excluded from coverage totals. |
 
 Composite entry programs use explicit, source-relative `include` paths to load
-reusable module definitions. Composite 01 includes Module 04's `module.culs`;
-Composite 02 includes Module 05's `module.culs` and Module 06's `two-lane-gfp.culs`.
+reusable module definitions. Composite 01 includes Module 04's `Module04.culs`;
+Composite 02 includes Module 05's `Module05.culs` and Module 06's `two-lane-gfp.culs`.
 Paths resolve relative to the composite file, independently of the working
 directory. No import search-path configuration or wrapper files are required.
 With Culsma 1.0.7 installed, both entry programs can run directly from the
@@ -106,7 +106,7 @@ The runner imports the pinned runtime directly; no private wheel is required.
 Use a new output directory for every run. For local work inside this repository,
 use `benchmarks/local-results/<run-name>/`, which is ignored by Git.
 
-The input snapshot is `b59609ca4cc5f8a25a2460f321a2a45a3c342e11`; the runtime
+The input snapshot is `c68193792344641514135385f71f83cc50ec07cf`; the runtime
 is `5364676bc2437b4981a00ce0133c730af243e469`. The paper's benchmark version is
 **1.0.7**; package metadata at the pinned runtime is **1.0.7**. Release tag
 `v1.0.7` contains the same implementation source as this evaluated runtime;

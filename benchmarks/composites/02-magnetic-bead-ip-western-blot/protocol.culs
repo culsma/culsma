@@ -1,4 +1,4 @@
-include "../../modules/05-magnetic-bead-immunoprecipitation/module.culs";
+include "../../modules/05-magnetic-bead-immunoprecipitation/Module05.culs";
 include "../../modules/06-western-blot/two-lane-gfp.culs";
 
 protocol Composite02_MagneticBeadIpWesternBlot() returns (
