@@ -106,7 +106,7 @@ The runner imports the pinned runtime directly; no private wheel is required.
 Use a new output directory for every run. For local work inside this repository,
 use `benchmarks/local-results/<run-name>/`, which is ignored by Git.
 
-The input snapshot is `c68193792344641514135385f71f83cc50ec07cf`; the runtime
+The input snapshot is `f7b744e8efbafd9176a5b4fa07761358a4aee214`; the runtime
 is `5364676bc2437b4981a00ce0133c730af243e469`. The paper's benchmark version is
 **1.0.7**; package metadata at the pinned runtime is **1.0.7**. Release tag
 `v1.0.7` contains the same implementation source as this evaluated runtime;

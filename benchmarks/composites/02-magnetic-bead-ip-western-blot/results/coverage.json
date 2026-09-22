@@ -7,7 +7,7 @@
   "language_version": "1.0.7",
   "source_sha256": "2d0e46ea6972dbdebab8131353df38a087791b958910ce18591abd96483910f9",
   "program_sha256": {
-    "protocol.culs": "c42019b7b70fd9a090d708adca6734ecb3ba726b7cacaa6a101fb1bff7339240"
+    "protocol.culs": "1563a21f7239d5231cc416ca35124b24f9b550eb46ca5c5eaba9ed9a2693d8b2"
   },
   "total_steps": 7,
   "matched_steps": 7,
