@@ -2,7 +2,7 @@
   "implementation_commit": "5364676bc2437b4981a00ce0133c730af243e469",
   "python": "3.12.8",
   "execution_backend": "deterministic_reference",
-  "runner_sha256": "33f7c0eaf89b46a1b285da5037bf92ef76996672b68c15efb829a8d2e2182c18",
+  "runner_sha256": "acf13b185d4c354411f31c928ac275cd91df4da6f1f3afebe25235679ccecde0",
   "source_archive_sha256": "01736ba0a38c61ae0e75c78e24794028d7bb4ac98eed247fab9bd020b8c49107",
   "input_mode": "exported_programs",
   "examples": {
@@ -123,19 +123,19 @@
     ],
     "files": {
       "pcr": {
-        "path": "pcr.results.json",
+        "path": "modules/example-01/results/pcr.results.json",
         "sha256": "04f0d6caa5f7203172f5fa8068b3cde2b657537a13259860fde2619490ca7257"
       },
       "flow": {
-        "path": "flow.results.json",
+        "path": "modules/example-02/results/flow.results.json",
         "sha256": "3779ab5e564e399a10185065392277b0c7845367386df2b8e54d55ff7dcf3615"
       },
       "magnetic": {
-        "path": "magnetic.results.json",
+        "path": "modules/example-03/results/magnetic.results.json",
         "sha256": "f818704815800904b3c89e7ca60e4595cbe1f88e5364ede494bf8e4f9276662a"
       },
       "fractions": {
-        "path": "fractions.results.json",
+        "path": "modules/example-04/results/fractions.results.json",
         "sha256": "3bbd6a5d3f7cd5eca5969e5f2d9fd1bd8b5b5c638a58045cdf58f481a21d89b6"
       }
     }

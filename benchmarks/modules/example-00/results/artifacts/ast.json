@@ -1,6 +1,6 @@
 {
   "entry_source_paths": [
-    "/private/tmp/submission-public-intro/lysate.culs"
+    "/private/tmp/benchmark-colocated-intro/lysate.culs"
   ],
   "library_imports": [],
   "module_name": null,
@@ -10,7 +10,7 @@
       "name": "GfpLysateClarification",
       "params": [],
       "returns": [],
-      "source_path": "/private/tmp/submission-public-intro/lysate.culs",
+      "source_path": "/private/tmp/benchmark-colocated-intro/lysate.culs",
       "source_role": "entry",
       "span": {
         "col": 1,

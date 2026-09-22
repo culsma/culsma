@@ -7,6 +7,7 @@
   "language_version": "1.0.7",
   "source_sha256": "af891f53ec8aeb3a4c35ac34d5ade079cde2ed5ed115f1cf6ef23bad50c73444",
   "program_sha256": {
+    "Module04.culs": "87c08f4376e5447b921422983d10869c506f6c265b14c29275d665889a9e59dd",
     "module.culs": "d313d40ca63ca452cffc7957c608469aa769a3a9c2c6fd668a21842ecda590c0",
     "protocol.culs": "b723eb71ded52913dc730c639ef472da28a909f83b28e5ef57ff95420c9185eb"
   },

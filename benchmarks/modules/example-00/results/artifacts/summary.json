@@ -2,7 +2,7 @@
   "completed_steps": 28,
   "failed_steps": 0,
   "inputs": [
-    "/tmp/submission-public-intro/lysate.culs"
+    "/tmp/benchmark-colocated-intro/lysate.culs"
   ],
   "plan_diagnostic_count": 0,
   "runtime_diagnostic_count": 0,
