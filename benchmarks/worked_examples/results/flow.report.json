@@ -3,8 +3,8 @@
   "execution": {
     "ok": true,
     "diagnostic_count": 0,
-    "total_steps": 52,
-    "completed_steps": 52,
+    "total_steps": 55,
+    "completed_steps": 55,
     "failed_steps": 0,
     "skipped_steps": 0
   },
@@ -22,7 +22,8 @@
         "name": "Cells for staining",
         "initial_uL": 70.0,
         "initial_mL": 0.07,
-        "initial_mg": 0.0
+        "initial_mg": 0.0,
+        "initial_cells": 1000000.0
       },
       {
         "name": "Six-stain panel",
@@ -34,17 +35,18 @@
     "final_products": [
       {
         "name": "Wash waste",
-        "volume_uL": 2000.0,
-        "volume_mL": 2.0,
-        "mass_mg": 2000.0,
+        "volume_uL": 2070.0,
+        "volume_mL": 2.07,
+        "mass_mg": 2070.0,
         "primary_component": "FSB"
       },
       {
         "name": "Cells for staining",
-        "volume_uL": 600.0,
-        "volume_mL": 0.6,
-        "mass_mg": 600.0,
-        "primary_component": "PBMC"
+        "volume_uL": 530.0,
+        "volume_mL": 0.53,
+        "mass_mg": 530.0,
+        "primary_component": "PBMC",
+        "count_cells": 1000000.0
       }
     ],
     "intermediate_materials": [],
@@ -65,8 +67,8 @@
           "sample",
           "source"
         ],
-        "consumed_uL": 66.667,
-        "consumed_mL": 0.066667,
+        "consumed_uL": 69.0,
+        "consumed_mL": 0.069,
         "consumed_mg": null
       },
       {

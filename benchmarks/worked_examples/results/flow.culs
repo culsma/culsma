@@ -1,7 +1,8 @@
 protocol FlowCytometryWorkflow {
   let cell_sample = tube(label = "Cells for staining", capacity = 5mL, load = [
     content(kind = ContentKind.BIO_CELLULAR, type = ContentType.CELL_POPULATION, code = "PBMC",
-      attrs = { state: suspension }):70uL]);
+      attrs = { state: suspension }):1000000cells,
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "FSB"):70uL]);
   let stain = tube(label = "Six-stain panel", capacity = 100uL, load = [
     content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN,
       code = "ANTI_CD45", attrs = { role: antibody }):5uL,

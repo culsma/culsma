@@ -3,6 +3,9 @@
     "entry.s0::alloc": "completed",
     "entry.s0::load0::define": "completed",
     "entry.s0::load0::load": "completed",
+    "entry.s0::load1::define": "completed",
+    "entry.s0::load1::load": "completed",
+    "entry.s0::finalize": "completed",
     "entry.s1::alloc": "completed",
     "entry.s1::load0::define": "completed",
     "entry.s1::load0::load": "completed",
@@ -375,17 +378,17 @@
     "material_state": {
       "containers": {
         "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample": {
-          "volume_uL": 600.0,
-          "mass_mg": 600.0,
+          "volume_uL": 530.0,
+          "mass_mg": 530.0,
           "components": {
-            "PBMC": 70.0,
+            "PBMC": 1000000.0,
+            "FSB": 500.0,
             "ANTI_CD45": 5.0,
             "ANTI_CD3": 5.0,
             "ANTI_CD4": 5.0,
             "ANTI_CD8": 5.0,
             "ANTI_CD19": 5.0,
-            "VIABILITY_DYE": 5.0,
-            "FSB": 500.0
+            "VIABILITY_DYE": 5.0
           },
           "metadata": {
             "kind": "tube",
@@ -400,9 +403,14 @@
           },
           "component_quantities": {
             "PBMC": {
+              "dimension": "count",
+              "unit": "cells",
+              "value": 1000000.0
+            },
+            "FSB": {
               "dimension": "volume",
               "unit": "uL",
-              "value": 70.0
+              "value": 500.0
             },
             "ANTI_CD45": {
               "dimension": "volume",
@@ -433,27 +441,22 @@
               "dimension": "volume",
               "unit": "uL",
               "value": 5.0
-            },
-            "FSB": {
-              "dimension": "volume",
-              "unit": "uL",
-              "value": 500.0
             }
           },
           "component_entries": [
             {
               "entry_id": "PBMC",
               "content_ref": "PBMC",
-              "amount": 70.0,
+              "amount": 1000000.0,
               "quantity": {
-                "dimension": "volume",
-                "unit": "uL",
-                "value": 70.0
+                "dimension": "count",
+                "unit": "cells",
+                "value": 1000000.0
               },
               "relation": "pellet",
               "associated_with": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample",
               "association_target_kind": "container",
-              "preservation": "derived",
+              "preservation": "declared",
               "label": "pellet_output",
               "relationship_source": "scientific_model",
               "material_state_source": "scientific_model_provider",
@@ -465,6 +468,24 @@
                 "model_version": null,
                 "configuration": {}
               }
+            },
+            {
+              "entry_id": "FSB",
+              "content_ref": "FSB",
+              "amount": 500.0,
+              "quantity": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 500.0
+              },
+              "relation": "free",
+              "associated_with": null,
+              "association_target_kind": null,
+              "preservation": "derived",
+              "label": null,
+              "relationship_source": "scientific_model",
+              "material_state_source": "scientific_model_provider",
+              "partition_class": null
             },
             {
               "entry_id": "ANTI_CD45",
@@ -609,27 +630,30 @@
                 "model_version": null,
                 "configuration": {}
               }
-            },
-            {
-              "entry_id": "FSB",
-              "content_ref": "FSB",
-              "amount": 500.0,
-              "quantity": {
-                "dimension": "volume",
-                "unit": "uL",
-                "value": 500.0
-              },
-              "relation": "free",
-              "associated_with": null,
-              "association_target_kind": null,
-              "preservation": "derived",
-              "label": null,
-              "relationship_source": "scientific_model",
-              "material_state_source": "scientific_model_provider",
-              "partition_class": null
             }
           ],
           "material_relationships": [
+            {
+              "kind": "dispersion",
+              "subtype": "cell_suspension",
+              "dispersed_component_ids": [
+                "PBMC"
+              ],
+              "carrier_component_ids": [
+                "FSB"
+              ],
+              "carrier_volume_uL": 500.0,
+              "material_state": "pellet",
+              "material_state_source": "runtime_transition",
+              "transferability": "non_homogeneous",
+              "assumption_policy_ids": [],
+              "concentration": {
+                "value": null,
+                "unit": "cells_per_uL",
+                "source": "derived",
+                "policy_id": "explicit_carrier_volume"
+              }
+            },
             {
               "kind": "association",
               "subtype": "scientific_model_relation",
@@ -683,8 +707,8 @@
           "material_relationships": []
         },
         "container/entry/entry.s3%3A%3Aalloc/__cmp_entry_s0_waste": {
-          "volume_uL": 2000.0,
-          "mass_mg": 2000.0,
+          "volume_uL": 2070.0,
+          "mass_mg": 2070.0,
           "components": {
             "PBMC": 0.0,
             "ANTI_CD45": 0.0,
@@ -693,7 +717,7 @@
             "ANTI_CD8": 0.0,
             "ANTI_CD19": 0.0,
             "VIABILITY_DYE": 0.0,
-            "FSB": 2000.0
+            "FSB": 2070.0
           },
           "metadata": {
             "kind": "tube",
@@ -708,8 +732,8 @@
           },
           "component_quantities": {
             "PBMC": {
-              "dimension": "volume",
-              "unit": "uL",
+              "dimension": "count",
+              "unit": "cells",
               "value": 0.0
             },
             "ANTI_CD45": {
@@ -745,7 +769,7 @@
             "FSB": {
               "dimension": "volume",
               "unit": "uL",
-              "value": 2000.0
+              "value": 2070.0
             }
           },
           "component_entries": [
@@ -754,8 +778,8 @@
               "content_ref": "PBMC",
               "amount": 0.0,
               "quantity": {
-                "dimension": "volume",
-                "unit": "uL",
+                "dimension": "count",
+                "unit": "cells",
                 "value": 0.0
               },
               "relation": "free",
@@ -872,11 +896,11 @@
             {
               "entry_id": "FSB",
               "content_ref": "FSB",
-              "amount": 2000.0,
+              "amount": 2070.0,
               "quantity": {
                 "dimension": "volume",
                 "unit": "uL",
-                "value": 2000.0
+                "value": 2070.0
               },
               "relation": "free",
               "associated_with": null,
@@ -937,6 +961,12 @@
             "state": "suspension"
           }
         },
+        "FSB": {
+          "content_kind": "formulation",
+          "content_type": "buffer",
+          "content_code": "FSB",
+          "content_name": null
+        },
         "ANTI_CD45": {
           "content_kind": "bio_molecule_or_virus",
           "content_type": "protein",
@@ -987,27 +1017,28 @@
           "content_type": "dye",
           "content_code": "VIABILITY_DYE",
           "content_name": null
-        },
-        "FSB": {
-          "content_kind": "formulation",
-          "content_type": "buffer",
-          "content_code": "FSB",
-          "content_name": null
         }
       },
       "content_bindings": {
         "PBMC": "PBMC",
+        "FSB": "FSB",
         "ANTI_CD45": "ANTI_CD45",
         "ANTI_CD3": "ANTI_CD3",
         "ANTI_CD4": "ANTI_CD4",
         "ANTI_CD8": "ANTI_CD8",
         "ANTI_CD19": "ANTI_CD19",
-        "VIABILITY_DYE": "VIABILITY_DYE",
-        "FSB": "FSB"
+        "VIABILITY_DYE": "VIABILITY_DYE"
       },
       "container_content_index": {
         "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_cell_sample": {
           "PBMC": {
+            "volume_uL": 0.0,
+            "mass_mg": 0.0,
+            "count_cells": 1000000.0,
+            "axis": "count",
+            "unit": "cells"
+          },
+          "FSB": {
             "volume_uL": 70.0,
             "mass_mg": 70.0,
             "count_cells": 0.0,
@@ -1087,6 +1118,21 @@
       "step_id": "entry.s0::load0::load",
       "status": "completed",
       "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s0::load1::define",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s0::load1::load",
+      "status": "completed",
+      "driver_code": "DRV_OK"
+    },
+    {
+      "step_id": "entry.s0::finalize",
+      "status": "completed",
+      "driver_code": "RUNTIME_MATERIAL_INTERNAL"
     },
     {
       "step_id": "entry.s1::alloc",

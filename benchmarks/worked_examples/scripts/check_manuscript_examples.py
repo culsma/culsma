@@ -76,21 +76,25 @@ def check_pcr_flow(name, artifacts):
     retained = containers[subject["source_ref"]]
     waste = next(c for c in containers.values()
                  if c["metadata"].get("label") == "Wash waste")
-    assert retained["components"]["PBMC"] == 70
-    assert waste["components"].get("PBMC", 0) == 0
+    assert retained["component_quantities"]["PBMC"] == {
+        "dimension": "count", "unit": "cells", "value": 1000000}
+    assert waste["component_quantities"]["PBMC"]["value"] == 0
     assert retained["components"]["FSB"] == 500
-    assert waste["components"]["FSB"] == 2000
+    assert waste["components"]["FSB"] == 2070
     expected_stains = {"ANTI_CD45": 5, "ANTI_CD3": 5,
                        "ANTI_CD4": 5, "ANTI_CD8": 5,
                        "ANTI_CD19": 5, "VIABILITY_DYE": 5}
     for content, amount in expected_stains.items():
         assert math.isclose(retained["components"][content], amount, abs_tol=1e-9)
         assert math.isclose(waste["components"].get(content, 0), 5 - amount, abs_tol=1e-9)
-    expected_totals = {"PBMC": 70, "FSB": 2500,
+    expected_totals = {"FSB": 2570,
                        **{key: 5 for key in expected_stains}}
     for content, total in expected_totals.items():
         actual = sum(c["components"].get(content, 0) for c in containers.values())
         assert math.isclose(actual, total, abs_tol=1e-9)
+    assert math.isclose(sum(
+        c.get("component_quantities", {}).get("PBMC", {}).get("value", 0)
+        for c in containers.values()), 1000000, abs_tol=1e-9)
     remaining = {}
     for content, total in expected_totals.items():
         value = round(total - retained["components"].get(content, 0)
@@ -108,6 +112,8 @@ def check_pcr_flow(name, artifacts):
     assert all(fields[key] is None for key in unset)
     return {"single_cell_subject_bound_to_processed_sample": True,
             "six_marker_panel_retained": True,
+            "initial_cell_count": 1000000,
+            "initial_cell_suspension_volume_uL": 70,
             "declared_component_totals_conserved": True,
             "material_state_uL": {
                 "retained_sample": {

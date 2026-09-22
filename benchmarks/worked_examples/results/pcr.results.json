@@ -34,13 +34,14 @@
     }
   ],
   "returns": {
-    "PCRWorkflow": {
-      "protocol_id": "p0",
-      "protocol_name": "PCRWorkflow",
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
       "returns": [],
       "value": {
         "container_kind": "tube",
-        "id": "container/pcr.PCRWorkflow/p0.s5%3A%3Aalloc/product",
+        "id": "container/entry/entry.s5%3A%3Aalloc/pcr_result",
         "kind": "container_ref",
         "label": "PCR reaction",
         "mass_mg": 50,

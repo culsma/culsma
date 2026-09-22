@@ -1,0 +1,24 @@
+{
+  "culsma_version": "1.0.7",
+  "ok": true,
+  "execution": {
+    "completed_steps": 28,
+    "diagnostic_count": 0,
+    "failed_steps": 0,
+    "ok": true,
+    "skipped_steps": 0,
+    "total_steps": 28
+  },
+  "input_sha256": "459af15202fe7e063a59992219bb4ae1dc083ae1b9e6f9e3706f3f20b8dfa583",
+  "renderer_sha256": "4d2b23ccd79955b2a1c971c2e60dba856c83ded609a65911f7bacd4e7d28f357",
+  "display_subject": {
+    "runtime_reference": "container/entry/entry.s3%3A%3Aalloc/__cmp_entry_s0_clarified_lysate",
+    "label": "ClarifiedLysate"
+  },
+  "checks": {
+    "clarified_volume_uL": 100,
+    "retained_cell_count": 100000,
+    "remaining_supernatant_uL": 60,
+    "measurement_fields_unset": true
+  }
+}

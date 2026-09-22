@@ -22,3 +22,5 @@ protocol PCRWorkflow {
   with env(thermal = 72C, duration = 5min) { hold(sample = product); }
   return product;
 }
+let pcr_result = PCRWorkflow();
+return pcr_result;

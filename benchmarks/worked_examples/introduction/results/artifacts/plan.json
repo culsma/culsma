@@ -1,0 +1,1761 @@
+{
+  "diagnostics": [],
+  "kind": "PlanProgram",
+  "plans": [
+    {
+      "entry_kind": "script",
+      "output_name": "entry",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "return_bindings": {},
+      "return_value": {
+        "kind": "IRIdentifier",
+        "name": "result",
+        "span": {
+          "col": 8,
+          "end": 1503,
+          "line": 28,
+          "start": 1497
+        }
+      },
+      "returns": [],
+      "span": {
+        "col": 3,
+        "end": 421,
+        "line": 2,
+        "start": 36
+      },
+      "steps": [
+        {
+          "args": {
+            "bind": "__cmp_entry_s0_cell_suspension",
+            "capacity": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 70,
+                "end": 108,
+                "line": 2,
+                "start": 103
+              },
+              "unit": "mL",
+              "value": 1.5
+            },
+            "container_name": "__cmp_entry_s0_cell_suspension",
+            "container_namespace": "entry",
+            "kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 25,
+                "end": 421,
+                "line": 2,
+                "start": 58
+              },
+              "value": "tube"
+            },
+            "label": {
+              "kind": "IRString",
+              "span": {
+                "col": 38,
+                "end": 90,
+                "line": 2,
+                "start": 71
+              },
+              "value": "GfpCellSuspension"
+            }
+          },
+          "deps": [],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "AllocContainer",
+          "span": {
+            "col": 3,
+            "end": 421,
+            "line": 2,
+            "start": 36
+          },
+          "step_id": "entry.s0::alloc"
+        },
+        {
+          "args": {
+            "attrs": {
+              "state": {
+                "kind": "IRIdentifier",
+                "name": "suspension",
+                "span": {
+                  "col": 65,
+                  "end": 274,
+                  "line": 4,
+                  "start": 264
+                }
+              }
+            },
+            "code": {
+              "kind": "IRString",
+              "span": {
+                "col": 14,
+                "end": 245,
+                "line": 4,
+                "start": 213
+              },
+              "value": "GFP_EXPRESSING_MICROBIAL_CELLS"
+            },
+            "kind": {
+              "enum": "ContentKind",
+              "kind": "ContentEnum",
+              "member": "BIO_CELLULAR"
+            },
+            "type": {
+              "enum": "ContentType",
+              "kind": "ContentEnum",
+              "member": "MICROBIAL_CELLS"
+            }
+          },
+          "deps": [
+            "entry.s0::alloc"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "DefineContent",
+          "span": {
+            "col": 5,
+            "end": 277,
+            "line": 3,
+            "start": 123
+          },
+          "step_id": "entry.s0::load0::define"
+        },
+        {
+          "args": {
+            "amount": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 79,
+                "end": 289,
+                "line": 4,
+                "start": 278
+              },
+              "unit": "cells",
+              "value": 100000.0
+            },
+            "container": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_cell_suspension",
+              "span": {
+                "col": 3,
+                "end": 421,
+                "line": 2,
+                "start": 36
+              }
+            },
+            "content": {
+              "kind": "IRString",
+              "span": {
+                "col": 14,
+                "end": 245,
+                "line": 4,
+                "start": 213
+              },
+              "value": "GFP_EXPRESSING_MICROBIAL_CELLS"
+            }
+          },
+          "deps": [
+            "entry.s0::load0::define"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "LoadContent",
+          "span": {
+            "col": 5,
+            "end": 289,
+            "line": 3,
+            "start": 123
+          },
+          "step_id": "entry.s0::load0::load"
+        },
+        {
+          "args": {
+            "code": {
+              "kind": "IRString",
+              "span": {
+                "col": 14,
+                "end": 413,
+                "line": 6,
+                "start": 375
+              },
+              "value": "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER"
+            },
+            "kind": {
+              "enum": "ContentKind",
+              "kind": "ContentEnum",
+              "member": "FORMULATION"
+            },
+            "type": {
+              "enum": "ContentType",
+              "kind": "ContentEnum",
+              "member": "BUFFER"
+            }
+          },
+          "deps": [
+            "entry.s0::load0::load"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "DefineContent",
+          "span": {
+            "col": 5,
+            "end": 414,
+            "line": 5,
+            "start": 295
+          },
+          "step_id": "entry.s0::load1::define"
+        },
+        {
+          "args": {
+            "amount": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 54,
+                "end": 419,
+                "line": 6,
+                "start": 415
+              },
+              "unit": "uL",
+              "value": 80.0
+            },
+            "container": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_cell_suspension",
+              "span": {
+                "col": 3,
+                "end": 421,
+                "line": 2,
+                "start": 36
+              }
+            },
+            "content": {
+              "kind": "IRString",
+              "span": {
+                "col": 14,
+                "end": 413,
+                "line": 6,
+                "start": 375
+              },
+              "value": "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER"
+            }
+          },
+          "deps": [
+            "entry.s0::load1::define"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "LoadContent",
+          "span": {
+            "col": 5,
+            "end": 419,
+            "line": 5,
+            "start": 295
+          },
+          "step_id": "entry.s0::load1::load"
+        },
+        {
+          "args": {
+            "container": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_cell_suspension",
+              "span": {
+                "col": 3,
+                "end": 421,
+                "line": 2,
+                "start": 36
+              }
+            }
+          },
+          "deps": [
+            "entry.s0::load1::load"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "FinalizeContainerContents",
+          "span": {
+            "col": 3,
+            "end": 421,
+            "line": 2,
+            "start": 36
+          },
+          "step_id": "entry.s0::finalize"
+        },
+        {
+          "args": {
+            "bind": "__cmp_entry_s0_lysis_buffer_2x",
+            "capacity": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 66,
+                "end": 493,
+                "line": 7,
+                "start": 488
+              },
+              "unit": "mL",
+              "value": 1.5
+            },
+            "container_name": "__cmp_entry_s0_lysis_buffer_2x",
+            "container_namespace": "entry",
+            "kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 25,
+                "end": 638,
+                "line": 7,
+                "start": 447
+              },
+              "value": "tube"
+            },
+            "label": {
+              "kind": "IRString",
+              "span": {
+                "col": 38,
+                "end": 475,
+                "line": 7,
+                "start": 460
+              },
+              "value": "LysisBuffer2x"
+            }
+          },
+          "deps": [
+            "entry.s0::finalize"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "AllocContainer",
+          "span": {
+            "col": 3,
+            "end": 638,
+            "line": 7,
+            "start": 425
+          },
+          "step_id": "entry.s1::alloc"
+        },
+        {
+          "args": {
+            "attrs": {
+              "role": {
+                "kind": "IRIdentifier",
+                "name": "lysis",
+                "span": {
+                  "col": 49,
+                  "end": 628,
+                  "line": 9,
+                  "start": 623
+                }
+              }
+            },
+            "code": {
+              "kind": "IRString",
+              "span": {
+                "col": 14,
+                "end": 605,
+                "line": 9,
+                "start": 588
+              },
+              "value": "LYSIS_BUFFER_2X"
+            },
+            "kind": {
+              "enum": "ContentKind",
+              "kind": "ContentEnum",
+              "member": "FORMULATION"
+            },
+            "type": {
+              "enum": "ContentType",
+              "kind": "ContentEnum",
+              "member": "BUFFER"
+            }
+          },
+          "deps": [
+            "entry.s1::alloc"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "DefineContent",
+          "span": {
+            "col": 5,
+            "end": 631,
+            "line": 8,
+            "start": 508
+          },
+          "step_id": "entry.s1::load0::define"
+        },
+        {
+          "args": {
+            "amount": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 58,
+                "end": 636,
+                "line": 9,
+                "start": 632
+              },
+              "unit": "uL",
+              "value": 80.0
+            },
+            "container": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_lysis_buffer_2x",
+              "span": {
+                "col": 3,
+                "end": 638,
+                "line": 7,
+                "start": 425
+              }
+            },
+            "content": {
+              "kind": "IRString",
+              "span": {
+                "col": 14,
+                "end": 605,
+                "line": 9,
+                "start": 588
+              },
+              "value": "LYSIS_BUFFER_2X"
+            }
+          },
+          "deps": [
+            "entry.s1::load0::define"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "LoadContent",
+          "span": {
+            "col": 5,
+            "end": 636,
+            "line": 8,
+            "start": 508
+          },
+          "step_id": "entry.s1::load0::load"
+        },
+        {
+          "args": {
+            "bind": "__cmp_entry_s0_lysis_tube",
+            "capacity": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 57,
+                "end": 701,
+                "line": 10,
+                "start": 696
+              },
+              "unit": "mL",
+              "value": 1.5
+            },
+            "container_name": "__cmp_entry_s0_lysis_tube",
+            "container_namespace": "entry",
+            "kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 20,
+                "end": 702,
+                "line": 10,
+                "start": 659
+              },
+              "value": "tube"
+            },
+            "label": {
+              "kind": "IRString",
+              "span": {
+                "col": 33,
+                "end": 683,
+                "line": 10,
+                "start": 672
+              },
+              "value": "LysisTube"
+            }
+          },
+          "deps": [
+            "entry.s1::load0::load"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "AllocContainer",
+          "span": {
+            "col": 3,
+            "end": 702,
+            "line": 10,
+            "start": 642
+          },
+          "step_id": "entry.s2::alloc"
+        },
+        {
+          "args": {
+            "bind": "__cmp_entry_s0_clarified_lysate",
+            "capacity": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 69,
+                "end": 777,
+                "line": 11,
+                "start": 772
+              },
+              "unit": "mL",
+              "value": 1.0
+            },
+            "container_name": "__cmp_entry_s0_clarified_lysate",
+            "container_namespace": "entry",
+            "kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 26,
+                "end": 778,
+                "line": 11,
+                "start": 729
+              },
+              "value": "tube"
+            },
+            "label": {
+              "kind": "IRString",
+              "span": {
+                "col": 39,
+                "end": 759,
+                "line": 11,
+                "start": 742
+              },
+              "value": "ClarifiedLysate"
+            }
+          },
+          "deps": [
+            "entry.s2::alloc"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "AllocContainer",
+          "span": {
+            "col": 3,
+            "end": 778,
+            "line": 11,
+            "start": 706
+          },
+          "step_id": "entry.s3::alloc"
+        },
+        {
+          "args": {
+            "bind": "__cmp_entry_s0_debris_waste",
+            "capacity": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 61,
+                "end": 845,
+                "line": 12,
+                "start": 840
+              },
+              "unit": "mL",
+              "value": 1.0
+            },
+            "container_name": "__cmp_entry_s0_debris_waste",
+            "container_namespace": "entry",
+            "kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 22,
+                "end": 846,
+                "line": 12,
+                "start": 801
+              },
+              "value": "tube"
+            },
+            "label": {
+              "kind": "IRString",
+              "span": {
+                "col": 35,
+                "end": 827,
+                "line": 12,
+                "start": 814
+              },
+              "value": "DebrisWaste"
+            }
+          },
+          "deps": [
+            "entry.s3::alloc"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "AllocContainer",
+          "span": {
+            "col": 3,
+            "end": 846,
+            "line": 12,
+            "start": 782
+          },
+          "step_id": "entry.s4::alloc"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "__cmp_entry_s0_cell_suspension",
+                  "span": {
+                    "col": 18,
+                    "end": 880,
+                    "line": 13,
+                    "start": 865
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 34,
+                    "end": 885,
+                    "line": 13,
+                    "start": 881
+                  },
+                  "unit": "uL",
+                  "value": 80.0
+                },
+                "span": {
+                  "col": 18,
+                  "end": 885,
+                  "line": 13,
+                  "start": 865
+                }
+              },
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "__cmp_entry_s0_lysis_buffer_2x",
+                  "span": {
+                    "col": 40,
+                    "end": 902,
+                    "line": 13,
+                    "start": 887
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 56,
+                    "end": 907,
+                    "line": 13,
+                    "start": 903
+                  },
+                  "unit": "uL",
+                  "value": 80.0
+                },
+                "span": {
+                  "col": 40,
+                  "end": 907,
+                  "line": 13,
+                  "start": 887
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_lysis_tube",
+              "span": {
+                "col": 3,
+                "end": 860,
+                "line": 13,
+                "start": 850
+              }
+            }
+          },
+          "deps": [
+            "entry.s4::alloc"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 3,
+            "end": 908,
+            "line": 13,
+            "start": 850
+          },
+          "step_id": "entry.s5"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "__cmp_entry_s0_lysis_tube",
+                  "span": {
+                    "col": 20,
+                    "end": 1011,
+                    "line": 15,
+                    "start": 1001
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 31,
+                    "end": 1017,
+                    "line": 15,
+                    "start": 1012
+                  },
+                  "unit": "uL",
+                  "value": 128.0
+                },
+                "span": {
+                  "col": 20,
+                  "end": 1017,
+                  "line": 15,
+                  "start": 1001
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_lysis_tube",
+              "span": {
+                "col": 5,
+                "end": 996,
+                "line": 15,
+                "start": 986
+              }
+            }
+          },
+          "deps": [
+            "entry.s5"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 5,
+            "end": 1018,
+            "line": 15,
+            "start": 986
+          },
+          "step_id": "entry.s6"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "__cmp_entry_s0_lysis_tube",
+                  "span": {
+                    "col": 20,
+                    "end": 1011,
+                    "line": 15,
+                    "start": 1001
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 31,
+                    "end": 1017,
+                    "line": 15,
+                    "start": 1012
+                  },
+                  "unit": "uL",
+                  "value": 128.0
+                },
+                "span": {
+                  "col": 20,
+                  "end": 1017,
+                  "line": 15,
+                  "start": 1001
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_lysis_tube",
+              "span": {
+                "col": 5,
+                "end": 996,
+                "line": 15,
+                "start": 986
+              }
+            }
+          },
+          "deps": [
+            "entry.s6"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 5,
+            "end": 1018,
+            "line": 15,
+            "start": 986
+          },
+          "step_id": "entry.s7"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "__cmp_entry_s0_lysis_tube",
+                  "span": {
+                    "col": 20,
+                    "end": 1011,
+                    "line": 15,
+                    "start": 1001
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 31,
+                    "end": 1017,
+                    "line": 15,
+                    "start": 1012
+                  },
+                  "unit": "uL",
+                  "value": 128.0
+                },
+                "span": {
+                  "col": 20,
+                  "end": 1017,
+                  "line": 15,
+                  "start": 1001
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_lysis_tube",
+              "span": {
+                "col": 5,
+                "end": 996,
+                "line": 15,
+                "start": 986
+              }
+            }
+          },
+          "deps": [
+            "entry.s7"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 5,
+            "end": 1018,
+            "line": 15,
+            "start": 986
+          },
+          "step_id": "entry.s8"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "__cmp_entry_s0_lysis_tube",
+                  "span": {
+                    "col": 20,
+                    "end": 1011,
+                    "line": 15,
+                    "start": 1001
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 31,
+                    "end": 1017,
+                    "line": 15,
+                    "start": 1012
+                  },
+                  "unit": "uL",
+                  "value": 128.0
+                },
+                "span": {
+                  "col": 20,
+                  "end": 1017,
+                  "line": 15,
+                  "start": 1001
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_lysis_tube",
+              "span": {
+                "col": 5,
+                "end": 996,
+                "line": 15,
+                "start": 986
+              }
+            }
+          },
+          "deps": [
+            "entry.s8"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 5,
+            "end": 1018,
+            "line": 15,
+            "start": 986
+          },
+          "step_id": "entry.s9"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "__cmp_entry_s0_lysis_tube",
+                  "span": {
+                    "col": 20,
+                    "end": 1011,
+                    "line": 15,
+                    "start": 1001
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 31,
+                    "end": 1017,
+                    "line": 15,
+                    "start": 1012
+                  },
+                  "unit": "uL",
+                  "value": 128.0
+                },
+                "span": {
+                  "col": 20,
+                  "end": 1017,
+                  "line": 15,
+                  "start": 1001
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_lysis_tube",
+              "span": {
+                "col": 5,
+                "end": 996,
+                "line": 15,
+                "start": 986
+              }
+            }
+          },
+          "deps": [
+            "entry.s9"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 5,
+            "end": 1018,
+            "line": 15,
+            "start": 986
+          },
+          "step_id": "entry.s10"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "__cmp_entry_s0_lysis_tube",
+                  "span": {
+                    "col": 20,
+                    "end": 1011,
+                    "line": 15,
+                    "start": 1001
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 31,
+                    "end": 1017,
+                    "line": 15,
+                    "start": 1012
+                  },
+                  "unit": "uL",
+                  "value": 128.0
+                },
+                "span": {
+                  "col": 20,
+                  "end": 1017,
+                  "line": 15,
+                  "start": 1001
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_lysis_tube",
+              "span": {
+                "col": 5,
+                "end": 996,
+                "line": 15,
+                "start": 986
+              }
+            }
+          },
+          "deps": [
+            "entry.s10"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 5,
+            "end": 1018,
+            "line": 15,
+            "start": 986
+          },
+          "step_id": "entry.s11"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "__cmp_entry_s0_lysis_tube",
+                  "span": {
+                    "col": 20,
+                    "end": 1011,
+                    "line": 15,
+                    "start": 1001
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 31,
+                    "end": 1017,
+                    "line": 15,
+                    "start": 1012
+                  },
+                  "unit": "uL",
+                  "value": 128.0
+                },
+                "span": {
+                  "col": 20,
+                  "end": 1017,
+                  "line": 15,
+                  "start": 1001
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_lysis_tube",
+              "span": {
+                "col": 5,
+                "end": 996,
+                "line": 15,
+                "start": 986
+              }
+            }
+          },
+          "deps": [
+            "entry.s11"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 5,
+            "end": 1018,
+            "line": 15,
+            "start": 986
+          },
+          "step_id": "entry.s12"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "__cmp_entry_s0_lysis_tube",
+                  "span": {
+                    "col": 20,
+                    "end": 1011,
+                    "line": 15,
+                    "start": 1001
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 31,
+                    "end": 1017,
+                    "line": 15,
+                    "start": 1012
+                  },
+                  "unit": "uL",
+                  "value": 128.0
+                },
+                "span": {
+                  "col": 20,
+                  "end": 1017,
+                  "line": 15,
+                  "start": 1001
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_lysis_tube",
+              "span": {
+                "col": 5,
+                "end": 996,
+                "line": 15,
+                "start": 986
+              }
+            }
+          },
+          "deps": [
+            "entry.s12"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 5,
+            "end": 1018,
+            "line": 15,
+            "start": 986
+          },
+          "step_id": "entry.s13"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "__cmp_entry_s0_lysis_tube",
+                  "span": {
+                    "col": 20,
+                    "end": 1011,
+                    "line": 15,
+                    "start": 1001
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 31,
+                    "end": 1017,
+                    "line": 15,
+                    "start": 1012
+                  },
+                  "unit": "uL",
+                  "value": 128.0
+                },
+                "span": {
+                  "col": 20,
+                  "end": 1017,
+                  "line": 15,
+                  "start": 1001
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_lysis_tube",
+              "span": {
+                "col": 5,
+                "end": 996,
+                "line": 15,
+                "start": 986
+              }
+            }
+          },
+          "deps": [
+            "entry.s13"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 5,
+            "end": 1018,
+            "line": 15,
+            "start": 986
+          },
+          "step_id": "entry.s14"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "__cmp_entry_s0_lysis_tube",
+                  "span": {
+                    "col": 20,
+                    "end": 1011,
+                    "line": 15,
+                    "start": 1001
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 31,
+                    "end": 1017,
+                    "line": 15,
+                    "start": 1012
+                  },
+                  "unit": "uL",
+                  "value": 128.0
+                },
+                "span": {
+                  "col": 20,
+                  "end": 1017,
+                  "line": 15,
+                  "start": 1001
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_lysis_tube",
+              "span": {
+                "col": 5,
+                "end": 996,
+                "line": 15,
+                "start": 986
+              }
+            }
+          },
+          "deps": [
+            "entry.s14"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 5,
+            "end": 1018,
+            "line": 15,
+            "start": 986
+          },
+          "step_id": "entry.s15"
+        },
+        {
+          "args": {},
+          "deps": [
+            "entry.s15"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry",
+            "env": {
+              "duration": {
+                "kind": "IRQuantity",
+                "span": {
+                  "col": 38,
+                  "end": 1066,
+                  "line": 17,
+                  "start": 1061
+                },
+                "unit": "min",
+                "value": 30.0
+              },
+              "thermal": {
+                "kind": "IRQuantity",
+                "span": {
+                  "col": 22,
+                  "end": 1048,
+                  "line": 17,
+                  "start": 1045
+                },
+                "unit": "C",
+                "value": 37.0
+              }
+            },
+            "env_layers": [
+              {
+                "env": {
+                  "duration": {
+                    "kind": "IRQuantity",
+                    "span": {
+                      "col": 38,
+                      "end": 1066,
+                      "line": 17,
+                      "start": 1061
+                    },
+                    "unit": "min",
+                    "value": 30.0
+                  },
+                  "thermal": {
+                    "kind": "IRQuantity",
+                    "span": {
+                      "col": 22,
+                      "end": 1048,
+                      "line": 17,
+                      "start": 1045
+                    },
+                    "unit": "C",
+                    "value": 37.0
+                  }
+                },
+                "env_targets": [
+                  {
+                    "kind": "IRIdentifier",
+                    "name": "__cmp_entry_s0_lysis_tube",
+                    "span": {
+                      "col": 61,
+                      "end": 1094,
+                      "line": 17,
+                      "start": 1084
+                    }
+                  }
+                ]
+              }
+            ],
+            "env_targets": [
+              {
+                "kind": "IRIdentifier",
+                "name": "__cmp_entry_s0_lysis_tube",
+                "span": {
+                  "col": 61,
+                  "end": 1094,
+                  "line": 17,
+                  "start": 1084
+                }
+              }
+            ]
+          },
+          "op": "env_hold",
+          "span": {
+            "col": 3,
+            "end": 1098,
+            "line": 17,
+            "start": 1026
+          },
+          "step_id": "entry.s16"
+        },
+        {
+          "args": {
+            "program": {
+              "args": [
+                {
+                  "kind": "IRArg",
+                  "name": "drive",
+                  "span": {
+                    "col": 59,
+                    "end": 1217,
+                    "line": 19,
+                    "start": 1203
+                  },
+                  "value": {
+                    "kind": "IRQuantity",
+                    "span": {
+                      "col": 67,
+                      "end": 1217,
+                      "line": 19,
+                      "start": 1211
+                    },
+                    "unit": "g",
+                    "value": 12000.0
+                  }
+                }
+              ],
+              "kind": "IRCall",
+              "name": "centrifuge_program",
+              "span": {
+                "col": 40,
+                "end": 1218,
+                "line": 19,
+                "start": 1184
+              }
+            },
+            "sample": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_lysis_tube",
+              "span": {
+                "col": 18,
+                "end": 1172,
+                "line": 19,
+                "start": 1162
+              }
+            }
+          },
+          "deps": [
+            "entry.s16"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry",
+            "env": {
+              "duration": {
+                "kind": "IRQuantity",
+                "span": {
+                  "col": 38,
+                  "end": 1141,
+                  "line": 18,
+                  "start": 1136
+                },
+                "unit": "min",
+                "value": 10.0
+              },
+              "thermal": {
+                "kind": "IRQuantity",
+                "span": {
+                  "col": 22,
+                  "end": 1123,
+                  "line": 18,
+                  "start": 1120
+                },
+                "unit": "C",
+                "value": 22.0
+              }
+            },
+            "env_layers": [
+              {
+                "env": {
+                  "duration": {
+                    "kind": "IRQuantity",
+                    "span": {
+                      "col": 38,
+                      "end": 1141,
+                      "line": 18,
+                      "start": 1136
+                    },
+                    "unit": "min",
+                    "value": 10.0
+                  },
+                  "thermal": {
+                    "kind": "IRQuantity",
+                    "span": {
+                      "col": 22,
+                      "end": 1123,
+                      "line": 18,
+                      "start": 1120
+                    },
+                    "unit": "C",
+                    "value": 22.0
+                  }
+                },
+                "env_targets": [
+                  {
+                    "kind": "IRIdentifier",
+                    "name": "__cmp_entry_s0_lysis_tube",
+                    "span": {
+                      "col": 18,
+                      "end": 1172,
+                      "line": 19,
+                      "start": 1162
+                    }
+                  }
+                ]
+              }
+            ],
+            "env_targets": [
+              {
+                "kind": "IRIdentifier",
+                "name": "__cmp_entry_s0_lysis_tube",
+                "span": {
+                  "col": 18,
+                  "end": 1172,
+                  "line": 19,
+                  "start": 1162
+                }
+              }
+            ]
+          },
+          "op": "sep",
+          "span": {
+            "col": 5,
+            "end": 1219,
+            "line": 19,
+            "start": 1149
+          },
+          "step_id": "entry.s17.b.s0"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "base": {
+                    "base": {
+                      "kind": "IRIdentifier",
+                      "name": "__cmp_entry_s0_lysis_tube",
+                      "span": {
+                        "col": 24,
+                        "end": 1258,
+                        "line": 21,
+                        "start": 1248
+                      }
+                    },
+                    "kind": "IRMember",
+                    "member": "contents",
+                    "span": {
+                      "col": 24,
+                      "end": 1267,
+                      "line": 21,
+                      "start": 1248
+                    }
+                  },
+                  "index": {
+                    "kind": "IRQuantity",
+                    "span": {
+                      "col": 44,
+                      "end": 1269,
+                      "line": 21,
+                      "start": 1268
+                    },
+                    "unit": null,
+                    "value": 0.0
+                  },
+                  "kind": "IRIndex",
+                  "span": {
+                    "col": 24,
+                    "end": 1270,
+                    "line": 21,
+                    "start": 1248
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 47,
+                    "end": 1276,
+                    "line": 21,
+                    "start": 1271
+                  },
+                  "unit": "uL",
+                  "value": 100.0
+                },
+                "span": {
+                  "col": 24,
+                  "end": 1276,
+                  "line": 21,
+                  "start": 1248
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_clarified_lysate",
+              "span": {
+                "col": 3,
+                "end": 1243,
+                "line": 21,
+                "start": 1227
+              }
+            }
+          },
+          "deps": [
+            "entry.s17.b.s0"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 3,
+            "end": 1277,
+            "line": 21,
+            "start": 1227
+          },
+          "step_id": "entry.s18"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "base": {
+                  "base": {
+                    "kind": "IRIdentifier",
+                    "name": "__cmp_entry_s0_lysis_tube",
+                    "span": {
+                      "col": 20,
+                      "end": 1308,
+                      "line": 22,
+                      "start": 1298
+                    }
+                  },
+                  "kind": "IRMember",
+                  "member": "contents",
+                  "span": {
+                    "col": 20,
+                    "end": 1317,
+                    "line": 22,
+                    "start": 1298
+                  }
+                },
+                "index": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 40,
+                    "end": 1319,
+                    "line": 22,
+                    "start": 1318
+                  },
+                  "unit": null,
+                  "value": 1.0
+                },
+                "kind": "IRIndex",
+                "span": {
+                  "col": 20,
+                  "end": 1320,
+                  "line": 22,
+                  "start": 1298
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_debris_waste",
+              "span": {
+                "col": 3,
+                "end": 1293,
+                "line": 22,
+                "start": 1281
+              }
+            }
+          },
+          "deps": [
+            "entry.s18"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 3,
+            "end": 1321,
+            "line": 22,
+            "start": 1281
+          },
+          "step_id": "entry.s19"
+        },
+        {
+          "args": {
+            "bind": "result",
+            "quantity": {
+              "kind": "IRIdentifier",
+              "name": "fluorescence",
+              "span": {
+                "col": 16,
+                "end": 1404,
+                "line": 24,
+                "start": 1392
+              }
+            },
+            "sample": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_clarified_lysate",
+              "span": {
+                "col": 37,
+                "end": 1375,
+                "line": 23,
+                "start": 1359
+              }
+            },
+            "save_raw": {
+              "kind": "IRBoolean",
+              "span": {
+                "col": 41,
+                "end": 1421,
+                "line": 24,
+                "start": 1417
+              },
+              "value": true
+            }
+          },
+          "deps": [
+            "entry.s19"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "img",
+          "span": {
+            "col": 3,
+            "end": 1422,
+            "line": 23,
+            "start": 1325
+          },
+          "step_id": "entry.s20"
+        }
+      ]
+    }
+  ],
+  "span": null
+}

@@ -137,6 +137,6 @@ the source directories.
 Historical Cases 00–14 and their original tools are preserved outside this
 active directory in [`archive/benchmarks-legacy/`](../archive/benchmarks-legacy/).
 They are excluded from this runner and the paper's current coverage totals.
-The four manuscript illustrations and their independent reproduction script are
-provided in [`worked_examples/`](worked_examples/). They are evaluated separately
+The four evaluation examples, the introductory illustration, and their
+reproduction scripts are provided in [`worked_examples/`](worked_examples/). They are evaluated separately
 and do not contribute to the coverage totals above.

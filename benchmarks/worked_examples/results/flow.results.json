@@ -1,6 +1,11 @@
 {
   "materials": [
     {
+      "amount": 1000000.0,
+      "name": "Cells for staining",
+      "unit": "cells"
+    },
+    {
       "amount": 2500.0,
       "name": "Wash buffer",
       "unit": "uL"

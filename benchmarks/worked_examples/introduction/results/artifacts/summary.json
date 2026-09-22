@@ -1,0 +1,15 @@
+{
+  "completed_steps": 28,
+  "failed_steps": 0,
+  "inputs": [
+    "/tmp/submission-public-intro/lysate.culs"
+  ],
+  "plan_diagnostic_count": 0,
+  "runtime_diagnostic_count": 0,
+  "runtime_ok": true,
+  "semantic_error_count": 0,
+  "skipped_steps": 0,
+  "total_steps": 28,
+  "type_error_count": 0,
+  "user_result_available": true
+}

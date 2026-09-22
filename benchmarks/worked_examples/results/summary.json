@@ -2,7 +2,7 @@
   "implementation_commit": "5364676bc2437b4981a00ce0133c730af243e469",
   "python": "3.12.8",
   "execution_backend": "deterministic_reference",
-  "runner_sha256": "7a94db1496dfabf78dc71d10d67aa2abc8b6d71e4ac417c5fa5ef59d0101ac34",
+  "runner_sha256": "33f7c0eaf89b46a1b285da5037bf92ef76996672b68c15efb829a8d2e2182c18",
   "source_archive_sha256": "01736ba0a38c61ae0e75c78e24794028d7bb4ac98eed247fab9bd020b8c49107",
   "input_mode": "exported_programs",
   "examples": {
@@ -20,7 +20,7 @@
         },
         "declared_components_retained": true
       },
-      "input_sha256": "f6539e62f14c14f9553ada6ad5bd9de096ff1e462712581eb0278e8af5f4a01f",
+      "input_sha256": "2a706514b79b1aac94de98f3752fc2b6c1733fb4c1e73656864511f007795344",
       "completed_steps": 109
     },
     "flow": {
@@ -28,10 +28,11 @@
       "checks": {
         "single_cell_subject_bound_to_processed_sample": true,
         "six_marker_panel_retained": true,
+        "initial_cell_count": 1000000,
+        "initial_cell_suspension_volume_uL": 70,
         "declared_component_totals_conserved": true,
         "material_state_uL": {
           "retained_sample": {
-            "PBMC": 70.0,
             "FSB": 500.0,
             "ANTI_CD45": 5.0,
             "ANTI_CD3": 5.0,
@@ -41,8 +42,7 @@
             "VIABILITY_DYE": 5.0
           },
           "waste": {
-            "PBMC": 0.0,
-            "FSB": 2000.0,
+            "FSB": 2070.0,
             "ANTI_CD45": 0.0,
             "ANTI_CD3": 0.0,
             "ANTI_CD4": 0.0,
@@ -51,7 +51,6 @@
             "VIABILITY_DYE": 0.0
           },
           "remaining_stock": {
-            "PBMC": 0.0,
             "FSB": 0.0,
             "ANTI_CD45": 0.0,
             "ANTI_CD3": 0.0,
@@ -64,8 +63,8 @@
         "sample_and_control_fields_populated": true,
         "measurement_fields_unset": true
       },
-      "input_sha256": "ed902aa473b5a5c1612490426ff5d2d7d6cd649d2f6de1d2e5808c9061345a9e",
-      "completed_steps": 52
+      "input_sha256": "06b5d4ba74e0f31502281905ce03a46bd75a82adce18197ce15ff2b68df895a8",
+      "completed_steps": 55
     },
     "magnetic": {
       "ok": true,
@@ -125,11 +124,11 @@
     "files": {
       "pcr": {
         "path": "pcr.results.json",
-        "sha256": "70a72ff15b6099fa533262e202e171aaf4f0b52c990740515c39ff742826a3ce"
+        "sha256": "04f0d6caa5f7203172f5fa8068b3cde2b657537a13259860fde2619490ca7257"
       },
       "flow": {
         "path": "flow.results.json",
-        "sha256": "3565e182a76c3c26c949dcea9320226a0720ae81592df04118797377d37804f9"
+        "sha256": "3779ab5e564e399a10185065392277b0c7845367386df2b8e54d55ff7dcf3615"
       },
       "magnetic": {
         "path": "magnetic.results.json",

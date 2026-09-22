@@ -1,0 +1,200 @@
+{
+  "ok": true,
+  "report": {
+    "alerts": [],
+    "execution": {
+      "completed_steps": 28,
+      "diagnostic_count": 0,
+      "failed_steps": 0,
+      "ok": true,
+      "skipped_steps": 0,
+      "total_steps": 28
+    },
+    "external_inventory": {
+      "checked": false,
+      "items": [],
+      "reason": "inventory_not_supplied",
+      "schema": "culsma_inventory_reconciliation_v1",
+      "shortages": [],
+      "sufficient": null
+    },
+    "headline": "Experiment completed successfully with no runtime errors.",
+    "materials": {
+      "final_products": [
+        {
+          "mass_mg": 100.0,
+          "name": "ClarifiedLysate",
+          "primary_component": "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER",
+          "volume_mL": 0.1,
+          "volume_uL": 100.0
+        },
+        {
+          "mass_mg": 60.0,
+          "name": "LysisTube",
+          "primary_component": "LYSIS_COMPATIBLE_RESUSPENSION_BUFFER",
+          "volume_mL": 0.06,
+          "volume_uL": 60.0
+        },
+        {
+          "count_cells": 100000.0,
+          "mass_mg": 0.0,
+          "name": "DebrisWaste",
+          "primary_component": "GFP_EXPRESSING_MICROBIAL_CELLS",
+          "volume_mL": 0.0,
+          "volume_uL": 0.0
+        }
+      ],
+      "has_material_state": true,
+      "input_inventory": [
+        {
+          "initial_cells": 100000.0,
+          "initial_mL": 0.08,
+          "initial_mg": 0.0,
+          "initial_uL": 80.0,
+          "name": "GfpCellSuspension"
+        },
+        {
+          "initial_mL": 0.08,
+          "initial_mg": 0.0,
+          "initial_uL": 80.0,
+          "name": "LysisBuffer2x"
+        }
+      ],
+      "intermediate_materials": [],
+      "reagent_consumption": [
+        {
+          "consumed_cells": 100000.0,
+          "consumed_mL": 0.08,
+          "consumed_mg": null,
+          "consumed_uL": 80.0,
+          "name": "GfpCellSuspension",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.08,
+          "consumed_mg": null,
+          "consumed_uL": 80.0,
+          "name": "LysisBuffer2x",
+          "roles": [
+            "source"
+          ]
+        }
+      ]
+    },
+    "process_summary": {
+      "environment_steps": 1,
+      "mutation_steps": 13,
+      "readout_steps": 1,
+      "separation_steps": 1
+    },
+    "qc_results": [],
+    "resource_summary": {
+      "containers": {
+        "allocated_count": 5,
+        "container_kinds": [
+          {
+            "count": 5,
+            "kind": "tube"
+          }
+        ],
+        "touched_count": 5,
+        "touched_names": [
+          "ClarifiedLysate",
+          "DebrisWaste",
+          "GfpCellSuspension",
+          "LysisBuffer2x",
+          "LysisTube"
+        ]
+      },
+      "instruments": {
+        "devices": [],
+        "tools": []
+      }
+    },
+    "schema": "lab_report_v1"
+  },
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": [],
+      "value": {
+        "binding": "result",
+        "contract_kind": "fluorescence",
+        "data_id": "entry.s20::data",
+        "data_kind": "observation",
+        "driver_payload": {
+          "op": "img",
+          "step_id": "entry.s20"
+        },
+        "export_refs": {
+          "driver_profile": {
+            "artifact_id": "entry.s20::data::raw",
+            "export_id": "entry.s20::data::driver_profile",
+            "format": "json",
+            "kind": "img",
+            "profile": "driver:DRV_OK"
+          }
+        },
+        "family": "img",
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "kind": "data_ref",
+        "observation_id": "entry.s20::data",
+        "op": "img",
+        "program": null,
+        "program_kind": null,
+        "raw_artifact": {
+          "artifact_id": "entry.s20::data::raw",
+          "driver_code": "DRV_OK",
+          "op": "img",
+          "step_id": "entry.s20"
+        },
+        "resolved_sample": "container/entry/entry.s3%3A%3Aalloc/__cmp_entry_s0_clarified_lysate",
+        "result": {
+          "channel": null,
+          "signal": null
+        },
+        "sample": {
+          "kind": "IRIdentifier",
+          "name": "__cmp_entry_s0_clarified_lysate",
+          "span": {
+            "col": 37,
+            "end": 1375,
+            "line": 23,
+            "start": 1359
+          }
+        },
+        "sample_ref": {
+          "kind": "IRIdentifier",
+          "name": "__cmp_entry_s0_clarified_lysate",
+          "span": {
+            "col": 37,
+            "end": 1375,
+            "line": 23,
+            "start": 1359
+          }
+        },
+        "save_raw": true,
+        "status": "ok",
+        "step_id": "entry.s20",
+        "subject_ref": {
+          "kind": "IRIdentifier",
+          "name": "__cmp_entry_s0_clarified_lysate",
+          "span": {
+            "col": 37,
+            "end": 1375,
+            "line": 23,
+            "start": 1359
+          }
+        }
+      }
+    }
+  },
+  "schema": "culsma_run_output_v1"
+}
