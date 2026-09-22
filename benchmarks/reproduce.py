@@ -181,9 +181,6 @@ def reproduce(runtime, output, update_readme=False):
         write_json(target / 'coverage.json', coverage)
         command = [sys.executable, '-m', 'culsma', 'run', str(artifact / 'protocol.culs'),
                    '--output', str(target / 'run.json')]
-        for module in manifest['artifacts']:
-            if module['path'].startswith('modules/'):
-                command[5:5] = ['--library-root', str(ROOT / module['path'])]
         process = subprocess.run(command, env=env, cwd=runtime, text=True, capture_output=True)
         if process.stdout.strip():
             (target / 'stdout.txt').write_text(process.stdout)

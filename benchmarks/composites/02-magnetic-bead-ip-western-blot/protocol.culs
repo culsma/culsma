@@ -1,12 +1,12 @@
-import Module05;
-import Module06;
+include "../../modules/05-magnetic-bead-immunoprecipitation/module.culs";
+include "../../modules/06-western-blot/two-lane-gfp.culs";
 
 protocol Composite02_MagneticBeadIpWesternBlot() returns (
   antibody_stained_membrane,
   western_blot_image
 ) {
   // Source step S1: Run Module 05 with 500 uL clarified protein lysate containing 1 mg total protein to obtain a 25 uL input fraction and a 30 uL denaturing IP eluate. Preserve both fraction identities. The target-protein mass in the IP eluate is not assumed or inferred.
-  let ip_result_group = Module05.Module05_MagneticBeadImmunoprecipitation();
+  let ip_result_group = Module05_MagneticBeadImmunoprecipitation();
   let input_fraction = ip_result_group[0];
   let ip_eluate = ip_result_group[1];
 
@@ -66,7 +66,7 @@ protocol Composite02_MagneticBeadIpWesternBlot() returns (
   // Source step S4: Run the electrophoresis, membrane-transfer, membrane-treatment, and imaging portion of Module 06 as a two-sample configuration. Load the complete 25 uL input-lane sample and 25 uL IP-elution lane sample into separate lanes of the same 4-12% Bis-Tris SDS-PAGE gel, and load 10 uL prestained molecular-weight protein ladder into an adjacent lane.
   // Source step S5: Separate the gel at 180 V for 30 min and transfer proteins to a PVDF membrane at 100 V for 90 min at 4 C using transfer buffer containing 20% methanol.
   // Source step S6: Block and wash the membrane according to Module 06. Probe it with rabbit anti-GFP primary antibody diluted 1:1,000 in 10 mL primary-antibody dilution buffer, followed by goat anti-rabbit IgG Alexa Fluor 680 secondary antibody diluted 1:10,000 in 10 mL blocking buffer.
-  let antibody_stained_membrane = Module06.Module06_TwoLaneGfpWesternBlot(
+  let antibody_stained_membrane = Module06_TwoLaneGfpWesternBlot(
     input_lane_sample = input_lane_sample,
     ip_lane_sample = ip_lane_sample,
     primary_antibody_stock = rabbit_anti_gfp_primary,

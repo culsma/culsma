@@ -71,12 +71,19 @@ references; structural correspondence does not establish that automatic link.
 | [`summary.json`](summary.json) | Aggregate benchmark results; per-artifact records are in each artifact's `results/`. |
 | [`examples-summary.json`](examples-summary.json) | Aggregate checks for Examples 01–04, excluded from coverage totals. |
 
-Modules 04, 05, and 06 keep their reusable definitions and named import entries
-(`Module04.culs`, `Module05.culs`, `Module06.culs`) inside their own directories.
-The runner supplies these module directories as import search paths; no separate
-library directory is needed. Composite 01 imports Module 04 for staining.
-Composite 02 passes the input fraction and eluate from Module 05 to Module 06's
-two-lane GFP configuration, preserving their lane identities in a shared image.
+Composite entry programs use explicit, source-relative `include` paths to load
+reusable module definitions. Composite 01 includes Module 04's `module.culs`;
+Composite 02 includes Module 05's `module.culs` and Module 06's `two-lane-gfp.culs`.
+Paths resolve relative to the composite file, independently of the working
+directory. No import search-path configuration or wrapper files are required.
+With Culsma 1.0.7 installed, both entry programs can run directly from the
+repository root:
+
+```sh
+culsma benchmarks/composites/01-flow-cytometry-immunophenotyping/protocol.culs
+culsma benchmarks/composites/02-magnetic-bead-ip-western-blot/protocol.culs
+```
+
 Each source procedure retains its references and context in `source.md`.
 
 ## Reproduce

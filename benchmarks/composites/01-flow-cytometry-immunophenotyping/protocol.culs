@@ -1,4 +1,4 @@
-import Module04;
+include "../../modules/04-suspension-cell-staining/module.culs";
 
 protocol Composite01_FlowCytometryImmunophenotyping() returns (acquisition_result_group) {
   let anti_cd45_fitc = tube(label = "AntiCD45FITC", capacity = 100uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ANTI_CD45", attrs = { role: antibody, stock_concentration_mg_per_mL: 5, marker: CD45, fluorophore: FITC }):10uL]);
@@ -13,7 +13,7 @@ protocol Composite01_FlowCytometryImmunophenotyping() returns (acquisition_resul
   let single_cd4_tube = tube(label = "SingleAntibodyControlCD4", capacity = 5mL);
 
   // Source step S1: Run Module 04 with anti-CD45-FITC, anti-CD3-PE, and anti-CD4-Cy5 to prepare six fixed cell suspensions: a fully stained sample, an unstained control, an isotype-control panel, and one single-antibody control for each antibody.
-  let stained_cell_suspensions = Module04.Module04_SuspensionCellAntibodyStaining(
+  let stained_cell_suspensions = Module04_SuspensionCellAntibodyStaining(
     antibody_1 = anti_cd45_fitc,
     antibody_2 = anti_cd3_pe,
     antibody_3 = anti_cd4_cy5,
