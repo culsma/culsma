@@ -1,0 +1,458 @@
+{
+  "ok": true,
+  "report": {
+    "alerts": [],
+    "execution": {
+      "completed_steps": 268,
+      "diagnostic_count": 0,
+      "failed_steps": 0,
+      "ok": true,
+      "skipped_steps": 0,
+      "total_steps": 268
+    },
+    "external_inventory": {
+      "checked": false,
+      "items": [],
+      "reason": "inventory_not_supplied",
+      "schema": "culsma_inventory_reconciliation_v1",
+      "shortages": [],
+      "sufficient": null
+    },
+    "headline": "Experiment completed successfully with no runtime errors.",
+    "materials": {
+      "final_products": [
+        {
+          "mass_mg": 800000.0,
+          "name": "Composite02ElectrophoresisTank",
+          "primary_component": "SDS_PAGE_RUNNING_BUFFER_1X",
+          "volume_mL": 800.0,
+          "volume_uL": 800000.0
+        },
+        {
+          "mass_mg": 201739.765,
+          "name": "WesternBlotLiquidWaste",
+          "primary_component": "NONFAT_MILK_PROTEIN",
+          "volume_mL": 201.739765,
+          "volume_uL": 201739.765
+        },
+        {
+          "mass_mg": 15000.0,
+          "name": "GelEquilibrationBath",
+          "primary_component": "TRANSFER_BUFFER_20_PERCENT_METHANOL",
+          "volume_mL": 15.0,
+          "volume_uL": 15000.0
+        },
+        {
+          "mass_mg": null,
+          "name": "ImmunoprecipitationLiquidWaste",
+          "primary_component": "LYSATE_BACKGROUND_PROTEINS",
+          "volume_mL": 1.525,
+          "volume_uL": 1525.0
+        },
+        {
+          "mass_mg": 50.0,
+          "name": "ProteinGMagneticBeadStock",
+          "primary_component": "PROTEIN_G_MAGNETIC_BEADS",
+          "volume_mL": 0.05,
+          "volume_uL": 50.0
+        },
+        {
+          "mass_mg": null,
+          "name": "InputFraction",
+          "primary_component": null,
+          "volume_mL": 0.01,
+          "volume_uL": 10.0
+        },
+        {
+          "mass_mg": null,
+          "name": "IpDenaturingEluate",
+          "primary_component": "GFP_TARGET_PROTEIN",
+          "volume_mL": 0.005001,
+          "volume_uL": 5.001
+        },
+        {
+          "mass_mg": 1.05,
+          "name": "FivePercentMilkBlockingBuffer",
+          "primary_component": "NONFAT_MILK_PROTEIN",
+          "volume_mL": 0.00105,
+          "volume_uL": 1.05
+        }
+      ],
+      "has_material_state": true,
+      "input_inventory": [
+        {
+          "initial_mL": 800.0,
+          "initial_mg": 0.0,
+          "initial_uL": 800000.0,
+          "name": "SDSPageRunningBuffer"
+        },
+        {
+          "initial_mL": 500.0,
+          "initial_mg": 0.0,
+          "initial_uL": 500000.0,
+          "name": "DeionizedWater"
+        },
+        {
+          "initial_mL": 500.0,
+          "initial_mg": 0.0,
+          "initial_uL": 500000.0,
+          "name": "TransferBufferTwentyPercentMethanol"
+        },
+        {
+          "initial_mL": 300.0,
+          "initial_mg": 0.0,
+          "initial_uL": 300000.0,
+          "name": "TBSTWashBuffer"
+        },
+        {
+          "initial_mL": 10.0,
+          "initial_mg": 0.0,
+          "initial_uL": 10000.0,
+          "name": "AntibodyBindingAndWashBuffer"
+        },
+        {
+          "initial_mL": 10.0,
+          "initial_mg": 0.0,
+          "initial_uL": 10000.0,
+          "name": "IceColdIpWashBuffer"
+        },
+        {
+          "initial_mL": 0.5,
+          "initial_mg": 1.0,
+          "initial_uL": 500.0,
+          "name": "ClarifiedProteinLysate"
+        },
+        {
+          "initial_mL": 0.4,
+          "initial_mg": 0.0,
+          "initial_uL": 400.0,
+          "name": "DenaturingElutionBuffer"
+        },
+        {
+          "initial_mL": 0.4,
+          "initial_mg": 0.0,
+          "initial_uL": 400.0,
+          "name": "PremixedFourXLdsReducingBuffer"
+        },
+        {
+          "initial_mL": 0.1,
+          "initial_mg": 0.0,
+          "initial_uL": 100.0,
+          "name": "PrestainedProteinLadder"
+        },
+        {
+          "initial_mL": 0.1,
+          "initial_mg": 0.0,
+          "initial_uL": 100.0,
+          "name": "ProteinGMagneticBeadStock"
+        },
+        {
+          "initial_mL": 0.05,
+          "initial_mg": 0.0,
+          "initial_uL": 50.0,
+          "name": "Composite02DeionizedWater"
+        },
+        {
+          "initial_mL": 0.05,
+          "initial_mg": 0.0,
+          "initial_uL": 50.0,
+          "name": "Composite02FourXLdsReducingBuffer"
+        },
+        {
+          "initial_mL": 0.02,
+          "initial_mg": 0.0,
+          "initial_uL": 20.0,
+          "name": "GoatAntiRabbitIgGAlexaFluor680"
+        },
+        {
+          "initial_mL": 0.02,
+          "initial_mg": 0.0,
+          "initial_uL": 20.0,
+          "name": "RabbitAntiGfpPrimary"
+        },
+        {
+          "initial_mL": 0.0,
+          "initial_mg": 2000.0,
+          "initial_uL": 0.0,
+          "name": "BovineSerumAlbuminPowder"
+        },
+        {
+          "initial_mL": 0.0,
+          "initial_mg": 2000.0,
+          "initial_uL": 0.0,
+          "name": "NonfatMilkPowder"
+        },
+        {
+          "initial_mL": 0.0,
+          "initial_mg": 0.05,
+          "initial_uL": 0.0,
+          "name": "AntiGfpCaptureAntibody"
+        },
+        {
+          "initial_mL": 0.0,
+          "initial_mg": 0.0,
+          "initial_uL": 0.0,
+          "name": "Composite02BisTrisGel"
+        },
+        {
+          "initial_mL": 0.0,
+          "initial_mg": 0.0,
+          "initial_uL": 0.0,
+          "name": "PVDFMembraneEquilibrationBath"
+        }
+      ],
+      "intermediate_materials": [],
+      "reagent_consumption": [
+        {
+          "consumed_mL": 800.0,
+          "consumed_mg": null,
+          "consumed_uL": 800000.0,
+          "name": "SDSPageRunningBuffer",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 184.99,
+          "consumed_mg": null,
+          "consumed_uL": 184990.0,
+          "name": "TBSTWashBuffer",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 60.0,
+          "consumed_mg": null,
+          "consumed_uL": 60000.0,
+          "name": "TransferBufferTwentyPercentMethanol",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 15.0,
+          "consumed_mg": null,
+          "consumed_uL": 15000.0,
+          "name": "DeionizedWater",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.6,
+          "consumed_mg": null,
+          "consumed_uL": 600.0,
+          "name": "IceColdIpWashBuffer",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.5,
+          "consumed_mg": null,
+          "consumed_uL": 500.0,
+          "name": "ClarifiedProteinLysate",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.425,
+          "consumed_mg": null,
+          "consumed_uL": 425.0,
+          "name": "AntibodyBindingAndWashBuffer",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.05,
+          "consumed_mg": null,
+          "consumed_uL": 50.0,
+          "name": "ProteinGMagneticBeadStock",
+          "roles": [
+            "sample",
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.02,
+          "consumed_mg": null,
+          "consumed_uL": 20.0,
+          "name": "DenaturingElutionBuffer",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.01,
+          "consumed_mg": null,
+          "consumed_uL": 10.0,
+          "name": "PremixedFourXLdsReducingBuffer",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.01,
+          "consumed_mg": null,
+          "consumed_uL": 10.0,
+          "name": "PrestainedProteinLadder",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.01,
+          "consumed_mg": null,
+          "consumed_uL": 10.0,
+          "name": "RabbitAntiGfpPrimary",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.00625,
+          "consumed_mg": null,
+          "consumed_uL": 6.25,
+          "name": "Composite02FourXLdsReducingBuffer",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.00375,
+          "consumed_mg": null,
+          "consumed_uL": 3.75,
+          "name": "Composite02DeionizedWater",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.001,
+          "consumed_mg": null,
+          "consumed_uL": 1.0,
+          "name": "GoatAntiRabbitIgGAlexaFluor680",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": null,
+          "consumed_mg": 1250.0,
+          "consumed_uL": null,
+          "name": "NonfatMilkPowder",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": null,
+          "consumed_mg": 500.0,
+          "consumed_uL": null,
+          "name": "BovineSerumAlbuminPowder",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": null,
+          "consumed_mg": 0.005,
+          "consumed_uL": null,
+          "name": "AntiGfpCaptureAntibody",
+          "roles": [
+            "source"
+          ]
+        }
+      ]
+    },
+    "process_summary": {
+      "environment_steps": 5,
+      "mutation_steps": 125,
+      "readout_steps": 1,
+      "separation_steps": 28
+    },
+    "qc_results": [],
+    "resource_summary": {
+      "containers": {
+        "allocated_count": 39,
+        "container_kinds": [
+          {
+            "count": 11,
+            "kind": "chamber"
+          },
+          {
+            "count": 16,
+            "kind": "tube"
+          },
+          {
+            "count": 9,
+            "kind": "unknown"
+          },
+          {
+            "count": 3,
+            "kind": "well"
+          }
+        ],
+        "touched_count": 39,
+        "touched_names": [
+          "AlexaFluor680SecondaryAntibodySolution",
+          "AntiGfpCaptureAntibody",
+          "AntiGfpPrimaryAntibodySolution",
+          "AntibodyBindingAndWashBuffer",
+          "BovineSerumAlbuminPowder",
+          "CaptureAntibodySolution",
+          "ClarifiedProteinLysate",
+          "Composite02BisTrisGel",
+          "Composite02DeionizedWater",
+          "Composite02ElectrophoresisTank",
+          "Composite02FourXLdsReducingBuffer",
+          "DeionizedWater",
+          "DenaturingElutionBuffer",
+          "FivePercentBsaPrimaryAntibodyDilutionBuffer",
+          "FivePercentMilkBlockingBuffer",
+          "GelAndPvdfTransferTank",
+          "GelEquilibrationBath",
+          "GoatAntiRabbitIgGAlexaFluor680",
+          "IceColdIpWashBuffer",
+          "ImmunoprecipitationLiquidWaste",
+          "InputFraction",
+          "InputFractionLane",
+          "InputFractionLaneSample",
+          "IpDenaturingEluate",
+          "IpEluateLane",
+          "IpEluateLaneSample",
+          "NonfatMilkPowder",
+          "PVDFMembraneEquilibrationBath",
+          "PVDFMembraneProcessingTank",
+          "PremixedFourXLdsReducingBuffer",
+          "PrestainedProteinLadder",
+          "ProteinGIpBeadTube",
+          "ProteinGMagneticBeadStock",
+          "ProteinLadderLane",
+          "RabbitAntiGfpPrimary",
+          "SDSPageRunningBuffer",
+          "TBSTWashBuffer",
+          "TransferBufferTwentyPercentMethanol",
+          "WesternBlotLiquidWaste"
+        ]
+      },
+      "instruments": {
+        "devices": [],
+        "tools": []
+      }
+    },
+    "schema": "lab_report_v1"
+  },
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": []
+    }
+  },
+  "schema": "culsma_run_output_v1"
+}

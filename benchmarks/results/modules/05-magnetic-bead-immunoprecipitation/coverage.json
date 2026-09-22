@@ -5,9 +5,10 @@
   "artifact": "05-magnetic-bead-immunoprecipitation",
   "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
   "language_version": "1.0.7",
-  "source_sha256": "268fc45b4f2f01698c2d833a0389046e55c1bb5c4b71d191f6962103da2476b2",
+  "source_sha256": "7b327d0e1f56da2c3733b580953b60941828ab3e574f93fad9232de3b71dfd95",
   "program_sha256": {
-    "protocol.culs": "6e9b545d28c5f9dd8c966b8f8971eb33a1016fb037683c95b58ec279f005b567"
+    "module.culs": "5ffc962fa6d234f5270c2fbed28a7733d6aff547ed42549a4f2a5265b552675b",
+    "protocol.culs": "53563fa2537f910e658b15a8e4c9674364b78b2f5f908c6c047825bc9ffb5945"
   },
   "total_steps": 23,
   "matched_steps": 23,

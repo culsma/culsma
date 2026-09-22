@@ -10,3 +10,4 @@ Evaluated with Culsma 1.0.7.
 | Module 06: Western blot | 32/32 | 100% |
 | Module 07: Sandwich ELISA | 41/42 | 97.6% |
 | Composite 01: Flow-cytometry immunophenotyping | 5/5 | 100% |
+| Composite 02: Magnetic-bead IP with Western blot | 7/7 | 100% |

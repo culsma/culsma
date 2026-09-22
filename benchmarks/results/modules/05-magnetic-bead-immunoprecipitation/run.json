@@ -3,12 +3,12 @@
   "report": {
     "alerts": [],
     "execution": {
-      "completed_steps": 114,
+      "completed_steps": 115,
       "diagnostic_count": 0,
       "failed_steps": 0,
       "ok": true,
       "skipped_steps": 0,
-      "total_steps": 114
+      "total_steps": 115
     },
     "external_inventory": {
       "checked": false,
@@ -43,11 +43,11 @@
           "volume_uL": 30.005
         },
         {
-          "mass_mg": 25.05,
+          "mass_mg": null,
           "name": "InputFraction",
-          "primary_component": "CLARIFIED_LYSATE_TOTAL_PROTEIN",
-          "volume_mL": 0.02505,
-          "volume_uL": 25.05
+          "primary_component": null,
+          "volume_mL": 0.025,
+          "volume_uL": 25.0
         }
       ],
       "has_material_state": true,

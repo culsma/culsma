@@ -1,6 +1,6 @@
 {
   "schema": "patterns-modular-reproduction-v1",
-  "source_commit": "5364676bc2437b4981a00ce0133c730af243e469",
+  "source_commit": "05c8472c4b50955d3eb0581e9163db28e05dd7d5",
   "runtime_commit": "5364676bc2437b4981a00ce0133c730af243e469",
   "table_version": "1.0.7",
   "runtime_package_version": "1.0.7",
@@ -43,7 +43,7 @@
       "matched_steps": 23,
       "total_steps": 23,
       "issues": [],
-      "completed_steps": 114,
+      "completed_steps": 115,
       "name": "Module 05: Magnetic-bead immunoprecipitation"
     },
     {
@@ -74,12 +74,24 @@
       "issues": [],
       "completed_steps": 608,
       "name": "Composite 01: Flow-cytometry immunophenotyping"
+    },
+    {
+      "path": "composites/02-magnetic-bead-ip-western-blot",
+      "matched_steps": 7,
+      "total_steps": 7,
+      "issues": [],
+      "completed_steps": 268,
+      "name": "Composite 02: Magnetic-bead IP with Western blot"
     }
   ],
   "input_sha256": {
     "composites/01-flow-cytometry-immunophenotyping/protocol.culs": "8d5a0abdc324a49abe132ccf6b4fb5eb8f29375a8da214ff40f5aeffd79e52b0",
     "composites/01-flow-cytometry-immunophenotyping/source.md": "b4df60eece954847ea3a727564d273bfa2ca6f91ffeab016ff58e67de21508a1",
+    "composites/02-magnetic-bead-ip-western-blot/protocol.culs": "c42019b7b70fd9a090d708adca6734ecb3ba726b7cacaa6a101fb1bff7339240",
+    "composites/02-magnetic-bead-ip-western-blot/source.md": "2d0e46ea6972dbdebab8131353df38a087791b958910ce18591abd96483910f9",
     "libraries/Module04.culs": "c0ed87e7a094e68c29ab0337ff615b8d3e2598252a1b93aa0434cc5378af7c72",
+    "libraries/Module05.culs": "d283deabce57413451ad3b2a8ef7a131bc7270e4cd2f25a658cfa0990213d556",
+    "libraries/Module06.culs": "6ee939eb3617a6486f9a5511096408adaaf5398984128efc2abd4c77d12e45e6",
     "modules/01-cell-transfection/protocol.culs": "8d41432d25b48fb0243da6894c4a94cea9c2823ab5da62f3e8211ffa5df7fd19",
     "modules/01-cell-transfection/source.md": "f6469969054b859cc804859008213dbde21ddb00d7dba4cc04c0502ec4f73ec0",
     "modules/02-selective-plating-candidate-colony-isolation/protocol.culs": "50b2540012ff59f5a4741a4b71fc25e46e4e0bcbeb2d8ca309244729d99ba066",
@@ -89,10 +101,13 @@
     "modules/04-suspension-cell-staining/module.culs": "d313d40ca63ca452cffc7957c608469aa769a3a9c2c6fd668a21842ecda590c0",
     "modules/04-suspension-cell-staining/protocol.culs": "b723eb71ded52913dc730c639ef472da28a909f83b28e5ef57ff95420c9185eb",
     "modules/04-suspension-cell-staining/source.md": "af891f53ec8aeb3a4c35ac34d5ade079cde2ed5ed115f1cf6ef23bad50c73444",
-    "modules/05-magnetic-bead-immunoprecipitation/protocol.culs": "6e9b545d28c5f9dd8c966b8f8971eb33a1016fb037683c95b58ec279f005b567",
-    "modules/05-magnetic-bead-immunoprecipitation/source.md": "268fc45b4f2f01698c2d833a0389046e55c1bb5c4b71d191f6962103da2476b2",
-    "modules/06-western-blot/protocol.culs": "6ebabfd58efb0acb356d37f1affe9ee74b9a36a6bb0e362e05991da132a9ca0f",
+    "modules/05-magnetic-bead-immunoprecipitation/module.culs": "5ffc962fa6d234f5270c2fbed28a7733d6aff547ed42549a4f2a5265b552675b",
+    "modules/05-magnetic-bead-immunoprecipitation/protocol.culs": "53563fa2537f910e658b15a8e4c9674364b78b2f5f908c6c047825bc9ffb5945",
+    "modules/05-magnetic-bead-immunoprecipitation/source.md": "7b327d0e1f56da2c3733b580953b60941828ab3e574f93fad9232de3b71dfd95",
+    "modules/06-western-blot/module.culs": "c9ae2c74a93588dbfcd1ac08b36d139da6d1edb955ad7e9be4df01d8b90c7189",
+    "modules/06-western-blot/protocol.culs": "abe999ac13a6c1edd736f49df2dfed9186870e671ec1f63978357f0b31c81c3d",
     "modules/06-western-blot/source.md": "7d56da32ad704ae13cc62c2e0fc8d152b390ad49212fd5b0ae00c0a6712bf1fb",
+    "modules/06-western-blot/two-lane-gfp.culs": "9b42a39b922bdb324398e65e33b82ed5d38dbc0bd111891faee575df1d5fa4e1",
     "modules/07-sandwich-elisa/protocol.culs": "834562c60321a00877d428c16243e30beab512cabf4e9f413d2814cef2f6f207",
     "modules/07-sandwich-elisa/source.md": "fbd40a4f9851eff8f3817396f80c77951b10a7ad9ac75d43e21e8e9910482192"
   }

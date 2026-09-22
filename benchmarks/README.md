@@ -2,7 +2,7 @@
 
 This is the canonical public benchmark for Section 3.5 of
 *Culsma: An Executable Specification Language for Laboratory Protocols*.
-It contains seven experimental modules and one composite workflow. Source
+It contains seven experimental modules and two composite workflows. Source
 procedures, programs, results, and reproduction instructions are maintained
 here together; no documentation-site export is needed.
 
@@ -21,11 +21,12 @@ Evaluated with Culsma 1.0.7.
 | Module 06: Western blot | 32/32 | 100% |
 | Module 07: Sandwich ELISA | 41/42 | 97.6% |
 | Composite 01: Flow-cytometry immunophenotyping | 5/5 | 100% |
+| Composite 02: Magnetic-bead IP with Western blot | 7/7 | 100% |
 <!-- paper-table:end -->
 
 The seven modules cover **160/161** numbered source steps (99.38%). Including
-the composite gives **165/166** (99.40%). All eight entry programs complete:
-**2406/2406** generated execution steps, with no failed or skipped steps and
+the two composites gives **172/173** (99.42%). All nine entry programs complete:
+**2675/2675** generated execution steps, with no failed or skipped steps and
 no runtime diagnostics. Source steps and execution steps are different
 counts; expanded loop iterations do not increase source-step coverage.
 
@@ -62,16 +63,18 @@ references; structural correspondence does not establish that automatic link.
 | Path | Contents |
 | --- | --- |
 | [`modules/`](modules/) | Seven modules; each has `source.md` and a `protocol.culs` entry program. |
-| [`composites/`](composites/) | One composite, also with `source.md` and a `protocol.culs` entry. |
+| [`composites/`](composites/) | Two composites, each with `source.md` and a `protocol.culs` entry. |
 | [`worked_examples/`](worked_examples/) | Four manuscript examples, independent checker, and recorded results; excluded from coverage totals. |
-| [`libraries/`](libraries/) | Import entry for Module 04, reused by the composite. |
+| [`libraries/`](libraries/) | Import entries for Modules 04, 05, and 06, reused by the composites. |
 | [`reproduce.py`](reproduce.py) | Single script for coverage, execution, comparison, and table generation. |
 | [`manifest.json`](manifest.json) | Fixed versions, source hashes, expected counts and known gaps. |
 | [`results/`](results/) | One checked set of coverage, execution, and material/observation results. |
 
-Module 04 also contains its reusable `module.culs`. Its `protocol.culs` runs
-that module independently. The composite imports the same definition through
-`libraries/Module04.culs`; it does not copy the staining procedure.
+Modules 04, 05, and 06 contain reusable `module.culs` definitions and
+`protocol.culs` entry programs. Composite 01 imports Module 04 for staining.
+Composite 02 passes the input fraction and eluate from Module 05 to the
+two-lane GFP configuration of Module 06 (`two-lane-gfp.culs`), preserving
+their lane identities in a shared image record.
 Each `source.md` retains the procedure's source references and context.
 
 ## Reproduce
@@ -79,7 +82,7 @@ Each `source.md` retains the procedure's source references and context.
 With Git and Python 3.12 installed, run from a new working directory:
 
 ```sh
-git clone --branch v1.0.7 https://github.com/culsma/culsma.git culsma-benchmark
+git clone https://github.com/culsma/culsma.git culsma-benchmark
 git clone https://github.com/culsma/culsma.git culsma-runtime
 git -C culsma-runtime checkout 5364676bc2437b4981a00ce0133c730af243e469
 python3.12 -m venv .venv
@@ -94,15 +97,15 @@ The runner imports the pinned runtime directly; no private wheel is required.
 Use a new output directory for every run. For local work inside this repository,
 use `benchmarks/local-results/<run-name>/`, which is ignored by Git.
 
-The input snapshot is `5364676bc2437b4981a00ce0133c730af243e469`; the runtime
+The input snapshot is `05c8472c4b50955d3eb0581e9163db28e05dd7d5`; the runtime
 is `5364676bc2437b4981a00ce0133c730af243e469`. The paper's benchmark version is
 **1.0.7**; package metadata at the pinned runtime is **1.0.7**. Release tag
-`v1.0.7` includes the benchmark package and the same implementation source as
-this evaluated runtime. The recorded evaluation environment is Python 3.12.8
+`v1.0.7` contains the same implementation source as this evaluated runtime;
+the benchmark package additionally includes the later composite and example updates. The recorded evaluation environment is Python 3.12.8
 with Lark 1.3.1.
 
 A zero exit status requires the pinned runtime and input hashes, matching
-coverage counts and gap records, and successful completion of all eight
+coverage counts and gap records, and successful completion of all nine
 programs with the expected execution counts and zero failures, skips, or
 runtime diagnostics. Reproducing the remaining known gap is a successful comparison.
 The checker and its counting rule are included in the single script.
