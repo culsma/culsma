@@ -1,0 +1,110 @@
+import Module05;
+import Module06;
+
+protocol Composite02_MagneticBeadIpWesternBlot() returns (
+  antibody_stained_membrane,
+  western_blot_image
+) {
+  // Source step S1: Run Module 05 with 500 uL clarified protein lysate containing 1 mg total protein to obtain a 25 uL input fraction and a 30 uL denaturing IP eluate. Preserve both fraction identities. The target-protein mass in the IP eluate is not assumed or inferred.
+  let ip_result_group = Module05.Module05_MagneticBeadImmunoprecipitation();
+  let input_fraction = ip_result_group[0];
+  let ip_eluate = ip_result_group[1];
+
+  let premixed_lds_reducing_4x = tube(label = "Composite02FourXLdsReducingBuffer", capacity = 100uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "LDS_REDUCING_BUFFER_4X", attrs = { role: reaction_environment, concentration: "4x", reducing_agent: premixed }):50uL
+  ]);
+  let deionized_water = tube(label = "Composite02DeionizedWater", capacity = 100uL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "DEIONIZED_WATER", attrs = { role: diluent }):50uL
+  ]);
+
+  // Source step S2: Prepare a 25 uL input-lane sample containing 15 uL input fraction, 6.25 uL premixed 4x LDS sample buffer with reducing agent, and 3.75 uL deionized water. Mix by pipetting 10 times using 20 uL per stroke, heat at 98 C for 15 min, and spin at 3,000 x g for 5 s at 25 C.
+  let input_lane_sample = tube(label = "InputFractionLaneSample", capacity = 100uL);
+  input_lane_sample << [input_fraction:15uL, premixed_lds_reducing_4x:6.25uL, deionized_water:3.75uL];
+  repeat input_lane_mix in schedule(start = 1, end = 10, step = 1) {
+    input_lane_sample << [input_lane_sample:20uL];
+  }
+  with env(thermal = 98C, duration = 15min) {
+    hold(sample = input_lane_sample);
+  }
+  with env(thermal = 25C, duration = 5s) {
+    sep(
+      sample = input_lane_sample,
+      program = centrifuge_program(drive = 3000g),
+      component_fates = {
+        GFP_TARGET_PROTEIN: { supernatant: 100%, pellet: 0% },
+        LYSATE_BACKGROUND_PROTEINS: { supernatant: 100%, pellet: 0% },
+        IP_LYSIS_BUFFER: { supernatant: 100%, pellet: 0% },
+        LDS_REDUCING_BUFFER_4X: { supernatant: 100%, pellet: 0% },
+        DEIONIZED_WATER: { supernatant: 100%, pellet: 0% }
+      }
+    );
+  }
+
+  // Source step S3: Use 25 uL of the denaturing IP eluate produced by Module 05 as the IP-elution lane sample. Spin the IP-elution lane sample at 3,000 x g for 5 s at 25 C before loading; do not assign a protein mass to this lane.
+  let ip_lane_sample = tube(label = "IpEluateLaneSample", capacity = 100uL);
+  ip_lane_sample << [ip_eluate:25uL];
+  with env(thermal = 25C, duration = 5s) {
+    sep(
+      sample = ip_lane_sample,
+      program = centrifuge_program(drive = 3000g),
+      component_fates = {
+        ANTI_GFP_CAPTURE_ANTIBODY: { supernatant: 100%, pellet: 0% },
+        GFP_TARGET_PROTEIN: { supernatant: 100%, pellet: 0% },
+        DENATURING_ELUTION_BUFFER: { supernatant: 100%, pellet: 0% },
+        LDS_REDUCING_BUFFER_4X: { supernatant: 100%, pellet: 0% }
+      }
+    );
+  }
+
+  let rabbit_anti_gfp_primary = tube(label = "RabbitAntiGfpPrimary", capacity = 100uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "RABBIT_ANTI_GFP_PRIMARY", attrs = { role: primary_antibody, target: GFP, host: rabbit }):20uL
+  ]);
+  let goat_anti_rabbit_680 = tube(label = "GoatAntiRabbitIgGAlexaFluor680", capacity = 100uL, load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "GOAT_ANTI_RABBIT_IGG_ALEXA_FLUOR_680", attrs = { role: secondary_antibody, target: rabbit_primary, fluorophore: AlexaFluor680 }):20uL
+  ]);
+
+  // Source step S4: Load the complete input-lane sample, IP-elution lane sample, and protein ladder into separate lanes of the same 4-12% Bis-Tris gel.
+  // Source step S5: Separate at 180 V for 30 min and transfer to PVDF at 100 V for 90 min at 4 C in transfer buffer containing 20% methanol.
+  // Source step S6: Block and wash the membrane, then probe with rabbit anti-GFP primary antibody and goat anti-rabbit Alexa Fluor 680 secondary antibody under the stated conditions.
+  let antibody_stained_membrane = Module06.Module06_TwoLaneGfpWesternBlot(
+    input_lane_sample = input_lane_sample,
+    ip_lane_sample = ip_lane_sample,
+    primary_antibody_stock = rabbit_anti_gfp_primary,
+    secondary_antibody_stock = goat_anti_rabbit_680
+  );
+
+  let western_blot_schema = data_schema(
+    label = "Composite02LaneResolvedWesternBlot",
+    fields = [
+      input_fraction_lane_id,
+      ip_eluate_lane_id,
+      protein_ladder_lane_id,
+      channel_nm,
+      antibody_target,
+      gfp_band_signal,
+      molecular_weight_estimate_kDa,
+      ladder_visible,
+      imaging_qc_status,
+      image_file
+    ]
+  );
+
+  // Source step S7: Acquire one Western blot image in the 680 nm fluorescence channel while preserving the lane identities input_fraction, ip_eluate, and protein_ladder.
+  let western_blot_image = img(
+    sample = antibody_stained_membrane,
+    quantity = customized,
+    schema_ref = western_blot_schema,
+    save_raw = true
+  );
+  western_blot_image.result.input_fraction_lane_id = "input_fraction";
+  western_blot_image.result.ip_eluate_lane_id = "ip_eluate";
+  western_blot_image.result.protein_ladder_lane_id = "protein_ladder";
+  western_blot_image.result.channel_nm = 680;
+  western_blot_image.result.antibody_target = "GFP";
+
+  return
+    antibody_stained_membrane = antibody_stained_membrane,
+    western_blot_image = western_blot_image;
+}
+
+Composite02_MagneticBeadIpWesternBlot();
