@@ -10,13 +10,13 @@ import re
 import subprocess
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parent
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--culsma-cli', required=True, type=Path)
-    parser.add_argument('--program', type=Path, help='Exported introductory program')
+    parser.add_argument('--program', type=Path, default=ROOT / 'modules/example-00/protocol.culs', help='Exported introductory program')
     parser.add_argument('--output', type=Path, default=ROOT / 'output/introduction_example')
     parser.add_argument('--tex-output-dir', type=Path, default=ROOT / 'sections/generated')
     args = parser.parse_args()

@@ -62,20 +62,22 @@ references; structural correspondence does not establish that automatic link.
 
 | Path | Contents |
 | --- | --- |
-| [`modules/`](modules/) | Seven modules; each has `source.md` and a `protocol.culs` entry program. |
-| [`composites/`](composites/) | Two composites, each with `source.md` and a `protocol.culs` entry. |
-| [`worked_examples/`](worked_examples/) | Four manuscript examples, independent checker, and recorded results; excluded from coverage totals. |
-| [`libraries/`](libraries/) | Import entries for Modules 04, 05, and 06, reused by the composites. |
-| [`reproduce.py`](reproduce.py) | Single script for coverage, execution, comparison, and table generation. |
-| [`manifest.json`](manifest.json) | Fixed versions, source hashes, expected counts and known gaps. |
-| [`results/`](results/) | One checked set of coverage, execution, and material/observation results. |
+| [`modules/`](modules/) | Seven numbered benchmark modules and manuscript `example-00`–`example-04`; programs and results are kept together in each directory. |
+| [`composites/`](composites/) | Two composite workflows, each with its source, entry program, and results. |
+| [`reproduce.py`](reproduce.py) | Coverage and execution checks for the seven benchmark modules and two composites. |
+| [`check_manuscript_examples.py`](check_manuscript_examples.py) | Material-state and result checks for Examples 01–04. |
+| [`check_introduction_example.py`](check_introduction_example.py) | Checks for introductory Example 00. |
+| [`manifest.json`](manifest.json) | Fixed versions, input hashes, expected counts and known gaps. |
+| [`summary.json`](summary.json) | Aggregate benchmark results; per-artifact records are in each artifact's `results/`. |
+| [`examples-summary.json`](examples-summary.json) | Aggregate checks for Examples 01–04, excluded from coverage totals. |
 
-Modules 04, 05, and 06 contain reusable `module.culs` definitions and
-`protocol.culs` entry programs. Composite 01 imports Module 04 for staining.
-Composite 02 passes the input fraction and eluate from Module 05 to the
-two-lane GFP configuration of Module 06 (`two-lane-gfp.culs`), preserving
-their lane identities in a shared image record.
-Each `source.md` retains the procedure's source references and context.
+Modules 04, 05, and 06 keep their reusable definitions and named import entries
+(`Module04.culs`, `Module05.culs`, `Module06.culs`) inside their own directories.
+The runner supplies these module directories as import search paths; no separate
+library directory is needed. Composite 01 imports Module 04 for staining.
+Composite 02 passes the input fraction and eluate from Module 05 to Module 06's
+two-lane GFP configuration, preserving their lane identities in a shared image.
+Each source procedure retains its references and context in `source.md`.
 
 ## Reproduce
 
@@ -110,8 +112,9 @@ programs with the expected execution counts and zero failures, skips, or
 runtime diagnostics. Reproducing the remaining known gap is a successful comparison.
 The checker and its counting rule are included in the single script.
 
-Each output directory contains `summary.json`, `table.md`, and per-artifact
-`coverage.json`, `run.json`, and `results.json`. Nonempty console/error logs
+Each output directory mirrors the module/composite layout, with `summary.json`,
+`table.md`, and per-artifact `results/coverage.json`, `results/run.json`, and
+`results/results.json`. Nonempty console/error logs
 are retained when present. Report and compact-result exports use separate
 deterministic CLI invocations. Input, script, environment, and output identities
 are recorded. The automatic comparison checks coverage and execution counts;
@@ -131,8 +134,8 @@ the source directories.
    table is written to `table.md`, using the paper's module names and rounding,
    with one version label for the entire run.
 4. Review the resulting records. When advancing to a new runtime version,
-   rerun the full collection and archive the previous complete `results/` set
-   under `archive/benchmark-results/<version>-<commit>/` before replacing it.
+   rerun the full collection and archive the previous aggregate summary and per-artifact `results/` sets
+   under `archive/benchmark-results/<version>-<commit>/` before replacing them.
    Update the aggregate figures above and the paper's table and Methods
    if the evidence changes. Commit inputs, manifest, README, and results
    together, and cite the new package commit in the paper.
@@ -140,6 +143,41 @@ the source directories.
 Historical Cases 00–14 and their original tools are preserved outside this
 active directory in [`archive/benchmarks-legacy/`](../archive/benchmarks-legacy/).
 They are excluded from this runner and the paper's current coverage totals.
-The four evaluation examples, the introductory illustration, and their
-reproduction scripts are provided in [`worked_examples/`](worked_examples/). They are evaluated separately
-and do not contribute to the coverage totals above.
+## Manuscript examples
+
+The examples share the module layout but are not part of the Section 3.5
+coverage denominator. Their `protocol.culs` files reproduce the paper listings;
+`results/` retains their checked states, observations, reports, and raw outputs.
+
+| Directory | Manuscript location | Focus |
+| --- | --- | --- |
+| `modules/example-00/` | Introduction | Lysate clarification and fluorescence observation |
+| `modules/example-01/` | Section 3.1 | PCR composition and applied conditions |
+| `modules/example-02/` | Section 3.2 | Staining, washing, and flow-cytometry observation |
+| `modules/example-03/` | Section 3.3 | Magnetic separation and component relationships |
+| `modules/example-04/` | Section 3.4 | Ordered fractions and parameterized plate analysis |
+
+Install the pinned runtime CLI in the environment above:
+
+```sh
+.venv/bin/python -m pip install -e culsma-runtime
+.venv/bin/python culsma-benchmark/benchmarks/check_manuscript_examples.py \
+  --culsma-repo culsma-runtime --culsma-cli .venv/bin/culsma \
+  --output results/examples-run-01 --tex-output-dir results/examples-run-01/listings
+.venv/bin/python culsma-benchmark/benchmarks/check_introduction_example.py \
+  --culsma-cli .venv/bin/culsma \
+  --output results/examples-run-01/modules/example-00/results \
+  --tex-output-dir results/examples-run-01/listings
+```
+
+The four-example checker emits `examples-summary.json` and per-example results
+under `modules/example-01` through `example-04`. The introductory checker keeps
+its summary alongside its outputs. Unset observation fields remain unset;
+these software runs do not supply laboratory measurements. Its display maps
+the observation subject to its declared container label; raw output and the
+mapping are retained. These commands generate TeX listings without compiling
+the manuscript PDF.
+
+When editing a manuscript listing, synchronize the corresponding `protocol.culs`
+and checker, rerun, and replace its recorded results. Keep coverage unchanged
+unless the separately enumerated benchmark source inventory changes.

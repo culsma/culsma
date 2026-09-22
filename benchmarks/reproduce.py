@@ -156,10 +156,10 @@ def reproduce(runtime, output, update_readme=False):
         raise ValueError('Runtime source or package metadata has local changes')
     actual_files = {
         str(p.relative_to(ROOT))
-        for group in ('modules', 'composites')
-        for d in (ROOT / group).iterdir() if d.is_dir()
+        for entry in manifest['artifacts']
+        for d in [ROOT / entry['path']]
         for p in d.iterdir() if p.suffix in ('.culs', '.md')
-    } | {str(p.relative_to(ROOT)) for p in (ROOT / 'libraries').glob('*.culs')}
+    }
     if actual_files != set(manifest['input_sha256']):
         raise ValueError('Benchmark input inventory differs from the paper snapshot')
     for name, expected in manifest['input_sha256'].items():
@@ -175,12 +175,15 @@ def reproduce(runtime, output, update_readme=False):
     rows = []
     for entry in manifest['artifacts']:
         artifact = ROOT / entry['path']
-        target = output / entry['path']
+        target = output / entry['path'] / 'results'
         target.mkdir(parents=True)
         coverage = assess(artifact, manifest['runtime_commit'], versions['culsma'])
         write_json(target / 'coverage.json', coverage)
         command = [sys.executable, '-m', 'culsma', 'run', str(artifact / 'protocol.culs'),
-                   '--library-root', str(ROOT / 'libraries'), '--output', str(target / 'run.json')]
+                   '--output', str(target / 'run.json')]
+        for module in manifest['artifacts']:
+            if module['path'].startswith('modules/'):
+                command[5:5] = ['--library-root', str(ROOT / module['path'])]
         process = subprocess.run(command, env=env, cwd=runtime, text=True, capture_output=True)
         if process.stdout.strip():
             (target / 'stdout.txt').write_text(process.stdout)

@@ -18,7 +18,7 @@ import tarfile
 import tempfile
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parent
 COMMIT = "5364676bc2437b4981a00ce0133c730af243e469"
 
 
@@ -286,13 +286,13 @@ def main():
     parser.add_argument("--output", type=Path, default=ROOT / "output/manuscript_examples")
     parser.add_argument("--tex-output-dir", type=Path, default=ROOT / "sections/generated")
     parser.add_argument("--culsma-cli", type=Path)
-    parser.add_argument("--program-dir", type=Path, help="Read exported .culs programs instead of manuscript listings")
+    parser.add_argument("--program-dir", type=Path, default=ROOT / "modules", help="Directory containing example-01 through example-04")
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     args.tex_output_dir.mkdir(parents=True, exist_ok=True)
     if args.program_dir:
-        inputs = [(name, (args.program_dir / f"{name}.culs").read_text())
-                  for name in ("pcr", "flow", "magnetic", "fractions")]
+        inputs = [(name, (args.program_dir / f"example-{index:02d}" / "protocol.culs").read_text())
+                  for index, name in enumerate(("pcr", "flow", "magnetic", "fractions"), 1)]
         source_identity = {"input_mode": "exported_programs"}
     else:
         text = (ROOT / "sections/08_modeling_principles_validation.tex").read_text()
@@ -383,7 +383,15 @@ def main():
         [str(culsma_cli), str(source_paths["fractions"])], text=True
     )
     write_fraction_execution_result(fraction_console, args.tex_output_dir)
-    (args.output / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+    import shutil
+    for index, name in enumerate(("pcr", "flow", "magnetic", "fractions"), 1):
+        target = args.output / "modules" / f"example-{index:02d}" / "results"
+        target.mkdir(parents=True, exist_ok=True)
+        for path in args.output.glob(name + ".*"):
+            shutil.move(str(path), target / path.name)
+        summary["compact_results"]["files"][name]["path"] = str(
+            (target / f"{name}.results.json").relative_to(args.output))
+    (args.output / "examples-summary.json").write_text(json.dumps(summary, indent=2) + "\n")
     return 0
 
 
