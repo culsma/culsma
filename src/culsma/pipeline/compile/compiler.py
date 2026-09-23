@@ -117,6 +117,7 @@ class IRCompiler:
         )
 
     def compile_protocol(self, proto: ProtocolDecl, *, proto_index: int, proto_id: str | None = None) -> IRProtocol:
+        self.session.state.synthesized_wells.clear()
         _require_span(proto, f"protocol[{proto_index}]")
         _validate_protocol_return_contract(proto)
         return_stmt = _protocol_tail_return(proto)

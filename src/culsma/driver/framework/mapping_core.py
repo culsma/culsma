@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from enum import Enum
+from culsma.domains.contracts import enum_wire_value
 from typing import Any
 
 from culsma.pipeline.plan_nodes import PlanStep
@@ -47,6 +49,8 @@ def normalize_step(step: PlanStep) -> MappingRecord:
 
 
 def value_to_text(value: Any) -> str:
+    if isinstance(value, Enum):
+        return enum_wire_value(value)
     if value is None:
         return "null"
     if isinstance(value, bool):

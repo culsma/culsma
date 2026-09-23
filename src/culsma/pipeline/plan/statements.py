@@ -10,6 +10,7 @@ from culsma.pipeline.ir_nodes import (
     IRArg,
     IRAssign,
     IRCall,
+    IRPlateWellRef,
     IRConditional,
     IRControl,
     IRIdentifier,
@@ -32,6 +33,7 @@ from .gates import append_constraints, append_env_layer, append_runtime_conditio
 from .references import DEFAULT_PLAN_REFERENCE_RESOLVER, PlanReferenceResolver
 from .serialization import DEFAULT_PLAN_EXPRESSION_SERIALIZER, PlanExpressionSerializer
 from .static_eval import PlanStaticEvaluator
+from .plates import PlateDescriptorResolver
 
 
 _CORE_RUNTIME_CALLS = {"sep", "frac", "img", "ecp", "phy"}
@@ -130,6 +132,19 @@ class LetPlanHandler(BasePlanStatementHandler):
     def prepare(self, stmt: IRStatement, _ctx: PlanLoweringContext) -> PlanStatementLoweringState:
         stmt = cast(IRLet, stmt)
         state = LetPlanState()
+        if isinstance(stmt.value, IRPlateWellRef):
+            try:
+                descriptor = PlateDescriptorResolver(
+                    serializer=self.serializer, evaluator=self.static_evaluator,
+                ).resolve(stmt.value.plate, _ctx.local_env)
+                state.call = descriptor.allocation(stmt.value.position, stmt.value.span)
+            except (TypeError, ValueError) as error:
+                _ctx.emit_diagnostic(Diagnostic(
+                    code='PLAN_PLATE_SELECTOR_INVALID', message=str(error),
+                    span=stmt.value.span, node_id=stmt.id,
+                ))
+                state.output = []
+            return state
         if (
             isinstance(stmt.value, IRCall)
             and stmt.value.name in (_CORE_RUNTIME_CALLS | _LOCAL_RUNTIME_CALLS | _CONSTRUCTOR_CALLS)

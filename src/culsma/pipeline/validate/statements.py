@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from culsma.pipeline.external_inputs import ExternalInputResolver, ExternalInputScope, ExternalInputStatus, deferred_external_bindings
+from culsma.domains.registry import EXTERNAL_ENUM_TYPES
+
 from dataclasses import dataclass, field
 from typing import Any, Iterable, Mapping, cast
 
@@ -219,6 +222,8 @@ class BaseStatementHandler:
         updates = deferred_content_enum_bindings(
             names, ContentArgumentScope(ctx.literal_bindings, ctx.expr_bindings, ctx.defined_names),
         )
+        updates.update(deferred_external_bindings(names, ExternalInputScope(
+            {**ctx.expr_bindings, **ctx.literal_bindings}, ctx.defined_names)))
         for name, value in updates.items():
             ctx.literal_bindings.pop(name, None)
             ctx.expr_bindings[name] = value
@@ -367,6 +372,11 @@ class LetHandler(BaseStatementHandler):
             enum_result.value if enum_result.source is ContentInputSource.ENUM and (enum_result.token is not None or isinstance(enum_result.value, DeferredContentEnum))
             else BindingValidator.resolve_let_value(stmt, ctx.literal_bindings)
         )
+        external = ExternalInputResolver.resolve(stmt.value, None, ExternalInputScope(
+            {**ctx.expr_bindings, **ctx.literal_bindings}, ctx.defined_names))
+        if external.status is ExternalInputStatus.RESOLVED and type(external.value) in EXTERNAL_ENUM_TYPES.values():
+            resolved = external.value
+            ctx.expr_bindings[stmt.name] = resolved
         if resolved is not None:
             ctx.literal_bindings[stmt.name] = resolved
         else:
@@ -459,8 +469,13 @@ class AssignHandler(BaseStatementHandler):
             result = ContentArgumentResolver.resolve_argument(
                 stmt.value, None, ContentArgumentScope(ctx.literal_bindings, ctx.expr_bindings, ctx.defined_names),
             )
+            external = ExternalInputResolver.resolve(stmt.value, None, ExternalInputScope(
+                {**ctx.expr_bindings, **ctx.literal_bindings}, ctx.defined_names))
             ctx.expr_bindings[assign_root] = stmt.value
-            if result.source is ContentInputSource.ENUM and (result.token is not None or isinstance(result.value, DeferredContentEnum)):
+            if external.status is ExternalInputStatus.RESOLVED and type(external.value) in EXTERNAL_ENUM_TYPES.values():
+                ctx.expr_bindings[assign_root] = external.value
+                ctx.literal_bindings[assign_root] = external.value
+            elif result.source is ContentInputSource.ENUM and (result.token is not None or isinstance(result.value, DeferredContentEnum)):
                 ctx.literal_bindings[assign_root] = result.value
             else:
                 ctx.literal_bindings.pop(assign_root, None)
@@ -886,6 +901,8 @@ class StepHandler(BaseStatementHandler):
             validate_readout_schema_contract(
                 stmt.name,
                 stmt.args,
+                expr_bindings=ctx.expr_bindings,
+                defined_names=ctx.defined_names,
                 literal_bindings=ctx.literal_bindings,
                 node_id=stmt.id,
                 span=stmt.span,
@@ -934,7 +951,7 @@ class StepHandler(BaseStatementHandler):
         state = cast(StepState, state)
         if state.builtin_method:
             return
-        self.append_diagnostics(ctx, validate_agit_contract(stmt, literal_bindings=ctx.literal_bindings))
+        self.append_diagnostics(ctx, validate_agit_contract(stmt, literal_bindings=ctx.literal_bindings, expr_bindings=ctx.expr_bindings, defined_names=ctx.defined_names))
         if stmt.name in {"sep", "frac"}:
             program_arg = next((arg for arg in stmt.args if arg.name == "program"), None)
             if program_arg is not None:

@@ -277,7 +277,13 @@ class RepeatStepHandler(BaseRuntimeStepHandler):
 
 class DriverBackedStepHandler(BaseRuntimeStepHandler):
     def execute_current_step(self, step: PlanStep, session: RuntimeSession, state: RuntimeStepState) -> bool:
-        runtime_step = session.value_resolver.resolve_step_args(step, session.state)
+        try:
+            runtime_step = session.value_resolver.resolve_step_args(step, session.state)
+        except (TypeError, ValueError) as error:
+            session.record_failed(step, reason="external_enum_invalid", diagnostic=Diagnostic(
+                code="RT_EXTERNAL_ENUM_INVALID", message=str(error), span=step.span, node_id=step.step_id))
+            state.recorded = True
+            return session.fail_fast
         material_result = _preflight_material_step(runtime_step, session)
         if material_result is not None and not material_result.ok:
             session.extend_diagnostics(material_result.diagnostics)
@@ -381,7 +387,13 @@ class InternalMaterialStepHandler(BaseRuntimeStepHandler):
     """Execute runtime-only material operations without exposing them to drivers."""
 
     def execute_current_step(self, step: PlanStep, session: RuntimeSession, state: RuntimeStepState) -> bool:
-        runtime_step = session.value_resolver.resolve_step_args(step, session.state)
+        try:
+            runtime_step = session.value_resolver.resolve_step_args(step, session.state)
+        except (TypeError, ValueError) as error:
+            session.record_failed(step, reason="external_enum_invalid", diagnostic=Diagnostic(
+                code="RT_EXTERNAL_ENUM_INVALID", message=str(error), span=step.span, node_id=step.step_id))
+            state.recorded = True
+            return session.fail_fast
         state.resolved_step = runtime_step
         material_result = _preflight_material_step(runtime_step, session)
         if material_result is None:

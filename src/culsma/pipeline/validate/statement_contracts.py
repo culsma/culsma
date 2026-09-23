@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from culsma.pipeline.external_inputs import external_parameter_resolution, ExternalInputStatus, ExternalInputIssue
+
 from culsma.domains.agitation import AGITATION_MODE
 from culsma.domains.readout import READOUT_QUANTITIES
 
@@ -199,7 +201,7 @@ def validate_assign_target_contract(
     return []
 
 
-def validate_agit_contract(step: IRStep, *, literal_bindings: dict[str, Any]) -> list[Diagnostic]:
+def validate_agit_contract(step: IRStep, *, literal_bindings: dict[str, Any], expr_bindings=None, defined_names=frozenset()) -> list[Diagnostic]:
     if step.name != "agit":
         return []
 
@@ -208,7 +210,11 @@ def validate_agit_contract(step: IRStep, *, literal_bindings: dict[str, Any]) ->
     if mode_arg is None:
         return diagnostics
 
-    mode_value = ExprResolver.to_name_ref(mode_arg.value, literal_bindings)
+    resolution = external_parameter_resolution('agit', 'mode', mode_arg.value,
+        bindings={**(expr_bindings or {}), **literal_bindings}, defined_names=defined_names)
+    if resolution.status is ExternalInputStatus.DEFERRED or resolution.issue in {ExternalInputIssue.WRONG_TYPE, ExternalInputIssue.CYCLIC_BINDING}:
+        return []
+    mode_value = resolution.value
     if mode_value is None or mode_value not in AGIT_MODES:
         diagnostics.append(
             Diagnostic(
@@ -589,6 +595,8 @@ def validate_let_call_contract(
             validate_readout_schema_contract(
                 value.name,
                 value.args,
+                expr_bindings=expr_bindings,
+                defined_names=defined_names or frozenset(),
                 literal_bindings=literal_bindings,
                 node_id=stmt.id,
                 span=value.span,
@@ -645,13 +653,19 @@ def validate_readout_schema_contract(
     literal_bindings: dict[str, Any],
     node_id: str | None,
     span: Span | None,
+    expr_bindings=None,
+    defined_names=frozenset(),
 ) -> list[Diagnostic]:
     if call_name not in {"img", "ecp", "phy"}:
         return []
     quantity_arg = _find_arg_by_name(args, "quantity")
     if quantity_arg is None:
         return []
-    quantity_value = ExprResolver.to_text_token(quantity_arg.value, literal_bindings)
+    resolution = external_parameter_resolution(call_name, 'quantity', quantity_arg.value,
+        bindings={**(expr_bindings or {}), **literal_bindings}, defined_names=defined_names)
+    if resolution.status is ExternalInputStatus.DEFERRED or resolution.issue in {ExternalInputIssue.WRONG_TYPE, ExternalInputIssue.CYCLIC_BINDING}:
+        return []
+    quantity_value = resolution.value
     allowed_quantities = READOUT_QUANTITY_SETS[call_name]
     if quantity_value not in allowed_quantities:
         return [

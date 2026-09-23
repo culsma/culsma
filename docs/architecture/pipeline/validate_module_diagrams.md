@@ -201,17 +201,17 @@ classDiagram
 | `python -m conformance.content_contract --reference-root ../culsma-reference --check` | 对照选定 reference 工作树；实现仓库的 Reference Conformance 手动工作流支持指定 revision |
 | `python -m conformance.content_contract --reference-root ../culsma-reference --write` | 从已审阅规范重新生成派生快照；随后运行相应行为测试 |
 
-## 1.0.8 Planned External Enum Contracts
+## 1.0.8 External Enum Contracts
 
-Status: **domain type foundation implemented; DSL binding/lowering/runtime integration remains planned**. Coordination: [PM #110](https://github.com/culsma/culsma-pm/issues/110).
-The three planned diagrams below use only Mermaid class, flowchart, and sequence syntax.
+Status: **domain types and DSL/plan/runtime integration implemented; plate geometry resolved after entry binding**. Coordination: [PM #110](https://github.com/culsma/culsma-pm/issues/110).
+The integration and local defect diagrams below use only Mermaid class, flowchart, and sequence syntax.
 The class diagram is the primary change; flow and sequence describe the boundary integration.
 
 | Boundary | Decision / invariant |
 | --- | --- |
 | Scope | First-group closed author-facing vocabularies only. Extensible classes, open attrs, and general internal discriminator cleanup follow separately. |
 | Baseline | Branch `codex/1.0.8` was fast-forwarded to accepted RC work at `42b562b` before implementation; content contracts and source compatibility are reused. |
-| Language ownership | The independent reference owns accepted member spellings, allowed values and compatibility semantics. Names below are proposals, not executable examples or a frozen reference contract. |
+| Language ownership | The independent reference owns accepted member spellings, allowed values and compatibility semantics. Closed enum spellings below are implemented and recorded in the owning reference sections; class-based open extensions remain a separate design. |
 | Type identity | Validate enum family and member, including through aliases and protocol parameters. Equal serialized text does not make different enum families interchangeable. |
 | Compatibility | Existing legal strings and bare tokens pass through a centralized source-compatibility adapter after normal binding resolution. A bound wrong-type value must not fall back to a token. |
 | Downstream boundary | Carry validated enum identity through lowering and execution. Serialize using existing field-specific strings; reuse the output's semantic role for keep_source, not its tuple value. Historical-data decoding remains separate from source compatibility. |
@@ -220,7 +220,7 @@ The class diagram is the primary change; flow and sequence describe the boundary
 
 ### Frozen First Delivery: Domain Types
 
-The implemented first delivery owns closed enum definitions and pure parameter contracts in `culsma.domains`, independent of parser, pipeline, runtime and drivers. Existing pipeline imports of program output types remain aliases of the same classes. Source compatibility converts legacy text through `pipeline.compat.external_enums`; domain APIs accept exact enum families only. This delivery does not claim new DSL member syntax is executable: binding, lowering and runtime integration remain subsequent acceptance gates.
+The implemented first delivery owns closed enum definitions and pure parameter contracts in `culsma.domains`, independent of parser, pipeline, runtime and drivers. Existing pipeline imports of program output types remain aliases of the same classes. Source compatibility converts legacy text through `pipeline.compat.external_enums`; domain APIs accept exact enum families only. This foundation was committed as `f14d5a1`. The second delivery adds scoped AST/IR resolution, semantic/type checks, tagged plan values, parameter-bound plan checks and runtime checks before drivers execute.
 
 | Requirement | Invariant / diagnostic boundary | Test hook |
 | --- | --- | --- |
@@ -228,24 +228,24 @@ The implemented first delivery owns closed enum definitions and pure parameter c
 | ENUM-IDENTITY | Reject another enum family even when its string value compares equal; domain API raises TypeError, unsupported members raise ValueError | `tests/test_domain_enums.py` |
 | ENUM-COMPAT | Only the source adapter accepts legacy strings; output roles decode using semantic_role; invalid strings fail | `tests/test_domain_enums.py` |
 | ENUM-OWNERS | Existing registries derive vocabulary from domain contracts; existing public output imports retain class identity | `tests/test_domain_enums.py` |
-| ENUM-EXTENSION | Closed enums cannot acquire extra members by subclassing. Extensible source classes need domain-specific contracts and separate metadata/execution capabilities; no empty catch-all program base is introduced | second delivery, pending extension declaration design |
+| ENUM-EXTENSION | Closed enums cannot acquire extra members by subclassing. Extensible source classes need domain-specific contracts and separate metadata/execution capabilities; no empty catch-all program base is introduced | later open-extension phase, pending declaration design |
 
 | Domain owner | Implemented types / contracts | Existing consumer |
 | --- | --- | --- |
-| `domains/labware.py` | PlateFormat, geometry and capacity | plate selector compiler |
+| `domains/labware.py` | PlateFormat, geometry and capacity | plate allocation planner |
 | `domains/separation.py` | Existing ProgramOutput families, DisruptionMethod, keep_source contract | program registry (backwards-compatible output imports) |
 | `domains/readout.py` | ReadoutQuantity, per-operation contracts and schema requirement | readout vocabulary view |
 | `domains/agitation.py` | AgitationMode including FLICK | agitation vocabulary view |
 | `domains/fractionation.py` | DensityGradientAxis / Order | program registry |
-| `domains/scheduling.py` | ScheduleMode and default | integration pending |
+| `domains/scheduling.py` | ScheduleMode and default | plan-time mode resolution |
 
 ### Proposed Authoring Surface
 
-Every expression in this table is **design-only**. The target values preserve the closed vocabularies; exact public names must be accepted in the owning reference before implementation.
+The expressions below support direct values, aliases and entry parameters. Actual entry arguments are bound before checking operation/program fields, schedule mode and plate geometry. Plate compilation preserves logical well references; planning checks actual bounds and allocates wells.
 
 | Parameter | Proposed new spelling | Members / restrictions | Current code owner |
 | --- | --- | --- | --- |
-| `plate.format` | `PlateFormat.WELL_96` | WELL_6, WELL_12, WELL_24, WELL_48, WELL_96, WELL_384; preserve explicit custom rows/cols rules | `domains/labware.py` → `compile/targets.py` |
+| `plate.format` | `PlateFormat.WELL_96` | WELL_6, WELL_12, WELL_24, WELL_48, WELL_96, WELL_384; preserve explicit custom rows/cols rules | `domains/labware.py` → `plan/plates.py` |
 | `centrifuge_program.keep_source` | `CentrifugeProgramOutput.PELLET` | Reuse existing SUPERNATANT / PELLET; do not create another output vocabulary | `program_registry.py` |
 | `img.quantity` | `ReadoutQuantity.FLUORESCENCE` | UV_ABSORBANCE, FLUORESCENCE, COLORIMETRIC, CUSTOMIZED | `validate/statement_contracts.py` |
 | `ecp.quantity` | `ReadoutQuantity.PH` | PH, CONDUCTIVITY, DISSOLVED_OXYGEN, ORP, CUSTOMIZED | `validate/statement_contracts.py` |
@@ -258,7 +258,7 @@ Every expression in this table is **design-only**. The target values preserve th
 
 ### Planned Class Relationships — Primary Change
 
-IMPLEMENTED marks delivered domain types; EXTEND marks pending pipeline integration; EXISTING marks a reusable output type. ExternalEnumContracts denotes `domains/contracts.py::EnumParameter`; SourceCompatibility denotes `pipeline/compat/external_enums.py`. Pipeline consumers and wire integration remain planned. No common extensible base class is introduced in this phase.
+IMPLEMENTED marks delivered domain types; EXTEND marks the integration paths added in the second delivery; EXISTING marks a reusable output type. ExternalEnumContracts denotes `domains/contracts.py::EnumParameter`; SourceCompatibility denotes `pipeline/compat/external_enums.py`. ExternalInputResolver owns scope resolution; external_boundary owns plan/runtime parameter checks. ExternalEnum plan tags preserve family/member identity across JSON; domain wire values remain stable. No common extensible base class is introduced in this phase.
 
 ```mermaid
 classDiagram
@@ -326,11 +326,11 @@ classDiagram
         +resolve_legacy_enum(value, contract)
     }
     class ParameterConsumers {
-        <<EXTEND>>
+        <<EXTEND_IMPLEMENTED>>
         +validate_domain_rules(value, context)
     }
     class WireCodec {
-        <<EXTEND>>
+        <<EXTEND_IMPLEMENTED>>
         +encode_value(value, contract)
         +decode_value(payload, contract)
     }
@@ -349,7 +349,124 @@ classDiagram
     note for AgitationMode "Domain owner: domains/agitation.py; RC FLICK member preserved"
 ```
 
-### Planned Resolution Flow — Boundary Changes
+### Plate 绑定与展开：已接受的实现契约
+
+编译只记录板描述和逻辑孔位引用（`IRPlateWellRef`）；矩形选择器的文本顺序和重复检查不依赖板规格。实际行列检查、默认容量和 `AllocContainer` 生成均在计划参数绑定之后执行。默认值不得覆盖显式实参；失败时不返回可执行计划。所有新逻辑入口保持公开并可直接测试。
+
+| Req ID | 不变量与归属 | 验收入口 |
+| --- | --- | --- |
+| PLATE-BIND | 同一 IR 按实际调用参数解析板；显式实参优先于默认值 | `tests/test_plate_plan_binding.py` |
+| PLATE-BOUNDS | 计划检查实际规格下的孔位；越界产生 `PLAN_PLATE_SELECTOR_INVALID` 并清空可执行计划 | `tests/test_plate_plan_binding.py` |
+| PLATE-TYPE | 源码可判定的错误类型由 typecheck 报告；绑定后的格式、布局或容量错误归计划诊断 | `tests/test_plate_plan_binding.py` |
+| PLATE-COMPAT | 旧字符串与枚举等价；自定义 rows/cols、显式容量、24 孔默认容量、选择顺序、重复引用身份保持一致 | `tests/test_plate_plan_binding.py` |
+| PLATE-IR | compile 不生成 plate well 的 AllocContainer；plan 生成与既有运行模型兼容的 AllocContainer | `tests/test_ir_compiler.py`, `tests/test_plate_plan_binding.py` |
+
+### Plate 参数绑定与孔位分配：已实现
+
+绿色标记本次调整的边界；格式在计划阶段确定，运行阶段执行已分配的孔位操作。
+
+```mermaid
+flowchart TB
+    Source["协议源码：plate 描述与选择器"] --> Compile["编译：保留板描述和 IRPlateWellRef<br/>仅枚举逻辑坐标与检查重复"]
+    Compile --> Bind["计划：绑定实际参数<br/>显式实参优先，否则使用默认值"]
+    Bind --> Format["兼容入口：旧字符串转换为 PlateFormat<br/>校验枚举归属"]
+    Format --> Geometry["解析实际行列与容量<br/>显式容量优先于规格默认容量"]
+    Geometry --> Bounds{"孔位在实际行列范围内？"}
+    Bounds -->|是| Allocate["生成 AllocContainer 与后续操作计划"]
+    Bounds -->|否| Error["PLAN_PLATE_SELECTOR_INVALID<br/>不返回可执行计划"]
+    Format -->|格式无效| Error
+    Geometry -->|布局或容量无效| Error
+    Allocate --> Run["运行孔位操作"]
+    classDef changed fill:#dcfce7,stroke:#16a34a,stroke-width:2px
+    class Compile,Format,Geometry,Bounds,Allocate,Error changed
+```
+
+### External boundary 职责收拢：已实现
+
+编解码和参数规范化已由独立类承担；计划遍历和诊断已迁入 `plan/external_parameters.py`。绿色为本次调整职责，蓝色为保留的契约和兼容入口。Plate 侧结构见 [Plan 类图与时序图](./plan_module_diagrams.md#plate-职责收拢已实现)。
+
+```mermaid
+classDiagram
+    class ExternalEnumCodec {
+        <<implemented>>
+        +Mapping enum_types
+        +encode(member) dict
+        +decode(payload) Enum
+    }
+    class ExternalParameterNormalizer {
+        <<implemented>>
+        +Mapping contracts
+        +ExternalEnumCodec codec
+        +require_member(value, contract) Enum
+        +resolve_member(value, contract) ExternalInputResolution
+        +normalize_plan_arguments(operation, arguments) dict
+        +normalize_runtime_arguments(operation, arguments) dict
+    }
+    class EnumParameter {
+        <<existing domain contract>>
+        +validate(member) Enum
+    }
+    class LegacyEnumAdapter {
+        <<existing compat module function>>
+        +resolve_legacy_enum(value, contract) Enum
+    }
+    class PlanBoundary {
+        <<implemented plan layer responsibility>>
+        +normalize_external_plan(plan) PlanProgram
+    }
+    class RuntimeBoundary {
+        <<existing runtime responsibility>>
+        +resolve_step_arguments(step, state)
+    }
+    ExternalParameterNormalizer --> ExternalEnumCodec : injected wire codec
+    ExternalParameterNormalizer --> EnumParameter : exact family and allowed members
+    ExternalParameterNormalizer ..> LegacyEnumAdapter : legacy source inputs only
+    PlanBoundary --> ExternalParameterNormalizer : normalize_plan_arguments
+    RuntimeBoundary --> ExternalParameterNormalizer : normalize_runtime_arguments
+    note for ExternalEnumCodec "只处理 ExternalEnum 序列化身份；不接受旧源码、不生成诊断"
+    note for ExternalParameterNormalizer "持有只读契约与 codec；沿用领域关联校验；不持有执行状态或诊断集合"
+    note for PlanBoundary "plan 层负责树遍历、PLAN_EXTERNAL_ENUM_INVALID 和阻断计划；负责 plate 错误的阻断判断"
+    note for RuntimeBoundary "runtime 层完成动态取值；RT_EXTERNAL_ENUM_INVALID 由现有运行步骤边界发出"
+    style ExternalEnumCodec fill:#dcfce7,stroke:#16a34a
+    style ExternalParameterNormalizer fill:#dcfce7,stroke:#16a34a
+    style PlanBoundary fill:#dcfce7,stroke:#16a34a
+    style EnumParameter fill:#dbeafe,stroke:#2563eb
+    style LegacyEnumAdapter fill:#dbeafe,stroke:#2563eb
+    style RuntimeBoundary fill:#dbeafe,stroke:#2563eb
+```
+
+```mermaid
+flowchart TB
+    Start["已完成名字解析的参数值"] --> Phase{"调用阶段"}
+    Phase -->|计划| Plan["Plan 层遍历调用树<br/>normalize_plan_arguments"]
+    Phase -->|运行| Runtime["现有 runtime 先解析动态值<br/>normalize_runtime_arguments"]
+    Plan --> Resolve["ExternalParameterNormalizer<br/>沿用作用域优先级、枚举归属及领域规则"]
+    Runtime --> Resolve
+    Resolve --> State{"解析结果"}
+    State -->|已验证| Output{"调用阶段"}
+    Output -->|计划| Encode["ExternalEnumCodec.encode<br/>保持现有 tagged payload"]
+    Output -->|运行| Member["保留真实枚举成员<br/>进入执行逻辑"]
+    State -->|尚未确定| Deferred{"计划阶段且允许延迟？"}
+    Deferred -->|是| Keep["保留原始表达式及绑定标记"]
+    Deferred -->|否| Error["返回失败或抛出类型/值错误"]
+    State -->|非法值| Error
+    Error --> Owner{"所属阶段"}
+    Owner -->|计划| PlanError["Plan 层发出 PLAN_EXTERNAL_ENUM_INVALID<br/>返回空 plans"]
+    Owner -->|运行| RuntimeError["Runtime 层发出 RT_EXTERNAL_ENUM_INVALID<br/>阻止当前步骤进入 driver"]
+    classDef planned fill:#dcfce7,stroke:#16a34a,stroke-width:2px
+    class Plan,Resolve,Encode,PlanError planned
+```
+
+| Req ID | 冻结边界 / 迁移 | 验收入口 |
+| --- | --- | --- |
+| CLASS-ENUM-CODEC | `serialize/deserialize_external_enum` → codec；tagged payload 与错误成员拒绝行为不变 | `tests/test_external_enum_frontend.py`：保留 JSON 回归，`tests/test_external_boundary_classes.py` 验证 codec 公开接口 |
+| CLASS-ENUM-NORMALIZE | `resolve_bound_external_enum` 与参数规范化 → normalizer；计划与运行使用独立公开入口；复用现有 resolution 状态，不新增另一套状态枚举 | `tests/test_external_enum_inputs.py`、`tests/test_external_enum_frontend.py`：作用域遮蔽、别名、延迟值与错误族 |
+| CLASS-ENUM-OWNER | codec / normalizer 不引用 `PlanProgram` 或输出阶段诊断；计划树遍历及无可执行计划策略归 plan；runtime 负责运行阶段错误 | `tests/test_external_enum_frontend.py`：错误诊断、空计划、driver 前拦截 |
+| CLASS-ENUM-COMPAT | 旧文本转换保留在 `compat/external_enums.py`；领域约束保留在各自 domain；已有 `ExternalInputResolver` 继续负责源码作用域解析 | `tests/test_domain_enums.py`、`tests/test_external_enum_inputs.py`、`tests/test_external_enum_frontend.py` |
+
+已完成板描述及分配整理、codec / normalizer 接入和阶段诊断归属迁移。所有有逻辑的方法公开；不引入空泛基类，不改变枚举扩展边界，不将纯工具函数机械改为静态方法。
+
+### Resolution Flow — Implemented Boundary Changes
 
 This is a cross-stage value-resolution flow, not a change to the statement-handler lifecycle or a claim that semantic validation runs typecheck.
 
@@ -372,7 +489,7 @@ flowchart TB
     class Identity,Compat,Allowed,Lower planned
 ```
 
-### Planned Call Sequence — Integration and Verification
+### Call Sequence — Integration and Verification
 
 Participants denote responsibilities across the frontend and execution pipeline; detailed diagnostic IDs and stage hooks are frozen before code changes. Each earliest-decidable failure terminates this value's path without duplicate downstream diagnostics.
 
@@ -398,7 +515,7 @@ sequenceDiagram
     Semantic->>Exec: Validated value with enum identity
     Exec->>Codec: Result containing typed values
     Codec-->>Author: Stable field-specific serialized values
-    Note over Frontend,Codec: NEW tests: complete-source old/new equivalence and boundary round trips
+    Note over Frontend,Codec: Implemented tests: source equivalence, aliases, overrides, runtime identity and JSON round trips
 ```
 
 ### Delivery Order and Acceptance Hooks
@@ -413,4 +530,8 @@ sequenceDiagram
 | Each / ENUM-IDENTITY | Direct members, aliases, protocol parameters, wrong families/members and binding shadowing | `test_external_enum_binding_and_diagnostics` |
 | Each / ENUM-WIRE | Old/new execution equivalence, stable serialized values and historical-data decoding | `test_external_enum_runtime_roundtrip` |
 
-Hooks above are planned, not existing passing tests. Wrong value shape/family belongs to typecheck; unresolved references belong to binding; disallowed members and dependent rules belong to semantic validation. Member lookup errors belong to the first stage able to resolve that enum namespace. Reuse existing diagnostic identities where applicable and settle exact mappings before implementation. Promote accepted language rules into existing owning reference sections without code dependencies.
+The original acceptance hooks above describe the overall target. Implemented evidence is in `tests/test_external_enum_inputs.py` and `tests/test_external_enum_frontend.py`: scoped resolution, alias snapshots, old/new execution equivalence, operation subsets, entry overrides, runtime family rejection, JSON round trips and shadowed legacy names. `TYPE_EXTERNAL_ENUM_MISMATCH` owns parameter shape/family errors; existing semantic value codes remain in use; `PLAN_EXTERNAL_ENUM_INVALID` and `RT_EXTERNAL_ENUM_INVALID` guard later-bound values.
+
+Plate geometry is resolved after entry binding. Regression coverage checks both old-text and enum arguments, overriding defaults, actual bounds, custom layouts and runtime capacity. Open extension base classes and arbitrary source `class` declarations are not implemented by this delivery.
+
+ Wrong value shape/family belongs to typecheck; unresolved references belong to binding; disallowed members and dependent rules belong to semantic validation. Malformed plate selector syntax remains a compile error; bound plate layout failures belong to planning; operation-specific member errors keep their semantic diagnostic codes. Reuse existing diagnostic identities where applicable and settle exact mappings before implementation. Promote accepted language rules into existing owning reference sections without code dependencies.

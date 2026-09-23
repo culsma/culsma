@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from typing import Any
+from enum import Enum
+from culsma.domains.contracts import enum_wire_value
 
 
 class MaterialArgReader:
@@ -40,6 +42,8 @@ class MaterialArgReader:
 
 
 def arg_string(value: Any) -> str | None:
+    if isinstance(value, Enum):
+        return enum_wire_value(value)
     if isinstance(value, str):
         return value
     if isinstance(value, dict):

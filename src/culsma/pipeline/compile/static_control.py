@@ -20,6 +20,7 @@ from culsma.parser.ast_nodes import (
 )
 
 from .context import BlockContext
+from .schedule import resolve_schedule_mode_from_args
 
 
 class StaticControlClassifier:
@@ -62,14 +63,10 @@ class StaticControlClassifier:
         return {arg.name: self.resolve_bound_expr(arg.value, ctx=ctx) for arg in resolved.args}
 
     def schedule_mode(self, args: dict[str, Expression]) -> str | None:
-        raw = args.get("mode")
-        if raw is None:
-            return "discrete"
-        if isinstance(raw, Identifier) and raw.name in {"discrete", "continuous"}:
-            return raw.name
-        if isinstance(raw, StringLiteral) and raw.value in {"discrete", "continuous"}:
-            return raw.value
-        return None
+        try:
+            return resolve_schedule_mode_from_args(args)
+        except ValueError:
+            return None
 
     def resolve_bound_expr(self, expr: Expression, *, ctx: BlockContext) -> Expression:
         seen: set[str] = set()

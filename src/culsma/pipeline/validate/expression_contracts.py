@@ -209,6 +209,8 @@ def validate_expr_contracts(
                 ProgramContractValidator.validate_program_call(
                     expr,
                     literal_bindings=literal_bindings,
+                    expr_bindings=expr_bindings,
+                    defined_names=defined_names or frozenset(),
                     node_id=node_id,
                 )
             )
@@ -485,6 +487,7 @@ def validate_source_partition_contract(
             ProgramContractValidator.validate_program_call(
                 program_call,
                 literal_bindings=literal_bindings,
+                expr_bindings=expr_bindings,
                 node_id=node_id,
             )
         )

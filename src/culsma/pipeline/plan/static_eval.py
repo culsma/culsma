@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from culsma.domains.scheduling import SCHEDULE_MODE, DEFAULT_SCHEDULE_MODE
+from culsma.pipeline.external_boundary import DEFAULT_EXTERNAL_PARAMETER_NORMALIZER
+
 from typing import Any, Mapping
 
 TIME_UNIT_SCALE = {
@@ -39,15 +42,11 @@ class PlanStaticEvaluator:
     def schedule_mode_from_args(self, args: Mapping[str, Any]) -> str:
         raw = args.get("mode")
         if raw is None:
-            return "discrete"
-        if isinstance(raw, str) and raw in {"discrete", "continuous"}:
-            return raw
-        if isinstance(raw, Mapping):
-            if raw.get("kind") == "IRString" and raw.get("value") in {"discrete", "continuous"}:
-                return str(raw["value"])
-            if raw.get("kind") == "IRIdentifier" and raw.get("name") in {"discrete", "continuous"}:
-                return str(raw["name"])
-        raise ValueError("schedule mode must be discrete or continuous")
+            return DEFAULT_SCHEDULE_MODE
+        try:
+            return DEFAULT_EXTERNAL_PARAMETER_NORMALIZER.require_member(raw, SCHEDULE_MODE)
+        except (TypeError, ValueError) as error:
+            raise ValueError("schedule mode must be discrete or continuous") from error
 
     def eval_bool(self, value: Any) -> bool | None:
         return self.try_eval_bool_expr(value)

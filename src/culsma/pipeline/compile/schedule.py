@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from culsma.domains.scheduling import SCHEDULE_MODE, DEFAULT_SCHEDULE_MODE
+from culsma.pipeline.external_inputs import ExternalInputResolver, ExternalInputScope, ExternalInputStatus
+
 from culsma.parser.ast_nodes import (
     Arg,
     AssignStatement,
@@ -186,7 +189,7 @@ def _eval_schedule_points(
         raise ValueError("repeat <name> in ... requires schedule(...)")
 
     args = {arg.name: _resolve_let_bound_expr(arg.value, let_bindings) for arg in resolved.args}
-    mode = _schedule_mode_from_args(args)
+    mode = resolve_schedule_mode_from_args(args, let_bindings=let_bindings)
     if mode != "discrete":
         raise ValueError("schedule(mode=continuous) cannot be expanded as discrete points")
     if "duration" in args or "observe_every" in args or "control_every" in args:
@@ -269,18 +272,17 @@ def _resolve_schedule_mode(
     if not isinstance(resolved, CallExpr) or resolved.name != "schedule":
         raise ValueError("repeat <name> in ... requires schedule(...)")
     args = {arg.name: _resolve_let_bound_expr(arg.value, let_bindings) for arg in resolved.args}
-    return _schedule_mode_from_args(args)
+    return resolve_schedule_mode_from_args(args, let_bindings=let_bindings)
 
 
-def _schedule_mode_from_args(args: dict[str, Expression]) -> str:
+def resolve_schedule_mode_from_args(args: dict[str, Expression], *, let_bindings=None):
     raw = args.get("mode")
     if raw is None:
-        return "discrete"
-    if isinstance(raw, Identifier) and raw.name in {"discrete", "continuous"}:
-        return raw.name
-    if isinstance(raw, StringLiteral) and raw.value in {"discrete", "continuous"}:
-        return raw.value
-    raise ValueError("schedule mode must be discrete or continuous")
+        return DEFAULT_SCHEDULE_MODE
+    result = ExternalInputResolver.resolve(raw, SCHEDULE_MODE, ExternalInputScope(let_bindings or {}))
+    if result.status is ExternalInputStatus.RESOLVED:
+        return result.value
+    raise ValueError("schedule mode must be discrete or continuous: " + result.detail)
 
 
 def _eval_continuous_schedule_boundary(
@@ -296,7 +298,7 @@ def _eval_continuous_schedule_boundary(
         raise ValueError("repeat <name> in ... requires schedule(...)")
 
     args = {arg.name: _resolve_let_bound_expr(arg.value, let_bindings) for arg in resolved.args}
-    mode = _schedule_mode_from_args(args)
+    mode = resolve_schedule_mode_from_args(args, let_bindings=let_bindings)
     if mode != "continuous":
         raise ValueError("continuous schedule boundary requires mode=continuous")
     if "at" in args or "step" in args:

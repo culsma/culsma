@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import fields, is_dataclass
-from enum import StrEnum
+from enum import StrEnum, Enum
+from culsma.domains.registry import EXTERNAL_ENUM_TYPES, EXTERNAL_PARAMETERS
+from culsma.pipeline.external_boundary import DEFAULT_EXTERNAL_ENUM_CODEC
 from typing import Any
 
 from culsma.common.content_contracts import CONTENT_ENUM_TYPES, serialize_content_enum
@@ -29,6 +31,11 @@ from culsma.pipeline.program_registry import canonical_program_arg_name
 class PlanExpressionSerializer:
     def contains_unresolved_identifier(self, value: Any) -> bool:
         if isinstance(value, dict):
+            if value.get("kind") == "IRMember":
+                base = value.get("base", {})
+                family = EXTERNAL_ENUM_TYPES.get(base.get("name")) if isinstance(base, dict) and base.get("kind") == "IRIdentifier" else None
+                if family is not None and value.get("member") in family.__members__:
+                    return False
             kind = value.get("kind")
             if kind == "IRIdentifier":
                 return True
@@ -96,10 +103,21 @@ class PlanExpressionSerializer:
 
     def serialize_expr(self, value: Any, env: dict[str, Any] | None = None) -> Any:
         """Serialize IR expression dataclass into JSON-friendly structure."""
+        if isinstance(value, Enum) and type(value) in EXTERNAL_ENUM_TYPES.values():
+            return DEFAULT_EXTERNAL_ENUM_CODEC.encode(value)
+        if (isinstance(value, IRMember) and isinstance(value.base, IRIdentifier)
+                and value.base.name in EXTERNAL_ENUM_TYPES and value.base.name not in (env or {})
+                and value.base.name != 'CentrifugeProgramOutput'):
+            return {"kind": "ExternalEnum", "enum": value.base.name, "member": value.member}
         if isinstance(value, StrEnum) and type(value) in CONTENT_ENUM_TYPES.values():
             return serialize_content_enum(value)
         if isinstance(value, IRIdentifier) and env is not None and value.name in env:
-            return env[value.name]
+            bound = env[value.name]
+            if isinstance(bound, dict) and bound.get('kind') == 'IRIdentifier' and (
+                value.name in EXTERNAL_ENUM_TYPES or any(value.name in contract.wire_values for contract in EXTERNAL_PARAMETERS.values())
+            ):
+                return {**bound, 'bound': True}
+            return bound
         if (isinstance(value, IRMember) and isinstance(value.base, IRIdentifier)
                 and value.base.name in CONTENT_ENUM_TYPES and value.base.name not in (env or {})):
             return {"kind": "ContentEnum", "enum": value.base.name, "member": value.member}

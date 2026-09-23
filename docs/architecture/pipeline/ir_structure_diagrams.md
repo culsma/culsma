@@ -153,6 +153,7 @@ flowchart TB
     Group["IRGroup"]
     Call["IRCall"]
     PlateSelector["IRPlateSelector"]
+    PlateWellRef["IRPlateWellRef<br/>plate, position：计划绑定后分配"]
     Index["IRIndex"]
     Member["IRMember"]
     Pair["IRPair"]
@@ -181,6 +182,7 @@ flowchart TB
     Expr --> Group
     Expr --> Call
     Expr --> PlateSelector
+    Expr --> PlateWellRef
     Expr --> Index
     Expr --> Member
     Expr --> Pair
@@ -259,6 +261,7 @@ flowchart LR
 | `IRGroup` | `elements: list[IRExpr]`, `span` |
 | `IRCall` | `name`, `args: list[IRArg]`, `span` |
 | `IRSelectorRegion` | `start`, `end: str | None`, `span` |
+| `IRPlateWellRef` | `plate: IRIdentifier`, `position: str`, `span`; logical reference, allocated after plan argument binding |
 | `IRPlateSelector` | `base: IRIdentifier`, `regions: list[IRSelectorRegion]`, `span` |
 | `IRIndex` | `base: IRExpr`, `index: IRExpr`, `span` |
 | `IRMember` | `base: IRExpr`, `member`, `span` |
@@ -271,7 +274,7 @@ flowchart LR
 | Alias | Members |
 |---|---|
 | `IRStatement` | `IRInclude`, `IRLet`, `IRAssign`, `IRStep`, `IRWithEnv`, `IRWithConstraint`, `IRMutation`, `IRConditional`, `IRControl`, `IRRepeat` |
-| `IRExpr` | `IRQuantity`, `IRString`, `IRBoolean`, `IRIdentifier`, `IRList`, `IRGroup`, `IRCall`, `IRPlateSelector`, `IRIndex`, `IRMember`, `IRPair`, `IRUnary`, `IRBinary` |
+| `IRExpr` | `IRQuantity`, `IRString`, `IRBoolean`, `IRIdentifier`, `IRList`, `IRGroup`, `IRCall`, `IRPlateSelector`, `IRPlateWellRef`, `IRIndex`, `IRMember`, `IRPair`, `IRUnary`, `IRBinary` |
 
 ## Structural Rules
 

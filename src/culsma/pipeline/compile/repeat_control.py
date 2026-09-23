@@ -70,7 +70,14 @@ class RepeatControlLowerer:
                 )
             ]
 
-        schedule_mode = lowering_ctx.schedule_evaluator.resolve_schedule_mode(stmt.iterable, ctx=lowering_ctx.ctx)
+        try:
+            schedule_mode = lowering_ctx.schedule_evaluator.resolve_schedule_mode(stmt.iterable, ctx=lowering_ctx.ctx)
+        except ValueError:
+            args = lowering_ctx.static_control_classifier.schedule_args(stmt.iterable, ctx=lowering_ctx.ctx)
+            mode = args.get("mode") if args is not None else None
+            if mode is not None and lowering_ctx.static_control_classifier.contains_unresolved_param_reference(mode, ctx=lowering_ctx.ctx):
+                return self.lower_deferred_static_repeat(stmt, lowering_ctx, stmt.iterable, env_time_boundary_deferred=True)
+            raise
         if schedule_mode == "continuous":
             try:
                 return self.lower_continuous_schedule(stmt, lowering_ctx)

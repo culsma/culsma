@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from culsma.pipeline.external_inputs import external_parameter_type_diagnostics, ExternalInputScope, ExternalInputResolver, ExternalInputStatus, deferred_external_bindings
+
 from dataclasses import dataclass
 from typing import Any, Iterable, Mapping, cast
 
@@ -45,6 +47,8 @@ class BaseTypecheckStatementHandler:
         if state.stop:
             return
 
+        ctx.extend(external_parameter_type_diagnostics(stmt,
+            scope=ExternalInputScope(ctx.expr_bindings, ctx.parameter_names), node_id=stmt.id))
         self.validate_pre_binding_contracts(stmt, ctx, state)
         if state.stop:
             return
@@ -125,6 +129,7 @@ class BaseTypecheckStatementHandler:
         if ctx.scope_query is not None:
             names = [effect.name for effect in ctx.scope_query.assignment_effects(stmt.id)]
             ctx.expr_bindings.update(deferred_content_enum_bindings(names, ctx.content_scope()))
+            ctx.expr_bindings.update(deferred_external_bindings(names, ExternalInputScope(ctx.expr_bindings, ctx.parameter_names)))
             for name in names:
                 kind = self.services.classify_local_expr_type(ctx.expr_bindings.get(name), expr_bindings=ctx.expr_bindings)
                 if kind in {"int", "quantity"}:
@@ -147,6 +152,10 @@ class LetTypecheckHandler(BaseTypecheckStatementHandler):
         stmt = cast(IRLet, stmt)
         if stmt.value is None:
             ctx.expr_bindings.pop(stmt.name, None)
+            return
+        external = ExternalInputResolver.resolve(stmt.value, None, ExternalInputScope(ctx.expr_bindings, ctx.parameter_names))
+        if external.status is ExternalInputStatus.RESOLVED:
+            ctx.expr_bindings[stmt.name] = external.value
             return
         numeric = self.services.numeric_binding(stmt.value, ctx.expr_bindings)
         if numeric is not None:
@@ -222,6 +231,10 @@ class AssignTypecheckHandler(BaseTypecheckStatementHandler):
 
     def apply_post_child_effects(self, stmt: IRStatement, ctx: TypecheckContext, _state: TypecheckStatementState) -> None:
         stmt = cast(IRAssign, stmt)
+        external = ExternalInputResolver.resolve(stmt.value, None, ExternalInputScope(ctx.expr_bindings, ctx.parameter_names))
+        if isinstance(stmt.target, IRIdentifier) and external.status is ExternalInputStatus.RESOLVED:
+            ctx.expr_bindings[stmt.target.name] = external.value
+            return
         result = ContentArgumentResolver.resolve_argument(stmt.value, None, ctx.content_scope())
         if isinstance(stmt.target, IRIdentifier) and result.source is ContentInputSource.ENUM and (result.token is not None or isinstance(result.value, DeferredContentEnum)):
             ctx.expr_bindings[stmt.target.name] = result.value

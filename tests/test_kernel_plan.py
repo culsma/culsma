@@ -881,7 +881,7 @@ protocol T {
     assert "voltage" in program_arg_names
     assert "field" not in program_arg_names
     assert steps[-1].args["bind"] == "gel_obs"
-    assert steps[-1].args["quantity"]["name"] == "customized"
+    assert steps[-1].args["quantity"] == {"kind": "ExternalEnum", "enum": "ReadoutQuantity", "member": "CUSTOMIZED"}
     assert steps[-1].args["schema_ref"]["kind"] == "IRIdentifier"
 
 

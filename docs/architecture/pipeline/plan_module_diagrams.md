@@ -1,6 +1,6 @@
 # Plan Module Diagrams
 
-Last updated: 2026-05-26
+Last updated: 2026-09-23
 
 Related IR / Plan documents:
 
@@ -8,7 +8,7 @@ Related IR / Plan documents:
 
 ## Scope
 
-This document has five diagrams only:
+The current implementation is described by these five diagrams; the implemented plate ownership detail follows separately:
 
 1. Functional flowchart: what plan lowering actually does.
 2. Runtime sequence: the current runtime call chain.
@@ -31,7 +31,7 @@ parser rule conversion, statement compile, validation, and typecheck:
 state, `plan/references.py` owns protocol reference expansion and parameter
 binding, `plan/serialization.py` owns expression/env serialization,
 `plan/static_eval.py` owns parameter-bound static expression and schedule
-evaluation, and `plan/statements.py` owns statement dispatch and handlers.
+evaluation, `plan/plates.py` resolves bound plate descriptors and produces well allocations, and `plan/statements.py` owns statement dispatch and handlers.
 
 ## Functional Flowchart
 
@@ -410,3 +410,119 @@ classDiagram
     PlanProgram --> ProtocolPlan : contains
     ProtocolPlan --> PlanStep : contains
 ```
+
+
+## Plate 职责收拢：已实现
+
+原有独立解析与分配函数已由下图结构替换。蓝色为保留的协作者，绿色为本次新增类或调整职责；`+` 表示公开接口。保持既有参数绑定、孔位顺序、身份、容量与诊断行为。
+
+```mermaid
+classDiagram
+    class LetPlanHandler {
+        <<existing>>
+        +prepare(stmt, ctx)
+        +lower_let_call_to_steps(call)
+    }
+    class PlateDescriptorResolver {
+        <<implemented>>
+        +PlanExpressionSerializer serializer
+        +PlanStaticEvaluator evaluator
+        +ExternalParameterNormalizer normalizer
+        +resolve(plate, env) ResolvedPlateDescriptor
+        +resolve_dimension(value, name) int
+        +resolve_text(value, name) str
+        +resolve_capacity(value) IRQuantity
+    }
+    class ResolvedPlateDescriptor {
+        <<implemented immutable>>
+        +PlateGeometry geometry
+        +IRQuantity capacity
+        +str carrier_id
+        +str label
+        +allocation(position, span) IRCall
+    }
+    class PlateGeometry {
+        <<implemented immutable domain value>>
+        +int rows
+        +int cols
+        +validate_position(position)
+    }
+    class PlanExpressionSerializer {
+        <<existing>>
+        +serialize_expr(expression, env)
+    }
+    class PlanStaticEvaluator {
+        <<existing>>
+        +try_eval_numeric_expr(value)
+    }
+    class ExternalParameterNormalizer {
+        <<implemented boundary service>>
+        +require_member(value, contract)
+    }
+    class CoordinateFunctions {
+        <<existing module functions>>
+        +parse_well_position(position)
+        +row_index_to_label(index)
+        +selector_positions(regions)
+    }
+    LetPlanHandler --> PlateDescriptorResolver : resolve actual binding
+    PlateDescriptorResolver --> PlanExpressionSerializer : injected dependency
+    PlateDescriptorResolver --> PlanStaticEvaluator : injected dependency
+    PlateDescriptorResolver --> ExternalParameterNormalizer : exact enum or legacy adapter
+    PlateDescriptorResolver ..> ResolvedPlateDescriptor : creates validated snapshot
+    ResolvedPlateDescriptor *-- PlateGeometry : owns layout
+    ResolvedPlateDescriptor ..> LetPlanHandler : returns AllocContainer call
+    PlateGeometry ..> CoordinateFunctions : parse coordinate
+    note for PlateDescriptorResolver "plan/plates.py：负责绑定值到板描述的转换；不保存 env、不跨调用缓存"
+    note for ResolvedPlateDescriptor "plan/plates.py：capacity、label 可为空；allocation 先检查孔位再构造 IRCall"
+    note for PlateGeometry "domains/labware.py：正整数行列及边界约束；不依赖 parser、IR、plan"
+    style LetPlanHandler fill:#dbeafe,stroke:#2563eb
+    style PlanExpressionSerializer fill:#dbeafe,stroke:#2563eb
+    style PlanStaticEvaluator fill:#dbeafe,stroke:#2563eb
+    style CoordinateFunctions fill:#dbeafe,stroke:#2563eb
+    style PlateDescriptorResolver fill:#dcfce7,stroke:#16a34a
+    style ResolvedPlateDescriptor fill:#dcfce7,stroke:#16a34a
+    style PlateGeometry fill:#dcfce7,stroke:#16a34a
+    style ExternalParameterNormalizer fill:#dcfce7,stroke:#16a34a
+```
+
+```mermaid
+sequenceDiagram
+    participant Bind as 现有参数绑定
+    participant Handler as LetPlanHandler
+    participant Resolver as PlateDescriptorResolver
+    participant Descriptor as ResolvedPlateDescriptor
+    participant Geometry as PlateGeometry
+    participant API as Plan API
+    Bind->>Handler: IRPlateWellRef + 当前 local_env
+    Handler->>Resolver: resolve(reference.plate, local_env)
+    Resolver->>Resolver: 序列化已绑定描述；格式转枚举；校验行列与容量
+    alt 描述有效
+        Resolver-->>Handler: 不可变描述快照
+        Handler->>Descriptor: allocation(position, span)
+        Descriptor->>Geometry: validate_position(position)
+        alt 孔位有效
+            Geometry-->>Descriptor: 通过
+            Descriptor-->>Handler: AllocContainer IRCall
+            Handler->>Handler: 复用现有 lowering、命名空间与依赖链
+        else 孔位越界
+            Geometry-->>Handler: ValueError 经调用栈返回
+            Handler->>API: PLAN_PLATE_SELECTOR_INVALID + 来源位置
+        end
+    else 描述无效
+        Resolver-->>Handler: TypeError / ValueError
+        Handler->>API: PLAN_PLATE_SELECTOR_INVALID + 来源位置
+    end
+    API->>API: 若存在阻断性 plate 错误，返回空 plans
+    Note over Bind,API: 同一 IR 再次规划时使用新的实参；本轮不引入跨孔位或跨协议缓存
+```
+
+| Req ID | 冻结边界 / 迁移 | 验收入口 |
+| --- | --- | --- |
+| CLASS-PLATE-OWNER | `plate_dimension/text/capacity` → resolver 公开方法；`plate_well_allocation` 的绑定与构造职责分开 | `tests/test_external_boundary_classes.py`：resolver / descriptor 直接测试 |
+| CLASS-PLATE-VALUE | `PlateGeometry` 维护正整数行列和孔位边界；描述对象只能携带已校验的布局、容量和文本 | `tests/test_external_boundary_classes.py`：geometry 构造及边界测试 |
+| CLASS-PLATE-BIND | resolver 不持有可变 env；无缓存；相同 IR 的不同实参相互隔离 | `test_actual_format_controls_bounds_without_mutating_ir`、`test_protocols_with_same_plate_name_have_independent_references` |
+| CLASS-PLATE-DIAG | 源码类型错误仍归 typecheck；绑定后的描述/孔位错误由 handler 发出 `PLAN_PLATE_SELECTOR_INVALID`；清空计划归 Plan API | `tests/test_plate_plan_binding.py`：保留无部分计划断言，检查诊断 span |
+| CLASS-PLATE-COMPAT | 保留纯坐标函数和兼容入口；旧 API 如有消费者，先委托新实现，不保留两套规则 | `tests/test_ir_compiler.py`、`tests/test_plate_plan_binding.py`、`tests/test_external_enum_frontend.py` |
+
+枚举编解码和规范化依赖见 [External boundary 类图](./validate_module_diagrams.md#external-boundary-职责收拢已实现)。这是实现组织调整，不新增语言语法，也不改变独立 reference 的语义契约。

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from culsma.pipeline.external_inputs import ExternalInputResolver, ExternalInputScope, ExternalInputStatus
+
 from typing import Any
 
 from culsma.pipeline.content_inputs import ContentArgumentResolver, ContentArgumentScope, ContentInputSource
@@ -17,6 +19,7 @@ from culsma.pipeline.ir_nodes import (
     IRMutation,
     IRPair,
     IRPlateSelector,
+    IRPlateWellRef,
     IRSourcePartitionRef,
     IRStep,
     IRString,
@@ -41,6 +44,9 @@ class BindingValidator:
         span: Span | None,
         node_id: str | None,
     ) -> list[Diagnostic]:
+        external = ExternalInputResolver.resolve(expr, None, ExternalInputScope({**expr_bindings, **literal_bindings}, defined_names))
+        if external.status is ExternalInputStatus.RESOLVED:
+            return []
         resolved = ExprResolver.resolve_bound_expr(expr, expr_bindings)
         enum_result = ContentArgumentResolver.resolve_argument(
             resolved, None, ContentArgumentScope(literal_bindings, expr_bindings, defined_names),
@@ -186,7 +192,7 @@ class BindingValidator:
         if stmt.value is None:
             return False
         resolved = ExprResolver.resolve_bound_expr(stmt.value, expr_bindings)
-        if isinstance(resolved, (IRIdentifier, IRString, IRPlateSelector, IRIndex)):
+        if isinstance(resolved, (IRIdentifier, IRString, IRPlateSelector, IRPlateWellRef, IRIndex)):
             return True
         return isinstance(resolved, IRCall) and resolved.name in {
             "AllocContainer",

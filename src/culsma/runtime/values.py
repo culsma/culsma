@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from culsma.domains.registry import EXTERNAL_ENUM_TYPES
+from culsma.pipeline.external_boundary import DEFAULT_EXTERNAL_ENUM_CODEC, DEFAULT_EXTERNAL_PARAMETER_NORMALIZER
+
 from copy import deepcopy
 from typing import Any
 
@@ -73,6 +76,11 @@ class RuntimeValueResolver:
 def evaluate_runtime_expression(expr: Any, state: RuntimeState) -> Any:
     if isinstance(expr, dict):
         kind = expr.get("kind")
+        if kind == "ExternalEnum":
+            try:
+                return DEFAULT_EXTERNAL_ENUM_CODEC.decode(expr)
+            except ValueError:
+                return UNRESOLVED
         if kind == "ContentEnum":
             return evaluate_content_enum(expr)
         if kind == "IRBoolean":
@@ -609,6 +617,8 @@ def _runtime_bound_value(value: Any, state: RuntimeState) -> Any:
 
 
 def serialize_runtime_value(value: Any) -> Any:
+    if type(value) in EXTERNAL_ENUM_TYPES.values():
+        return DEFAULT_EXTERNAL_ENUM_CODEC.encode(value)
     if type(value) in CONTENT_ENUM_TYPES.values():
         return serialize_content_enum(value)
     if isinstance(value, tuple) and len(value) == 2 and isinstance(value[0], (int, float)) and isinstance(value[1], str):
@@ -666,7 +676,7 @@ def _resolve_step_runtime_args(step: PlanStep, state: RuntimeState) -> PlanStep:
     return PlanStep(
         step_id=step.step_id,
         op=step.op,
-        args=resolve_runtime_arg_value(step.args, state),
+        args=DEFAULT_EXTERNAL_PARAMETER_NORMALIZER.normalize_runtime_arguments(step.op, resolve_runtime_arg_value(step.args, state)),
         deps=list(step.deps),
         gate=step.gate,
         span=step.span,

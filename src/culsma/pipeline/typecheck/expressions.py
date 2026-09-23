@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from culsma.domains.registry import EXTERNAL_PARAMETERS, EXTERNAL_ENUM_TYPES
+from culsma.pipeline.external_inputs import ExternalInputResolver, ExternalInputScope, ExternalInputStatus, DeferredExternalEnum
+
 from dataclasses import dataclass
 from typing import Any
 
@@ -19,6 +22,7 @@ from culsma.pipeline.ir_nodes import (
     IRBinary,
     IRBoolean,
     IRCall,
+    IRPlateWellRef,
     IRGroup,
     IRIdentifier,
     IRIndex,
@@ -212,7 +216,7 @@ class TypecheckExpressionServices:
         if call.name == "DefineContent":
             diagnostics.extend(self.typecheck_define_content_args(call.args, call.span, node_id, scope=scope))
             return diagnostics
-        if call.name != "AllocContainer":
+        if call.name not in {"AllocContainer", "plate"}:
             return diagnostics
         for arg in call.args:
             if arg.name == "kind":
@@ -577,7 +581,7 @@ class TypecheckExpressionServices:
         target_type = self.classify_local_expr_type(target_expr, expr_bindings=expr_bindings)
         value_type = self.classify_local_expr_type(stmt.value, expr_bindings=expr_bindings)
 
-        if target_type not in _ASSIGNABLE_TYPES and target_type not in CONTENT_ENUM_TYPES:
+        if target_type not in _ASSIGNABLE_TYPES and target_type not in CONTENT_ENUM_TYPES and target_type not in EXTERNAL_ENUM_TYPES:
             diagnostics.append(
                 Diagnostic(
                     code="TYPE_LOCAL_ASSIGN_TARGET_FORBIDDEN",
@@ -648,8 +652,11 @@ class TypecheckExpressionServices:
 
     def classify_local_expr_type(self, expr: Any, *, expr_bindings: dict[str, Any]) -> str:
         deferred = expr_bindings.get(expr.name) if isinstance(expr, IRIdentifier) else expr
-        if isinstance(deferred, DeferredContentEnum):
+        if isinstance(deferred, (DeferredContentEnum, DeferredExternalEnum)):
             return deferred.enum_type.__name__
+        external = ExternalInputResolver.resolve(expr, None, ExternalInputScope(expr_bindings))
+        if external.status is ExternalInputStatus.RESOLVED and type(external.value) in EXTERNAL_ENUM_TYPES.values():
+            return type(external.value).__name__
         enum_result = ContentArgumentResolver.resolve_argument(expr, None, ContentArgumentScope(expr_bindings=expr_bindings))
         if enum_result.source is ContentInputSource.ENUM and enum_result.token is not None:
             return type(enum_result.value).__name__
@@ -662,6 +669,8 @@ class TypecheckExpressionServices:
             return "text"
         if isinstance(resolved, IRQuantity):
             return "quantity" if resolved.unit is not None else "int"
+        if isinstance(resolved, IRPlateWellRef):
+            return "container_ref"
         if isinstance(resolved, (IRGroup, IRIndex)):
             return "group_ref"
         if isinstance(resolved, IRSourcePartitionRef):
@@ -982,6 +991,8 @@ class TypecheckExpressionServices:
                     )
                 )
                 continue
+            if (call.name, arg.name) in EXTERNAL_PARAMETERS:
+                continue  # Exact family/shape checks are owned by external parameter contracts.
             if field_spec.value_kind in {"text", "text_enum"} and not isinstance(resolved, (IRString, IRIdentifier)):
                 diagnostics.append(
                     Diagnostic(

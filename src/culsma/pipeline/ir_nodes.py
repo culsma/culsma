@@ -73,6 +73,14 @@ class IRPlateSelector:
 
 
 @dataclass(frozen=True)
+class IRPlateWellRef:
+    """Logical well selection; geometry and allocation are plan-time concerns."""
+    plate: IRIdentifier
+    position: str
+    span: Span | None = None
+
+
+@dataclass(frozen=True)
 class IRIndex:
     base: IRExpr
     index: IRExpr
@@ -123,7 +131,7 @@ class IRArg:
     span: Span | None = None
 
 
-IRExpr = IRQuantity | IRString | IRBoolean | IRIdentifier | IRList | IRRecord | IRGroup | IRCall | IRPlateSelector | IRIndex | IRMember | IRSourcePartitionRef | IRPair | IRUnary | IRBinary
+IRExpr = IRQuantity | IRString | IRBoolean | IRIdentifier | IRList | IRRecord | IRGroup | IRCall | IRPlateSelector | IRPlateWellRef | IRIndex | IRMember | IRSourcePartitionRef | IRPair | IRUnary | IRBinary
 
 
 @dataclass(frozen=True)

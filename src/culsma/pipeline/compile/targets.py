@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from culsma.domains.labware import PLATE_DIMENSIONS, PLATE_DEFAULT_WELL_CAPACITY
+from culsma.domains.labware import PLATE_DIMENSIONS, PLATE_DEFAULT_WELL_CAPACITY, selector_positions
 
 from dataclasses import dataclass
 
@@ -26,15 +26,13 @@ from culsma.parser.ast_nodes import (
     ProtocolDecl,
     Quantity,
     RepeatStatement,
-    SelectorRegion,
     Statement,
     StepCall,
     StringLiteral,
     WithConstraintStmt,
     WithEnvStmt,
 )
-from culsma.pipeline.ir_nodes import IRArg, IRCall, IRLet, IRQuantity, IRString
-from culsma.pipeline.content_vocab import ContainerKind
+from culsma.pipeline.ir_nodes import IRLet, IRPlateWellRef, IRIdentifier
 from culsma.pipeline.container_views import classify_container_target_view, is_container_target_view_namespace_path
 
 from .context import BlockContext, CompileSession, _CompilerState
@@ -401,7 +399,7 @@ def _expand_group_like_target_expr(
             members.extend(nested_members)
         return prefix, members
     if isinstance(resolved, PlateSelectorExpr):
-        return _materialize_plate_selector(
+        return materialize_plate_selector(
             resolved,
             stmt_id=stmt_id,
             let_bindings=let_bindings,
@@ -464,180 +462,55 @@ def _resolve_group_like_bound_expr(expr: Expression, let_bindings: dict[str, Exp
     return current
 
 
-def _materialize_plate_selector(
+def materialize_plate_selector(
     selector: PlateSelectorExpr,
     *,
     stmt_id: str,
     let_bindings: dict[str, Expression],
     state: _CompilerState,
 ) -> tuple[list[IRLet], list[Expression]]:
-    descriptor = _resolve_plate_descriptor(selector.base.name, let_bindings)
-    ordered_positions = _expand_selector_positions(selector, descriptor=descriptor)
+    plate_name = plate_descriptor_binding(selector.base.name, let_bindings)
+    positions = selector_positions([(region.start, region.end) for region in selector.regions])
     prefix: list[IRLet] = []
     members: list[Expression] = []
-    for position in ordered_positions:
-        synth_prefix, identifier = _ensure_synthesized_well(
-            plate_name=selector.base.name,
-            position=position,
-            descriptor=descriptor,
-            stmt_id=stmt_id,
-            state=state,
-            span=selector.span,
+    for position in positions:
+        declarations, identifier = request_plate_well(
+            plate_name=plate_name, position=position, stmt_id=stmt_id,
+            state=state, span=selector.span,
         )
-        prefix.extend(synth_prefix)
+        prefix.extend(declarations)
         members.append(identifier)
     return prefix, members
 
 
-def _resolve_plate_descriptor(name: str, let_bindings: dict[str, Expression]) -> dict[str, object]:
-    bound = let_bindings.get(name)
-    if not isinstance(bound, CallExpr) or bound.name != "plate":
-        raise ValueError(f"plate selector base '{name}' must resolve to let-bound plate(...)")
-
-    format_arg = _find_named_arg(bound.args, "format")
-    rows_arg = _find_named_arg(bound.args, "rows")
-    cols_arg = _find_named_arg(bound.args, "cols")
-    carrier_id_arg = _find_named_arg(bound.args, "carrier_id")
-    label_arg = _find_named_arg(bound.args, "label")
-    capacity_arg = _find_named_arg(bound.args, "capacity")
-
-    rows: int | None = None
-    cols: int | None = None
-    format_value: str | None = None
-    if format_arg is not None and isinstance(format_arg.value, StringLiteral):
-        format_value = format_arg.value.value
-        dims = _PLATE_FORMAT_DIMENSIONS.get(format_value)
-        if dims is None:
-            raise ValueError(f"Unsupported plate format '{format_value}' in selector base '{name}'")
-        rows, cols = dims
-    if rows_arg is not None and isinstance(rows_arg.value, Quantity) and rows_arg.value.unit is None:
-        rows = int(rows_arg.value.value)
-    if cols_arg is not None and isinstance(cols_arg.value, Quantity) and cols_arg.value.unit is None:
-        cols = int(cols_arg.value.value)
-    if rows is None or cols is None:
-        raise ValueError(f"plate selector base '{name}' must provide format or rows/cols")
-
-    carrier_id = carrier_id_arg.value.value if carrier_id_arg and isinstance(carrier_id_arg.value, StringLiteral) else name
-    label = label_arg.value.value if label_arg and isinstance(label_arg.value, StringLiteral) else None
-    capacity = capacity_arg.value if capacity_arg is not None else None
-    if capacity is not None and not isinstance(capacity, Quantity):
-        raise ValueError(f"plate capacity for '{name}' must be a quantity")
-    if capacity is None and format_value in _PLATE_FORMAT_DEFAULT_WELL_CAPACITY:
-        value, unit = _PLATE_FORMAT_DEFAULT_WELL_CAPACITY[format_value]
-        capacity = Quantity(value=value, unit=unit, span=bound.span)
-
-    return {
-        "rows": rows,
-        "cols": cols,
-        "carrier_id": carrier_id,
-        "label": label,
-        "format": format_value,
-        "capacity": capacity,
-    }
+def plate_descriptor_binding(name: str, let_bindings: dict[str, Expression]) -> str:
+    """Resolve descriptor aliases without evaluating geometry or defaults."""
+    seen = set()
+    while name not in seen:
+        seen.add(name)
+        bound = let_bindings.get(name)
+        if isinstance(bound, CallExpr) and bound.name == 'plate':
+            return name
+        if isinstance(bound, Identifier):
+            name = bound.name
+            continue
+        break
+    raise ValueError(f"plate selector base '{name}' must resolve to let-bound plate(...)")
 
 
-def _expand_selector_positions(
-    selector: PlateSelectorExpr,
-    *,
-    descriptor: dict[str, object],
-) -> list[str]:
-    rows = int(descriptor["rows"])
-    cols = int(descriptor["cols"])
-    ordered: list[str] = []
-    seen: set[str] = set()
-    for region in selector.regions:
-        region_positions = _expand_selector_region(region, rows=rows, cols=cols)
-        for position in region_positions:
-            if position in seen:
-                raise ValueError(f"Duplicate well '{position}' is not allowed in plate selector")
-            seen.add(position)
-            ordered.append(position)
-    return ordered
-
-
-def _expand_selector_region(region: SelectorRegion, *, rows: int, cols: int) -> list[str]:
-    start_row, start_col = _parse_well_position(region.start)
-    end_row, end_col = _parse_well_position(region.end or region.start)
-    row_lo, row_hi = sorted((start_row, end_row))
-    col_lo, col_hi = sorted((start_col, end_col))
-    if row_hi > rows or col_hi > cols:
-        end_label = region.end or region.start
-        raise ValueError(f"plate selector range '{region.start}:{end_label}' exceeds plate bounds")
-    return [
-        f"{_row_index_to_label(row)}{col}"
-        for row in range(row_lo, row_hi + 1)
-        for col in range(col_lo, col_hi + 1)
-    ]
-
-
-def _parse_well_position(value: str) -> tuple[int, int]:
-    idx = 0
-    while idx < len(value) and value[idx].isalpha():
-        idx += 1
-    if idx == 0 or idx == len(value):
-        raise ValueError(f"Invalid well position '{value}'")
-    row_label = value[:idx]
-    col_text = value[idx:]
-    row = 0
-    for char in row_label:
-        row = row * 26 + (ord(char) - ord("A") + 1)
-    return row, int(col_text)
-
-
-def _row_index_to_label(index: int) -> str:
-    parts: list[str] = []
-    current = index
-    while current > 0:
-        current, rem = divmod(current - 1, 26)
-        parts.append(chr(ord("A") + rem))
-    return "".join(reversed(parts))
-
-
-def _ensure_synthesized_well(
-    *,
-    plate_name: str,
-    position: str,
-    descriptor: dict[str, object],
-    stmt_id: str,
-    state: _CompilerState,
-    span,
-) -> tuple[list[IRLet], Identifier]:
+def request_plate_well(*, plate_name: str, position: str, stmt_id: str, state: _CompilerState, span):
+    """Reserve one symbolic reference; do not allocate a well during compile."""
     key = (plate_name, position)
     existing = state.synthesized_wells.get(key)
     if existing is not None:
         return [], Identifier(name=existing, span=span)
-
-    synth_name = f"__lw_plate_{plate_name}_{position}"
-    state.synthesized_wells[key] = synth_name
-
-    ir_args = [
-        IRArg(name="kind", value=IRString(value=ContainerKind.WELL.value, span=span), span=span),
-        IRArg(name="carrier_kind", value=IRString(value="plate", span=span), span=span),
-        IRArg(name="carrier_id", value=IRString(value=str(descriptor["carrier_id"]), span=span), span=span),
-        IRArg(name="carrier_position", value=IRString(value=position, span=span), span=span),
-    ]
-    label_prefix = descriptor.get("label")
-    if isinstance(label_prefix, str):
-        ir_args.append(
-            IRArg(name="label", value=IRString(value=f"{label_prefix}_{position}", span=span), span=span)
-        )
-    capacity = descriptor.get("capacity")
-    if isinstance(capacity, Quantity):
-        ir_args.append(
-            IRArg(
-                name="capacity",
-                value=IRQuantity(value=capacity.value, unit=capacity.unit, span=capacity.span),
-                span=capacity.span,
-            )
-        )
-
-    ir_let = IRLet(
-        id=f"{stmt_id}::well::{position}",
-        name=synth_name,
-        value=IRCall(name="AllocContainer", args=ir_args, span=span),
+    name = f"__lw_plate_{plate_name}_{position}"
+    state.synthesized_wells[key] = name
+    return [IRLet(
+        id=f"{stmt_id}::well::{position}", name=name,
+        value=IRPlateWellRef(plate=IRIdentifier(name=plate_name, span=span), position=position, span=span),
         span=span,
-    )
-    return [ir_let], Identifier(name=synth_name, span=span)
+    )], Identifier(name=name, span=span)
 
 
 def _expr_identity_key(expr: Expression) -> str:

@@ -17,6 +17,7 @@ from culsma.pipeline.ir_nodes import (
     IRList,
     IRMember,
     IRPlateSelector,
+    IRPlateWellRef,
     IRProgram,
     IRQuantity,
     IRRepeat,
@@ -209,7 +210,7 @@ def _let_defines_runtime_name(stmt: IRLet, *, expr_bindings: dict[str, Any]) -> 
     if stmt.value is None:
         return False
     resolved = _resolve_bound_expr(stmt.value, expr_bindings)
-    if isinstance(resolved, (IRIdentifier, IRString, IRPlateSelector, IRIndex)):
+    if isinstance(resolved, (IRIdentifier, IRString, IRPlateSelector, IRPlateWellRef, IRIndex)):
         return True
     return isinstance(resolved, IRCall) and resolved.name in {
         "AllocContainer",

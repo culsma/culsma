@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+from culsma.pipeline.external_inputs import external_parameter_resolution, ExternalInputStatus, ExternalInputIssue
+from culsma.domains.contracts import enum_wire_value
+from culsma.domains.registry import EXTERNAL_PARAMETERS
+
 from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
@@ -23,6 +27,8 @@ class ProgramContractValidator:
         *,
         literal_bindings: dict[str, Any],
         node_id: str | None,
+        expr_bindings=None,
+        defined_names=frozenset(),
     ) -> list[Diagnostic]:
         diagnostics: list[Diagnostic] = []
         spec = get_program_spec(call.name)
@@ -108,6 +114,12 @@ class ProgramContractValidator:
             if field_spec.enum_values is None:
                 continue
             value = ExprResolver.to_text_token(arg.value, literal_bindings)
+            if (call.name, arg.name) in EXTERNAL_PARAMETERS:
+                result = external_parameter_resolution(call.name, arg.name, arg.value,
+                    bindings={**(expr_bindings or {}), **literal_bindings}, defined_names=defined_names)
+                if result.status is ExternalInputStatus.DEFERRED or result.issue in {ExternalInputIssue.WRONG_TYPE, ExternalInputIssue.CYCLIC_BINDING}:
+                    continue
+                value = enum_wire_value(result.value) if result.value is not None else None
             if value is None or value not in set(field_spec.enum_values):
                 diagnostics.append(
                     Diagnostic(

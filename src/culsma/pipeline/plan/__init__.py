@@ -12,6 +12,7 @@ from culsma.pipeline.plan_nodes import PlanProgram, ProtocolPlan
 from culsma.pipeline.scope import ScopeAnalyzer, ScopeQueryService
 
 from .content_enums import validate_bound_content_plan
+from .external_parameters import normalize_external_plan
 from .context import PlanLoweringContext
 from .references import DEFAULT_PLAN_REFERENCE_RESOLVER, PlanReferenceResolver
 from .serialization import DEFAULT_PLAN_EXPRESSION_SERIALIZER, PlanExpressionSerializer
@@ -67,7 +68,7 @@ def lower_ir_to_plan(
                 reference_resolver=reference_resolver,
             )
         )
-        return validate_bound_content_plan(PlanProgram(plans=plans, diagnostics=diagnostics, span=ir.span))
+        return normalize_external_plan(validate_bound_content_plan(PlanProgram(plans=plans, diagnostics=diagnostics, span=ir.span)))
 
     root_protocol = next(
         (protocol for protocol in ir.protocols if protocol.name == entry_resolution.protocol_name),
@@ -97,7 +98,7 @@ def lower_ir_to_plan(
         )
     )
 
-    return validate_bound_content_plan(PlanProgram(plans=plans, diagnostics=diagnostics, span=ir.span))
+    return normalize_external_plan(validate_bound_content_plan(PlanProgram(plans=plans, diagnostics=diagnostics, span=ir.span)))
 
 
 def lower_script_entry_to_plan(
