@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from culsma.domains.agitation import AGITATION_MODE
+from culsma.domains.readout import READOUT_QUANTITIES
+
 from dataclasses import dataclass
 from typing import Any, Mapping
 
@@ -35,12 +38,9 @@ from .separation import validate_component_fates_contract
 BUILTIN_METHOD_STEPS = {"append", "replace"}
 CONSTRAINT_CUSTOMIZED = "customized"
 COLD_CHAIN_MAX_C = 8.0
-AGIT_MODES = {"vortex", "invert", "flick", "shake", "stir"}
-READOUT_QUANTITY_SETS = {
-    "img": frozenset({"uv_absorbance", "fluorescence", "colorimetric", "customized"}),
-    "ecp": frozenset({"ph", "conductivity", "dissolved_oxygen", "orp", "customized"}),
-    "phy": frozenset({"temperature", "pressure", "flow_rate", "mass", "volume", "humidity", "current", "customized"}),
-}
+# Legacy consumer views derived from domain-owned contracts.
+AGIT_MODES = frozenset(AGITATION_MODE.wire_values)
+READOUT_QUANTITY_SETS = {operation: frozenset(contract.wire_values) for operation, contract in READOUT_QUANTITIES.items()}
 
 
 @dataclass(frozen=True)

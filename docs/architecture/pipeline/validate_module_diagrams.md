@@ -200,3 +200,217 @@ classDiagram
 | `python -m conformance.content_contract --check` | 对照固定规范快照、实现及测试映射；实现 PR CI 使用此入口 |
 | `python -m conformance.content_contract --reference-root ../culsma-reference --check` | 对照选定 reference 工作树；实现仓库的 Reference Conformance 手动工作流支持指定 revision |
 | `python -m conformance.content_contract --reference-root ../culsma-reference --write` | 从已审阅规范重新生成派生快照；随后运行相应行为测试 |
+
+## 1.0.8 Planned External Enum Contracts
+
+Status: **domain type foundation implemented; DSL binding/lowering/runtime integration remains planned**. Coordination: [PM #110](https://github.com/culsma/culsma-pm/issues/110).
+The three planned diagrams below use only Mermaid class, flowchart, and sequence syntax.
+The class diagram is the primary change; flow and sequence describe the boundary integration.
+
+| Boundary | Decision / invariant |
+| --- | --- |
+| Scope | First-group closed author-facing vocabularies only. Extensible classes, open attrs, and general internal discriminator cleanup follow separately. |
+| Baseline | Branch `codex/1.0.8` was fast-forwarded to accepted RC work at `42b562b` before implementation; content contracts and source compatibility are reused. |
+| Language ownership | The independent reference owns accepted member spellings, allowed values and compatibility semantics. Names below are proposals, not executable examples or a frozen reference contract. |
+| Type identity | Validate enum family and member, including through aliases and protocol parameters. Equal serialized text does not make different enum families interchangeable. |
+| Compatibility | Existing legal strings and bare tokens pass through a centralized source-compatibility adapter after normal binding resolution. A bound wrong-type value must not fall back to a token. |
+| Downstream boundary | Carry validated enum identity through lowering and execution. Serialize using existing field-specific strings; reuse the output's semantic role for keep_source, not its tuple value. Historical-data decoding remains separate from source compatibility. |
+| Behavior | Preserve operation-specific quantity membership, customized/schema_ref checks, plate geometry and supported capacity defaults, layout rules, schedule defaults and behavior. |
+| Testability | New logical entry points are public and directly testable; acceptance also begins from complete DSL source. |
+
+### Frozen First Delivery: Domain Types
+
+The implemented first delivery owns closed enum definitions and pure parameter contracts in `culsma.domains`, independent of parser, pipeline, runtime and drivers. Existing pipeline imports of program output types remain aliases of the same classes. Source compatibility converts legacy text through `pipeline.compat.external_enums`; domain APIs accept exact enum families only. This delivery does not claim new DSL member syntax is executable: binding, lowering and runtime integration remain subsequent acceptance gates.
+
+| Requirement | Invariant / diagnostic boundary | Test hook |
+| --- | --- | --- |
+| ENUM-DOMAIN | Each domain owns its members and immutable tables; readout allowed sets remain operation-specific | `tests/test_domain_enums.py` |
+| ENUM-IDENTITY | Reject another enum family even when its string value compares equal; domain API raises TypeError, unsupported members raise ValueError | `tests/test_domain_enums.py` |
+| ENUM-COMPAT | Only the source adapter accepts legacy strings; output roles decode using semantic_role; invalid strings fail | `tests/test_domain_enums.py` |
+| ENUM-OWNERS | Existing registries derive vocabulary from domain contracts; existing public output imports retain class identity | `tests/test_domain_enums.py` |
+| ENUM-EXTENSION | Closed enums cannot acquire extra members by subclassing. Extensible source classes need domain-specific contracts and separate metadata/execution capabilities; no empty catch-all program base is introduced | second delivery, pending extension declaration design |
+
+| Domain owner | Implemented types / contracts | Existing consumer |
+| --- | --- | --- |
+| `domains/labware.py` | PlateFormat, geometry and capacity | plate selector compiler |
+| `domains/separation.py` | Existing ProgramOutput families, DisruptionMethod, keep_source contract | program registry (backwards-compatible output imports) |
+| `domains/readout.py` | ReadoutQuantity, per-operation contracts and schema requirement | readout vocabulary view |
+| `domains/agitation.py` | AgitationMode including FLICK | agitation vocabulary view |
+| `domains/fractionation.py` | DensityGradientAxis / Order | program registry |
+| `domains/scheduling.py` | ScheduleMode and default | integration pending |
+
+### Proposed Authoring Surface
+
+Every expression in this table is **design-only**. The target values preserve the closed vocabularies; exact public names must be accepted in the owning reference before implementation.
+
+| Parameter | Proposed new spelling | Members / restrictions | Current code owner |
+| --- | --- | --- | --- |
+| `plate.format` | `PlateFormat.WELL_96` | WELL_6, WELL_12, WELL_24, WELL_48, WELL_96, WELL_384; preserve explicit custom rows/cols rules | `domains/labware.py` → `compile/targets.py` |
+| `centrifuge_program.keep_source` | `CentrifugeProgramOutput.PELLET` | Reuse existing SUPERNATANT / PELLET; do not create another output vocabulary | `program_registry.py` |
+| `img.quantity` | `ReadoutQuantity.FLUORESCENCE` | UV_ABSORBANCE, FLUORESCENCE, COLORIMETRIC, CUSTOMIZED | `validate/statement_contracts.py` |
+| `ecp.quantity` | `ReadoutQuantity.PH` | PH, CONDUCTIVITY, DISSOLVED_OXYGEN, ORP, CUSTOMIZED | `validate/statement_contracts.py` |
+| `phy.quantity` | `ReadoutQuantity.TEMPERATURE` | TEMPERATURE, PRESSURE, FLOW_RATE, MASS, VOLUME, HUMIDITY, CURRENT, CUSTOMIZED | `validate/statement_contracts.py` |
+| `agit.mode` | `AgitationMode.VORTEX` | VORTEX, INVERT, FLICK, SHAKE, STIR; FLICK preserved from the reconciled RC baseline | `validate/statement_contracts.py` |
+| `disrupt_program.method` | `DisruptionMethod.SONICATION` | MECHANICAL, SONICATION, SHEAR_HOMOGENIZATION, HIGH_PRESSURE_DISRUPTION, BEAD_IMPACT | `program_registry.py` |
+| `density_gradient_program.axis` | `DensityGradientAxis.DENSITY` | DENSITY | `program_registry.py` |
+| `density_gradient_program.order` | `DensityGradientOrder.TOP_TO_BOTTOM` | TOP_TO_BOTTOM, BOTTOM_TO_TOP | `program_registry.py` |
+| `schedule.mode` | `ScheduleMode.CONTINUOUS` | DISCRETE, CONTINUOUS; preserve omitted-mode default DISCRETE | `compile/schedule.py`, `plan/static_eval.py` |
+
+### Planned Class Relationships — Primary Change
+
+IMPLEMENTED marks delivered domain types; EXTEND marks pending pipeline integration; EXISTING marks a reusable output type. ExternalEnumContracts denotes `domains/contracts.py::EnumParameter`; SourceCompatibility denotes `pipeline/compat/external_enums.py`. Pipeline consumers and wire integration remain planned. No common extensible base class is introduced in this phase.
+
+```mermaid
+classDiagram
+    class PlateFormat {
+        <<IMPLEMENTED_ENUM>>
+        WELL_6
+        WELL_12
+        WELL_24
+        WELL_48
+        WELL_96
+        WELL_384
+    }
+    class CentrifugeProgramOutput {
+        <<EXISTING_ENUM>>
+        SUPERNATANT
+        PELLET
+    }
+    class ReadoutQuantity {
+        <<IMPLEMENTED_ENUM>>
+        FLUORESCENCE
+        PH
+        TEMPERATURE
+        CUSTOMIZED
+    }
+    class AgitationMode {
+        <<IMPLEMENTED_ENUM>>
+        VORTEX
+        INVERT
+        FLICK
+        SHAKE
+        STIR
+    }
+    class DisruptionMethod {
+        <<IMPLEMENTED_ENUM>>
+        MECHANICAL
+        SONICATION
+        SHEAR_HOMOGENIZATION
+        HIGH_PRESSURE_DISRUPTION
+        BEAD_IMPACT
+    }
+    class DensityGradientAxis {
+        <<IMPLEMENTED_ENUM>>
+        DENSITY
+    }
+    class DensityGradientOrder {
+        <<IMPLEMENTED_ENUM>>
+        TOP_TO_BOTTOM
+        BOTTOM_TO_TOP
+    }
+    class ScheduleMode {
+        <<IMPLEMENTED_ENUM>>
+        DISCRETE
+        CONTINUOUS
+    }
+    class ExternalEnumContracts {
+        <<IMPLEMENTED_EnumParameter>>
+        +enum_type
+        +allowed_members
+        +validate(value)
+        +encode(value)
+        +decode(value)
+    }
+    class SourceCompatibility {
+        <<IMPLEMENTED_ADAPTER>>
+        +resolve_legacy_enum(value, contract)
+    }
+    class ParameterConsumers {
+        <<EXTEND>>
+        +validate_domain_rules(value, context)
+    }
+    class WireCodec {
+        <<EXTEND>>
+        +encode_value(value, contract)
+        +decode_value(payload, contract)
+    }
+    ExternalEnumContracts --> PlateFormat : plate.format
+    ExternalEnumContracts --> CentrifugeProgramOutput : keep_source
+    ExternalEnumContracts --> ReadoutQuantity : quantity per operation
+    ExternalEnumContracts --> AgitationMode : agit.mode
+    ExternalEnumContracts --> DisruptionMethod : disrupt.method
+    ExternalEnumContracts --> DensityGradientAxis : density axis
+    ExternalEnumContracts --> DensityGradientOrder : density order
+    ExternalEnumContracts --> ScheduleMode : schedule.mode
+    SourceCompatibility --> ExternalEnumContracts : produces validated members
+    ParameterConsumers --> ExternalEnumContracts : checks identity and membership
+    WireCodec --> ExternalEnumContracts : field-specific stable representation
+    note for ReadoutQuantity "Representative members shown; full per-operation sets are in the table"
+    note for AgitationMode "Domain owner: domains/agitation.py; RC FLICK member preserved"
+```
+
+### Planned Resolution Flow — Boundary Changes
+
+This is a cross-stage value-resolution flow, not a change to the statement-handler lifecycle or a claim that semantic validation runs typecheck.
+
+```mermaid
+flowchart TB
+    Source["DSL parameter expression"] --> Bind["Existing binding resolution<br/>including variables and protocol arguments"]
+    Bind --> Shape{"Resolved value form"}
+    Shape -->|enum member| Identity["NEW: check expected enum family"]
+    Shape -->|legacy string or permitted bare token| Compat["EXTEND compat boundary:<br/>legacy spelling to expected enum member"]
+    Shape -->|other type or unresolved binding| TypeError["Owning binding/type diagnostic"]
+    Compat -->|recognized| Identity
+    Compat -->|unknown| ValueError["Semantic value diagnostic"]
+    Identity -->|wrong family| TypeError
+    Identity -->|correct family| Allowed["NEW: check operation-specific members"]
+    Allowed -->|not allowed| ValueError
+    Allowed -->|allowed| Domain["Existing domain checks:<br/>schema_ref, layout, scheduling rules"]
+    Domain -->|valid| Lower["EXTEND lowering and execution:<br/>preserve typed identity"]
+    Lower --> Wire["Boundary codec:<br/>existing serialized field values"]
+    classDef planned fill:#fff3cd,stroke:#b7791f,stroke-width:2px
+    class Identity,Compat,Allowed,Lower planned
+```
+
+### Planned Call Sequence — Integration and Verification
+
+Participants denote responsibilities across the frontend and execution pipeline; detailed diagnostic IDs and stage hooks are frozen before code changes. Each earliest-decidable failure terminates this value's path without duplicate downstream diagnostics.
+
+```mermaid
+sequenceDiagram
+    actor Author
+    participant Frontend as Parser and binding
+    participant Types as Typecheck
+    participant Compat as Source compat adapter
+    participant Semantic as Semantic contracts
+    participant Exec as Plan and runtime
+    participant Codec as Serialization boundary
+    Author->>Frontend: Parameter expression / alias / protocol argument
+    Frontend->>Types: Resolved expression and expected enum family
+    alt Proposed enum member
+        Types->>Types: Check enum-family identity
+        Types->>Semantic: Correctly typed member
+    else Compatible legacy text or bare token
+        Types->>Compat: Resolve permitted legacy input in field context
+        Compat->>Semantic: Canonical member or value diagnostic
+    end
+    Semantic->>Semantic: Allowed members and dependent domain rules
+    Semantic->>Exec: Validated value with enum identity
+    Exec->>Codec: Result containing typed values
+    Codec-->>Author: Stable field-specific serialized values
+    Note over Frontend,Codec: NEW tests: complete-source old/new equivalence and boundary round trips
+```
+
+### Delivery Order and Acceptance Hooks
+
+| Order / requirement | Deliverable | Planned complete-source test hook |
+| --- | --- | --- |
+| 0 / ENUM-BASELINE | RC baseline reconciled; freeze source reference/call contracts and exact diagnostic ownership before DSL integration | `test_external_enum_reference_conformance` |
+| 1 / ENUM-PLATE | Plate format, geometry/selection and compatibility | `test_plate_format_enum_frontend_equivalence` |
+| 2 / ENUM-OUTPUT | keep_source reuses centrifuge outputs, rejects other output families | `test_keep_source_enum_frontend_contract` |
+| 3 / ENUM-READOUT | Readout enums with per-operation subsets and customized schema rules | `test_readout_quantity_enum_frontend_contract` |
+| 4 / ENUM-MODES | Agitation, disruption, density axis/order and scheduling | `test_closed_mode_enums_frontend_contract` |
+| Each / ENUM-IDENTITY | Direct members, aliases, protocol parameters, wrong families/members and binding shadowing | `test_external_enum_binding_and_diagnostics` |
+| Each / ENUM-WIRE | Old/new execution equivalence, stable serialized values and historical-data decoding | `test_external_enum_runtime_roundtrip` |
+
+Hooks above are planned, not existing passing tests. Wrong value shape/family belongs to typecheck; unresolved references belong to binding; disallowed members and dependent rules belong to semantic validation. Member lookup errors belong to the first stage able to resolve that enum namespace. Reuse existing diagnostic identities where applicable and settle exact mappings before implementation. Promote accepted language rules into existing owning reference sections without code dependencies.

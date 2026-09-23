@@ -3,69 +3,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from enum import Enum
 
 
-class ProgramOutput(Enum):
-    """Closed, program-owned identity for one ordered separation output."""
-
-    def __new__(cls, part_id: str, semantic_role: str) -> ProgramOutput:
-        member = object.__new__(cls)
-        member._value_ = (part_id, semantic_role)
-        return member
-
-    @property
-    def part_id(self) -> str:
-        return self.value[0]
-
-    @property
-    def semantic_role(self) -> str:
-        return self.value[1]
-
-
-class SepProgramOutput(ProgramOutput):
-    FRACTION_A = ("0", "fraction_0")
-    FRACTION_B = ("1", "fraction_1")
-
-
-class CentrifugeProgramOutput(ProgramOutput):
-    SUPERNATANT = ("0", "supernatant")
-    PELLET = ("1", "pellet")
-
-
-class MagneticProgramOutput(ProgramOutput):
-    BOUND = ("0", "bound")
-    FLOWTHROUGH = ("1", "flowthrough")
-
-
-class DisruptProgramOutput(ProgramOutput):
-    LYSATE = ("0", "lysate")
-    DEBRIS_OR_RESIDUE = ("1", "debris_or_residue")
-
-
-class FieldProgramOutput(ProgramOutput):
-    TARGET_BAND_FRACTION = ("0", "target_band_fraction")
-    NON_TARGET_FRACTION = ("1", "non_target_fraction")
-
-
-class FiltrationProgramOutput(ProgramOutput):
-    FILTRATE = ("0", "filtrate")
-    RETENTATE = ("1", "retentate")
-
-
-class CentrifugalFiltrationProgramOutput(ProgramOutput):
-    FILTRATE = ("0", "filtrate")
-    RETENTATE = ("1", "retentate")
-
-
-class PhasePartitionProgramOutput(ProgramOutput):
-    TARGET_PHASE = ("0", "target_phase")
-    OTHER_PHASE = ("1", "other_phase")
-
-
-class PrecipitationProgramOutput(ProgramOutput):
-    PRECIPITATE = ("0", "precipitate")
-    SUPERNATANT = ("1", "supernatant")
+from culsma.domains.separation import (
+    ProgramOutput, SepProgramOutput, CentrifugeProgramOutput, MagneticProgramOutput,
+    DisruptProgramOutput, FieldProgramOutput, FiltrationProgramOutput,
+    CentrifugalFiltrationProgramOutput, PhasePartitionProgramOutput, PrecipitationProgramOutput,
+    CENTRIFUGE_KEEP_SOURCE, DISRUPTION_METHOD,
+)
+from culsma.domains.fractionation import DENSITY_GRADIENT_AXIS, DENSITY_GRADIENT_ORDER
 
 
 @dataclass(frozen=True)
@@ -163,14 +109,9 @@ def _spec(
     )
 
 
-KEEP_SOURCE_VALUES = ("supernatant", "pellet")
-DISRUPTION_METHOD_VALUES = (
-    "mechanical",
-    "sonication",
-    "shear_homogenization",
-    "high_pressure_disruption",
-    "bead_impact",
-)
+# Compatibility views: domain contracts are the single vocabulary source.
+KEEP_SOURCE_VALUES = CENTRIFUGE_KEEP_SOURCE.wire_values
+DISRUPTION_METHOD_VALUES = DISRUPTION_METHOD.wire_values
 
 PROGRAM_OUTPUT_TYPES: dict[str, type[ProgramOutput]] = {
     output_type.__name__: output_type
@@ -306,8 +247,8 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         family="frac",
         owners=("frac",),
         fields=(
-            _field("axis", required=True, value_kind="text_enum", enum_values=("density",)),
-            _field("order", required=True, value_kind="text_enum", enum_values=("top_to_bottom", "bottom_to_top")),
+            _field("axis", required=True, value_kind="text_enum", enum_values=DENSITY_GRADIENT_AXIS.wire_values),
+            _field("order", required=True, value_kind="text_enum", enum_values=DENSITY_GRADIENT_ORDER.wire_values),
             _field("bins", required=True, value_kind="int"),
         ),
         result_contract_key="fraction_group",

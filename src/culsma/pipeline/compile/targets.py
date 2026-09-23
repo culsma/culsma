@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from culsma.domains.labware import PLATE_DIMENSIONS, PLATE_DEFAULT_WELL_CAPACITY
+
 from dataclasses import dataclass
 
 from culsma.parser.ast_nodes import (
@@ -37,20 +39,9 @@ from culsma.pipeline.container_views import classify_container_target_view, is_c
 
 from .context import BlockContext, CompileSession, _CompilerState
 
-_PLATE_FORMAT_DIMENSIONS = {
-    "6well": (2, 3),
-    "12well": (3, 4),
-    "24well": (4, 6),
-    "48well": (6, 8),
-    "96well": (8, 12),
-    "384well": (16, 24),
-}
-
-# Format defaults describe total per-well capacity. Authors can override these
-# when a plate family uses a different well geometry.
-_PLATE_FORMAT_DEFAULT_WELL_CAPACITY = {
-    "24well": (3.4, "mL"),
-}
+# Compatibility views retain historical compiler lookup names.
+_PLATE_FORMAT_DIMENSIONS = {member.value: dimensions for member, dimensions in PLATE_DIMENSIONS.items()}
+_PLATE_FORMAT_DEFAULT_WELL_CAPACITY = {member.value: capacity for member, capacity in PLATE_DEFAULT_WELL_CAPACITY.items()}
 
 
 @dataclass(frozen=True)
