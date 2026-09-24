@@ -2,7 +2,8 @@
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Protocol, Mapping, AbstractSet, Any
+from types import MappingProxyType
 
 E = TypeVar("E", bound=Enum)
 
@@ -59,3 +60,40 @@ class EnumParameter(Generic[E]):
     @property
     def wire_values(self) -> tuple[str, ...]:
         return tuple(enum_wire_value(member) for member in self.enum_type if member in self.allowed_members)
+
+
+class ParameterContract(Protocol):
+    enum_type: type[Enum]
+
+    def validate(self, value: Any) -> Enum: ...
+
+    def decode(self, value: str) -> Enum | str: ...
+
+    @property
+    def wire_values(self) -> tuple[str, ...]: ...
+
+
+class ParameterRule(Protocol):
+    parameters: AbstractSet[str]
+
+    def validate(self, values: Mapping[str, Any], present: AbstractSet[str]) -> None: ...
+
+
+@dataclass(frozen=True)
+class CallParameterContract:
+    """Domain fields and dependent rules; stages own resolution and diagnostics."""
+
+    fields: Mapping[str, ParameterContract]
+    rules: tuple[ParameterRule, ...] = ()
+
+    def __post_init__(self):
+        object.__setattr__(self, 'fields', MappingProxyType(dict(self.fields)))
+        object.__setattr__(self, 'rules', tuple(self.rules))
+        for rule in self.rules:
+            if not set(rule.parameters) <= self.fields.keys():
+                raise ValueError('Rule dependencies must have registered parameter contracts')
+
+    def validate_resolved(self, values: Mapping[str, Any], present: AbstractSet[str]) -> None:
+        for rule in self.rules:
+            if set(rule.parameters) <= values.keys():
+                rule.validate(values, present)

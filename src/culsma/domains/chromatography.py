@@ -208,3 +208,10 @@ class ExternalTypeCatalog(Mapping):
 
     def __len__(self):
         return len(set(self.closed) | set(ACTIVE_CHROMATOGRAPHY_REGISTRY.get().types))
+
+
+class ChromatographyPairRule:
+    parameters = frozenset({'axis', 'order'})
+
+    def validate(self, values, present):
+        ACTIVE_CHROMATOGRAPHY_REGISTRY.get().validate_pair(values['axis'], values['order'])

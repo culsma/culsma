@@ -664,3 +664,43 @@ protocol T(sample) {
 | 执行含义 | 扩展声明只增加轴和方向描述；沿用既有 frac 物料处理，不声称新增色谱分离科学算法；设备行为由明确支持该身份的 driver 提供 |
 | 兼容 | 任意历史文本仍保留文本；只有标准词汇自动转换；文本不能代替已注册扩展身份；`pipeline/compat/external_enums.py` 独占该转换 |
 | 验证 | `tests/test_chromatography_extensions.py` 与 `tests/test_chromatography_frontend.py` 覆盖身份、作用域、配对、动态赋值、JSON 回放和 driver 前拦截 |
+
+### Program 字段与关联规则统一入口：已实现
+
+ProgramSpec 与边界层共用 domains/registry.py 登记的 CallParameterContract；EXTERNAL_PARAMETERS 由它派生。前端解析字段值并负责 SEM 诊断，计划/运行规范化负责各自诊断。领域规则只接收已解析值及参数存在集合，依赖值未确定时延迟，不读取 AST、IR 或诊断对象。
+
+```mermaid
+classDiagram
+    class ProgramSpec {
+        +CallParameterContract parameter_contract
+    }
+    class CallParameterContract {
+        +Mapping fields
+        +tuple rules
+        +validate_resolved(values, present)
+    }
+    class ParameterRule {
+        <<interface>>
+        +parameters
+        +validate(values, present)
+    }
+    class ChromatographyPairRule
+    class AgitationArgumentsRule
+    class ReadoutQuantityRule
+    ProgramSpec --> CallParameterContract
+    CallParameterContract o-- ParameterRule
+    ParameterRule <|.. ChromatographyPairRule
+    ParameterRule <|.. AgitationArgumentsRule
+    ParameterRule <|.. ReadoutQuantityRule
+    ProgramContractValidator --> ProgramSpec
+    ExternalParameterNormalizer --> CallParameterContract
+    style CallParameterContract fill:#dcfce7,stroke:#16a34a
+    style ChromatographyPairRule fill:#dcfce7,stroke:#16a34a
+    style ProgramSpec fill:#dcfce7,stroke:#16a34a
+```
+
+| Req ID | 不变量 / 诊断 | 验收 |
+| --- | --- | --- |
+| PROGRAM-CONTRACT | 字段契约与关联规则只有一份登记；ProgramSpec 和边界层复用；不按 program 名称分支 | tests/test_program_parameter_contracts.py |
+| PROGRAM-DEFER | 只执行依赖已解析的规则；未知值延迟，但已知错误仍报告 | tests/test_chromatography_frontend.py |
+| PROGRAM-DIAG | 错误类型保留 TYPE；非法成员与配对保留 SEM_INVALID_PROGRAM_ARG_VALUE；计划/运行诊断不变 | tests/test_chromatography_frontend.py、tests/test_external_enum_frontend.py |

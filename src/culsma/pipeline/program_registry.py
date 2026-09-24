@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from culsma.domains.contracts import CallParameterContract
+from culsma.domains.registry import EXTERNAL_CALL_CONTRACTS
 
 
 from culsma.domains.separation import (
@@ -59,6 +61,7 @@ class ProgramSpec:
     material_effect_kind: str | None = None
     output_type: type[ProgramOutput] | None = None
     legacy_aliases: tuple[str, ...] = ()
+    parameter_contract: CallParameterContract | None = None
 
 
 def _field(
@@ -96,6 +99,7 @@ def _spec(
     return ProgramSpec(
         kind=kind,
         family=family,
+        parameter_contract=EXTERNAL_CALL_CONTRACTS.get(kind),
         owners=owners,
         fields=fields,
         required_fields=required_fields,

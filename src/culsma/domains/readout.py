@@ -1,4 +1,5 @@
 """Readout quantities and operation-specific membership contracts."""
+from dataclasses import dataclass
 from enum import StrEnum
 from types import MappingProxyType
 from .contracts import EnumParameter
@@ -44,3 +45,12 @@ def validate_readout_quantity(operation: str, quantity: ReadoutQuantity, *, has_
     if value is ReadoutQuantity.CUSTOMIZED and not has_schema:
         raise ValueError("Customized readout requires schema_ref")
     return value
+
+
+@dataclass(frozen=True)
+class ReadoutQuantityRule:
+    operation: str
+    parameters = frozenset({'quantity'})
+
+    def validate(self, values, present):
+        validate_readout_quantity(self.operation, values['quantity'], has_schema='schema_ref' in present)

@@ -2,10 +2,8 @@
 
 from __future__ import annotations
 
-from culsma.pipeline.external_inputs import external_parameter_resolution, ExternalInputStatus, ExternalInputIssue
-from culsma.domains.chromatography import ACTIVE_CHROMATOGRAPHY_REGISTRY
-from culsma.domains.contracts import enum_wire_value
-from culsma.domains.registry import EXTERNAL_PARAMETERS
+from culsma.pipeline.external_inputs import ExternalInputStatus, ExternalInputIssue
+from culsma.pipeline.external_inputs import ExternalInputResolver, ExternalInputScope
 
 from typing import Any
 
@@ -108,50 +106,44 @@ class ProgramContractValidator:
             )
 
         field_specs = {field.name: field for field in spec.fields}
+        contract = spec.parameter_contract
+        resolved_values = {}
+        scope = ExternalInputScope({**(expr_bindings or {}), **literal_bindings}, defined_names)
         for arg in call.args:
             field_spec = field_specs.get(arg.name)
             if field_spec is None:
                 continue
+            parameter = contract.fields.get(arg.name) if contract is not None else None
+            if parameter is not None:
+                result = ExternalInputResolver.resolve(arg.value, parameter, scope)
+                if result.status is ExternalInputStatus.RESOLVED:
+                    resolved_values[arg.name] = result.value
+                elif result.issue in {ExternalInputIssue.UNKNOWN_MEMBER, ExternalInputIssue.INVALID_VALUE}:
+                    diagnostics.append(Diagnostic(
+                        code="SEM_INVALID_PROGRAM_ARG_VALUE",
+                        message=f"Program arg '{arg.name}' in '{call.name}': {result.detail}",
+                        span=arg.span or call.span, node_id=node_id,
+                    ))
+                continue
             if field_spec.enum_values is None:
                 continue
             value = ExprResolver.to_text_token(arg.value, literal_bindings)
-            if (call.name, arg.name) in EXTERNAL_PARAMETERS:
-                result = external_parameter_resolution(call.name, arg.name, arg.value,
-                    bindings={**(expr_bindings or {}), **literal_bindings}, defined_names=defined_names)
-                if result.status is ExternalInputStatus.DEFERRED or result.issue in {ExternalInputIssue.WRONG_TYPE, ExternalInputIssue.CYCLIC_BINDING}:
-                    continue
-                value = enum_wire_value(result.value) if result.value is not None else None
-            if value is None or value not in set(field_spec.enum_values):
-                diagnostics.append(
-                    Diagnostic(
-                        code="SEM_INVALID_PROGRAM_ARG_VALUE",
-                        message=(
-                            f"Program arg '{arg.name}' in '{call.name}' must be one of: "
-                            + ", ".join(field_spec.enum_values)
-                        ),
-                        span=arg.span or call.span,
-                        node_id=node_id,
-                    )
-                )
+            if value is None or value not in field_spec.enum_values:
+                diagnostics.append(Diagnostic(
+                    code="SEM_INVALID_PROGRAM_ARG_VALUE",
+                    message=f"Program arg '{arg.name}' in '{call.name}' must be one of: "
+                            + ", ".join(field_spec.enum_values),
+                    span=arg.span or call.span, node_id=node_id,
+                ))
 
-        if call.name == 'chromatography_program':
-            values = {}
-            for arg in call.args:
-                if arg.name not in {'axis', 'order'}:
-                    continue
-                result = external_parameter_resolution(call.name, arg.name, arg.value,
-                    bindings={**(expr_bindings or {}), **literal_bindings}, defined_names=defined_names)
-                if result.status is ExternalInputStatus.RESOLVED:
-                    values[arg.name] = result.value
-                elif result.issue in {ExternalInputIssue.UNKNOWN_MEMBER, ExternalInputIssue.INVALID_VALUE}:
-                    diagnostics.append(Diagnostic(code='SEM_INVALID_PROGRAM_ARG_VALUE',
-                        message=result.detail, span=arg.span or call.span, node_id=node_id))
-            if set(values) == {'axis', 'order'}:
-                try:
-                    ACTIVE_CHROMATOGRAPHY_REGISTRY.get().validate_pair(values['axis'], values['order'])
-                except (TypeError, ValueError) as error:
-                    diagnostics.append(Diagnostic(code='SEM_INVALID_PROGRAM_ARG_VALUE',
-                        message=str(error), span=call.span, node_id=node_id))
+        if contract is not None:
+            try:
+                contract.validate_resolved(resolved_values, frozenset(arg_names))
+            except (TypeError, ValueError) as error:
+                diagnostics.append(Diagnostic(
+                    code="SEM_INVALID_PROGRAM_ARG_VALUE", message=str(error),
+                    span=call.span, node_id=node_id,
+                ))
 
         for alias in spec.argument_aliases:
             alias_arg = _find_arg_by_name(call.args, alias.name)

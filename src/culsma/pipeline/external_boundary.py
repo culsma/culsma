@@ -7,9 +7,7 @@ from culsma.domains.chromatography import (
     ACTIVE_CHROMATOGRAPHY_REGISTRY, ChromatographyAxisBase, ChromatographyOrderBase, ChromatographyParameter,
 )
 from culsma.domains.contracts import EnumParameter
-from culsma.domains.agitation import AgitationMode, validate_agitation_arguments
-from culsma.domains.readout import ReadoutQuantity, validate_readout_quantity
-from culsma.domains.registry import EXTERNAL_ENUM_TYPES, EXTERNAL_PARAMETERS
+from culsma.domains.registry import EXTERNAL_ENUM_TYPES, EXTERNAL_PARAMETERS, EXTERNAL_CALL_CONTRACTS
 from culsma.pipeline.external_inputs import (
     KNOWN_ENUM_TYPES, ExternalInputResolution, ExternalInputStatus, ExternalInputIssue,
 )
@@ -42,8 +40,17 @@ class ExternalEnumCodec:
 
 
 class ExternalParameterNormalizer:
-    def __init__(self, contracts=EXTERNAL_PARAMETERS, codec=None):
+    def __init__(self, contracts=EXTERNAL_PARAMETERS, codec=None, *, call_contracts=None):
+        if call_contracts is None:
+            call_contracts = EXTERNAL_CALL_CONTRACTS if contracts is EXTERNAL_PARAMETERS else {}
+        else:
+            fields = {(operation, name): field for operation, contract in call_contracts.items()
+                      for name, field in contract.fields.items()}
+            if contracts is not EXTERNAL_PARAMETERS and dict(contracts) != fields:
+                raise ValueError('Parameter fields must match the supplied call contracts')
+            contracts = fields
         self.contracts = MappingProxyType(dict(contracts))
+        self.call_contracts = MappingProxyType(dict(call_contracts))
         self.codec = codec if codec is not None else ExternalEnumCodec()
 
     def resolve_member(self, value, contract) -> ExternalInputResolution:
@@ -106,32 +113,19 @@ class ExternalParameterNormalizer:
 
     def normalize_arguments(self, operation: str, arguments: dict, *, runtime: bool = False) -> dict:
         result = {}
+        resolved_values = {}
         for name, value in arguments.items():
             contract = self.contracts.get((operation, name))
             if contract is not None:
                 member = self.require_member(value, contract) if runtime else self.plan_member(value, contract)
+                if member is not None:
+                    resolved_values[name] = member
                 result[name] = value if member is None else member if runtime or isinstance(member, str) and not isinstance(member, Enum) else self.codec.encode(member)
             else:
                 result[name] = self.normalize_tree(value, runtime=runtime)
-        if operation == 'chromatography_program' and 'axis' in result and 'order' in result:
-            pair = [result['axis'], result['order']]
-            pair = [self.codec.decode(value) if isinstance(value, dict) and value.get('kind') == 'ChromatographyEnum'
-                    else value for value in pair]
-            if not any(isinstance(value, dict) for value in pair):
-                ACTIVE_CHROMATOGRAPHY_REGISTRY.get().validate_pair(*pair)
-        if operation in {'img', 'ecp', 'phy'} and 'quantity' in result:
-            quantity = result['quantity']
-            if isinstance(quantity, dict) and quantity.get('kind') == 'ExternalEnum':
-                quantity = self.codec.decode(quantity)
-            if isinstance(quantity, ReadoutQuantity):
-                validate_readout_quantity(operation, quantity, has_schema='schema_ref' in result)
-        if operation == 'agit' and 'mode' in result:
-            mode = result['mode']
-            if isinstance(mode, dict) and mode.get('kind') == 'ExternalEnum':
-                mode = self.codec.decode(mode)
-            if isinstance(mode, AgitationMode):
-                validate_agitation_arguments(mode, has_duration='duration' in result,
-                    has_rate='rate' in result, has_cycles='cycles' in result)
+        call_contract = self.call_contracts.get(operation)
+        if call_contract is not None:
+            call_contract.validate_resolved(resolved_values, frozenset(arguments))
         return result
 
     def normalize_tree(self, value: Any, *, runtime: bool = False) -> Any:

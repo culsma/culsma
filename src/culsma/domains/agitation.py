@@ -23,3 +23,11 @@ def validate_agitation_arguments(mode: AgitationMode, *, has_duration: bool, has
     elif has_cycles:
         raise ValueError('cycles is only allowed for invert/flick')
     return value
+
+
+class AgitationArgumentsRule:
+    parameters = frozenset({'mode'})
+
+    def validate(self, values, present):
+        validate_agitation_arguments(values['mode'], has_duration='duration' in present,
+                                    has_rate='rate' in present, has_cycles='cycles' in present)
