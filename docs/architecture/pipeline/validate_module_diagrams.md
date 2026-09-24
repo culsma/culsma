@@ -211,7 +211,7 @@ The class diagram is the primary change; flow and sequence describe the boundary
 | --- | --- |
 | Scope | First-group closed author-facing vocabularies only. Extensible classes, open attrs, and general internal discriminator cleanup follow separately. |
 | Baseline | Branch `codex/1.0.8` was fast-forwarded to accepted RC work at `42b562b` before implementation; content contracts and source compatibility are reused. |
-| Language ownership | The independent reference owns accepted member spellings, allowed values and compatibility semantics. Closed enum spellings below are implemented and recorded in the owning reference sections; class-based open extensions remain a separate design. |
+| Language ownership | The independent reference owns accepted member spellings, allowed values and compatibility semantics. Closed enum spellings below are implemented and recorded in the owning reference sections; the chromatography Python extension is specified below; other open domains remain separate. |
 | Type identity | Validate enum family and member, including through aliases and protocol parameters. Equal serialized text does not make different enum families interchangeable. |
 | Compatibility | Existing legal strings and bare tokens pass through a centralized source-compatibility adapter after normal binding resolution. A bound wrong-type value must not fall back to a token. |
 | Downstream boundary | Carry validated enum identity through lowering and execution. Serialize using existing field-specific strings; reuse the output's semantic role for keep_source, not its tuple value. Historical-data decoding remains separate from source compatibility. |
@@ -228,7 +228,7 @@ The implemented first delivery owns closed enum definitions and pure parameter c
 | ENUM-IDENTITY | Reject another enum family even when its string value compares equal; domain API raises TypeError, unsupported members raise ValueError | `tests/test_domain_enums.py` |
 | ENUM-COMPAT | Only the source adapter accepts legacy strings; output roles decode using semantic_role; invalid strings fail | `tests/test_domain_enums.py` |
 | ENUM-OWNERS | Existing registries derive vocabulary from domain contracts; existing public output imports retain class identity | `tests/test_domain_enums.py` |
-| ENUM-EXTENSION | Closed enums cannot acquire extra members by subclassing. Extensible source classes need domain-specific contracts and separate metadata/execution capabilities; no empty catch-all program base is introduced | later open-extension phase, pending declaration design |
+| ENUM-EXTENSION | Closed enums cannot acquire extra members by subclassing. Extensible source classes need domain-specific contracts and separate metadata/execution capabilities; no empty catch-all program base is introduced | chromatography implemented below; stream, constraints and attrs pending |
 
 | Domain owner | Implemented types / contracts | Existing consumer |
 | --- | --- | --- |
@@ -532,6 +532,135 @@ sequenceDiagram
 
 The original acceptance hooks above describe the overall target. Implemented evidence is in `tests/test_external_enum_inputs.py` and `tests/test_external_enum_frontend.py`: scoped resolution, alias snapshots, old/new execution equivalence, operation subsets, entry overrides, runtime family rejection, JSON round trips and shadowed legacy names. `TYPE_EXTERNAL_ENUM_MISMATCH` owns parameter shape/family errors; existing semantic value codes remain in use; `PLAN_EXTERNAL_ENUM_INVALID` and `RT_EXTERNAL_ENUM_INVALID` guard later-bound values.
 
-Plate geometry is resolved after entry binding. Regression coverage checks both old-text and enum arguments, overriding defaults, actual bounds, custom layouts and runtime capacity. Open extension base classes and arbitrary source `class` declarations are not implemented by this delivery.
+Plate geometry is resolved after entry binding. Regression coverage checks both old-text and enum arguments, overriding defaults, actual bounds, custom layouts and runtime capacity. Chromatography now has Python extension bases and explicit scoped registration as described below. Stream, constraints and attrs remain pending. Source-level class declarations are outside the selected architecture.
 
  Wrong value shape/family belongs to typecheck; unresolved references belong to binding; disallowed members and dependent rules belong to semantic validation. Malformed plate selector syntax remains a compile error; bound plate layout failures belong to planning; operation-specific member errors keep their semantic diagnostic codes. Reuse existing diagnostic identities where applicable and settle exact mappings before implementation. Promote accepted language rules into existing owning reference sections without code dependencies.
+
+
+## 开放词汇扩展：色谱已实现，其余领域待推进
+
+先以 chromatography 的 axis/order 验证领域类扩展，再推进 stream、constraint 与 attrs。已选择正式 Python 扩展入口：宿主声明领域子类并显式安装注册表，Culsma 引用成员；不新增 class/type 语法。
+
+```mermaid
+flowchart TB
+    Declaration["领域扩展声明<br/>Python 领域子类与显式注册"] --> Family["校验所属领域基础类型<br/>禁止跨领域混用"]
+    Family --> Identity["登记稳定身份与版本<br/>拒绝重复身份及标准成员覆盖"]
+    Identity --> Reference["协议引用已登记类型<br/>正常名字绑定和作用域遮蔽"]
+    Reference --> Contract["检查参数契约<br/>色谱 axis 与 order 必须相容"]
+    Legacy["已有文本协议"] --> Compat["集中兼容适配<br/>保留来源；不冒充已登记扩展"]
+    Compat --> Contract
+    Contract --> Usage{"是否只表达元数据？"}
+    Usage -->|是| Metadata["保留类型身份和数据<br/>不得自动取得科学行为"]
+    Usage -->|否| Capability["核对所需执行能力<br/>类声明不能代替实现"]
+    Capability -->|支持| Execute["生成计划并执行"]
+    Capability -->|不支持| Reject["明确拒绝<br/>不静默套用标准类型行为"]
+    Metadata --> Wire["序列化稳定领域身份<br/>回放不加载任意类或执行声明"]
+    Execute --> Wire
+    classDef planned fill:#fff3cd,stroke:#b7791f,stroke-width:2px
+    class Declaration,Family,Identity,Reference,Contract,Capability,Wire planned
+```
+
+| 顺序 / 范围 | 当前事实 | 下一阶段约束 |
+| --- | --- | --- |
+| 1：chromatography axis/order | `program_registry.py` 两个字段均为 text；reference §6.3.13 保留开放边界 | 独立的色谱领域基础类型；标准成员与扩展类型共同受 axis/order 相容性约束；不复用密度梯度闭合枚举 |
+| 2：stream.unit | 运行结果保存文本 `unit_kind`，CLI 对 single_cell 有既有展示行为 | 观察单位独立身份；扩展单位不得自动继承 single_cell 的展示或科学解释 |
+| 3：constraint | 标准 requirement 注册表；未知名称报 SEM_UNKNOWN_REQUIREMENT；customized 需要 schema_ref | 保留既有标准语法；新声明必须明确作用域、冲突与执行支持，不能把任意字符串当成约束实现 |
+| 4：attrs.role/state/bead_property | attrs 开放；role 有推荐词汇与既有消费者 | 标准/扩展元数据不能凭名称获得物理状态或材料行为；不封闭整个 attrs；不混用 program 输出角色 |
+
+| Req ID | 共同不变量 | 后续验收要求 |
+| --- | --- | --- |
+| EXT-FAMILY | 每个语法领域拥有基础类型；不建立万能业务基类 | 拒绝跨领域类、未登记类型、重复身份与覆盖标准成员 |
+| EXT-COMPAT | 旧文本兼容规则集中；新类扩展与历史未分类值分开 | 源码入口验证旧协议结果不变，拼写错误不提升成已登记类 |
+| EXT-CAPABILITY | 元数据声明与可执行能力分开 | 声明成功但执行能力缺失时明确拒绝；不得自动调用任意用户代码 |
+| EXT-IDENTITY | 绑定、计划及运行保留领域身份 | 别名、实参覆盖、错误族、序列化和回放端到端测试 |
+
+色谱的声明引用、稳定身份和兼容策略已融入 reference §6.3.13，诊断与测试对应如下；其余领域在各自实现前冻结这些契约。不支持 Culsma 类声明，也不把类型注册当作自定义执行程序。
+
+### Chromatography Python 扩展契约：已实现
+
+```mermaid
+classDiagram
+    class ChromatographyAxisBase {
+        <<enum extension base>>
+    }
+    class ChromatographyOrderBase {
+        <<enum extension base>>
+        +axis
+    }
+    class ChromatographyAxis {
+        RETENTION_TIME
+    }
+    class ChromatographyOrder {
+        EARLY_TO_LATE
+    }
+    ChromatographyAxisBase <|-- ChromatographyAxis
+    ChromatographyOrderBase <|-- ChromatographyOrder
+    class ChromatographyRegistry {
+        +with_type(enum_type, stable_id, version) ChromatographyRegistry
+        +activate()
+        +encode(member)
+        +decode(payload)
+        +validate_pair(axis, order)
+    }
+    ChromatographyRegistry --> ChromatographyAxisBase : registers subclasses
+    ChromatographyRegistry --> ChromatographyOrderBase : registers subclasses
+    ChromatographyOrderBase --> ChromatographyAxisBase : exact axis member
+    note for ChromatographyRegistry "不可变注册快照；上下文隔离；序列化 stable_id/version/member；不导入 Python 类路径"
+```
+
+| Req ID | 决定 / 诊断归属 | 测试入口 |
+| --- | --- | --- |
+| CHROMA-REGISTER | 不修改已有枚举；继承领域空基类声明新枚举族；注册明确 stable_id/version；拒绝重复身份、覆盖内置类型、错误族、未注册轴、重复 wire 值；注册 API 抛 TypeError/ValueError | tests/test_chromatography_extensions.py |
+| CHROMA-SCOPE | 注册表以不可变快照激活；作用域退出恢复，不污染其它编译/运行；正常变量绑定优先于类型名称 | tests/test_chromatography_frontend.py |
+| CHROMA-COMPAT | 标准 retention_time/early_to_late 转标准成员；其它历史文本保持文本，不自动注册为扩展；不收紧历史文本对；含显式扩展时不得用未知文本绕过轴/方向匹配 | tests/test_chromatography_frontend.py |
+| CHROMA-TYPE | 不同领域归 TYPE_EXTERNAL_ENUM_MISMATCH；错误成员和轴/方向组合归 SEM_INVALID_PROGRAM_ARG_VALUE；动态值在 PLAN_EXTERNAL_ENUM_INVALID / RT_EXTERNAL_ENUM_INVALID 复核 | tests/test_chromatography_frontend.py |
+| CHROMA-WIRE | ChromatographyEnum 载荷只含领域、稳定身份、版本、成员；恢复需预安装同身份注册；未知版本明确失败，不动态 import；源码类名不作为 wire 身份 | tests/test_chromatography_extensions.py |
+| CHROMA-EXEC | 标准词汇沿用现有 fractionation；扩展仅描述轴/方向，不新增分离算法；driver 显式声明支持的稳定类型身份，缺失时 RT_DRIVER_REQUIREMENT_UNSUPPORTED，执行前拒绝 | tests/test_chromatography_frontend.py |
+
+已按上述 Req ID 贯通 source、alias、default、entry override、plan JSON 与 runtime；同领域子类可赋给同领域局部变量，跨领域赋值仍拒绝；控制流中的绑定标记保留至运行求值。开放 attrs、stream 与 constraint 仍是下一批独立领域。
+
+#### Python 扩展安装与 Culsma 引用
+
+```python
+from culsma.domains.chromatography import (
+    ChromatographyAxisBase, ChromatographyOrderBase,
+    STANDARD_CHROMATOGRAPHY_REGISTRY,
+)
+
+class LabAxis(ChromatographyAxisBase):
+    ELUTION_VOLUME = "elution_volume"
+
+class LabOrder(ChromatographyOrderBase):
+    SMALL_TO_LARGE = ("small_to_large", LabAxis.ELUTION_VOLUME)
+
+registry = (
+    STANDARD_CHROMATOGRAPHY_REGISTRY
+    .with_type(LabAxis, "example.chromatography.axis", version=1)
+    .with_type(LabOrder, "example.chromatography.order", version=1)
+)
+# 在 with registry.activate(): 作用域内调用现有编译、校验、计划和运行 API。
+```
+
+已安装上述注册表后，协议使用现有成员表达式：
+
+```culsma
+protocol T(sample) {
+    let fractions = frac(
+        sample = sample,
+        program = chromatography_program(
+            axis = LabAxis.ELUTION_VOLUME,
+            order = LabOrder.SMALL_TO_LARGE,
+            bins = 8
+        )
+    );
+}
+```
+
+| 使用边界 | 当前规则 |
+| --- | --- |
+| 安装 | 宿主显式加载扩展代码，并以不可变注册表激活上下文；退出自动恢复；Culsma import 不自动加载 Python |
+| 身份与版本 | 每个 stable_id 当前仅安装一个版本；升级后回放需安装原版本；类名可变，稳定 ID、版本与成员名才是持久化身份 |
+| driver 接入 | 可选属性 `supported_chromatography_types` 是 `(stable_id, version)` 的集合；默认空集，需同时支持扩展轴和方向 |
+| 执行含义 | 扩展声明只增加轴和方向描述；沿用既有 frac 物料处理，不声称新增色谱分离科学算法；设备行为由明确支持该身份的 driver 提供 |
+| 兼容 | 任意历史文本仍保留文本；只有标准词汇自动转换；文本不能代替已注册扩展身份；`pipeline/compat/external_enums.py` 独占该转换 |
+| 验证 | `tests/test_chromatography_extensions.py` 与 `tests/test_chromatography_frontend.py` 覆盖身份、作用域、配对、动态赋值、JSON 回放和 driver 前拦截 |

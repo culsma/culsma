@@ -76,7 +76,7 @@ class RuntimeValueResolver:
 def evaluate_runtime_expression(expr: Any, state: RuntimeState) -> Any:
     if isinstance(expr, dict):
         kind = expr.get("kind")
-        if kind == "ExternalEnum":
+        if kind in {"ExternalEnum", "ChromatographyEnum"}:
             try:
                 return DEFAULT_EXTERNAL_ENUM_CODEC.decode(expr)
             except ValueError:

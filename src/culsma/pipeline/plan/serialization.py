@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import fields, is_dataclass
 from enum import StrEnum, Enum
+from culsma.domains.chromatography import ACTIVE_CHROMATOGRAPHY_REGISTRY
 from culsma.domains.registry import EXTERNAL_ENUM_TYPES, EXTERNAL_PARAMETERS
 from culsma.pipeline.external_boundary import DEFAULT_EXTERNAL_ENUM_CODEC
 from typing import Any
@@ -108,14 +109,17 @@ class PlanExpressionSerializer:
         if (isinstance(value, IRMember) and isinstance(value.base, IRIdentifier)
                 and value.base.name in EXTERNAL_ENUM_TYPES and value.base.name not in (env or {})
                 and value.base.name != 'CentrifugeProgramOutput'):
+            registry = ACTIVE_CHROMATOGRAPHY_REGISTRY.get()
+            if value.base.name in registry.types:
+                family = registry.types[value.base.name]
+                return {**registry.encode(next(iter(family))), 'member': value.member}
             return {"kind": "ExternalEnum", "enum": value.base.name, "member": value.member}
         if isinstance(value, StrEnum) and type(value) in CONTENT_ENUM_TYPES.values():
             return serialize_content_enum(value)
         if isinstance(value, IRIdentifier) and env is not None and value.name in env:
             bound = env[value.name]
-            if isinstance(bound, dict) and bound.get('kind') == 'IRIdentifier' and (
-                value.name in EXTERNAL_ENUM_TYPES or any(value.name in contract.wire_values for contract in EXTERNAL_PARAMETERS.values())
-            ):
+            # Every deferred binding must remain distinguishable from a legacy bare token.
+            if isinstance(bound, dict) and bound.get('kind') == 'IRIdentifier':
                 return {**bound, 'bound': True}
             return bound
         if (isinstance(value, IRMember) and isinstance(value.base, IRIdentifier)

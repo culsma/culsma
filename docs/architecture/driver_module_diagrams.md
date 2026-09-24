@@ -1,6 +1,6 @@
 # Driver Module Diagrams
 
-Last updated: 2026-04-25
+Last updated: 2026-09-24
 
 Related runtime/driver documents:
 
@@ -29,6 +29,7 @@ The structure is intentionally conservative:
 - `driver/base.py` defines the public contracts
 - `driver/framework/driver.py` defines the reusable projection template
 - `driver/framework/capability.py` owns formal capability checks
+- `driver/framework/chromatography.py` checks extension identities against the driver’s optional `supported_chromatography_types` set before execution; missing support defaults to rejection
 - `human_driver/` and `robot_driver/` mostly do component assembly
 - `StubDriver` remains a concrete deterministic testing driver, not a base
   class for formal drivers
@@ -50,7 +51,14 @@ flowchart TB
     Receipt["Normalize emitted payload into runtime receipt"]
     ReturnResult["Return DriverResult"]
 
-    Start --> Check
+    Extension["ChromatographyCapability<br/>校验注册扩展的 stable_id + version 支持"]
+    ExtensionOK{"扩展能力满足？"}
+    ExtensionReject["RT_DRIVER_REQUIREMENT_UNSUPPORTED<br/>执行及物料预检前拒绝"]
+    Start --> Extension --> ExtensionOK
+    ExtensionOK -->|是或无扩展| Check
+    ExtensionOK -->|否| ExtensionReject
+    classDef added fill:#dcfce7,stroke:#16a34a,stroke-width:2px
+    class Extension,ExtensionOK,ExtensionReject added
     Check --> Capability
     Capability -->|no| ReturnCapability
     Capability -->|yes| Execute

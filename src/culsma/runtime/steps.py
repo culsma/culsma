@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.driver.framework.chromatography import ChromatographyCapability
 from culsma.pipeline.plan_nodes import PlanProgram, PlanStep, ProtocolPlan
 from culsma.runtime.session import RuntimeSession
 from culsma.runtime.values import UNRESOLVED
@@ -282,6 +283,14 @@ class DriverBackedStepHandler(BaseRuntimeStepHandler):
         except (TypeError, ValueError) as error:
             session.record_failed(step, reason="external_enum_invalid", diagnostic=Diagnostic(
                 code="RT_EXTERNAL_ENUM_INVALID", message=str(error), span=step.span, node_id=step.step_id))
+            state.recorded = True
+            return session.fail_fast
+        try:
+            ChromatographyCapability.require_support(runtime_step.args, session.driver)
+        except ValueError as error:
+            session.record_failed(step, reason="driver_requirement_unsupported", diagnostic=Diagnostic(
+                code="RT_DRIVER_REQUIREMENT_UNSUPPORTED", message=str(error),
+                span=step.span, node_id=step.step_id))
             state.recorded = True
             return session.fail_fast
         material_result = _preflight_material_step(runtime_step, session)

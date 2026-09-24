@@ -3,10 +3,12 @@
 This module resolves identity, not diagnostics or execution. Unknown runtime
 bindings remain deferred. Conversion of legacy spellings is owned by compat.
 """
+from collections import ChainMap
 from dataclasses import dataclass, field
 from enum import Enum, StrEnum
 from typing import Any, Mapping, AbstractSet
 
+from culsma.domains.chromatography import ChromatographyParameter
 from culsma.domains.contracts import EnumParameter
 from culsma.domains.registry import EXTERNAL_ENUM_TYPES
 from culsma.common.content_contracts import CONTENT_ENUM_TYPES
@@ -21,15 +23,14 @@ from culsma.pipeline.compat.external_enums import resolve_legacy_enum
 
 # Other known enum families must be recognized so that cross-family mistakes
 # cannot degrade to arbitrary text or deferred values.
-KNOWN_ENUM_TYPES = {
+KNOWN_ENUM_TYPES = ChainMap({
     **CONTENT_ENUM_TYPES,
     **{cls.__name__: cls for cls in (
         SepProgramOutput, CentrifugeProgramOutput, MagneticProgramOutput,
         DisruptProgramOutput, FieldProgramOutput, FiltrationProgramOutput,
         CentrifugalFiltrationProgramOutput, PhasePartitionProgramOutput, PrecipitationProgramOutput,
     )},
-    **EXTERNAL_ENUM_TYPES,
-}
+}, EXTERNAL_ENUM_TYPES)
 
 
 class ExternalInputStatus(StrEnum):
@@ -62,7 +63,7 @@ class ExternalInputScope:
 @dataclass(frozen=True)
 class ExternalInputResolution:
     status: ExternalInputStatus
-    value: Enum | None = None
+    value: Enum | str | None = None
     issue: ExternalInputIssue | None = None
     detail: str = ''
 
@@ -89,7 +90,7 @@ class ExternalInputResolver:
         seen: frozenset[str] = frozenset(),
     ) -> ExternalInputResolution:
         if isinstance(expression, DeferredExternalEnum):
-            if contract is not None and expression.enum_type is not contract.enum_type:
+            if contract is not None and not issubclass(expression.enum_type, contract.enum_type):
                 return ExternalInputResolution(ExternalInputStatus.INVALID, issue=ExternalInputIssue.WRONG_TYPE, detail=expression.enum_type.__name__)
             return ExternalInputResolution(ExternalInputStatus.DEFERRED)
         if isinstance(expression, Enum):
@@ -116,6 +117,9 @@ class ExternalInputResolver:
                     if member is None:
                         return ExternalInputResolution(ExternalInputStatus.INVALID, issue=ExternalInputIssue.UNKNOWN_MEMBER, detail=f'{base.name}.{expression.member}')
                     return ExternalInputResolver.validate_value(member, contract)
+                if isinstance(contract, ChromatographyParameter):
+                    return ExternalInputResolution(ExternalInputStatus.INVALID,
+                        issue=ExternalInputIssue.UNKNOWN_MEMBER, detail=f'Unknown chromatography type: {base.name}')
             record = ExternalInputResolver.resolve_record(base, scope, seen)
             if isinstance(record, (RecordLiteral, IRRecord)) and expression.member in record.entries:
                 return ExternalInputResolver.resolve(record.entries[expression.member], contract, scope, seen)

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from culsma.pipeline.external_inputs import external_parameter_resolution, ExternalInputStatus, ExternalInputIssue
+from culsma.domains.chromatography import ACTIVE_CHROMATOGRAPHY_REGISTRY
 from culsma.domains.contracts import enum_wire_value
 from culsma.domains.registry import EXTERNAL_PARAMETERS
 
@@ -132,6 +133,25 @@ class ProgramContractValidator:
                         node_id=node_id,
                     )
                 )
+
+        if call.name == 'chromatography_program':
+            values = {}
+            for arg in call.args:
+                if arg.name not in {'axis', 'order'}:
+                    continue
+                result = external_parameter_resolution(call.name, arg.name, arg.value,
+                    bindings={**(expr_bindings or {}), **literal_bindings}, defined_names=defined_names)
+                if result.status is ExternalInputStatus.RESOLVED:
+                    values[arg.name] = result.value
+                elif result.issue in {ExternalInputIssue.UNKNOWN_MEMBER, ExternalInputIssue.INVALID_VALUE}:
+                    diagnostics.append(Diagnostic(code='SEM_INVALID_PROGRAM_ARG_VALUE',
+                        message=result.detail, span=arg.span or call.span, node_id=node_id))
+            if set(values) == {'axis', 'order'}:
+                try:
+                    ACTIVE_CHROMATOGRAPHY_REGISTRY.get().validate_pair(values['axis'], values['order'])
+                except (TypeError, ValueError) as error:
+                    diagnostics.append(Diagnostic(code='SEM_INVALID_PROGRAM_ARG_VALUE',
+                        message=str(error), span=call.span, node_id=node_id))
 
         for alias in spec.argument_aliases:
             alias_arg = _find_arg_by_name(call.args, alias.name)

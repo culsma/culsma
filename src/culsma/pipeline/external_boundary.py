@@ -3,6 +3,9 @@ from enum import Enum
 from types import MappingProxyType
 from typing import Any
 
+from culsma.domains.chromatography import (
+    ACTIVE_CHROMATOGRAPHY_REGISTRY, ChromatographyAxisBase, ChromatographyOrderBase, ChromatographyParameter,
+)
 from culsma.domains.contracts import EnumParameter
 from culsma.domains.agitation import AgitationMode, validate_agitation_arguments
 from culsma.domains.readout import ReadoutQuantity, validate_readout_quantity
@@ -18,11 +21,15 @@ class ExternalEnumCodec:
         self.enum_types = MappingProxyType(dict(enum_types))
 
     def encode(self, value: Enum) -> dict[str, str]:
+        if isinstance(value, (ChromatographyAxisBase, ChromatographyOrderBase)):
+            return ACTIVE_CHROMATOGRAPHY_REGISTRY.get().encode(value)
         if type(value) not in self.enum_types.values():
             raise TypeError(f'Not an external parameter enum: {type(value).__name__}')
         return {'kind': 'ExternalEnum', 'enum': type(value).__name__, 'member': value.name}
 
     def decode(self, value: dict) -> Enum:
+        if value.get('kind') == 'ChromatographyEnum':
+            return ACTIVE_CHROMATOGRAPHY_REGISTRY.get().decode(value)
         if not isinstance(value.get('enum'), str) or not isinstance(value.get('member'), str):
             raise ValueError('Invalid external enum identity')
         family = self.enum_types.get(value.get('enum'))
@@ -71,7 +78,7 @@ class ExternalParameterNormalizer:
     def resolve_value(self, value: Any, contract: EnumParameter, *, allow_deferred: bool) -> Enum | None:
         if isinstance(value, dict):
             kind = value.get('kind')
-            if kind == 'ExternalEnum':
+            if kind in {'ExternalEnum', 'ChromatographyEnum'}:
                 return contract.validate(self.codec.decode(value))
             if kind == 'ContentEnum':
                 raise TypeError(f"Expected {contract.enum_type.__name__}, got {value.get('enum')}")
@@ -79,7 +86,7 @@ class ExternalParameterNormalizer:
                 return resolve_legacy_enum(value.get('value'), contract)
             if kind == 'IRIdentifier':
                 token = value.get('name')
-                if not value.get('bound') and token in contract.wire_values:
+                if not value.get('bound') and (token in contract.wire_values or isinstance(contract, ChromatographyParameter)):
                     return resolve_legacy_enum(token, contract)
                 if allow_deferred:
                     return None
@@ -103,9 +110,15 @@ class ExternalParameterNormalizer:
             contract = self.contracts.get((operation, name))
             if contract is not None:
                 member = self.require_member(value, contract) if runtime else self.plan_member(value, contract)
-                result[name] = value if member is None else member if runtime else self.codec.encode(member)
+                result[name] = value if member is None else member if runtime or isinstance(member, str) and not isinstance(member, Enum) else self.codec.encode(member)
             else:
                 result[name] = self.normalize_tree(value, runtime=runtime)
+        if operation == 'chromatography_program' and 'axis' in result and 'order' in result:
+            pair = [result['axis'], result['order']]
+            pair = [self.codec.decode(value) if isinstance(value, dict) and value.get('kind') == 'ChromatographyEnum'
+                    else value for value in pair]
+            if not any(isinstance(value, dict) for value in pair):
+                ACTIVE_CHROMATOGRAPHY_REGISTRY.get().validate_pair(*pair)
         if operation in {'img', 'ecp', 'phy'} and 'quantity' in result:
             quantity = result['quantity']
             if isinstance(quantity, dict) and quantity.get('kind') == 'ExternalEnum':
