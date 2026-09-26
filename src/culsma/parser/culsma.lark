@@ -98,7 +98,7 @@ with_constraint_stmt: "with" "constraint" "(" constraint_item_block ")" "{" stat
 env_arg_block: arg_list?
 constraint_item_block: constraint_item_list?
 constraint_item_list: constraint_item ("," constraint_item)*
-?constraint_item: IDENTIFIER -> constraint_name
+?constraint_item: IDENTIFIER ("." IDENTIFIER)? -> constraint_name
     | arg
 
 mutation_stmt: batch_target_expr MUTATE_OP mutation_source_list

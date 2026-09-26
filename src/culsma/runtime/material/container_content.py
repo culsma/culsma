@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from .content_attributes import ContentAttributePersistence
+
 from typing import Any
 from urllib.parse import quote
 
@@ -347,6 +349,10 @@ def _arg_string_map(value: Any) -> dict[str, Any]:
     attrs: dict[str, Any] = {}
     for key, raw in value.items():
         if not isinstance(key, str):
+            continue
+        identity = ContentAttributePersistence.extension_identity(raw)
+        if identity is not None:
+            attrs[key] = identity
             continue
         text = arg_string(raw)
         if text is not None:

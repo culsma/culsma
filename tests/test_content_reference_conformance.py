@@ -286,3 +286,16 @@ def test_file_entry_enforces_nested_content_argument_contract(tmp_path, args, co
     assert code in [d['code'] for d in bundle['validate']]
     assert not bundle['output']['ok']
     assert bundle['run']['events'] == []
+
+
+@pytest.mark.parametrize('change', ['missing', 'extra'])
+def test_role_vocabulary_drift_is_detected(change):
+    from copy import deepcopy
+    contract = deepcopy(CONTRACT)
+    if change == 'missing':
+        for roles in contract['recommended_roles'].values():
+            if 'culture' in roles:
+                roles.remove('culture')
+    else:
+        next(iter(contract['recommended_roles'].values())).append('unreviewed_role')
+    assert any('content roles differ' in error for error in implementation_errors(contract))

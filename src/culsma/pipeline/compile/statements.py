@@ -1,6 +1,8 @@
 """Statement lowering for AST -> IR compile."""
 
 from __future__ import annotations
+from culsma.pipeline.compat.requirements import ConstraintSourceResolver
+
 
 from dataclasses import dataclass, field
 from typing import cast
@@ -649,7 +651,7 @@ class WithConstraintHandler(BaseStatementCompileHandler):
         return [
             IRWithConstraint(
                 id=lowering_ctx.stmt_id,
-                requirements=list(stmt.requirements),
+                requirements=[ConstraintSourceResolver.resolve(name) for name in stmt.requirements],
                 options=[lowering_ctx.expr_compiler.compile_arg(arg) for arg in stmt.options],
                 statements=lowering_ctx.statement_compiler.compile_list(
                     stmt.statements,

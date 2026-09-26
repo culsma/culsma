@@ -11,7 +11,7 @@ from culsma.domains.separation import (
     ProgramOutput, SepProgramOutput, CentrifugeProgramOutput, MagneticProgramOutput,
     DisruptProgramOutput, FieldProgramOutput, FiltrationProgramOutput,
     CentrifugalFiltrationProgramOutput, PhasePartitionProgramOutput, PrecipitationProgramOutput,
-    CENTRIFUGE_KEEP_SOURCE, DISRUPTION_METHOD,
+    CENTRIFUGE_KEEP_SOURCE, DISRUPTION_METHOD, PROGRAM_OUTPUT_TYPES,
 )
 from culsma.domains.fractionation import DENSITY_GRADIENT_AXIS, DENSITY_GRADIENT_ORDER
 
@@ -116,21 +116,6 @@ def _spec(
 # Compatibility views: domain contracts are the single vocabulary source.
 KEEP_SOURCE_VALUES = CENTRIFUGE_KEEP_SOURCE.wire_values
 DISRUPTION_METHOD_VALUES = DISRUPTION_METHOD.wire_values
-
-PROGRAM_OUTPUT_TYPES: dict[str, type[ProgramOutput]] = {
-    output_type.__name__: output_type
-    for output_type in (
-        SepProgramOutput,
-        CentrifugeProgramOutput,
-        MagneticProgramOutput,
-        DisruptProgramOutput,
-        FieldProgramOutput,
-        FiltrationProgramOutput,
-        CentrifugalFiltrationProgramOutput,
-        PhasePartitionProgramOutput,
-        PrecipitationProgramOutput,
-    )
-}
 
 _LEGACY_PROGRAM_OUTPUT_TYPES: dict[str, type[ProgramOutput]] = {
     "sep_program": SepProgramOutput,

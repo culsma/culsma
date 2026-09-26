@@ -2,10 +2,11 @@
 from collections.abc import Mapping
 from contextlib import contextmanager
 from contextvars import ContextVar
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
 from types import MappingProxyType
 import re
+from .namespace_contracts import NamespaceBinding
 
 
 class ChromatographyAxisBase(Enum):
@@ -44,6 +45,7 @@ class ChromatographyType:
 @dataclass(frozen=True)
 class ChromatographyRegistry:
     entries: tuple[ChromatographyType, ...] = ()
+    namespace: NamespaceBinding = field(default_factory=NamespaceBinding, compare=False, repr=False, kw_only=True)
 
     @property
     def types(self):
@@ -57,7 +59,7 @@ class ChromatographyRegistry:
             self.validate_type(entry.enum_type, entry.stable_id, entry.version, self.entries[:index])
 
     def with_type(self, enum_type, stable_id: str, version: int = 1):
-        return ChromatographyRegistry((*self.entries, ChromatographyType(enum_type, stable_id, version)))
+        return ChromatographyRegistry((*self.entries, ChromatographyType(enum_type, stable_id, version)), namespace=self.namespace)
 
     @staticmethod
     def validate_type(enum_type, stable_id: str, version: int, entries):
@@ -72,13 +74,6 @@ class ChromatographyRegistry:
         if any(entry.stable_id == stable_id or entry.enum_type.__name__ == enum_type.__name__
                or entry.enum_type is enum_type for entry in entries):
             raise ValueError('Duplicate extension identity or source type name')
-        # These namespaces are already owned by the other built-in language contracts.
-        reserved = {'PlateFormat', 'ReadoutQuantity', 'AgitationMode', 'ScheduleMode',
-                    'DisruptionMethod', 'DensityGradientAxis', 'DensityGradientOrder',
-                    'ContentKind', 'ContentType', 'ContainerKind', 'MaterialRelation',
-                    'ProgramOutput', 'ChromatographyAxisBase', 'ChromatographyOrderBase'}
-        if enum_type.__name__ in reserved or enum_type.__name__.endswith('ProgramOutput'):
-            raise ValueError('Extension source name is reserved')
         builtins = {ChromatographyAxis: 'culsma.chromatography.axis',
                     ChromatographyOrder: 'culsma.chromatography.order'}
         if enum_type in builtins:
@@ -149,11 +144,13 @@ class ChromatographyRegistry:
     def activate(self):
         if not all(entry in self.entries for entry in STANDARD_CHROMATOGRAPHY_REGISTRY.entries):
             raise ValueError('An active registry must preserve standard chromatography types')
-        token = ACTIVE_CHROMATOGRAPHY_REGISTRY.set(self)
-        try:
-            yield self
-        finally:
-            ACTIVE_CHROMATOGRAPHY_REGISTRY.reset(token)
+        with self.namespace.require().activate('chromatography', self.types):
+            token = ACTIVE_CHROMATOGRAPHY_REGISTRY.set(self)
+            try:
+                yield self
+            finally:
+                ACTIVE_CHROMATOGRAPHY_REGISTRY.reset(token)
+
 
 
 STANDARD_CHROMATOGRAPHY_REGISTRY = (
@@ -166,6 +163,7 @@ ACTIVE_CHROMATOGRAPHY_REGISTRY = ContextVar('chromatography_registry', default=S
 
 @dataclass(frozen=True)
 class ChromatographyParameter:
+    allow_legacy_text = True
     enum_type: type[Enum]
 
     def validate(self, value):

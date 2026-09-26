@@ -1,6 +1,5 @@
 """Legacy external-parameter inputs; domain contracts themselves require enums."""
 from enum import Enum
-from culsma.domains.chromatography import ChromatographyParameter
 from culsma.domains.contracts import E, EnumParameter
 
 
@@ -12,8 +11,10 @@ def resolve_legacy_enum(value: str | E, contract: EnumParameter[E]) -> E:
     """
     if isinstance(value, Enum):
         return contract.validate(value)
+    if type(value) is not str and getattr(contract, 'preserve_legacy_values', False):
+        return value
     if type(value) is not str:
         raise TypeError(f"Expected {contract.enum_type.__name__} or legacy text")
-    if isinstance(contract, ChromatographyParameter) and value not in contract.wire_values:
+    if getattr(contract, 'allow_legacy_text', False) and value not in contract.wire_values:
         return value
     return contract.decode(value)

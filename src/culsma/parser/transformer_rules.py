@@ -418,7 +418,7 @@ class EmptyArgBlockHandler(StatementRuleHandler):
 class ConstraintNameHandler(StatementRuleHandler):
     def construct_ast(self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState) -> str:
         del meta, ctx, state
-        return str(items[0])
+        return ".".join(str(item) for item in items)
 
 
 def _split_constraint_items(raw_items: list[Any]) -> tuple[list[str], list[Arg]]:

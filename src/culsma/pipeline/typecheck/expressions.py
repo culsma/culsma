@@ -593,7 +593,7 @@ class TypecheckExpressionServices:
             )
             return diagnostics
 
-        if value_type != target_type and not ACTIVE_CHROMATOGRAPHY_REGISTRY.get().same_parameter_family(target_type, value_type):
+        if value_type != target_type and not (ACTIVE_CHROMATOGRAPHY_REGISTRY.get().same_parameter_family(target_type, value_type) or EXTERNAL_ENUM_TYPES.same_parameter_family(target_type, value_type)):
             diagnostics.append(
                 Diagnostic(
                     code="TYPE_LOCAL_ASSIGN_MISMATCH",

@@ -3,34 +3,21 @@
 This module resolves identity, not diagnostics or execution. Unknown runtime
 bindings remain deferred. Conversion of legacy spellings is owned by compat.
 """
-from collections import ChainMap
 from dataclasses import dataclass, field
 from enum import Enum, StrEnum
 from typing import Any, Mapping, AbstractSet
 
 from culsma.domains.chromatography import ChromatographyParameter
-from culsma.domains.contracts import EnumParameter
+from culsma.domains.contracts import EnumParameter, RecordParameterContract
 from culsma.domains.registry import EXTERNAL_ENUM_TYPES
-from culsma.common.content_contracts import CONTENT_ENUM_TYPES
-from culsma.domains.separation import (
-    SepProgramOutput, CentrifugeProgramOutput, MagneticProgramOutput,
-    DisruptProgramOutput, FieldProgramOutput, FiltrationProgramOutput,
-    CentrifugalFiltrationProgramOutput, PhasePartitionProgramOutput, PrecipitationProgramOutput,
-)
+from culsma.domains.registry import SOURCE_TYPE_NAMES
+from culsma.domains.namespace_contracts import TypeNamespace
 from culsma.parser.ast_nodes import Identifier, MemberExpr, RecordLiteral, StringLiteral
 from culsma.pipeline.ir_nodes import IRIdentifier, IRMember, IRRecord, IRString
 from culsma.pipeline.compat.external_enums import resolve_legacy_enum
 
-# Other known enum families must be recognized so that cross-family mistakes
-# cannot degrade to arbitrary text or deferred values.
-KNOWN_ENUM_TYPES = ChainMap({
-    **CONTENT_ENUM_TYPES,
-    **{cls.__name__: cls for cls in (
-        SepProgramOutput, CentrifugeProgramOutput, MagneticProgramOutput,
-        DisruptProgramOutput, FieldProgramOutput, FiltrationProgramOutput,
-        CentrifugalFiltrationProgramOutput, PhasePartitionProgramOutput, PrecipitationProgramOutput,
-    )},
-}, EXTERNAL_ENUM_TYPES)
+# Installation and source resolution share one authoritative name table.
+KNOWN_ENUM_TYPES: TypeNamespace = SOURCE_TYPE_NAMES
 
 
 class ExternalInputStatus(StrEnum):
@@ -55,6 +42,7 @@ class DeferredExternalEnum:
 class ExternalInputScope:
     bindings: Mapping[str, Any] = field(default_factory=dict)
     defined_names: AbstractSet[str] = frozenset()
+    namespace: TypeNamespace = field(default_factory=lambda: SOURCE_TYPE_NAMES, repr=False, compare=False)
 
     def has_binding(self, name: str) -> bool:
         return name in self.bindings or name in self.defined_names
@@ -111,15 +99,15 @@ class ExternalInputResolver:
         if isinstance(expression, (MemberExpr, IRMember)):
             base = expression.base
             if isinstance(base, (Identifier, IRIdentifier)) and not scope.has_binding(base.name):
-                family = KNOWN_ENUM_TYPES.get(base.name)
+                family = scope.namespace.get(base.name)
                 if family is not None:
                     member = family.__members__.get(expression.member)
                     if member is None:
                         return ExternalInputResolution(ExternalInputStatus.INVALID, issue=ExternalInputIssue.UNKNOWN_MEMBER, detail=f'{base.name}.{expression.member}')
                     return ExternalInputResolver.validate_value(member, contract)
-                if isinstance(contract, ChromatographyParameter):
+                if getattr(contract, 'allow_legacy_text', False):
                     return ExternalInputResolution(ExternalInputStatus.INVALID,
-                        issue=ExternalInputIssue.UNKNOWN_MEMBER, detail=f'Unknown chromatography type: {base.name}')
+                        issue=ExternalInputIssue.UNKNOWN_MEMBER, detail=f'Unknown registered vocabulary type: {base.name}')
             record = ExternalInputResolver.resolve_record(base, scope, seen)
             if isinstance(record, (RecordLiteral, IRRecord)) and expression.member in record.entries:
                 return ExternalInputResolver.resolve(record.entries[expression.member], contract, scope, seen)
@@ -127,9 +115,22 @@ class ExternalInputResolver:
             if record is not None:
                 return ExternalInputResolution(ExternalInputStatus.INVALID, issue=ExternalInputIssue.WRONG_TYPE, detail='Member base is not a record with this field')
             return ExternalInputResolution(ExternalInputStatus.DEFERRED)
+        if getattr(contract, 'preserve_legacy_values', False):
+            return ExternalInputResolution(ExternalInputStatus.DEFERRED)
         if expression is None:
             return ExternalInputResolution(ExternalInputStatus.DEFERRED)
         return ExternalInputResolution(ExternalInputStatus.INVALID, issue=ExternalInputIssue.WRONG_TYPE, detail=type(expression).__name__)
+
+    @staticmethod
+    def resolve_fields(expression, contract, scope, path=''):
+        if isinstance(contract, RecordParameterContract):
+            record = ExternalInputResolver.resolve_record(expression, scope, frozenset())
+            if isinstance(record, (RecordLiteral, IRRecord)):
+                for name, field in contract.fields.items():
+                    if name in record.entries:
+                        yield from ExternalInputResolver.resolve_fields(record.entries[name], field, scope, f'{path}.{name}')
+        else:
+            yield path, contract, ExternalInputResolver.resolve(expression, contract, scope)
 
     @staticmethod
     def resolve_record(expression: Any, scope: ExternalInputScope, seen: frozenset[str]) -> Any:
@@ -158,13 +159,13 @@ def external_parameter_type_diagnostics(value, *, scope, node_id=None):
         for arg in value.args:
             contract = EXTERNAL_PARAMETERS.get((value.name, arg.name))
             if contract is not None:
-                result = ExternalInputResolver.resolve(arg.value, contract, scope)
-                if result.issue in {ExternalInputIssue.WRONG_TYPE, ExternalInputIssue.CYCLIC_BINDING}:
-                    diagnostics.append(Diagnostic(
-                        code='TYPE_EXTERNAL_ENUM_MISMATCH',
-                        message=f"{value.name}.{arg.name} expects {contract.enum_type.__name__}: {result.detail}",
-                        span=arg.span or value.span, node_id=node_id,
-                    ))
+                for path, field_contract, result in ExternalInputResolver.resolve_fields(arg.value, contract, scope, arg.name):
+                    if result.issue in {ExternalInputIssue.WRONG_TYPE, ExternalInputIssue.CYCLIC_BINDING}:
+                        diagnostics.append(Diagnostic(
+                            code='TYPE_EXTERNAL_ENUM_MISMATCH',
+                            message=f"{value.name}.{path} expects {field_contract.enum_type.__name__}: {result.detail}",
+                            span=arg.span or value.span, node_id=node_id,
+                        ))
     if isinstance(value, (list, tuple)):
         for item in value:
             diagnostics.extend(external_parameter_type_diagnostics(item, scope=scope, node_id=node_id))

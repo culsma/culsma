@@ -160,11 +160,13 @@ def implementation_errors(contract: dict) -> list[str]:
         FALLBACK_CONTENT_TYPE_BY_KIND, parse_content_classification,
     )
     from culsma.pipeline.compat.content_taxonomy import normalize_content_classification
+    from culsma.domains.content_attributes import ContentRole
 
     errors = []
     comparisons = {
         'content kinds': ({member.value for member in ContentKind}, set(contract['types_by_kind'])),
         'content types': ({member.value for member in ContentType}, {t for types in contract['types_by_kind'].values() for t in types}),
+        'content roles': ({member.value for member in ContentRole}, {role for roles in contract['recommended_roles'].values() for role in roles}),
         'container kinds': ({member.value for member in ContainerKind}, set(contract['container_kinds'])),
         'kind/type pairs': ({k: sorted(v) for k, v in STANDARD_CONTENT_TYPES_BY_KIND.items()}, contract['types_by_kind']),
         'fallbacks': (dict(FALLBACK_CONTENT_TYPE_BY_KIND), contract['fallback_by_kind']),
@@ -172,7 +174,7 @@ def implementation_errors(contract: dict) -> list[str]:
     for label, (actual, expected) in comparisons.items():
         if actual != expected:
             errors.append(f'{label} differ from reference: actual={actual!r}, expected={expected!r}')
-    for family in (ContentKind, ContentType, ContainerKind):
+    for family in (ContentKind, ContentType, ContainerKind, ContentRole):
         if any(member.name != member.value.upper() for member in family):
             errors.append(f'{family.__name__} member names differ from the uppercase canonical contract')
     for kind, types in contract['types_by_kind'].items():

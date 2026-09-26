@@ -38,6 +38,7 @@ from .environment import EnvContractValidator
 from .expression_contracts import validate_expr_contracts
 from .groups import GroupIndexValidator
 from .programs import ProgramContractValidator
+from .parameters import ExpressionParameterValidator
 from .separation import validate_component_fates_contract
 from .statement_contracts import (
     BUILTIN_METHOD_STEPS,
@@ -811,6 +812,9 @@ class StepHandler(BaseStatementHandler):
     ) -> None:
         stmt = cast(IRStep, stmt)
         state = cast(StepState, state)
+        ctx.diagnostics.extend(ExpressionParameterValidator.validate(stmt,
+            bindings={**ctx.expr_bindings, **ctx.literal_bindings},
+            defined_names=ctx.defined_names, node_id=stmt.id))
         if stmt.name == "replace":
             ctx.diagnostics.extend(validate_material_replace(stmt, ctx.expr_bindings, ctx.defined_names))
         self.append_diagnostics(

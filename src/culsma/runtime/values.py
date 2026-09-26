@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from culsma.domains.registry import EXTERNAL_ENUM_TYPES
-from culsma.pipeline.external_boundary import DEFAULT_EXTERNAL_ENUM_CODEC, DEFAULT_EXTERNAL_PARAMETER_NORMALIZER
+from culsma.runtime.stream_values import StreamValueBuilder
+from culsma.pipeline.external_boundary import DEFAULT_EXTERNAL_ENUM_CODEC, DEFAULT_EXTERNAL_PARAMETER_NORMALIZER, RuntimeParameterError
 
 from copy import deepcopy
 from typing import Any
@@ -76,7 +77,7 @@ class RuntimeValueResolver:
 def evaluate_runtime_expression(expr: Any, state: RuntimeState) -> Any:
     if isinstance(expr, dict):
         kind = expr.get("kind")
-        if kind in {"ExternalEnum", "ChromatographyEnum"}:
+        if kind in {"ExternalEnum", "ChromatographyEnum", "DomainEnum"}:
             try:
                 return DEFAULT_EXTERNAL_ENUM_CODEC.decode(expr)
             except ValueError:
@@ -199,6 +200,11 @@ def _eval_local_runtime_constructor(
             continue
         kwargs[arg_name] = _eval_runtime_constructor_arg(raw_arg.get("value"), state)
 
+    try:
+        kwargs = DEFAULT_EXTERNAL_PARAMETER_NORMALIZER.normalize_runtime_arguments(name, kwargs)
+    except (TypeError, ValueError) as error:
+        raise RuntimeParameterError(str(error)) from error
+
     if name == "markers":
         raw_items = kwargs.get("items")
         items = raw_items if isinstance(raw_items, list) else []
@@ -208,26 +214,7 @@ def _eval_local_runtime_constructor(
             "items": list(items),
         }
     if name == "stream":
-        source_ref = kwargs.get("sample")
-        if not isinstance(source_ref, str):
-            source_ref = None
-        unit_kind = kwargs.get("unit")
-        if not isinstance(unit_kind, str):
-            unit_kind = None
-        panel_ref = kwargs.get("panel")
-        return {
-            "kind": "unit_stream_ref",
-            "id": target_name or "unit_stream",
-            "source_ref": source_ref,
-            "unit_kind": unit_kind,
-            "panel_ref": panel_ref,
-            "items": _seed_runtime_stream_items(
-                state=state,
-                stream_name=target_name,
-                source_ref=source_ref,
-                unit_kind=unit_kind,
-            ),
-        }
+        return StreamValueBuilder.build(kwargs, state, target_name=target_name)
     if name == "data_ref":
         schema_ref = kwargs.get("schema_ref")
         return {
@@ -282,83 +269,6 @@ def _eval_runtime_constructor_arg(expr: Any, state: RuntimeState) -> Any:
     if value is not UNRESOLVED:
         return value
     return expr
-
-
-def _seed_runtime_stream_items(
-    *,
-    state: RuntimeState,
-    stream_name: str | None,
-    source_ref: str | None,
-    unit_kind: str | None,
-) -> list[dict[str, Any]]:
-    raw_seed = state.artifacts.get("stream_units", {})
-    if not isinstance(raw_seed, dict):
-        return []
-    candidates: list[Any] = []
-    if isinstance(stream_name, str) and stream_name in raw_seed:
-        candidates = raw_seed.get(stream_name)
-    elif isinstance(source_ref, str) and source_ref in raw_seed:
-        candidates = raw_seed.get(source_ref)
-    if not isinstance(candidates, list):
-        return []
-    out: list[dict[str, Any]] = []
-    for idx, item in enumerate(candidates):
-        normalized = _normalize_runtime_unit_seed(
-            item=item,
-            ordinal=idx,
-            stream_name=stream_name,
-            source_ref=source_ref,
-            unit_kind=unit_kind,
-        )
-        if normalized is not None:
-            out.append(normalized)
-    return out
-
-
-def _normalize_runtime_unit_seed(
-    *,
-    item: Any,
-    ordinal: int,
-    stream_name: str | None,
-    source_ref: str | None,
-    unit_kind: str | None,
-) -> dict[str, Any] | None:
-    base_id = f"{stream_name or 'unit_stream'}::{ordinal}"
-    if isinstance(item, dict):
-        if item.get("kind") == "unit_ref":
-            normalized = deepcopy(item)
-            normalized.setdefault("id", base_id)
-            normalized.setdefault("stream_ref", stream_name)
-            normalized.setdefault("source_ref", source_ref)
-            normalized.setdefault("unit_kind", unit_kind)
-            return normalized
-        normalized = {
-            "kind": "unit_ref",
-            "id": str(item.get("id", base_id)),
-            "stream_ref": stream_name,
-            "source_ref": source_ref,
-            "unit_kind": unit_kind,
-        }
-        for key, value in item.items():
-            if key not in normalized:
-                normalized[key] = deepcopy(value)
-        return normalized
-    if isinstance(item, str):
-        return {
-            "kind": "unit_ref",
-            "id": item,
-            "stream_ref": stream_name,
-            "source_ref": source_ref,
-            "unit_kind": unit_kind,
-        }
-    return {
-        "kind": "unit_ref",
-        "id": base_id,
-        "stream_ref": stream_name,
-        "source_ref": source_ref,
-        "unit_kind": unit_kind,
-        "value": deepcopy(item),
-    }
 
 
 def _eval_runtime_method_arg(expr: Any, state: RuntimeState) -> Any:

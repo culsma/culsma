@@ -10,7 +10,23 @@
 - Compact CLI results and a source-linked benchmark with seven modules, one
   composite, and four independently checked manuscript examples.
 
+### Added
+
+- Typed observation units, execution requirements, and content role/state/bead
+  metadata, with separate Python extension bases and scoped stable identities.
+  Legacy spellings remain supported; metadata extensions add no material
+  behavior, and requirement extensions need explicit driver support.
+
 ### Fixed
+
+- Extension activation and frontend lookup share one source type namespace,
+  including every separation output family. Conflicting names fail before
+  activation; scoped registries restore together after errors and nested use.
+  Domain registries depend on an injected naming protocol; the composition
+  root supplies its implementation, also used by frontend resolution.
+
+- Content metadata retains enum identity through aliases, protocol arguments,
+  conditional bindings and serialized execution plans.
 
 - Qualified imported protocol calls can be used in `let` and `return`
   expressions. Their returned groups remain indexable, and caller-owned

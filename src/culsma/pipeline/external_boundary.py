@@ -6,7 +6,7 @@ from typing import Any
 from culsma.domains.chromatography import (
     ACTIVE_CHROMATOGRAPHY_REGISTRY, ChromatographyAxisBase, ChromatographyOrderBase, ChromatographyParameter,
 )
-from culsma.domains.contracts import EnumParameter
+from culsma.domains.contracts import EnumParameter, RecordParameterContract
 from culsma.domains.registry import EXTERNAL_ENUM_TYPES, EXTERNAL_PARAMETERS, EXTERNAL_CALL_CONTRACTS
 from culsma.pipeline.external_inputs import (
     KNOWN_ENUM_TYPES, ExternalInputResolution, ExternalInputStatus, ExternalInputIssue,
@@ -19,6 +19,9 @@ class ExternalEnumCodec:
         self.enum_types = MappingProxyType(dict(enum_types))
 
     def encode(self, value: Enum) -> dict[str, str]:
+        domain = EXTERNAL_ENUM_TYPES.domain_for_type(type(value))
+        if domain is not None:
+            return domain.current.encode(value)
         if isinstance(value, (ChromatographyAxisBase, ChromatographyOrderBase)):
             return ACTIVE_CHROMATOGRAPHY_REGISTRY.get().encode(value)
         if type(value) not in self.enum_types.values():
@@ -26,6 +29,8 @@ class ExternalEnumCodec:
         return {'kind': 'ExternalEnum', 'enum': type(value).__name__, 'member': value.name}
 
     def decode(self, value: dict) -> Enum:
+        if value.get('kind') == 'DomainEnum':
+            return EXTERNAL_ENUM_TYPES.decode(value)
         if value.get('kind') == 'ChromatographyEnum':
             return ACTIVE_CHROMATOGRAPHY_REGISTRY.get().decode(value)
         if not isinstance(value.get('enum'), str) or not isinstance(value.get('member'), str):
@@ -85,7 +90,7 @@ class ExternalParameterNormalizer:
     def resolve_value(self, value: Any, contract: EnumParameter, *, allow_deferred: bool) -> Enum | None:
         if isinstance(value, dict):
             kind = value.get('kind')
-            if kind in {'ExternalEnum', 'ChromatographyEnum'}:
+            if kind in {'ExternalEnum', 'ChromatographyEnum', 'DomainEnum'}:
                 return contract.validate(self.codec.decode(value))
             if kind == 'ContentEnum':
                 raise TypeError(f"Expected {contract.enum_type.__name__}, got {value.get('enum')}")
@@ -93,7 +98,7 @@ class ExternalParameterNormalizer:
                 return resolve_legacy_enum(value.get('value'), contract)
             if kind == 'IRIdentifier':
                 token = value.get('name')
-                if not value.get('bound') and (token in contract.wire_values or isinstance(contract, ChromatographyParameter)):
+                if not value.get('bound') and (token in contract.wire_values or getattr(contract, 'allow_legacy_text', False)):
                     return resolve_legacy_enum(token, contract)
                 if allow_deferred:
                     return None
@@ -108,6 +113,10 @@ class ExternalParameterNormalizer:
                         raise ValueError('Unknown enum member') from error
             if allow_deferred and kind in {'IRMember', 'IRIndex', 'IRCall', 'IRBinary'}:
                 return None
+            if kind in {'IRMember', 'IRIndex', 'IRCall', 'IRBinary'}:
+                raise ValueError('Unresolved typed metadata expression')
+            if getattr(contract, 'preserve_legacy_values', False):
+                return value
             raise TypeError(f'Expected {contract.enum_type.__name__}')
         return resolve_legacy_enum(value, contract)
 
@@ -116,16 +125,29 @@ class ExternalParameterNormalizer:
         resolved_values = {}
         for name, value in arguments.items():
             contract = self.contracts.get((operation, name))
-            if contract is not None:
+            if isinstance(contract, RecordParameterContract):
+                result[name] = self.normalize_record(value, contract, runtime=runtime)
+            elif contract is not None:
                 member = self.require_member(value, contract) if runtime else self.plan_member(value, contract)
                 if member is not None:
                     resolved_values[name] = member
-                result[name] = value if member is None else member if runtime or isinstance(member, str) and not isinstance(member, Enum) else self.codec.encode(member)
+                result[name] = value if member is None else member if runtime or not isinstance(member, Enum) else self.codec.encode(member)
             else:
                 result[name] = self.normalize_tree(value, runtime=runtime)
         call_contract = self.call_contracts.get(operation)
         if call_contract is not None:
             call_contract.validate_resolved(resolved_values, frozenset(arguments))
+        return result
+
+    def normalize_record(self, value, contract, *, runtime):
+        if not isinstance(value, dict) or value.get('kind') in {'IRIdentifier', 'IRMember', 'IRCall'}:
+            return value
+        result = dict(value)
+        for name, field in contract.fields.items():
+            if name in result:
+                member = self.require_member(result[name], field) if runtime else self.plan_member(result[name], field)
+                if member is not None:
+                    result[name] = self.codec.encode(member) if not runtime and isinstance(member, Enum) else member
         return result
 
     def normalize_tree(self, value: Any, *, runtime: bool = False) -> Any:
@@ -142,3 +164,7 @@ class ExternalParameterNormalizer:
 
 DEFAULT_EXTERNAL_ENUM_CODEC = ExternalEnumCodec()
 DEFAULT_EXTERNAL_PARAMETER_NORMALIZER = ExternalParameterNormalizer(codec=DEFAULT_EXTERNAL_ENUM_CODEC)
+
+
+class RuntimeParameterError(ValueError):
+    """A local runtime constructor failed its registered parameter contract."""

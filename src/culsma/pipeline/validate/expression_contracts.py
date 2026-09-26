@@ -26,6 +26,7 @@ from culsma.pipeline.ir_nodes import (
     IRUnary,
 )
 
+from .parameters import ExpressionParameterValidator
 from .constructors import ConstructorValidator
 from .context import _GroupBinding
 from .groups import GroupIndexValidator
@@ -195,6 +196,9 @@ def validate_expr_contracts(
         return diagnostics
 
     if isinstance(expr, IRCall):
+        diagnostics.extend(ExpressionParameterValidator.validate(expr,
+            bindings={**expr_bindings, **literal_bindings},
+            defined_names=defined_names or frozenset(), node_id=node_id))
         if is_legacy_program_kind(expr.name):
             diagnostics.append(
                 Diagnostic(

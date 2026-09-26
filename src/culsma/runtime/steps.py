@@ -8,9 +8,11 @@ from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
 from culsma.driver.framework.chromatography import ChromatographyCapability
+from culsma.driver.framework.requirements import RequirementCapability
 from culsma.pipeline.plan_nodes import PlanProgram, PlanStep, ProtocolPlan
 from culsma.runtime.session import RuntimeSession
 from culsma.runtime.values import UNRESOLVED
+from culsma.pipeline.external_boundary import RuntimeParameterError
 
 
 _MATERIAL_BOOTSTRAP_OPS = {
@@ -53,6 +55,14 @@ class BaseRuntimeStepHandler:
                 ),
             )
             state.recorded = True
+            return session.fail_fast
+
+        try:
+            RequirementCapability.require_support(step.gate, session.driver)
+        except (TypeError, ValueError) as error:
+            session.record_failed(step, reason="driver_requirement_unsupported", diagnostic=Diagnostic(
+                code="RT_DRIVER_REQUIREMENT_UNSUPPORTED", message=str(error),
+                span=step.span, node_id=step.step_id))
             return session.fail_fast
 
         ref_group = session.ref_reuse_decider.group_for_step(step.step_id, session)
@@ -135,6 +145,15 @@ class ControlStepHandler(BaseRuntimeStepHandler):
 
 class LocalStateStepHandler(BaseRuntimeStepHandler):
     def execute_current_step(self, step: PlanStep, session: RuntimeSession, state: RuntimeStepState) -> bool:
+        try:
+            return self.dispatch_local_step(step, session, state)
+        except RuntimeParameterError as error:
+            session.record_failed(step, reason="external_parameter_invalid", diagnostic=Diagnostic(
+                code="RT_EXTERNAL_ENUM_INVALID", message=str(error), span=step.span, node_id=step.step_id))
+            state.recorded = True
+            return session.fail_fast
+
+    def dispatch_local_step(self, step: PlanStep, session: RuntimeSession, state: RuntimeStepState) -> bool:
         if step.op == "assign_local":
             return self._assign_local(step, session, state)
         if step.op == "assign_member":

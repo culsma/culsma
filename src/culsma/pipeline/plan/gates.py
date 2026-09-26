@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
+from culsma.domains.constraints import ConstraintRequirementBase, ConstraintRequirement, CONSTRAINT_REQUIREMENTS
 
 
 def merge_gate(base: dict[str, Any] | None, **extra: Any) -> dict[str, Any] | None:
@@ -49,7 +50,9 @@ def append_constraints(
     existing = merged.get("constraint")
     merged_requirements: list[str] = []
     merged_options: dict[str, Any] = {}
+    identities = {}
     if isinstance(existing, dict):
+        identities.update(existing.get("requirement_types", {}))
         existing_requirements = existing.get("requirements")
         if isinstance(existing_requirements, list):
             for item in existing_requirements:
@@ -59,6 +62,8 @@ def append_constraints(
         if isinstance(existing_options, dict):
             merged_options.update(existing_options)
     for item in requirements:
+        if isinstance(item, ConstraintRequirementBase) and type(item) is not ConstraintRequirement:
+            identities[item.value] = CONSTRAINT_REQUIREMENTS.current.encode(item)
         if item not in merged_requirements:
             merged_requirements.append(item)
     merged_options.update(options)
@@ -66,4 +71,6 @@ def append_constraints(
         "requirements": merged_requirements,
         "options": merged_options,
     }
+    if identities:
+        merged["constraint"]["requirement_types"] = identities
     return merged

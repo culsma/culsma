@@ -28,6 +28,7 @@ from culsma.pipeline.ir_nodes import (
 )
 from culsma.pipeline.operation_specs import OperationSpec
 
+from culsma.domains.constraints import REQUIREMENT_REGISTRY, ConstraintRequirement
 from .binding import BindingValidator
 from .constructors import ConstructorValidator
 from .context import _GroupBinding
@@ -38,139 +39,13 @@ from .resolution import ExprResolver
 from .separation import validate_component_fates_contract
 
 BUILTIN_METHOD_STEPS = {"append", "replace"}
-CONSTRAINT_CUSTOMIZED = "customized"
+CONSTRAINT_CUSTOMIZED = ConstraintRequirement.CUSTOMIZED
 COLD_CHAIN_MAX_C = 8.0
 # Legacy consumer views derived from domain-owned contracts.
 AGIT_MODES = frozenset(AGITATION_MODE.wire_values)
 READOUT_QUANTITY_SETS = {operation: frozenset(contract.wire_values) for operation, contract in READOUT_QUANTITIES.items()}
 
 
-@dataclass(frozen=True)
-class _RequirementSpec:
-    category: str
-    allowed_on: frozenset[str]
-    scopes: frozenset[str]
-    conflicts: frozenset[str] = frozenset()
-    needs_context: frozenset[str] = frozenset()
-
-
-REQUIREMENT_REGISTRY: dict[str, _RequirementSpec] = {
-    "dropwise": _RequirementSpec(
-        category="delivery_mode",
-        allowed_on=frozenset({"mutation"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "spread": _RequirementSpec(
-        category="delivery_mode",
-        allowed_on=frozenset({"mutation"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "preserve_boundary": _RequirementSpec(
-        category="structure_preservation",
-        allowed_on=frozenset({"mutation", "sep", "frac"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "preserve_layering": _RequirementSpec(
-        category="structure_preservation",
-        allowed_on=frozenset({"mutation", "sep", "frac"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "preserve_fraction_order": _RequirementSpec(
-        category="structure_preservation",
-        allowed_on=frozenset({"sep", "frac"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "aseptic": _RequirementSpec(
-        category="contamination_control",
-        allowed_on=frozenset({"mutation", "sep", "img", "ecp", "phy", "stream"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "low_carryover": _RequirementSpec(
-        category="contamination_control",
-        allowed_on=frozenset({"mutation", "sep", "img", "ecp", "phy", "stream"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "cross_contam_control": _RequirementSpec(
-        category="contamination_control",
-        allowed_on=frozenset({"mutation", "sep", "img", "ecp", "phy", "stream"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "gentle": _RequirementSpec(
-        category="material_integrity",
-        allowed_on=frozenset({"mutation", "sep", "frac", "stream", "env_hold"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "avoid_resuspension": _RequirementSpec(
-        category="material_integrity",
-        allowed_on=frozenset({"mutation", "sep", "frac"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "avoid_shear": _RequirementSpec(
-        category="material_integrity",
-        allowed_on=frozenset({"mutation", "sep", "frac", "stream"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "preserve_viability": _RequirementSpec(
-        category="material_integrity",
-        allowed_on=frozenset({"mutation", "stream"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "cold_chain": _RequirementSpec(
-        category="environmental_protection",
-        allowed_on=frozenset({"mutation", "sep", "frac", "img", "ecp", "phy", "stream", "env_hold"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "dark_protected": _RequirementSpec(
-        category="environmental_protection",
-        allowed_on=frozenset({"mutation", "img", "ecp", "phy", "stream", "env_hold"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "sealed": _RequirementSpec(
-        category="environmental_protection",
-        allowed_on=frozenset({"env_hold"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "controlled_atmosphere": _RequirementSpec(
-        category="environmental_protection",
-        allowed_on=frozenset({"mutation", "img", "ecp", "phy", "stream", "env_hold"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "high_precision": _RequirementSpec(
-        category="quantitative_quality",
-        allowed_on=frozenset({"mutation", "sep", "frac", "ecp", "phy"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "low_loss": _RequirementSpec(
-        category="quantitative_quality",
-        allowed_on=frozenset({"mutation", "sep", "frac", "ecp", "phy"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "quantitative_recovery": _RequirementSpec(
-        category="quantitative_quality",
-        allowed_on=frozenset({"mutation", "sep", "frac"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "stabilized_reading": _RequirementSpec(
-        category="measurement_quality",
-        allowed_on=frozenset({"img", "ecp", "phy"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "low_noise": _RequirementSpec(
-        category="measurement_quality",
-        allowed_on=frozenset({"img", "ecp", "phy"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    "noninvasive": _RequirementSpec(
-        category="measurement_quality",
-        allowed_on=frozenset({"img", "ecp", "phy"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-    CONSTRAINT_CUSTOMIZED: _RequirementSpec(
-        category="customized",
-        allowed_on=frozenset({"mutation", "sep", "frac", "img", "ecp", "phy", "stream"}),
-        scopes=frozenset({"stmt", "block"}),
-    ),
-}
 
 
 def validate_assign_target_contract(

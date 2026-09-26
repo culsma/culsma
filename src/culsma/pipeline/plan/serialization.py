@@ -109,6 +109,10 @@ class PlanExpressionSerializer:
         if (isinstance(value, IRMember) and isinstance(value.base, IRIdentifier)
                 and value.base.name in EXTERNAL_ENUM_TYPES and value.base.name not in (env or {})
                 and value.base.name != 'CentrifugeProgramOutput'):
+            family = EXTERNAL_ENUM_TYPES[value.base.name]
+            domain = EXTERNAL_ENUM_TYPES.domain_for_type(family)
+            if domain is not None:
+                return {**domain.current.encode(next(iter(family))), 'member': value.member}
             registry = ACTIVE_CHROMATOGRAPHY_REGISTRY.get()
             if value.base.name in registry.types:
                 family = registry.types[value.base.name]
@@ -157,7 +161,7 @@ class PlanExpressionSerializer:
             }
         if isinstance(value, IRRecord):
             return {
-                key: self.serialize_expr(record_value, env if isinstance(record_value, IRMember) else None)
+                key: self.serialize_expr(record_value, env)
                 for key, record_value in value.entries.items()
             }
         if is_dataclass(value):

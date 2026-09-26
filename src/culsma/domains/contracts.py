@@ -97,3 +97,12 @@ class CallParameterContract:
         for rule in self.rules:
             if set(rule.parameters) <= values.keys():
                 rule.validate(values, present)
+
+
+@dataclass(frozen=True)
+class RecordParameterContract:
+    """Known typed fields within an otherwise open metadata record."""
+    fields: Mapping[str, ParameterContract]
+
+    def __post_init__(self):
+        object.__setattr__(self, 'fields', MappingProxyType(dict(self.fields)))

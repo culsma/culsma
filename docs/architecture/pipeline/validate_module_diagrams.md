@@ -532,14 +532,14 @@ sequenceDiagram
 
 The original acceptance hooks above describe the overall target. Implemented evidence is in `tests/test_external_enum_inputs.py` and `tests/test_external_enum_frontend.py`: scoped resolution, alias snapshots, old/new execution equivalence, operation subsets, entry overrides, runtime family rejection, JSON round trips and shadowed legacy names. `TYPE_EXTERNAL_ENUM_MISMATCH` owns parameter shape/family errors; existing semantic value codes remain in use; `PLAN_EXTERNAL_ENUM_INVALID` and `RT_EXTERNAL_ENUM_INVALID` guard later-bound values.
 
-Plate geometry is resolved after entry binding. Regression coverage checks both old-text and enum arguments, overriding defaults, actual bounds, custom layouts and runtime capacity. Chromatography now has Python extension bases and explicit scoped registration as described below. Stream, constraints and attrs remain pending. Source-level class declarations are outside the selected architecture.
+Plate geometry is resolved after entry binding. Regression coverage checks both old-text and enum arguments, overriding defaults, actual bounds, custom layouts and runtime capacity. Chromatography now has Python extension bases and explicit scoped registration as described below. Stream, constraints and attrs now use separate domain vocabularies and scoped Python extensions; their implemented contracts are shown below. Source-level class declarations are outside the selected architecture.
 
  Wrong value shape/family belongs to typecheck; unresolved references belong to binding; disallowed members and dependent rules belong to semantic validation. Malformed plate selector syntax remains a compile error; bound plate layout failures belong to planning; operation-specific member errors keep their semantic diagnostic codes. Reuse existing diagnostic identities where applicable and settle exact mappings before implementation. Promote accepted language rules into existing owning reference sections without code dependencies.
 
 
 ## 开放词汇扩展：色谱已实现，其余领域待推进
 
-先以 chromatography 的 axis/order 验证领域类扩展，再推进 stream、constraint 与 attrs。已选择正式 Python 扩展入口：宿主声明领域子类并显式安装注册表，Culsma 引用成员；不新增 class/type 语法。
+chromatography 的 axis/order、stream、constraint 与 attrs 均已采用领域类扩展。已选择正式 Python 扩展入口：宿主声明领域子类并显式安装注册表，Culsma 引用成员；不新增 class/type 语法。
 
 ```mermaid
 flowchart TB
@@ -617,7 +617,7 @@ classDiagram
 | CHROMA-WIRE | ChromatographyEnum 载荷只含领域、稳定身份、版本、成员；恢复需预安装同身份注册；未知版本明确失败，不动态 import；源码类名不作为 wire 身份 | tests/test_chromatography_extensions.py |
 | CHROMA-EXEC | 标准词汇沿用现有 fractionation；扩展仅描述轴/方向，不新增分离算法；driver 显式声明支持的稳定类型身份，缺失时 RT_DRIVER_REQUIREMENT_UNSUPPORTED，执行前拒绝 | tests/test_chromatography_frontend.py |
 
-已按上述 Req ID 贯通 source、alias、default、entry override、plan JSON 与 runtime；同领域子类可赋给同领域局部变量，跨领域赋值仍拒绝；控制流中的绑定标记保留至运行求值。开放 attrs、stream 与 constraint 仍是下一批独立领域。
+已按上述 Req ID 贯通 source、alias、default、entry override、plan JSON 与 runtime；同领域子类可赋给同领域局部变量，跨领域赋值仍拒绝；控制流中的绑定标记保留至运行求值。开放 attrs、stream 与 constraint 已按各自领域完成接入，见下方实施契约。
 
 #### Python 扩展安装与 Culsma 引用
 
@@ -704,3 +704,300 @@ classDiagram
 | PROGRAM-CONTRACT | 字段契约与关联规则只有一份登记；ProgramSpec 和边界层复用；不按 program 名称分支 | tests/test_program_parameter_contracts.py |
 | PROGRAM-DEFER | 只执行依赖已解析的规则；未知值延迟，但已知错误仍报告 | tests/test_chromatography_frontend.py |
 | PROGRAM-DIAG | 错误类型保留 TYPE；非法成员与配对保留 SEM_INVALID_PROGRAM_ARG_VALUE；计划/运行诊断不变 | tests/test_chromatography_frontend.py、tests/test_external_enum_frontend.py |
+
+## 1.0.8 剩余外部词汇：stream → constraint → attrs
+
+三组均纳入本版本类型化范围；只整理标准类型、领域扩展与兼容边界，不新增科学解释或设备能力。三组已按 stream、constraint、attrs 顺序实现；绿色标记本批新增边界。
+
+### Stream 观察单位：已实现的领域契约
+
+```mermaid
+classDiagram
+    class ObservationUnitBase {
+        <<Python extension base>>
+    }
+    class ObservationUnit {
+        SINGLE_CELL
+    }
+    ObservationUnitBase <|-- ObservationUnit
+    class VocabularyDomain {
+        +current
+        +validate(value)
+    }
+    class VocabularyRegistry {
+        +with_type(enum_type, stable_id, version)
+        +activate()
+        +encode(member)
+        +decode(payload)
+    }
+    VocabularyDomain --> ObservationUnitBase : owns exact domain
+    VocabularyDomain --> VocabularyRegistry : scoped installation
+    CallParameterContract --> VocabularyDomain : stream.unit
+    ExternalEnumCodec --> VocabularyRegistry : stable identity
+    ExternalParameterNormalizer --> VocabularyDomain : validates final unit
+    StreamValueBuilder --> VocabularyDomain : preserves unit identity
+    style ObservationUnitBase fill:#dcfce7,stroke:#16a34a
+    style VocabularyRegistry fill:#dcfce7,stroke:#16a34a
+    style StreamValueBuilder fill:#dcfce7,stroke:#16a34a
+```
+
+| Req ID | 不变量 / 诊断归属 | 测试入口 |
+| --- | --- | --- |
+| STREAM-TYPE | 标准 ObservationUnit.SINGLE_CELL；扩展继承 ObservationUnitBase；错误族归 TYPE_EXTERNAL_ENUM_MISMATCH，未知成员归 SEM_INVALID_EXTERNAL_PARAMETER | tests/test_stream_vocabulary.py |
+| STREAM-COMPAT | single_cell 旧词转标准类型；未知历史文本原样保留，不自动成为扩展；sample、panel、观察数据不变 | tests/test_stream_vocabulary.py、tests/test_cli_results.py |
+| STREAM-BIND | 成员、别名、参数、控制流与名称遮蔽沿用现有解析；绑定后 PLAN_EXTERNAL_ENUM_INVALID，运行最终值错误 RT_EXTERNAL_ENUM_INVALID | tests/test_stream_vocabulary.py |
+| STREAM-WIRE | 稳定领域 ID/version/member，不使用 Python 类路径；作用域退出不泄漏；恢复未知身份失败 | tests/test_stream_vocabulary.py |
+| STREAM-RESULT | unit_kind 是既有结果字段；扩展额外保留 unit_type 身份及其派生 unit_ref 身份；不凭单位名称继承 single_cell 行为，不改变 seeded observation 的内容 | tests/test_stream_vocabulary.py |
+
+### Constraint 类型化：已实现的领域契约
+
+```mermaid
+classDiagram
+    class ConstraintRequirementBase {
+        +RequirementSpec spec
+    }
+    class ConstraintRequirement
+    ConstraintRequirementBase <|-- ConstraintRequirement
+    class RequirementSpec {
+        +allowed_on
+        +scopes
+        +conflicts
+        +needs_context = empty
+    }
+    ConstraintRequirementBase --> RequirementSpec
+    ConstraintRequirementBase --> VocabularyRegistry : explicit extension identity
+    ConstraintSourceResolver --> ConstraintRequirementBase : bare standard or qualified member
+    RequirementSpecRegistry --> ConstraintRequirementBase : existing semantic rules
+    RequirementCapability --> VocabularyRegistry : driver support before execution
+    style ConstraintRequirementBase fill:#dcfce7,stroke:#16a34a
+    style RequirementCapability fill:#dcfce7,stroke:#16a34a
+```
+
+| Req ID | 不变量 / 诊断 | 验收 |
+| --- | --- | --- |
+| REQUIREMENT-TYPE | 标准词表迁入 ConstraintRequirement；原裸写保留，增加直接限定成员写法；此处仍是静态 requirement 声明，不新增变量求值语义；未知声明沿用 SEM_UNKNOWN_REQUIREMENT | tests/test_requirement_vocabulary.py |
+| REQUIREMENT-RULES | 原作用域、适用操作、冲突、customized/schema_ref、cold_chain 与 sealed 规则保持；扩展基类必须声明 RequirementSpec；尚无实现的 context predicate 拒绝登记，不自动获得标准能力 | tests/test_requirement_vocabulary.py、既有 constraint 测试 |
+| REQUIREMENT-EXT | Python 显式注册；仅限定类型成员可引入扩展；普通未知裸文本不得因扩展 wire 同名而获得身份 | tests/test_requirement_vocabulary.py |
+| REQUIREMENT-WIRE | gate 保留现有 requirements，扩展额外保存 requirement_types；执行前恢复身份并要求 driver 明确支持，未知或不支持沿用 RT_DRIVER_REQUIREMENT_UNSUPPORTED | tests/test_requirement_vocabulary.py |
+
+### Attrs 标准词汇：已实现的领域契约
+
+```mermaid
+classDiagram
+    class ContentRoleBase
+    class ContentRole
+    class ContentStateBase
+    class ContentState
+    class BeadPropertyBase
+    class BeadProperty
+    ContentRoleBase <|-- ContentRole
+    ContentStateBase <|-- ContentState
+    BeadPropertyBase <|-- BeadProperty
+    RecordParameterContract --> VocabularyDomain : role / state / bead_property
+    VocabularyDomain --> VocabularyRegistry : separate domain identities
+    ExternalParameterNormalizer --> RecordParameterContract : open record fields
+    ContentAttributePersistence --> VocabularyRegistry : extension metadata identity
+    style RecordParameterContract fill:#dcfce7,stroke:#16a34a
+    style ContentAttributePersistence fill:#dcfce7,stroke:#16a34a
+```
+
+| Req ID | 不变量 / 诊断 | 验收 |
+| --- | --- | --- |
+| ATTR-STANDARD | ContentRole 对照既有推荐表，保留 wash/washing 和 pH_adjuster；ContentState 与 BeadProperty 首批覆盖已有示例与兼容标准词，未知旧值继续开放 | tests/test_content_attribute_vocabulary.py |
+| ATTR-OPEN | 不封闭 attrs，不把推荐 kind/type/role 组合变成限制；既有布尔等元数据路径不收紧；显式错误枚举族 TYPE_EXTERNAL_ENUM_MISMATCH，错误成员 SEM_INVALID_EXTERNAL_PARAMETER | tests/test_content_attribute_vocabulary.py |
+| ATTR-BOUNDARY | 嵌套字段使用登记的 RecordParameterContract；绑定后由现有 PLAN/RT_EXTERNAL_ENUM_INVALID 拦截 | tests/test_content_attribute_vocabulary.py |
+| ATTR-PERSIST | 标准成员在存储边界输出原字符串；扩展以 DomainEnum 数据载荷保留身份，普通科学消费者不把载荷当标准字符串；未知历史元数据仍保持开放，不动态加载代码 | tests/test_content_attribute_vocabulary.py |
+| ATTR-NO-EFFECT | 子类声明仅赋予元数据身份；不直接增加物理状态、分离或约束行为 | tests/test_content_attribute_vocabulary.py、既有物料测试 |
+
+### 类型名称归属：当前实现（组织方式待下述迁移）
+
+```mermaid
+classDiagram
+    class TypeNamespace {
+        <<interface>>
+        +activate(owner, types)
+        +get(name)
+        +snapshot()
+    }
+    class NamespaceBinding {
+        +bind(service)
+        +require()
+    }
+    TypeNamespace <|.. SourceTypeNamespace
+    NamespaceBinding --> TypeNamespace
+    class SourceTypeNamespace {
+        +configure(builtins, reserved)
+        +activate(owner, types)
+        +validate(owner, types)
+        +snapshot()
+    }
+    class DomainComposition
+    DomainComposition --> SourceTypeNamespace : construct and configure once
+    DomainComposition --> NamespaceBinding : bind same service once
+    ChromatographyRegistry --> NamespaceBinding : injected dependency
+    VocabularyRegistry --> NamespaceBinding : domain dependency
+    ExternalInputScope --> TypeNamespace : injected resolution service
+    ExternalInputResolver --> ExternalInputScope
+    DomainComposition --> ProgramOutputTypes : complete output families
+    note for DomainComposition "domains package initializes composition before public use; no parser or runtime imports"
+    style SourceTypeNamespace fill:#dcfce7,stroke:#16a34a
+```
+
+| Req ID | 不变量 / 归属 | 验收 |
+| --- | --- | --- |
+| NAMESPACE-OWNER | 内建类型由组合层集中登记；领域注册表只依赖名称服务，不反向 import registry；空基类与 MaterialRelation 名称保留 | tests/test_source_type_namespace.py |
+| NAMESPACE-COLLISION | 所有程序输出及内建类型不能被扩展覆盖；跨领域重名在 activate 前 ValueError；前端读取同一名称表 | tests/test_source_type_namespace.py |
+| NAMESPACE-SCOPE | 同领域嵌套替换、异常恢复、跨上下文隔离；失败激活不改变任何域或名称状态 | tests/test_source_type_namespace.py |
+| NAMESPACE-BOOT | 单独导入任一领域即可安全激活；不同导入顺序无循环导入，不加载 parser/pipeline/runtime | tests/test_source_type_namespace.py |
+| NAMESPACE-PORT | TypeNamespace 为结构化接口；组合层构造实现并一次性注入独立的 NamespaceBinding；领域无具体实现 import；with_type 保留依赖；前端暴露接口视图 | tests/test_namespace_injection.py |
+
+约束规则归属与 `constraint(Type.MEMBER)` 静态语法保持不变；本次修复只整理名称登记和解析一致性。
+
+
+## 枚举代码按 reference 语法归属迁移（目标设计，尚未实施）
+
+本节替代前文以 VocabularyDomain 组织领域的结构方案；前文已验证的行为、诊断和兼容要求仍有效。只重组枚举及其契约，不把 parser、validate、plan、runtime 合并进语法模块。路径树均相对 `src/culsma/`。
+
+### 当前结构：语法契约与技术装配混在 domains
+
+```text
+common/
+  content_contracts.py         # ContentKind/Type、ContainerKind、分类和编解码
+domains/
+  content_attributes.py        # role/state/bead_property，依赖 VocabularyDomain
+  observation.py              # stream.unit，依赖 VocabularyDomain
+  constraints.py              # constraint，依赖 VocabularyDomain
+  separation.py               # sep 输出、离心 keep_source、破碎方式
+  fractionation.py             # 密度梯度 axis/order
+  chromatography.py           # 色谱契约＋跨领域 ExternalTypeCatalog
+  labware.py                   # plate format 与几何
+  agitation.py                 # agit.mode
+  readout.py                   # img/ecp/phy.quantity
+  scheduling.py                # schedule.mode
+  vocabularies.py              # 五组不同语义的共同业务容器与目录
+  contracts.py                 # 参数校验技术接口，名称范围过宽
+  registry.py                  # 调用字段登记＋目录拼装＋名称服务装配
+  namespaces.py                # 名称查找／冲突机制
+  namespace_contracts.py       # 接口与延迟依赖绑定
+pipeline/
+  external_inputs.py           # 来源、绑定与类型解析
+  external_boundary.py         # 枚举编码与参数规范化
+  compat/                      # 旧输入兼容规则
+runtime/
+  stream_values.py              # stream 结果构造
+  material/content_attributes.py # 内容属性持久化
+```
+
+### 目标结构：每个语法拥有自己的枚举与规则
+
+```text
+domains/
+  __init__.py                  # 导出语法模块；不隐式装配整个系统
+  container.py                 # ContainerKind、PlateFormat、板几何及构造器契约
+  content/
+    classification.py          # ContentKind/Type、合法配对与 fallback
+    attributes.py              # ContentRole/State、BeadProperty，各自基类与规则
+    extensions.py              # 内容属性扩展安装与身份登记
+    contracts.py               # content 参数、属性字段及关联规则
+  sep/
+    outputs.py                 # reference 的逐程序输出枚举表
+    centrifuge.py              # keep_source，复用离心输出枚举
+    disrupt.py                 # DisruptionMethod
+    filtration.py              # 待做：过滤驱动类型；先冻结具体字段契约
+    contracts.py               # sep 与各分离 program 的参数登记
+  frac/
+    density_gradient.py        # 密度梯度轴／方向
+    chromatography.py          # 色谱基类、成员、扩展登记和轴／方向配对
+    contracts.py               # frac 的 program 参数登记
+  agit.py                      # AgitationMode 与关联规则
+  readout.py                   # ReadoutQuantity；img/ecp/phy 的独立允许集合
+  stream.py                    # ObservationUnit、StreamUnitContract、观察单位扩展
+  constraint.py                # ConstraintRequirement、适用范围／冲突与扩展
+  schedule.py                  # repeat 使用的 ScheduleMode
+  data_reference.py            # 待做：data_ref/data_group_ref 种类契约
+common/
+  enum_parameters.py           # 枚举参数检查与记录字段组合等技术工具
+  enum_identity.py             # ID/version/member 的数据编解码工具
+  type_name_contracts.py       # 类型名检查／查询／作用域的技术接口
+  type_names.py                # 名称表实现；无业务分类、无语法模块 import
+composition/
+  enum_services.py             # 唯一装配入口：创建服务并显式组装各语法的扩展入口
+  call_contracts.py            # 仅汇总各语法提供的调用契约，不定义其字段规则
+pipeline/                      # 保持现有阶段职责，改为消费上述明确契约
+  compat/                      # 保留集中兼容入口，按 content/stream/constraint 等归属组织
+runtime/                       # 保持现有执行职责，改用所属语法契约
+```
+
+包目录的 `__init__.py` 省略。filtration 与 data_reference 标为未实施，不在结构迁移中顺带增加语言取值。语法模块可以使用相同技术工具，但不得以工具类型替代自己的契约对象；不再建立 VocabularyDomain 或同义的大业务分类。
+
+| 目标归属 | Reference 依据 | 应由该模块决定的规则 |
+| --- | --- | --- |
+| container | 第 4 章 §4.5.1；第 6 章 §6.2.4 | 容器种类、板规格与几何 |
+| content | 第 4 章 §4.5.2；第 6 章 §6.2.4–6.2.8 | 分类配对、属性含义、各属性的扩展边界 |
+| sep | 第 6 章 §6.3.11–6.3.12 | 输出类型、keep_source、破碎方式、过滤参数 |
+| frac | 第 6 章 §6.3.13 | 密度梯度与色谱各自的参数、色谱配对 |
+| agit | 第 6 章 §6.3.15 | 搅动方式及关联参数 |
+| readout | 第 6 章 §6.3.16 | img/ecp/phy 的 quantity 集合与 schema 条件 |
+| stream | 第 4 章 §4.6.2 | 观察单位及其扩展；不拥有其他读出种类 |
+| constraint | 第 4 章 §4.3 与第 6 章约束调用规则 | requirement、作用域、冲突和执行能力要求 |
+| schedule | 第 4 章 §4.2 | repeat/schedule 的离散与连续模式 |
+| data_reference | 第 6 章 §6.2.2、第 9 章信息引用类型；Appendix D 为草案背景 | 新增种类前明确正式契约，不能将草案候选取值直接视为已接受枚举 |
+
+### 旧文件如何迁移
+
+| 当前文件／对象 | 目标与处理 |
+| --- | --- |
+| common/content_contracts.py | 分类移入 content/classification，容器种类移入 container；已使用的 Python 导入保留显式重导出，枚举类只定义一次 |
+| content_attributes.py | 内容及基类迁入 content/attributes；各属性兼容和扩展规则由 content 拥有 |
+| observation.py | 移到 stream；用具体观察单位契约替代 VocabularyDomain 实例 |
+| constraints.py | 移到 constraint；保留 RequirementSpec 和标准规则，扩展入口归本模块 |
+| separation.py | 输出移到 sep/outputs；keep_source 与破碎参数分归具体 program |
+| fractionation.py、chromatography.py | 分归 frac 的两个 program；色谱不再拥有全局类型目录 |
+| labware.py、agitation.py、scheduling.py | 分归 container、agit、schedule；迁移不改变成员和行为 |
+| readout.py | 保持 reference 已定义的读出家族归属，不为凑同构而拆散 |
+| VocabularyDomain | 删除；观察单位、约束、内容各自提供明确契约，不改名后继续作为共同业务容器 |
+| VocabularyRegistry/Type | 领域规则回到所属语法；纯身份登记／数据校验可委托技术工具 |
+| VocabularyCatalog、ExternalTypeCatalog | 删除分层拼装目录；名称查找由统一技术名称表负责，身份恢复由装配的所属语法处理器负责 |
+| domains/registry.py | 业务字段登记迁回所属语法；汇总与创建服务迁到 composition |
+| contracts.py、namespace_contracts.py、namespaces.py | 技术接口／工具移出业务目录；ParameterContract 按实际枚举／记录职责限定命名及类型 |
+| NamespaceBinding | 去掉生产路径中先建空依赖再 bind 的装配方式；先声明类型，再由显式装配入口构造完整扩展服务 |
+| pipeline、runtime 中已修复路径 | 保留阶段职责、诊断和行为，逐模块改接；不为迁移重写物料算法 |
+
+```mermaid
+classDiagram
+    class StreamContract
+    class ConstraintContract
+    class ContentContract
+    class ChromatographyContract
+    class TypeNameService {
+        <<interface>>
+    }
+    class EnumServices
+    class TypeNameTable
+    TypeNameService <|.. TypeNameTable
+    EnumServices --> TypeNameTable : constructs
+    EnumServices --> StreamContract : assembles extension service
+    EnumServices --> ConstraintContract : assembles extension service
+    EnumServices --> ContentContract : assembles extension service
+    EnumServices --> ChromatographyContract : assembles extension service
+    StreamContract --> TypeNameService : injected tool
+    ConstraintContract --> TypeNameService : injected tool
+    ContentContract --> TypeNameService : injected tool
+    ChromatographyContract --> TypeNameService : injected tool
+    note for EnumServices "技术装配；不定义语言分类或各语法允许的成员"
+```
+
+图中的 Contract 是目标职责名称，最终类名按各字段细化；四者没有共同业务父类。类型声明保持无装配副作用，独立使用扩展时通过明确的装配入口取得完整服务；frontend 使用同一实例。普通扩展作者仍继承所属语法的 Python 基类，不需要实现名称服务接口。
+
+### 迁移顺序与验收
+
+| 阶段 | 工作 | 完成条件 |
+| --- | --- | --- |
+| 0：冻结映射 | 核对上表与 reference；清点现有导入路径、成员、稳定身份、诊断和测试 | 每个枚举有唯一语法归属；不引入新取值或科学语义 |
+| 1：建立语法归属 | 先迁 container/content/sep/frac/agit/readout/stream/constraint/schedule 的类型与业务规则 | 新旧导入指向同一枚举类；逐组旧／新写法、字段限制及前端测试通过 |
+| 2：拆除伪分类 | 依次以 stream、constraint、content 的明确契约替换 VocabularyDomain；色谱保留自身配对规则 | 不再通过公共业务域对象决定参数归属；各语法可单独理解与测试 |
+| 3：整理装配 | 去掉叠加目录与 import 时装配；组合层显式传入技术接口；调用契约从语法模块汇总 | 无领域反向 import；无先创建空服务依赖的生产路径；名称和注册身份仍一致 |
+| 4：兼容验收 | 保持既有稳定 ID/version/member 与读写载荷；校验默认值、实际参数、控制流、JSON 恢复、执行与异常恢复 | 原测试保留并增加归属／装配测试；完整回归、reference 对照、导入 smoke 通过；同步架构图和 PM |
+| 5：剩余枚举 | 结构稳定后，单独完成 filtration.drive 与 data_ref/data_group_ref.kind 的规范和实现 | 不把新的字段语义混入结构迁移；每项先有 reference 契约 |
+
+阶段 1–3 每阶段保留可运行状态并单独 review；旧 Python 路径的兼容导出只做转发，禁止复制枚举定义。已有 DomainEnum 等载荷作为历史读写契约保持兼容，不因文件或类的组织调整而擅自改格式。reference 只记录语言契约，不写入上述实现文件结构。

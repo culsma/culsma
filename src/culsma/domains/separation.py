@@ -1,6 +1,7 @@
 """Program-owned separation outputs and closed disruption parameters."""
 from __future__ import annotations
 from enum import Enum, StrEnum
+from types import MappingProxyType
 from .contracts import EnumParameter
 
 
@@ -76,3 +77,10 @@ class DisruptionMethod(StrEnum):
 
 CENTRIFUGE_KEEP_SOURCE = EnumParameter(CentrifugeProgramOutput)
 DISRUPTION_METHOD = EnumParameter(DisruptionMethod)
+
+
+PROGRAM_OUTPUT_TYPES = MappingProxyType({family.__name__: family for family in (
+    SepProgramOutput, CentrifugeProgramOutput, MagneticProgramOutput,
+    DisruptProgramOutput, FieldProgramOutput, FiltrationProgramOutput,
+    CentrifugalFiltrationProgramOutput, PhasePartitionProgramOutput, PrecipitationProgramOutput,
+)})
