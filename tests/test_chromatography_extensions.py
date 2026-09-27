@@ -1,7 +1,7 @@
 import json
 from enum import StrEnum
 import pytest
-from culsma.domains.chromatography import (
+from culsma.domains.fractionation import (
     ChromatographyAxisBase, ChromatographyOrderBase, ChromatographyAxis, ChromatographyOrder,
     STANDARD_CHROMATOGRAPHY_REGISTRY, ACTIVE_CHROMATOGRAPHY_REGISTRY,
 )
@@ -86,7 +86,7 @@ def test_axis_and_order_require_exact_pair():
 
 
 def test_registry_constructor_and_activation_cannot_bypass_contract():
-    from culsma.domains.chromatography import ChromatographyRegistry, ChromatographyType
+    from culsma.domains.fractionation import ChromatographyRegistry, ChromatographyType
     with pytest.raises(ValueError):
         ChromatographyRegistry((ChromatographyType(LabAxis, 'culsma.chromatography.axis', 1),))
     with pytest.raises(ValueError):

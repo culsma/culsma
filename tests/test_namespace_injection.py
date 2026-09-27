@@ -7,11 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from culsma.domains.namespace_contracts import NamespaceBinding, TypeNamespace
-from culsma.domains.namespaces import SourceTypeNamespace
-from culsma.domains.registry import SOURCE_TYPE_NAMES, EXTERNAL_ENUM_TYPES
-from culsma.domains.observation import ObservationUnitBase, OBSERVATION_UNITS
-from culsma.domains.chromatography import (
+from culsma.common.type_name_contracts import NamespaceBinding, TypeNamespace
+from culsma.common.type_names import SourceTypeNamespace
+from culsma.enum_services import SOURCE_TYPE_NAMES, ENUM_REGISTRATION_SOURCES
+from culsma.domains.stream import ObservationUnitBase, OBSERVATION_UNITS
+from culsma.domains.fractionation import (
     ChromatographyAxisBase, STANDARD_CHROMATOGRAPHY_REGISTRY,
 )
 from culsma.pipeline.external_inputs import ExternalInputResolver, ExternalInputScope, ExternalInputStatus
@@ -56,11 +56,11 @@ def test_registry_and_frontend_use_supplied_port(domain):
     service: TypeNamespace = RecordingNamespace()
     binding = NamespaceBinding(service)
     if domain == 'observation':
-        vocabulary = replace(OBSERVATION_UNITS, namespace=binding)
+        contract = replace(OBSERVATION_UNITS, registry=replace(OBSERVATION_UNITS.registry, namespace=binding))
         family = ObservationUnitBase('InjectedUnit', {'CUSTOM': 'injected_unit'})
-        registry = vocabulary.standard_registry.with_type(family, 'test.unit')
-        owner = vocabulary.name
-        assert registry.domain.namespace is binding
+        registry = contract.standard_registry.with_type(family, 'test.unit')
+        owner = registry.wire_domain
+        assert registry.namespace is binding
     else:
         family = ChromatographyAxisBase('InjectedAxis', {'CUSTOM': 'injected_axis'})
         registry = replace(STANDARD_CHROMATOGRAPHY_REGISTRY, namespace=binding).with_type(family, 'test.axis')
@@ -81,7 +81,7 @@ def test_registry_and_frontend_use_supplied_port(domain):
 
 def test_composition_injects_one_service_into_every_domain():
     assert STANDARD_CHROMATOGRAPHY_REGISTRY.namespace.require() is SOURCE_TYPE_NAMES
-    assert all(domain.namespace.require() is SOURCE_TYPE_NAMES for domain in EXTERNAL_ENUM_TYPES.domains)
+    assert all(current().namespace.require() is SOURCE_TYPE_NAMES for bases, current in ENUM_REGISTRATION_SOURCES)
     assert ExternalInputScope().namespace is SOURCE_TYPE_NAMES
 
 
@@ -96,19 +96,19 @@ def test_missing_dependency_fails_explicitly_and_binding_is_single_assignment():
         binding.service = RecordingNamespace()
 
 
-@pytest.mark.parametrize('module', ['chromatography.py', 'vocabularies.py'])
+@pytest.mark.parametrize('module', ['fractionation.py', 'stream.py', 'constraints.py', 'content.py', 'separation.py', 'data.py'])
 def test_domains_depend_only_on_port_not_implementation_or_composition(module):
     root = Path(__file__).resolve().parents[1] / 'src/culsma/domains'
     tree = ast.parse((root / module).read_text())
     imports = [node.module for node in ast.walk(tree) if isinstance(node, ast.ImportFrom)]
-    assert 'namespace_contracts' in imports
-    assert not any(name and name.split('.')[-1] in {'namespaces', 'registry'} for name in imports)
+    assert any(name and name.startswith('culsma.common.') for name in imports)
+    assert not any(name and name.split('.')[-1] in {'enum_services', 'type_names', 'registry'} for name in imports)
     assert not any(isinstance(node, ast.Name) and node.id == 'SOURCE_TYPE_NAMES' for node in ast.walk(tree))
 
 
 @pytest.mark.parametrize('domain', ['observation', 'chromatography'])
 def test_injected_service_failure_does_not_change_domain_state(domain):
-    from culsma.domains.chromatography import ACTIVE_CHROMATOGRAPHY_REGISTRY
+    from culsma.domains.fractionation import ACTIVE_CHROMATOGRAPHY_REGISTRY
 
     class RejectingNamespace(RecordingNamespace):
         @contextmanager
@@ -118,7 +118,7 @@ def test_injected_service_failure_does_not_change_domain_state(domain):
 
     binding = NamespaceBinding(RejectingNamespace())
     if domain == 'observation':
-        registry = replace(OBSERVATION_UNITS, namespace=binding).standard_registry
+        registry = replace(OBSERVATION_UNITS, registry=replace(OBSERVATION_UNITS.registry, namespace=binding)).standard_registry
         before = OBSERVATION_UNITS.current
     else:
         registry = replace(STANDARD_CHROMATOGRAPHY_REGISTRY, namespace=binding)

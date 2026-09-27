@@ -32,10 +32,10 @@ class SourceTypeNamespace(Mapping):
                 raise ValueError('Invalid source type name')
             builtin = self.builtins.get(name)
             if (builtin is not None and builtin is not family) or name in self.reserved:
-                raise ValueError(f'Vocabulary namespace collision: {name}')
+                raise ValueError(f'Type namespace collision: {name}')
             for other_owner, installed in self.active.get().items():
                 if other_owner != owner and name in installed:
-                    raise ValueError(f'Vocabulary namespace collision: {name}')
+                    raise ValueError(f'Type namespace collision: {name}')
 
     @contextmanager
     def activate(self, owner, types):

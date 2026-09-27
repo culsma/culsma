@@ -1,6 +1,9 @@
 """Agitation vocabulary."""
+
 from enum import StrEnum
-from .contracts import EnumParameter
+from culsma.common.enum_parameters import EnumParameter
+from types import MappingProxyType
+from culsma.common.enum_parameters import CallParameterContract
 
 
 class AgitationMode(StrEnum):
@@ -31,3 +34,6 @@ class AgitationArgumentsRule:
     def validate(self, values, present):
         validate_agitation_arguments(values['mode'], has_duration='duration' in present,
                                     has_rate='rate' in present, has_cycles='cycles' in present)
+
+
+CALL_PARAMETER_CONTRACTS = MappingProxyType({'agit': CallParameterContract({'mode': AGITATION_MODE}, (AgitationArgumentsRule(),))})

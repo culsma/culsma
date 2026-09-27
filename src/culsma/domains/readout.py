@@ -1,8 +1,10 @@
 """Readout quantities and operation-specific membership contracts."""
+
 from dataclasses import dataclass
 from enum import StrEnum
 from types import MappingProxyType
-from .contracts import EnumParameter
+from culsma.common.enum_parameters import EnumParameter
+from culsma.common.enum_parameters import CallParameterContract
 
 
 class ReadoutQuantity(StrEnum):
@@ -54,3 +56,6 @@ class ReadoutQuantityRule:
 
     def validate(self, values, present):
         validate_readout_quantity(self.operation, values['quantity'], has_schema='schema_ref' in present)
+
+
+CALL_PARAMETER_CONTRACTS = MappingProxyType({operation: CallParameterContract({'quantity': contract}, (ReadoutQuantityRule(operation),)) for operation, contract in READOUT_QUANTITIES.items()})

@@ -160,7 +160,7 @@ def implementation_errors(contract: dict) -> list[str]:
         FALLBACK_CONTENT_TYPE_BY_KIND, parse_content_classification,
     )
     from culsma.pipeline.compat.content_taxonomy import normalize_content_classification
-    from culsma.domains.content_attributes import ContentRole
+    from culsma.domains.content import ContentRole
 
     errors = []
     comparisons = {

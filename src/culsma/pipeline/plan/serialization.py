@@ -4,8 +4,7 @@ from __future__ import annotations
 
 from dataclasses import fields, is_dataclass
 from enum import StrEnum, Enum
-from culsma.domains.chromatography import ACTIVE_CHROMATOGRAPHY_REGISTRY
-from culsma.domains.registry import EXTERNAL_ENUM_TYPES, EXTERNAL_PARAMETERS
+from culsma.enum_services import PARAMETER_ENUM_TYPES, PARAMETER_CONTRACTS
 from culsma.pipeline.external_boundary import DEFAULT_EXTERNAL_ENUM_CODEC
 from typing import Any
 
@@ -34,7 +33,7 @@ class PlanExpressionSerializer:
         if isinstance(value, dict):
             if value.get("kind") == "IRMember":
                 base = value.get("base", {})
-                family = EXTERNAL_ENUM_TYPES.get(base.get("name")) if isinstance(base, dict) and base.get("kind") == "IRIdentifier" else None
+                family = PARAMETER_ENUM_TYPES.get(base.get("name")) if isinstance(base, dict) and base.get("kind") == "IRIdentifier" else None
                 if family is not None and value.get("member") in family.__members__:
                     return False
             kind = value.get("kind")
@@ -104,18 +103,14 @@ class PlanExpressionSerializer:
 
     def serialize_expr(self, value: Any, env: dict[str, Any] | None = None) -> Any:
         """Serialize IR expression dataclass into JSON-friendly structure."""
-        if isinstance(value, Enum) and type(value) in EXTERNAL_ENUM_TYPES.values():
+        if isinstance(value, Enum) and type(value) in PARAMETER_ENUM_TYPES.values():
             return DEFAULT_EXTERNAL_ENUM_CODEC.encode(value)
         if (isinstance(value, IRMember) and isinstance(value.base, IRIdentifier)
-                and value.base.name in EXTERNAL_ENUM_TYPES and value.base.name not in (env or {})
+                and value.base.name in PARAMETER_ENUM_TYPES and value.base.name not in (env or {})
                 and value.base.name != 'CentrifugeProgramOutput'):
-            family = EXTERNAL_ENUM_TYPES[value.base.name]
-            domain = EXTERNAL_ENUM_TYPES.domain_for_type(family)
-            if domain is not None:
-                return {**domain.current.encode(next(iter(family))), 'member': value.member}
-            registry = ACTIVE_CHROMATOGRAPHY_REGISTRY.get()
-            if value.base.name in registry.types:
-                family = registry.types[value.base.name]
+            family = PARAMETER_ENUM_TYPES[value.base.name]
+            registry = PARAMETER_ENUM_TYPES.registry_for_type(family)
+            if registry is not None:
                 return {**registry.encode(next(iter(family))), 'member': value.member}
             return {"kind": "ExternalEnum", "enum": value.base.name, "member": value.member}
         if isinstance(value, StrEnum) and type(value) in CONTENT_ENUM_TYPES.values():

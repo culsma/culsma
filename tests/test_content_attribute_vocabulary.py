@@ -1,7 +1,7 @@
 """Source-to-runtime checks for open typed content metadata."""
 import json
 import pytest
-from culsma.domains.content_attributes import CONTENT_ROLES, ContentRoleBase, ContentRole
+from culsma.domains.content import CONTENT_ROLES, ContentRoleBase, ContentRole
 from culsma.driver.stub import StubDriver
 from culsma.frontend.resolver import resolve_program
 from culsma.parser import parse
@@ -76,7 +76,7 @@ def test_bad_typed_metadata_fails_at_frontend(role,code):
 
 
 def test_entry_override_and_reloaded_plan_validate_identity():
-    from culsma.domains.content_attributes import ContentState
+    from culsma.domains.content import ContentState
     from culsma.pipeline.plan_nodes import PlanProgram, ProtocolPlan, PlanStep
     compiled,semantic,typed=compile_source('role:r',params='(r=ContentRole.CULTURE)')
     assert semantic.ok and typed.ok

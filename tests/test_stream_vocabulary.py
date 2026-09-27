@@ -1,6 +1,6 @@
 import json
 import pytest
-from culsma.domains.observation import ObservationUnitBase, ObservationUnit, OBSERVATION_UNITS, STANDARD_OBSERVATION_UNITS
+from culsma.domains.stream import ObservationUnitBase, ObservationUnit, OBSERVATION_UNITS, STANDARD_OBSERVATION_UNITS
 from culsma.domains.readout import ReadoutQuantity
 from culsma.pipeline.external_boundary import ExternalEnumCodec
 from culsma.parser import parse
@@ -128,7 +128,7 @@ def test_registry_rejects_wrong_domain_and_wire_collisions_and_restores_context(
 
 
 def test_cross_domain_namespace_collision_is_rejected_in_either_order():
-    from culsma.domains.chromatography import ChromatographyAxisBase, STANDARD_CHROMATOGRAPHY_REGISTRY
+    from culsma.domains.fractionation import ChromatographyAxisBase, STANDARD_CHROMATOGRAPHY_REGISTRY
     ConflictingAxis=ChromatographyAxisBase('LabUnit',{'TIME':'lab_time'})
     chromatography=STANDARD_CHROMATOGRAPHY_REGISTRY.with_type(ConflictingAxis,'example.axis')
     with registry().activate():

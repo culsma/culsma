@@ -4,7 +4,7 @@ from enum import StrEnum
 
 import pytest
 
-from culsma.domains.contracts import EnumParameter
+from culsma.common.enum_parameters import EnumParameter
 from culsma.domains.labware import PlateGeometry
 from culsma.domains.agitation import AgitationMode, AGITATION_MODE
 from culsma.domains.readout import ReadoutQuantity

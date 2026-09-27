@@ -1,12 +1,12 @@
 """Registered expression parameter contracts; domain rules do not emit diagnostics."""
 from culsma.common.diagnostics import Diagnostic
-from culsma.domains.registry import EXTERNAL_CALL_CONTRACTS
+from culsma.enum_services import CALL_PARAMETER_CONTRACTS
 from culsma.pipeline.external_inputs import ExternalInputResolver, ExternalInputScope, ExternalInputStatus, ExternalInputIssue
 from types import MappingProxyType
 
 # Stage ownership: program/readout/agitation handlers retain their existing diagnostics.
 EXPRESSION_PARAMETER_CONTRACTS = MappingProxyType({
-    **{name: EXTERNAL_CALL_CONTRACTS[name] for name in ('stream', 'content', 'DefineContent')},
+    **{name: CALL_PARAMETER_CONTRACTS[name] for name in ('stream', 'content', 'DefineContent', 'data_ref', 'data_group_ref')},
 })
 
 

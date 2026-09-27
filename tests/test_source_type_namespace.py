@@ -5,9 +5,9 @@ import sys
 
 import pytest
 
-from culsma.domains.registry import SOURCE_TYPE_NAMES
-from culsma.domains.observation import ObservationUnitBase, OBSERVATION_UNITS, STANDARD_OBSERVATION_UNITS
-from culsma.domains.chromatography import (
+from culsma.enum_services import SOURCE_TYPE_NAMES
+from culsma.domains.stream import ObservationUnitBase, OBSERVATION_UNITS, STANDARD_OBSERVATION_UNITS
+from culsma.domains.fractionation import (
     ChromatographyAxisBase, STANDARD_CHROMATOGRAPHY_REGISTRY, ACTIVE_CHROMATOGRAPHY_REGISTRY,
 )
 from culsma.pipeline.external_inputs import KNOWN_ENUM_TYPES
@@ -79,16 +79,16 @@ def test_parallel_contexts_have_independent_source_and_domain_views():
 
 
 @pytest.mark.parametrize('first', [
-    'culsma.domains.chromatography', 'culsma.domains.observation',
-    'culsma.domains.constraints', 'culsma.domains.registry',
+    'culsma.domains.fractionation', 'culsma.domains.stream',
+    'culsma.domains.constraints', 'culsma.enum_services',
     'culsma.common.content_contracts',
 ])
 def test_domain_import_smoke_is_independent_of_frontend_and_runtime(first):
     source = f'''
 import {first}
 import sys
-from culsma.domains.observation import ObservationUnitBase, STANDARD_OBSERVATION_UNITS
-from culsma.domains.registry import SOURCE_TYPE_NAMES
+from culsma.domains.stream import ObservationUnitBase, STANDARD_OBSERVATION_UNITS
+from culsma.enum_services import SOURCE_TYPE_NAMES
 Collision = ObservationUnitBase('MagneticProgramOutput', {{'CUSTOM': 'custom'}})
 try:
     with STANDARD_OBSERVATION_UNITS.with_type(Collision, 'smoke.collision').activate():

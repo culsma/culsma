@@ -2,7 +2,7 @@
 from __future__ import annotations
 from copy import deepcopy
 from typing import Any, TYPE_CHECKING
-from culsma.domains.registry import EXTERNAL_ENUM_TYPES
+from culsma.domains.stream import OBSERVATION_UNITS, ObservationUnitBase, ObservationUnit
 if TYPE_CHECKING:
     from culsma.runtime.state import RuntimeState
 
@@ -14,8 +14,8 @@ class StreamValueBuilder:
         if not isinstance(source_ref, str):
             source_ref = None
         unit_value = kwargs.get("unit")
-        domain = EXTERNAL_ENUM_TYPES.domain_for_type(type(unit_value))
-        unit_kind = unit_value.value if domain is not None else unit_value
+        typed_unit = isinstance(unit_value, ObservationUnitBase)
+        unit_kind = unit_value.value if typed_unit else unit_value
         if not isinstance(unit_kind, str):
             unit_kind = None
         panel_ref = kwargs.get("panel")
@@ -32,8 +32,8 @@ class StreamValueBuilder:
                 unit_kind=unit_kind,
             ),
         }
-        if domain is not None and type(unit_value) is not domain.standard:
-            stream['unit_type'] = domain.current.encode(unit_value)
+        if typed_unit and type(unit_value) is not ObservationUnit:
+            stream['unit_type'] = OBSERVATION_UNITS.current.encode(unit_value)
             for item in stream['items']:
                 if item.get('unit_kind') == unit_kind:
                     item['unit_type'] = dict(stream['unit_type'])

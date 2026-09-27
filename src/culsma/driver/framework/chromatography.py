@@ -1,5 +1,5 @@
 """Capability gate for registered chromatography extensions, before driver execution."""
-from culsma.domains.chromatography import ACTIVE_CHROMATOGRAPHY_REGISTRY
+from culsma.domains.fractionation import ACTIVE_CHROMATOGRAPHY_REGISTRY
 
 
 class ChromatographyCapability:

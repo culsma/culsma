@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from culsma.pipeline.external_inputs import ExternalInputResolver, ExternalInputScope, ExternalInputStatus, deferred_external_bindings
-from culsma.domains.registry import EXTERNAL_ENUM_TYPES
+from culsma.enum_services import PARAMETER_ENUM_TYPES
 
 from dataclasses import dataclass, field
 from typing import Any, Iterable, Mapping, cast
@@ -375,7 +375,7 @@ class LetHandler(BaseStatementHandler):
         )
         external = ExternalInputResolver.resolve(stmt.value, None, ExternalInputScope(
             {**ctx.expr_bindings, **ctx.literal_bindings}, ctx.defined_names))
-        if external.status is ExternalInputStatus.RESOLVED and type(external.value) in EXTERNAL_ENUM_TYPES.values():
+        if external.status is ExternalInputStatus.RESOLVED and type(external.value) in PARAMETER_ENUM_TYPES.values():
             resolved = external.value
             ctx.expr_bindings[stmt.name] = resolved
         if resolved is not None:
@@ -473,7 +473,7 @@ class AssignHandler(BaseStatementHandler):
             external = ExternalInputResolver.resolve(stmt.value, None, ExternalInputScope(
                 {**ctx.expr_bindings, **ctx.literal_bindings}, ctx.defined_names))
             ctx.expr_bindings[assign_root] = stmt.value
-            if external.status is ExternalInputStatus.RESOLVED and type(external.value) in EXTERNAL_ENUM_TYPES.values():
+            if external.status is ExternalInputStatus.RESOLVED and type(external.value) in PARAMETER_ENUM_TYPES.values():
                 ctx.expr_bindings[assign_root] = external.value
                 ctx.literal_bindings[assign_root] = external.value
             elif result.source is ContentInputSource.ENUM and (result.token is not None or isinstance(result.value, DeferredContentEnum)):

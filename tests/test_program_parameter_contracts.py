@@ -3,9 +3,9 @@ from dataclasses import replace
 
 import pytest
 
-from culsma.domains.contracts import CallParameterContract
-from culsma.domains.registry import EXTERNAL_CALL_CONTRACTS, EXTERNAL_PARAMETERS
-from culsma.domains.chromatography import ChromatographyAxis, ChromatographyOrder
+from culsma.common.enum_parameters import CallParameterContract
+from culsma.enum_services import CALL_PARAMETER_CONTRACTS, PARAMETER_CONTRACTS
+from culsma.domains.fractionation import ChromatographyAxis, ChromatographyOrder
 from culsma.pipeline.external_boundary import ExternalParameterNormalizer
 from culsma.pipeline.program_registry import PROGRAM_REGISTRY
 from culsma.pipeline.validate.programs import ProgramContractValidator
@@ -18,10 +18,10 @@ def member(namespace, value):
 
 
 def test_program_spec_and_flattened_fields_share_contract_identity():
-    contract = EXTERNAL_CALL_CONTRACTS['chromatography_program']
+    contract = CALL_PARAMETER_CONTRACTS['chromatography_program']
     assert PROGRAM_REGISTRY['chromatography_program'].parameter_contract is contract
     for name, field in contract.fields.items():
-        assert EXTERNAL_PARAMETERS[('chromatography_program', name)] is field
+        assert PARAMETER_CONTRACTS[('chromatography_program', name)] is field
 
 
 def test_renamed_program_runs_registered_semantic_rules(monkeypatch):
@@ -41,7 +41,7 @@ def test_renamed_program_runs_registered_semantic_rules(monkeypatch):
 
 
 def test_renamed_program_runs_same_rules_at_plan_and_runtime_boundaries():
-    contract = EXTERNAL_CALL_CONTRACTS['chromatography_program']
+    contract = CALL_PARAMETER_CONTRACTS['chromatography_program']
     normalizer = ExternalParameterNormalizer(call_contracts={'registered_test_program': contract})
     from test_chromatography_extensions import LabAxis, LabOrder
     with installed_registry().activate():
@@ -54,7 +54,7 @@ def test_renamed_program_runs_same_rules_at_plan_and_runtime_boundaries():
 
 
 def test_deferred_dependency_does_not_skip_other_known_invalid_fields():
-    contract = EXTERNAL_CALL_CONTRACTS['chromatography_program']
+    contract = CALL_PARAMETER_CONTRACTS['chromatography_program']
     normalizer = ExternalParameterNormalizer(call_contracts={'other': contract})
     deferred = {'kind': 'IRIdentifier', 'name': 'axis', 'bound': True}
     result = normalizer.normalize_plan_arguments('other', {
@@ -68,7 +68,7 @@ def test_deferred_dependency_does_not_skip_other_known_invalid_fields():
 
 
 def test_rule_dependencies_and_call_field_tables_cannot_diverge():
-    contract = EXTERNAL_CALL_CONTRACTS['chromatography_program']
+    contract = CALL_PARAMETER_CONTRACTS['chromatography_program']
     with pytest.raises(ValueError, match='dependencies'):
         CallParameterContract({'axis': contract.fields['axis']}, contract.rules)
     with pytest.raises(ValueError, match='match'):

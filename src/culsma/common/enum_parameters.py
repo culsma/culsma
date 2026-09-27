@@ -62,7 +62,7 @@ class EnumParameter(Generic[E]):
         return tuple(enum_wire_value(member) for member in self.enum_type if member in self.allowed_members)
 
 
-class ParameterContract(Protocol):
+class EnumParameterContract(Protocol):
     enum_type: type[Enum]
 
     def validate(self, value: Any) -> Enum: ...
@@ -83,7 +83,7 @@ class ParameterRule(Protocol):
 class CallParameterContract:
     """Domain fields and dependent rules; stages own resolution and diagnostics."""
 
-    fields: Mapping[str, ParameterContract]
+    fields: Mapping[str, "EnumParameterContract | RecordParameterContract"]
     rules: tuple[ParameterRule, ...] = ()
 
     def __post_init__(self):
@@ -102,7 +102,7 @@ class CallParameterContract:
 @dataclass(frozen=True)
 class RecordParameterContract:
     """Known typed fields within an otherwise open metadata record."""
-    fields: Mapping[str, ParameterContract]
+    fields: Mapping[str, "EnumParameterContract | RecordParameterContract"]
 
     def __post_init__(self):
         object.__setattr__(self, 'fields', MappingProxyType(dict(self.fields)))

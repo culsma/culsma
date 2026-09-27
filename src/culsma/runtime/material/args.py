@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 from enum import Enum
-from culsma.domains.contracts import enum_wire_value
+from culsma.common.enum_parameters import enum_wire_value
 
 
 class MaterialArgReader:

@@ -8,7 +8,7 @@ from culsma.pipeline.typecheck import typecheck
 from culsma.pipeline.plan import lower_ir_to_plan
 from culsma.runtime.executor import run
 from culsma.driver.stub import StubDriver
-from culsma.domains.chromatography import ChromatographyAxis, ChromatographyOrder
+from culsma.domains.fractionation import ChromatographyAxis, ChromatographyOrder
 from test_chromatography_extensions import installed_registry, LabAxis, LabOrder
 
 PREFIX = 'let x=tube(load=[content(kind=formulation,type=medium,code="M"):1mL]);'

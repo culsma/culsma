@@ -1,6 +1,6 @@
 # Global Architecture Diagrams
 
-Last updated: 2026-08-25
+Last updated: 2026-09-26
 
 This document records the repository-level execution architecture. It gives the
 global source-to-runtime flow first, then records cross-stage semantic
@@ -31,6 +31,15 @@ flowchart LR
     Resolver["Scientific Model Resolver<br/>one Runtime port; default or injected"]
     Models["Pluggable scientific models<br/>many capability-specific providers"]
 
+    Domains["domains: language contracts by syntax<br/>allowed enum types, members and combinations"]
+    Common["common: shared models and technical tools<br/>content classification, names and identity encoding"]
+    ParseCompile -. "typed declarations" .-> Domains
+    Validate -. "member and combination rules" .-> Domains
+    Typecheck -. "parameter types" .-> Domains
+    Plan -. "bound parameter checks" .-> Domains
+    Runtime -. "final value checks" .-> Domains
+    Domains -. "uses" .-> Common
+
     CLI --> Batch
     Batch -->|one| Source
     Batch -->|many| PerFile
@@ -48,6 +57,54 @@ flowchart LR
     Resolver --> Models
     Models --> Resolver
 ```
+
+## Language Contract Ownership — Agreed Flat Structure
+
+Domains are language contracts, not an execution stage. Solid arrows above are execution flow; dashed arrows to domains/common are dependencies. The independent reference owns semantics. Common may contain shared semantic models such as content classification; domains supplies syntax-specific field contracts. Neither layer imports parser, pipeline, runtime or drivers.
+
+```mermaid
+classDiagram
+    class ContentContract
+    class StreamUnitContract
+    class ConstraintRequirementContract
+    class ChromatographyRegistry
+    class ReadoutQuantity
+    class ContentClassification
+    class EnumTypeRegistry
+    class TypeNamespace {
+        <<interface>>
+    }
+    ContentContract --> ContentClassification : shared model
+    ContentContract --> ContentAttributeContract : attrs fields
+    ContentAttributeContract --> EnumTypeRegistry : metadata type identities
+    StreamUnitContract --> EnumTypeRegistry : unit type identities
+    ConstraintRequirementContract --> EnumTypeRegistry : requirement type identities
+    ChromatographyRegistry --> TypeNamespace : extension names
+    EnumTypeRegistry --> TypeNamespace : scoped names
+    note for EnumTypeRegistry "Technical registration only; no shared business domain or vocabulary category"
+```
+
+| Flat owner | Reference concept | Boundary |
+| --- | --- | --- |
+| domains/content.py | content constructor and attrs, §6.2.4–6.2.8 | Owns field contracts and attribute extensions; reuses common/content_contracts.py classification |
+| domains/data.py | data_ref and data_group_ref kind | Owns data kind identity; result schemas and measurement behavior remain separate |
+| domains/stream.py | stream units, §4.6.2 | Independent of readout measurement quantities |
+| domains/constraints.py | execution requirements, §4.3 | Owns applicability, scopes and conflicts |
+| domains/fractionation.py | density-gradient and chromatography programs, §6.3.13 | Owns both programs and chromatography pairing; not sep |
+| domains/separation.py | binary separation outputs and parameters, §6.3.12 | Owns program-specific outputs and parameter restrictions |
+| domains/readout.py | img/ecp/phy, §6.3.16 | Shared family with operation-specific allowed quantities |
+| domains/agitation.py, labware.py, scheduling.py | agit, plate, schedule | Existing ownership retained |
+| common/enum_registration.py, enum_parameters.py, type_names.py, type_name_contracts.py | Implementation mechanisms | No aggregate business category; no imports of domains |
+| enum_services.py | Application composition | Only assembles module-provided declarations and injected name services |
+
+Migration invariants: existing enum identities, wire ID/version/member, legacy spellings and diagnostic ownership remain unchanged; All implementation imports use their semantic or technical owner directly; unused development-time forwarding modules are removed. Domain import alone does not assemble application services. Default execution imports enum_services; standalone extension hosts explicitly import that assembly or inject a TypeNamespace.
+
+| Requirement | Evidence |
+| --- | --- |
+| DOMAIN-OWNER: every contract belongs to a named syntax; no VocabularyDomain | tests/test_domain_ownership.py |
+| DOMAIN-CONTENT: common classification remains the only model; content owns parameter fields | tests/test_domain_ownership.py, existing content tests |
+| DOMAIN-COMPAT: stored extension identities preserve behavior | tests/test_domain_ownership.py, existing extension JSON tests |
+| DOMAIN-DEPENDENCY: common does not import domains; domains does not import assembly or pipeline | tests/test_domain_ownership.py, tests/test_namespace_injection.py |
 
 ## Main Execution Sequence
 

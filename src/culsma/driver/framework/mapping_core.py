@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from culsma.domains.contracts import enum_wire_value
+from culsma.common.enum_parameters import enum_wire_value
 from typing import Any
 
 from culsma.pipeline.plan_nodes import PlanStep

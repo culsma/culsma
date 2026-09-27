@@ -1,6 +1,6 @@
 """Legacy external-parameter inputs; domain contracts themselves require enums."""
 from enum import Enum
-from culsma.domains.contracts import E, EnumParameter
+from culsma.common.enum_parameters import E, EnumParameter
 
 
 def resolve_legacy_enum(value: str | E, contract: EnumParameter[E]) -> E:

@@ -12,12 +12,32 @@
 
 ### Added
 
+- Typed filtration drives and local data-reference kinds, with separate Python
+  extension bases, scoped registration and source-to-runtime validation. Standard
+  and historical text inputs remain compatible. Data-kind extension identity
+  survives plan replay and result persistence without defining measurement behavior.
+
 - Typed observation units, execution requirements, and content role/state/bead
   metadata, with separate Python extension bases and scoped stable identities.
   Legacy spellings remain supported; metadata extensions add no material
   behavior, and requirement extensions need explicit driver support.
 
+### Changed
+
+- Language contracts now follow flat syntax modules: content, stream, constraints,
+  data, and fractionation. Unused development-time import forwarding modules
+  have been removed. Common retains shared content classification and technical
+  enum/name services; application assembly lives in `culsma.enum_services`.
+  Standalone extension hosts import that entry point or inject a naming service
+  before activation. Chromatography types are imported from `culsma.domains.fractionation`
+  and content attribute types from `culsma.domains.content`;
+  stored identities remain supported.
+
 ### Fixed
+
+- Enum registration rejects inheritance across unrelated parameter families,
+  including mixed chromatography axes and orders. Open enum types cannot use
+  closed class-name payloads to bypass their scoped identity/version checks.
 
 - Extension activation and frontend lookup share one source type namespace,
   including every separation output family. Conflicting names fail before

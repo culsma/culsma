@@ -1,8 +1,10 @@
 """Standard plate geometry and capacity defaults."""
+
 from dataclasses import dataclass
 from enum import StrEnum
 from types import MappingProxyType
-from .contracts import EnumParameter
+from culsma.common.enum_parameters import EnumParameter
+from culsma.common.enum_parameters import CallParameterContract
 
 
 class PlateFormat(StrEnum):
@@ -98,6 +100,5 @@ class PlateGeometry:
             )
 
 
-def validate_plate_position(position: str, *, rows: int, cols: int) -> None:
-    """Compatibility entry point; geometry owns the bounds rule."""
-    PlateGeometry(rows, cols).validate_position(position)
+
+CALL_PARAMETER_CONTRACTS = MappingProxyType({'plate': CallParameterContract({'format': PLATE_FORMAT})})

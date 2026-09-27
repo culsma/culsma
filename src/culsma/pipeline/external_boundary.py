@@ -3,11 +3,11 @@ from enum import Enum
 from types import MappingProxyType
 from typing import Any
 
-from culsma.domains.chromatography import (
+from culsma.domains.fractionation import (
     ACTIVE_CHROMATOGRAPHY_REGISTRY, ChromatographyAxisBase, ChromatographyOrderBase, ChromatographyParameter,
 )
-from culsma.domains.contracts import EnumParameter, RecordParameterContract
-from culsma.domains.registry import EXTERNAL_ENUM_TYPES, EXTERNAL_PARAMETERS, EXTERNAL_CALL_CONTRACTS
+from culsma.common.enum_parameters import EnumParameter, RecordParameterContract
+from culsma.enum_services import PARAMETER_ENUM_TYPES, PARAMETER_CONTRACTS, CALL_PARAMETER_CONTRACTS
 from culsma.pipeline.external_inputs import (
     KNOWN_ENUM_TYPES, ExternalInputResolution, ExternalInputStatus, ExternalInputIssue,
 )
@@ -15,22 +15,25 @@ from culsma.pipeline.compat.external_enums import resolve_legacy_enum
 
 
 class ExternalEnumCodec:
-    def __init__(self, enum_types=EXTERNAL_ENUM_TYPES):
-        self.enum_types = MappingProxyType(dict(enum_types))
+    def __init__(self, enum_types=PARAMETER_ENUM_TYPES):
+        # Only closed types use class-name payloads. Open families are always
+        # encoded and restored through their current scoped identity registry.
+        self.enum_types = MappingProxyType({
+            name: family for name, family in enum_types.items()
+            if PARAMETER_ENUM_TYPES.base_for_type(family) is None
+        })
 
     def encode(self, value: Enum) -> dict[str, str]:
-        domain = EXTERNAL_ENUM_TYPES.domain_for_type(type(value))
-        if domain is not None:
-            return domain.current.encode(value)
-        if isinstance(value, (ChromatographyAxisBase, ChromatographyOrderBase)):
-            return ACTIVE_CHROMATOGRAPHY_REGISTRY.get().encode(value)
+        registry = PARAMETER_ENUM_TYPES.registry_for_type(type(value))
+        if registry is not None:
+            return registry.encode(value)
         if type(value) not in self.enum_types.values():
             raise TypeError(f'Not an external parameter enum: {type(value).__name__}')
         return {'kind': 'ExternalEnum', 'enum': type(value).__name__, 'member': value.name}
 
     def decode(self, value: dict) -> Enum:
         if value.get('kind') == 'DomainEnum':
-            return EXTERNAL_ENUM_TYPES.decode(value)
+            return PARAMETER_ENUM_TYPES.decode_registered(value)
         if value.get('kind') == 'ChromatographyEnum':
             return ACTIVE_CHROMATOGRAPHY_REGISTRY.get().decode(value)
         if not isinstance(value.get('enum'), str) or not isinstance(value.get('member'), str):
@@ -45,13 +48,13 @@ class ExternalEnumCodec:
 
 
 class ExternalParameterNormalizer:
-    def __init__(self, contracts=EXTERNAL_PARAMETERS, codec=None, *, call_contracts=None):
+    def __init__(self, contracts=PARAMETER_CONTRACTS, codec=None, *, call_contracts=None):
         if call_contracts is None:
-            call_contracts = EXTERNAL_CALL_CONTRACTS if contracts is EXTERNAL_PARAMETERS else {}
+            call_contracts = CALL_PARAMETER_CONTRACTS if contracts is PARAMETER_CONTRACTS else {}
         else:
             fields = {(operation, name): field for operation, contract in call_contracts.items()
                       for name, field in contract.fields.items()}
-            if contracts is not EXTERNAL_PARAMETERS and dict(contracts) != fields:
+            if contracts is not PARAMETER_CONTRACTS and dict(contracts) != fields:
                 raise ValueError('Parameter fields must match the supplied call contracts')
             contracts = fields
         self.contracts = MappingProxyType(dict(contracts))

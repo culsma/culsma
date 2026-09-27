@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from culsma.domains.registry import EXTERNAL_ENUM_TYPES
+from culsma.runtime.data_values import DataReferenceBuilder
+from culsma.enum_services import PARAMETER_ENUM_TYPES
 from culsma.runtime.stream_values import StreamValueBuilder
 from culsma.pipeline.external_boundary import DEFAULT_EXTERNAL_ENUM_CODEC, DEFAULT_EXTERNAL_PARAMETER_NORMALIZER, RuntimeParameterError
 
@@ -215,25 +216,10 @@ def _eval_local_runtime_constructor(
         }
     if name == "stream":
         return StreamValueBuilder.build(kwargs, state, target_name=target_name)
-    if name == "data_ref":
-        schema_ref = kwargs.get("schema_ref")
-        return {
-            "kind": "data_ref",
-            "data_kind": kwargs.get("kind"),
-            "subject_ref": kwargs.get("subject_ref"),
-            "context_ref": kwargs.get("context_ref"),
-            "schema_ref": schema_ref,
-            "result": _merge_result_payloads(_schema_result_payload(schema_ref), {}),
-        }
-    if name == "data_group_ref":
-        schema_ref = kwargs.get("schema_ref")
-        return {
-            "kind": "data_group_ref",
-            "data_kind": kwargs.get("kind"),
-            "schema_ref": schema_ref,
-            "items": [],
-            "result": _merge_result_payloads(_schema_result_payload(schema_ref), {}),
-        }
+    if name in {"data_ref", "data_group_ref"}:
+        return DataReferenceBuilder.build(
+            name, kwargs, _merge_result_payloads(_schema_result_payload(kwargs.get("schema_ref")), {})
+        )
     if name == "data_schema":
         return {
             "kind": "data_schema_ref",
@@ -527,7 +513,7 @@ def _runtime_bound_value(value: Any, state: RuntimeState) -> Any:
 
 
 def serialize_runtime_value(value: Any) -> Any:
-    if type(value) in EXTERNAL_ENUM_TYPES.values():
+    if type(value) in PARAMETER_ENUM_TYPES.values():
         return DEFAULT_EXTERNAL_ENUM_CODEC.encode(value)
     if type(value) in CONTENT_ENUM_TYPES.values():
         return serialize_content_enum(value)

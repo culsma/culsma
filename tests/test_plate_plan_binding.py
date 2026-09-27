@@ -3,7 +3,7 @@ import json
 
 import pytest
 
-from culsma.domains.labware import PlateFormat, selector_positions, validate_plate_position
+from culsma.domains.labware import PlateFormat, selector_positions, PlateGeometry
 from culsma.domains.readout import ReadoutQuantity
 from culsma.frontend.resolver import resolve_program
 from culsma.parser import parse
@@ -93,9 +93,9 @@ def test_selector_order_duplicate_guard_and_multiletter_rows():
         selector_positions([('A1', 'B2'), ('A1', None)])
     with pytest.raises(ValueError):
         selector_positions([('A0', None)])
-    validate_plate_position('AA1', rows=27, cols=1)
+    PlateGeometry(rows=27, cols=1).validate_position('AA1')
     with pytest.raises(ValueError, match='bounds'):
-        validate_plate_position('AA1', rows=26, cols=1)
+        PlateGeometry(rows=26, cols=1).validate_position('AA1')
 
 
 def test_bound_capacity_overrides_default_and_rejects_wrong_dimension():

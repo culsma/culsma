@@ -15,7 +15,8 @@ from culsma.pipeline.program_registry import (
     get_material_effect_kind,
     get_program_outputs,
 )
-from culsma.runtime.material.args import arg_string, call_arg_string
+from culsma.domains.separation import FiltrationDrive, FiltrationDriveBase
+from culsma.runtime.material.args import arg_string, call_arg_string, call_arg_value
 
 
 _RATIO_EPSILON = 1e-9
@@ -31,6 +32,16 @@ class SeparationOperationContract:
     released_associations: frozenset[str]
     free_phase_passes: bool = False
     preservation_contract: dict[str, Any] | None = None
+
+    @staticmethod
+    def is_surface_aspiration(program: dict[str, Any]) -> bool:
+        membrane = _normalized_token(call_arg_string(program, "membrane"))
+        drive = call_arg_value(program, "drive")
+        # Typed extensions retain their own identity even if text normalization
+        # would resemble a standard handling name. Old text keeps its behavior.
+        aspiration = (drive is FiltrationDrive.ASPIRATION if isinstance(drive, FiltrationDriveBase)
+                      else _normalized_token(arg_string(drive)) == "aspiration")
+        return membrane == "adherent_cell_surface" and aspiration
 
     @property
     def slot_contract(self) -> dict[str, str]:
@@ -133,9 +144,7 @@ def resolve_separation_operation_contract(
     elif program_kind == "filtration_program":
         retained_part_id = FiltrationProgramOutput.RETENTATE.part_id
         preserved["membrane"] = retained_part_id
-        membrane = _normalized_token(call_arg_string(program, "membrane"))
-        drive = _normalized_token(call_arg_string(program, "drive"))
-        if membrane == "adherent_cell_surface" and drive == "aspiration":
+        if SeparationOperationContract.is_surface_aspiration(program):
             preserved["container_surface"] = retained_part_id
             free_phase_passes = True
     elif program_kind == "centrifugal_filtration_program":

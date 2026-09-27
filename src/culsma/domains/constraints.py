@@ -2,7 +2,7 @@
 from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import StrEnum
-from .vocabularies import VocabularyDomain
+from culsma.common.enum_registration import EnumTypeRegistry
 
 
 @dataclass(frozen=True)
@@ -155,9 +155,40 @@ class ConstraintRequirement(ConstraintRequirementBase):
     ))
 
 
-CONSTRAINT_REQUIREMENTS = VocabularyDomain(
-    'constraint_requirement', ConstraintRequirementBase, ConstraintRequirement, allow_legacy_text=False)
-STANDARD_CONSTRAINT_REQUIREMENTS = CONSTRAINT_REQUIREMENTS.standard_registry
+@dataclass(frozen=True)
+class ConstraintRequirementContract:
+    registry: EnumTypeRegistry
+    enum_type = ConstraintRequirementBase
+    standard = ConstraintRequirement
+    allow_legacy_text = False
+
+    @property
+    def standard_registry(self):
+        return self.registry
+
+    @property
+    def current(self):
+        return self.registry.current
+
+    @property
+    def wire_values(self):
+        return tuple(member.value for member in ConstraintRequirement)
+
+    def validate(self, value):
+        if not isinstance(value, ConstraintRequirementBase):
+            raise TypeError('Expected an execution requirement')
+        self.current.registration(type(value))
+        return value
+
+    def decode(self, value):
+        if type(value) is not str:
+            raise TypeError('Expected an execution requirement spelling')
+        return ConstraintRequirement(value)
+
+
+STANDARD_CONSTRAINT_REQUIREMENTS = EnumTypeRegistry.create(
+    ConstraintRequirementBase, ConstraintRequirement, 'constraint_requirement')
+CONSTRAINT_REQUIREMENTS = ConstraintRequirementContract(STANDARD_CONSTRAINT_REQUIREMENTS)
 
 
 class RequirementSpecRegistry(Mapping):

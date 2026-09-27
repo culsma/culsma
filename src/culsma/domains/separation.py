@@ -1,8 +1,12 @@
 """Program-owned separation outputs and closed disruption parameters."""
+
 from __future__ import annotations
 from enum import Enum, StrEnum
+from dataclasses import dataclass
+from culsma.common.enum_registration import EnumTypeRegistry
 from types import MappingProxyType
-from .contracts import EnumParameter
+from culsma.common.enum_parameters import EnumParameter
+from culsma.common.enum_parameters import CallParameterContract
 
 
 class ProgramOutput(Enum):
@@ -84,3 +88,50 @@ PROGRAM_OUTPUT_TYPES = MappingProxyType({family.__name__: family for family in (
     DisruptProgramOutput, FieldProgramOutput, FiltrationProgramOutput,
     CentrifugalFiltrationProgramOutput, PhasePartitionProgramOutput, PrecipitationProgramOutput,
 )})
+
+
+class FiltrationDriveBase(Enum):
+    """Python extensions declare filtration mechanisms, not centrifugal settings."""
+
+
+class FiltrationDrive(FiltrationDriveBase):
+    PRESSURE = 'pressure'
+    ASPIRATION = 'aspiration'
+    CELL_LIFTER = 'cell_lifter'
+
+
+@dataclass(frozen=True)
+class FiltrationDriveContract:
+    registry: EnumTypeRegistry
+    enum_type = FiltrationDriveBase
+    standard = FiltrationDrive
+    allow_legacy_text = True
+
+    @property
+    def current(self):
+        return self.registry.current
+
+    @property
+    def wire_values(self):
+        return tuple(member.value for member in self.standard)
+
+    def validate(self, value):
+        if not isinstance(value, FiltrationDriveBase):
+            raise TypeError('Expected a filtration drive member')
+        self.current.registration(type(value))
+        return value
+
+    def decode(self, value):
+        if type(value) is not str:
+            raise TypeError('Expected a filtration drive spelling')
+        return self.standard(value)
+
+
+STANDARD_FILTRATION_DRIVES = EnumTypeRegistry.create(FiltrationDriveBase, FiltrationDrive, 'filtration_drive')
+FILTRATION_DRIVES = FiltrationDriveContract(STANDARD_FILTRATION_DRIVES)
+
+CALL_PARAMETER_CONTRACTS = MappingProxyType({
+    'centrifuge_program': CallParameterContract({'keep_source': CENTRIFUGE_KEEP_SOURCE}),
+    'disrupt_program': CallParameterContract({'method': DISRUPTION_METHOD}),
+    'filtration_program': CallParameterContract({'drive': FILTRATION_DRIVES}),
+})

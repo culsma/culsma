@@ -38,7 +38,7 @@ docs/
 
 ## Global Architecture
 
-- [global_architecture_diagrams.md](global_architecture_diagrams.md)
+- [global_architecture_diagrams.md](global_architecture_diagrams.md): execution flow and the shared Domain/Common language-contract boundaries.
 
 ## Current Module Architecture Notes
 

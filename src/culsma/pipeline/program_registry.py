@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from culsma.domains.contracts import CallParameterContract
-from culsma.domains.registry import EXTERNAL_CALL_CONTRACTS
+from culsma.common.enum_parameters import CallParameterContract
+from culsma.enum_services import CALL_PARAMETER_CONTRACTS
 
 
 from culsma.domains.separation import (
@@ -99,7 +99,7 @@ def _spec(
     return ProgramSpec(
         kind=kind,
         family=family,
-        parameter_contract=EXTERNAL_CALL_CONTRACTS.get(kind),
+        parameter_contract=CALL_PARAMETER_CONTRACTS.get(kind),
         owners=owners,
         fields=fields,
         required_fields=required_fields,

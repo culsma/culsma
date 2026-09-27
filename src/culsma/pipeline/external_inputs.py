@@ -7,11 +7,11 @@ from dataclasses import dataclass, field
 from enum import Enum, StrEnum
 from typing import Any, Mapping, AbstractSet
 
-from culsma.domains.chromatography import ChromatographyParameter
-from culsma.domains.contracts import EnumParameter, RecordParameterContract
-from culsma.domains.registry import EXTERNAL_ENUM_TYPES
-from culsma.domains.registry import SOURCE_TYPE_NAMES
-from culsma.domains.namespace_contracts import TypeNamespace
+from culsma.domains.fractionation import ChromatographyParameter
+from culsma.common.enum_parameters import EnumParameter, RecordParameterContract
+from culsma.enum_services import PARAMETER_ENUM_TYPES
+from culsma.enum_services import SOURCE_TYPE_NAMES
+from culsma.common.type_name_contracts import TypeNamespace
 from culsma.parser.ast_nodes import Identifier, MemberExpr, RecordLiteral, StringLiteral
 from culsma.pipeline.ir_nodes import IRIdentifier, IRMember, IRRecord, IRString
 from culsma.pipeline.compat.external_enums import resolve_legacy_enum
@@ -107,7 +107,7 @@ class ExternalInputResolver:
                     return ExternalInputResolver.validate_value(member, contract)
                 if getattr(contract, 'allow_legacy_text', False):
                     return ExternalInputResolution(ExternalInputStatus.INVALID,
-                        issue=ExternalInputIssue.UNKNOWN_MEMBER, detail=f'Unknown registered vocabulary type: {base.name}')
+                        issue=ExternalInputIssue.UNKNOWN_MEMBER, detail=f'Unknown registered enum type: {base.name}')
             record = ExternalInputResolver.resolve_record(base, scope, seen)
             if isinstance(record, (RecordLiteral, IRRecord)) and expression.member in record.entries:
                 return ExternalInputResolver.resolve(record.entries[expression.member], contract, scope, seen)
@@ -143,8 +143,8 @@ class ExternalInputResolver:
 
 
 def external_parameter_resolution(operation, parameter, expression, *, bindings=None, defined_names=frozenset()):
-    from culsma.domains.registry import EXTERNAL_PARAMETERS
-    contract = EXTERNAL_PARAMETERS[(operation, parameter)]
+    from culsma.enum_services import PARAMETER_CONTRACTS
+    contract = PARAMETER_CONTRACTS[(operation, parameter)]
     return ExternalInputResolver.resolve(expression, contract, ExternalInputScope(bindings or {}, defined_names))
 
 
@@ -152,12 +152,12 @@ def external_parameter_type_diagnostics(value, *, scope, node_id=None):
     """Check this statement's expressions; nested statement blocks own their scopes."""
     from dataclasses import fields, is_dataclass
     from culsma.common.diagnostics import Diagnostic
-    from culsma.domains.registry import EXTERNAL_PARAMETERS
+    from culsma.enum_services import PARAMETER_CONTRACTS
     from culsma.pipeline.ir_nodes import IRCall, IRStep
     diagnostics = []
     if isinstance(value, (IRCall, IRStep)):
         for arg in value.args:
-            contract = EXTERNAL_PARAMETERS.get((value.name, arg.name))
+            contract = PARAMETER_CONTRACTS.get((value.name, arg.name))
             if contract is not None:
                 for path, field_contract, result in ExternalInputResolver.resolve_fields(arg.value, contract, scope, arg.name):
                     if result.issue in {ExternalInputIssue.WRONG_TYPE, ExternalInputIssue.CYCLIC_BINDING}:
@@ -187,6 +187,6 @@ def deferred_external_bindings(names, scope: ExternalInputScope) -> dict[str, De
             updates[name] = previous
             continue
         result = ExternalInputResolver.resolve(IRIdentifier(name), None, scope)
-        if result.status is ExternalInputStatus.RESOLVED and type(result.value) in EXTERNAL_ENUM_TYPES.values():
+        if result.status is ExternalInputStatus.RESOLVED and type(result.value) in PARAMETER_ENUM_TYPES.values():
             updates[name] = DeferredExternalEnum(type(result.value))
     return updates

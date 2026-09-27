@@ -8,7 +8,7 @@ import ast
 import pytest
 
 from culsma.domains.agitation import AGITATION_MODE, AgitationMode
-from culsma.domains.contracts import EnumParameter
+from culsma.common.enum_parameters import EnumParameter
 from culsma.domains.fractionation import DENSITY_GRADIENT_AXIS, DENSITY_GRADIENT_ORDER
 from culsma.domains.labware import PLATE_FORMAT, PlateFormat, plate_dimensions, plate_default_well_capacity
 from culsma.domains.readout import READOUT_QUANTITIES, ReadoutQuantity, validate_readout_quantity
