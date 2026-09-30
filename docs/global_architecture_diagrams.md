@@ -1,18 +1,84 @@
 # Global Architecture Diagrams
 
-Last updated: 2026-09-26
+## Proposed incremental language-module organization
 
-This document records the repository-level execution architecture. It gives the
-global source-to-runtime flow first, then records cross-stage semantic
-dependencies that are not themselves pipeline stages. Module-specific details
-remain in the existing parser, compile, validate, typecheck, plan, runtime,
-material, and driver documents.
+Status: proposal, 2026-09-30. Coordination: [PM #126](https://github.com/culsma/culsma-pm/issues/126).
+Migrate a small language responsibility when related work touches it; each batch
+must remain independently releasable. This is not a 1.0.8 release prerequisite.
+Reference continues to own semantics. Current architecture diagrams follow below.
 
-## Global Execution Flow
+| Today | Target |
+| --- | --- |
+| Language rules spread across compile/validate/plan/runtime | One primary module per language family, aligned with reference concepts |
+| Large kernel tests mix language behavior and engine mechanisms | Language tests beside their family in the test tree; engine tests remain separate |
+| `domains` already contains family contracts | One owner for each contract and rule; no permanent duplicate domains/language implementations |
 
-This activity-style flowchart is the global pipeline. It intentionally uses
-conceptual stage names rather than internal helper objects. Implementation
-module names are included only to connect the architecture to the repository.
+```mermaid
+flowchart TB
+    Entry["Entry-point assembly"] --> Old["Unmigrated handlers<br/>existing locations"]
+    Entry --> New["Migrated language families<br/>contracts and rules"]
+    Entry --> Engine["Shared stage interfaces and execution mechanisms"]
+    Old --> Engine
+    New --> Engine
+    New -. "requests atomic effects" .-> Ledger["Single shared ledger"]
+    Engine --> Ledger
+```
+
+The diagram shows dependencies. Assembly selects exactly one handler per dispatch
+key, old or migrated; it never executes both or retries the old handler on failure.
+Keep Source → AST → IR → Validate/Typecheck → Plan → Runtime and existing public
+entry points. Generic mechanisms call injected interfaces, not concrete family imports.
+
+| Boundary | Ownership |
+| --- | --- |
+| Language family | Its contracts, validation and operation-specific lowering/execution; create only needed files |
+| Shared foundation | Unified grammar/AST, IR/Plan, traversal, scope infrastructure, scheduling, events and atomic ledger updates |
+| Assembly | Register old and new handlers together through existing interfaces; minimal wiring, no plugin framework |
+
+The pilot chooses whether to extend `domains` or introduce `language`; do not
+create both as permanent owners of the same family. Initially reuse existing
+contracts in place. Move family-only contracts with their consumers when safe;
+truly shared values remain shared. Contract-only imports must not pull in execution
+modules through package initialization. Directory names do not require a new
+`foundation/` tree or a file for every statement and stage.
+
+| When related work occurs | Small migration opportunity | Keep outside that batch |
+| --- | --- | --- |
+| First pilot: groups / #122 follow-up | One group-index or binding rule, its callers and focused tests | Nested-group semantics and broad protocol refactoring |
+| Protocol/import/return bug | One binding or output rule and its source regression | Entire resolver and scope engine |
+| Labware, content or quantity bug | Touched selector, constructor or quantity rule | Shared value-model redesign |
+| Constraint/environment bug | One scoped rule and its handler | Scheduler and new persistent seal semantics |
+| Transfer/replace bug | One operation-specific rule and its tests | Shared ledger, conservation and transaction boundaries |
+| Agitation, separation/fractionation or readout/data/control work | One touched operation family slice | Other operations, drivers and scientific-model redesign |
+
+Only the groups pilot is first; subsequent order follows actual bugs/features.
+Moving all tests before any implementation is not required. If extraction needs
+unrelated rewrites, fix the bug in place and record a bounded follow-up in PM #126.
+
+| Step within one batch | Completion condition |
+| --- | --- |
+| 1. Bound the change | Identify one rule, consumers, tests and target owner; record the slice in PM |
+| 2. Establish behavior | Reproduce/fix the bug with a focused regression; keep the behavior change distinguishable from the move |
+| 3. Extract the slice | Move the implementation and relevant tests; old entry points delegate or assembly routes to the new owner |
+| 4. Verify coexistence | Exercise migrated and unmigrated operations in one source program; preserve diagnostics, outputs and single execution |
+| 5. Retire the bridge | Once internal consumers move, remove unused forwarding code; retain published compatibility where required |
+
+A temporary bridge delegates old → new with no copied rules. Do not add a bridge
+without an existing consumer. Record its consumers and removal condition in the
+batch; new code uses the new owner. Do not route back through the old dispatcher
+from the new implementation. Unrelated legacy code may remain until touched.
+
+Tests use complete source examples and direct real IR/value objects, without
+mocks where real inputs suffice. Use owner-qualified filenames, e.g.
+`tests/language/groups/test_groups_rules.py`; keep setup separate from cases.
+For moves, preserve assertions, parameter cases and skip/xfail metadata; update
+node-ID mappings, `conformance/test_hooks.json`, CI/scripts and cross-test imports.
+Run affected and mixed-path tests; shared dispatcher/runtime changes require the
+full suite. Check import cycles and public entry points. Update the owning diagram
+and PM slice status: **legacy → mixed → migrated**; compatibility removal is tracked
+explicitly. No global import-mode, syntax or serialization change accompanies a move.
+
+## Execution Flow
 
 ```mermaid
 flowchart LR
@@ -58,7 +124,7 @@ flowchart LR
     Models --> Resolver
 ```
 
-## Language Contract Ownership — Agreed Flat Structure
+## Language Contract Ownership
 
 Domains are language contracts, not an execution stage. Solid arrows above are execution flow; dashed arrows to domains/common are dependencies. The independent reference owns semantics. Common may contain shared semantic models such as content classification; domains supplies syntax-specific field contracts. Neither layer imports parser, pipeline, runtime or drivers.
 
@@ -68,7 +134,8 @@ classDiagram
     class StreamUnitContract
     class ConstraintRequirementContract
     class ChromatographyRegistry
-    class ReadoutQuantity
+    class DataKindContract
+    class FiltrationDriveContract
     class ContentClassification
     class EnumTypeRegistry
     class TypeNamespace {
@@ -78,10 +145,11 @@ classDiagram
     ContentContract --> ContentAttributeContract : attrs fields
     ContentAttributeContract --> EnumTypeRegistry : metadata type identities
     StreamUnitContract --> EnumTypeRegistry : unit type identities
+    DataKindContract --> EnumTypeRegistry : data kind identities
+    FiltrationDriveContract --> EnumTypeRegistry : drive identities
     ConstraintRequirementContract --> EnumTypeRegistry : requirement type identities
     ChromatographyRegistry --> TypeNamespace : extension names
     EnumTypeRegistry --> TypeNamespace : scoped names
-    note for EnumTypeRegistry "Technical registration only; no shared business domain or vocabulary category"
 ```
 
 | Flat owner | Reference concept | Boundary |
@@ -90,26 +158,18 @@ classDiagram
 | domains/data.py | data_ref and data_group_ref kind | Owns data kind identity; result schemas and measurement behavior remain separate |
 | domains/stream.py | stream units, §4.6.2 | Independent of readout measurement quantities |
 | domains/constraints.py | execution requirements, §4.3 | Owns applicability, scopes and conflicts |
-| domains/fractionation.py | density-gradient and chromatography programs, §6.3.13 | Owns both programs and chromatography pairing; not sep |
+| domains/fractionation.py | density-gradient and chromatography programs, §6.3.13 | Owns both programs and chromatography pairing |
 | domains/separation.py | binary separation outputs and parameters, §6.3.12 | Owns program-specific outputs and parameter restrictions |
 | domains/readout.py | img/ecp/phy, §6.3.16 | Shared family with operation-specific allowed quantities |
-| domains/agitation.py, labware.py, scheduling.py | agit, plate, schedule | Existing ownership retained |
-| common/enum_registration.py, enum_parameters.py, type_names.py, type_name_contracts.py | Implementation mechanisms | No aggregate business category; no imports of domains |
+| domains/agitation.py, labware.py, scheduling.py | agit, plate, schedule | Owns modes, plate layout and scheduling |
+| common/enum_registration.py, enum_parameters.py, type_names.py, type_name_contracts.py | Implementation mechanisms | Parameter, registration and naming mechanics; no domain imports |
 | enum_services.py | Application composition | Only assembles module-provided declarations and injected name services |
 
-Migration invariants: existing enum identities, wire ID/version/member, legacy spellings and diagnostic ownership remain unchanged; All implementation imports use their semantic or technical owner directly; unused development-time forwarding modules are removed. Domain import alone does not assemble application services. Default execution imports enum_services; standalone extension hosts explicitly import that assembly or inject a TypeNamespace.
+Domain imports do not assemble application services. `enum_services.py` collects
+syntax declarations and injects the shared name service. Standalone extension
+hosts import that entry point or supply a `TypeNamespace` implementation.
 
-| Requirement | Evidence |
-| --- | --- |
-| DOMAIN-OWNER: every contract belongs to a named syntax; no VocabularyDomain | tests/test_domain_ownership.py |
-| DOMAIN-CONTENT: common classification remains the only model; content owns parameter fields | tests/test_domain_ownership.py, existing content tests |
-| DOMAIN-COMPAT: stored extension identities preserve behavior | tests/test_domain_ownership.py, existing extension JSON tests |
-| DOMAIN-DEPENDENCY: common does not import domains; domains does not import assembly or pipeline | tests/test_domain_ownership.py, tests/test_namespace_injection.py |
-
-## Main Execution Sequence
-
-This sequence diagram shows the main cross-module path. It uses representative
-classes that exist in the implementation and omits internal helpers.
+## Execution Sequence
 
 ```mermaid
 sequenceDiagram
@@ -158,154 +218,28 @@ sequenceDiagram
     end
 ```
 
-## Pluggable Scientific-Compute Capability Families
-
-The resolver is a repository-level scientific-compute port. Runtime is its first
-consumer, not its permanent exclusive owner. Future planning and post-run
-analysis surfaces may use the same typed capability boundary, but they retain
-their own validation and commit policies.
+## Runtime, Models and Drivers
 
 ```mermaid
 flowchart LR
-    subgraph Consumers["Culsma consumers"]
-        Planning["Future planning tools<br/>advisory parameter proposals"]
-        RuntimeConsumer["Runtime operation effects<br/>validated before state commit"]
-        Analysis["Future post-run analysis<br/>derived scientific interpretations"]
-    end
-
-    Resolver["one ScientificModelResolver per consumer run<br/>capability discovery + typed envelopes + provenance"]
-
-    subgraph Providers["Model provider capabilities"]
-        ProviderRegistry["Capability provider registry<br/>many providers; one binding per capability@version"]
-        Fate["Material fate<br/>separation + recovery + carryover + loss"]
-        Transform["Material transformation<br/>binding + lysis + PCR + digestion + reaction + precipitation"]
-        Evolution["State evolution<br/>incubation + growth + viability + degradation + stability"]
-        Transport["Physical transport<br/>mixing + diffusion + evaporation + heat/field response"]
-        Observation["Observation forward models<br/>image + fluorescence + absorbance + sequencing signal"]
-        Inference["Scientific inference<br/>concentration + identity + QC + parameter estimation"]
-        Optimize["Protocol optimization<br/>condition + yield + resource trade-off proposals"]
-    end
-
-    Planning -.-> Resolver
-    RuntimeConsumer --> Resolver
-    Analysis -.-> Resolver
-
-    Resolver --> ProviderRegistry
-    ProviderRegistry --> Fate
-    ProviderRegistry --> Transform
-    ProviderRegistry --> Evolution
-    ProviderRegistry --> Transport
-    ProviderRegistry --> Observation
-    ProviderRegistry --> Inference
-    ProviderRegistry --> Optimize
+    Runtime["Runtime operation"] --> Facts{"Effect follows from declared facts?"}
+    Facts -->|yes| Core["Core rules: units, ledger and explicit author effects"]
+    Facts -->|no| Resolver["ScientificModelResolver"]
+    Resolver --> Providers["Registered capability providers"]
+    Providers --> Proposal["Typed proposal with model provenance"]
+    Proposal --> Validate["Validate bounds, conservation and allowed effects"]
+    Core --> Validate
+    Validate --> Driver["Driver capability check and execution receipt"]
+    Driver --> Commit["Runtime commit policy"]
 ```
 
-Capability families share the resolver contract but not one universal
-prediction schema. Each family defines a typed request, typed result, model
-applicability rules, assumptions, uncertainty, model identity, and version.
-
-Providers implement capability protocols; they do not subclass or replace the
-runtime kernel. A provider may use any of these implementation styles:
-
-| Provider style | Typical use |
+| Owner | Responsibility |
 | --- | --- |
-| Bundled reference provider | Preserve the documented coarse fallback behavior |
-| Mechanistic formula provider | Apply a bounded physical or chemical equation when all required parameters are present |
-| Lookup/calibration provider | Interpolate vendor, laboratory, or instrument-specific recovery tables |
-| Statistical or ML provider | Produce empirical predictions with declared uncertainty and model provenance |
-| Composite or ensemble provider | Select, chain, or compare several compatible providers without changing the kernel contract |
+| Core | Language semantics, units, material accounting, capacity, conservation and explicit author rules |
+| Scientific model | Effects requiring empirical parameters, calibration or scientific assumptions; returns proposals |
+| Driver | Backend execution, capability checks, receipts and measured payloads |
+| Runtime | Validate effects and control state commits; a provider cannot write the material ledger directly |
 
-The same provider protocol may initially run in-process, then be exposed by an
-external Python package, local service/container, or transport-neutral remote
-adapter. Deployment location does not change the request/result contract.
-
-The following computations remain inside Culsma and do not become plugins:
-
-| Deterministic core responsibility | Reason |
-| --- | --- |
-| Parsing, validation, control flow, and scheduling | They define language and execution semantics |
-| Units and dimensional arithmetic | Every external proposal must be checked against one authoritative unit system |
-| Material-detail ledger and aggregate projection | There must remain one source of accounting truth |
-| Conservation, capacity, bounds, and atomic commit | A model must not bypass runtime invariants |
-| Separation slot meanings and explicit author rules | Declared language meaning takes precedence over prediction |
-| Driver capability and execution receipts | Hardware realization is separate from scientific prediction |
-
-Planning and optimization providers are advisory. Their proposals must return
-through normal source/IR/plan validation before execution. Post-run inference
-produces derived observations and does not retroactively rewrite the material
-ledger. Runtime material-effect providers return proposed effects only; the
-runtime kernel remains the sole state-commit authority.
-
-## Scientific-Compute Ownership Boundary
-
-The boundary is evidence-based rather than operation-name-based. A calculation
-belongs to the deterministic core only when its result follows completely from
-declared language facts, current authoritative state, and fixed runtime
-invariants. A calculation belongs behind the Scientific Model Resolver when it
-requires empirical parameters, natural-process assumptions, calibration,
-probability, or learned behavior.
-
-```mermaid
-stateDiagram-v2
-    direction TB
-
-    [*] --> ReadNeed
-    state "Read the proposed calculation<br/>and the facts available at this lifecycle point" as ReadNeed
-
-    state DeterministicChoice <<choice>>
-    state ExecutionChoice <<choice>>
-    state MeasurementChoice <<choice>>
-    ReadNeed --> DeterministicChoice
-    DeterministicChoice --> Core : [the result is fully implied by declared facts and runtime invariants]
-    DeterministicChoice --> ExecutionChoice : [additional knowledge or an external outcome is required]
-
-    state "Keep the calculation in the deterministic core:<br/>units, ledger arithmetic, control flow,<br/>capacity, conservation, validation, and commit" as Core
-
-    ExecutionChoice --> Driver : [the question is whether or how a declared operation was physically executed]
-    ExecutionChoice --> MeasurementChoice : [the question concerns a scientific consequence or interpretation]
-
-    state "Use the Driver boundary:<br/>capability, backend realization,<br/>execution receipt, and measured payload" as Driver
-
-    MeasurementChoice --> Observation : [a measured observation already supplies the result]
-    MeasurementChoice --> Model : [the result requires assumptions, calibration, probability, or a learned model]
-    MeasurementChoice --> Unknown : [required facts and an applicable model are both absent]
-
-    state "Record the measured observation<br/>without relabeling it as a prediction" as Observation
-    state "Use the Scientific Model Resolver:<br/>return a typed proposal, uncertainty,<br/>assumptions, model identity, and provenance" as Model
-    state "Return not-applicable or an uncertainty diagnostic;<br/>do not silently invent scientific behavior" as Unknown
-
-    Core --> [*]
-    Driver --> [*]
-    Observation --> [*]
-    Model --> ValidateProposal
-    Unknown --> [*]
-
-    state "Validate the proposed effect with core rules;<br/>only the owning lifecycle may commit it" as ValidateProposal
-    ValidateProposal --> [*]
-```
-
-The shortest ownership test is:
-
-> If changing laboratory, instrument calibration, biological context, empirical
-> dataset, or scientific model could legitimately change the answer while the
-> Culsma source remains identical, the calculation is not a core invariant and
-> belongs behind a model capability or an explicit author rule.
-
-| Example | Owner | Boundary reason |
-| --- | --- | --- |
-| Add `100uL + 200uL`, convert units, and check capacity | Core | Fully determined arithmetic and invariant checking |
-| Project aggregate volume from routed component detail | Core | Accounting projection from the single authoritative ledger |
-| Preserve explicitly surface-associated cells during declared aspiration | Core | Deterministic consequence of declared association and operation contract |
-| Apply author-declared `component_fates` | Core | Execute an explicit source rule; no inference is required |
-| Apply an author-declared transition between `MaterialRelation` enum members | Core | Execute a typed author decision; the enum domain and association invariants remain kernel-validated |
-| Predict DNA recovery, pellet carryover, filtration retention, or magnetic capture efficiency | Scientific model | Depends on material, device, conditions, calibration, or empirical assumptions |
-| Predict binding, lysis products, PCR yield, viability, degradation, or signal intensity | Scientific model | Natural-process outcome is not implied by workflow syntax |
-| Select a robot command and report whether it executed | Driver | Hardware realization and execution receipt |
-| Record an observed image, absorbance, or instrument measurement | Observation/Driver result | Measured evidence is not a model prediction |
-| Interpret a measured signal as concentration, identity, or QC status | Scientific inference model or explicit analysis rule | Requires a calibration or interpretive model |
-| No applicable model and insufficient facts | Explicit unknown/fallback | The system must expose uncertainty instead of claiming a prediction |
-
-Current coarse `0.99/0.01`, `0.95/0.05`, and similar reference ratios are
-compatibility behavior. Under this boundary they are not timeless core truths;
-they should eventually be represented as a bundled reference model or clearly
-provenanced fallback behind the same capability contract.
+See the [runtime](architecture/runtime_module_diagrams.md),
+[material compute](architecture/material_compute_module_diagrams.md) and
+[driver](architecture/driver_module_diagrams.md) diagrams for implementation detail.
