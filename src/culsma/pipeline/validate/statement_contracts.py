@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from culsma.pipeline.external_inputs import external_parameter_resolution, ExternalInputStatus, ExternalInputIssue
 
-from culsma.domains.agitation import AGITATION_MODE
+from culsma.domains.agitation.validation import AGIT_MODES, validate_agit_contract
 from culsma.domains.readout import READOUT_QUANTITIES
 
 from dataclasses import dataclass
@@ -42,7 +42,6 @@ BUILTIN_METHOD_STEPS = {"append", "replace"}
 CONSTRAINT_CUSTOMIZED = ConstraintRequirement.CUSTOMIZED
 COLD_CHAIN_MAX_C = 8.0
 # Legacy consumer views derived from domain-owned contracts.
-AGIT_MODES = frozenset(AGITATION_MODE.wire_values)
 READOUT_QUANTITY_SETS = {operation: frozenset(contract.wire_values) for operation, contract in READOUT_QUANTITIES.items()}
 
 
@@ -76,77 +75,10 @@ def validate_assign_target_contract(
     return []
 
 
-def validate_agit_contract(step: IRStep, *, literal_bindings: dict[str, Any], expr_bindings=None, defined_names=frozenset()) -> list[Diagnostic]:
-    if step.name != "agit":
-        return []
-
-    diagnostics: list[Diagnostic] = []
-    mode_arg = _find_arg(step, "mode")
-    if mode_arg is None:
-        return diagnostics
-
-    resolution = external_parameter_resolution('agit', 'mode', mode_arg.value,
-        bindings={**(expr_bindings or {}), **literal_bindings}, defined_names=defined_names)
-    if resolution.status is ExternalInputStatus.DEFERRED or resolution.issue in {ExternalInputIssue.WRONG_TYPE, ExternalInputIssue.CYCLIC_BINDING}:
-        return []
-    mode_value = resolution.value
-    if mode_value is None or mode_value not in AGIT_MODES:
-        diagnostics.append(
-            Diagnostic(
-                code="SEM_AGIT_MODE_UNKNOWN",
-                message="agit(...): mode must be one of vortex, invert, flick, shake, stir",
-                span=mode_arg.span or step.span,
-                node_id=step.id,
-            )
-        )
-        return diagnostics
-
-    duration_arg = _find_arg(step, "duration")
-    rate_arg = _find_arg(step, "rate")
-    cycles_arg = _find_arg(step, "cycles")
-
-    if mode_value in {"invert", "flick"}:
-        if duration_arg is not None:
-            diagnostics.append(
-                Diagnostic(
-                    code="SEM_AGIT_ARG_CONFLICT",
-                    message=f"agit(mode = {mode_value}): duration is not allowed; use cycles",
-                    span=duration_arg.span or step.span,
-                    node_id=step.id,
-                )
-            )
-        if rate_arg is not None:
-            diagnostics.append(
-                Diagnostic(
-                    code="SEM_AGIT_ARG_CONFLICT",
-                    message=f"agit(mode = {mode_value}): rate is not allowed; use cycles",
-                    span=rate_arg.span or step.span,
-                    node_id=step.id,
-                )
-            )
-    else:
-        if cycles_arg is not None:
-            diagnostics.append(
-                Diagnostic(
-                    code="SEM_AGIT_ARG_CONFLICT",
-                    message=f"agit(mode = {mode_value}): cycles is not allowed; use duration/rate",
-                    span=cycles_arg.span or step.span,
-                    node_id=step.id,
-                )
-            )
-    return diagnostics
-
 
 def defined_names_from_step(stmt: IRStep, literal_bindings: dict[str, Any], expr_bindings: dict[str, Any]) -> set[str]:
     del stmt, literal_bindings, expr_bindings
     return set()
-
-
-def _find_arg(step: IRStep, name: str):
-    for arg in step.args:
-        if arg.name == name:
-            return arg
-    return None
 
 
 def _find_arg_by_name(args: list[IRArg], name: str) -> IRArg | None:

@@ -18,7 +18,7 @@ def test_content_reuses_common_classification():
     assert content.CONTENT_CONTRACT.fields['attrs'] is content.CONTENT_ATTRIBUTES
 
 
-@pytest.mark.parametrize('module', ['content', 'stream', 'constraints', 'fractionation', 'separation', 'data', 'groups'])
+@pytest.mark.parametrize('module', ['content', 'stream', 'constraints', 'fractionation', 'separation', 'data', 'groups', 'agitation'])
 def test_domain_import_does_not_assemble_application(module):
     script = f'''
 import sys

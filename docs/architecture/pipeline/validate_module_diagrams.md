@@ -180,3 +180,21 @@ a bounds message; validation preserves its diagnostic code, source span and node
 The context alias serves existing validation imports and can be removed when those
 consumers import the domain value directly. No runtime or pipeline dependency is
 introduced into the domain.
+
+## Agitation Frontend Ownership
+
+```mermaid
+flowchart LR
+    Dispatch["Existing StepHandler"] --> Validation["domains.agitation.validation"]
+    Validation --> Contracts["domains.agitation.contracts<br/>single parameter-conflict rule"]
+    Validation --> Shared["Shared IR, external-input resolution and diagnostics"]
+    Compat["statement_contracts legacy import"] -. "same function" .-> Validation
+```
+
+Contract-only imports remain stage-independent through the package root. Existing
+source diagnostic codes, messages, argument spans and ordering are preserved.
+Runtime and operation-spec assembly are outside this batch.
+
+Quantity adapters extract shared `(number, unit)` values from IR and bound
+arguments. Agitation contracts validate these values without depending on IR
+serialization; the execution boundary invokes the same contract after binding.

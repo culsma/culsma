@@ -129,7 +129,7 @@ protocol MagneticBeadImmunoprecipitationWithWesternBlotReadout returns (ip_blot_
   antibody_binding_mix << [anti_gfp_capture_antibody:5ug, antibody_binding_wash_buffer:200uL];
   ip_bead_tube << [antibody_binding_mix:200uL];
   with env(thermal = 25C, duration = 10min) {
-    agit(sample = ip_bead_tube, mode = "shake", duration = 10min, rate = 20rpm);
+    agit(sample = ip_bead_tube, mode = AgitationMode.ROTATION, duration = 10min, rate = 20rpm);
   }
   let conjugation_split = BindCaptureAntibody(sample = ip_bead_tube);
   liquid_waste << [conjugation_split[1]];
@@ -160,7 +160,7 @@ protocol MagneticBeadImmunoprecipitationWithWesternBlotReadout returns (ip_blot_
   antibody_conjugated_beads << [clarified_cell_lysate:475uL, antibody_binding_wash_buffer:25uL];
   with env(thermal = 4C, duration = 2h) {
     // Source step S3: rotate the immunoprecipitation reaction for 2 h at 4 C.
-    agit(sample = antibody_conjugated_beads, mode = "shake", duration = 2h, rate = 20rpm);
+    agit(sample = antibody_conjugated_beads, mode = AgitationMode.ROTATION, duration = 2h, rate = 20rpm);
   }
   let flowthrough_fraction = tube(label = "IpFlowthroughFraction", capacity = 1.5mL);
   // Source step S4: separate the reaction and retain beads while collecting flowthrough.
@@ -176,7 +176,7 @@ protocol MagneticBeadImmunoprecipitationWithWesternBlotReadout returns (ip_blot_
       captured_ip_beads << [captured_ip_beads:160uL];
     }
     with env(thermal = 4C, duration = 5min) {
-      agit(sample = captured_ip_beads, mode = "shake", duration = 5min, rate = 20rpm);
+      agit(sample = captured_ip_beads, mode = AgitationMode.ROTATION, duration = 5min, rate = 20rpm);
     }
     with env(field = magnetic_rack) {
       with env(thermal = 4C, duration = 2min) {

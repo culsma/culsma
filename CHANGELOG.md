@@ -12,6 +12,11 @@
 
 ### Added
 
+- Added `AgitationMode.ROTATION` for continuous sample rotation, requiring a finite
+  positive action duration and allowing an optional positive rotation rate. Cycles
+  are rejected; existing agitation modes remain unchanged. Older runtimes do not
+  recognize this new enum member.
+
 - Typed filtration drives and local data-reference kinds, with separate Python
   extension bases, scoped registration and source-to-runtime validation. Standard
   and historical text inputs remain compatible. Data-kind extension identity

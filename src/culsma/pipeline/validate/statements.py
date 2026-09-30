@@ -30,6 +30,8 @@ from culsma.pipeline.ir_nodes import (
 from culsma.pipeline.operation_specs import OperationSpec
 from culsma.pipeline.scope import ScopeModel, ScopeQueryService
 
+from culsma.domains.agitation.validation import validate_agit_contract
+
 from .binding import BindingValidator
 from .material_replace import validate_material_replace
 from .constructors import ConstructorValidator
@@ -46,7 +48,6 @@ from .statement_contracts import (
     defined_names_from_step,
     validate_active_constraint_compatibility,
     validate_active_env_constraint_compatibility,
-    validate_agit_contract,
     validate_assign_target_contract,
     validate_let_call_contract,
     validate_mutation_contract,

@@ -44,14 +44,16 @@ modules through package initialization. Directory names do not require a new
 
 | When related work occurs | Small migration opportunity | Keep outside that batch |
 | --- | --- | --- |
-| First pilot: groups / #122 follow-up | One group-index or binding rule, its callers and focused tests | Nested-group semantics and broad protocol refactoring |
+| Agitation module pilot | Contracts and frontend diagnostics first; operation-specific execution next | Shared scheduler, state services and driver redesign |
+| Groups follow-up | Completed bounds extraction retained; remaining work follows actual needs | Nested-group semantics and broad protocol refactoring |
 | Protocol/import/return bug | One binding or output rule and its source regression | Entire resolver and scope engine |
 | Labware, content or quantity bug | Touched selector, constructor or quantity rule | Shared value-model redesign |
 | Constraint/environment bug | One scoped rule and its handler | Scheduler and new persistent seal semantics |
 | Transfer/replace bug | One operation-specific rule and its tests | Shared ledger, conservation and transaction boundaries |
 | Agitation, separation/fractionation or readout/data/control work | One touched operation family slice | Other operations, drivers and scientific-model redesign |
 
-Only the groups pilot is first; subsequent order follows actual bugs/features.
+Groups bounds extraction is complete; agitation is the first module-ownership pilot.
+Subsequent order follows actual bugs/features.
 Moving all tests before any implementation is not required. If extraction needs
 unrelated rewrites, fix the bug in place and record a bounded follow-up in PM #126.
 
@@ -91,6 +93,22 @@ explicitly. No global import-mode, syntax or serialization change accompanies a 
 This pilot extends existing `domains` without adding `language`. It extracts one
 pure rule, so handler registration changes are unnecessary. Remaining group
 classification and protocol binding work stays in its current location.
+
+### Agitation pilot: frontend module ownership
+
+```text
+domains/agitation/
+  __init__.py      # existing contract imports remain valid; no validation import
+  contracts.py     # vocabulary and single parameter-conflict rule
+  validation.py    # complete agit-specific frontend diagnostic adapter
+pipeline/validate/statements.py  # existing dispatch calls the module adapter
+```
+
+Six source regressions now live in `tests/language/agitation/`, with direct
+contract/diagnostic tests. The old statement-contract import re-exports the same
+validator for compatibility; new dispatch imports the owner directly. Runtime
+behavior and operation-spec assembly remain unchanged for the next batch. This
+completes frontend ownership only, not the entire operation's migration.
 
 ## Execution Flow
 

@@ -139,7 +139,19 @@ class ExternalParameterNormalizer:
                 result[name] = self.normalize_tree(value, runtime=runtime)
         call_contract = self.call_contracts.get(operation)
         if call_contract is not None:
-            call_contract.validate_resolved(resolved_values, frozenset(arguments))
+            # Non-enum quantities can participate in dependent rules after binding.
+            # Keep symbolic plan expressions deferred, but reject unresolved
+            # values through their domain rule at the runtime boundary.
+            symbolic_kinds = {'IRIdentifier', 'IRMember', 'IRIndex', 'IRCall', 'IRBinary', 'IRUnary'}
+            bound_values = {
+                name: ((value.get("value"), value.get("unit"))
+                       if isinstance(value, dict) and value.get("kind") == "IRQuantity" else value)
+                for name, value in result.items()
+                if name not in call_contract.fields and (
+                    runtime or not isinstance(value, dict) or value.get('kind') not in symbolic_kinds
+                )
+            }
+            call_contract.validate_resolved({**bound_values, **resolved_values}, frozenset(arguments))
         return result
 
     def normalize_record(self, value, contract, *, runtime):
