@@ -133,3 +133,30 @@ def test_reference_requirements_are_readable_without_test_paths():
     requirements=project_contract(sections)['requirements']
     assert all(entry['owner'] and entry['coverage'] for entry in requirements.values())
     assert all('test' not in entry for entry in requirements.values())
+
+
+@pytest.mark.parametrize("mutation", ["missing", "renamed", "duplicate"])
+def test_content_evidence_mapping_detects_reference_invariant_drift(mutation):
+    sections = source_sections()
+    rows = sections["mapping"].splitlines()
+    row = next(line for line in rows if line.startswith("| Only canonical kind/type pairs"))
+    if mutation == "missing":
+        sections["mapping"] = sections["mapping"].replace(row + "\n", "")
+    elif mutation == "renamed":
+        sections["mapping"] = sections["mapping"].replace("Only canonical kind/type pairs form valid classifications", "Changed classification contract")
+    else:
+        sections["mapping"] = sections["mapping"].replace(row, row + "\n" + row)
+    with pytest.raises(ValueError):
+        project_contract(sections)
+
+
+def test_content_evidence_keys_are_internal_and_independent_of_row_order():
+    sections = source_sections()
+    assert "CNT-ENUM-" not in sections["mapping"]
+    rows = sections["mapping"].splitlines()
+    indices = [i for i, row in enumerate(rows) if row.startswith("| ") and not row.startswith("| Invariant")]
+    values = [rows[i] for i in indices]
+    for i, value in zip(indices, reversed(values)):
+        rows[i] = value
+    sections["mapping"] = "\n".join(rows)
+    assert project_contract(sections)["requirements"] == SNAPSHOT_DATA["contract"]["requirements"]

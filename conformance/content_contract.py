@@ -19,8 +19,17 @@ SECTIONS = {
     'enums': (VOCABULARY, '### 6.2.7 Explicit Content Enum Contract'),
     'legacy': (VOCABULARY, '### 6.2.8 Selected Legacy Normalization Conformance Cases'),
     'diagnostics': (DIAGNOSTICS, '## 8.2.2 Diagnostic Mapping Table (Content + Mutation Model)'),
-    'mapping': (MAPPING, '## 12.8 Material Content Requirement Mapping'),
+    'mapping': (MAPPING, '## 12.8 Material Content Conformance'),
 }
+# Implementation-owned evidence keys; the reference contains no test IDs.
+CONTENT_EVIDENCE_KEYS = {'Only canonical kind/type pairs form valid classifications': 'CNT-ENUM-01',
+ 'Container and content enum families remain distinct under lexical binding': 'CNT-ENUM-02',
+ 'Legacy conversion preserves canonical meaning and historical metadata': 'CNT-ENUM-03',
+ 'Role recommendations do not close metadata or add constructor parameters': 'CNT-ENUM-04',
+ 'Failures appear at the earliest decidable stage without duplicate source reports': 'CNT-ENUM-05',
+ 'Equivalent enum and text inputs preserve material results': 'CNT-ENUM-06',
+ 'Conformance evidence is traceable to its reference revision': 'CNT-ENUM-07'}
+
 PILOT_DIAGNOSTICS = frozenset({
     'SEM_INVALID_CONTENT_KIND', 'SEM_INVALID_CONTENT_TYPE_VALUE',
     'SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED', 'SEM_SURFACE_CAPACITY_FORBIDDEN',
@@ -125,9 +134,14 @@ def project_contract(sections: dict[str, str]) -> dict:
         raise ValueError(f'Missing pilot diagnostics: {sorted(PILOT_DIAGNOSTICS - diagnostics.keys())}')
     requirements = {}
     for row in table_rows(sections['mapping'], 'Invariant'):
-        if row[2] in requirements:
-            raise ValueError(f'Duplicate requirement: {row[2]}')
-        requirements[row[2]] = {'owner': row[1], 'coverage': row[3]}
+        if len(row) != 3 or row[0] not in CONTENT_EVIDENCE_KEYS:
+            raise ValueError(f'Unmapped content invariant: {row}')
+        key = CONTENT_EVIDENCE_KEYS[row[0]]
+        if key in requirements:
+            raise ValueError(f'Duplicate requirement: {key}')
+        requirements[key] = {'owner': row[1], 'coverage': row[2]}
+    if set(requirements) != set(CONTENT_EVIDENCE_KEYS.values()):
+        raise ValueError('Missing content invariant evidence')
     return {'container_kinds': sorted(containers), 'types_by_kind': {k: sorted(v) for k, v in types.items()},
             'fallback_by_kind': fallback, 'recommended_roles': roles, 'roles_open': True,
             'legacy_cases': legacy, 'diagnostics': diagnostics, 'requirements': requirements}
