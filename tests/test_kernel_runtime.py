@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from culsma.frontend.resolver import resolve_program
+from culsma.frontend.resolver import resolve_files, resolve_program
 from culsma.pipeline.analysis import build_compile_analysis
 from culsma.pipeline.compile import compile_ast as _compile_ast
 from culsma.driver.human import HumanDriver
@@ -38,7 +38,11 @@ def validate(ir, **kwargs):
 
 
 def _build_plan_from_source(source: str):
-    compile_result = _compile_ast(resolve_program(parse(source)).prepared_program)
+    return _build_plan_from_program(resolve_program(parse(source)).prepared_program)
+
+
+def _build_plan_from_program(program):
+    compile_result = _compile_ast(program)
     ir = compile_result.ir
     sem = _validate(ir, analysis=compile_result.analysis)
     assert sem.ok, [d.to_dict() for d in sem.diagnostics]
@@ -2557,6 +2561,72 @@ protocol T {
     well = _container_by_label(containers, "Culture_A1")
     assert well["metadata"]["capacity_uL"] == 3400.0
     assert well["volume_uL"] == 1000.0
+
+
+def test_runtime_group_parameter_alias_and_return_keep_original_wells():
+    plan = _build_plan_from_source("""
+protocol Dose(wells, stock) returns (result) {
+  wells[0] << [stock:10uL];
+  let selected = wells;
+  selected[1] << [stock:20uL];
+  let result = wells;
+  return result;
+}
+let assay = plate(label="Assay", format="96well", capacity=200uL);
+let stock = tube(label="Stock", load=[
+  content(kind=ContentKind.FORMULATION, type=ContentType.BUFFER, code="BUFFER"):100uL
+]);
+let treated = Dose(wells=assay[A1:A2], stock=stock);
+treated[1] << [stock:5uL];
+""")
+    assert not plan.diagnostics
+    result = run(plan=plan, driver=StubDriver())
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    containers = result.state.artifacts["material_state"]["containers"]
+    assert len(containers) == 3
+    assert _container_by_label(containers, "Assay_A1")["volume_uL"] == 10
+    assert _container_by_label(containers, "Assay_A2")["volume_uL"] == 25
+    assert _container_by_label(containers, "Stock")["volume_uL"] == 65
+    mutations = [step for step in plan.plans[0].steps if step.op == "Mutation"]
+    assert mutations[1].args["target"] == mutations[2].args["target"]
+
+
+def test_runtime_imported_group_wrapper_preserves_returned_well_identity(tmp_path):
+    library = tmp_path / "Library.culs"
+    library.write_text("""
+protocol Dose(wells, stock) returns (result) {
+  wells[0] << [stock:10uL];
+  wells[1] << [stock:20uL];
+  let result = wells;
+  return result;
+}
+""")
+    main = tmp_path / "main.culs"
+    main.write_text("""
+import Library;
+protocol Wrapper(wells, stock) returns (result) {
+  let result = Library.Dose(wells=wells, stock=stock);
+  return result;
+}
+let assay = plate(label="Assay", format="96well", capacity=200uL);
+let stock = tube(label="Stock", load=[
+  content(kind=ContentKind.FORMULATION, type=ContentType.BUFFER, code="BUFFER"):100uL
+]);
+let treated = Wrapper(wells=assay[A1:A2], stock=stock);
+treated[1] << [stock:5uL];
+""")
+    bundle = resolve_files([main], library_roots=[tmp_path])
+    plan = _build_plan_from_program(bundle.prepared_program)
+    assert not plan.diagnostics
+    result = run(plan=plan, driver=StubDriver())
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    containers = result.state.artifacts["material_state"]["containers"]
+    assert len(containers) == 3
+    assert _container_by_label(containers, "Assay_A1")["volume_uL"] == 10
+    assert _container_by_label(containers, "Assay_A2")["volume_uL"] == 25
+    assert _container_by_label(containers, "Stock")["volume_uL"] == 65
+    mutations = [step for step in plan.plans[0].steps if step.op == "Mutation"]
+    assert mutations[1].args["target"] == mutations[2].args["target"]
 
 
 def test_runtime_static_plate_group_index_aliases_original_selected_well():

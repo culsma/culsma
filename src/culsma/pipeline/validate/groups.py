@@ -18,8 +18,11 @@ class GroupIndexValidator:
         *,
         literal_bindings: dict[str, Any],
         expr_bindings: dict[str, Any],
+        group_bindings: dict[str, _GroupBinding] | None = None,
     ) -> _GroupBinding | None:
         resolved = ExprResolver.resolve_bound_expr(expr, expr_bindings)
+        if isinstance(resolved, IRIdentifier):
+            return (group_bindings or {}).get(resolved.name)
         if isinstance(resolved, (IRGroup, IRPlateSelector)):
             return _GroupBinding(kind="container_group", size=_static_group_cardinality(resolved))
         call = ExprResolver.resolve_call_expr(expr, expr_bindings)

@@ -386,6 +386,7 @@ class LetHandler(BaseStatementHandler):
             stmt.value,
             literal_bindings=ctx.literal_bindings,
             expr_bindings=ctx.expr_bindings,
+            group_bindings=ctx.group_bindings,
         )
         if binding is not None:
             ctx.group_bindings[stmt.name] = binding
@@ -467,6 +468,14 @@ class AssignHandler(BaseStatementHandler):
         stmt = cast(IRAssign, stmt)
         assign_root = BindingValidator.assign_target_root_name(stmt.target)
         if assign_root is not None and isinstance(stmt.target, IRIdentifier):
+            binding = GroupIndexValidator.classify_binding(
+                stmt.value, literal_bindings=ctx.literal_bindings,
+                expr_bindings=ctx.expr_bindings, group_bindings=ctx.group_bindings,
+            )
+            if binding is None:
+                ctx.group_bindings.pop(assign_root, None)
+            else:
+                ctx.group_bindings[assign_root] = binding
             result = ContentArgumentResolver.resolve_argument(
                 stmt.value, None, ContentArgumentScope(ctx.literal_bindings, ctx.expr_bindings, ctx.defined_names),
             )

@@ -12,6 +12,7 @@ from culsma.pipeline.operation_specs import BUILTIN_OPERATION_SPECS, OperationSp
 from culsma.pipeline.scope import ScopeQueryService
 
 from .context import ValidationResult, _GroupBinding
+from .groups import GroupIndexValidator
 from .statements import StatementValidationContext, validate_statement_list_with_context
 
 
@@ -51,6 +52,18 @@ def validate(
             if param.default is not None
         }
         group_bindings: dict[str, _GroupBinding] = {}
+        for param in protocol.params:
+            # Definitions have no concrete actuals. Validate the index itself
+            # here; expanded calls validate the actual group kind and size.
+            binding = (
+                _GroupBinding(kind="unbound_parameter") if param.default is None
+                else GroupIndexValidator.classify_binding(
+                    param.default, literal_bindings=literal_bindings,
+                    expr_bindings=expr_bindings, group_bindings=group_bindings,
+                )
+            )
+            if binding is not None:
+                group_bindings[param.name] = binding
         defined_names: set[str] = set(initial_defined_names or set()) | {param.name for param in protocol.params}
         content_scope = ContentArgumentScope(literal_bindings, expr_bindings, defined_names)
         for param in protocol.params:

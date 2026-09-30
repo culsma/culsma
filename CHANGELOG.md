@@ -35,6 +35,9 @@
 
 ### Fixed
 
+- Fixed false non-group errors when indexing group parameters in reusable
+  protocols and imported wrappers.
+
 - Enum registration rejects inheritance across unrelated parameter families,
   including mixed chromatography axes and orders. Open enum types cannot use
   closed class-name payloads to bypass their scoped identity/version checks.
