@@ -6,15 +6,11 @@ from dataclasses import dataclass, field
 from typing import Any, Mapping
 
 from culsma.common.diagnostics import Diagnostic
+# Transitional alias for existing validation consumers; remove when they import the domain value.
+from culsma.domains.groups import GroupBinding as _GroupBinding
 from culsma.pipeline.analysis import CompileAnalysis
 from culsma.pipeline.ir_nodes import IRProgram
 from culsma.pipeline.operation_specs import OperationSpec
-
-
-@dataclass(frozen=True)
-class _GroupBinding:
-    kind: str
-    size: int | None = None
 
 
 @dataclass(frozen=True)

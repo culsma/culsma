@@ -164,3 +164,19 @@ mappings and their diagnostics; it is not a checker for every language table.
 python -m conformance.content_contract --check
 python -m conformance.content_contract --reference-root ../culsma-reference --check
 ```
+
+## Group Bounds Ownership
+
+```mermaid
+flowchart LR
+    Expr["Existing expression validation"] --> Adapter["pipeline.validate.groups<br/>resolve index, own diagnostics"]
+    Adapter --> Rule["domains.groups.index_bounds_error<br/>resolved static bounds"]
+    Rule --> Binding["domains.groups.GroupBinding"]
+    Context["validate.context._GroupBinding<br/>temporary same-class alias"] --> Binding
+```
+
+Base checks and static integer resolution remain in validation. The domain returns
+a bounds message; validation preserves its diagnostic code, source span and node ID.
+The context alias serves existing validation imports and can be removed when those
+consumers import the domain value directly. No runtime or pipeline dependency is
+introduced into the domain.

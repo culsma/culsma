@@ -78,6 +78,20 @@ full suite. Check import cycles and public entry points. Update the owning diagr
 and PM slice status: **legacy → mixed → migrated**; compatibility removal is tracked
 explicitly. No global import-mode, syntax or serialization change accompanies a move.
 
+### Groups pilot: mixed state
+
+| Slice | Current ownership |
+| --- | --- |
+| Binding value and resolved static upper bounds | `domains/groups.py`: `GroupBinding`, `index_bounds_error`; pure values, no stage imports |
+| Expression resolution, base/integer checks, source diagnostics | Existing `pipeline/validate/groups.py`, delegating bounds checks to the domain |
+| Compatibility | `validate/context.py` re-exports `_GroupBinding` as the same class for existing validation consumers; remove alias once those imports migrate |
+| Tests | Seven source regressions moved unchanged to `tests/language/groups/test_groups_frontend.py`; direct boundary cases in `test_groups_rules.py` |
+| Coexistence | Existing protocol/group runtime regressions exercise the new bounds rule with unchanged protocol, plan and material execution |
+
+This pilot extends existing `domains` without adding `language`. It extracts one
+pure rule, so handler registration changes are unnecessary. Remaining group
+classification and protocol binding work stays in its current location.
+
 ## Execution Flow
 
 ```mermaid

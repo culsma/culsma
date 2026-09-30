@@ -5,9 +5,9 @@ from __future__ import annotations
 from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.domains.groups import GroupBinding, index_bounds_error
 from culsma.pipeline.ir_nodes import IRArg, IRGroup, IRIdentifier, IRIndex, IRPlateSelector
 
-from .context import _GroupBinding
 from .resolution import ExprResolver
 
 
@@ -18,27 +18,27 @@ class GroupIndexValidator:
         *,
         literal_bindings: dict[str, Any],
         expr_bindings: dict[str, Any],
-        group_bindings: dict[str, _GroupBinding] | None = None,
-    ) -> _GroupBinding | None:
+        group_bindings: dict[str, GroupBinding] | None = None,
+    ) -> GroupBinding | None:
         resolved = ExprResolver.resolve_bound_expr(expr, expr_bindings)
         if isinstance(resolved, IRIdentifier):
             return (group_bindings or {}).get(resolved.name)
         if isinstance(resolved, (IRGroup, IRPlateSelector)):
-            return _GroupBinding(kind="container_group", size=_static_group_cardinality(resolved))
+            return GroupBinding(kind="container_group", size=_static_group_cardinality(resolved))
         call = ExprResolver.resolve_call_expr(expr, expr_bindings)
         if call is None:
             return None
         if call.name == "sep":
-            return _GroupBinding(kind="sep_container_group", size=2)
+            return GroupBinding(kind="sep_container_group", size=2)
         if call.name in {"img", "ecp", "phy"}:
             sample_arg = _find_arg_by_name(call.args, "sample")
             if sample_arg is None:
                 return None
             sample_expr = ExprResolver.resolve_bound_expr(sample_arg.value, expr_bindings)
             if isinstance(sample_expr, (IRGroup, IRPlateSelector)):
-                return _GroupBinding(kind="data_group", size=_static_group_cardinality(sample_expr))
+                return GroupBinding(kind="data_group", size=_static_group_cardinality(sample_expr))
         if call.name == "data_group_ref":
-            return _GroupBinding(kind="data_group", size=None)
+            return GroupBinding(kind="data_group", size=None)
         if call.name != "frac":
             return None
         program_arg = _find_arg_by_name(call.args, "program")
@@ -54,7 +54,7 @@ class GroupIndexValidator:
                 )
                 if reason is not None:
                     bins = None
-        return _GroupBinding(kind="fraction_group", size=bins)
+        return GroupBinding(kind="fraction_group", size=bins)
 
     @staticmethod
     def validate_index(
@@ -62,7 +62,7 @@ class GroupIndexValidator:
         *,
         literal_bindings: dict[str, Any],
         expr_bindings: dict[str, Any],
-        group_bindings: dict[str, _GroupBinding],
+        group_bindings: dict[str, GroupBinding],
         node_id: str | None,
     ) -> list[Diagnostic]:
         diagnostics: list[Diagnostic] = []
@@ -117,38 +117,12 @@ class GroupIndexValidator:
         if index_value is None:
             return diagnostics
 
-        if binding.kind == "sep_container_group" and index_value not in {0, 1}:
+        bounds_error = index_bounds_error(binding, index_value)
+        if bounds_error is not None:
             diagnostics.append(
                 Diagnostic(
                     code="SEM_INDEX_OUT_OF_RANGE",
-                    message="sep_container_group only supports indices 0 and 1",
-                    span=expr.index.span or expr.span,
-                    node_id=node_id,
-                )
-            )
-        if binding.kind == "fraction_group" and binding.size is not None and index_value >= binding.size:
-            diagnostics.append(
-                Diagnostic(
-                    code="SEM_INDEX_OUT_OF_RANGE",
-                    message=f"fraction_group index {index_value} is out of range for bins={binding.size}",
-                    span=expr.index.span or expr.span,
-                    node_id=node_id,
-                )
-            )
-        if binding.kind == "data_group" and binding.size is not None and index_value >= binding.size:
-            diagnostics.append(
-                Diagnostic(
-                    code="SEM_INDEX_OUT_OF_RANGE",
-                    message=f"data_group_ref index {index_value} is out of range for size={binding.size}",
-                    span=expr.index.span or expr.span,
-                    node_id=node_id,
-                )
-            )
-        if binding.kind == "container_group" and binding.size is not None and index_value >= binding.size:
-            diagnostics.append(
-                Diagnostic(
-                    code="SEM_INDEX_OUT_OF_RANGE",
-                    message=f"container_group index {index_value} is out of range for size={binding.size}",
+                    message=bounds_error,
                     span=expr.index.span or expr.span,
                     node_id=node_id,
                 )
