@@ -96,7 +96,7 @@ def test_missing_dependency_fails_explicitly_and_binding_is_single_assignment():
         binding.service = RecordingNamespace()
 
 
-@pytest.mark.parametrize('module', ['fractionation.py', 'stream.py', 'constraints.py', 'content.py', 'separation.py', 'data.py'])
+@pytest.mark.parametrize('module', ['fractionation.py', 'stream.py', 'constraints/contracts.py', 'content.py', 'separation.py', 'data.py'])
 def test_domains_depend_only_on_port_not_implementation_or_composition(module):
     root = Path(__file__).resolve().parents[1] / 'src/culsma/domains'
     tree = ast.parse((root / module).read_text())

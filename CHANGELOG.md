@@ -10,6 +10,14 @@
 - Compact CLI results and a source-linked benchmark with seven modules, one
   composite, and four independently checked manuscript examples.
 
+### Constraint integration
+- Allow gentle, aseptic, cross-contamination control, cold-chain, dark-protected,
+  and controlled-atmosphere requirements on mechanical agitation.
+- Centralize constraint applicability and thermal checks. Validate explicit bound
+  cold-chain temperatures before execution, including Kelvin values, and enforce
+  customized-requirement exclusivity across nested scopes. Previously unchecked
+  conflicting programs or replay plans now fail before the affected action.
+
 ### Added
 
 - Added `AgitationMode.ROTATION` for continuous sample rotation, requiring a finite

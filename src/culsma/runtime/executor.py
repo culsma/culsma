@@ -8,6 +8,7 @@ from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
 from culsma.driver.base import Driver
+from culsma.domains.constraints.execution import RuntimeConstraintValidator
 from culsma.pipeline.plan_nodes import PlanProgram, PlanStep, ProtocolPlan
 from culsma.scientific_model import (
     ScientificModelResolver,
@@ -145,6 +146,7 @@ class RuntimeExecutor:
             material_accounting_recorder=material_accounting_recorder,
             material_accounting=material_accounting,
             finalizer=finalizer,
+            constraint_checker=RuntimeConstraintValidator(),
         )
         dispatcher = RuntimeStepDispatcher()
         max_rounds = self.max_scheduler_rounds if self.max_scheduler_rounds is not None else max(1, len(steps) * 2 + 4)

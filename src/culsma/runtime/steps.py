@@ -65,6 +65,14 @@ class BaseRuntimeStepHandler:
                 span=step.span, node_id=step.step_id))
             return session.fail_fast
 
+        if session.constraint_checker is not None:
+            constraint_diagnostics = session.constraint_checker.validate(
+                step, lambda value: session.value_resolver.eval_expr(value, session.state))
+            if constraint_diagnostics:
+                session.extend_diagnostics(constraint_diagnostics[1:])
+                session.record_failed(step, reason="constraint_invalid", diagnostic=constraint_diagnostics[0])
+                return session.fail_fast
+
         ref_group = session.ref_reuse_decider.group_for_step(step.step_id, session)
         if ref_group is not None:
             ref_decision = session.ref_reuse_decider.decide(ref_group, session)

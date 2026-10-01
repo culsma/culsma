@@ -31,6 +31,7 @@ from culsma.pipeline.operation_specs import OperationSpec
 from culsma.pipeline.scope import ScopeModel, ScopeQueryService
 
 from culsma.domains.agitation.validation import validate_agit_contract
+from culsma.domains.constraints.validation import ConstraintSourceValidator
 
 from .binding import BindingValidator
 from .material_replace import validate_material_replace
@@ -46,8 +47,6 @@ from .statement_contracts import (
     BUILTIN_METHOD_STEPS,
     dedupe_requirement_names,
     defined_names_from_step,
-    validate_active_constraint_compatibility,
-    validate_active_env_constraint_compatibility,
     validate_assign_target_contract,
     validate_let_call_contract,
     validate_mutation_contract,
@@ -319,7 +318,7 @@ class LetHandler(BaseStatementHandler):
         stmt = cast(IRLet, stmt)
         self.append_diagnostics(
             ctx,
-            validate_active_constraint_compatibility(stmt, active_requirements=ctx.active_requirements),
+            ConstraintSourceValidator.validate_active_constraint_compatibility(stmt, active_requirements=ctx.active_requirements),
         )
         if isinstance(stmt.value, IRCall):
             self.append_diagnostics(
@@ -530,14 +529,14 @@ class WithEnvHandler(BaseStatementHandler):
         stmt = cast(IRWithEnv, stmt)
         self.append_diagnostics(
             ctx,
-            validate_active_constraint_compatibility(
+            ConstraintSourceValidator.validate_active_constraint_compatibility(
                 stmt,
                 active_requirements=ctx.active_requirements,
             ),
         )
         self.append_diagnostics(
             ctx,
-            validate_active_env_constraint_compatibility(
+            ConstraintSourceValidator.validate_active_env_constraint_compatibility(
                 stmt,
                 expr_bindings=ctx.expr_bindings,
                 active_requirements=ctx.active_requirements,
@@ -633,6 +632,7 @@ class WithConstraintHandler(BaseStatementHandler):
                 literal_bindings=ctx.literal_bindings,
                 expr_bindings=ctx.expr_bindings,
                 defined_names=ctx.defined_names,
+                active_requirements=ctx.active_requirements,
             ),
         )
 
@@ -742,7 +742,7 @@ class MutationHandler(BaseStatementHandler):
         stmt = cast(IRMutation, stmt)
         self.append_diagnostics(
             ctx,
-            validate_active_constraint_compatibility(stmt, active_requirements=ctx.active_requirements),
+            ConstraintSourceValidator.validate_active_constraint_compatibility(stmt, active_requirements=ctx.active_requirements),
         )
 
     def validate_bindings(
@@ -829,7 +829,7 @@ class StepHandler(BaseStatementHandler):
             ctx.diagnostics.extend(validate_material_replace(stmt, ctx.expr_bindings, ctx.defined_names))
         self.append_diagnostics(
             ctx,
-            validate_active_constraint_compatibility(stmt, active_requirements=ctx.active_requirements),
+            ConstraintSourceValidator.validate_active_constraint_compatibility(stmt, active_requirements=ctx.active_requirements),
         )
         if state.builtin_method:
             return

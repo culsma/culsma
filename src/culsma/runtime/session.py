@@ -40,6 +40,7 @@ class RuntimeSession:
     material_accounting_recorder: Any = None
     material_accounting: Any = None
     finalizer: Any = None
+    constraint_checker: Any = None
 
     def emit_diagnostic(self, diagnostic: Diagnostic) -> None:
         self.diagnostics.append(diagnostic)

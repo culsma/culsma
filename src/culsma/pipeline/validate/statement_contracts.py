@@ -40,7 +40,13 @@ from .separation import validate_component_fates_contract
 
 BUILTIN_METHOD_STEPS = {"append", "replace"}
 CONSTRAINT_CUSTOMIZED = ConstraintRequirement.CUSTOMIZED
-COLD_CHAIN_MAX_C = 8.0
+from culsma.domains.constraints.rules import COLD_CHAIN_MAX_C, ConstraintRules
+from culsma.domains.constraints.validation import ConstraintSourceValidator
+
+# Preserve the existing stage entry points as aliases, with no duplicated rules.
+classify_constraint_action_family = ConstraintSourceValidator.classify_constraint_action_family
+validate_active_constraint_compatibility = ConstraintSourceValidator.validate_active_constraint_compatibility
+validate_active_env_constraint_compatibility = ConstraintSourceValidator.validate_active_env_constraint_compatibility
 # Legacy consumer views derived from domain-owned contracts.
 READOUT_QUANTITY_SETS = {operation: frozenset(contract.wire_values) for operation, contract in READOUT_QUANTITIES.items()}
 
@@ -94,6 +100,7 @@ def validate_with_constraint_contract(
     literal_bindings: dict[str, Any],
     expr_bindings: dict[str, Any],
     defined_names: set[str] | None = None,
+    active_requirements: tuple[str, ...] = (),
 ) -> list[Diagnostic]:
     diagnostics: list[Diagnostic] = []
     if not stmt.statements:
@@ -156,30 +163,10 @@ def validate_with_constraint_contract(
                     node_id=stmt.id,
                 )
             )
-    for name in requirement_names:
-        spec = REQUIREMENT_REGISTRY.get(name)
-        if spec is None:
-            continue
-        for conflict in spec.conflicts:
-            if conflict in requirement_names:
-                diagnostics.append(
-                    Diagnostic(
-                        code="SEM_CONSTRAINT_CONFLICT",
-                        message=f"Requirement '{name}' conflicts with '{conflict}'",
-                        span=stmt.span,
-                        node_id=stmt.id,
-                    )
-                )
-
-    if CONSTRAINT_CUSTOMIZED in requirement_names and len(requirement_names) > 1:
-        diagnostics.append(
-            Diagnostic(
-                code="SEM_CONSTRAINT_CUSTOMIZED_EXCLUSIVE",
-                message="constraint(customized, ...): customized must not be mixed with standard requirements",
-                span=stmt.span,
-                node_id=stmt.id,
-            )
-        )
+    for violation in ConstraintRules.combination_violations((*active_requirements, *requirement_names)):
+        diagnostics.append(Diagnostic(
+            code="SEM_CONSTRAINT_CUSTOMIZED_EXCLUSIVE" if violation.kind == "customized" else "SEM_CONSTRAINT_CONFLICT",
+            message=violation.message, span=stmt.span, node_id=stmt.id))
 
     if CONSTRAINT_CUSTOMIZED in requirement_names:
         schema_arg = _find_arg_by_name(stmt.options, "schema_ref")
@@ -236,76 +223,6 @@ def dedupe_requirement_names(names: tuple[str, ...] | list[str]) -> list[str]:
             out.append(name)
             seen.add(name)
     return out
-
-
-def classify_constraint_action_family(stmt: IRStatement) -> str | None:
-    if isinstance(stmt, IRMutation):
-        return "mutation"
-    if isinstance(stmt, IRWithEnv) and stmt.explicit_hold and not stmt.statements:
-        return "env_hold"
-    if isinstance(stmt, IRStep):
-        if stmt.name in {"sep", "frac", "img", "ecp", "phy", "agit"}:
-            return stmt.name
-        return None
-    if isinstance(stmt, IRLet) and isinstance(stmt.value, IRCall):
-        if stmt.value.name in {"sep", "frac", "img", "ecp", "phy", "stream"}:
-            return stmt.value.name
-    return None
-
-
-def validate_active_constraint_compatibility(
-    stmt: IRStatement,
-    *,
-    active_requirements: tuple[str, ...],
-) -> list[Diagnostic]:
-    diagnostics: list[Diagnostic] = []
-    family = classify_constraint_action_family(stmt)
-    if family is None:
-        return diagnostics
-    for name in dedupe_requirement_names(active_requirements):
-        spec = REQUIREMENT_REGISTRY.get(name)
-        if spec is None or family in spec.allowed_on:
-            continue
-        diagnostics.append(
-            Diagnostic(
-                code="SEM_CONSTRAINT_ACTION_FAMILY_MISMATCH",
-                message=f"Requirement '{name}' is not allowed on action family '{family}'",
-                span=stmt.span,
-                node_id=getattr(stmt, "id", None),
-            )
-        )
-    return diagnostics
-
-
-def validate_active_env_constraint_compatibility(
-    stmt: IRWithEnv,
-    *,
-    expr_bindings: dict[str, Any],
-    active_requirements: tuple[str, ...],
-) -> list[Diagnostic]:
-    diagnostics: list[Diagnostic] = []
-    if "cold_chain" not in active_requirements:
-        return diagnostics
-    thermal_arg = _find_arg_by_name(stmt.env_args, "thermal")
-    if thermal_arg is None:
-        return diagnostics
-    thermal_value = ExprResolver.resolve_bound_expr(thermal_arg.value, expr_bindings)
-    if not isinstance(thermal_value, IRQuantity):
-        return diagnostics
-    if thermal_value.unit != "C":
-        return diagnostics
-    if float(thermal_value.value) > COLD_CHAIN_MAX_C:
-        diagnostics.append(
-            Diagnostic(
-                code="SEM_CONSTRAINT_ENV_CONFLICT",
-                message=(
-                    f"Requirement 'cold_chain' conflicts with env thermal {thermal_value.value}{thermal_value.unit}"
-                ),
-                span=thermal_arg.span or stmt.span,
-                node_id=stmt.id,
-            )
-        )
-    return diagnostics
 
 
 def validate_mutation_contract(

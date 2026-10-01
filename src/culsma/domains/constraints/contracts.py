@@ -14,7 +14,7 @@ class RequirementSpec:
     needs_context: frozenset[str] = frozenset()
 
     def __post_init__(self):
-        operations = {'mutation', 'sep', 'frac', 'img', 'ecp', 'phy', 'stream', 'env_hold'}
+        operations = {'mutation', 'sep', 'frac', 'img', 'ecp', 'phy', 'stream', 'env_hold', 'agit'}
         if not isinstance(self.category, str) or not self.category or not self.allowed_on or not set(self.allowed_on) <= operations:
             raise ValueError('Requirement must declare supported operation families')
         if not self.scopes or not set(self.scopes) <= {'stmt', 'block'}:
@@ -65,7 +65,7 @@ class ConstraintRequirement(ConstraintRequirementBase):
     ))
     ASEPTIC = ('aseptic', RequirementSpec(
         category="contamination_control",
-        allowed_on=frozenset({"mutation", "sep", "img", "ecp", "phy", "stream"}),
+        allowed_on=frozenset({"agit", "mutation", "sep", "img", "ecp", "phy", "stream"}),
         scopes=frozenset({"stmt", "block"}),
     ))
     LOW_CARRYOVER = ('low_carryover', RequirementSpec(
@@ -75,12 +75,12 @@ class ConstraintRequirement(ConstraintRequirementBase):
     ))
     CROSS_CONTAM_CONTROL = ('cross_contam_control', RequirementSpec(
         category="contamination_control",
-        allowed_on=frozenset({"mutation", "sep", "img", "ecp", "phy", "stream"}),
+        allowed_on=frozenset({"agit", "mutation", "sep", "img", "ecp", "phy", "stream"}),
         scopes=frozenset({"stmt", "block"}),
     ))
     GENTLE = ('gentle', RequirementSpec(
         category="material_integrity",
-        allowed_on=frozenset({"mutation", "sep", "frac", "stream", "env_hold"}),
+        allowed_on=frozenset({"agit", "mutation", "sep", "frac", "stream", "env_hold"}),
         scopes=frozenset({"stmt", "block"}),
     ))
     AVOID_RESUSPENSION = ('avoid_resuspension', RequirementSpec(
@@ -100,12 +100,12 @@ class ConstraintRequirement(ConstraintRequirementBase):
     ))
     COLD_CHAIN = ('cold_chain', RequirementSpec(
         category="environmental_protection",
-        allowed_on=frozenset({"mutation", "sep", "frac", "img", "ecp", "phy", "stream", "env_hold"}),
+        allowed_on=frozenset({"agit", "mutation", "sep", "frac", "img", "ecp", "phy", "stream", "env_hold"}),
         scopes=frozenset({"stmt", "block"}),
     ))
     DARK_PROTECTED = ('dark_protected', RequirementSpec(
         category="environmental_protection",
-        allowed_on=frozenset({"mutation", "img", "ecp", "phy", "stream", "env_hold"}),
+        allowed_on=frozenset({"agit", "mutation", "img", "ecp", "phy", "stream", "env_hold"}),
         scopes=frozenset({"stmt", "block"}),
     ))
     SEALED = ('sealed', RequirementSpec(
@@ -115,7 +115,7 @@ class ConstraintRequirement(ConstraintRequirementBase):
     ))
     CONTROLLED_ATMOSPHERE = ('controlled_atmosphere', RequirementSpec(
         category="environmental_protection",
-        allowed_on=frozenset({"mutation", "img", "ecp", "phy", "stream", "env_hold"}),
+        allowed_on=frozenset({"agit", "mutation", "img", "ecp", "phy", "stream", "env_hold"}),
         scopes=frozenset({"stmt", "block"}),
     ))
     HIGH_PRECISION = ('high_precision', RequirementSpec(
@@ -196,9 +196,11 @@ class RequirementSpecRegistry(Mapping):
         if isinstance(name, ConstraintRequirementBase):
             CONSTRAINT_REQUIREMENTS.validate(name)
             return name.spec
-        for member in ConstraintRequirement:
-            if type(name) is str and member.value == name:
-                return member.spec
+        if type(name) is str:
+            try:
+                return CONSTRAINT_REQUIREMENTS.decode(name).spec
+            except ValueError:
+                raise KeyError(name) from None
         raise KeyError(name)
 
     def __iter__(self):
