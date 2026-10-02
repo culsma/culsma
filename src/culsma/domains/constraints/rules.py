@@ -1,15 +1,8 @@
 """Pure constraint rules shared by source and execution adapters."""
-from dataclasses import dataclass
-from culsma.common.quantity_arithmetic import require_finite_number
-from .contracts import REQUIREMENT_REGISTRY
+from collections.abc import Iterable
 
-COLD_CHAIN_MAX_C = 8.0
-
-
-@dataclass(frozen=True)
-class ConstraintViolation:
-    kind: str
-    message: str
+from .checks import COLD_CHAIN_MAX_C, ColdChainRule, ConstraintContext, ConstraintViolation
+from .contracts import ConstraintRequirementBase, REQUIREMENT_REGISTRY
 
 
 class ConstraintRules:
@@ -43,18 +36,31 @@ class ConstraintRules:
         return violations
 
     @staticmethod
+    def context_violations(
+        requirements: Iterable[ConstraintRequirementBase | str],
+        contexts: Iterable[ConstraintContext],
+    ) -> list[ConstraintViolation]:
+        """Select checks from each rule object, then validate supplied facts.
+
+        Contexts may be lazy: do not resolve facts when no selected rule needs them.
+        Unknown requirements are diagnosed by applicability_violations.
+        """
+        checks = []
+        for requirement in dict.fromkeys(requirements):
+            spec = REQUIREMENT_REGISTRY.get(requirement)
+            if spec is not None:
+                checks.extend(spec.context_checks)
+        if not checks:
+            return []
+        violations = []
+        for context in contexts:
+            for check in checks:
+                violation = check(context)
+                if violation is not None:
+                    violations.append(violation)
+        return violations
+
+    @staticmethod
     def cold_chain_violation(temperature):
-        """Check an explicitly resolved (value, unit); absence is handled by adapters."""
-        if not isinstance(temperature, tuple) or len(temperature) != 2:
-            return ConstraintViolation("unresolved", "Cold-chain thermal value must resolve to a temperature quantity")
-        value, unit = temperature
-        try:
-            number = require_finite_number(value)
-        except ValueError:
-            return ConstraintViolation("unresolved", "Cold-chain thermal value must be finite")
-        if unit not in {'C', 'K'}:
-            return ConstraintViolation("unresolved", "Cold-chain thermal value must use temperature units")
-        celsius = number - 273.15 if unit == 'K' else number
-        if celsius > COLD_CHAIN_MAX_C:
-            return ConstraintViolation("environment", f"Requirement 'cold_chain' conflicts with env thermal {value}{unit}")
-        return None
+        """Compatibility entry for callers checking a single temperature."""
+        return ColdChainRule.validate(ConstraintContext(thermal=temperature))

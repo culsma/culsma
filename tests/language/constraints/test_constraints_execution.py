@@ -70,7 +70,9 @@ Mix(sample=sample);
         ['gentle'], ['gentle', 'dark_protected'], ['gentle'], []]
 
 
-@pytest.mark.parametrize('temperature,ok', [('4C', True), ('277.15K', True), ('37C', False), ('310.15K', False)])
+@pytest.mark.parametrize('temperature,ok', [('4C', True), ('277.15K', True),
+    ('8C', True), ('281.15K', True), ('8.01C', False), ('281.16K', False),
+    ('37C', False), ('310.15K', False)])
 def test_dynamic_thermal_conflict_before_driver(temperature, ok):
     plan = plan_source(f'''
 protocol T(flag=true) {{
@@ -194,3 +196,39 @@ protocol T(flag=false) {
     result = run(plan=plan, driver=driver)
     assert result.ok, result.diagnostics
     assert len(driver.actions) == 1
+
+
+@pytest.mark.parametrize('outer,inner', [('37C', '4C'), ('4C', '37C')])
+def test_each_nested_dynamic_temperature_is_checked_before_action(outer, inner):
+    plan = plan_source(f'''
+protocol T(flag=true) {{
+ let sample=tube(label="S");
+ let outer=4C;
+ let inner=4C;
+ if flag {{ outer={outer}; inner={inner}; }}
+ with constraint(ConstraintRequirement.COLD_CHAIN) {{
+  with env(thermal=outer) {{
+   with env(thermal=inner) {{ agit(sample=sample,mode=shake,duration=1s); }}
+  }}
+ }}
+}}
+''')
+    driver = RecordingDriver()
+    result = run(plan=plan, driver=driver)
+    assert not result.ok
+    assert 'RT_CONSTRAINT_ENV_CONFLICT' in [d.code for d in result.diagnostics]
+    assert not driver.actions
+
+
+def test_cold_chain_check_does_not_leak_to_unconstrained_sibling():
+    plan = plan_source('''
+let sample=tube(label="S");
+with constraint(ConstraintRequirement.COLD_CHAIN) {
+ with env(thermal=4C) { agit(sample=sample,mode=shake,duration=1s); }
+}
+with env(thermal=37C) { agit(sample=sample,mode=shake,duration=1s); }
+''')
+    driver = RecordingDriver()
+    result = run(plan=plan, driver=driver)
+    assert result.ok, result.diagnostics
+    assert len(driver.actions) == 2

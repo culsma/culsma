@@ -35,7 +35,7 @@ Module ownership is defined in the [global architecture](../../global_architectu
 | `domains/separation.py` | Program-owned outputs, disruption method, keep-source selection and filtration drives |
 | `domains/fractionation.py` | Density-gradient types; chromatography axis/order types and pairing |
 | `domains/data.py`, `domains/stream.py` | Data-reference kinds and observation units, respectively |
-| `domains/constraints.py` | Requirement types, applicability, scopes and conflicts |
+| `domains/constraints/` | Requirement types, applicability, scopes and conflicts |
 | `domains/readout.py` | Per-operation quantity membership and customized/schema_ref rule |
 | `domains/agitation.py`, `labware.py`, `scheduling.py` | Agitation modes, plate layout and scheduling modes |
 | `enum_services.py` | Assemble module declarations and bind the shared source-name service |

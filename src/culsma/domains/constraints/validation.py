@@ -4,6 +4,7 @@ from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.ir_nodes import IRStatement, IRMutation, IRWithEnv, IRStep, IRLet, IRCall, IRQuantity
 from culsma.pipeline.validate.resolution import ExprResolver
 from .rules import ConstraintRules
+from .checks import ConstraintContext
 
 
 class ConstraintSourceValidator:
@@ -47,16 +48,17 @@ class ConstraintSourceValidator:
         active_requirements: tuple[str, ...],
     ) -> list[Diagnostic]:
         diagnostics: list[Diagnostic] = []
-        if "cold_chain" not in active_requirements:
-            return diagnostics
         thermal_arg = ConstraintSourceValidator._find_arg_by_name(stmt.env_args, "thermal")
         if thermal_arg is None:
             return diagnostics
         thermal_value = ExprResolver.resolve_bound_expr(thermal_arg.value, expr_bindings)
         if not isinstance(thermal_value, IRQuantity):
             return diagnostics
-        violation = ConstraintRules.cold_chain_violation((thermal_value.value, thermal_value.unit))
-        if violation is not None and violation.kind == "environment":
-            diagnostics.append(Diagnostic(code="SEM_CONSTRAINT_ENV_CONFLICT", message=violation.message,
-                                          span=thermal_arg.span or stmt.span, node_id=stmt.id))
+        for violation in ConstraintRules.context_violations(
+            active_requirements,
+            [ConstraintContext(thermal=(thermal_value.value, thermal_value.unit))],
+        ):
+            if violation.kind == "environment":
+                diagnostics.append(Diagnostic(code="SEM_CONSTRAINT_ENV_CONFLICT", message=violation.message,
+                                              span=thermal_arg.span or stmt.span, node_id=stmt.id))
         return diagnostics

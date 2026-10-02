@@ -2,6 +2,7 @@
 from culsma.common.diagnostics import Diagnostic
 from .contracts import CONSTRAINT_REQUIREMENTS
 from .rules import ConstraintRules
+from .checks import ConstraintContext
 
 # Control, declarations and internal bookkeeping are not physical actions.
 _ACTION_FAMILIES = {name: name for name in ('agit', 'sep', 'frac', 'img', 'ecp', 'phy', 'env_hold')}
@@ -24,19 +25,20 @@ class RuntimeConstraintValidator:
                 return [self._diagnostic(step, 'RT_CONSTRAINT_INVALID', 'Requirement identity does not match its gate')]
             requirements = [member if name == wire else name for name in requirements]
         violations = ConstraintRules.applicability_violations(family, requirements) + ConstraintRules.combination_violations(requirements)
-        if 'cold_chain' in requirements:
-            # Check each explicit scoped thermal setting, matching source validation.
-            # No thermal setting means a qualitative driver requirement, not an
-            # inferred temperature. Unknown explicit values must resolve before use.
-            layers = gate.get('env_layers')
-            environments = [layer.get('env', {}) for layer in layers] if isinstance(layers, list) else [gate.get('env', {})]
-            for env in environments:
-                if 'thermal' in env:
-                    violation = ConstraintRules.cold_chain_violation(evaluate(env['thermal']))
-                    if violation is not None:
-                        violations.append(violation)
+        violations.extend(ConstraintRules.context_violations(
+            requirements, self._contexts(gate, evaluate)))
         return [self._diagnostic(step, 'RT_CONSTRAINT_ENV_CONFLICT' if v.kind == 'environment' else 'RT_CONSTRAINT_INVALID', v.message)
                 for v in violations]
+
+    @staticmethod
+    def _contexts(gate, evaluate):
+        # Yield lazily so unconstrained actions do not resolve unrelated facts.
+        # Check every explicit nested setting; absence implies no temperature.
+        layers = gate.get('env_layers')
+        environments = [layer.get('env', {}) for layer in layers] if isinstance(layers, list) else [gate.get('env', {})]
+        for env in environments:
+            if 'thermal' in env:
+                yield ConstraintContext(thermal=evaluate(env['thermal']))
 
     @staticmethod
     def _diagnostic(step, code, message):

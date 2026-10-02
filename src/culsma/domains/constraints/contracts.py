@@ -1,17 +1,19 @@
 """Domain-owned requirement identities and existing application rules."""
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from enum import StrEnum
 from culsma.common.enum_registration import EnumTypeRegistry
+from .checks import ColdChainRule, ConstraintContext, ConstraintViolation
 
 
 @dataclass(frozen=True)
-class RequirementSpec:
+class ConstraintRequirementSpec:
     category: str
     allowed_on: frozenset[str]
     scopes: frozenset[str]
     conflicts: frozenset[str] = frozenset()
     needs_context: frozenset[str] = frozenset()
+    context_checks: tuple[Callable[[ConstraintContext], ConstraintViolation | None], ...] = ()
 
     def __post_init__(self):
         operations = {'mutation', 'sep', 'frac', 'img', 'ecp', 'phy', 'stream', 'env_hold', 'agit'}
@@ -23,14 +25,22 @@ class RequirementSpec:
             raise ValueError('Custom context predicates are not supported')
         if any(not isinstance(item, str) or not item for item in self.conflicts):
             raise TypeError('Requirement conflicts must name requirement spellings')
+        checks = tuple(self.context_checks)
+        if any(not callable(check) for check in checks):
+            raise TypeError('Constraint context checks must be callable')
+        object.__setattr__(self, 'context_checks', checks)
         for name in ('allowed_on', 'scopes', 'conflicts', 'needs_context'):
             object.__setattr__(self, name, frozenset(getattr(self, name)))
 
 
+# Preserve existing vocabulary-extension imports.
+RequirementSpec = ConstraintRequirementSpec
+
+
 class ConstraintRequirementBase(StrEnum):
     def __new__(cls, wire, spec):
-        if not isinstance(spec, RequirementSpec):
-            raise TypeError('Requirement members need a RequirementSpec')
+        if not isinstance(spec, ConstraintRequirementSpec):
+            raise TypeError('Requirement members need a ConstraintRequirementSpec')
         member = str.__new__(cls, wire)
         member._value_ = wire
         member.spec = spec
@@ -38,117 +48,118 @@ class ConstraintRequirementBase(StrEnum):
 
 
 class ConstraintRequirement(ConstraintRequirementBase):
-    DROPWISE = ('dropwise', RequirementSpec(
+    DROPWISE = ('dropwise', ConstraintRequirementSpec(
         category="delivery_mode",
         allowed_on=frozenset({"mutation"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    SPREAD = ('spread', RequirementSpec(
+    SPREAD = ('spread', ConstraintRequirementSpec(
         category="delivery_mode",
         allowed_on=frozenset({"mutation"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    PRESERVE_BOUNDARY = ('preserve_boundary', RequirementSpec(
+    PRESERVE_BOUNDARY = ('preserve_boundary', ConstraintRequirementSpec(
         category="structure_preservation",
         allowed_on=frozenset({"mutation", "sep", "frac"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    PRESERVE_LAYERING = ('preserve_layering', RequirementSpec(
+    PRESERVE_LAYERING = ('preserve_layering', ConstraintRequirementSpec(
         category="structure_preservation",
         allowed_on=frozenset({"mutation", "sep", "frac"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    PRESERVE_FRACTION_ORDER = ('preserve_fraction_order', RequirementSpec(
+    PRESERVE_FRACTION_ORDER = ('preserve_fraction_order', ConstraintRequirementSpec(
         category="structure_preservation",
         allowed_on=frozenset({"sep", "frac"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    ASEPTIC = ('aseptic', RequirementSpec(
+    ASEPTIC = ('aseptic', ConstraintRequirementSpec(
         category="contamination_control",
         allowed_on=frozenset({"agit", "mutation", "sep", "img", "ecp", "phy", "stream"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    LOW_CARRYOVER = ('low_carryover', RequirementSpec(
+    LOW_CARRYOVER = ('low_carryover', ConstraintRequirementSpec(
         category="contamination_control",
         allowed_on=frozenset({"mutation", "sep", "img", "ecp", "phy", "stream"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    CROSS_CONTAM_CONTROL = ('cross_contam_control', RequirementSpec(
+    CROSS_CONTAM_CONTROL = ('cross_contam_control', ConstraintRequirementSpec(
         category="contamination_control",
         allowed_on=frozenset({"agit", "mutation", "sep", "img", "ecp", "phy", "stream"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    GENTLE = ('gentle', RequirementSpec(
+    GENTLE = ('gentle', ConstraintRequirementSpec(
         category="material_integrity",
         allowed_on=frozenset({"agit", "mutation", "sep", "frac", "stream", "env_hold"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    AVOID_RESUSPENSION = ('avoid_resuspension', RequirementSpec(
+    AVOID_RESUSPENSION = ('avoid_resuspension', ConstraintRequirementSpec(
         category="material_integrity",
         allowed_on=frozenset({"mutation", "sep", "frac"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    AVOID_SHEAR = ('avoid_shear', RequirementSpec(
+    AVOID_SHEAR = ('avoid_shear', ConstraintRequirementSpec(
         category="material_integrity",
         allowed_on=frozenset({"mutation", "sep", "frac", "stream"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    PRESERVE_VIABILITY = ('preserve_viability', RequirementSpec(
+    PRESERVE_VIABILITY = ('preserve_viability', ConstraintRequirementSpec(
         category="material_integrity",
         allowed_on=frozenset({"mutation", "stream"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    COLD_CHAIN = ('cold_chain', RequirementSpec(
+    COLD_CHAIN = ('cold_chain', ConstraintRequirementSpec(
         category="environmental_protection",
         allowed_on=frozenset({"agit", "mutation", "sep", "frac", "img", "ecp", "phy", "stream", "env_hold"}),
         scopes=frozenset({"stmt", "block"}),
+        context_checks=(ColdChainRule.validate,),
     ))
-    DARK_PROTECTED = ('dark_protected', RequirementSpec(
+    DARK_PROTECTED = ('dark_protected', ConstraintRequirementSpec(
         category="environmental_protection",
         allowed_on=frozenset({"agit", "mutation", "img", "ecp", "phy", "stream", "env_hold"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    SEALED = ('sealed', RequirementSpec(
+    SEALED = ('sealed', ConstraintRequirementSpec(
         category="environmental_protection",
         allowed_on=frozenset({"env_hold"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    CONTROLLED_ATMOSPHERE = ('controlled_atmosphere', RequirementSpec(
+    CONTROLLED_ATMOSPHERE = ('controlled_atmosphere', ConstraintRequirementSpec(
         category="environmental_protection",
         allowed_on=frozenset({"agit", "mutation", "img", "ecp", "phy", "stream", "env_hold"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    HIGH_PRECISION = ('high_precision', RequirementSpec(
+    HIGH_PRECISION = ('high_precision', ConstraintRequirementSpec(
         category="quantitative_quality",
         allowed_on=frozenset({"mutation", "sep", "frac", "ecp", "phy"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    LOW_LOSS = ('low_loss', RequirementSpec(
+    LOW_LOSS = ('low_loss', ConstraintRequirementSpec(
         category="quantitative_quality",
         allowed_on=frozenset({"mutation", "sep", "frac", "ecp", "phy"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    QUANTITATIVE_RECOVERY = ('quantitative_recovery', RequirementSpec(
+    QUANTITATIVE_RECOVERY = ('quantitative_recovery', ConstraintRequirementSpec(
         category="quantitative_quality",
         allowed_on=frozenset({"mutation", "sep", "frac"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    STABILIZED_READING = ('stabilized_reading', RequirementSpec(
+    STABILIZED_READING = ('stabilized_reading', ConstraintRequirementSpec(
         category="measurement_quality",
         allowed_on=frozenset({"img", "ecp", "phy"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    LOW_NOISE = ('low_noise', RequirementSpec(
+    LOW_NOISE = ('low_noise', ConstraintRequirementSpec(
         category="measurement_quality",
         allowed_on=frozenset({"img", "ecp", "phy"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    NONINVASIVE = ('noninvasive', RequirementSpec(
+    NONINVASIVE = ('noninvasive', ConstraintRequirementSpec(
         category="measurement_quality",
         allowed_on=frozenset({"img", "ecp", "phy"}),
         scopes=frozenset({"stmt", "block"}),
     ))
-    CUSTOMIZED = ('customized', RequirementSpec(
+    CUSTOMIZED = ('customized', ConstraintRequirementSpec(
         category="customized",
         allowed_on=frozenset({"mutation", "sep", "frac", "img", "ecp", "phy", "stream"}),
         scopes=frozenset({"stmt", "block"}),
@@ -193,14 +204,14 @@ CONSTRAINT_REQUIREMENTS = ConstraintRequirementContract(STANDARD_CONSTRAINT_REQU
 
 class RequirementSpecRegistry(Mapping):
     def __getitem__(self, name):
+        if type(name) is str:
+            try:
+                name = CONSTRAINT_REQUIREMENTS.decode(name)
+            except ValueError:
+                raise KeyError(name) from None
         if isinstance(name, ConstraintRequirementBase):
             CONSTRAINT_REQUIREMENTS.validate(name)
             return name.spec
-        if type(name) is str:
-            try:
-                return CONSTRAINT_REQUIREMENTS.decode(name).spec
-            except ValueError:
-                raise KeyError(name) from None
         raise KeyError(name)
 
     def __iter__(self):
