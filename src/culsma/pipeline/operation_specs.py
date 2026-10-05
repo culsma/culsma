@@ -37,10 +37,10 @@ BUILTIN_OPERATION_SPECS: Mapping[str, OperationSpec] = MappingProxyType(
     {
         "agit": _spec(
             required={"sample", "mode"},
-            allowed={"sample", "mode", "duration", "rate", "cycles"},
+            allowed={"sample", "mode", "motion", "duration", "rate", "cycles"},
             dimensions={
                 "duration": {"time"},
-                "rate": {"rotation_rate"},
+                "rate": {"rotation_rate", "frequency"},
             },
         ),
         "sep": _spec(

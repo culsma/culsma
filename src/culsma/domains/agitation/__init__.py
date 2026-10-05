@@ -2,6 +2,8 @@
 
 from .contracts import (
     AGITATION_MODE,
+    SHAKE_MOTION,
+    ShakeMotion,
     CALL_PARAMETER_CONTRACTS,
     AgitationArgumentsRule,
     AgitationMode,
@@ -9,6 +11,7 @@ from .contracts import (
 )
 
 __all__ = [
+    "SHAKE_MOTION", "ShakeMotion",
     "AGITATION_MODE", "CALL_PARAMETER_CONTRACTS", "AgitationArgumentsRule",
     "AgitationMode", "validate_agitation_arguments",
 ]

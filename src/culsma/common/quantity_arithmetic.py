@@ -21,6 +21,7 @@ UNIT_SCALES = {
     "electric_potential": {"V": 1, "mV": .001},
     "electric_current": {"A": 1, "mA": .001, "uA": .000001},
     "rotation_rate": {"rpm": 1},
+    "frequency": {"Hz": 1, "cycle/min": 1 / 60},
 }
 UNIT_TO_DIMENSION = {unit: dim for dim, units in UNIT_SCALES.items() for unit in units}
 

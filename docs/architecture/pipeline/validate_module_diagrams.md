@@ -37,7 +37,7 @@ Module ownership is defined in the [global architecture](../../global_architectu
 | `domains/data.py`, `domains/stream.py` | Data-reference kinds and observation units, respectively |
 | `domains/constraints/` | Requirement types, applicability, scopes and conflicts |
 | `domains/readout.py` | Per-operation quantity membership and customized/schema_ref rule |
-| `domains/agitation.py`, `labware.py`, `scheduling.py` | Agitation modes, plate layout and scheduling modes |
+| `domains/agitation/`, `labware.py`, `scheduling.py` | Agitation modes, plate layout and scheduling modes |
 | `enum_services.py` | Assemble module declarations and bind the shared source-name service |
 
 `CALL_PARAMETER_CONTRACTS` maps a call name to its field contracts and associated
@@ -186,14 +186,16 @@ introduced into the domain.
 ```mermaid
 flowchart LR
     Dispatch["Existing StepHandler"] --> Validation["domains.agitation.validation"]
-    Validation --> Contracts["domains.agitation.contracts<br/>single parameter-conflict rule"]
+    Validation --> Contracts["domains.agitation.contracts<br/>mode and motion parameter rules"]
     Validation --> Shared["Shared IR, external-input resolution and diagnostics"]
     Compat["statement_contracts legacy import"] -. "same function" .-> Validation
 ```
 
 Contract-only imports remain stage-independent through the package root. Existing
 source diagnostic codes, messages, argument spans and ordering are preserved.
-Runtime and operation-spec assembly are outside this batch.
+The shared parameter boundary also invokes these contracts after runtime binding.
+`AgitationMode` and `ShakeMotion` are assembled into the existing enum registry;
+operation signatures admit `motion`, while the domain owns combination rules.
 
 Quantity adapters extract shared `(number, unit)` values from IR and bound
 arguments. Agitation contracts validate these values without depending on IR
