@@ -10,6 +10,8 @@
 - Compact CLI results and a source-linked benchmark with seven modules, one
   composite, and four independently checked manuscript examples.
 
+## 1.0.8 — 2026-10-07
+
 ### Constraint integration
 - Allow gentle, aseptic, cross-contamination control, cold-chain, dark-protected,
   and controlled-atmosphere requirements on mechanical agitation.
