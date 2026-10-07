@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -35,6 +37,7 @@ jobs:
           python - <<'PY'
           import os
           import re
+          import subprocess
           import tomllib
 
           ref_type = os.environ["GITHUB_REF_TYPE"]
@@ -55,6 +58,24 @@ jobs:
               raise SystemExit(
                   f"release tag {tag!r} does not match pyproject version {expected!r}"
               )
+
+          # A release candidate must retain the preceding public release history.
+          current_version = tuple(int(part) for part in version.split("."))
+          previous_releases = []
+          for previous_tag in subprocess.check_output(
+              ["git", "tag", "--list", "v*"], text=True
+          ).splitlines():
+              if re.fullmatch(r"v[0-9]+[.][0-9]+[.][0-9]+", previous_tag):
+                  previous_version = tuple(int(part) for part in previous_tag[1:].split("."))
+                  if previous_version < current_version:
+                      previous_releases.append((previous_version, previous_tag))
+          if previous_releases:
+              previous_tag = max(previous_releases)[1]
+              if subprocess.run(
+                  ["git", "merge-base", "--is-ancestor", previous_tag, "HEAD"]
+              ).returncode != 0:
+                  raise SystemExit(f"release {tag} is missing baseline {previous_tag}")
+              print(f"Release baseline verified: {previous_tag}")
 
           with open(os.environ["GITHUB_OUTPUT"], "a", encoding="utf-8") as out:
               print(f"version={version}", file=out)

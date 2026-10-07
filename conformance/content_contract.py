@@ -220,7 +220,7 @@ def requirement_hook_errors(contract: dict, root: Path, test_hooks: dict | None 
             errors.append(f'{requirement} must map to a nonempty list of test hooks')
             continue
         for hook in hooks:
-            match = re.fullmatch(r'(tests/[a-zA-Z0-9_]+\.py)(?:::(test_[a-zA-Z0-9_]+))?', hook) if isinstance(hook, str) else None
+            match = re.fullmatch(r'(tests/(?:[a-zA-Z0-9_]+/)*[a-zA-Z0-9_]+\.py)(?:::(test_[a-zA-Z0-9_]+))?', hook) if isinstance(hook, str) else None
             if match is None:
                 errors.append(f'{requirement}: invalid test hook {hook!r}')
                 continue

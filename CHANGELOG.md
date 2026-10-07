@@ -1,14 +1,6 @@
 # Changelog
 
-## 1.0.7 — 2026-09-21
-
-### Added
-
-- Canonical material enums and validation of material classification.
-- Author-declared, selector-keyed material replacement with one or more products.
-- Explicit surface spreading, dropwise delivery, scoped sealed holds, and tube flicking.
-- Compact CLI results and a source-linked benchmark with seven modules, one
-  composite, and four independently checked manuscript examples.
+## Unreleased
 
 ## 1.0.8 — 2026-10-07
 
@@ -79,6 +71,22 @@
 
 - Content metadata retains enum identity through aliases, protocol arguments,
   conditional bindings and serialized execution plans.
+
+- Qualified imported protocol calls can be used in `let` and `return`
+  expressions. Their returned groups remain indexable, and caller-owned
+  containers retain identity through nested imported protocol calls.
+
+## 1.0.7 — 2026-09-21
+
+### Added
+
+- Canonical material enums and validation of material classification.
+- Author-declared, selector-keyed material replacement with one or more products.
+- Explicit surface spreading, dropwise delivery, scoped sealed holds, and tube flicking.
+- Compact CLI results and a source-linked benchmark with seven modules, one
+  composite, and four independently checked manuscript examples.
+
+### Fixed
 
 - Qualified imported protocol calls can be used in `let` and `return`
   expressions. Their returned groups remain indexable, and caller-owned

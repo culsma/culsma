@@ -78,6 +78,9 @@
   "MAT-SURFACE-RELEASE-01": [
     "tests/test_case09_surface_release.py"
   ],
+  "REC-CONFIG-01": [
+    "tests/test_record_configuration.py"
+  ],
   "ENV-SEALED-01": [
     "tests/test_sealed_constraint.py"
   ],
@@ -87,10 +90,7 @@
     "tests/test_frontend_resolver.py::test_resolve_files_expands_qualified_import_call_in_named_return_binding"
   ],
   "AGIT-FLICK-01": [
-    "tests/test_kernel_validate.py::test_validate_agit_accepts_flick_with_optional_cycles",
-    "tests/test_kernel_validate.py::test_validate_agit_rejects_flick_with_duration_or_rate"
-  ],
-  "REC-CONFIG-01": [
-    "tests/test_record_configuration.py"
+    "tests/language/agitation/test_agitation_frontend.py::test_validate_agit_accepts_flick_with_optional_cycles",
+    "tests/language/agitation/test_agitation_frontend.py::test_validate_agit_rejects_flick_with_duration_or_rate"
   ]
 }

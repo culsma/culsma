@@ -160,3 +160,16 @@ def test_content_evidence_keys_are_internal_and_independent_of_row_order():
         rows[i] = value
     sections["mapping"] = "\n".join(rows)
     assert project_contract(sections)["requirements"] == SNAPSHOT_DATA["contract"]["requirements"]
+
+
+@pytest.mark.parametrize('hook', [
+    'tests/../conformance/content_contract.py',
+    'tests/language/agitation/../test_agitation_frontend.py',
+])
+def test_nested_evidence_paths_reject_parent_traversal(hook):
+    from pathlib import Path
+    from conformance.content_contract import requirement_hook_errors
+    hooks = json.loads(TEST_HOOKS.read_text())
+    hooks['AGIT-FLICK-01'] = [hook]
+    errors = requirement_hook_errors(SNAPSHOT_DATA['contract'], Path(__file__).resolve().parents[1], hooks)
+    assert any('invalid test hook' in error for error in errors)
