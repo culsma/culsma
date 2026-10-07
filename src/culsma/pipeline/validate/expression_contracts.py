@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 from typing import Any
+from culsma.pipeline.expression_resolution import resolve_expression, ResolutionStatus
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.common.content_contracts import CONTENT_ENUM_TYPES
 from culsma.pipeline.content_inputs import ContentArgumentResolver, ContentArgumentScope, ContentInputSource, content_enum_diagnostics
 from culsma.pipeline.container_views import (
     classify_container_target_view,
@@ -379,6 +381,16 @@ def validate_expr_contracts(
         return diagnostics
 
     if isinstance(expr, IRMember):
+        projection = resolve_expression(expr, expr_bindings)
+        if projection.status is ResolutionStatus.INVALID and not (
+            projection.issue == "non_record" and getattr(expr.base, "name", None) in CONTENT_ENUM_TYPES
+        ):
+            code, message = {
+                "missing_field": ("SEM_RECORD_FIELD_MISSING", f"Record has no field '{projection.detail}'"),
+                "non_record": ("SEM_RECORD_MEMBER_BASE_INVALID", f"Cannot read field '{projection.detail}' from a non-record value"),
+                "binding_cycle": ("SEM_EXPRESSION_BINDING_CYCLE", f"Cyclic expression binding at '{projection.detail}'"),
+            }[projection.issue]
+            return [Diagnostic(code=code, message=message, span=expr.span, node_id=node_id)]
         enum_result = ContentArgumentResolver.resolve_argument(
             expr, None, ContentArgumentScope(literal_bindings, expr_bindings, defined_names or frozenset()),
         )

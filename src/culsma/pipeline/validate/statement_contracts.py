@@ -330,6 +330,7 @@ def validate_let_call_contract(
             diagnostics.extend(
                 validate_component_fates_contract(
                     value.args,
+                    defined_names=defined_names or frozenset(),
                     expr_bindings=expr_bindings,
                     node_id=stmt.id,
                     span=value.span,

@@ -7,6 +7,7 @@ from enum import StrEnum, Enum
 from culsma.enum_services import PARAMETER_ENUM_TYPES, PARAMETER_CONTRACTS
 from culsma.pipeline.external_boundary import DEFAULT_EXTERNAL_ENUM_CODEC
 from typing import Any
+from culsma.pipeline.expression_resolution import project_record_member, ResolutionStatus
 
 from culsma.common.content_contracts import CONTENT_ENUM_TYPES, serialize_content_enum
 
@@ -124,10 +125,11 @@ class PlanExpressionSerializer:
         if (isinstance(value, IRMember) and isinstance(value.base, IRIdentifier)
                 and value.base.name in CONTENT_ENUM_TYPES and value.base.name not in (env or {})):
             return {"kind": "ContentEnum", "enum": value.base.name, "member": value.member}
-        if isinstance(value, IRMember) and isinstance(value.base, IRIdentifier) and env is not None:
-            base = env.get(value.base.name)
-            if isinstance(base, dict) and value.member in base:
-                return base[value.member]
+        if isinstance(value, IRMember) and env is not None:
+            base = self.serialize_expr(value.base, env)
+            projected = project_record_member(base, value.member)
+            if projected.status is ResolutionStatus.RESOLVED:
+                return projected.value
         if isinstance(value, IRCall):
             value = IRCall(
                 name=value.name,

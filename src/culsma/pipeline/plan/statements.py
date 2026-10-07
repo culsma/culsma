@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Any, Mapping, cast
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.pipeline.expression_resolution import quantity_expression_unit
 from culsma.pipeline.ir_nodes import (
     IRArg,
     IRAssign,
@@ -292,7 +293,8 @@ class LetPlanHandler(BasePlanStatementHandler):
         for idx, item in enumerate(load_arg.value.elements):
             if not isinstance(item, IRPair) or not isinstance(item.left, IRCall) or item.left.name != "DefineContent":
                 continue
-            if isinstance(item.right, IRQuantity) and item.right.unit == "cells":
+            amount = self.serializer.serialize_expr(item.right, ctx.local_env)
+            if quantity_expression_unit(amount, ctx.local_env) == "cells":
                 requires_material_finalization = True
             define_step_id = f"{ctx.step_id_prefix}{stmt.id}::load{idx}::define"
             content_ref = self.serializer.load_content_ref_expr(item.left, define_step_id)

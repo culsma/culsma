@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
+from culsma.pipeline.expression_resolution import resolve_expression, ResolutionStatus
 
 from culsma.common.diagnostics import Diagnostic
 from culsma.common.quantity_arithmetic import UNIT_TO_DIMENSION
@@ -69,7 +70,7 @@ def validate_material_replace(
                 "each replacement value must be one material or a nonempty material list"
             )
         for product in products:
-            error = _validate_replacement_material(product)
+            error = _validate_replacement_material(product, bindings, defined_names)
             if error is not None:
                 return issue(error)
     return []
@@ -83,14 +84,17 @@ def _replacement_products(value: Any) -> list[Any] | None:
     return None
 
 
-def _validate_replacement_material(value: Any) -> str | None:
+def _validate_replacement_material(value: Any, bindings: dict[str, Any], defined_names: set[str]) -> str | None:
     if (
         not isinstance(value, IRPair)
         or not isinstance(value.left, IRCall)
         or value.left.name != "DefineContent"
     ):
         return "each replacement value must be one content(...):quantity material"
-    quantity = value.right
+    resolved = resolve_expression(value.right, bindings)
+    if resolved.status is ResolutionStatus.DEFERRED and resolved.detail in defined_names:
+        return None  # Concrete expanded calls validate formal configuration fields.
+    quantity = resolved.value
     if isinstance(quantity, IRQuantity):
         if quantity.unit is None:
             return "replacement material quantities must carry a unit"

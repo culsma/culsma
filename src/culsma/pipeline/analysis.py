@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from culsma.pipeline.expression_resolution import resolve_expression, ResolutionStatus
+
 from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Any, Mapping
@@ -223,12 +225,8 @@ def _let_defines_runtime_name(stmt: IRLet, *, expr_bindings: dict[str, Any]) -> 
 
 
 def _resolve_bound_expr(expr: Any, expr_bindings: dict[str, Any]) -> Any:
-    seen: set[str] = set()
-    current = expr
-    while isinstance(current, IRIdentifier) and current.name in expr_bindings and current.name not in seen:
-        seen.add(current.name)
-        current = expr_bindings[current.name]
-    return current
+    result = resolve_expression(expr, expr_bindings)
+    return result.value if result.status is not ResolutionStatus.INVALID else expr
 
 
 def _to_string(expr: Any, env: dict[str, Any]) -> str | None:

@@ -985,6 +985,7 @@ class StepHandler(BaseStatementHandler):
                 ctx,
                 validate_component_fates_contract(
                     stmt.args,
+                    defined_names=ctx.defined_names,
                     expr_bindings=ctx.expr_bindings,
                     node_id=stmt.id,
                     span=stmt.span,

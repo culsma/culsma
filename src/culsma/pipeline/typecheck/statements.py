@@ -300,7 +300,8 @@ class RepeatTypecheckHandler(BaseTypecheckStatementHandler):
     ) -> Iterable[ChildStatementBlock]:
         stmt = cast(IRRepeat, stmt)
         nested_bindings = dict(ctx.expr_bindings)
-        nested_bindings[stmt.binding] = IRIdentifier(name=stmt.binding, span=stmt.span)
+        # A runtime loop value is deferred, not a cyclic identifier binding.
+        nested_bindings[stmt.binding] = DeferredNumeric("unknown", span=stmt.span)
         return (ChildStatementBlock(stmt.statements, nested_bindings),)
 
 

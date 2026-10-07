@@ -89,5 +89,8 @@
   "AGIT-FLICK-01": [
     "tests/test_kernel_validate.py::test_validate_agit_accepts_flick_with_optional_cycles",
     "tests/test_kernel_validate.py::test_validate_agit_rejects_flick_with_duration_or_rate"
+  ],
+  "REC-CONFIG-01": [
+    "tests/test_record_configuration.py"
   ]
 }

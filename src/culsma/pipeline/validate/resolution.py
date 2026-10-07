@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from culsma.pipeline.expression_resolution import resolve_expression, ResolutionStatus
+
 from typing import Any
 
 from culsma.pipeline.ir_nodes import IRCall, IRIdentifier, IRList, IRQuantity, IRString, IRUnary
@@ -10,12 +12,8 @@ from culsma.pipeline.ir_nodes import IRCall, IRIdentifier, IRList, IRQuantity, I
 class ExprResolver:
     @staticmethod
     def resolve_bound_expr(expr: Any, expr_bindings: dict[str, Any]) -> Any:
-        seen: set[str] = set()
-        current = expr
-        while isinstance(current, IRIdentifier) and current.name in expr_bindings and current.name not in seen:
-            seen.add(current.name)
-            current = expr_bindings[current.name]
-        return current
+        result = resolve_expression(expr, expr_bindings)
+        return result.value if result.status is not ResolutionStatus.INVALID else expr
 
     @staticmethod
     def resolve_call_expr(expr: Any, expr_bindings: dict[str, Any]) -> IRCall | None:

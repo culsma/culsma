@@ -7,6 +7,8 @@ from culsma.enum_services import PARAMETER_ENUM_TYPES
 from culsma.runtime.stream_values import StreamValueBuilder
 from culsma.pipeline.external_boundary import DEFAULT_EXTERNAL_ENUM_CODEC, DEFAULT_EXTERNAL_PARAMETER_NORMALIZER, RuntimeParameterError
 
+from culsma.pipeline.expression_resolution import project_record_member, ResolutionStatus
+
 from copy import deepcopy
 from typing import Any
 
@@ -111,12 +113,13 @@ def evaluate_runtime_expression(expr: Any, state: RuntimeState) -> Any:
             return _resolve_runtime_index(expr, state)
         if kind == "IRMember":
             base = evaluate_runtime_expression(expr.get("base"), state)
-            if base is UNRESOLVED or not isinstance(base, dict):
+            if base is UNRESOLVED:
                 return UNRESOLVED
             member = expr.get("member")
-            if not isinstance(member, str) or member not in base:
+            if not isinstance(member, str):
                 return UNRESOLVED
-            return base[member]
+            projected = project_record_member(base, member)
+            return _runtime_bound_value(projected.value, state) if projected.status is ResolutionStatus.RESOLVED else UNRESOLVED
         if kind == "IRCall":
             return _eval_runtime_call(expr, state)
         if kind == "IRUnary":
@@ -131,6 +134,14 @@ def evaluate_runtime_expression(expr: Any, state: RuntimeState) -> Any:
             return UNRESOLVED
         if kind == "IRBinary":
             return evaluate_runtime_binary(expr, state)
+        if kind is None or not isinstance(kind, str):
+            record = {}
+            for key, raw in expr.items():
+                value = evaluate_runtime_expression(raw, state)
+                if value is UNRESOLVED:
+                    return UNRESOLVED
+                record[key] = value
+            return record
     if isinstance(expr, (bool, int, float, str)):
         return expr
     return UNRESOLVED
@@ -503,9 +514,14 @@ def _runtime_bound_value(value: Any, state: RuntimeState) -> Any:
         if kind == "IRQuantity":
             raw = value.get("value")
             unit = value.get("unit")
-            if isinstance(raw, (int, float)) and isinstance(unit, str):
-                return (float(raw), unit)
+            if isinstance(raw, (int, float)):
+                if unit is None:
+                    return raw
+                if isinstance(unit, str):
+                    return (float(raw), unit)
             return UNRESOLVED
+        if kind in ("ContentEnum", "ExternalEnum", "DomainEnum", "ChromatographyEnum"):
+            return evaluate_runtime_expression(value, state)
         if not isinstance(kind, str) or not kind.startswith("IR"):
             return value
         return evaluate_runtime_expression(value, state)

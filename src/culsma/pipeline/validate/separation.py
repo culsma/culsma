@@ -10,6 +10,7 @@ from culsma.pipeline.ir_nodes import IRArg, IRCall, IRQuantity, IRRecord
 from culsma.pipeline.program_registry import get_separation_slot_contract
 
 from .resolution import ExprResolver
+from culsma.pipeline.expression_resolution import resolve_expression, ResolutionStatus
 
 _RATIO_EPSILON = 1e-9
 
@@ -20,6 +21,7 @@ def validate_component_fates_contract(
     expr_bindings: dict[str, Any],
     node_id: str | None,
     span: Span | None,
+    defined_names: set[str] | frozenset[str] = frozenset(),
 ) -> list[Diagnostic]:
     fate_arg = next((arg for arg in args if arg.name == "component_fates"), None)
     if fate_arg is None:
@@ -45,7 +47,10 @@ def validate_component_fates_contract(
     if slot_contract is None:
         return []  # The attached-program validator owns unknown/incompatible programs.
 
-    rules = ExprResolver.resolve_bound_expr(fate_arg.value, expr_bindings)
+    result = resolve_expression(fate_arg.value, expr_bindings)
+    if result.status is ResolutionStatus.DEFERRED and result.detail in defined_names:
+        return []  # Expanded calls validate concrete actuals; definitions have no record schema.
+    rules = result.value
     if not isinstance(rules, IRRecord):
         return [
             _diagnostic(
@@ -61,7 +66,7 @@ def validate_component_fates_contract(
     expected_slots = set(slot_contract)
     diagnostics: list[Diagnostic] = []
     for component_id, raw_fate in rules.entries.items():
-        fate = raw_fate
+        fate = ExprResolver.resolve_bound_expr(raw_fate, expr_bindings)
         if not isinstance(fate, IRRecord):
             diagnostics.append(
                 _diagnostic(
@@ -143,7 +148,7 @@ def validate_component_fates_contract(
 
 
 def _static_ratio(value: Any, expr_bindings: dict[str, Any]) -> float | None:
-    del expr_bindings
+    value = ExprResolver.resolve_bound_expr(value, expr_bindings)
     if not isinstance(value, IRQuantity):
         return None
     if value.unit is None:

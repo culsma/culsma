@@ -48,6 +48,16 @@
 
 ### Fixed
 
+- Configuration record fields preserve text, quantities, units, enums and nested
+  separation fates across aliases and nested/imported protocol calls. Semantic
+  checks, type checks, plan lowering and runtime share record projection;
+  missing fields and non-record bases receive precise semantic diagnostics.
+  Text quantities remain text and operation unit/dimension checks remain active.
+  Schedule boundaries and material replacement quantities use the same resolver;
+  centrifuge drives accept quantity arithmetic, and record-based cell loads
+  retain container finalization. Compile and plan scheduling share the common
+  time-unit table.
+
 - Fixed false non-group errors when indexing group parameters in reusable
   protocols and imported wrappers.
 

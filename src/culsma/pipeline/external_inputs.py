@@ -14,6 +14,7 @@ from culsma.enum_services import SOURCE_TYPE_NAMES
 from culsma.common.type_name_contracts import TypeNamespace
 from culsma.parser.ast_nodes import Identifier, MemberExpr, RecordLiteral, StringLiteral
 from culsma.pipeline.ir_nodes import IRIdentifier, IRMember, IRRecord, IRString
+from culsma.pipeline.expression_resolution import resolve_expression, ResolutionStatus
 from culsma.pipeline.compat.external_enums import resolve_legacy_enum
 
 # Installation and source resolution share one authoritative name table.
@@ -108,12 +109,13 @@ class ExternalInputResolver:
                 if getattr(contract, 'allow_legacy_text', False):
                     return ExternalInputResolution(ExternalInputStatus.INVALID,
                         issue=ExternalInputIssue.UNKNOWN_MEMBER, detail=f'Unknown registered enum type: {base.name}')
-            record = ExternalInputResolver.resolve_record(base, scope, seen)
-            if isinstance(record, (RecordLiteral, IRRecord)) and expression.member in record.entries:
-                return ExternalInputResolver.resolve(record.entries[expression.member], contract, scope, seen)
-            # A shadowing, known non-record is a type error, never a namespace.
-            if record is not None:
-                return ExternalInputResolution(ExternalInputStatus.INVALID, issue=ExternalInputIssue.WRONG_TYPE, detail='Member base is not a record with this field')
+            selected = resolve_expression(expression, scope.bindings, seen)
+            if selected.status is ResolutionStatus.RESOLVED or (selected.status is ResolutionStatus.DEFERRED and selected.value is not expression):
+                return ExternalInputResolver.resolve(selected.value, contract, scope, seen)
+            if selected.status is ResolutionStatus.INVALID:
+                return ExternalInputResolution(ExternalInputStatus.INVALID,
+                    issue=ExternalInputIssue.CYCLIC_BINDING if selected.issue == "binding_cycle" else ExternalInputIssue.WRONG_TYPE,
+                    detail=selected.detail)
             return ExternalInputResolution(ExternalInputStatus.DEFERRED)
         if getattr(contract, 'preserve_legacy_values', False):
             return ExternalInputResolution(ExternalInputStatus.DEFERRED)
@@ -134,12 +136,9 @@ class ExternalInputResolver:
 
     @staticmethod
     def resolve_record(expression: Any, scope: ExternalInputScope, seen: frozenset[str]) -> Any:
-        while isinstance(expression, (Identifier, IRIdentifier)):
-            if expression.name in seen or expression.name not in scope.bindings:
-                return None
-            seen = seen | {expression.name}
-            expression = scope.bindings[expression.name]
-        return expression
+        result = resolve_expression(expression, scope.bindings, seen)
+        return result.value if result.status is ResolutionStatus.RESOLVED else None
+
 
 
 def external_parameter_resolution(operation, parameter, expression, *, bindings=None, defined_names=frozenset()):

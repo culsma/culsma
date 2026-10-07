@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from culsma.pipeline.expression_resolution import resolve_expression, ResolutionStatus
 from enum import StrEnum
 from typing import AbstractSet, Any, Mapping
 
@@ -152,31 +153,19 @@ class ContentArgumentResolver:
         scope: ContentArgumentScope,
         seen_names: frozenset[str] = frozenset(),
     ) -> ContentEnumResolution:
-        if not isinstance(expr.base, IRIdentifier):
-            return ContentEnumResolution(
-                ContentResolutionStatus.INVALID, issue=ContentResolutionIssue.NON_TEXT,
-                expected_enum=expected_enum,
-            )
-        name = expr.base.name
-        if scope.has_binding(name):
-            # A local name shadows the enum namespace. Resolve records as records.
-            if name in seen_names:
-                return ContentEnumResolution(
-                    ContentResolutionStatus.INVALID,
-                    issue=ContentResolutionIssue.CYCLIC_BINDING, detail=name,
-                    expected_enum=expected_enum,
-                )
-            base = scope.expr_bindings.get(name, scope.literal_bindings.get(name))
-            if isinstance(base, IRRecord) and expr.member in base.entries:
-                return ContentArgumentResolver.resolve_argument(
-                    base.entries[expr.member], expected_enum, scope, seen_names | {name},
-                )
-            if base is None:
+        bindings = {**scope.expr_bindings, **scope.literal_bindings}
+        if not isinstance(expr.base, IRIdentifier) or scope.has_binding(expr.base.name):
+            result = resolve_expression(expr, bindings, seen_names)
+            if result.status is ResolutionStatus.RESOLVED or (result.status is ResolutionStatus.DEFERRED and result.value is not expr):
+                return ContentArgumentResolver.resolve_argument(result.value, expected_enum, scope, seen_names)
+            if result.status is ResolutionStatus.DEFERRED:
                 return ContentEnumResolution(ContentResolutionStatus.DEFERRED, expected_enum=expected_enum)
             return ContentEnumResolution(
-                ContentResolutionStatus.INVALID, issue=ContentResolutionIssue.NON_TEXT,
-                detail=name, expected_enum=expected_enum,
+                ContentResolutionStatus.INVALID,
+                issue=ContentResolutionIssue.CYCLIC_BINDING if result.issue == "binding_cycle" else ContentResolutionIssue.NON_TEXT,
+                detail=result.detail, expected_enum=expected_enum,
             )
+        name = expr.base.name
         enum_type = CONTENT_ENUM_TYPES.get(name)
         if enum_type is None:
             return ContentEnumResolution(

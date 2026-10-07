@@ -2,20 +2,14 @@
 
 from __future__ import annotations
 
+from culsma.common.quantity_arithmetic import UNIT_SCALES
+
 from culsma.domains.scheduling import SCHEDULE_MODE, DEFAULT_SCHEDULE_MODE
 from culsma.pipeline.external_boundary import DEFAULT_EXTERNAL_PARAMETER_NORMALIZER
 
 from typing import Any, Mapping
 
-TIME_UNIT_SCALE = {
-    "ms": 0.001,
-    "s": 1.0,
-    "sec": 1.0,
-    "min": 60.0,
-    "hr": 3600.0,
-    "h": 3600.0,
-    "day": 86400.0,
-}
+TIME_UNIT_SCALE = UNIT_SCALES["time"]
 
 
 class PlanStaticEvaluator:

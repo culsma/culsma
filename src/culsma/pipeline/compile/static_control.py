@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from culsma.pipeline.expression_resolution import resolve_expression, ResolutionStatus
+
 from culsma.parser.ast_nodes import (
     BinaryOp,
     CallExpr,
@@ -69,14 +71,8 @@ class StaticControlClassifier:
             return None
 
     def resolve_bound_expr(self, expr: Expression, *, ctx: BlockContext) -> Expression:
-        seen: set[str] = set()
-        current = expr
-        while isinstance(current, Identifier) and current.name in ctx.let_bindings:
-            if current.name in seen:
-                break
-            seen.add(current.name)
-            current = ctx.let_bindings[current.name]
-        return current
+        result = resolve_expression(expr, ctx.let_bindings)
+        return result.value if result.status is not ResolutionStatus.INVALID else expr
 
     def contains_unresolved_param_reference(self, expr: Expression | None, *, ctx: BlockContext) -> bool:
         if expr is None:

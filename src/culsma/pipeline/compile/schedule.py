@@ -2,6 +2,10 @@
 
 from __future__ import annotations
 
+from culsma.common.quantity_arithmetic import UNIT_SCALES
+
+from culsma.pipeline.expression_resolution import resolve_expression, ResolutionStatus
+
 from culsma.domains.scheduling import SCHEDULE_MODE, DEFAULT_SCHEDULE_MODE
 from culsma.pipeline.external_inputs import ExternalInputResolver, ExternalInputScope, ExternalInputStatus
 
@@ -38,15 +42,7 @@ from culsma.pipeline.ir_nodes import IRControl, IRStatement
 
 from .context import BlockContext
 
-_TIME_UNIT_SCALE = {
-    "ms": 0.001,
-    "s": 1.0,
-    "sec": 1.0,
-    "min": 60.0,
-    "hr": 3600.0,
-    "h": 3600.0,
-    "day": 86400.0,
-}
+_TIME_UNIT_SCALE = UNIT_SCALES["time"]
 
 
 class ScheduleEvaluator:
@@ -96,14 +92,8 @@ class ScheduleEvaluator:
         return _substitute_statement(stmt, binding, value)
 
     def resolve_bound_expr(self, expr: Expression, *, ctx: BlockContext) -> Expression:
-        seen: set[str] = set()
-        current = expr
-        while isinstance(current, Identifier) and current.name in ctx.let_bindings:
-            if current.name in seen:
-                break
-            seen.add(current.name)
-            current = ctx.let_bindings[current.name]
-        return current
+        result = resolve_expression(expr, ctx.let_bindings)
+        return result.value if result.status is not ResolutionStatus.INVALID else expr
 
     def extract_env_time_boundary(self, stmt: WithEnvStmt, *, ctx: BlockContext) -> Quantity | None:
         duration_arg = next((arg for arg in stmt.env_args if arg.name == "duration"), None)
@@ -407,14 +397,8 @@ def _expand_count_schedule_points(start: Quantity, end: Quantity, step: Quantity
 
 
 def _resolve_let_bound_expr(expr: Expression, let_bindings: dict[str, Expression]) -> Expression:
-    seen: set[str] = set()
-    current = expr
-    while isinstance(current, Identifier) and current.name in let_bindings:
-        if current.name in seen:
-            break
-        seen.add(current.name)
-        current = let_bindings[current.name]
-    return current
+    result = resolve_expression(expr, let_bindings)
+    return result.value if result.status is not ResolutionStatus.INVALID else expr
 
 
 def _substitute_statement(stmt, binding: str, value: Expression):

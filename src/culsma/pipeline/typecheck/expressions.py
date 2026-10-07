@@ -8,6 +8,8 @@ from culsma.enum_services import PARAMETER_CONTRACTS, PARAMETER_ENUM_TYPES
 from culsma.pipeline.external_inputs import ExternalInputResolver, ExternalInputScope, ExternalInputStatus, DeferredExternalEnum
 
 from dataclasses import dataclass
+from culsma.pipeline.expression_resolution import resolve_expression, ResolutionStatus
+
 from typing import Any
 
 from culsma.common.content_contracts import CONTENT_ENUM_TYPES, parse_content_classification, parse_content_kind
@@ -490,15 +492,18 @@ class TypecheckExpressionServices:
             ]
         return []
 
-    def evaluate_quantity(self, value: Any, expr_bindings: dict[str, Any], seen: frozenset[str] = frozenset()) -> IRQuantity | None:
+    def evaluate_quantity(self, value: Any, expr_bindings: dict[str, Any], seen: frozenset[Any] = frozenset()) -> IRQuantity | None:
+        if isinstance(value, (IRIdentifier, IRMember)):
+            result = resolve_expression(value, expr_bindings, seen)
+            if result.status is ResolutionStatus.RESOLVED:
+                return self.evaluate_quantity(result.value, expr_bindings, result.visited)
+            if result.status is ResolutionStatus.DEFERRED:
+                raise DeferredQuantity()
+            return None
         if isinstance(value, InvalidNumeric):
             raise value.error
         if isinstance(value, DeferredNumeric):
             raise DeferredQuantity(value)
-        if isinstance(value, IRIdentifier):
-            if value.name not in expr_bindings or value.name in seen:
-                raise DeferredQuantity()
-            return self.evaluate_quantity(expr_bindings[value.name], expr_bindings, seen | {value.name})
         if isinstance(value, IRQuantity):
             quantity_parts((value.value, value.unit) if value.unit is not None else value.value)
             return value
@@ -559,12 +564,8 @@ class TypecheckExpressionServices:
             return None
 
     def resolve_bound_expr(self, expr: Any, expr_bindings: dict[str, Any]) -> Any:
-        seen: set[str] = set()
-        current = expr
-        while isinstance(current, IRIdentifier) and current.name in expr_bindings and current.name not in seen:
-            seen.add(current.name)
-            current = expr_bindings[current.name]
-        return current
+        result = resolve_expression(expr, expr_bindings)
+        return result.value if result.status is not ResolutionStatus.INVALID else expr
 
     def typecheck_assignment(self, stmt: IRAssign, *, expr_bindings: dict[str, Any]) -> list[Diagnostic]:
         if isinstance(stmt.target, IRMember):
@@ -767,14 +768,16 @@ class TypecheckExpressionServices:
             if arg.name in {"kind", "type"}:
                 expected_enum = CONTENT_CONTRACT.fields[arg.name].enum_type
                 diagnostics.extend(self.typecheck_content_enum_argument(arg, expected_enum, node_id, scope))
-            elif arg.name == "code" and not isinstance(arg.value, (IRString, IRIdentifier)):
+            elif arg.name in {"code", "attrs"}:
+                result = resolve_expression(arg.value, scope.expr_bindings)
+                if result.status is ResolutionStatus.DEFERRED:
+                    continue
+                expected = (IRString, str) if arg.name == "code" else (IRRecord,)
+                if result.status is ResolutionStatus.RESOLVED and isinstance(result.value, expected):
+                    continue
                 diagnostics.append(Diagnostic(
-                    code="TYPE_CONTENT_CODE_NOT_TEXT", message="DefineContent arg 'code' must be text-like",
-                    span=arg.span or span, node_id=node_id,
-                ))
-            elif arg.name == "attrs" and not isinstance(arg.value, IRRecord):
-                diagnostics.append(Diagnostic(
-                    code="TYPE_CONTENT_ATTRS_NOT_RECORD", message="DefineContent arg 'attrs' must be record-like",
+                    code="TYPE_CONTENT_CODE_NOT_TEXT" if arg.name == "code" else "TYPE_CONTENT_ATTRS_NOT_RECORD",
+                    message=f"DefineContent arg '{arg.name}' must be {'text-like' if arg.name == 'code' else 'record-like'}",
                     span=arg.span or span, node_id=node_id,
                 ))
         return diagnostics
@@ -1018,7 +1021,25 @@ class TypecheckExpressionServices:
         expr_bindings: dict[str, Any] | None = None,
     ) -> list[Diagnostic]:
         if dimension == "centrifuge_speed":
-            return self.validate_centrifuge_speed_quantity(
+            diagnostics = self.validate_quantity_dimensions(
+                value, expr_bindings=expr_bindings,
+                expected=["mass", "rotation_rate"],
+                non_quantity_code="TYPE_PROGRAM_FIELD_KIND_MISMATCH",
+                mismatch_code="TYPE_PROGRAM_FIELD_DIMENSION_MISMATCH",
+                unknown_code="TYPE_UNKNOWN_UNIT",
+                missing_unit_code="TYPE_PROGRAM_FIELD_KIND_MISMATCH",
+                label=f"Program arg '{field_name}' in '{program_name}'",
+                span=span, node_id=node_id,
+            )
+            if any(d.severity == "error" for d in diagnostics):
+                return diagnostics
+            try:
+                value = self.evaluate_quantity(value, expr_bindings or {})
+            except DeferredQuantity as exc:
+                value = exc.numeric
+                if value.kind == "unknown" or value.unit is None:
+                    return diagnostics
+            return diagnostics + self.validate_centrifuge_speed_quantity(
                 value,
                 field_name=field_name,
                 program_name=program_name,
