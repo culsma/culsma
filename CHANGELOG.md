@@ -48,6 +48,10 @@
 
 ### Fixed
 
+- Compact CLI observation output resolves the declared label of the actual
+  subject container, including protocol returns and grouped observations;
+  unlabeled subjects retain their internal-name fallback.
+
 - Configuration record fields preserve text, quantities, units, enums and nested
   separation fates across aliases and nested/imported protocol calls. Semantic
   checks, type checks, plan lowering and runtime share record projection;

@@ -143,12 +143,16 @@ def test_serialized_runtime_record_fields_preserve_units_and_text():
         'nested': {'amount': {'kind': 'IRQuantity', 'value': 5, 'unit': 'uL'}},
         'text': {'kind': 'IRString', 'value': '5uL'},
     }}
-    def field(base, member):
-        return {'kind': 'IRMember', 'base': base, 'member': member}
     root = {'kind': 'IRIdentifier', 'name': 'cfg'}
-    assert evaluate_runtime_expression(field(field(root, 'nested'), 'amount'), state) == (5, 'uL')
-    assert evaluate_runtime_expression(field(root, 'text'), state) == '5uL'
-    assert evaluate_runtime_expression(field(root, 'kind'), state) == 'configuration'
+    nested = {'kind': 'IRMember', 'base': root, 'member': 'nested'}
+    cases = [
+        ({'kind': 'IRMember', 'base': nested, 'member': 'amount'}, (5, 'uL')),
+        ({'kind': 'IRMember', 'base': root, 'member': 'text'}, '5uL'),
+        ({'kind': 'IRMember', 'base': root, 'member': 'kind'}, 'configuration'),
+    ]
+    for expression, expected in cases:
+        assert evaluate_runtime_expression(expression, state) == expected
+
 
 
 @pytest.mark.parametrize('before,after,code', [
@@ -300,7 +304,8 @@ def test_serialized_scalar_projection_is_invalid_not_deferred(base):
     assert result.issue == "non_record"
 
 
-def test_runtime_record_members_decode_enum_and_unitless_values():
+@pytest.mark.parametrize("member", ["dilution", "content_kind", "motion"])
+def test_runtime_record_members_decode_enum_and_unitless_values(member):
     from culsma.pipeline.content_vocab import ContentKind
     from culsma.domains.agitation import AgitationMode
     state = RuntimeState()
@@ -309,11 +314,12 @@ def test_runtime_record_members_decode_enum_and_unitless_values():
         "content_kind": {"kind": "ContentEnum", "enum": "ContentKind", "member": "FORMULATION"},
         "motion": {"kind": "ExternalEnum", "enum": "AgitationMode", "member": "VORTEX"},
     }}
-    def read(member):
-        return evaluate_runtime_expression({"kind": "IRMember", "base": {"kind": "IRIdentifier", "name": "cfg"}, "member": member}, state)
-    assert read("dilution") == 1000
-    assert read("content_kind") is ContentKind.FORMULATION
-    assert read("motion") is AgitationMode.VORTEX
+    expected = {"dilution": 1000, "content_kind": ContentKind.FORMULATION, "motion": AgitationMode.VORTEX}[member]
+    value = evaluate_runtime_expression({
+        "kind": "IRMember", "base": {"kind": "IRIdentifier", "name": "cfg"}, "member": member,
+    }, state)
+    assert value == expected
+    assert type(value) is type(expected)
 
 
 def test_quantity_unit_inference_defers_unknowns_and_cycles():
@@ -323,3 +329,34 @@ def test_quantity_unit_inference_defers_unknowns_and_cycles():
     assert quantity_expression_unit(expr, {}) is None
     expr = IRBinary("+", IRIdentifier("amount"), IRQuantity(10, "cells"))
     assert quantity_expression_unit(IRIdentifier("amount"), {"amount": expr}) is None
+
+
+@pytest.mark.parametrize("representation", ["ast", "ir", "serialized"])
+def test_quantity_unit_inference_preserves_nested_arithmetic_across_representations(representation):
+    from culsma.pipeline.expression_resolution import quantity_expression_unit
+    from culsma.pipeline.ir_nodes import IRBinary, IRUnary
+    from culsma.parser.ast_nodes import BinaryOp, UnaryOp, Identifier, MemberExpr, Quantity, RecordLiteral
+    if representation == "ast":
+        amount = MemberExpr(Identifier("cfg"), "count")
+        expr = BinaryOp("/", UnaryOp("-", amount), Quantity(2, None))
+        bindings = {"cfg": RecordLiteral({"count": Quantity(100, "cells")})}
+    else:
+        amount = IRMember(IRIdentifier("cfg"), "count")
+        expr = IRBinary("/", IRUnary("-", amount), IRQuantity(2, None))
+        bindings = {"cfg": IRRecord({"count": IRQuantity(100, "cells")})}
+        if representation == "serialized":
+            serializer = PlanExpressionSerializer()
+            expr = serializer.serialize_expr(expr)
+            bindings = {key: serializer.serialize_expr(value) for key, value in bindings.items()}
+    assert quantity_expression_unit(expr, bindings) == "cells"
+
+
+
+def test_unit_inference_helper_distinguishes_unitless_and_unknown_operands():
+    from culsma.pipeline.expression_resolution import infer_quantity_unit, UNKNOWN_UNIT
+    from culsma.pipeline.ir_nodes import IRBinary
+    assert infer_quantity_unit(IRQuantity(2, None), {}) is None
+    assert infer_quantity_unit(IRQuantity(10, "cells"), {}) == "cells"
+    expr = IRBinary("*", IRIdentifier("runtime_count"), IRQuantity(2, None))
+    assert infer_quantity_unit(expr, {}) is UNKNOWN_UNIT
+    assert infer_quantity_unit(expr, {"runtime_count": IRQuantity(10, "cells")}) == "cells"

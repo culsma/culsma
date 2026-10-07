@@ -83,96 +83,120 @@ def build_batch_run_output(*, run_items: list[dict[str, Any]]) -> dict[str, Any]
     }
 
 
-def _format_number(value: Any) -> str:
-    if not isinstance(value, (int, float)):
-        return str(value)
-    number = float(value)
-    if number.is_integer():
-        return str(int(number))
-    return f"{number:.6f}".rstrip("0").rstrip(".")
+class TerminalResultFormatter:
+    """Format one run with its subject labels and recursive value renderers."""
 
+    def __init__(self, bundle: dict[str, Any]) -> None:
+        self._bundle = bundle
+        artifacts = bundle.get("run", {}).get("state", {}).get("artifacts", {})
+        containers = artifacts.get("material_state", {}).get("containers", {})
+        self._subject_labels = {
+            container_id: metadata["label"]
+            for container_id, container in containers.items()
+            if isinstance(container, dict)
+            and isinstance(metadata := container.get("metadata"), dict)
+            and isinstance(metadata.get("label"), str) and metadata["label"]
+        }
+        self._value_renderers = {
+            "container_group_ref": self.format_container_group,
+            "container_ref": self.format_container,
+            "data_ref": self.format_data,
+            "data_group_ref": self.format_data_group,
+            "IRQuantity": self.format_quantity,
+        }
 
-def _format_container_state(value: dict[str, Any], *, indent: str = "  ") -> list[str]:
-    label = value.get("label") or value.get("id") or "container"
-    container_kind = value.get("container_kind") or value.get("kind") or "container"
-    lines = [f"{indent}{label} ({container_kind})"]
-    if value.get("volume_uL") is not None:
-        lines.append(f"{indent}  volume: {_format_number(value.get('volume_uL'))} uL")
-    elif value.get("mass_mg") is not None:
-        lines.append(f"{indent}  mass: {_format_number(value.get('mass_mg'))} mg")
-    if float(value.get("count_cells", 0.0) or 0.0) > 0.0:
-        lines.append(f"{indent}  cells: {_format_number(value.get('count_cells'))}")
-    return lines
+    @staticmethod
+    def _number(value: Any) -> str:
+        if not isinstance(value, (int, float)):
+            return str(value)
+        number = float(value)
+        if number.is_integer():
+            return str(int(number))
+        return f"{number:.6f}".rstrip("0").rstrip(".")
 
+    def format_container(self, value: dict[str, Any], *, indent: str = "  ") -> list[str]:
+        label = value.get("label") or value.get("id") or "container"
+        container_kind = value.get("container_kind") or value.get("kind") or "container"
+        lines = [f"{indent}{label} ({container_kind})"]
+        if value.get("volume_uL") is not None:
+            lines.append(f"{indent}  volume: {self._number(value.get('volume_uL'))} uL")
+        elif value.get("mass_mg") is not None:
+            lines.append(f"{indent}  mass: {self._number(value.get('mass_mg'))} mg")
+        if float(value.get("count_cells", 0.0) or 0.0) > 0.0:
+            lines.append(f"{indent}  cells: {self._number(value.get('count_cells'))}")
+        return lines
 
-def _format_container_group_state(value: dict[str, Any], *, indent: str = "  ", preview_limit: int = 3) -> list[str]:
-    members = value.get("members")
-    members = members if isinstance(members, list) else []
-    member_count = value.get("member_count")
-    if not isinstance(member_count, int):
-        member_count = len(members)
-    member_kind = _container_group_member_kind(members)
-    summary = f"{member_count} {member_kind}" if member_kind is not None else f"{member_count} containers"
-    lines = [f"{indent}container group: {summary}"]
-    for member in members[:preview_limit]:
-        if isinstance(member, dict) and (member.get("label") or member.get("container_kind")):
-            lines.extend(_format_container_state(member, indent=indent))
-    if member_count > preview_limit:
-        lines.append(f"{indent}...")
-    return lines
+    def format_container_group(self, value: dict[str, Any], *, indent: str = "  ", preview_limit: int = 3) -> list[str]:
+        members = value.get("members")
+        members = members if isinstance(members, list) else []
+        member_count = value.get("member_count")
+        if not isinstance(member_count, int):
+            member_count = len(members)
+        member_kind = self._member_kind(members)
+        summary = f"{member_count} {member_kind}" if member_kind is not None else f"{member_count} containers"
+        lines = [f"{indent}container group: {summary}"]
+        for member in members[:preview_limit]:
+            if isinstance(member, dict) and (member.get("label") or member.get("container_kind")):
+                lines.extend(self.format_container(member, indent=indent))
+        if member_count > preview_limit:
+            lines.append(f"{indent}...")
+        return lines
 
+    @staticmethod
+    def _member_kind(members: list[Any]) -> str | None:
+        kinds = {
+            item.get("container_kind")
+            for item in members
+            if isinstance(item, dict) and isinstance(item.get("container_kind"), str)
+        }
+        if len(kinds) != 1:
+            return None
+        kind = next(iter(kinds))
+        return kind if kind.endswith("s") else f"{kind}s"
 
-def _container_group_member_kind(members: list[Any]) -> str | None:
-    kinds = {
-        item.get("container_kind")
-        for item in members
-        if isinstance(item, dict) and isinstance(item.get("container_kind"), str)
-    }
-    if len(kinds) != 1:
-        return None
-    kind = next(iter(kinds))
-    return kind if kind.endswith("s") else f"{kind}s"
+    def format_data(self, value: dict[str, Any], *, indent: str) -> list[str]:
+        subject = value.get("subject_ref")
+        subject = subject if isinstance(subject, dict) else {}
+        unit = subject.get("unit_kind")
+        description = value.get("contract_kind") or value.get("program_kind") or value.get("data_kind") or "data"
+        if unit == "single_cell":
+            description = "single-cell acquisition"
+        lines = [f"{indent}data: {description}"]
+        if unit:
+            lines.append(f"{indent}  unit: {unit}")
+        else:
+            subject_name = (
+                self._subject_labels.get(value.get("resolved_sample"))
+                or subject.get("label") or subject.get("name") or value.get("subject_ref")
+            )
+            if isinstance(subject_name, str):
+                lines.append(f"{indent}  subject: {subject_name}")
+        panel = subject.get("panel_ref")
+        if isinstance(panel, dict) and isinstance(panel.get("items"), list):
+            lines.append(f"{indent}  panel: {', '.join(str(item) for item in panel['items'])}")
+        result = value.get("result")
+        if isinstance(result, dict):
+            populated = [(key, item) for key, item in result.items() if item is not None]
+            for key, item in populated[:8]:
+                if isinstance(item, (list, dict)):
+                    rendered = f"{len(item)} items"
+                else:
+                    rendered = str(item)
+                lines.append(f"{indent}  {key}: {rendered}")
+            if len(populated) > 8:
+                lines.append(f"{indent}  ... {len(populated) - 8} more fields")
+        return lines
 
+    def format_value(self, value: Any, *, indent: str = "  ") -> list[str]:
+        if isinstance(value, dict):
+            kind = value.get("kind")
+            renderer = self._value_renderers.get(kind, self.format_object) if isinstance(kind, str) else self.format_object
+            return renderer(value, indent=indent)
+        if isinstance(value, list):
+            return self.format_list(value, indent=indent)
+        return [f"{indent}{value}"]
 
-def _format_data_state(value: dict[str, Any], *, indent: str) -> list[str]:
-    subject = value.get("subject_ref")
-    subject = subject if isinstance(subject, dict) else {}
-    unit = subject.get("unit_kind")
-    description = value.get("contract_kind") or value.get("program_kind") or value.get("data_kind") or "data"
-    if unit == "single_cell":
-        description = "single-cell acquisition"
-    lines = [f"{indent}data: {description}"]
-    if unit:
-        lines.append(f"{indent}  unit: {unit}")
-    else:
-        subject_name = subject.get("label") or subject.get("name") or value.get("subject_ref")
-        if isinstance(subject_name, str):
-            lines.append(f"{indent}  subject: {subject_name}")
-    panel = subject.get("panel_ref")
-    if isinstance(panel, dict) and isinstance(panel.get("items"), list):
-        lines.append(f"{indent}  panel: {', '.join(str(item) for item in panel['items'])}")
-    result = value.get("result")
-    if isinstance(result, dict):
-        populated = [(key, item) for key, item in result.items() if item is not None]
-        for key, item in populated[:8]:
-            if isinstance(item, (list, dict)):
-                rendered = f"{len(item)} items"
-            else:
-                rendered = str(item)
-            lines.append(f"{indent}  {key}: {rendered}")
-        if len(populated) > 8:
-            lines.append(f"{indent}  ... {len(populated) - 8} more fields")
-    return lines
-
-
-def _format_return_value(value: Any, *, indent: str = "  ") -> list[str]:
-    if isinstance(value, dict) and value.get("kind") == "container_group_ref":
-        return _format_container_group_state(value, indent=indent)
-    if isinstance(value, dict) and value.get("kind") == "container_ref":
-        return _format_container_state(value, indent=indent)
-    if isinstance(value, dict) and value.get("kind") == "data_ref":
-        return _format_data_state(value, indent=indent)
-    if isinstance(value, dict) and value.get("kind") == "data_group_ref":
+    def format_data_group(self, value: dict[str, Any], *, indent: str) -> list[str]:
         items = value.get("items")
         items = items if isinstance(items, list) else []
         item_ids = value.get("item_ids")
@@ -181,25 +205,28 @@ def _format_return_value(value: Any, *, indent: str = "  ") -> list[str]:
         noun = "observations" if item_ids else "items"
         lines = [f"{indent}data group: {count} {noun}"]
         for item in items[:3]:
-            lines.extend(_format_return_value(item, indent=indent + "  "))
+            lines.extend(self.format_value(item, indent=indent + "  "))
         if len(items) > 3:
             lines.append(f"{indent}... {len(items) - 3} more items")
         return lines
-    if isinstance(value, dict) and value.get("kind") == "IRQuantity":
-        return [f"{indent}{_format_number(value.get('value'))} {value.get('unit')}"]
-    if isinstance(value, list):
+
+    def format_quantity(self, value: dict[str, Any], *, indent: str) -> list[str]:
+        return [f"{indent}{self._number(value.get('value'))} {value.get('unit')}"]
+
+    def format_list(self, value: list[Any], *, indent: str) -> list[str]:
         if not value:
             return [f"{indent}[]"]
         lines = [f"{indent}["]
         for item in value:
-            rendered = _format_return_value(item, indent=indent + "  ")
+            rendered = self.format_value(item, indent=indent + "  ")
             if len(rendered) == 1:
                 lines.append(f"{rendered[0]},")
             else:
                 lines.extend(rendered)
         lines.append(f"{indent}]")
         return lines
-    if isinstance(value, dict):
+
+    def format_object(self, value: dict[str, Any], *, indent: str) -> list[str]:
         lines = [f"{indent}{value.get('kind', 'object')}"]
         for key, item in sorted(value.items()):
             if key == "kind":
@@ -209,87 +236,95 @@ def _format_return_value(value: Any, *, indent: str = "  ") -> list[str]:
             else:
                 lines.append(f"{indent}  {key}: {item}")
         return lines
-    return [f"{indent}{value}"]
+
+    def render(self) -> str:
+        """Render a compact, human-readable result for the default CLI path."""
+        bundle = self._bundle
+        if bundle.get("batch"):
+            return self.render_batch()
+
+        result = bundle["output"]["report"]
+        ok = bundle["output"]["ok"]
+        results = bundle["results"]
+        outputs = results["returns"]
+
+        names = list(outputs.keys())
+        title = names[0] if len(names) == 1 else "Culsma run"
+        lines = [] if ok else [f"{title} failed", ""]
+
+        lines.append("materials:")
+        for row in results["materials"]:
+            lines.append(f"  {row['name']}: {self._number(row['amount'])} {row['unit']}")
+        if not results["materials"]:
+            lines.append("  (none recorded)")
+
+        lines.extend(["", "resources:"])
+        for row in results["resources"]:
+            description = row["kind"]
+            if "name" in row:
+                description += f" {row['name']}"
+            elif row.get("capacity_uL") is not None:
+                capacity = row["capacity_uL"]
+                quantity = f"{self._number(capacity / 1000)} mL" if capacity >= 1000 else f"{self._number(capacity)} uL"
+                description += f" ({quantity})"
+            lines.append(f"  {row['count']} x {description}")
+        if not results["resources"]:
+            lines.append("  (none recorded)")
+
+        lines.extend(["", "return:"])
+        if outputs:
+            for protocol_name, payload in outputs.items():
+                if len(outputs) > 1:
+                    lines.append(f"  {protocol_name}:")
+                    indent = "    "
+                else:
+                    indent = "  "
+                if not isinstance(payload, dict):
+                    lines.append(f"{indent}{payload}")
+                    continue
+                if "bindings" in payload and isinstance(payload["bindings"], dict):
+                    for name, value in payload["bindings"].items():
+                        lines.append(f"{indent}{name}:")
+                        lines.extend(self.format_value(value, indent=indent + "  "))
+                elif "value" in payload:
+                    lines.extend(self.format_value(payload["value"], indent=indent))
+                else:
+                    lines.append(f"{indent}(no explicit return value)")
+        else:
+            lines.append("  (no explicit return value)")
+        inventory = result.get("external_inventory", {}) if isinstance(result, dict) else {}
+        if isinstance(inventory, dict) and inventory.get("checked") is True:
+            shortages = inventory.get("shortages")
+            shortage_count = len(shortages) if isinstance(shortages, list) else 0
+            if inventory.get("sufficient") is True:
+                lines.append("inventory: sufficient")
+            else:
+                lines.append(f"inventory: insufficient ({shortage_count} shortages)")
+        alerts = result.get("alerts", []) if isinstance(result, dict) else []
+        if isinstance(alerts, list) and alerts:
+            lines.append("alerts:")
+            for alert in alerts[:5]:
+                lines.append(f"  {alert}")
+        return "\n".join(lines) + "\n"
+
+    def render_batch(self) -> str:
+        bundle = self._bundle
+        ok = bundle["output"]["ok"]
+        lines = [] if ok else ["Culsma batch failed"]
+        for run_item in bundle["runs"]:
+            if lines:
+                lines.append("")
+            lines.extend([f"{run_item['input']}:", TerminalResultFormatter(run_item["bundle"]).render().rstrip()])
+        return "\n".join(lines) + "\n"
 
 
 def format_terminal_result(bundle: dict[str, Any]) -> str:
     """Render a compact, human-readable result for the default CLI path."""
-    if bundle.get("batch"):
-        return format_batch_terminal_result(bundle)
-
-    result = bundle["output"]["report"]
-    ok = bundle["output"]["ok"]
-    results = bundle["results"]
-    outputs = results["returns"]
-
-    names = list(outputs.keys())
-    title = names[0] if len(names) == 1 else "Culsma run"
-    lines = [] if ok else [f"{title} failed", ""]
-
-    lines.append("materials:")
-    for row in results["materials"]:
-        lines.append(f"  {row['name']}: {_format_number(row['amount'])} {row['unit']}")
-    if not results["materials"]:
-        lines.append("  (none recorded)")
-
-    lines.extend(["", "resources:"])
-    for row in results["resources"]:
-        description = row["kind"]
-        if "name" in row:
-            description += f" {row['name']}"
-        elif row.get("capacity_uL") is not None:
-            capacity = row["capacity_uL"]
-            quantity = f"{_format_number(capacity / 1000)} mL" if capacity >= 1000 else f"{_format_number(capacity)} uL"
-            description += f" ({quantity})"
-        lines.append(f"  {row['count']} x {description}")
-    if not results["resources"]:
-        lines.append("  (none recorded)")
-
-    lines.extend(["", "return:"])
-    if outputs:
-        for protocol_name, payload in outputs.items():
-            if len(outputs) > 1:
-                lines.append(f"  {protocol_name}:")
-                indent = "    "
-            else:
-                indent = "  "
-            if not isinstance(payload, dict):
-                lines.append(f"{indent}{payload}")
-                continue
-            if "bindings" in payload and isinstance(payload["bindings"], dict):
-                for name, value in payload["bindings"].items():
-                    lines.append(f"{indent}{name}:")
-                    lines.extend(_format_return_value(value, indent=indent + "  "))
-            elif "value" in payload:
-                lines.extend(_format_return_value(payload["value"], indent=indent))
-            else:
-                lines.append(f"{indent}(no explicit return value)")
-    else:
-        lines.append("  (no explicit return value)")
-    inventory = result.get("external_inventory", {}) if isinstance(result, dict) else {}
-    if isinstance(inventory, dict) and inventory.get("checked") is True:
-        shortages = inventory.get("shortages")
-        shortage_count = len(shortages) if isinstance(shortages, list) else 0
-        if inventory.get("sufficient") is True:
-            lines.append("inventory: sufficient")
-        else:
-            lines.append(f"inventory: insufficient ({shortage_count} shortages)")
-    alerts = result.get("alerts", []) if isinstance(result, dict) else []
-    if isinstance(alerts, list) and alerts:
-        lines.append("alerts:")
-        for alert in alerts[:5]:
-            lines.append(f"  {alert}")
-    return "\n".join(lines) + "\n"
+    return TerminalResultFormatter(bundle).render()
 
 
 def format_batch_terminal_result(bundle: dict[str, Any]) -> str:
-    ok = bundle["output"]["ok"]
-    lines = [] if ok else ["Culsma batch failed"]
-    for run_item in bundle["runs"]:
-        if lines:
-            lines.append("")
-        lines.extend([f"{run_item['input']}:", format_terminal_result(run_item["bundle"]).rstrip()])
-    return "\n".join(lines) + "\n"
+    return TerminalResultFormatter(bundle).render_batch()
 
 
 def _load_initial_material_state(material_state_path: Path | None) -> dict[str, Any]:

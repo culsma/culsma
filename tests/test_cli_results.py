@@ -350,3 +350,103 @@ def test_batch_results_preserve_independent_runs_in_input_order(tmp_path, monkey
     assert len(results) == 2
     assert all(set(item) == {"materials", "resources", "returns"} for item in results)
     assert [item["returns"]["entry"]["value"] for item in results] == ["first", "second"]
+
+
+@pytest.mark.parametrize("label", ["ClarifiedLysate", None])
+def test_protocol_observation_subject_uses_container_label_with_name_fallback(tmp_path, label):
+    from copy import deepcopy
+    declaration = f'label = "{label}", ' if label else ""
+    source = tmp_path / "subject.culs"
+    source.write_text(f'''protocol Observe {{
+      let sample = tube({declaration}capacity = 1mL);
+      let readout = img(sample = sample, quantity = fluorescence, save_raw = true);
+      return readout;
+    }}
+    let observation = Observe();
+    return observation;''')
+    bundle = execute_pipeline([source])
+    assert bundle["output"]["ok"]
+    before = deepcopy(bundle["results"]["returns"])
+    observation = before["entry"]["value"]
+    internal_name = observation["subject_ref"]["name"]
+    assert internal_name.startswith("__cmp_")
+    assert f"subject: {label or internal_name}\n" in format_terminal_result(bundle)
+    assert bundle["results"]["returns"] == before
+    assert bundle["output"]["returns"] == before
+
+
+@pytest.mark.parametrize("group", [False, True])
+def test_duplicate_observation_labels_preserve_distinct_subjects_and_nested_display(tmp_path, group):
+    from copy import deepcopy
+    returned = '''let observations = data_group_ref(kind = acquisition);
+      observations.items.append(first);
+      observations.items.append(second);
+      return observations;''' if group else "return [first, second];"
+    source = tmp_path / "shared_labels.culs"
+    source.write_text('''protocol Observe(sample) {
+      let readout = img(sample = sample, quantity = fluorescence);
+      return readout;
+    }
+    let a = tube(label = "Shared");
+    let b = tube(label = "Shared");
+    let first = Observe(sample = a);
+    let second = Observe(sample = b);
+    ''' + returned)
+    bundle = execute_pipeline([source])
+    assert bundle["output"]["ok"]
+    before = deepcopy(bundle["results"]["returns"])
+    value = before["entry"]["value"]
+    observations = value["items"] if group else value
+    assert observations[0]["resolved_sample"] != observations[1]["resolved_sample"]
+    assert format_terminal_result(bundle).count("subject: Shared\n") == 2
+    assert bundle["results"]["returns"] == before
+
+
+def test_batch_observation_display_keeps_each_runs_label_context(tmp_path):
+    from copy import deepcopy
+    from culsma.cli import execute_batch_pipeline
+    sources = []
+    for label in ("First", "Second"):
+        source = tmp_path / f"{label}.culs"
+        source.write_text(f'''let sample = tube(label = "{label}");
+          let readout = img(sample = sample, quantity = fluorescence);
+          return readout;''')
+        sources.append(source)
+    bundle = execute_batch_pipeline(sources)
+    assert bundle["output"]["ok"]
+    before = deepcopy(bundle["results"])
+    text = format_terminal_result(bundle)
+    first, second = text.split(f"{sources[1]}:")
+    assert "subject: First\n" in first and "subject: Second\n" not in first
+    assert "subject: Second\n" in second and "subject: First\n" not in second
+    assert bundle["results"] == before
+
+
+def test_formatter_formats_observation_independently_of_cli_execution():
+    from culsma.cli import TerminalResultFormatter
+    formatter = TerminalResultFormatter({"run": {"state": {"artifacts": {
+        "material_state": {"containers": {"sample-id": {"metadata": {"label": "Sample"}}}}
+    }}}})
+    observation = {
+        "kind": "data_ref", "contract_kind": "fluorescence",
+        "resolved_sample": "sample-id", "subject_ref": {"name": "__compiled_sample"},
+        "result": {"signal": 0, "missing": None},
+    }
+    assert formatter.format_data(observation, indent="") == [
+        "data: fluorescence", "  subject: Sample", "  signal: 0",
+    ]
+    assert observation["subject_ref"] == {"name": "__compiled_sample"}
+
+
+def test_formatter_container_group_preview_can_be_tested_independently():
+    from copy import deepcopy
+    from culsma.cli import TerminalResultFormatter
+    group = {"kind": "container_group_ref", "members": [
+        {"label": label, "container_kind": "tube"} for label in ("First", "Second", "Third")
+    ]}
+    before = deepcopy(group)
+    formatter = TerminalResultFormatter({})
+    assert formatter.format_container_group(group, preview_limit=1) == [
+        "  container group: 3 tubes", "  First (tube)", "  ...",
+    ]
+    assert group == before

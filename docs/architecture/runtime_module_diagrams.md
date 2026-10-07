@@ -707,7 +707,9 @@ flowchart TB
     Materials --> Compact[Compact results]
     Resources --> Compact
     ReturnValues --> Compact
-    Compact --> Console[Default CLI]
+    Compact --> Formatter["cli.py::TerminalResultFormatter"]
+    State -->|container labels by identity| Formatter
+    Formatter --> Console[Default CLI]
     Compact --> File[--results FILE.json]
     Accounting --> Report[LabReport / lab_report_v1]
     Report --> Legacy[--json / --output]
@@ -729,9 +731,41 @@ Compact-result review rules:
    allocations such as wells are coalesced by `carrier_id` before counting.
 5. Protocol returns pass through unchanged. Console shortening never truncates
    the JSON return value.
+6. CLI formatting owns display labels and kind-based rendering. Each batch run
+   gets its own formatter; labels never replace container identity.
 
 ```mermaid
 classDiagram
+    class Cli {
+        <<module>>
+        +format_terminal_result(bundle) str
+        +format_batch_terminal_result(bundle) str
+    }
+
+    class TerminalResultFormatter {
+        -_bundle
+        -_subject_labels
+        -_value_renderers
+        +render() str
+        +render_batch() str
+        +format_value(value) list
+        +format_container(value) list
+        +format_data(value) list
+        +format_data_group(value) list
+        +format_quantity(value) list
+    }
+
+    class CompactResults {
+        <<projection>>
+        +materials
+        +resources
+        +returns
+    }
+
+    class RuntimeState {
+        +artifacts
+    }
+
     class LabReport {
         +execution
         +headline
@@ -833,6 +867,12 @@ classDiagram
         +environment_steps
         +readout_steps
     }
+
+    Cli ..> TerminalResultFormatter : creates per run
+    TerminalResultFormatter ..> CompactResults : renders by kind
+    TerminalResultFormatter ..> RuntimeState : reads labels by container id
+    TerminalResultFormatter ..> LabReport : reads inventory and alerts
+    TerminalResultFormatter ..> TerminalResultFormatter : isolated formatter per batch run
 
     LabReport *-- ExecutionSummary : execution
     LabReport *-- MaterialsReport : materials
