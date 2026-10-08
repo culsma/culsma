@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-## 1.0.8 — 2026-10-07
+## 1.0.8 — 2026-10-08
 
 ### Constraint integration
 - Allow gentle, aseptic, cross-contamination control, cold-chain, dark-protected,
@@ -13,6 +13,12 @@
   conflicting programs or replay plans now fail before the affected action.
 
 ### Added
+
+- Added explicit `ShakeMotion.LINEAR`, `ORBITAL`, `ROCK`, and `ROTATION`
+  trajectories for `AgitationMode.SHAKE`, with shared source and runtime
+  parameter validation. Linear and rocking rates use `Hz` or `cycle/min`;
+  orbital and rotation rates use `rpm`. Unspecified shake motion and existing
+  rotation forms remain compatible.
 
 - Added `AgitationMode.ROTATION` for continuous sample rotation, requiring a finite
   positive action duration and allowing an optional positive rotation rate. Cycles
@@ -71,10 +77,6 @@
 
 - Content metadata retains enum identity through aliases, protocol arguments,
   conditional bindings and serialized execution plans.
-
-- Qualified imported protocol calls can be used in `let` and `return`
-  expressions. Their returned groups remain indexable, and caller-owned
-  containers retain identity through nested imported protocol calls.
 
 ## 1.0.7 — 2026-09-21
 
