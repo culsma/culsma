@@ -237,6 +237,7 @@ class IRProtocol:
     source_role: str | None = None
     params: list[IRParam] = field(default_factory=list)
     returns: list[str] = field(default_factory=list)
+    legacy_returns_header: bool = False
     return_value: IRExpr | None = None
     return_bindings: list[IRArg] = field(default_factory=list)
     statements: list[IRStatement] = field(default_factory=list)

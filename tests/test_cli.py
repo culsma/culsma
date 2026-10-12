@@ -37,6 +37,75 @@ def _container_by_label(containers: dict, label: str) -> dict:
     return matches[0]
 
 
+def test_tail_return_declares_named_outputs_without_header(tmp_path):
+    source = tmp_path / "tail_returns.culs"
+    source.write_text(
+        "protocol T { return sample = 1, readout = 2; }\n",
+        encoding="utf-8",
+    )
+
+    bundle = execute_pipeline([source])
+
+    assert bundle["run"]["ok"]
+    assert bundle["returns"]["T"]["returns"] == ["sample", "readout"]
+    assert bundle["returns"]["T"]["bindings"] == {"sample": 1, "readout": 2}
+    assert not any(d["code"] == "SEM_RETURNS_HEADER_DEPRECATED" for d in bundle["validate"])
+
+
+def test_tail_named_output_can_bind_component_call_without_header(tmp_path):
+    source = tmp_path / "tail_component.culs"
+    source.write_text(
+        "protocol Child { return output = 2; }\nlet result = Child();\nreturn result;\n",
+        encoding="utf-8",
+    )
+
+    bundle = execute_pipeline([source])
+
+    assert bundle["run"]["ok"]
+    assert bundle["returns"]["entry"]["value"] == 2
+    assert not any(d["code"] == "SEM_RETURNS_HEADER_DEPRECATED" for d in bundle["validate"])
+
+
+def test_legacy_returns_header_still_runs_with_migration_warning(tmp_path):
+    source = tmp_path / "header_returns.culs"
+    source.write_text(
+        "protocol T returns (sample, readout) { return sample = 1, readout = 2; }\n",
+        encoding="utf-8",
+    )
+
+    bundle = execute_pipeline([source])
+
+    assert bundle["run"]["ok"]
+    assert bundle["returns"]["T"]["bindings"] == {"sample": 1, "readout": 2}
+    warnings = [d for d in bundle["validate"] if d["code"] == "SEM_RETURNS_HEADER_DEPRECATED"]
+    assert len(warnings) == 1
+    assert warnings[0]["severity"] == "warning"
+    assert "return name = value" in warnings[0]["message"]
+    assert not any(d["code"] == "SEM_RETURNS_HEADER_DEPRECATED" for d in bundle["plan"]["diagnostics"])
+
+
+def test_empty_legacy_returns_header_also_warns(tmp_path):
+    source = tmp_path / "empty_header_returns.culs"
+    source.write_text("protocol T returns () {}\n", encoding="utf-8")
+
+    bundle = execute_pipeline([source])
+
+    assert bundle["run"]["ok"]
+    assert [d["code"] for d in bundle["validate"]] == ["SEM_RETURNS_HEADER_DEPRECATED"]
+
+
+def test_cli_displays_returns_header_migration_warning(tmp_path, monkeypatch, capsys):
+    source = tmp_path / "header_returns.culs"
+    source.write_text("protocol T returns (out) { return 1; }\n", encoding="utf-8")
+    monkeypatch.setattr(sys, "argv", ["culsma", "run", str(source), "--json"])
+
+    main()
+
+    captured = capsys.readouterr()
+    assert json.loads(captured.out)["ok"]
+    assert "warning: Protocol 'T' uses deprecated header returns(...)" in captured.err
+
+
 def test_cli_run_prints_human_summary_to_stdout_by_default(tmp_path, monkeypatch, capsys):
     source = _write_smoke_source(tmp_path)
     monkeypatch.setattr(sys, "argv", ["culsma", "run", "--input", str(source)])
@@ -529,7 +598,7 @@ def test_cli_machine_output_projects_named_container_group_return(tmp_path, monk
     source = tmp_path / "group_return.culs"
     source.write_text(
         """
-protocol GroupReturn returns (wells) {
+protocol GroupReturn {
   let a1 = well(label = "A1", capacity = 50uL);
   let a2 = well(label = "A2", capacity = 50uL);
   let mix = tube(label = "Mix", capacity = 100uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):50uL]);
@@ -562,7 +631,7 @@ def test_cli_machine_output_projects_plate_selector_group_return(tmp_path, monke
     source = tmp_path / "plate_selector_return.culs"
     source.write_text(
         """
-protocol SelectorReturn returns (wells) {
+protocol SelectorReturn {
   let plate96 = plate(label = "QPCR96", format = "96well", carrier_id = "PlateA");
   let mix = tube(label = "Mix", capacity = 100uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):50uL]);
   plate96[A1:A2] << [mix:10uL];
@@ -591,7 +660,7 @@ def test_cli_human_summary_summarizes_container_group_return(tmp_path, monkeypat
     source = tmp_path / "group_return.culs"
     source.write_text(
         """
-protocol GroupReturn returns (wells) {
+protocol GroupReturn {
   let a1 = well(label = "A1", capacity = 50uL);
   let a2 = well(label = "A2", capacity = 50uL);
   let mix = tube(label = "Mix", capacity = 100uL, load = [content(kind = "biosample", code = "S1", type = "dna_sample"):50uL]);

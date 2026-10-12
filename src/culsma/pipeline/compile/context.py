@@ -73,7 +73,7 @@ def _validate_protocol_return_contract(proto: ProtocolDecl) -> None:
         if len(binding_names) != len(set(binding_names)):
             raise ValueError(f"Protocol '{proto.name}' return statement declares duplicate binding names")
         if not proto.returns:
-            raise ValueError(f"Protocol '{proto.name}' uses named return bindings without a returns(...) declaration")
+            return
         unknown = sorted(set(binding_names) - set(proto.returns))
         if unknown:
             raise ValueError(

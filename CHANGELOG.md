@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Changed
+
+- Tail `return` statements now declare named protocol outputs without a
+  `returns (...)` header. The header remains valid for 1.x compatibility and
+  emits `SEM_RETURNS_HEADER_DEPRECATED` with a migration hint; it is planned for
+  removal in the next major version.
+
 ## 1.0.8 — 2026-10-08
 
 ### Constraint integration

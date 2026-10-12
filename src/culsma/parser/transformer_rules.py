@@ -259,9 +259,26 @@ class ProtocolDeclHandler(TopLevelRuleHandler):
         returns: list[str] = []
         if remaining and isinstance(remaining[0], list) and (not remaining[0] or isinstance(remaining[0][0], ParamDecl)):
             params = remaining.pop(0)
-        if remaining and isinstance(remaining[0], list) and (not remaining[0] or isinstance(remaining[0][0], str)):
-            returns = remaining.pop(0)
-        return ProtocolDecl(name=name, params=params, returns=returns, statements=remaining, span=state.span)
+        header_returns_declared = False
+        if remaining and isinstance(remaining[0], HeaderReturnsDecl):
+            returns = remaining.pop(0).names
+            header_returns_declared = True
+        return ProtocolDecl(
+            name=name, params=params, returns=returns,
+            header_returns_declared=header_returns_declared,
+            statements=remaining, span=state.span,
+        )
+
+
+@dataclass(frozen=True)
+class HeaderReturnsDecl:
+    names: list[str]
+
+
+class HeaderReturnsDeclHandler(TopLevelRuleHandler):
+    def construct_ast(self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState) -> HeaderReturnsDecl:
+        del meta, ctx, state
+        return HeaderReturnsDecl(names=list(items[0]) if items else [])
 
 
 class ParamDeclHandler(TopLevelRuleHandler):
@@ -723,7 +740,7 @@ def create_parse_rule_dispatcher() -> ParseRuleDispatcher:
             "protocol_decl": ProtocolDeclHandler(),
             "param_decl_list": list_handler,
             "param_decl": ParamDeclHandler(),
-            "returns_decl": empty_or_first_handler,
+            "returns_decl": HeaderReturnsDeclHandler(),
             "return_name_list": StringListRuleHandler(),
             "statement": first_item_handler,
             "include_stmt": IncludeStmtHandler(),

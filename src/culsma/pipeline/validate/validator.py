@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Mapping
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.pipeline.compat.returns_header import returns_header_diagnostics
 from culsma.pipeline.analysis import CompileAnalysis, ProtocolAnalysis
 from culsma.pipeline.content_inputs import ContentArgumentResolver, ContentArgumentScope, content_enum_diagnostics
 from culsma.pipeline.ir_nodes import IRBoolean, IRList, IRParam, IRProgram, IRQuantity, IRScriptEntry, IRString
@@ -27,7 +28,7 @@ def validate(
     content_type_policy: str = "required",
 ) -> ValidationResult:
     """Validate IR against builtin operation signature rules."""
-    diagnostics: list[Diagnostic] = []
+    diagnostics: list[Diagnostic] = returns_header_diagnostics(ir)
     operations = operation_specs
     scope_query = ScopeQueryService.from_model(analysis.scope)
 

@@ -61,6 +61,7 @@ def expand_component_calls(
             source_role=protocol.source_role,
             params=list(protocol.params),
             returns=list(protocol.returns),
+            header_returns_declared=protocol.header_returns_declared,
             statements=_expand_statement_list(protocol.statements, lookup=lookup, call_stack=[protocol.name], token_seed=protocol.name),
             span=protocol.span,
         )
@@ -351,7 +352,7 @@ def _inline_component_call(
     if result_name is not None and return_stmt is None:
         raise ValueError(f"Component '{protocol.name}' does not define a return value")
     if result_name is not None and return_stmt is not None and return_stmt.bindings:
-        if len(return_stmt.bindings) != 1 or len(protocol.returns) != 1:
+        if len(return_stmt.bindings) != 1 or (protocol.returns and len(protocol.returns) != 1):
             raise ValueError(
                 f"Component '{protocol.name}' uses named multi-return and cannot be let-bound until bundle return semantics are implemented"
             )

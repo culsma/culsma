@@ -134,7 +134,7 @@ class IRCompiler:
             param_names=param_names,
         )
         statements = self.statement_compiler.compile_list(proto.statements, ctx=ctx)
-        return_prefix, return_value, return_bindings, _returns = self.compile_return(
+        return_prefix, return_value, return_bindings, return_names = self.compile_return(
             return_stmt=return_stmt,
             scope_id=proto_id,
             ctx=ctx,
@@ -156,7 +156,8 @@ class IRCompiler:
             source_path=proto.source_path,
             source_role=proto.source_role,
             params=[self.expr_compiler.compile_param(param) for param in proto.params],
-            returns=list(proto.returns),
+            returns=list(proto.returns) if proto.returns else return_names,
+            legacy_returns_header=proto.header_returns_declared,
             return_value=(
                 self.expr_compiler.compile(return_value)
                 if return_value is not None

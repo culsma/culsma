@@ -59,6 +59,7 @@ class ProtocolDecl:
     source_role: str | None = None
     params: list[ParamDecl] = field(default_factory=list)
     returns: list[str] = field(default_factory=list)
+    header_returns_declared: bool = False
     statements: list[Statement] = field(default_factory=list)
     span: Span | None = None
 
