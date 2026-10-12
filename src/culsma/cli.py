@@ -528,7 +528,7 @@ def _argv_for_parser(argv: list[str]) -> list[str]:
     return argv
 
 
-def _print_returns_header_warnings(bundle: dict[str, Any]) -> None:
+def print_returns_header_warnings(bundle: dict[str, Any]) -> None:
     runs = bundle["runs"] if bundle.get("batch") else [{"bundle": bundle}]
     for item in runs:
         for diagnostic in item["bundle"].get("validate", []):
@@ -623,7 +623,7 @@ def main() -> None:
             ),
             library_roots=[Path(p) for p in args.library_root],
         )
-        _print_returns_header_warnings(bundle)
+        print_returns_header_warnings(bundle)
         if args.results:
             _write_json(Path(args.results), bundle["results"])
             if not bundle["output"]["ok"]:

@@ -669,6 +669,15 @@ class TestProtocolParams:
         ast = parse("protocol T(sample) returns (prepared_out, seq_out) { return prepared_out = sample, seq_out = sample; }")
         proto = ast.protocols[0]
         assert proto.returns == ["prepared_out", "seq_out"]
+        assert proto.header_returns_declared
+
+    def test_protocol_decl_distinguishes_absent_and_empty_header_returns(self):
+        absent = parse("protocol T { return output = 1; }").protocols[0]
+        empty = parse("protocol T returns () {}").protocols[0]
+        assert absent.returns == []
+        assert not absent.header_returns_declared
+        assert empty.returns == []
+        assert empty.header_returns_declared
 
     def test_protocol_tail_return_statement(self):
         ast = parse("protocol T(sample) { return sample; }")
