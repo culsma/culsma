@@ -2219,6 +2219,54 @@ def test_runtime_executes_mutation_step_and_updates_material_state():
     assert result.state.artifacts["material_state"]["containers"]["B"]["volume_uL"] == 10.0
 
 
+@pytest.mark.parametrize(
+    ("target_capacity", "expected_ok", "expected_volumes"),
+    [
+        (200, True, {"TARGET": 60.0, "A": 0.0, "B": 40.0}),
+        (50, False, {"TARGET": 0.0, "A": 40.0, "B": 60.0}),
+    ],
+)
+def test_runtime_mixed_full_and_quantified_mutation_is_one_ordered_step(
+    target_capacity, expected_ok, expected_volumes
+):
+    plan = _build_plan_from_source(
+        f'''
+protocol T {{
+  let target = tube(label = "TARGET", capacity = {target_capacity}uL);
+  let a = tube(label = "A", capacity = 100uL, load = [content(kind = "formulation", type = "buffer", code = "A"):40uL]);
+  let b = tube(label = "B", capacity = 100uL, load = [content(kind = "formulation", type = "buffer", code = "B"):60uL]);
+  target << [a, b:20uL];
+}}
+'''
+    )
+    mutation_steps = [step for step in plan.plans[0].steps if step.op == "Mutation"]
+    assert len(mutation_steps) == 1
+
+    result = run(plan=plan, driver=StubDriver())
+    assert result.ok is expected_ok
+    material = result.state.artifacts["material_state"]
+    actual_volumes = {
+        container["metadata"]["label"]: container["volume_uL"]
+        for container in material["containers"].values()
+        if container.get("metadata", {}).get("label") in expected_volumes
+    }
+    assert actual_volumes == expected_volumes
+
+    mutation_step = mutation_steps[0]
+    if expected_ok:
+        completed = [
+            event for event in result.events
+            if event.kind == "STEP_COMPLETED" and event.step_id == mutation_step.step_id
+        ]
+        assert len(completed) == 1
+        assert [source["mode"] for source in completed[0].payload["material_delta"]["sources"]] == [
+            "full", "quantified"
+        ]
+    else:
+        assert result.state.step_status[mutation_step.step_id] == "failed"
+        assert any(diagnostic.code == "MAT_CONTAINER_OVERFLOW" for diagnostic in result.diagnostics)
+
+
 def test_runtime_step_events_preserve_gate_for_env_backed_steps():
     plan = PlanProgram(
         plans=[

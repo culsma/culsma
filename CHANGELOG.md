@@ -4,6 +4,8 @@
 
 ### Changed
 
+- `<<` source lists may mix whole-source and quantified transfers; items run in
+  source order within one mutation step, with no material-state commit if an item fails.
 - Tail `return` statements now declare named protocol outputs without a
   `returns (...)` header. The header remains valid for 1.x compatibility and
   emits `SEM_RETURNS_HEADER_DEPRECATED` with a migration hint; it is planned for

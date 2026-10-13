@@ -1030,11 +1030,11 @@ def test_validate_data_group_ref_classifies_as_group_binding():
     assert binding.kind == "data_group"
 
 
-def test_validate_mutation_disallows_mixed_source_styles():
+def test_validate_mutation_allows_mixed_source_styles():
     src = "protocol T { tube << [feed_a:1uL, feed_b]; }"
     ir = _compile_source(src)
     result = validate(ir)
-    assert "SEM_MUTATION_QUANTITY_STYLE_CONFLICT" in _codes(result)
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
 
 
 def test_validate_source_partition_accepts_sep_family_program_in_mutation_source():

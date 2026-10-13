@@ -19,7 +19,6 @@ from culsma.pipeline.ir_nodes import (
     IRCall,
     IRLet,
     IRMutation,
-    IRPair,
     IRQuantity,
     IRStatement,
     IRStep,
@@ -235,19 +234,6 @@ def validate_mutation_contract(
 ) -> list[Diagnostic]:
     del group_bindings
     diagnostics: list[Diagnostic] = []
-    has_quantified = any(isinstance(source, IRPair) for source in stmt.sources)
-    has_unquantified = any(not isinstance(source, IRPair) for source in stmt.sources)
-    if has_quantified and has_unquantified:
-        diagnostics.append(
-            Diagnostic(
-                code="SEM_MUTATION_QUANTITY_STYLE_CONFLICT",
-                message="mutation_stmt source list must not mix quantified and unquantified items",
-                span=stmt.span,
-                node_id=stmt.id,
-            )
-        )
-        return diagnostics
-
     if "spread" in active_requirements and stmt.target is not None:
         target = ExprResolver.resolve_bound_expr(stmt.target, expr_bindings)
         if isinstance(target, IRCall) and target.name == "AllocContainer":
