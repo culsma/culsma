@@ -40,7 +40,7 @@ flowchart TB
     StatementLoop{"More source statements?"}
     Dispatch["Select statement lowering handler<br/>by AST statement type"]
     HandlerFound{"Handler exists?"}
-    LowerStatement["Lower statement through handler lifecycle:<br/>normalize source form, update compile context,<br/>emit zero or more IR statements,<br/>compile nested blocks when needed"]
+    LowerStatement["Lower statement through handler lifecycle:<br/>normalize source form, update compile context,<br/>emit IR statements; preserve multi-target mutations<br/>as one ordered IRMutationGroup; single target stays scalar"]
     RecordAnalysis["Record sidecar analysis facts<br/>from emitted IR statements"]
     NextStatement["Continue with next source statement"]
     ReturnLowering["Compile protocol return value and bindings"]
@@ -417,6 +417,10 @@ classDiagram
     class WithEnvHandler
     class WithConstraintHandler
     class MutationHandler
+    class IRMutationGroup {
+        +members: list~IRMutation~
+    }
+    class IRMutation
     class StepCallHandler
     class ControlHandler
     class RepeatHandler
@@ -563,6 +567,9 @@ classDiagram
     WithEnvHandler --> ScheduleEvaluator
     WithEnvHandler --> StaticControlClassifier
     WithEnvHandler --> ExprCompiler
+    MutationHandler ..> IRMutationGroup : multiple targets
+    MutationHandler ..> IRMutation : single target
+    IRMutationGroup "1" *-- "2..*" IRMutation : ordered members
     MutationHandler --> TargetResolver
     MutationHandler --> ExprCompiler
     StepCallHandler --> CallableLowering

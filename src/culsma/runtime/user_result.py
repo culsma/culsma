@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from culsma.pipeline.plan_nodes import PlanStepTree
+
 from typing import Any
 
 from culsma.pipeline.content_vocab import ContentKind, ContentType
@@ -245,7 +247,7 @@ def _extract_calculation_summary(*, plan: Any, state: Any) -> ProcessSummary:
     statuses = getattr(state, "step_status", {})
     statuses = statuses if isinstance(statuses, dict) else {}
     for protocol in getattr(plan, "plans", []):
-        for step in getattr(protocol, "steps", []):
+        for step in PlanStepTree.leaves(getattr(protocol, "steps", [])):
             if statuses.get(getattr(step, "step_id", "")) != "completed":
                 continue
             op = str(getattr(step, "op", ""))
@@ -553,7 +555,7 @@ def _container_usage_summary(*, plan: Any, final_material_state: dict[str, Any] 
     allocated = 0
     kind_counts: dict[str, int] = {}
     for protocol in getattr(plan, "plans", []):
-        for step in getattr(protocol, "steps", []):
+        for step in PlanStepTree.leaves(getattr(protocol, "steps", [])):
             if getattr(step, "op", "") != "AllocContainer":
                 continue
             allocated += 1
@@ -598,7 +600,7 @@ def _instrument_usage_summary(*, plan: Any) -> InstrumentSummary:
     tool_counts: dict[str, int] = {}
     device_counts: dict[str, int] = {}
     for protocol in getattr(plan, "plans", []):
-        for step in getattr(protocol, "steps", []):
+        for step in PlanStepTree.leaves(getattr(protocol, "steps", [])):
             args = getattr(step, "args", {})
             if not isinstance(args, dict):
                 continue

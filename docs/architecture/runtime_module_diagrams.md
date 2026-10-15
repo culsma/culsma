@@ -379,8 +379,8 @@ diagnostic without mutation.
 flowchart TB
     Start(["Start runtime run"])
     Boundary["Confirm execution boundary:<br/>selected entry session"]
-    Init["Prepare session-scoped runtime state:<br/>init or reuse RuntimeState,<br/>create EventLog, diagnostics, step lookup tables"]
-    Order["Order steps inside the session:<br/>compute dependency layers, protocol output capture points,<br/>reference-call groups and cache"]
+    Init["Prepare session-scoped runtime state:<br/>init or reuse RuntimeState,<br/>create EventLog, diagnostics,<br/>index group envelopes and member steps"]
+    Order["Order steps inside the session:<br/>schedule envelopes; index members separately;<br/>compute dependencies, output capture points and ref cache"]
     RoundLoop{"More scheduler rounds<br/>with progress?"}
     StepLoop{"More pending steps<br/>to scan this round?"}
     Select["Select one pending step"]
@@ -407,7 +407,28 @@ flowchart TB
     StepLoop -->|yes| Select
     Select --> Deps
     Deps -->|no| StepLoop
-    Deps -->|yes| Gate
+    Deps -->|yes| GroupKind
+    GroupKind{"MutationGroup?"}
+    GroupKind -->|no| Gate
+    GroupKind -->|yes| GroupReady
+    GroupReady{"Member states resolved?"}
+    GroupReady -->|no| GroupUnresolved["RT_MUTATION_GROUP_UNRESOLVED"]
+    GroupUnresolved --> GroupBlocked["Fail group and stop; retain member facts"]
+    GroupReady -->|yes| GroupMode
+    GroupMode{"supports_group_execution?"}
+    GroupMode -->|no| GroupMembers
+    GroupMode -->|yes| GroupPrepare["prepare_group:<br/>interpret on isolated state;<br/>no device actions or formal material commits"]
+    GroupPrepare --> GroupSend["execute_group once if prepared members exist"]
+    GroupSend --> GroupValid{"Result IDs, order, count and types match?"}
+    GroupValid -->|no| GroupInvalid["Fail group: RT_GROUP_RESULT_INVALID<br/>Do not apply results; external effects may exist"]
+    GroupValid -->|yes| GroupReplay["Use GroupResultDriver:<br/>read returned results without device re-execution"]
+    GroupReplay --> GroupMembers["handle_members in order:<br/>existing dependency, gate, material and result rules;<br/>retain completed prefix on failure"]
+    GroupMembers --> GroupAbort{"Member handler requests abort?"}
+    GroupAbort -->|yes| GroupBlocked
+    GroupAbort -->|no| GroupFinish["Aggregate group status;<br/>group events are structural; summaries count leaves"]
+    GroupFinish --> StepLoop
+    GroupBlocked --> Finalize
+    GroupInvalid --> Finalize
     Gate -->|skip| Finish
     Gate -->|error| Finish
     Gate -->|run| Ref
@@ -441,22 +462,33 @@ sequenceDiagram
     participant Session as "runtime/session.py::RuntimeSession"
     participant Disp as "runtime/steps.py::RuntimeStepDispatcher"
     participant H as "runtime/steps.py::BaseRuntimeStepHandler"
+    participant Group as "MutationGroupStepHandler"
     participant Accounting as "runtime/material/accounting.py::MaterialAccountingRecorder"
     participant Final as "runtime/finalize.py::RuntimeFinalizer"
     participant Report as "runtime/user_result.py::ReportBuilder"
 
     Caller->>API: run(selected-entry plan, driver, state, ...)
     API->>Exec: RuntimeExecutor(...)
+    API->>Exec: execute(plan, driver, runtime_state, ...)
     Exec->>Accounting: initialize(initial_material_state)
-    API->>Session: create RuntimeSession(plan, driver, runtime_state, services)
-    API->>Exec: execute(session)
+    Exec->>Session: RuntimeSession(plan, driver, runtime_state, services)
 
     loop scheduler rounds
         Exec->>Exec: scan pending steps and pick ready step
         Exec->>Disp: dispatch(step, session)
-        Disp->>H: handle(step, session)
-        H->>Accounting: record successful material update
-        H-->>Exec: step result recorded through session
+        alt MutationGroup
+            Disp->>Group: handle(group, session)
+            Group->>Group: optional prepare_group / handle_native
+            loop ordered eligible members
+                Group->>H: handle(member, session)
+                H->>Accounting: record successful material update
+            end
+            Group-->>Exec: member facts and aggregate group status
+        else scalar or control step
+            Disp->>H: handle(step, session)
+            H->>Accounting: record successful material update
+            H-->>Exec: step result recorded through session
+        end
     end
 
     Exec->>Final: finalize(session)
@@ -1077,7 +1109,7 @@ classDiagram
     }
 
     class RuntimeExecutor {
-        +execute(session) RunResult
+        +execute(plan, driver, runtime_state, ...) RunResult
     }
 
     class RuntimeSession {
@@ -1118,7 +1150,22 @@ classDiagram
     class ControlStepHandler
     class LocalStateStepHandler
     class RepeatStepHandler
-    class DriverBackedStepHandler
+    class DriverBackedStepHandler {
+        +prepare_step(step, session, state)
+        +apply_result(step, session, state, prepared, result)
+    }
+    class MutationGroupStepHandler {
+        +handle(step, session)
+        +handle_members(step, session)
+        +prepare_group(step, session)
+        +handle_native(step, session)
+    }
+    class GroupPreparationStepHandler
+    class GroupResultDriver
+    class GroupDriver {
+        <<protocol>>
+        +execute_group(group) GroupDriverResult
+    }
 
     class RuntimeState {
         +step_status
@@ -1208,7 +1255,7 @@ classDiagram
     class PlanStep
 
     RuntimeAPI --> RuntimeExecutor : creates
-    RuntimeAPI --> RuntimeSession : builds
+    RuntimeExecutor --> RuntimeSession : builds
     RuntimeExecutor --> RuntimeSession : mutates
     RuntimeExecutor --> RuntimeStepDispatcher : dispatches through
     RuntimeExecutor --> RuntimeFinalizer : finalizes through
@@ -1216,7 +1263,14 @@ classDiagram
     RuntimeSession --> RuntimeState : wraps
     RuntimeSession --> EventLog : writes through
     EventLog --> RuntimeEvent : contains
-    RuntimeStepDispatcher --> BaseRuntimeStepHandler : selects
+    RuntimeStepDispatcher --> BaseRuntimeStepHandler : scalar and control
+    RuntimeStepDispatcher --> MutationGroupStepHandler : group envelope
+    MutationGroupStepHandler --> DriverBackedStepHandler : ordered member interpretation
+    MutationGroupStepHandler ..> GroupPreparationStepHandler : isolated preparation
+    DriverBackedStepHandler <|-- GroupPreparationStepHandler
+    MutationGroupStepHandler ..> GroupDriver : optional group handoff
+    MutationGroupStepHandler ..> GroupResultDriver : consume returned results
+    GroupResultDriver ..|> Driver
     BaseRuntimeStepHandler --> RuntimeStepState : creates
     BaseRuntimeStepHandler --> RuntimeSession : records through
     BaseRuntimeStepHandler --> GateEvaluator : uses

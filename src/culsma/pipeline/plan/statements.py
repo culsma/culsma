@@ -19,6 +19,7 @@ from culsma.pipeline.ir_nodes import (
     IRLet,
     IRList,
     IRMutation,
+    IRMutationGroup,
     IRPair,
     IRQuantity,
     IRRepeat,
@@ -684,6 +685,16 @@ class ConditionalPlanHandler(BasePlanStatementHandler):
         self.serializer.invalidate_local_env_names(ctx.local_env, statements)
 
 
+class MutationGroupPlanHandler(BasePlanStatementHandler):
+    def lower_current_or_children(self, stmt, ctx, state):
+        members = ctx.statement_lowerer.lower_list(list(stmt.members), ctx)
+        return [PlanStep(
+            step_id=f"{ctx.step_id_prefix}{stmt.id}", op="MutationGroup",
+            args={"members": self.serializer.linearize_steps(members)},
+            gate=merge_gate(ctx.gate_base), span=stmt.span,
+        )]
+
+
 class MutationPlanHandler(BasePlanStatementHandler):
     def lower_current_or_children(
         self,
@@ -756,6 +767,7 @@ _STATEMENT_HANDLERS_BY_TYPE: dict[type[object], BasePlanStatementHandler] = {
     IRRepeat: RepeatPlanHandler(),
     IRConditional: ConditionalPlanHandler(),
     IRMutation: MutationPlanHandler(),
+    IRMutationGroup: MutationGroupPlanHandler(),
     IRControl: ControlPlanHandler(),
     IRStep: StepPlanHandler(),
 }

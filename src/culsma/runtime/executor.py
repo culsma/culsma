@@ -9,7 +9,7 @@ from typing import Any
 from culsma.common.diagnostics import Diagnostic
 from culsma.driver.base import Driver
 from culsma.domains.constraints.execution import RuntimeConstraintValidator
-from culsma.pipeline.plan_nodes import PlanProgram, PlanStep, ProtocolPlan
+from culsma.pipeline.plan_nodes import PlanProgram, PlanStep, ProtocolPlan, PlanStepTree
 from culsma.scientific_model import (
     ScientificModelResolver,
     create_default_scientific_model_resolver,
@@ -96,12 +96,15 @@ class RuntimeExecutor:
     ) -> RunResult:
         log = EventLog()
         steps = [step for protocol in plan.plans for step in protocol.steps]
-        for step in steps:
+        all_steps = PlanStepTree.walk(steps)
+        for step in all_steps:
             runtime_state.step_status.setdefault(step.step_id, "pending")
-        step_by_id = {step.step_id: step for step in steps}
+        step_by_id = {step.step_id: step for step in all_steps}
         step_layers = _compute_step_layers(steps)
         ordered_steps = sorted(steps, key=lambda s: (step_layers.get(s.step_id, 0), s.step_id))
-        step_index_by_id = {step.step_id: idx for idx, step in enumerate(ordered_steps)}
+        # Scheduler owns envelopes; handlers own member traversal.
+        session_steps = PlanStepTree.walk(ordered_steps)
+        step_index_by_id = {step.step_id: idx for idx, step in enumerate(session_steps)}
         protocol_plan_by_last_step_id = {
             protocol.steps[-1].step_id: protocol
             for protocol in plan.plans
@@ -116,7 +119,7 @@ class RuntimeExecutor:
         material_accounting_recorder = MaterialAccountingRecorder()
         material_accounting = material_accounting_recorder.initialize(initial_material_state)
         finalizer = RuntimeFinalizer()
-        ref_groups = ref_reuse_decider.build_groups(steps)
+        ref_groups = ref_reuse_decider.build_groups(PlanStepTree.leaves(steps))
         ref_groups_by_first = {group.first_step_id: group for group in ref_groups.values()}
         ref_cache = ref_reuse_decider.ensure_cache(runtime_state)
         material_compute = MaterialCompute(scientific_model=scientific_model)
@@ -128,7 +131,7 @@ class RuntimeExecutor:
             diagnostics=diagnostics,
             event_log=log,
             step_by_id=step_by_id,
-            ordered_steps=ordered_steps,
+            ordered_steps=session_steps,
             step_index_by_id=step_index_by_id,
             protocol_plan_by_last_step_id=protocol_plan_by_last_step_id,
             ref_groups=ref_groups,

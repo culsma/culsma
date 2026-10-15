@@ -101,6 +101,7 @@ flowchart TB
     WithEnv["IRWithEnv"]
     WithConstraint["IRWithConstraint"]
     Mutation["IRMutation"]
+    MutationGroup["IRMutationGroup<br/>id, members, span"]
     Conditional["IRConditional"]
     Control["IRControl"]
     Repeat["IRRepeat"]
@@ -123,6 +124,8 @@ flowchart TB
     Statement --> WithEnv
     Statement --> WithConstraint
     Statement --> Mutation
+    Statement --> MutationGroup
+    MutationGroup -->|ordered members| Mutation
     Statement --> Conditional
     Statement --> Control
     Statement --> Repeat
@@ -221,6 +224,7 @@ flowchart LR
     IRWithConstraint["IRWithConstraint.statements"] --> IRStatement
     IRConditional["IRConditional.then/else"] --> IRStatement
     IRRepeat["IRRepeat.statements"] --> IRStatement
+    IRMutationGroup["IRMutationGroup.members"] --> IRMutation["IRMutation"]
 ```
 
 ## IR Node Definition
@@ -245,6 +249,7 @@ flowchart LR
 | `IRWithEnv` | `id`, `env_args: list[IRArg]`, `targets: list[IRExpr]`, `statements: list[IRStatement]`, `explicit_hold`, `span` |
 | `IRWithConstraint` | `id`, `requirements: list[str]`, `options: list[IRArg]`, `statements: list[IRStatement]`, `span` |
 | `IRMutation` | `id`, `target: IRExpr | None`, `sources: list[IRExpr]`, `span` |
+| `IRMutationGroup` | `id`, `members: list[IRMutation]` in source order, `span`; one-member operations retain `IRMutation` |
 | `IRConditional` | `id`, `condition: IRExpr`, `then_statements: list[IRStatement]`, `else_statements: list[IRStatement]`, `span` |
 | `IRControl` | `id`, `action`, `span` |
 | `IRRepeat` | `id`, `binding`, `iterable: IRExpr`, `statements: list[IRStatement]`, `span` |
@@ -273,7 +278,7 @@ flowchart LR
 
 | Alias | Members |
 |---|---|
-| `IRStatement` | `IRInclude`, `IRLet`, `IRAssign`, `IRStep`, `IRWithEnv`, `IRWithConstraint`, `IRMutation`, `IRConditional`, `IRControl`, `IRRepeat` |
+| `IRStatement` | `IRInclude`, `IRLet`, `IRAssign`, `IRStep`, `IRWithEnv`, `IRWithConstraint`, `IRMutation`, `IRMutationGroup`, `IRConditional`, `IRControl`, `IRRepeat` |
 | `IRExpr` | `IRQuantity`, `IRString`, `IRBoolean`, `IRIdentifier`, `IRList`, `IRGroup`, `IRCall`, `IRPlateSelector`, `IRPlateWellRef`, `IRIndex`, `IRMember`, `IRPair`, `IRUnary`, `IRBinary` |
 
 ## Structural Rules

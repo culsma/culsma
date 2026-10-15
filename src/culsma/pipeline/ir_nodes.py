@@ -201,6 +201,15 @@ class IRMutation:
 
 
 @dataclass(frozen=True)
+class IRMutationGroup:
+    """One source group operation; members retain ordered scalar semantics."""
+
+    id: str
+    members: list[IRMutation] = field(default_factory=list)
+    span: Span | None = None
+
+
+@dataclass(frozen=True)
 class IRConditional:
     id: str
     condition: IRExpr
@@ -225,7 +234,7 @@ class IRRepeat:
     span: Span | None = None
 
 
-IRStatement = IRInclude | IRLet | IRAssign | IRStep | IRWithEnv | IRWithConstraint | IRMutation | IRConditional | IRControl | IRRepeat
+IRStatement = IRInclude | IRLet | IRAssign | IRStep | IRWithEnv | IRWithConstraint | IRMutation | IRMutationGroup | IRConditional | IRControl | IRRepeat
 
 
 @dataclass(frozen=True)

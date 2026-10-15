@@ -876,7 +876,7 @@ def test_compile_rejects_legacy_electrophoresis_signature_for_current_stdlib_nam
         compile_to_ir(parse(src))
 
 
-def test_compile_group_mutation_expands_to_ordered_per_target_mutations():
+def test_compile_group_mutation_preserves_ordered_members_in_one_group():
     src = """
 protocol T {
   let t1 = tube(label = "T1", capacity = 500uL);
@@ -893,12 +893,11 @@ protocol T {
         "IRLet",
         "IRLet",
         "IRLet",
-        "IRMutation",
-        "IRMutation",
+        "IRMutationGroup",
     ]
     group_let = protocol.statements[3]
     assert group_let.value.__class__.__name__ == "IRGroup"
-    assert [stmt.target.name for stmt in protocol.statements[4:]] == ["t1", "t2"]
+    assert [stmt.target.name for stmt in protocol.statements[4].members] == ["t1", "t2"]
 
 
 def test_compile_group_mutation_series_expands_positionally():
@@ -914,7 +913,9 @@ protocol T {
 """
     ir = compile_to_ir(parse(src))
     protocol = ir.protocols[0]
-    mutations = protocol.statements[5:]
+    assert len(protocol.statements[5:]) == 1
+    assert protocol.statements[5].__class__.__name__ == "IRMutationGroup"
+    mutations = protocol.statements[5].members
     assert [stmt.__class__.__name__ for stmt in mutations] == ["IRMutation", "IRMutation", "IRMutation"]
     assert [stmt.target.name for stmt in mutations] == ["t1", "t2", "t3"]
     assert [stmt.sources[0].right.value for stmt in mutations] == [5.0, 10.0, 20.0]
@@ -933,7 +934,8 @@ protocol T {
 }
 """
     ir = compile_to_ir(parse(src))
-    mutations = ir.protocols[0].statements[5:]
+    assert len(ir.protocols[0].statements[5:]) == 1
+    mutations = ir.protocols[0].statements[5].members
     assert len(mutations) == 2
     assert all(len(stmt.sources) == 2 for stmt in mutations)
     assert [stmt.sources[0].left.name for stmt in mutations] == ["media", "media"]
@@ -984,7 +986,7 @@ protocol T {
     ir = compile_to_ir(parse(src))
     protocol = ir.protocols[0]
     kinds = [stmt.__class__.__name__ for stmt in protocol.statements]
-    assert kinds == ["IRLet", "IRLet", "IRLet", "IRLet", "IRLet", "IRLet", "IRMutation", "IRMutation", "IRMutation", "IRMutation"]
+    assert kinds == ["IRLet", "IRLet", "IRLet", "IRLet", "IRLet", "IRLet", "IRMutationGroup"]
     synth_lets = protocol.statements[2:6]
     synth_names = [stmt.name for stmt in synth_lets]
     assert synth_names == [
@@ -993,7 +995,7 @@ protocol T {
         "__lw_plate_plate96_B1",
         "__lw_plate_plate96_B2",
     ]
-    targets = [stmt.target.name for stmt in protocol.statements[6:]]
+    targets = [stmt.target.name for stmt in protocol.statements[6].members]
     assert targets == synth_names
 
 

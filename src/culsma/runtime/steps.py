@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.driver.base import DriverResult
+from culsma.driver.groups import PreparedDriverStep, PreparedExecutionGroup, GroupDriverResult
+from culsma.runtime.event_log import EventLog
 from culsma.driver.framework.chromatography import ChromatographyCapability
 from culsma.driver.framework.requirements import RequirementCapability
-from culsma.pipeline.plan_nodes import PlanProgram, PlanStep, ProtocolPlan
+from culsma.pipeline.plan_nodes import PlanProgram, PlanStep, ProtocolPlan, PlanStepTree
 from culsma.runtime.session import RuntimeSession
 from culsma.runtime.values import UNRESOLVED
 from culsma.pipeline.external_boundary import RuntimeParameterError
@@ -304,14 +307,21 @@ class RepeatStepHandler(BaseRuntimeStepHandler):
 
 
 class DriverBackedStepHandler(BaseRuntimeStepHandler):
-    def execute_current_step(self, step: PlanStep, session: RuntimeSession, state: RuntimeStepState) -> bool:
+    def execute_current_step(self, step, session, state):
+        prepared = self.prepare_step(step, session, state)
+        if prepared is None:
+            return session.fail_fast
+        result = session.driver.execute(prepared.driver_step)
+        return self.apply_result(step, session, state, prepared, result)
+
+    def prepare_step(self, step, session, state):
         try:
             runtime_step = session.value_resolver.resolve_step_args(step, session.state)
         except (TypeError, ValueError) as error:
             session.record_failed(step, reason="external_enum_invalid", diagnostic=Diagnostic(
                 code="RT_EXTERNAL_ENUM_INVALID", message=str(error), span=step.span, node_id=step.step_id))
             state.recorded = True
-            return session.fail_fast
+            return None
         try:
             ChromatographyCapability.require_support(runtime_step.args, session.driver)
         except ValueError as error:
@@ -319,7 +329,7 @@ class DriverBackedStepHandler(BaseRuntimeStepHandler):
                 code="RT_DRIVER_REQUIREMENT_UNSUPPORTED", message=str(error),
                 span=step.span, node_id=step.step_id))
             state.recorded = True
-            return session.fail_fast
+            return None
         material_result = _preflight_material_step(runtime_step, session)
         if material_result is not None and not material_result.ok:
             session.extend_diagnostics(material_result.diagnostics)
@@ -335,7 +345,7 @@ class DriverBackedStepHandler(BaseRuntimeStepHandler):
                 driver_code="RUNTIME_MATERIAL_REJECTED",
             )
             state.recorded = True
-            return session.fail_fast
+            return None
 
         driver_step = _step_with_material_resolution(
             runtime_step,
@@ -371,9 +381,18 @@ class DriverBackedStepHandler(BaseRuntimeStepHandler):
                 },
             )
             state.recorded = True
-            return session.fail_fast
+            return None
 
-        result = session.driver.execute(driver_step)
+        return PreparedDriverStep(
+            runtime_step, driver_step, material_result,
+            deepcopy(session.state.artifacts.get("material_state", {"containers": {}})),
+            capability,
+        )
+
+    def apply_result(self, step, session, state, prepared, result):
+        runtime_step = prepared.runtime_step
+        material_result = prepared.material_result
+        driver_step = prepared.driver_step
         if result.ok:
             observation_delta: dict[str, Any] | None = None
             material_delta = (material_result.delta or None) if material_result is not None else None
@@ -464,6 +483,133 @@ class InternalMaterialStepHandler(BaseRuntimeStepHandler):
         return False
 
 
+class GroupPreparationStepHandler(DriverBackedStepHandler):
+    """Use the reference checks/commits on isolated state to stage a prefix."""
+
+    def __init__(self):
+        self.prepared_members = []
+
+    def execute_current_step(self, step, session, state):
+        prepared = self.prepare_step(step, session, state)
+        if prepared is None:
+            return session.fail_fast
+        self.prepared_members.append(prepared)
+        return self.apply_result(step, session, state, prepared, DriverResult(True, "GROUP_PREPARATION_ONLY"))
+
+
+class GroupResultDriver:
+    """Consume already executed results, never call an external device."""
+
+    def __init__(self, source, prepared, result):
+        self.source = source
+        self.prepared = {p.driver_step.step_id: p for p in prepared.members}
+        self.results = dict(zip(result.member_ids, result.results))
+        self.supported_requirement_types = getattr(source, "supported_requirement_types", frozenset())
+        self.supported_chromatography_types = getattr(source, "supported_chromatography_types", frozenset())
+
+    def check(self, step):
+        member = self.prepared.get(step.step_id)
+        if member is None:
+            raise ValueError("RT_GROUP_RESULT_INVALID")
+        return member.capability
+
+    def execute(self, step):
+        member = self.prepared.get(step.step_id)
+        if member is None or member.driver_step != step or step.step_id not in self.results:
+            raise ValueError("RT_GROUP_RESULT_INVALID")
+        return self.results[step.step_id]
+
+
+class MutationGroupStepHandler:
+    """Interpret one group envelope, preserving ordered scalar member semantics."""
+
+    def __init__(self, member_handler=None):
+        self.member_handler = member_handler or DriverBackedStepHandler()
+
+    def handle(self, step, session):
+        members = PlanStepTree.children(step)
+        unresolved = [member.step_id for member in members
+                      if session.state.step_status.get(member.step_id) not in {"pending", "completed", "failed", "skipped"}]
+        if unresolved:
+            session.record_failed(step, reason="group_member_unresolved", diagnostic=Diagnostic(
+                code="RT_MUTATION_GROUP_UNRESOLVED",
+                message="Group contains unresolved members; reconcile their outcome before resuming execution",
+                span=step.span, node_id=step.step_id,
+            ), driver_payload={"unresolved_members": unresolved})
+            return True
+        session.mark_running(step)
+        if getattr(session.driver, "supports_group_execution", False):
+            return self.handle_native(step, session)
+        return self.handle_members(step, session)
+
+    def handle_members(self, step, session):
+        members = PlanStepTree.children(step)
+        for member in members:
+            if session.state.step_status.get(member.step_id) != "pending":
+                continue
+            if not self.dependencies_satisfied(member, session):
+                session.record_skipped(member, "unsatisfied_dependency")
+                session.emit_diagnostic(Diagnostic(
+                    code="RT_UNSATISFIED_DEPENDENCY", message=f"Step '{member.step_id}' skipped due to unsatisfied dependency",
+                    span=member.span, node_id=member.step_id))
+                continue
+            aborted = self.member_handler.handle(member, session)
+            if aborted:
+                session.record_failed(step, reason="group_member_failed")
+                return True
+        statuses = [session.state.step_status.get(member.step_id) for member in members]
+        if any(status == "failed" for status in statuses):
+            session.record_failed(step, reason="group_member_failed")
+        elif all(status == "skipped" for status in statuses):
+            session.record_skipped(step, "runtime_condition_false")
+        else:
+            session.record_completed(step, driver_code="RUNTIME_MUTATION_GROUP", driver_payload={"members": [m.step_id for m in members]})
+        return False
+
+    def prepare_group(self, step, session):
+        handler = GroupPreparationStepHandler()
+        projected_state = deepcopy(session.state)
+        projected = replace(
+            session, state=projected_state, diagnostics=[], event_log=EventLog(),
+            ref_cache=projected_state.artifacts.setdefault("ref_cache", {}),
+            ref_pending_updates=deepcopy(session.ref_pending_updates),
+            material_accounting=deepcopy(session.material_accounting),
+        )
+        MutationGroupStepHandler(handler).handle_members(step, projected)
+        return PreparedExecutionGroup(
+            step.step_id, tuple(handler.prepared_members),
+            tuple(m.step_id for m in PlanStepTree.children(step)),
+        )
+
+    def handle_native(self, step, session):
+        prepared = self.prepare_group(step, session)
+        driver = session.driver
+        expected = tuple(m.driver_step.step_id for m in prepared.members)
+        result = driver.execute_group(prepared) if prepared.members else GroupDriverResult((), ())
+        if (not isinstance(result, GroupDriverResult) or result.member_ids != expected
+                or len(result.results) != len(expected)
+                or any(not isinstance(r, DriverResult) for r in result.results)):
+            session.record_failed(step, reason="invalid_group_result", diagnostic=Diagnostic(
+                "RT_GROUP_RESULT_INVALID", "Group result does not match prepared member identities", step.span, node_id=step.step_id))
+            return True
+        session.driver = GroupResultDriver(driver, prepared, result)
+        try:
+            return self.handle_members(step, session)
+        finally:
+            session.driver = driver
+
+    def dependencies_satisfied(self, member, session):
+        reasons = session.state.artifacts.get("skip_reasons", {})
+        for dependency in member.deps:
+            status = session.state.step_status.get(dependency)
+            if status == "completed":
+                continue
+            if status == "skipped" and reasons.get(dependency) in {"runtime_condition_false", "runtime_continue", "runtime_break"}:
+                continue
+            return False
+        return True
+
+
 class RuntimeStepDispatcher:
     def __init__(self) -> None:
         self.control_handler = ControlStepHandler()
@@ -471,8 +617,11 @@ class RuntimeStepDispatcher:
         self.repeat_handler = RepeatStepHandler()
         self.internal_material_handler = InternalMaterialStepHandler()
         self.driver_handler = DriverBackedStepHandler()
+        self.group_handler = MutationGroupStepHandler(self.driver_handler)
 
     def dispatch(self, step: PlanStep, session: RuntimeSession) -> bool:
+        if step.op == "MutationGroup":
+            return self.group_handler.handle(step, session)
         if step.op in {"control_break", "control_continue"}:
             return self.control_handler.handle(step, session)
         if step.op in {"assign_local", "assign_member", "append"}:
@@ -736,7 +885,12 @@ def _instantiate_runtime_repeat_steps(
             PlanStep(
                 step_id=f"{prefix}.{template.step_id}",
                 op=template.op,
-                args=deepcopy(template.args),
+                args=(
+                    {"members": _instantiate_runtime_repeat_steps(
+                        parent_step_id=parent_step_id, iteration_index=iteration_index,
+                        templates=PlanStepTree.children(template))}
+                    if template.op == "MutationGroup" else deepcopy(template.args)
+                ),
                 deps=[f"{prefix}.{dep}" for dep in template.deps],
                 gate=deepcopy(template.gate),
                 span=template.span,

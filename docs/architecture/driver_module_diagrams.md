@@ -266,9 +266,26 @@ classDiagram
         +normalize(base_payload=..., emitted_payload=...) dict
     }
 
+    class GroupDriver {
+        <<protocol>>
+        +supports_group_execution
+        +execute_group(group) GroupDriverResult
+    }
+    class PreparedExecutionGroup {
+        +step_id
+        +source_member_ids
+    }
+    class PreparedDriverStep
+    class GroupDriverResult {
+        +member_ids
+    }
     class HumanDriver
     class RobotDriver
 
+    GroupDriver ..> PreparedExecutionGroup : input
+    GroupDriver ..> GroupDriverResult : output
+    PreparedExecutionGroup *-- PreparedDriverStep : ordered prepared members
+    GroupDriverResult *-- DriverResult : one result per prepared member
     Driver <|.. StubDriver
     Driver <|.. ProjectionDriver
     ProjectionDriver <|-- HumanDriver

@@ -15,6 +15,7 @@ from culsma.pipeline.ir_nodes import (
     IRIdentifier,
     IRLet,
     IRMutation,
+    IRMutationGroup,
     IRRepeat,
     IRStatement,
     IRStep,
@@ -313,6 +314,11 @@ class ConditionalTypecheckHandler(BaseTypecheckStatementHandler):
         )
 
 
+class MutationGroupTypecheckHandler(BaseTypecheckStatementHandler):
+    def iter_child_blocks(self, stmt, ctx, state):
+        return (ChildStatementBlock(stmt.members, dict(ctx.expr_bindings)),)
+
+
 class MutationTypecheckHandler(BaseTypecheckStatementHandler):
     def check_statement_specific_rules(
         self,
@@ -392,6 +398,7 @@ _STATEMENT_HANDLERS_BY_TYPE: dict[type[object], BaseTypecheckStatementHandler] =
     IRRepeat: RepeatTypecheckHandler(),
     IRConditional: ConditionalTypecheckHandler(),
     IRMutation: MutationTypecheckHandler(),
+    IRMutationGroup: MutationGroupTypecheckHandler(),
     IRStep: StepTypecheckHandler(),
 }
 

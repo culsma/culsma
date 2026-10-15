@@ -20,6 +20,7 @@ from culsma.pipeline.ir_nodes import (
     IRInclude,
     IRLet,
     IRMutation,
+    IRMutationGroup,
     IRPair,
     IRRepeat,
     IRStatement,
@@ -731,6 +732,11 @@ class ControlHandler(BaseStatementHandler):
     pass
 
 
+class MutationGroupHandler(BaseStatementHandler):
+    def iter_child_blocks(self, stmt, ctx, state):
+        return (ChildBlock(stmt.members),)
+
+
 class MutationHandler(BaseStatementHandler):
     def validate_pre_binding_contracts(
         self,
@@ -1021,6 +1027,7 @@ _STATEMENT_HANDLERS_BY_TYPE: dict[type[object], BaseStatementHandler] = {
     IRConditional: ConditionalHandler(),
     IRControl: ControlHandler(),
     IRMutation: MutationHandler(),
+    IRMutationGroup: MutationGroupHandler(),
     IRStep: StepHandler(),
 }
 

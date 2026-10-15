@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
-from culsma.pipeline.plan_nodes import PlanProgram
+from culsma.pipeline.plan_nodes import PlanProgram, PlanStepTree
 
 
 @dataclass
@@ -27,7 +27,7 @@ class RuntimeState:
 def init_state(plan: PlanProgram) -> RuntimeState:
     state = RuntimeState()
     for protocol_plan in plan.plans:
-        for step in protocol_plan.steps:
+        for step in PlanStepTree.walk(protocol_plan.steps):
             state.step_status[step.step_id] = "pending"
     data_objects: dict[str, Any] = {}
     data_bindings: dict[str, Any] = {}

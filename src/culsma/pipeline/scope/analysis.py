@@ -23,6 +23,7 @@ from culsma.pipeline.ir_nodes import (
     IRLet,
     IRProgram,
     IRRepeat,
+    IRMutationGroup,
     IRStatement,
     IRWithConstraint,
     IRWithEnv,
@@ -382,6 +383,8 @@ class ScopeAnalyzer:
         return f"{parent_frame_id}.{node_id}.{label}"
 
     def child_blocks(self, stmt: IRStatement) -> list[ScopeChildBlock]:
+        if isinstance(stmt, IRMutationGroup):
+            return [ScopeChildBlock(label="members", statements=list(stmt.members))]
         if isinstance(stmt, IRConditional):
             return [
                 ScopeChildBlock(label="then", statements=stmt.then_statements),

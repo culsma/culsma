@@ -1,0 +1,80 @@
+{
+  "decision": "GROUP-EXEC-20261015",
+  "status": "implemented_current_ordered_reference_profile",
+  "scope": "Preserve source group Mutation as one IR/Plan envelope; runtime owns ordered member interpretation; no hardware concurrency claim",
+  "invariants": [
+    "plate selector/group members remain first-class expressions/typed references, never name binding substitutes",
+    "IRMutationGroup contains ordered IRMutation members; Plan MutationGroup contains ordered PlanStep members; no compiler-side top-level scalarization",
+    "Scalar IDs, source broadcasting, series quantities, constraints and member failure semantics remain unchanged; no new zip, reordering or atomic rollback",
+    "Ordinary execution traverses members with the existing DriverBackedStepHandler and MaterialCompute; native handoff uses isolated preparation and formal result interpretation through the same handlers",
+    "Existing scalar Driver protocol remains supported; the optional native handoff reduces external group delivery to one call without implying multichannel execution",
+    "OS compatibility preserves typed envelopes and member lookup; historical scalar checkpoints retain their scalar replay profile",
+    "Empty/malformed group plans fail before executing members; codec continues explicit type allowlisting",
+    "A group with running/waiting or otherwise unresolved member state cannot be reported completed or dispatch later members through the ordinary scalar run entry"
+  ],
+  "diagnostics": {
+    "compile": "existing selector/series/nested-group diagnostics",
+    "validate/typecheck": "existing per-member binding/type/method diagnostics, source spans and IDs",
+    "plan": "existing bound plate geometry diagnostics; preserve member scope",
+    "runtime": "RT_MUTATION_GROUP_INVALID for malformed envelope; otherwise existing per-member errors and completed prefix preserved",
+    "os": "existing unsupported-profile and checkpoint checks; no simulated physical evidence fabrication",
+    "runtime_unresolved": "RT_MUTATION_GROUP_UNRESOLVED at group entry before any member dispatch; fail explicitly and preserve unresolved member facts"
+  },
+  "requirements": {
+    "GROUP-EXEC-01": "tests/language/groups/test_group_execution.py::test_group_is_one_ir_and_plan_operation",
+    "GROUP-EXEC-02": "tests/language/groups/test_group_execution.py::test_group_runtime_matches_explicit_scalar_program",
+    "GROUP-EXEC-03": "tests/language/groups/test_group_execution.py::test_series_and_alias_preserve_member_mapping",
+    "GROUP-EXEC-04": "tests/language/groups/test_group_execution.py::test_member_error_preserves_completed_prefix",
+    "GROUP-EXEC-05": "tests/language/groups/test_group_execution.py::test_protocol_condition_repeat_and_constraints",
+    "GROUP-EXEC-06": "tests/language/groups/test_group_execution.py::test_large_group_retains_one_envelope",
+    "GROUP-EXEC-07": "tests/language/groups/test_group_execution.py::test_malformed_group_plan_is_rejected",
+    "GROUP-EXEC-08": "culsmaOS/tests/test_hosted_semantics.py::TestHostedGroupRuntime::test_group_checkpoint_roundtrip",
+    "GROUP-EXEC-09": "tests/language/groups/test_group_execution.py::test_unresolved_member_state_cannot_complete_group"
+  },
+  "owners": {
+    "language": "IR/compiler/plan and shared runtime semantics",
+    "os": "Host codec, group dispatch, resource admission, member evidence and registration; defined by native_handoff",
+    "vendor": "Device-specific planning and execution remain external to the language"
+  },
+  "verification": {
+    "core": "2615 passed, 68 skipped in 75.88s on 2026-10-15; full working-tree suite including separately pending CLI extension tests",
+    "os": "200 passed, 1 skipped including complete 96-well simulation; additional group hardware-admission test recorded separately",
+    "vendor": "91 passed",
+    "native_group_driver_handoff": "implemented: optional GroupDriver with schema-3 OS pending/resolution",
+    "multichannel": "not implemented",
+    "os_per_effect_replay_optimization": "group members dispatch without individual Runtime resume; per-group replay and legacy schema-2 scalar replay remain",
+    "review_fix": "verified: unresolved waiting/running member re-entry refuses group completion and member dispatch; 237 affected language tests passed; 43 OS tests passed, 1 full-96 simulation deselected"
+  },
+  "native_handoff": {
+    "status": "implemented_current_serial_simulation_profile",
+    "scope": "Optional generic group driver boundary; OS new group checkpoint profile; legacy scalar handoff preserved",
+    "invariants": [
+      "Group preparation reuses the same scalar preflight, method gates and material computation on an isolated state; it does not update formal state or perform device actions",
+      "Prepared successful prefix preserves existing later semantic error behavior; no new implicit all-or-nothing rejection",
+      "One execute_group call returns registered member results; ordinary Driver remains scalar and opt-in is explicit",
+      "OS owns group identity, one group resource permit, sequential member intents/evidence and ledger receipts; Runtime only consumes completed registered group results",
+      "Unknown/partial effects never return success; confirmed prefix persists and no group/member is automatically re-executed after an existing intent",
+      "Schema 2 retains scalar-effect replay; group schema 3 uses typed PendingEffectGroup/RecordedEffectGroup and verifies group fingerprints",
+      "Recovery can finish group registration from complete saved member evidence; incomplete/unknown groups conservatively require reconciliation and retain resources",
+      "Group-level resource protection is not whole-program reservation or cross-worker fencing (#141 remains planned)",
+      "OS group hardware/resource admission rejects a known invalid member before any group action; this is distinct from the language semantic successful-prefix rule"
+    ],
+    "diagnostics": {
+      "runtime": "Existing member validation/preflight diagnostics; RT_GROUP_RESULT_INVALID on malformed result before formal commit",
+      "host": "HOST_GROUP_* on changed member identity, fingerprint, resolution or group checkpoint",
+      "scheduler": "Group plan/resource/config admission before dispatch; member execution uncertainty retains group permit",
+      "recovery": "GROUP_INCOMPLETE / INTENT_WITHOUT_EVIDENCE blocks physical resend"
+    },
+    "requirements": {
+      "GROUP-HANDOFF-01": "tests/language/groups/test_group_handoff.py::test_runtime_hands_group_once_without_scalar_external_calls",
+      "GROUP-HANDOFF-02": "tests/language/groups/test_group_handoff.py::test_native_and_scalar_semantics_match",
+      "GROUP-HANDOFF-03": "tests/language/groups/test_group_handoff.py::test_preparation_error_preserves_scalar_prefix",
+      "GROUP-HANDOFF-04": "tests/language/groups/test_group_handoff.py::test_invalid_results_never_commit_formal_state",
+      "GROUP-HANDOFF-05": "culsmaOS/tests/test_group_handoff.py::test_official_simulator_group_handoff",
+      "GROUP-HANDOFF-06": "culsmaOS/tests/test_group_handoff.py::test_group_unknown_preserves_prefix_and_does_not_reexecute",
+      "GROUP-HANDOFF-07": "culsmaOS/tests/test_group_handoff.py::test_group_recovery_registers_saved_evidence",
+      "GROUP-HANDOFF-08": "culsmaOS/tests/test_group_handoff.py::test_legacy_group_checkpoint_stays_scalar",
+      "GROUP-HANDOFF-09": "tests/language/groups/test_group_handoff.py::test_native_protocol_loop_and_constraints_share_reference_semantics"
+    }
+  }
+}

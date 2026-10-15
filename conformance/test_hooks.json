@@ -92,5 +92,46 @@
   "AGIT-FLICK-01": [
     "tests/language/agitation/test_agitation_frontend.py::test_validate_agit_accepts_flick_with_optional_cycles",
     "tests/language/agitation/test_agitation_frontend.py::test_validate_agit_rejects_flick_with_duration_or_rate"
+  ],
+  "GROUP-EXEC-01": [
+    "tests/language/groups/test_group_execution.py::test_group_is_one_ir_and_plan_operation"
+  ],
+  "GROUP-EXEC-02": [
+    "tests/language/groups/test_group_execution.py::test_group_runtime_matches_explicit_scalar_program"
+  ],
+  "GROUP-EXEC-03": [
+    "tests/language/groups/test_group_execution.py::test_series_and_alias_preserve_member_mapping"
+  ],
+  "GROUP-EXEC-04": [
+    "tests/language/groups/test_group_execution.py::test_member_error_preserves_completed_prefix"
+  ],
+  "GROUP-EXEC-05": [
+    "tests/language/groups/test_group_execution.py::test_protocol_condition_repeat_and_constraints",
+    "tests/language/groups/test_group_execution.py::test_group_member_constraints_are_preserved",
+    "tests/language/groups/test_group_execution.py::test_runtime_repeat_group_members_have_distinct_instance_ids"
+  ],
+  "GROUP-EXEC-06": [
+    "tests/language/groups/test_group_execution.py::test_large_group_retains_one_envelope"
+  ],
+  "GROUP-EXEC-07": [
+    "tests/language/groups/test_group_execution.py::test_malformed_group_plan_is_rejected"
+  ],
+  "GROUP-EXEC-09": [
+    "tests/language/groups/test_group_execution.py::test_unresolved_member_state_cannot_complete_group"
+  ],
+  "GROUP-HANDOFF-01": [
+    "tests/language/groups/test_group_handoff.py::test_runtime_hands_group_once_without_scalar_external_calls"
+  ],
+  "GROUP-HANDOFF-02": [
+    "tests/language/groups/test_group_handoff.py::test_native_and_scalar_semantics_match"
+  ],
+  "GROUP-HANDOFF-03": [
+    "tests/language/groups/test_group_handoff.py::test_preparation_error_preserves_scalar_prefix"
+  ],
+  "GROUP-HANDOFF-04": [
+    "tests/language/groups/test_group_handoff.py::test_invalid_results_never_commit_formal_state"
+  ],
+  "GROUP-HANDOFF-09": [
+    "tests/language/groups/test_group_handoff.py::test_native_protocol_loop_and_constraints_share_reference_semantics"
   ]
 }

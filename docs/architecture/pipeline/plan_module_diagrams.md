@@ -46,7 +46,7 @@ flowchart TB
     Bind["Bind entry parameters when needed<br/>and create runtime env"]
     StatementLoop{"More IR statements<br/>in this entry or nested block?"}
     Dispatch["Select lowering behavior<br/>by IR statement type"]
-    LowerStmt["Rewrite current IR statement into runtime plan form:<br/>update local env, expand protocol references,<br/>serialize payloads, resolve parameter-bound static control,<br/>attach env/constraint/branch gates,<br/>or emit direct PlanStep values"]
+    LowerStmt["Rewrite current IR statement into runtime plan form:<br/>update local env, expand protocol references,<br/>serialize payloads, resolve parameter-bound static control,<br/>attach env/constraint/branch gates,<br/>or emit PlanStep values; MutationGroup retains<br/>ordered member steps and their dependencies"]
     NextStmt["Continue lowering the next statement"]
     Linearize["Turn emitted steps into an ordered execution chain<br/>by filling linear dependencies"]
     Build["Assemble one execution plan:<br/>entry kind, returns, return bindings, ordered steps"]
@@ -371,6 +371,12 @@ classDiagram
     class RepeatPlanHandler
     class ConditionalPlanHandler
     class MutationPlanHandler
+    class MutationGroupPlanHandler
+    class PlanStepTree {
+        +children(step)
+        +walk(steps)
+        +leaves(steps)
+    }
     class ControlPlanHandler
     class StepPlanHandler
 
@@ -402,6 +408,11 @@ classDiagram
     BasePlanStatementHandler <|-- RepeatPlanHandler
     BasePlanStatementHandler <|-- ConditionalPlanHandler
     BasePlanStatementHandler <|-- MutationPlanHandler
+    BasePlanStatementHandler <|-- MutationGroupPlanHandler
+    MutationGroupPlanHandler --> PlanStatementLowerer : lower ordered members
+    MutationGroupPlanHandler ..> PlanStep : op = MutationGroup
+    PlanStep "1" *-- "0..*" PlanStep : args.members for MutationGroup
+    PlanStepTree --> PlanStep : structural or leaf traversal
     BasePlanStatementHandler <|-- ControlPlanHandler
     BasePlanStatementHandler <|-- StepPlanHandler
     RepeatPlanHandler --> PlanStaticEvaluator

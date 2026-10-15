@@ -36,6 +36,7 @@ from culsma.pipeline.ir_nodes import (
     IRInclude,
     IRLet,
     IRMutation,
+    IRMutationGroup,
     IRStatement,
     IRStep,
     IRWithConstraint,
@@ -717,7 +718,7 @@ class MutationHandler(BaseStatementCompileHandler):
     ) -> list[IRStatement]:
         stmt = cast(MutationStmt, stmt)
         state = cast(MutationState, state)
-        return [
+        members = [
             IRMutation(
                 id=f"{lowering_ctx.stmt_id}.g{idx}" if len(state.flattened_targets) > 1 else lowering_ctx.stmt_id,
                 target=lowering_ctx.expr_compiler.compile(target),
@@ -726,6 +727,9 @@ class MutationHandler(BaseStatementCompileHandler):
             )
             for idx, target in enumerate(state.flattened_targets)
         ]
+        if len(members) > 1:
+            return [IRMutationGroup(id=lowering_ctx.stmt_id, members=members, span=stmt.span)]
+        return members
 
 
 @dataclass

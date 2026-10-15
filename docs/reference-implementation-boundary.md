@@ -5,8 +5,15 @@ quantities, operation results, and failure behavior. It does not prescribe the
 Python classes or execution-plan representation used by this implementation.
 
 In this implementation, material transfer passes through `MutationStmt`,
-`IRMutation`, and a `PlanStep` whose operation is `Mutation`. Constructor
-initialization uses canonical operations such as `AllocContainer`,
+`IRMutation`, and a `PlanStep` whose operation is `Mutation` for a single
+target. Multi-target operations retain ordered `IRMutation` members inside
+`IRMutationGroup`, lowered to a `MutationGroup` plan step. Runtime interprets
+members with the same scalar rules; an optional `GroupDriver` accepts prepared
+members in one handoff and returns corresponding member results. Grouping does
+not imply parallel execution or whole-group rollback. Plan and event consumers
+must account for structural group nodes; older runtimes are not assumed to
+accept these new plans. Constructor initialization uses canonical operations
+such as `AllocContainer`,
 `DefineContent`, `LoadContent`, and `AnnotateContent`; these names are not
 protocol-authoring APIs. Container records store aggregate quantities and
 component quantities together with metadata.

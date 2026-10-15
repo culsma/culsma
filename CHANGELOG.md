@@ -4,6 +4,11 @@
 
 ### Changed
 
+- Multi-target material mutations preserve an ordered group through compilation
+  and planning. Runtime retains scalar member semantics and supports optional
+  prepared-group driver handoff. Plan and event consumers must recognize group
+  nodes; this does not introduce physical parallelism or whole-group rollback.
+
 - Non-fractionating centrifugation is authored as `agit(mode=CENTRIFUGE,
   drive=..., duration=...)`. It preserves the same
   container without creating separation parts, so later whole-container
