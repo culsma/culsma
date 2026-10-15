@@ -5,7 +5,7 @@ import pytest
 from culsma.common.source import Span
 from culsma.domains.agitation import AgitationMode, validate_agitation_arguments
 from culsma.domains.agitation.contracts import conflicting_arguments, validate_rotation_quantity
-from culsma.domains.agitation.validation import validate_agit_contract, validate_motion
+from culsma.domains.agitation.validation import AgitationContractValidator, validate_agit_contract, validate_motion
 from culsma.pipeline.ir_nodes import IRArg, IRIdentifier, IRMember, IRQuantity, IRStep
 
 
@@ -48,6 +48,64 @@ def test_agitation_conflicts_preserve_each_argument_location():
         ("SEM_AGIT_ARG_CONFLICT", "agit(mode = flick): duration is not allowed; use cycles", duration_span, "mix"),
         ("SEM_AGIT_ARG_CONFLICT", "agit(mode = flick): rate is not allowed; use cycles", rate_span, "mix"),
     ]
+
+
+def test_validator_centrifuge_branch_reports_quantity_missing_time_and_conflict():
+    drive_span = Span(2, 1, 2, 10)
+    rate_span = Span(3, 1, 3, 10)
+    step = IRStep('spin', 'agit', [
+        IRArg('mode', IRIdentifier('centrifuge')),
+        IRArg('drive', IRQuantity(3, 'min'), drive_span),
+        IRArg('rate', IRQuantity(20, 'rpm'), rate_span),
+    ])
+    diagnostics = AgitationContractValidator(step, {}).validate_centrifuge()
+    assert [(d.code, d.span, d.node_id) for d in diagnostics] == [
+        ('SEM_AGIT_QUANTITY_INVALID', drive_span, 'spin'),
+        ('SEM_AGIT_DURATION_REQUIRED', None, 'spin'),
+        ('SEM_AGIT_ARG_CONFLICT', rate_span, 'spin'),
+    ]
+
+
+def test_validator_without_motion_branch_keeps_rotation_diagnostics():
+    duration_span = Span(2, 1, 2, 10)
+    cycles_span = Span(3, 1, 3, 10)
+    step = IRStep('mix', 'agit', [
+        IRArg('duration', IRQuantity(0, 's'), duration_span),
+        IRArg('cycles', IRQuantity(3, None), cycles_span),
+    ])
+    diagnostics = AgitationContractValidator(step, {}).validate_without_motion(AgitationMode.ROTATION)
+    assert [(d.code, d.span) for d in diagnostics] == [
+        ('SEM_AGIT_QUANTITY_INVALID', duration_span),
+        ('SEM_AGIT_ARG_CONFLICT', cycles_span),
+    ]
+
+
+def test_validator_motion_branch_reports_each_bad_quantity():
+    motion = IRArg('motion', IRIdentifier('orbital'))
+    step = IRStep('mix', 'agit', [
+        motion,
+        IRArg('duration', IRQuantity(0, 's')),
+        IRArg('rate', IRQuantity(2, 'Hz')),
+    ])
+    diagnostics = AgitationContractValidator(step, {}).validate_motion(AgitationMode.SHAKE, motion)
+    assert [d.code for d in diagnostics] == [
+        'SEM_AGIT_QUANTITY_INVALID', 'SEM_AGIT_QUANTITY_INVALID',
+    ]
+
+
+def test_validator_quantity_branch_resolves_binding_chain_at_argument_span():
+    span = Span(2, 1, 2, 15)
+    arg = IRArg('duration', IRIdentifier('elapsed'), span)
+    step = IRStep('mix', 'agit', [arg])
+    validator = AgitationContractValidator(step, {
+        'elapsed': IRIdentifier('time'), 'time': IRQuantity(0, 's'),
+    })
+    diagnostics = validator.validate_quantity_argument(arg, 'duration', validate_rotation_quantity)
+    assert [(d.code, d.span, d.node_id) for d in diagnostics] == [
+        ('SEM_AGIT_QUANTITY_INVALID', span, 'mix'),
+    ]
+    assert validator.find_argument('duration') is arg
+    assert validator.resolve_bound_value(arg.value) == IRQuantity(0, 's')
 
 
 @pytest.mark.parametrize('name,value', [('duration', (2, 'h')), ('rate', (20, 'rpm'))])

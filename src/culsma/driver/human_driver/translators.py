@@ -28,6 +28,36 @@ class GenericTranslator:
         )
 
 
+class CentrifugeTranslator:
+    def translate(self, record: HumanMappingRecord, binding: dict[str, Any]) -> HumanProjection:
+        sample = value_to_text(record.semantic_args.get("sample"))
+        drive = value_to_text(record.semantic_args.get("drive"))
+        duration = value_to_text(record.semantic_args.get("duration"))
+        summary = f"Centrifuge {sample} at {drive} for {duration}; keep the same sample container."
+        return HumanProjection(
+            step_id=record.step_id,
+            semantic_op=record.semantic_op,
+            channel="human",
+            label="Centrifuge Step",
+            summary=summary,
+            details=tuple(_dedupe([*_requirement_details(binding), *_env_detail(binding)])),
+            category="handling",
+            binding=dict(binding),
+            payload={"sample": sample, "drive": drive, "duration": duration, "mode": "centrifuge"},
+        )
+
+
+class AgitationTranslator:
+    def __init__(self) -> None:
+        self._centrifuge = CentrifugeTranslator()
+        self._generic = GenericTranslator()
+
+    def translate(self, record: HumanMappingRecord, binding: dict[str, Any]) -> HumanProjection:
+        if value_to_text(record.semantic_args.get("mode")) == "centrifuge":
+            return self._centrifuge.translate(record, binding)
+        return self._generic.translate(record, binding)
+
+
 class MutationTranslator:
     def translate(self, record: HumanMappingRecord, binding: dict[str, Any]) -> HumanProjection:
         target = value_to_text(record.semantic_args.get("target"))

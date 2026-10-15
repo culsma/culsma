@@ -60,6 +60,8 @@ class RobotBindingResolver:
 
 
 def action_for_record(record: MappingRecord) -> str:
+    if record.semantic_op == "agit" and value_to_text(record.semantic_args.get("mode")) == "centrifuge":
+        return "device.centrifuge.run"
     if (
         record.semantic_op == "sep"
         and record.program_kind == "filtration_program"

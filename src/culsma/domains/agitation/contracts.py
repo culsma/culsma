@@ -14,6 +14,7 @@ class AgitationMode(StrEnum):
     SHAKE = "shake"
     STIR = "stir"
     ROTATION = "rotation"
+    CENTRIFUGE = "centrifuge"
 
 
 class ShakeMotion(StrEnum):
@@ -30,15 +31,19 @@ SHAKE_MOTION = EnumParameter(ShakeMotion)
 def conflicting_arguments(mode: AgitationMode, present: set[str]) -> tuple[str, ...]:
     """Return conflicting parameter names in stable diagnostic order."""
     value = AGITATION_MODE.validate(mode)
-    forbidden = ("duration", "rate") if value in {AgitationMode.INVERT, AgitationMode.FLICK} else ("cycles",)
+    forbidden = (
+        ("duration", "rate") if value in {AgitationMode.INVERT, AgitationMode.FLICK}
+        else ("rate", "cycles") if value is AgitationMode.CENTRIFUGE
+        else ("cycles",)
+    )
     return tuple(name for name in forbidden if name in present)
 
 
 def validate_agitation_arguments(mode: AgitationMode, *, has_duration: bool, has_rate: bool, has_cycles: bool) -> AgitationMode:
     """Check mode-dependent arguments after the actual mode has been bound."""
     value = AGITATION_MODE.validate(mode)
-    if value is AgitationMode.ROTATION and not has_duration:
-        raise ValueError("rotation requires duration")
+    if value in {AgitationMode.ROTATION, AgitationMode.CENTRIFUGE} and not has_duration:
+        raise ValueError(f"{value} requires duration")
     present = {name for name, enabled in (
         ("duration", has_duration), ("rate", has_rate), ("cycles", has_cycles)
     ) if enabled}
@@ -48,6 +53,21 @@ def validate_agitation_arguments(mode: AgitationMode, *, has_duration: bool, has
             raise ValueError('invert/flick forbid duration and rate; use cycles')
         raise ValueError('cycles is only allowed for invert/flick')
     return value
+
+
+def validate_centrifuge_quantity(name, value):
+    expected = 'time' if name == 'duration' else 'centrifugal drive'
+    units = set(UNIT_TO_DIMENSION) if name == 'duration' else {'g', 'rpm'}
+    if not isinstance(value, tuple) or len(value) != 2 or value[1] not in units or (
+        name == 'duration' and UNIT_TO_DIMENSION.get(value[1]) != 'time'
+    ):
+        raise ValueError(f'centrifuge {name} must be a {expected} quantity')
+    try:
+        number = require_finite_number(value[0])
+    except ValueError as error:
+        raise ValueError(f'centrifuge {name} must be finite and positive') from error
+    if number <= 0:
+        raise ValueError(f'centrifuge {name} must be finite and positive')
 
 
 def validate_rotation_quantity(name, value):
@@ -70,6 +90,21 @@ class AgitationArgumentsRule:
     parameters = frozenset({'mode'})
 
     def validate(self, values, present):
+        mode = values['mode']
+        if mode is AgitationMode.CENTRIFUGE:
+            if 'drive' not in present:
+                raise ValueError('centrifuge requires drive')
+            if 'duration' not in present:
+                raise ValueError('centrifuge requires duration')
+            if 'motion' in present or 'rate' in present or 'cycles' in present:
+                raise ValueError('centrifuge accepts drive and duration, not motion, rate or cycles')
+            for name in ('drive', 'duration'):
+                value = values.get(name)
+                if value is not None:
+                    validate_centrifuge_quantity(name, value)
+            return
+        if 'drive' in present:
+            raise ValueError('drive is only allowed with mode=centrifuge')
         if 'motion' in present:
             if values['mode'] is not AgitationMode.SHAKE:
                 raise ValueError('motion is only allowed with mode=shake')

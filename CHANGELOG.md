@@ -4,6 +4,10 @@
 
 ### Changed
 
+- Non-fractionating centrifugation is authored as `agit(mode=CENTRIFUGE,
+  drive=..., duration=...)`. It preserves the same
+  container without creating separation parts, so later whole-container
+  material declarations remain valid.
 - `<<` source lists may mix whole-source and quantified transfers; items run in
   source order within one mutation step, with no material-state commit if an item fails.
 - Tail `return` statements now declare named protocol outputs without a

@@ -11,6 +11,7 @@ _SECTION_BY_CATEGORY = {
     "setup": "Setup",
     "internal_setup": "Setup",
     "material": "Material Transfer",
+    "handling": "Material Handling",
     "separation": "Separation",
     "environment": "Condition Hold",
     "thermal_control": "Thermal Cycling",

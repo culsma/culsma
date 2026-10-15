@@ -9,6 +9,7 @@ from typing import Any
 from .unknown_quantity import container_has_unknown
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.domains.agitation import AgitationMode
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.material.args import arg_call, arg_quantity, arg_string, call_arg_int, call_arg_string
 from culsma.runtime.material.author_transition import parse_explicit_material_transitions
@@ -214,6 +215,16 @@ def mark_contents_state_mixed(state: dict[str, Any], container_id: str, *, step_
     record["kind"] = "mixed"
     record["mixed_by_step"] = step_id
     return {"action": "mixed", "reason": "explicit_mixing", "previous_kind": previous_kind}
+
+
+def mark_contents_state_unindexed(state: dict[str, Any], container_id: str, *, reason: str) -> dict[str, Any]:
+    contents_states = state.get("contents_states")
+    record = contents_states.get(container_id) if isinstance(contents_states, dict) else None
+    if not isinstance(record, dict) or record.get("valid") is False:
+        return {"action": "none", "reason": "no_valid_contents_state"}
+    previous_kind = record.get("kind")
+    invalidate_contents_state(state, container_id, reason=reason)
+    return {"action": "invalidated", "reason": reason, "previous_kind": previous_kind}
 
 
 class MaterialIndexedPartsStateManager:
@@ -522,11 +533,18 @@ class MaterialIndexedPartsStateManager:
         )
 
     def apply_agit(self, step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
+        centrifuge = step.args.get("mode") == AgitationMode.CENTRIFUGE
+
+        def record_impact(sample_id: str) -> dict[str, Any]:
+            if centrifuge:
+                return mark_contents_state_unindexed(state, sample_id, reason="centrifuge")
+            return mark_contents_state_mixed(state, sample_id, step_id=step.step_id)
+
         sample_arg = step.args.get("sample")
         sample_ids = self._resolve_structured_ref_group_ids(state, sample_arg)
         if sample_ids is not None:
             impacts = {
-                sample_id: mark_contents_state_mixed(state, sample_id, step_id=step.step_id)
+                sample_id: record_impact(sample_id)
                 for sample_id in sample_ids
             }
             return MaterialUpdateResult(
@@ -542,7 +560,7 @@ class MaterialIndexedPartsStateManager:
                 "MAT_BINDING_NOT_FOUND",
                 f"Unknown agit sample '{ref_display(sample_arg)}'",
             )
-        impact = mark_contents_state_mixed(state, sample_id, step_id=step.step_id)
+        impact = record_impact(sample_id)
         return MaterialUpdateResult(
             material_state=state,
             diagnostics=[],

@@ -90,6 +90,8 @@ class HumanBindingResolver:
 
 
 def tool_label_for_record(record: HumanMappingRecord) -> str:
+    if record.semantic_op == "agit" and value_to_text(record.semantic_args.get("mode")) == "centrifuge":
+        return "manual centrifuge workflow"
     if (
         record.semantic_op == "sep"
         and record.program_kind == "filtration_program"

@@ -12,6 +12,7 @@ from .translators import (
     MutationTranslator,
     ObservationTranslator,
     SeparationTranslator,
+    AgitationTranslator,
     SetupTranslator,
 )
 
@@ -20,6 +21,7 @@ def build_default_registry() -> TranslatorRegistry:
     return TranslatorRegistry(
         translators={
             "Mutation": MutationTranslator(),
+            "agit": AgitationTranslator(),
             "env_hold": EnvironmentHoldTranslator(),
             "sep": SeparationTranslator(),
             "frac": SeparationTranslator(),
