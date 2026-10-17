@@ -8,6 +8,8 @@ from culsma.runtime.stream_values import StreamValueBuilder
 from culsma.pipeline.external_boundary import DEFAULT_EXTERNAL_ENUM_CODEC, DEFAULT_EXTERNAL_PARAMETER_NORMALIZER, RuntimeParameterError
 
 from culsma.pipeline.expression_resolution import project_record_member, ResolutionStatus
+from culsma.pipeline.container_views import is_container_contents_volume, split_member_path
+from culsma.runtime.material.refs import MaterialRefResolver
 
 from copy import deepcopy
 from typing import Any
@@ -112,6 +114,16 @@ def evaluate_runtime_expression(expr: Any, state: RuntimeState) -> Any:
         if kind == "IRIndex":
             return _resolve_runtime_index(expr, state)
         if kind == "IRMember":
+            if is_container_contents_volume(expr):
+                path = split_member_path(expr)
+                material_state = state.artifacts.get("material_state")
+                if path is not None and isinstance(material_state, dict):
+                    container_id = MaterialRefResolver.resolve_target_ref(material_state, path[0])
+                    containers = material_state.get("containers", {})
+                    container = containers.get(container_id) if isinstance(containers, dict) else None
+                    volume = container.get("volume_uL") if isinstance(container, dict) else None
+                    if isinstance(volume, (int, float)):
+                        return (float(volume), "uL")
             base = evaluate_runtime_expression(expr.get("base"), state)
             if base is UNRESOLVED:
                 return UNRESOLVED

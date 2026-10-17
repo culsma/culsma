@@ -63,6 +63,12 @@
     "tests/test_quantity_arithmetic.py",
     "tests/test_quantity_arithmetic_integration.py"
   ],
+  "CONTENTS-VOLUME-01": [
+    "tests/test_contents_volume.py::test_contents_volume_reads_current_amount_after_transfer_and_in_repeat",
+    "tests/test_contents_volume.py::test_contents_volume_re_evaluates_but_let_captures_its_read",
+    "tests/test_contents_volume.py::test_contents_volume_is_read_only_and_other_nested_members_remain_invalid",
+    "tests/test_contents_volume.py::test_record_contents_volume_keeps_ordinary_record_projection"
+  ],
   "MAT-REPLACE-01": [
     "tests/test_material_replace_integration.py"
   ],

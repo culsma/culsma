@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Any, Mapping, cast
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.pipeline.container_views import contains_container_contents_volume
 from culsma.pipeline.expression_resolution import quantity_expression_unit
 from culsma.pipeline.ir_nodes import (
     IRArg,
@@ -183,7 +184,7 @@ class LetPlanHandler(BasePlanStatementHandler):
         state = cast(LetPlanState, state)
         if state.call is None and stmt.value is not None:
             value = self.serializer.serialize_expr(stmt.value, ctx.local_env)
-            if self.is_runtime_local_alias(stmt.value, ctx.local_env):
+            if self.is_runtime_local_alias(stmt.value, ctx.local_env) or contains_container_contents_volume(stmt.value):
                 state.runtime_alias_value = value
                 ctx.local_env[stmt.name] = {"kind": "IRIdentifier", "name": stmt.name}
             else:

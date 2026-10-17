@@ -18,7 +18,7 @@ from culsma.common.quantity_arithmetic import UNIT_TO_DIMENSION, QuantityArithme
 from culsma.pipeline.content_inputs import (
     ContentArgumentResolver, ContentArgumentScope, ContentInputSource, ContentResolutionIssue, DeferredContentEnum,
 )
-from culsma.pipeline.container_views import classify_container_target_view, is_container_target_view
+from culsma.pipeline.container_views import classify_container_target_view, is_container_target_view, is_container_contents_volume
 from culsma.pipeline.compat.content_taxonomy import normalize_content_classification
 from culsma.pipeline.content_vocab import ContentKind, ContentType, ContainerKind
 from culsma.pipeline.ir_nodes import (
@@ -497,6 +497,8 @@ class TypecheckExpressionServices:
             result = resolve_expression(value, expr_bindings, seen)
             if result.status is ResolutionStatus.RESOLVED:
                 return self.evaluate_quantity(result.value, expr_bindings, result.visited)
+            if isinstance(value, IRMember) and is_container_contents_volume(value):
+                raise DeferredQuantity(DeferredNumeric("quantity", "uL", value.span))
             if result.status is ResolutionStatus.DEFERRED:
                 raise DeferredQuantity()
             return None

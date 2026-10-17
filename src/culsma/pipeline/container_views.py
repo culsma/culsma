@@ -6,14 +6,17 @@ from dataclasses import dataclass
 from typing import Any
 
 from culsma.pipeline.ir_nodes import (
+    IRBinary,
     IRCall,
     IRIdentifier,
     IRIndex,
     IRMember,
     IRString,
+    IRUnary,
 )
 
 CONTAINER_CONTENTS_MEMBER = "contents"
+CONTAINER_CONTENTS_VOLUME_MEMBER = "volume"
 CONTAINER_STRUCTURE_MEMBER = "structure"
 CONTAINER_MATERIALS_MEMBER = "materials"
 CONTAINER_STRUCTURE_FACETS = frozenset({"top", "bottom", "sidewall"})
@@ -114,8 +117,8 @@ def split_member_path(expr: Any) -> tuple[Any, tuple[str, ...]] | None:
     members: list[str] = []
     current = expr
     while _is_member_expr(current):
-        members.append(str(current.member))
-        current = current.base
+        members.append(str(current["member"] if isinstance(current, dict) else current.member))
+        current = current["base"] if isinstance(current, dict) else current.base
     if not members:
         return None
     members.reverse()
@@ -142,6 +145,24 @@ def is_container_target_view(expr: Any) -> bool:
     return classify_container_target_view(expr) is not None
 
 
+def is_container_contents_volume(expr: Any) -> bool:
+    path = split_member_path(expr)
+    return path is not None and path[1] == (
+        CONTAINER_CONTENTS_MEMBER,
+        CONTAINER_CONTENTS_VOLUME_MEMBER,
+    )
+
+
+def contains_container_contents_volume(expr: Any) -> bool:
+    if is_container_contents_volume(expr):
+        return True
+    if isinstance(expr, IRBinary):
+        return contains_container_contents_volume(expr.left) or contains_container_contents_volume(expr.right)
+    if isinstance(expr, IRUnary):
+        return contains_container_contents_volume(expr.operand)
+    return False
+
+
 def is_container_target_view_namespace_path(expr: Any) -> bool:
     path = split_member_path(expr)
     if path is None:
@@ -158,9 +179,12 @@ def container_view_path_error(expr: Any) -> str | None:
     if not members:
         return None
     if members[0] == CONTAINER_CONTENTS_MEMBER:
-        if members == (CONTAINER_CONTENTS_MEMBER,):
+        if members in {
+            (CONTAINER_CONTENTS_MEMBER,),
+            (CONTAINER_CONTENTS_MEMBER, CONTAINER_CONTENTS_VOLUME_MEMBER),
+        }:
             return None
-        return "container.contents does not define nested target-view members in the current surface"
+        return "container.contents only defines the read-only .volume quantity member"
     if members[0] == CONTAINER_STRUCTURE_MEMBER:
         if members == (CONTAINER_STRUCTURE_MEMBER,):
             return "container.structure is a target-view namespace; select .top, .bottom, or .sidewall"
@@ -186,4 +210,6 @@ def container_view_root(expr: Any) -> Any | None:
 
 
 def _is_member_expr(expr: Any) -> bool:
-    return hasattr(expr, "base") and hasattr(expr, "member")
+    return (
+        isinstance(expr, dict) and expr.get("kind") == "IRMember"
+    ) or (hasattr(expr, "base") and hasattr(expr, "member"))
