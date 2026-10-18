@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
+
 from culsma.driver.framework.mapping_core import value_to_text
 from culsma.driver.framework.models import DriverProjection, MappingRecord
 
@@ -16,7 +18,7 @@ class GenericRobotTranslator:
             summary=f"Dispatch {record.semantic_op} to robot backend.",
             category="command",
             binding=dict(binding),
-            payload={"semantic_args": _serialize_args(record.semantic_args)},
+            payload={"semantic_args": serialize_semantic_args(record.semantic_args)},
         )
 
 
@@ -68,9 +70,10 @@ class ObservationRobotTranslator:
             summary=f"Dispatch {record.semantic_op} readout for {sample}.",
             category="command",
             binding=dict(binding),
-            payload=_serialize_args(record.semantic_args),
+            payload=serialize_semantic_args(record.semantic_args),
         )
 
 
-def _serialize_args(args: dict[str, object]) -> dict[str, str]:
-    return {key: value_to_text(value) for key, value in sorted(args.items())}
+def serialize_semantic_args(args: dict[str, object]) -> dict[str, object]:
+    return {key: deepcopy(value) if isinstance(value, dict) and value.get('kind') == 'plate_ref'
+            else value_to_text(value) for key, value in sorted(args.items())}
