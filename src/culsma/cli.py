@@ -14,6 +14,8 @@ from typing import Any
 from culsma.frontend.resolver import resolve_files
 from culsma.pipeline.compile import compile_ast
 from culsma.driver.stub import StubDriver
+from culsma.driver.models import ProgramExecutionRequest, ProgramExecutionError
+from culsma.driver.interactors import ProgramExecutionInteractor
 from culsma.pipeline.entrypoints import resolve_entry
 from culsma.pipeline.plan import lower_ir_to_plan
 from culsma.runtime.replay import replay_events
@@ -601,6 +603,9 @@ def main() -> None:
         help="Optional directory containing importable library .culs modules (repeatable).",
     )
 
+    run_cmd.add_argument("--driver", help="Installed whole-program execution profile for an external driver")
+    run_cmd.add_argument("--driver-config", type=Path, help="External driver configuration file")
+
     replay_cmd = sub.add_parser("replay", help="Replay state from a run artifact JSON")
     replay_cmd.add_argument("--run-json", required=True, help="Path to an explicit run.json artifact")
     replay_cmd.add_argument("--out", required=True, help="Output JSON path for reconstructed state")
@@ -612,17 +617,35 @@ def main() -> None:
         input_values = [*args.input, *args.paths]
         if not input_values:
             parser.error("run requires at least one input path")
-        bundle = execute_batch_pipeline(
-            input_paths=[Path(p) for p in input_values],
-            fail_ops=set(args.fail_op),
-            material_state_path=Path(args.material_state_json) if args.material_state_json else None,
-            inventory_check=(
-                _load_inventory_snapshot(Path(args.inventory_check))
-                if isinstance(args.inventory_check, str)
-                else args.inventory_check
-            ),
-            library_roots=[Path(p) for p in args.library_root],
-        )
+        if args.driver_config is not None and args.driver is None:
+            parser.error("--driver-config requires --driver")
+        if args.driver is not None:
+            request = ProgramExecutionRequest(
+                input_paths=tuple(Path(p) for p in input_values),
+                driver_name=args.driver,
+                config_path=args.driver_config,
+                artifacts_dir=Path(args.artifacts_dir) if args.artifacts_dir else None,
+                fail_ops=frozenset(args.fail_op),
+                material_state_path=Path(args.material_state_json) if args.material_state_json else None,
+                inventory_check=(_load_inventory_snapshot(Path(args.inventory_check)) if isinstance(args.inventory_check, str) else args.inventory_check),
+                library_roots=tuple(Path(p) for p in args.library_root),
+            )
+            try:
+                bundle = ProgramExecutionInteractor().execute(request)
+            except (ProgramExecutionError, ValueError, OSError) as error:
+                parser.error(str(error))
+        else:
+            bundle = execute_batch_pipeline(
+                input_paths=[Path(p) for p in input_values],
+                fail_ops=set(args.fail_op),
+                material_state_path=Path(args.material_state_json) if args.material_state_json else None,
+                inventory_check=(
+                    _load_inventory_snapshot(Path(args.inventory_check))
+                    if isinstance(args.inventory_check, str)
+                    else args.inventory_check
+                ),
+                library_roots=[Path(p) for p in args.library_root],
+            )
         print_returns_header_warnings(bundle)
         if args.results:
             _write_json(Path(args.results), bundle["results"])

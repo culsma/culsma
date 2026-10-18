@@ -300,3 +300,63 @@ classDiagram
     ProjectionDriver --> ReceiptNormalizer : normalizes through
     Translator --> DriverProjection : returns
 ```
+
+## Generic CLI program execution extension (unreleased)
+
+```mermaid
+flowchart TB
+    CLI["Original culsma CLI"] --> Selected{"--driver selected?"}
+    Selected -- no --> Local["Existing execute_batch_pipeline / StubDriver"]
+    Selected -- yes --> Request["ProgramExecutionRequest: entire source invocation"]
+    Request --> Discover["culsma.program_executors: registered program executor factory"]
+    Discover --> External["External executor receives the complete program"]
+    External --> Runtime["Executor invokes public language Runtime"]
+    Runtime --> Step["Existing Driver.check / execute: per-step boundary"]
+```
+
+```mermaid
+sequenceDiagram
+    participant main
+    participant ProgramExecutionInteractor
+    participant ProgramExecutorFactory
+    participant ProgramExecutorPort
+    main->>ProgramExecutionInteractor: execute(ProgramExecutionRequest)
+    ProgramExecutionInteractor->>ProgramExecutionInteractor: load_executor(driver_name)
+    ProgramExecutionInteractor->>ProgramExecutorFactory: build()
+    ProgramExecutorFactory-->>ProgramExecutionInteractor: ProgramExecutorPort
+    ProgramExecutionInteractor->>ProgramExecutorPort: execute(request)
+    ProgramExecutorPort-->>main: run bundle
+```
+
+```mermaid
+classDiagram
+    namespace Model {
+        class ProgramExecutionRequest
+        class ProgramExecutorPort {
+            <<interface>>
+            execute(request)
+        }
+        class ProgramExecutorFactory {
+            <<interface>>
+            build()
+        }
+        class ProgramExecutionError
+    }
+    namespace Interactor {
+        class ProgramExecutionInteractor {
+            load_executor(name)
+            execute(request)
+        }
+    }
+    namespace CLI {
+        class main {
+            <<function>>
+        }
+    }
+    main --> ProgramExecutionInteractor
+    main --> ProgramExecutionRequest
+    ProgramExecutionInteractor --> ProgramExecutorFactory
+    ProgramExecutorFactory --> ProgramExecutorPort
+```
+
+The per-step `Driver` contract remains unchanged. The optional CLI extension selects an installed whole-program executor; its factory and implementation are external. Core imports no concrete OS or vendor code. Without `--driver`, the previous standalone CLI path is preserved. This extension is on the development branch, not the published 1.0.8 package.

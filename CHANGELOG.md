@@ -9,6 +9,9 @@
   dispatches once, and invalidates indexed contents organization in its allocated
   wells without moving material between them. Tapping does not infer duration,
   rate or count parameters.
+- Added optional `culsma run --driver` and `--driver-config` selection for
+  installed whole-program executors. The CLI submits the complete invocation
+  through a vendor-neutral request; its default standalone path is preserved.
 
 ### Changed
 
