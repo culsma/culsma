@@ -1,0 +1,2650 @@
+{
+  "tag": "v1.0.8",
+  "cases": [
+    {
+      "name": "whole_plate_shake",
+      "source": "let p=plate(format=\"96well\"); agit(sample=p,mode=shake,duration=1min);",
+      "plan": {
+        "plans": [
+          {
+            "protocol_id": "entry",
+            "protocol_name": "entry",
+            "entry_kind": "script",
+            "output_name": "entry",
+            "returns": [],
+            "return_value": null,
+            "return_bindings": {},
+            "steps": [
+              {
+                "step_id": "entry.s1",
+                "op": "agit",
+                "args": {
+                  "sample": {
+                    "name": "plate",
+                    "args": [
+                      {
+                        "name": "format",
+                        "value": {
+                          "kind": "ExternalEnum",
+                          "enum": "PlateFormat",
+                          "member": "WELL_96"
+                        },
+                        "span": {
+                          "line": 1,
+                          "col": 13,
+                          "start": 12,
+                          "end": 27
+                        },
+                        "kind": "IRArg"
+                      }
+                    ],
+                    "span": {
+                      "line": 1,
+                      "col": 7,
+                      "start": 6,
+                      "end": 28
+                    },
+                    "kind": "IRCall"
+                  },
+                  "mode": {
+                    "kind": "ExternalEnum",
+                    "enum": "AgitationMode",
+                    "member": "SHAKE"
+                  },
+                  "duration": {
+                    "value": 1.0,
+                    "unit": "min",
+                    "span": {
+                      "line": 1,
+                      "col": 65,
+                      "start": 64,
+                      "end": 68
+                    },
+                    "kind": "IRQuantity"
+                  }
+                },
+                "deps": [],
+                "gate": {
+                  "entry_kind": "script",
+                  "entry_name": "entry"
+                },
+                "span": {
+                  "line": 1,
+                  "col": 31,
+                  "start": 30,
+                  "end": 69
+                }
+              }
+            ],
+            "span": {
+              "line": 1,
+              "col": 1,
+              "start": 0,
+              "end": 70
+            }
+          }
+        ],
+        "diagnostics": [],
+        "span": {
+          "line": 1,
+          "col": 1,
+          "start": 0,
+          "end": 70
+        },
+        "kind": "PlanProgram"
+      },
+      "actions": [
+        {
+          "op": "agit",
+          "args": {
+            "sample": {
+              "name": "plate",
+              "args": [
+                {
+                  "name": "format",
+                  "value": "96well",
+                  "span": {
+                    "line": 1,
+                    "col": 13,
+                    "start": 12,
+                    "end": 27
+                  },
+                  "kind": "IRArg"
+                }
+              ],
+              "span": {
+                "line": 1,
+                "col": 7,
+                "start": 6,
+                "end": 28
+              },
+              "kind": "IRCall"
+            },
+            "mode": "shake",
+            "duration": {
+              "value": 1.0,
+              "unit": "min",
+              "span": {
+                "line": 1,
+                "col": 65,
+                "start": 64,
+                "end": 68
+              },
+              "kind": "IRQuantity"
+            }
+          },
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          }
+        }
+      ],
+      "state": {
+        "step_status": {
+          "entry.s1": "completed"
+        },
+        "artifacts": {
+          "data_objects": {},
+          "data_bindings": {},
+          "data_groups": {},
+          "data_group_bindings": {},
+          "data_group_indexed_bindings": {},
+          "raw_data": {},
+          "data_exports": {},
+          "protocol_outputs": {
+            "entry": {
+              "protocol_id": "entry",
+              "protocol_name": "entry",
+              "returns": [],
+              "entry_kind": "script"
+            }
+          },
+          "local_bindings": {},
+          "skip_reasons": {},
+          "ref_cache": {}
+        },
+        "locks": {},
+        "history": [
+          {
+            "step_id": "entry.s1",
+            "status": "completed",
+            "driver_code": "DRV_OK"
+          }
+        ]
+      }
+    },
+    {
+      "name": "inline_plate_shake",
+      "source": "agit(sample=plate(format=\"96well\"),mode=shake,duration=1min);",
+      "plan": {
+        "plans": [
+          {
+            "protocol_id": "entry",
+            "protocol_name": "entry",
+            "entry_kind": "script",
+            "output_name": "entry",
+            "returns": [],
+            "return_value": null,
+            "return_bindings": {},
+            "steps": [
+              {
+                "step_id": "entry.s0",
+                "op": "agit",
+                "args": {
+                  "sample": {
+                    "name": "plate",
+                    "args": [
+                      {
+                        "name": "format",
+                        "value": {
+                          "kind": "ExternalEnum",
+                          "enum": "PlateFormat",
+                          "member": "WELL_96"
+                        },
+                        "span": {
+                          "line": 1,
+                          "col": 19,
+                          "start": 18,
+                          "end": 33
+                        },
+                        "kind": "IRArg"
+                      }
+                    ],
+                    "span": {
+                      "line": 1,
+                      "col": 13,
+                      "start": 12,
+                      "end": 34
+                    },
+                    "kind": "IRCall"
+                  },
+                  "mode": {
+                    "kind": "ExternalEnum",
+                    "enum": "AgitationMode",
+                    "member": "SHAKE"
+                  },
+                  "duration": {
+                    "value": 1.0,
+                    "unit": "min",
+                    "span": {
+                      "line": 1,
+                      "col": 56,
+                      "start": 55,
+                      "end": 59
+                    },
+                    "kind": "IRQuantity"
+                  }
+                },
+                "deps": [],
+                "gate": {
+                  "entry_kind": "script",
+                  "entry_name": "entry"
+                },
+                "span": {
+                  "line": 1,
+                  "col": 1,
+                  "start": 0,
+                  "end": 60
+                }
+              }
+            ],
+            "span": {
+              "line": 1,
+              "col": 1,
+              "start": 0,
+              "end": 61
+            }
+          }
+        ],
+        "diagnostics": [],
+        "span": {
+          "line": 1,
+          "col": 1,
+          "start": 0,
+          "end": 61
+        },
+        "kind": "PlanProgram"
+      },
+      "actions": [
+        {
+          "op": "agit",
+          "args": {
+            "sample": {
+              "name": "plate",
+              "args": [
+                {
+                  "name": "format",
+                  "value": "96well",
+                  "span": {
+                    "line": 1,
+                    "col": 19,
+                    "start": 18,
+                    "end": 33
+                  },
+                  "kind": "IRArg"
+                }
+              ],
+              "span": {
+                "line": 1,
+                "col": 13,
+                "start": 12,
+                "end": 34
+              },
+              "kind": "IRCall"
+            },
+            "mode": "shake",
+            "duration": {
+              "value": 1.0,
+              "unit": "min",
+              "span": {
+                "line": 1,
+                "col": 56,
+                "start": 55,
+                "end": 59
+              },
+              "kind": "IRQuantity"
+            }
+          },
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          }
+        }
+      ],
+      "state": {
+        "step_status": {
+          "entry.s0": "completed"
+        },
+        "artifacts": {
+          "data_objects": {},
+          "data_bindings": {},
+          "data_groups": {},
+          "data_group_bindings": {},
+          "data_group_indexed_bindings": {},
+          "raw_data": {},
+          "data_exports": {},
+          "protocol_outputs": {
+            "entry": {
+              "protocol_id": "entry",
+              "protocol_name": "entry",
+              "returns": [],
+              "entry_kind": "script"
+            }
+          },
+          "local_bindings": {},
+          "skip_reasons": {},
+          "ref_cache": {}
+        },
+        "locks": {},
+        "history": [
+          {
+            "step_id": "entry.s0",
+            "status": "completed",
+            "driver_code": "DRV_OK"
+          }
+        ]
+      }
+    },
+    {
+      "name": "deferred_inline_plate_shake",
+      "source": "protocol T(flag=true) {let mode=\"vortex\"; if flag {mode=\"shake\";} agit(sample=plate(format=\"96well\"),mode=mode,duration=1min);} T();",
+      "plan": {
+        "plans": [
+          {
+            "protocol_id": "entry",
+            "protocol_name": "entry",
+            "entry_kind": "script",
+            "output_name": "entry",
+            "returns": [],
+            "return_value": null,
+            "return_bindings": {},
+            "steps": [
+              {
+                "step_id": "entry.s2",
+                "op": "assign_local",
+                "args": {
+                  "target": "__cmp_entry_s0_mode",
+                  "value": {
+                    "value": "shake",
+                    "span": {
+                      "line": 1,
+                      "col": 57,
+                      "start": 56,
+                      "end": 63
+                    },
+                    "kind": "IRString"
+                  }
+                },
+                "deps": [],
+                "gate": {
+                  "entry_kind": "script",
+                  "entry_name": "entry"
+                },
+                "span": {
+                  "line": 1,
+                  "col": 52,
+                  "start": 51,
+                  "end": 63
+                }
+              },
+              {
+                "step_id": "entry.s3",
+                "op": "agit",
+                "args": {
+                  "sample": {
+                    "name": "plate",
+                    "args": [
+                      {
+                        "name": "format",
+                        "value": {
+                          "kind": "ExternalEnum",
+                          "enum": "PlateFormat",
+                          "member": "WELL_96"
+                        },
+                        "span": {
+                          "line": 1,
+                          "col": 85,
+                          "start": 84,
+                          "end": 99
+                        },
+                        "kind": "IRArg"
+                      }
+                    ],
+                    "span": {
+                      "line": 1,
+                      "col": 79,
+                      "start": 78,
+                      "end": 100
+                    },
+                    "kind": "IRCall"
+                  },
+                  "mode": {
+                    "kind": "IRIdentifier",
+                    "name": "__cmp_entry_s0_mode",
+                    "bound": true
+                  },
+                  "duration": {
+                    "value": 1.0,
+                    "unit": "min",
+                    "span": {
+                      "line": 1,
+                      "col": 121,
+                      "start": 120,
+                      "end": 124
+                    },
+                    "kind": "IRQuantity"
+                  }
+                },
+                "deps": [
+                  "entry.s2"
+                ],
+                "gate": {
+                  "entry_kind": "script",
+                  "entry_name": "entry"
+                },
+                "span": {
+                  "line": 1,
+                  "col": 67,
+                  "start": 66,
+                  "end": 125
+                }
+              }
+            ],
+            "span": {
+              "line": 1,
+              "col": 1,
+              "start": 0,
+              "end": 132
+            }
+          }
+        ],
+        "diagnostics": [],
+        "span": {
+          "line": 1,
+          "col": 1,
+          "start": 0,
+          "end": 132
+        },
+        "kind": "PlanProgram"
+      },
+      "actions": [
+        {
+          "op": "agit",
+          "args": {
+            "sample": {
+              "name": "plate",
+              "args": [
+                {
+                  "name": "format",
+                  "value": "96well",
+                  "span": {
+                    "line": 1,
+                    "col": 85,
+                    "start": 84,
+                    "end": 99
+                  },
+                  "kind": "IRArg"
+                }
+              ],
+              "span": {
+                "line": 1,
+                "col": 79,
+                "start": 78,
+                "end": 100
+              },
+              "kind": "IRCall"
+            },
+            "mode": "shake",
+            "duration": {
+              "value": 1.0,
+              "unit": "min",
+              "span": {
+                "line": 1,
+                "col": 121,
+                "start": 120,
+                "end": 124
+              },
+              "kind": "IRQuantity"
+            }
+          },
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          }
+        }
+      ],
+      "state": {
+        "step_status": {
+          "entry.s2": "completed",
+          "entry.s3": "completed"
+        },
+        "artifacts": {
+          "data_objects": {},
+          "data_bindings": {},
+          "data_groups": {},
+          "data_group_bindings": {},
+          "data_group_indexed_bindings": {},
+          "raw_data": {},
+          "data_exports": {},
+          "protocol_outputs": {
+            "entry": {
+              "protocol_id": "entry",
+              "protocol_name": "entry",
+              "returns": [],
+              "entry_kind": "script"
+            }
+          },
+          "local_bindings": {
+            "__cmp_entry_s0_mode": "shake"
+          },
+          "skip_reasons": {},
+          "ref_cache": {}
+        },
+        "locks": {},
+        "history": [
+          {
+            "step_id": "entry.s2",
+            "status": "completed",
+            "driver_code": "LOCAL_ASSIGN"
+          },
+          {
+            "step_id": "entry.s3",
+            "status": "completed",
+            "driver_code": "DRV_OK"
+          }
+        ]
+      }
+    },
+    {
+      "name": "label_only_environment",
+      "source": "let p=plate(label=\"P\"); with env(thermal=22C,duration=1min) { hold(p); }",
+      "plan": {
+        "plans": [
+          {
+            "protocol_id": "entry",
+            "protocol_name": "entry",
+            "entry_kind": "script",
+            "output_name": "entry",
+            "returns": [],
+            "return_value": null,
+            "return_bindings": {},
+            "steps": [
+              {
+                "step_id": "entry.s1",
+                "op": "env_hold",
+                "args": {},
+                "deps": [],
+                "gate": {
+                  "entry_kind": "script",
+                  "entry_name": "entry",
+                  "env_layers": [
+                    {
+                      "env": {
+                        "thermal": {
+                          "value": 22.0,
+                          "unit": "C",
+                          "span": {
+                            "line": 1,
+                            "col": 42,
+                            "start": 41,
+                            "end": 44
+                          },
+                          "kind": "IRQuantity"
+                        },
+                        "duration": {
+                          "value": 1.0,
+                          "unit": "min",
+                          "span": {
+                            "line": 1,
+                            "col": 55,
+                            "start": 54,
+                            "end": 58
+                          },
+                          "kind": "IRQuantity"
+                        }
+                      },
+                      "env_targets": [
+                        {
+                          "name": "plate",
+                          "args": [
+                            {
+                              "name": "label",
+                              "value": {
+                                "value": "P",
+                                "span": {
+                                  "line": 1,
+                                  "col": 19,
+                                  "start": 18,
+                                  "end": 21
+                                },
+                                "kind": "IRString"
+                              },
+                              "span": {
+                                "line": 1,
+                                "col": 13,
+                                "start": 12,
+                                "end": 21
+                              },
+                              "kind": "IRArg"
+                            }
+                          ],
+                          "span": {
+                            "line": 1,
+                            "col": 7,
+                            "start": 6,
+                            "end": 22
+                          },
+                          "kind": "IRCall"
+                        }
+                      ]
+                    }
+                  ],
+                  "env": {
+                    "thermal": {
+                      "value": 22.0,
+                      "unit": "C",
+                      "span": {
+                        "line": 1,
+                        "col": 42,
+                        "start": 41,
+                        "end": 44
+                      },
+                      "kind": "IRQuantity"
+                    },
+                    "duration": {
+                      "value": 1.0,
+                      "unit": "min",
+                      "span": {
+                        "line": 1,
+                        "col": 55,
+                        "start": 54,
+                        "end": 58
+                      },
+                      "kind": "IRQuantity"
+                    }
+                  },
+                  "env_targets": [
+                    {
+                      "name": "plate",
+                      "args": [
+                        {
+                          "name": "label",
+                          "value": {
+                            "value": "P",
+                            "span": {
+                              "line": 1,
+                              "col": 19,
+                              "start": 18,
+                              "end": 21
+                            },
+                            "kind": "IRString"
+                          },
+                          "span": {
+                            "line": 1,
+                            "col": 13,
+                            "start": 12,
+                            "end": 21
+                          },
+                          "kind": "IRArg"
+                        }
+                      ],
+                      "span": {
+                        "line": 1,
+                        "col": 7,
+                        "start": 6,
+                        "end": 22
+                      },
+                      "kind": "IRCall"
+                    }
+                  ]
+                },
+                "span": {
+                  "line": 1,
+                  "col": 25,
+                  "start": 24,
+                  "end": 72
+                }
+              }
+            ],
+            "span": {
+              "line": 1,
+              "col": 1,
+              "start": 0,
+              "end": 72
+            }
+          }
+        ],
+        "diagnostics": [],
+        "span": {
+          "line": 1,
+          "col": 1,
+          "start": 0,
+          "end": 72
+        },
+        "kind": "PlanProgram"
+      },
+      "actions": [
+        {
+          "op": "env_hold",
+          "args": {},
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry",
+            "env_layers": [
+              {
+                "env": {
+                  "thermal": {
+                    "value": 22.0,
+                    "unit": "C",
+                    "span": {
+                      "line": 1,
+                      "col": 42,
+                      "start": 41,
+                      "end": 44
+                    },
+                    "kind": "IRQuantity"
+                  },
+                  "duration": {
+                    "value": 1.0,
+                    "unit": "min",
+                    "span": {
+                      "line": 1,
+                      "col": 55,
+                      "start": 54,
+                      "end": 58
+                    },
+                    "kind": "IRQuantity"
+                  }
+                },
+                "env_targets": [
+                  {
+                    "name": "plate",
+                    "args": [
+                      {
+                        "name": "label",
+                        "value": {
+                          "value": "P",
+                          "span": {
+                            "line": 1,
+                            "col": 19,
+                            "start": 18,
+                            "end": 21
+                          },
+                          "kind": "IRString"
+                        },
+                        "span": {
+                          "line": 1,
+                          "col": 13,
+                          "start": 12,
+                          "end": 21
+                        },
+                        "kind": "IRArg"
+                      }
+                    ],
+                    "span": {
+                      "line": 1,
+                      "col": 7,
+                      "start": 6,
+                      "end": 22
+                    },
+                    "kind": "IRCall"
+                  }
+                ]
+              }
+            ],
+            "env": {
+              "thermal": {
+                "value": 22.0,
+                "unit": "C",
+                "span": {
+                  "line": 1,
+                  "col": 42,
+                  "start": 41,
+                  "end": 44
+                },
+                "kind": "IRQuantity"
+              },
+              "duration": {
+                "value": 1.0,
+                "unit": "min",
+                "span": {
+                  "line": 1,
+                  "col": 55,
+                  "start": 54,
+                  "end": 58
+                },
+                "kind": "IRQuantity"
+              }
+            },
+            "env_targets": [
+              {
+                "name": "plate",
+                "args": [
+                  {
+                    "name": "label",
+                    "value": {
+                      "value": "P",
+                      "span": {
+                        "line": 1,
+                        "col": 19,
+                        "start": 18,
+                        "end": 21
+                      },
+                      "kind": "IRString"
+                    },
+                    "span": {
+                      "line": 1,
+                      "col": 13,
+                      "start": 12,
+                      "end": 21
+                    },
+                    "kind": "IRArg"
+                  }
+                ],
+                "span": {
+                  "line": 1,
+                  "col": 7,
+                  "start": 6,
+                  "end": 22
+                },
+                "kind": "IRCall"
+              }
+            ]
+          }
+        }
+      ],
+      "state": {
+        "step_status": {
+          "entry.s1": "completed"
+        },
+        "artifacts": {
+          "data_objects": {},
+          "data_bindings": {},
+          "data_groups": {},
+          "data_group_bindings": {},
+          "data_group_indexed_bindings": {},
+          "raw_data": {},
+          "data_exports": {},
+          "protocol_outputs": {
+            "entry": {
+              "protocol_id": "entry",
+              "protocol_name": "entry",
+              "returns": [],
+              "entry_kind": "script"
+            }
+          },
+          "local_bindings": {},
+          "skip_reasons": {},
+          "ref_cache": {}
+        },
+        "locks": {},
+        "history": [
+          {
+            "step_id": "entry.s1",
+            "status": "completed",
+            "driver_code": "DRV_OK"
+          }
+        ]
+      }
+    },
+    {
+      "name": "unused_dynamic_label",
+      "source": "protocol T(flag=true) { let label=\"A\"; if flag { label=\"B\"; } let p=plate(label=label); } T();",
+      "plan": {
+        "plans": [
+          {
+            "protocol_id": "entry",
+            "protocol_name": "entry",
+            "entry_kind": "script",
+            "output_name": "entry",
+            "returns": [],
+            "return_value": null,
+            "return_bindings": {},
+            "steps": [
+              {
+                "step_id": "entry.s2",
+                "op": "assign_local",
+                "args": {
+                  "target": "__cmp_entry_s0_label",
+                  "value": {
+                    "value": "B",
+                    "span": {
+                      "line": 1,
+                      "col": 56,
+                      "start": 55,
+                      "end": 58
+                    },
+                    "kind": "IRString"
+                  }
+                },
+                "deps": [],
+                "gate": {
+                  "entry_kind": "script",
+                  "entry_name": "entry"
+                },
+                "span": {
+                  "line": 1,
+                  "col": 50,
+                  "start": 49,
+                  "end": 58
+                }
+              }
+            ],
+            "span": {
+              "line": 1,
+              "col": 1,
+              "start": 0,
+              "end": 94
+            }
+          }
+        ],
+        "diagnostics": [],
+        "span": {
+          "line": 1,
+          "col": 1,
+          "start": 0,
+          "end": 94
+        },
+        "kind": "PlanProgram"
+      },
+      "actions": [],
+      "state": {
+        "step_status": {
+          "entry.s2": "completed"
+        },
+        "artifacts": {
+          "data_objects": {},
+          "data_bindings": {},
+          "data_groups": {},
+          "data_group_bindings": {},
+          "data_group_indexed_bindings": {},
+          "raw_data": {},
+          "data_exports": {},
+          "protocol_outputs": {
+            "entry": {
+              "protocol_id": "entry",
+              "protocol_name": "entry",
+              "returns": [],
+              "entry_kind": "script"
+            }
+          },
+          "local_bindings": {
+            "__cmp_entry_s0_label": "B"
+          },
+          "skip_reasons": {},
+          "ref_cache": {}
+        },
+        "locks": {},
+        "history": [
+          {
+            "step_id": "entry.s2",
+            "status": "completed",
+            "driver_code": "LOCAL_ASSIGN"
+          }
+        ]
+      }
+    },
+    {
+      "name": "two_wells",
+      "source": "let p=plate(label=\"P\",format=\"96well\",capacity=100uL); let a=p[A1]; let b=p[A2];",
+      "plan": {
+        "plans": [
+          {
+            "protocol_id": "entry",
+            "protocol_name": "entry",
+            "entry_kind": "script",
+            "output_name": "entry",
+            "returns": [],
+            "return_value": null,
+            "return_bindings": {},
+            "steps": [
+              {
+                "step_id": "entry.s1::well::A1::alloc",
+                "op": "AllocContainer",
+                "args": {
+                  "kind": {
+                    "value": "well",
+                    "span": {
+                      "line": 1,
+                      "col": 62,
+                      "start": 61,
+                      "end": 66
+                    },
+                    "kind": "IRString"
+                  },
+                  "carrier_kind": {
+                    "value": "plate",
+                    "span": {
+                      "line": 1,
+                      "col": 62,
+                      "start": 61,
+                      "end": 66
+                    },
+                    "kind": "IRString"
+                  },
+                  "carrier_id": {
+                    "value": "p",
+                    "span": {
+                      "line": 1,
+                      "col": 62,
+                      "start": 61,
+                      "end": 66
+                    },
+                    "kind": "IRString"
+                  },
+                  "carrier_position": {
+                    "value": "A1",
+                    "span": {
+                      "line": 1,
+                      "col": 62,
+                      "start": 61,
+                      "end": 66
+                    },
+                    "kind": "IRString"
+                  },
+                  "label": {
+                    "value": "P_A1",
+                    "span": {
+                      "line": 1,
+                      "col": 62,
+                      "start": 61,
+                      "end": 66
+                    },
+                    "kind": "IRString"
+                  },
+                  "capacity": {
+                    "value": 100.0,
+                    "unit": "uL",
+                    "span": null,
+                    "kind": "IRQuantity"
+                  },
+                  "bind": "__lw_plate_p_A1",
+                  "container_namespace": "entry",
+                  "container_name": "__lw_plate_p_A1"
+                },
+                "deps": [],
+                "gate": {
+                  "entry_kind": "script",
+                  "entry_name": "entry"
+                },
+                "span": {
+                  "line": 1,
+                  "col": 62,
+                  "start": 61,
+                  "end": 66
+                }
+              },
+              {
+                "step_id": "entry.s3::well::A2::alloc",
+                "op": "AllocContainer",
+                "args": {
+                  "kind": {
+                    "value": "well",
+                    "span": {
+                      "line": 1,
+                      "col": 75,
+                      "start": 74,
+                      "end": 79
+                    },
+                    "kind": "IRString"
+                  },
+                  "carrier_kind": {
+                    "value": "plate",
+                    "span": {
+                      "line": 1,
+                      "col": 75,
+                      "start": 74,
+                      "end": 79
+                    },
+                    "kind": "IRString"
+                  },
+                  "carrier_id": {
+                    "value": "p",
+                    "span": {
+                      "line": 1,
+                      "col": 75,
+                      "start": 74,
+                      "end": 79
+                    },
+                    "kind": "IRString"
+                  },
+                  "carrier_position": {
+                    "value": "A2",
+                    "span": {
+                      "line": 1,
+                      "col": 75,
+                      "start": 74,
+                      "end": 79
+                    },
+                    "kind": "IRString"
+                  },
+                  "label": {
+                    "value": "P_A2",
+                    "span": {
+                      "line": 1,
+                      "col": 75,
+                      "start": 74,
+                      "end": 79
+                    },
+                    "kind": "IRString"
+                  },
+                  "capacity": {
+                    "value": 100.0,
+                    "unit": "uL",
+                    "span": null,
+                    "kind": "IRQuantity"
+                  },
+                  "bind": "__lw_plate_p_A2",
+                  "container_namespace": "entry",
+                  "container_name": "__lw_plate_p_A2"
+                },
+                "deps": [
+                  "entry.s1::well::A1::alloc"
+                ],
+                "gate": {
+                  "entry_kind": "script",
+                  "entry_name": "entry"
+                },
+                "span": {
+                  "line": 1,
+                  "col": 75,
+                  "start": 74,
+                  "end": 79
+                }
+              }
+            ],
+            "span": {
+              "line": 1,
+              "col": 1,
+              "start": 0,
+              "end": 80
+            }
+          }
+        ],
+        "diagnostics": [],
+        "span": {
+          "line": 1,
+          "col": 1,
+          "start": 0,
+          "end": 80
+        },
+        "kind": "PlanProgram"
+      },
+      "actions": [
+        {
+          "op": "AllocContainer",
+          "args": {
+            "kind": {
+              "value": "well",
+              "span": {
+                "line": 1,
+                "col": 62,
+                "start": 61,
+                "end": 66
+              },
+              "kind": "IRString"
+            },
+            "carrier_kind": {
+              "value": "plate",
+              "span": {
+                "line": 1,
+                "col": 62,
+                "start": 61,
+                "end": 66
+              },
+              "kind": "IRString"
+            },
+            "carrier_id": {
+              "value": "p",
+              "span": {
+                "line": 1,
+                "col": 62,
+                "start": 61,
+                "end": 66
+              },
+              "kind": "IRString"
+            },
+            "carrier_position": {
+              "value": "A1",
+              "span": {
+                "line": 1,
+                "col": 62,
+                "start": 61,
+                "end": 66
+              },
+              "kind": "IRString"
+            },
+            "label": {
+              "value": "P_A1",
+              "span": {
+                "line": 1,
+                "col": 62,
+                "start": 61,
+                "end": 66
+              },
+              "kind": "IRString"
+            },
+            "capacity": {
+              "value": 100.0,
+              "unit": "uL",
+              "span": null,
+              "kind": "IRQuantity"
+            },
+            "bind": "__lw_plate_p_A1",
+            "container_namespace": "entry",
+            "container_name": "__lw_plate_p_A1"
+          },
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          }
+        },
+        {
+          "op": "AllocContainer",
+          "args": {
+            "kind": {
+              "value": "well",
+              "span": {
+                "line": 1,
+                "col": 75,
+                "start": 74,
+                "end": 79
+              },
+              "kind": "IRString"
+            },
+            "carrier_kind": {
+              "value": "plate",
+              "span": {
+                "line": 1,
+                "col": 75,
+                "start": 74,
+                "end": 79
+              },
+              "kind": "IRString"
+            },
+            "carrier_id": {
+              "value": "p",
+              "span": {
+                "line": 1,
+                "col": 75,
+                "start": 74,
+                "end": 79
+              },
+              "kind": "IRString"
+            },
+            "carrier_position": {
+              "value": "A2",
+              "span": {
+                "line": 1,
+                "col": 75,
+                "start": 74,
+                "end": 79
+              },
+              "kind": "IRString"
+            },
+            "label": {
+              "value": "P_A2",
+              "span": {
+                "line": 1,
+                "col": 75,
+                "start": 74,
+                "end": 79
+              },
+              "kind": "IRString"
+            },
+            "capacity": {
+              "value": 100.0,
+              "unit": "uL",
+              "span": null,
+              "kind": "IRQuantity"
+            },
+            "bind": "__lw_plate_p_A2",
+            "container_namespace": "entry",
+            "container_name": "__lw_plate_p_A2"
+          },
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          }
+        }
+      ],
+      "state": {
+        "step_status": {
+          "entry.s1::well::A1::alloc": "completed",
+          "entry.s3::well::A2::alloc": "completed"
+        },
+        "artifacts": {
+          "data_objects": {},
+          "data_bindings": {},
+          "data_groups": {},
+          "data_group_bindings": {},
+          "data_group_indexed_bindings": {},
+          "raw_data": {},
+          "data_exports": {},
+          "protocol_outputs": {
+            "entry": {
+              "protocol_id": "entry",
+              "protocol_name": "entry",
+              "returns": [],
+              "entry_kind": "script"
+            }
+          },
+          "local_bindings": {},
+          "skip_reasons": {},
+          "ref_cache": {},
+          "material_state": {
+            "containers": {
+              "container/entry/entry.s1%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate_p_A1": {
+                "volume_uL": 0.0,
+                "mass_mg": 0.0,
+                "components": {},
+                "metadata": {
+                  "kind": "well",
+                  "label": "P_A1",
+                  "allocation_namespace": "entry",
+                  "allocation_name": "__lw_plate_p_A1",
+                  "allocation_step_id": "entry.s1::well::A1::alloc",
+                  "capacity_uL": 100.0
+                },
+                "component_quantities": {},
+                "component_entries": [],
+                "material_relationships": []
+              },
+              "container/entry/entry.s3%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate_p_A2": {
+                "volume_uL": 0.0,
+                "mass_mg": 0.0,
+                "components": {},
+                "metadata": {
+                  "kind": "well",
+                  "label": "P_A2",
+                  "allocation_namespace": "entry",
+                  "allocation_name": "__lw_plate_p_A2",
+                  "allocation_step_id": "entry.s3::well::A2::alloc",
+                  "capacity_uL": 100.0
+                }
+              }
+            },
+            "bindings": {
+              "well::container/entry/entry.s1%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate_p_A1": "container/entry/entry.s1%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate_p_A1",
+              "__lw_plate_p_A1": "container/entry/entry.s1%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate_p_A1",
+              "container/entry/entry.s1%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate_p_A1": "container/entry/entry.s1%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate_p_A1",
+              "well::container/entry/entry.s3%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate_p_A2": "container/entry/entry.s3%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate_p_A2",
+              "__lw_plate_p_A2": "container/entry/entry.s3%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate_p_A2"
+            },
+            "indexed_bindings": {}
+          }
+        },
+        "locks": {},
+        "history": [
+          {
+            "step_id": "entry.s1::well::A1::alloc",
+            "status": "completed",
+            "driver_code": "DRV_OK"
+          },
+          {
+            "step_id": "entry.s3::well::A2::alloc",
+            "status": "completed",
+            "driver_code": "DRV_OK"
+          }
+        ]
+      }
+    },
+    {
+      "name": "whole_plate_readout",
+      "source": "let p=plate(label=\"P\",format=\"96well\"); let r=img(sample=p,quantity=uv_absorbance,save_raw=true);",
+      "plan": {
+        "plans": [
+          {
+            "protocol_id": "entry",
+            "protocol_name": "entry",
+            "entry_kind": "script",
+            "output_name": "entry",
+            "returns": [],
+            "return_value": null,
+            "return_bindings": {},
+            "steps": [
+              {
+                "step_id": "entry.s1",
+                "op": "img",
+                "args": {
+                  "sample": {
+                    "name": "plate",
+                    "args": [
+                      {
+                        "name": "label",
+                        "value": {
+                          "value": "P",
+                          "span": {
+                            "line": 1,
+                            "col": 19,
+                            "start": 18,
+                            "end": 21
+                          },
+                          "kind": "IRString"
+                        },
+                        "span": {
+                          "line": 1,
+                          "col": 13,
+                          "start": 12,
+                          "end": 21
+                        },
+                        "kind": "IRArg"
+                      },
+                      {
+                        "name": "format",
+                        "value": {
+                          "kind": "ExternalEnum",
+                          "enum": "PlateFormat",
+                          "member": "WELL_96"
+                        },
+                        "span": {
+                          "line": 1,
+                          "col": 23,
+                          "start": 22,
+                          "end": 37
+                        },
+                        "kind": "IRArg"
+                      }
+                    ],
+                    "span": {
+                      "line": 1,
+                      "col": 7,
+                      "start": 6,
+                      "end": 38
+                    },
+                    "kind": "IRCall"
+                  },
+                  "quantity": {
+                    "kind": "ExternalEnum",
+                    "enum": "ReadoutQuantity",
+                    "member": "UV_ABSORBANCE"
+                  },
+                  "save_raw": {
+                    "value": true,
+                    "span": {
+                      "line": 1,
+                      "col": 92,
+                      "start": 91,
+                      "end": 95
+                    },
+                    "kind": "IRBoolean"
+                  },
+                  "bind": "r"
+                },
+                "deps": [],
+                "gate": {
+                  "entry_kind": "script",
+                  "entry_name": "entry"
+                },
+                "span": {
+                  "line": 1,
+                  "col": 41,
+                  "start": 40,
+                  "end": 96
+                }
+              }
+            ],
+            "span": {
+              "line": 1,
+              "col": 1,
+              "start": 0,
+              "end": 97
+            }
+          }
+        ],
+        "diagnostics": [],
+        "span": {
+          "line": 1,
+          "col": 1,
+          "start": 0,
+          "end": 97
+        },
+        "kind": "PlanProgram"
+      },
+      "actions": [
+        {
+          "op": "img",
+          "args": {
+            "sample": {
+              "name": "plate",
+              "args": [
+                {
+                  "name": "label",
+                  "value": {
+                    "value": "P",
+                    "span": {
+                      "line": 1,
+                      "col": 19,
+                      "start": 18,
+                      "end": 21
+                    },
+                    "kind": "IRString"
+                  },
+                  "span": {
+                    "line": 1,
+                    "col": 13,
+                    "start": 12,
+                    "end": 21
+                  },
+                  "kind": "IRArg"
+                },
+                {
+                  "name": "format",
+                  "value": "96well",
+                  "span": {
+                    "line": 1,
+                    "col": 23,
+                    "start": 22,
+                    "end": 37
+                  },
+                  "kind": "IRArg"
+                }
+              ],
+              "span": {
+                "line": 1,
+                "col": 7,
+                "start": 6,
+                "end": 38
+              },
+              "kind": "IRCall"
+            },
+            "quantity": "uv_absorbance",
+            "save_raw": {
+              "value": true,
+              "span": {
+                "line": 1,
+                "col": 92,
+                "start": 91,
+                "end": 95
+              },
+              "kind": "IRBoolean"
+            },
+            "bind": "r"
+          },
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          }
+        }
+      ],
+      "state": {
+        "step_status": {
+          "entry.s1": "completed"
+        },
+        "artifacts": {
+          "data_objects": {
+            "entry.s1::data": {
+              "kind": "data_ref",
+              "data_id": "entry.s1::data",
+              "observation_id": "entry.s1::data",
+              "data_kind": "observation",
+              "family": "img",
+              "op": "img",
+              "step_id": "entry.s1",
+              "binding": "r",
+              "subject_ref": {
+                "name": "plate",
+                "args": [
+                  {
+                    "name": "label",
+                    "value": {
+                      "value": "P",
+                      "span": {
+                        "line": 1,
+                        "col": 19,
+                        "start": 18,
+                        "end": 21
+                      },
+                      "kind": "IRString"
+                    },
+                    "span": {
+                      "line": 1,
+                      "col": 13,
+                      "start": 12,
+                      "end": 21
+                    },
+                    "kind": "IRArg"
+                  },
+                  {
+                    "name": "format",
+                    "value": "96well",
+                    "span": {
+                      "line": 1,
+                      "col": 23,
+                      "start": 22,
+                      "end": 37
+                    },
+                    "kind": "IRArg"
+                  }
+                ],
+                "span": {
+                  "line": 1,
+                  "col": 7,
+                  "start": 6,
+                  "end": 38
+                },
+                "kind": "IRCall"
+              },
+              "sample_ref": {
+                "name": "plate",
+                "args": [
+                  {
+                    "name": "label",
+                    "value": {
+                      "value": "P",
+                      "span": {
+                        "line": 1,
+                        "col": 19,
+                        "start": 18,
+                        "end": 21
+                      },
+                      "kind": "IRString"
+                    },
+                    "span": {
+                      "line": 1,
+                      "col": 13,
+                      "start": 12,
+                      "end": 21
+                    },
+                    "kind": "IRArg"
+                  },
+                  {
+                    "name": "format",
+                    "value": "96well",
+                    "span": {
+                      "line": 1,
+                      "col": 23,
+                      "start": 22,
+                      "end": 37
+                    },
+                    "kind": "IRArg"
+                  }
+                ],
+                "span": {
+                  "line": 1,
+                  "col": 7,
+                  "start": 6,
+                  "end": 38
+                },
+                "kind": "IRCall"
+              },
+              "sample": {
+                "name": "plate",
+                "args": [
+                  {
+                    "name": "label",
+                    "value": {
+                      "value": "P",
+                      "span": {
+                        "line": 1,
+                        "col": 19,
+                        "start": 18,
+                        "end": 21
+                      },
+                      "kind": "IRString"
+                    },
+                    "span": {
+                      "line": 1,
+                      "col": 13,
+                      "start": 12,
+                      "end": 21
+                    },
+                    "kind": "IRArg"
+                  },
+                  {
+                    "name": "format",
+                    "value": "96well",
+                    "span": {
+                      "line": 1,
+                      "col": 23,
+                      "start": 22,
+                      "end": 37
+                    },
+                    "kind": "IRArg"
+                  }
+                ],
+                "span": {
+                  "line": 1,
+                  "col": 7,
+                  "start": 6,
+                  "end": 38
+                },
+                "kind": "IRCall"
+              },
+              "resolved_sample": null,
+              "contract_kind": "uv_absorbance",
+              "program_kind": null,
+              "program": null,
+              "status": "ok",
+              "result": {
+                "signal": null,
+                "channel": null
+              },
+              "save_raw": true,
+              "driver_payload": {
+                "step_id": "entry.s1",
+                "op": "img"
+              },
+              "gate": {
+                "entry_kind": "script",
+                "entry_name": "entry"
+              },
+              "raw_artifact": {
+                "artifact_id": "entry.s1::data::raw",
+                "step_id": "entry.s1",
+                "op": "img",
+                "driver_code": "DRV_OK"
+              },
+              "export_refs": {
+                "driver_profile": {
+                  "export_id": "entry.s1::data::driver_profile",
+                  "kind": "img",
+                  "format": "json",
+                  "profile": "driver:DRV_OK",
+                  "artifact_id": "entry.s1::data::raw"
+                }
+              }
+            }
+          },
+          "data_bindings": {
+            "r": "entry.s1::data"
+          },
+          "data_groups": {},
+          "data_group_bindings": {},
+          "data_group_indexed_bindings": {},
+          "raw_data": {
+            "entry.s1::data": {
+              "artifact_id": "entry.s1::data::raw",
+              "step_id": "entry.s1",
+              "op": "img",
+              "driver_code": "DRV_OK"
+            }
+          },
+          "data_exports": {
+            "entry.s1::data": {
+              "driver_profile": {
+                "export_id": "entry.s1::data::driver_profile",
+                "kind": "img",
+                "format": "json",
+                "profile": "driver:DRV_OK",
+                "artifact_id": "entry.s1::data::raw"
+              }
+            }
+          },
+          "protocol_outputs": {
+            "entry": {
+              "protocol_id": "entry",
+              "protocol_name": "entry",
+              "returns": [],
+              "entry_kind": "script"
+            }
+          },
+          "local_bindings": {},
+          "skip_reasons": {},
+          "ref_cache": {}
+        },
+        "locks": {},
+        "history": [
+          {
+            "step_id": "entry.s1",
+            "status": "completed",
+            "driver_code": "DRV_OK"
+          }
+        ]
+      }
+    },
+    {
+      "name": "selected_well_partition",
+      "source": "let p=plate(label=\"P\",format=\"96well\",capacity=100uL); let a=p[A1]; let s=tube(load=[content(kind=formulation,type=buffer,code=\"B\"):80uL]); a << [s]; sep(sample=a[0],program=centrifuge_program(drive=3000g));",
+      "plan": {
+        "plans": [
+          {
+            "protocol_id": "entry",
+            "protocol_name": "entry",
+            "entry_kind": "script",
+            "output_name": "entry",
+            "returns": [],
+            "return_value": null,
+            "return_bindings": {},
+            "steps": [
+              {
+                "step_id": "entry.s1::well::A1::alloc",
+                "op": "AllocContainer",
+                "args": {
+                  "kind": {
+                    "value": "well",
+                    "span": {
+                      "line": 1,
+                      "col": 62,
+                      "start": 61,
+                      "end": 66
+                    },
+                    "kind": "IRString"
+                  },
+                  "carrier_kind": {
+                    "value": "plate",
+                    "span": {
+                      "line": 1,
+                      "col": 62,
+                      "start": 61,
+                      "end": 66
+                    },
+                    "kind": "IRString"
+                  },
+                  "carrier_id": {
+                    "value": "p",
+                    "span": {
+                      "line": 1,
+                      "col": 62,
+                      "start": 61,
+                      "end": 66
+                    },
+                    "kind": "IRString"
+                  },
+                  "carrier_position": {
+                    "value": "A1",
+                    "span": {
+                      "line": 1,
+                      "col": 62,
+                      "start": 61,
+                      "end": 66
+                    },
+                    "kind": "IRString"
+                  },
+                  "label": {
+                    "value": "P_A1",
+                    "span": {
+                      "line": 1,
+                      "col": 62,
+                      "start": 61,
+                      "end": 66
+                    },
+                    "kind": "IRString"
+                  },
+                  "capacity": {
+                    "value": 100.0,
+                    "unit": "uL",
+                    "span": null,
+                    "kind": "IRQuantity"
+                  },
+                  "bind": "__lw_plate_p_A1",
+                  "container_namespace": "entry",
+                  "container_name": "__lw_plate_p_A1"
+                },
+                "deps": [],
+                "gate": {
+                  "entry_kind": "script",
+                  "entry_name": "entry"
+                },
+                "span": {
+                  "line": 1,
+                  "col": 62,
+                  "start": 61,
+                  "end": 66
+                }
+              },
+              {
+                "step_id": "entry.s3::alloc",
+                "op": "AllocContainer",
+                "args": {
+                  "kind": {
+                    "value": "tube",
+                    "span": {
+                      "line": 1,
+                      "col": 75,
+                      "start": 74,
+                      "end": 138
+                    },
+                    "kind": "IRString"
+                  },
+                  "bind": "s",
+                  "container_namespace": "entry",
+                  "container_name": "s"
+                },
+                "deps": [
+                  "entry.s1::well::A1::alloc"
+                ],
+                "gate": {
+                  "entry_kind": "script",
+                  "entry_name": "entry"
+                },
+                "span": {
+                  "line": 1,
+                  "col": 69,
+                  "start": 68,
+                  "end": 138
+                }
+              },
+              {
+                "step_id": "entry.s3::load0::define",
+                "op": "DefineContent",
+                "args": {
+                  "kind": {
+                    "name": "formulation",
+                    "span": {
+                      "line": 1,
+                      "col": 99,
+                      "start": 98,
+                      "end": 109
+                    },
+                    "kind": "IRIdentifier"
+                  },
+                  "type": {
+                    "name": "buffer",
+                    "span": {
+                      "line": 1,
+                      "col": 116,
+                      "start": 115,
+                      "end": 121
+                    },
+                    "kind": "IRIdentifier"
+                  },
+                  "code": {
+                    "value": "B",
+                    "span": {
+                      "line": 1,
+                      "col": 128,
+                      "start": 127,
+                      "end": 130
+                    },
+                    "kind": "IRString"
+                  }
+                },
+                "deps": [
+                  "entry.s3::alloc"
+                ],
+                "gate": {
+                  "entry_kind": "script",
+                  "entry_name": "entry"
+                },
+                "span": {
+                  "line": 1,
+                  "col": 86,
+                  "start": 85,
+                  "end": 131
+                }
+              },
+              {
+                "step_id": "entry.s3::load0::load",
+                "op": "LoadContent",
+                "args": {
+                  "container": {
+                    "name": "s",
+                    "span": {
+                      "line": 1,
+                      "col": 69,
+                      "start": 68,
+                      "end": 138
+                    },
+                    "kind": "IRIdentifier"
+                  },
+                  "content": {
+                    "value": "B",
+                    "span": {
+                      "line": 1,
+                      "col": 128,
+                      "start": 127,
+                      "end": 130
+                    },
+                    "kind": "IRString"
+                  },
+                  "amount": {
+                    "value": 80.0,
+                    "unit": "uL",
+                    "span": {
+                      "line": 1,
+                      "col": 133,
+                      "start": 132,
+                      "end": 136
+                    },
+                    "kind": "IRQuantity"
+                  }
+                },
+                "deps": [
+                  "entry.s3::load0::define"
+                ],
+                "gate": {
+                  "entry_kind": "script",
+                  "entry_name": "entry"
+                },
+                "span": {
+                  "line": 1,
+                  "col": 86,
+                  "start": 85,
+                  "end": 136
+                }
+              },
+              {
+                "step_id": "entry.s4",
+                "op": "Mutation",
+                "args": {
+                  "target": {
+                    "name": "__lw_plate_p_A1",
+                    "span": {
+                      "line": 1,
+                      "col": 62,
+                      "start": 61,
+                      "end": 66
+                    },
+                    "kind": "IRIdentifier"
+                  },
+                  "sources": [
+                    {
+                      "name": "s",
+                      "span": {
+                        "line": 1,
+                        "col": 147,
+                        "start": 146,
+                        "end": 147
+                      },
+                      "kind": "IRIdentifier"
+                    }
+                  ]
+                },
+                "deps": [
+                  "entry.s3::load0::load"
+                ],
+                "gate": {
+                  "entry_kind": "script",
+                  "entry_name": "entry"
+                },
+                "span": {
+                  "line": 1,
+                  "col": 141,
+                  "start": 140,
+                  "end": 148
+                }
+              },
+              {
+                "step_id": "entry.s5",
+                "op": "sep",
+                "args": {
+                  "sample": {
+                    "name": "__lw_plate_p_A1",
+                    "span": {
+                      "line": 1,
+                      "col": 62,
+                      "start": 61,
+                      "end": 66
+                    },
+                    "kind": "IRIdentifier"
+                  },
+                  "program": {
+                    "name": "centrifuge_program",
+                    "args": [
+                      {
+                        "name": "drive",
+                        "value": {
+                          "value": 3000.0,
+                          "unit": "g",
+                          "span": {
+                            "line": 1,
+                            "col": 200,
+                            "start": 199,
+                            "end": 204
+                          },
+                          "kind": "IRQuantity"
+                        },
+                        "span": {
+                          "line": 1,
+                          "col": 194,
+                          "start": 193,
+                          "end": 204
+                        },
+                        "kind": "IRArg"
+                      }
+                    ],
+                    "span": {
+                      "line": 1,
+                      "col": 175,
+                      "start": 174,
+                      "end": 205
+                    },
+                    "kind": "IRCall"
+                  }
+                },
+                "deps": [
+                  "entry.s4"
+                ],
+                "gate": {
+                  "entry_kind": "script",
+                  "entry_name": "entry"
+                },
+                "span": {
+                  "line": 1,
+                  "col": 151,
+                  "start": 150,
+                  "end": 206
+                }
+              }
+            ],
+            "span": {
+              "line": 1,
+              "col": 1,
+              "start": 0,
+              "end": 207
+            }
+          }
+        ],
+        "diagnostics": [],
+        "span": {
+          "line": 1,
+          "col": 1,
+          "start": 0,
+          "end": 207
+        },
+        "kind": "PlanProgram"
+      },
+      "actions": [
+        {
+          "op": "AllocContainer",
+          "args": {
+            "kind": {
+              "value": "well",
+              "span": {
+                "line": 1,
+                "col": 62,
+                "start": 61,
+                "end": 66
+              },
+              "kind": "IRString"
+            },
+            "carrier_kind": {
+              "value": "plate",
+              "span": {
+                "line": 1,
+                "col": 62,
+                "start": 61,
+                "end": 66
+              },
+              "kind": "IRString"
+            },
+            "carrier_id": {
+              "value": "p",
+              "span": {
+                "line": 1,
+                "col": 62,
+                "start": 61,
+                "end": 66
+              },
+              "kind": "IRString"
+            },
+            "carrier_position": {
+              "value": "A1",
+              "span": {
+                "line": 1,
+                "col": 62,
+                "start": 61,
+                "end": 66
+              },
+              "kind": "IRString"
+            },
+            "label": {
+              "value": "P_A1",
+              "span": {
+                "line": 1,
+                "col": 62,
+                "start": 61,
+                "end": 66
+              },
+              "kind": "IRString"
+            },
+            "capacity": {
+              "value": 100.0,
+              "unit": "uL",
+              "span": null,
+              "kind": "IRQuantity"
+            },
+            "bind": "__lw_plate_p_A1",
+            "container_namespace": "entry",
+            "container_name": "__lw_plate_p_A1"
+          },
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          }
+        },
+        {
+          "op": "AllocContainer",
+          "args": {
+            "kind": {
+              "value": "tube",
+              "span": {
+                "line": 1,
+                "col": 75,
+                "start": 74,
+                "end": 138
+              },
+              "kind": "IRString"
+            },
+            "bind": "s",
+            "container_namespace": "entry",
+            "container_name": "s"
+          },
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          }
+        },
+        {
+          "op": "DefineContent",
+          "args": {
+            "kind": {
+              "name": "formulation",
+              "span": {
+                "line": 1,
+                "col": 99,
+                "start": 98,
+                "end": 109
+              },
+              "kind": "IRIdentifier"
+            },
+            "type": {
+              "name": "buffer",
+              "span": {
+                "line": 1,
+                "col": 116,
+                "start": 115,
+                "end": 121
+              },
+              "kind": "IRIdentifier"
+            },
+            "code": {
+              "value": "B",
+              "span": {
+                "line": 1,
+                "col": 128,
+                "start": 127,
+                "end": 130
+              },
+              "kind": "IRString"
+            }
+          },
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          }
+        },
+        {
+          "op": "LoadContent",
+          "args": {
+            "container": {
+              "name": "s",
+              "span": {
+                "line": 1,
+                "col": 69,
+                "start": 68,
+                "end": 138
+              },
+              "kind": "IRIdentifier"
+            },
+            "content": {
+              "value": "B",
+              "span": {
+                "line": 1,
+                "col": 128,
+                "start": 127,
+                "end": 130
+              },
+              "kind": "IRString"
+            },
+            "amount": {
+              "value": 80.0,
+              "unit": "uL",
+              "span": {
+                "line": 1,
+                "col": 133,
+                "start": 132,
+                "end": 136
+              },
+              "kind": "IRQuantity"
+            }
+          },
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          }
+        },
+        {
+          "op": "Mutation",
+          "args": {
+            "target": {
+              "name": "__lw_plate_p_A1",
+              "span": {
+                "line": 1,
+                "col": 62,
+                "start": 61,
+                "end": 66
+              },
+              "kind": "IRIdentifier"
+            },
+            "sources": [
+              {
+                "name": "s",
+                "span": {
+                  "line": 1,
+                  "col": 147,
+                  "start": 146,
+                  "end": 147
+                },
+                "kind": "IRIdentifier"
+              }
+            ]
+          },
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          }
+        },
+        {
+          "op": "sep",
+          "args": {
+            "sample": {
+              "name": "__lw_plate_p_A1",
+              "span": {
+                "line": 1,
+                "col": 62,
+                "start": 61,
+                "end": 66
+              },
+              "kind": "IRIdentifier"
+            },
+            "program": {
+              "name": "centrifuge_program",
+              "args": [
+                {
+                  "name": "drive",
+                  "value": {
+                    "value": 3000.0,
+                    "unit": "g",
+                    "span": {
+                      "line": 1,
+                      "col": 200,
+                      "start": 199,
+                      "end": 204
+                    },
+                    "kind": "IRQuantity"
+                  },
+                  "span": {
+                    "line": 1,
+                    "col": 194,
+                    "start": 193,
+                    "end": 204
+                  },
+                  "kind": "IRArg"
+                }
+              ],
+              "span": {
+                "line": 1,
+                "col": 175,
+                "start": 174,
+                "end": 205
+              },
+              "kind": "IRCall"
+            }
+          },
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          }
+        }
+      ],
+      "state": {
+        "step_status": {
+          "entry.s1::well::A1::alloc": "completed",
+          "entry.s3::alloc": "completed",
+          "entry.s3::load0::define": "completed",
+          "entry.s3::load0::load": "completed",
+          "entry.s4": "completed",
+          "entry.s5": "completed"
+        },
+        "artifacts": {
+          "data_objects": {},
+          "data_bindings": {},
+          "data_groups": {},
+          "data_group_bindings": {},
+          "data_group_indexed_bindings": {},
+          "raw_data": {},
+          "data_exports": {},
+          "protocol_outputs": {
+            "entry": {
+              "protocol_id": "entry",
+              "protocol_name": "entry",
+              "returns": [],
+              "entry_kind": "script"
+            }
+          },
+          "local_bindings": {},
+          "skip_reasons": {},
+          "ref_cache": {},
+          "material_state": {
+            "containers": {
+              "container/entry/entry.s1%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate_p_A1": {
+                "volume_uL": 80.0,
+                "mass_mg": 80.0,
+                "components": {
+                  "B": 80.0
+                },
+                "metadata": {
+                  "kind": "well",
+                  "label": "P_A1",
+                  "allocation_namespace": "entry",
+                  "allocation_name": "__lw_plate_p_A1",
+                  "allocation_step_id": "entry.s1::well::A1::alloc",
+                  "capacity_uL": 100.0
+                },
+                "component_quantities": {
+                  "B": {
+                    "dimension": "volume",
+                    "unit": "uL",
+                    "value": 80.0
+                  }
+                },
+                "component_entries": [
+                  {
+                    "entry_id": "B",
+                    "content_ref": "B",
+                    "amount": 80.0,
+                    "quantity": {
+                      "dimension": "volume",
+                      "unit": "uL",
+                      "value": 80.0
+                    },
+                    "relation": "free",
+                    "associated_with": null,
+                    "association_target_kind": null,
+                    "preservation": null,
+                    "label": "supernatant_output",
+                    "relationship_source": "scientific_model",
+                    "material_state_source": "scientific_model_provider",
+                    "provenance": {
+                      "provider_id": "culsma.builtin.material_rulebook",
+                      "provider_version": "1.0",
+                      "model_id": null,
+                      "model_version": null,
+                      "configuration": {}
+                    }
+                  }
+                ],
+                "material_relationships": []
+              },
+              "container/entry/entry.s3%3A%3Aalloc/s": {
+                "volume_uL": 0.0,
+                "mass_mg": 0.0,
+                "components": {},
+                "metadata": {
+                  "kind": "tube",
+                  "allocation_namespace": "entry",
+                  "allocation_name": "s",
+                  "allocation_step_id": "entry.s3::alloc",
+                  "capacity_uL": 1500.0
+                },
+                "component_quantities": {},
+                "component_entries": [],
+                "material_relationships": []
+              }
+            },
+            "bindings": {
+              "well::container/entry/entry.s1%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate_p_A1": "container/entry/entry.s1%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate_p_A1",
+              "__lw_plate_p_A1": "container/entry/entry.s1%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate_p_A1",
+              "container/entry/entry.s1%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate_p_A1": "container/entry/entry.s1%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate_p_A1",
+              "tube::container/entry/entry.s3%3A%3Aalloc/s": "container/entry/entry.s3%3A%3Aalloc/s",
+              "s": "container/entry/entry.s3%3A%3Aalloc/s",
+              "container/entry/entry.s3%3A%3Aalloc/s": "container/entry/entry.s3%3A%3Aalloc/s"
+            },
+            "indexed_bindings": {},
+            "content_registry": {
+              "B": {
+                "content_kind": "formulation",
+                "content_type": "buffer",
+                "content_code": "B",
+                "content_name": null
+              }
+            },
+            "content_bindings": {
+              "B": "B"
+            },
+            "container_content_index": {
+              "container/entry/entry.s3%3A%3Aalloc/s": {
+                "B": {
+                  "volume_uL": 80.0,
+                  "mass_mg": 80.0,
+                  "count_cells": 0.0,
+                  "axis": "volume",
+                  "unit": "uL"
+                }
+              }
+            },
+            "contents_states": {
+              "container/entry/entry.s1%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate_p_A1": {
+                "kind": "partitioned",
+                "producer_op": "sep",
+                "program_kind": "centrifuge_program",
+                "source": "container/entry/entry.s1%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate_p_A1",
+                "slot_contract": {
+                  "0": "supernatant",
+                  "1": "pellet"
+                },
+                "parts": {
+                  "0": {
+                    "volume_uL": 80.0,
+                    "mass_mg": 80.0,
+                    "components": {
+                      "B": 80.0
+                    },
+                    "metadata": {},
+                    "component_entries": [
+                      {
+                        "entry_id": "B",
+                        "content_ref": "B",
+                        "amount": 80.0,
+                        "quantity": {
+                          "dimension": "volume",
+                          "unit": "uL",
+                          "value": 80.0
+                        },
+                        "relation": "free",
+                        "associated_with": null,
+                        "association_target_kind": null,
+                        "preservation": "derived",
+                        "label": "supernatant_output",
+                        "relationship_source": "scientific_model",
+                        "material_state_source": "scientific_model_provider",
+                        "provenance": {
+                          "provider_id": "culsma.builtin.material_rulebook",
+                          "provider_version": "1.0",
+                          "model_id": null,
+                          "model_version": null,
+                          "configuration": {}
+                        }
+                      }
+                    ],
+                    "component_quantities": {
+                      "B": {
+                        "dimension": "volume",
+                        "unit": "uL",
+                        "value": 80.0
+                      }
+                    },
+                    "material_relationships": []
+                  },
+                  "1": {
+                    "volume_uL": 0.0,
+                    "mass_mg": 0.0,
+                    "components": {
+                      "B": 0.0
+                    },
+                    "metadata": {},
+                    "component_entries": [
+                      {
+                        "entry_id": "B",
+                        "content_ref": "B",
+                        "amount": 0.0,
+                        "quantity": {
+                          "dimension": "volume",
+                          "unit": "uL",
+                          "value": 0.0
+                        },
+                        "relation": "free",
+                        "associated_with": null,
+                        "association_target_kind": null,
+                        "preservation": "derived",
+                        "label": null,
+                        "relationship_source": "scientific_model",
+                        "material_state_source": "scientific_model_provider"
+                      }
+                    ],
+                    "component_quantities": {
+                      "B": {
+                        "dimension": "volume",
+                        "unit": "uL",
+                        "value": 0.0
+                      }
+                    },
+                    "material_relationships": []
+                  }
+                },
+                "valid": true,
+                "step_id": "entry.s5"
+              }
+            }
+          }
+        },
+        "locks": {},
+        "history": [
+          {
+            "step_id": "entry.s1::well::A1::alloc",
+            "status": "completed",
+            "driver_code": "DRV_OK"
+          },
+          {
+            "step_id": "entry.s3::alloc",
+            "status": "completed",
+            "driver_code": "DRV_OK"
+          },
+          {
+            "step_id": "entry.s3::load0::define",
+            "status": "completed",
+            "driver_code": "DRV_OK"
+          },
+          {
+            "step_id": "entry.s3::load0::load",
+            "status": "completed",
+            "driver_code": "DRV_OK"
+          },
+          {
+            "step_id": "entry.s4",
+            "status": "completed",
+            "driver_code": "DRV_OK"
+          },
+          {
+            "step_id": "entry.s5",
+            "status": "completed",
+            "driver_code": "DRV_OK"
+          }
+        ]
+      }
+    }
+  ],
+  "commit": "dc9a38be57455b6740b26eab6fa3dc068b25b143"
+}

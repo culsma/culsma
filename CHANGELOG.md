@@ -2,7 +2,22 @@
 
 ## Unreleased
 
+### Added
+
+- Added `AgitationMode.TAP` for container tapping with independent handling
+  requirements. Whole-plate tapping preserves a first-class carrier reference,
+  dispatches once, and invalidates indexed contents organization in its allocated
+  wells without moving material between them. Tapping does not infer duration,
+  rate or count parameters.
+
 ### Changed
+
+- Plate carrier identity no longer requires eagerly bound geometry or labels.
+  Aliases, protocol arguments and returned plate values preserve that identity.
+  Existing source, old serialized plans and environment/readout/non-TAP descriptor payloads
+  remain supported. New carrier-assignment plans require a carrier-aware runtime.
+  Inline unallocated TAP targets and whole-carrier effects on incomplete
+  legacy well membership fail before dispatch or mutation.
 
 - Multi-target material mutations preserve an ordered group through compilation
   and planning. Runtime retains scalar member semantics and supports optional

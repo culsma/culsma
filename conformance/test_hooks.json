@@ -139,5 +139,44 @@
   ],
   "GROUP-HANDOFF-09": [
     "tests/language/groups/test_group_handoff.py::test_native_protocol_loop_and_constraints_share_reference_semantics"
+  ],
+  "AGIT-TAP-01": [
+    "tests/language/agitation/test_tap.py::test_tap_preserves_mode_and_gentle_without_invented_parameters"
+  ],
+  "AGIT-TAP-02": [
+    "tests/language/agitation/test_tap.py::test_tap_rejects_parameters_before_dispatch",
+    "tests/language/agitation/test_tap.py::test_dynamic_tap_parameters_fail_before_driver",
+    "tests/language/agitation/test_tap.py::test_unallocated_plate_reference_fails_before_dispatch"
+  ],
+  "AGIT-TAP-03": [
+    "tests/language/agitation/test_tap.py::test_plate_tap_is_one_action_and_preserves_each_well",
+    "tests/language/agitation/test_tap.py::test_failed_plate_action_keeps_prior_contents_organization"
+  ],
+  "AGIT-TAP-04": [
+    "tests/language/agitation/test_tap.py::test_plate_identity_survives_alias_protocol_and_loop",
+    "tests/language/agitation/test_tap.py::test_returned_plate_preserves_identity_through_protocol_call",
+    "tests/language/agitation/test_tap.py::test_plate_instances_are_scoped_across_nested_calls_and_runtime_iterations",
+    "tests/language/agitation/test_tap.py::test_runtime_stream_iterations_allocate_distinct_plate_instances"
+  ],
+  "AGIT-TAP-05": [
+    "tests/language/agitation/test_tap.py::test_elisa_stop_tap_readout_order"
+  ],
+  "AGIT-DIAG-01": [
+    "tests/language/agitation/test_plate_diagnostics.py"
+  ],
+  "PC146-01": [
+    "tests/language/agitation/test_plate_compatibility.py"
+  ],
+  "PC146-02": [
+    "tests/language/agitation/test_plate_compatibility.py"
+  ],
+  "PC146-03": [
+    "tests/language/agitation/test_plate_compatibility.py"
+  ],
+  "PC146-04": [
+    "tests/language/agitation/test_plate_compatibility.py"
+  ],
+  "PC146-05": [
+    "tests/language/agitation/test_plate_compatibility.py"
   ]
 }

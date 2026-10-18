@@ -13,6 +13,11 @@ from culsma.pipeline.analysis import CompileAnalysisBuilder
 class _CompilerState:
     synthesized_wells: dict[tuple[str, str], str] = field(default_factory=dict)
 
+    def begin_plate_declaration(self, name: str) -> None:
+        """A new declaration, including an unrolled iteration, owns fresh wells."""
+        self.synthesized_wells = {key: value for key, value in self.synthesized_wells.items()
+                                  if key[0] != name}
+
 
 def _build_qualified_protocol_lookup(ast: Program) -> dict[str, str]:
     lookup: dict[str, str] = {}

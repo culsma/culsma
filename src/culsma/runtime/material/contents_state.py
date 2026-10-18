@@ -10,6 +10,7 @@ from .unknown_quantity import container_has_unknown
 
 from culsma.common.diagnostics import Diagnostic
 from culsma.domains.agitation import AgitationMode
+from culsma.domains.agitation.contracts import validate_agitation_target
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.material.args import arg_call, arg_quantity, arg_string, call_arg_int, call_arg_string
 from culsma.runtime.material.author_transition import parse_explicit_material_transitions
@@ -38,6 +39,8 @@ from culsma.runtime.material.separation import (
     separation_slot_contract,
 )
 from culsma.runtime.material.refs import (
+    MaterialReferenceError,
+    resolve_plate_reference,
     bind_indexed_group,
     is_serialized_pair,
     ref_display,
@@ -541,6 +544,14 @@ class MaterialIndexedPartsStateManager:
             return mark_contents_state_mixed(state, sample_id, step_id=step.step_id)
 
         sample_arg = step.args.get("sample")
+        if (isinstance(sample_arg, dict) and sample_arg.get('kind') == 'IRCall'
+                and sample_arg.get('name') == 'plate' and state.get('plates')
+                and not state.get('containers') and step.args.get('mode') != AgitationMode.TAP):
+            # A declaration-only registry must not turn a published descriptor
+            # action into a physical-container lookup or invent well effects.
+            return MaterialUpdateResult(material_state=state, diagnostics=[], delta={})
+        if isinstance(sample_arg, dict) and sample_arg.get('kind') == 'plate_ref':
+            return self.apply_plate_tap(step, state, sample_arg)
         sample_ids = self._resolve_structured_ref_group_ids(state, sample_arg)
         if sample_ids is not None:
             impacts = {
@@ -565,6 +576,38 @@ class MaterialIndexedPartsStateManager:
             material_state=state,
             diagnostics=[],
             delta={"op": "agit", "sample": sample_id, "contents_state_impact": impact},
+        )
+
+    def apply_plate_tap(self, step: PlanStep, state: dict[str, Any], sample: dict[str, Any]) -> MaterialUpdateResult:
+        try:
+            reference = resolve_plate_reference(state, sample)
+        except MaterialReferenceError as error:
+            return diagnostic_result(step, state, error.code, str(error))
+        try:
+            validate_agitation_target(step.args.get('mode'), 'plate')
+        except (TypeError, ValueError) as error:
+            return diagnostic_result(step, state, 'RT_EXTERNAL_ENUM_INVALID', str(error))
+        for item in state.get('containers', {}).values():
+            metadata = item.get('metadata', {})
+            if metadata.get('kind') != 'well':
+                continue
+            if metadata.get('plate_ref') is None:
+                return diagnostic_result(step, state, 'MAT_PLATE_REF_INVALID',
+                    'Whole-plate effects require explicit membership for every existing well; legacy membership is unknown')
+            try:
+                resolve_plate_reference(state, metadata['plate_ref'])
+            except MaterialReferenceError as error:
+                return diagnostic_result(step, state, error.code, str(error))
+        sample_ids = [
+            container_id for container_id, container in state.get('containers', {}).items()
+            if container.get('metadata', {}).get('plate_ref') == reference.to_dict()
+        ]
+        impacts = {sample_id: mark_contents_state_mixed(state, sample_id, step_id=step.step_id)
+                   for sample_id in sample_ids}
+        return MaterialUpdateResult(
+            material_state=state, diagnostics=[],
+            delta={'op': 'agit', 'plate': reference.to_dict(), 'samples': sample_ids,
+                   'contents_state_impacts': impacts},
         )
 
     def _resolve_structured_ref_group_ids(self, state: dict[str, Any], value: Any) -> list[str] | None:

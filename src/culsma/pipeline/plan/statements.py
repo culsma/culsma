@@ -141,6 +141,9 @@ class LetPlanHandler(BasePlanStatementHandler):
                     serializer=self.serializer, evaluator=self.static_evaluator,
                 ).resolve(stmt.value.plate, _ctx.local_env)
                 state.call = descriptor.allocation(stmt.value.position, stmt.value.span)
+                bound_plate = self.serializer.serialize_expr(stmt.value.plate, _ctx.local_env)
+                if isinstance(bound_plate, dict) and 'runtime_ref' in bound_plate:
+                    state.call.args.append(IRArg('plate_ref', bound_plate['runtime_ref']))
             except (TypeError, ValueError) as error:
                 _ctx.emit_diagnostic(Diagnostic(
                     code='PLAN_PLATE_SELECTOR_INVALID', message=str(error),
@@ -184,6 +187,14 @@ class LetPlanHandler(BasePlanStatementHandler):
         state = cast(LetPlanState, state)
         if state.call is None and stmt.value is not None:
             value = self.serializer.serialize_expr(stmt.value, ctx.local_env)
+            if isinstance(stmt.value, IRCall) and stmt.value.name == 'plate':
+                ctx.local_env[stmt.name] = value
+                from .plates import PlateDeclarationResolver
+                state.runtime_alias_value = PlateDeclarationResolver(
+                    self.serializer, self.static_evaluator).definition(stmt.name, ctx.local_env)
+                binding = f'{ctx.step_id_prefix}{stmt.id}::plate'
+                value['runtime_ref'] = {'kind': 'IRIdentifier', 'name': binding}
+                return
             if self.is_runtime_local_alias(stmt.value, ctx.local_env) or contains_container_contents_volume(stmt.value):
                 state.runtime_alias_value = value
                 ctx.local_env[stmt.name] = {"kind": "IRIdentifier", "name": stmt.name}
@@ -206,9 +217,12 @@ class LetPlanHandler(BasePlanStatementHandler):
         state = cast(LetPlanState, state)
         if state.call is None:
             if state.runtime_alias_value is not None:
+                target = stmt.name
+                if isinstance(state.runtime_alias_value, dict) and state.runtime_alias_value.get('kind') == 'PlateDefinition':
+                    target = ctx.local_env[stmt.name]['runtime_ref']['name']
                 return [PlanStep(
                     step_id=f"{ctx.step_id_prefix}{stmt.id}", op="assign_local",
-                    args={"target": stmt.name, "value": state.runtime_alias_value},
+                    args={"target": target, "value": state.runtime_alias_value},
                     deps=[], gate=merge_gate(ctx.gate_base), span=stmt.span,
                 )]
             return []

@@ -4,8 +4,35 @@ from __future__ import annotations
 
 from typing import Any
 
+from culsma.domains.labware import PlateReference
+
 from culsma.runtime.material.args import arg_string
 from culsma.runtime.material.ledger import ensure_container
+
+
+class MaterialReferenceError(ValueError):
+    """A reference-resolution failure with its material diagnostic category."""
+
+    def __init__(self, code: str, message: str):
+        super().__init__(message)
+        self.code = code
+
+
+def resolve_plate_reference(state: dict[str, Any], value: Any) -> PlateReference:
+    """Resolve carrier identity without conflating malformed and absent bindings."""
+    try:
+        reference = PlateReference.from_dict(value)
+    except (TypeError, ValueError) as error:
+        raise MaterialReferenceError('MAT_PLATE_REF_INVALID', str(error)) from error
+    plates = state.get('plates', {})
+    if not isinstance(plates, dict):
+        raise MaterialReferenceError('MAT_PLATE_REF_INVALID', 'Plate registry is malformed')
+    allocated = plates.get(reference.id)
+    if allocated is None:
+        raise MaterialReferenceError('MAT_BINDING_NOT_FOUND', 'Plate reference is not allocated')
+    if allocated != reference.to_dict():
+        raise MaterialReferenceError('MAT_PLATE_REF_INVALID', 'Plate reference conflicts with its allocated carrier')
+    return reference
 
 
 class MaterialRefResolver:

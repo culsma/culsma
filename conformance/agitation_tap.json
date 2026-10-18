@@ -1,0 +1,86 @@
+{
+  "decision": "AGIT-TAP-20261017",
+  "status": "implemented_verified",
+  "scope": "Discrete container tapping, including one action on a whole plate",
+  "invariants": [
+    "TAP is an AgitationMode, distinct from tube FLICK and SHAKE trajectories",
+    "TAP has no duration, rate, cycles, motion or drive parameters; omitted execution details remain unspecified",
+    "GENTLE is an independent execution requirement",
+    "A plate is a first-class carrier reference with invocation identity, not a label lookup or a container group",
+    "Whole-plate TAP dispatches once and invalidates indexed contents organization of its allocated wells without mixing material between wells",
+    "Plate aliases, protocol parameters and returned values retain carrier identity; separate declarations and loop invocations remain distinct",
+    "TAP preserves identities, quantities and component relationships; it asserts no physical homogenization outcome",
+    "The published 1.0.7 benchmark and its pinned evidence remain reproducible; current-runtime regression checks the missing ELISA action separately"
+  ],
+  "owners": {
+    "language": "agitation contracts and source validation",
+    "plan": "carrier declaration identity and selector-owned bound geometry",
+    "runtime": "carrier instance identity, material preflight and one driver dispatch",
+    "driver": "execution of TAP and independent handling requirements"
+  },
+  "diagnostics": {
+    "validate": "SEM_AGIT_ARG_CONFLICT for incompatible mode/target or forbidden arguments; retain source spans and known/deferred stage ownership",
+    "plan": "Retain published PLAN_PLATE_SELECTOR_INVALID for bound plate validation and PLAN_EXTERNAL_ENUM_INVALID for dependent parameter contracts",
+    "runtime": "Retain published RT_EXTERNAL_ENUM_INVALID for deferred mode/target or parameter conflicts; local plate declarations use RT_LOCAL_ASSIGN_INVALID_TARGET or RT_LOCAL_ASSIGN_UNRESOLVED",
+    "material": "MAT_BINDING_NOT_FOUND for an absent allocated carrier; MAT_PLATE_REF_INVALID for malformed/inconsistent references or incomplete legacy membership; reject before whole-carrier mutation"
+  },
+  "requirements": {
+    "AGIT-TAP-01": "tests/language/agitation/test_tap.py::test_tap_preserves_mode_and_gentle_without_invented_parameters",
+    "AGIT-TAP-02": "tests/language/agitation/test_tap.py::test_tap_rejects_parameters_before_dispatch",
+    "AGIT-TAP-03": "tests/language/agitation/test_tap.py::test_plate_tap_is_one_action_and_preserves_each_well",
+    "AGIT-TAP-04": "tests/language/agitation/test_tap.py::test_plate_identity_survives_alias_protocol_and_loop",
+    "AGIT-TAP-05": "tests/language/agitation/test_tap.py::test_elisa_stop_tap_readout_order",
+    "AGIT-DIAG-01": "tests/language/agitation/test_plate_diagnostics.py"
+  },
+  "verification": {
+    "core": "2692 passed, 68 skipped on 2026-10-18, including 25 released-source/plan/payload compatibility tests and returned-carrier identity coverage",
+    "documentation": "Reference and public DOC production builds passed; new plate selector and TAP examples executed successfully; modified class/sequence diagrams validated",
+    "benchmark": "Current-runtime copy of Module 07: 42/42 source steps; one TAP after stop solution and before readout; 16 wells retain 150 uL each",
+    "published_snapshot": "1.0.7 manifest, programs and recorded results preserved",
+    "diagnostic_cleanup": "43 targeted tests passed; Reference build passed; 11 before/after reproductions retained acceptance, execution steps, driver actions and outputs; published generic diagnostic codes retained",
+    "compatibility": "PM #146: 8 v1.0.8 source/plan snapshots, including bound/inline/deferred SHAKE; compatibility cases include semantic validation, typechecking, lowering and runtime replay"
+  },
+  "coordination": {
+    "issue": "https://github.com/culsma/culsma-pm/issues/146",
+    "state": "Compatibility implementation verified locally; no public release or PM status mutation",
+    "scope": "Source/payload preservation, old-plan replay, explicit carrier membership, instance-based OS binding and fresh-state/checkpoint admission"
+  },
+  "compatibility_decision": {
+    "id": "CARRIER-COMPAT-146",
+    "status": "implemented_verified",
+    "owners": {
+      "language": "carrier instance identity and well membership; source/payload compatibility",
+      "OS": "physical binding by instance, safe initial-state admission and checkpoint contract",
+      "driver": "capability rejection; TAP not replaced by SHAKE"
+    },
+    "invariants": [
+      "Plate identity is independent of optional geometry/display metadata; unused or environment-only declarations do not force selector validation",
+      "Well selectors retain bound-geometry diagnostics; inline TAP targets reject when mode is known. Deferred modes are decided at runtime, preserving published non-TAP descriptor calls",
+      "Existing readout, environment and non-TAP agitation targets retain descriptor payloads; whole-plate TAP alone consumes an allocated plate_ref",
+      "Internal carrier assignment is an additive new-plan representation; new plans require a carrier-aware runtime; old serialized plans remain executable",
+      "Old well state without an explicit instance association is not guessed or relabeled; whole-plate effects reject incomplete membership before mutation",
+      "OS uses validated plate_ref.id where present, retains explicit legacy bindings otherwise, and never merges identities by label or carrier text",
+      "New OS runs require fresh step statuses; continuation uses its stored plan and checkpoint; unknown semantic-contract versions reject"
+    ],
+    "diagnostics": {
+      "source_inline_target": "SEM_AGIT_ARG_CONFLICT for a statically known inline TAP target; deferred mode is checked at runtime",
+      "selector_geometry": "existing PLAN_PLATE_SELECTOR_INVALID at selector lowering",
+      "unbound_runtime_target": "existing RT_EXTERNAL_ENUM_INVALID before dispatch",
+      "legacy_membership": "MAT_PLATE_REF_INVALID before whole-carrier material mutation",
+      "host_initial_state": "HOST_INITIAL_STATE_NOT_FRESH before checkpoint admission",
+      "host_contract": "HOST_CHECKPOINT_LANGUAGE_CONTRACT_UNSUPPORTED before continuation"
+    },
+    "requirements": {
+      "PC146-01": "tests/language/agitation/test_plate_compatibility.py::TestPlateCompatibility::test_old_source_acceptance",
+      "PC146-02": "tests/language/agitation/test_plate_compatibility.py::TestPlateCompatibility::test_legacy_payloads",
+      "PC146-03": "tests/language/agitation/test_plate_compatibility.py::TestPlateCompatibility::test_inline_target_rejects",
+      "PC146-04": "tests/language/agitation/test_plate_compatibility.py::TestPlateCompatibility::test_old_plan_replay",
+      "PC146-05": "tests/language/agitation/test_plate_compatibility.py::TestPlateCompatibility::test_legacy_membership_cannot_silently_skip",
+      "PC146-06": "culsmaOS/tests/test_carrier_compatibility.py::TestCarrierCompatibility::test_distinct_instances_bind_independently",
+      "PC146-07": "culsmaOS/tests/test_carrier_compatibility.py::TestCarrierCompatibility::test_initial_state_and_checkpoint_contract",
+      "PC146-08": "tests/language/agitation/test_tap.py"
+    },
+    "migration": "No automatic carrier membership migration; legacy material stays readable for legacy container operations, while whole-carrier actions require explicit trustworthy membership",
+    "public_release_evidence": "v1.0.8 accepts bound and inline whole-plate SHAKE descriptors; adding TAP must not narrow this published non-TAP surface"
+  }
+}

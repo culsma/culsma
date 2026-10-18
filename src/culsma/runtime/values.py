@@ -188,6 +188,8 @@ def _eval_runtime_call(expr: dict[str, Any], state: RuntimeState) -> Any:
     name = expr.get("name")
     if not isinstance(name, str):
         return UNRESOLVED
+    if name == 'plate' and 'runtime_ref' in expr:
+        return evaluate_runtime_expression(expr['runtime_ref'], state)
     if name in _LOCAL_RUNTIME_CONSTRUCTORS:
         return _eval_local_runtime_constructor(expr, state)
     if name == "detects":
@@ -596,13 +598,43 @@ def _runtime_protocol_output_serialize(value: Any) -> Any:
     return serialize_runtime_value(value)
 
 
+class PlateRuntimeValueResolver:
+    """Keep published descriptor consumers separate from explicit carrier actions."""
+    def optional_text(self, expression, state):
+        value = evaluate_runtime_expression(expression, state)
+        return value if isinstance(value, str) else None
+
+    def descriptors(self, value):
+        if isinstance(value, dict):
+            plate = value.get('kind') == 'IRCall' and value.get('name') == 'plate'
+            return {key: self.descriptors(item) for key, item in value.items()
+                    if not (plate and key == 'runtime_ref')}
+        if isinstance(value, list):
+            return [self.descriptors(item) for item in value]
+        return value
+
+    def arguments(self, step, state):
+        args = resolve_runtime_arg_value(step.args, state)
+        sample = step.args.get('sample')
+        if (step.op == 'agit' and isinstance(sample, dict) and sample.get('kind') == 'IRCall'
+                and sample.get('name') == 'plate' and 'runtime_ref' in sample):
+            from culsma.domains.agitation.contracts import AGITATION_MODE, AgitationMode
+            try:
+                mode = DEFAULT_EXTERNAL_PARAMETER_NORMALIZER.require_member(args.get('mode'), AGITATION_MODE)
+            except (TypeError, ValueError):
+                return args  # The normal argument boundary reports the invalid mode.
+            if mode is AgitationMode.TAP:
+                args['sample'] = resolve_runtime_arg_value(sample['runtime_ref'], state)
+        return args
+
+
 def _resolve_step_runtime_args(step: PlanStep, state: RuntimeState) -> PlanStep:
     return PlanStep(
         step_id=step.step_id,
         op=step.op,
-        args=DEFAULT_EXTERNAL_PARAMETER_NORMALIZER.normalize_runtime_arguments(step.op, resolve_runtime_arg_value(step.args, state)),
+        args=DEFAULT_EXTERNAL_PARAMETER_NORMALIZER.normalize_runtime_arguments(step.op, PlateRuntimeValueResolver().arguments(step, state)),
         deps=list(step.deps),
-        gate=step.gate,
+        gate=PlateRuntimeValueResolver().descriptors(step.gate),
         span=step.span,
     )
 
@@ -610,6 +642,9 @@ def _resolve_step_runtime_args(step: PlanStep, state: RuntimeState) -> PlanStep:
 def resolve_runtime_arg_value(value: Any, state: RuntimeState) -> Any:
     if isinstance(value, dict):
         kind = value.get("kind")
+        if kind == 'IRCall' and value.get('name') == 'plate':
+            return {key: resolve_runtime_arg_value(item, state) for key, item in value.items()
+                    if key != 'runtime_ref'}
         if isinstance(kind, str) and kind == "IRIdentifier":
             name = value.get("name")
             local_bindings = state.artifacts.get("local_bindings", {})

@@ -11,6 +11,7 @@ class AgitationMode(StrEnum):
     VORTEX = "vortex"
     INVERT = "invert"
     FLICK = "flick"
+    TAP = "tap"
     SHAKE = "shake"
     STIR = "stir"
     ROTATION = "rotation"
@@ -28,11 +29,18 @@ AGITATION_MODE = EnumParameter(AgitationMode)
 SHAKE_MOTION = EnumParameter(ShakeMotion)
 
 
+def validate_agitation_target(mode: AgitationMode, target_kind: str) -> None:
+    """Check the current target/method contract independently of stage syntax."""
+    if target_kind == 'plate' and AGITATION_MODE.validate(mode) is not AgitationMode.TAP:
+        raise ValueError('whole-plate agitation requires mode=tap')
+
+
 def conflicting_arguments(mode: AgitationMode, present: set[str]) -> tuple[str, ...]:
     """Return conflicting parameter names in stable diagnostic order."""
     value = AGITATION_MODE.validate(mode)
     forbidden = (
-        ("duration", "rate") if value in {AgitationMode.INVERT, AgitationMode.FLICK}
+        ("duration", "rate", "cycles") if value is AgitationMode.TAP
+        else ("duration", "rate") if value in {AgitationMode.INVERT, AgitationMode.FLICK}
         else ("rate", "cycles") if value is AgitationMode.CENTRIFUGE
         else ("cycles",)
     )
@@ -49,6 +57,8 @@ def validate_agitation_arguments(mode: AgitationMode, *, has_duration: bool, has
     ) if enabled}
     conflicts = conflicting_arguments(value, present)
     if conflicts:
+        if value is AgitationMode.TAP:
+            raise ValueError('tap does not accept duration, rate or cycles')
         if conflicts[0] in {"duration", "rate"}:
             raise ValueError('invert/flick forbid duration and rate; use cycles')
         raise ValueError('cycles is only allowed for invert/flick')
@@ -91,6 +101,11 @@ class AgitationArgumentsRule:
 
     def validate(self, values, present):
         mode = values['mode']
+        sample = values.get('sample')
+        if mode is AgitationMode.TAP and isinstance(sample, dict) and sample.get('kind') == 'IRCall' and sample.get('name') == 'plate':
+            raise ValueError('Whole-plate agitation requires a bound allocated plate reference')
+        if isinstance(sample, dict) and sample.get('kind') == 'plate_ref':
+            validate_agitation_target(mode, 'plate')
         if mode is AgitationMode.CENTRIFUGE:
             if 'drive' not in present:
                 raise ValueError('centrifuge requires drive')
@@ -111,7 +126,7 @@ class AgitationArgumentsRule:
             return
         validate_agitation_arguments(values['mode'], has_duration='duration' in present,
                                     has_rate='rate' in present, has_cycles='cycles' in present)
-        if 'rate' in values and values['mode'] not in {AgitationMode.INVERT, AgitationMode.FLICK, AgitationMode.ROTATION}:
+        if 'rate' in values and values['mode'] not in {AgitationMode.INVERT, AgitationMode.FLICK, AgitationMode.TAP, AgitationMode.ROTATION}:
             rate = values['rate']
             if isinstance(rate, tuple) and len(rate) == 2 and rate[1] != 'rpm':
                 raise ValueError('agitation rate without motion must use rpm')

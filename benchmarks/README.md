@@ -48,10 +48,12 @@ coverage rules when assessing improvements in operation support.
 | --- | --- | --- |
 | [Module 07 S37](modules/07-sandwich-elisa/source.md) | Gentle plate tapping to mix the stopped reaction has no verified action in the evaluated program. | Define plate tap-mixing and its target and requirements, then provide execution support. Verify that it occurs after stopping the reaction and before readout, without substituting a different mixing method. |
 
-These are extension proposals, not implemented fixes or commitments that a
-driver change alone is sufficient. Language representation and execution
-support need to be assessed together. Keep the original numbered source steps
-and gap records until support is implemented and checked. A later result should
+The development runtime now represents plate tapping with `AgitationMode.TAP`
+and an independent gentle requirement. The agitation regression suite runs a
+copy of Module 07 with that action at S37, checking one whole-plate dispatch
+after stop-solution addition and before readout. This verifies language and
+simulated execution support; the published 1.0.7 program, manifest and results
+above retain their original gap. A later benchmark revision should
 record the revised program/runtime versions and rerun coverage and execution;
 successful software execution alone does not demonstrate physical performance.
 Module 02 is 12/12; Module 07 remains 41/42. Module 02 still requires an

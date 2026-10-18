@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from .content_attributes import ContentAttributePersistence
+from culsma.domains.labware import PlateGeometry
 
 from typing import Any
 from urllib.parse import quote
@@ -26,6 +27,8 @@ from culsma.runtime.material.ledger import (
     refresh_container_aggregates,
 )
 from culsma.runtime.material.refs import (
+    MaterialReferenceError,
+    resolve_plate_reference,
     bind_name,
     resolve_content_ref,
     resolve_or_create_container_ref,
@@ -35,6 +38,19 @@ from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_
 
 
 def apply_alloc_container(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
+    plate_ref = step.args.get('plate_ref')
+    if plate_ref is not None:
+        try:
+            reference = resolve_plate_reference(state, plate_ref)
+            rows, cols = reference.rows, reference.cols
+            if rows is None and cols is None:
+                rows = (step.args.get('carrier_rows') or {}).get('value')
+                cols = (step.args.get('carrier_cols') or {}).get('value')
+            PlateGeometry(rows, cols).validate_position(arg_string(step.args.get('carrier_position')))
+        except MaterialReferenceError as error:
+            return diagnostic_result(step, state, error.code, str(error))
+        except (TypeError, ValueError) as error:
+            return diagnostic_result(step, state, 'MAT_PLATE_REF_INVALID', str(error))
     kind = arg_string(step.args.get("kind"))
     label = arg_string(step.args.get("label"))
     barcode = arg_string(step.args.get("barcode"))
@@ -62,6 +78,8 @@ def apply_alloc_container(step: PlanStep, state: dict[str, Any]) -> MaterialUpda
         invocation_id=step.step_id,
         name=container_name,
     )
+    prior = state.get('containers', {}).get(container_id)
+    legacy_membership = isinstance(prior, dict) and prior.get('metadata', {}).get('kind') == 'well' and prior.get('metadata', {}).get('plate_ref') is None
     container = ensure_container(state, container_id)
     metadata = container.setdefault("metadata", {})
     if isinstance(metadata, dict):
@@ -74,6 +92,8 @@ def apply_alloc_container(step: PlanStep, state: dict[str, Any]) -> MaterialUpda
         metadata["allocation_namespace"] = container_namespace
         metadata["allocation_name"] = container_name
         metadata["allocation_step_id"] = step.step_id
+        if plate_ref is not None and not legacy_membership:
+            metadata['plate_ref'] = reference.to_dict()
         if open_flag is not None:
             metadata["open"] = open_flag
         raw_capacity = step.args.get("capacity")

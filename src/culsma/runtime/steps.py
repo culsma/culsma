@@ -7,6 +7,7 @@ from dataclasses import dataclass, field, replace
 from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.domains.labware import PlateReference
 from culsma.driver.base import DriverResult
 from culsma.driver.groups import PreparedDriverStep, PreparedExecutionGroup, GroupDriverResult
 from culsma.runtime.event_log import EventLog
@@ -166,11 +167,44 @@ class LocalStateStepHandler(BaseRuntimeStepHandler):
 
     def dispatch_local_step(self, step: PlanStep, session: RuntimeSession, state: RuntimeStepState) -> bool:
         if step.op == "assign_local":
+            value = step.args.get('value')
+            if isinstance(value, dict) and value.get('kind') == 'PlateDefinition':
+                return self.assign_plate(step, session, state)
             return self._assign_local(step, session, state)
         if step.op == "assign_member":
             return self._assign_member(step, session, state)
         if step.op == "append":
             return self._append(step, session, state)
+        return False
+
+    def assign_plate(self, step: PlanStep, session: RuntimeSession, state: RuntimeStepState) -> bool:
+        target = step.args.get('target')
+        definition = step.args['value']
+        if type(target) is not str:
+            session.record_failed(step, reason='local_assign_invalid_target', diagnostic=Diagnostic(
+                code='RT_LOCAL_ASSIGN_INVALID_TARGET', message='Plate binding target must be text',
+                span=step.span, node_id=step.step_id,
+            ))
+            state.recorded = True
+            return session.fail_fast
+        try:
+            from culsma.runtime.values import PlateRuntimeValueResolver
+            reference = PlateReference(
+                step.step_id, PlateRuntimeValueResolver().optional_text(definition.get('carrier_id'), session.state),
+                definition.get('rows'), definition.get('cols'),
+                PlateRuntimeValueResolver().optional_text(definition.get('label'), session.state),
+            ).to_dict()
+        except (TypeError, ValueError) as error:
+            session.record_failed(step, reason='local_assign_unresolved', diagnostic=Diagnostic(
+                code='RT_LOCAL_ASSIGN_UNRESOLVED', message=str(error), span=step.span, node_id=step.step_id,
+            ))
+            state.recorded = True
+            return session.fail_fast
+        material = session.state.artifacts.setdefault('material_state', {'containers': {}})
+        material.setdefault('plates', {})[reference['id']] = reference
+        session.state.artifacts.setdefault('local_bindings', {})[target] = reference
+        state.driver_code = 'LOCAL_ASSIGN'
+        state.driver_payload = {'target': target, 'value': reference}
         return False
 
     def _assign_local(self, step: PlanStep, session: RuntimeSession, state: RuntimeStepState) -> bool:
@@ -636,7 +670,9 @@ class RuntimeStepDispatcher:
 def _preflight_material_step(runtime_step: PlanStep, session: RuntimeSession):
     material_state = session.state.artifacts.get("material_state")
     if not isinstance(material_state, dict):
-        if runtime_step.op not in _MATERIAL_BOOTSTRAP_OPS:
+        sample = runtime_step.args.get('sample')
+        plate_action = runtime_step.op == 'agit' and isinstance(sample, dict) and sample.get('kind') == 'plate_ref'
+        if runtime_step.op not in _MATERIAL_BOOTSTRAP_OPS and not plate_action:
             return None
         material_state = {"containers": {}}
     return session.material_compute.apply_step(

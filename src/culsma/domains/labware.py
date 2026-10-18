@@ -28,6 +28,36 @@ PLATE_DIMENSIONS = MappingProxyType({
 PLATE_DEFAULT_WELL_CAPACITY = MappingProxyType({PlateFormat.WELL_24: (3.4, "mL")})
 
 
+@dataclass(frozen=True)
+class PlateReference:
+    """One physical carrier instance; display identifiers do not define identity."""
+
+    id: str
+    carrier_id: str | None
+    rows: int | None
+    cols: int | None
+    label: str | None = None
+
+    def __post_init__(self):
+        if type(self.id) is not str or not self.id or self.carrier_id is not None and type(self.carrier_id) is not str:
+            raise ValueError('Plate reference requires instance identity and optional carrier text')
+        if self.label is not None and type(self.label) is not str:
+            raise ValueError('Plate label must be text')
+        if self.rows is not None or self.cols is not None:
+            PlateGeometry(self.rows, self.cols)
+
+    def to_dict(self):
+        return {'kind': 'plate_ref', 'id': self.id, 'carrier_id': self.carrier_id,
+                'rows': self.rows, 'cols': self.cols, 'label': self.label}
+
+    @classmethod
+    def from_dict(cls, value):
+        if not isinstance(value, dict) or value.get('kind') != 'plate_ref':
+            raise ValueError('Expected a plate reference')
+        return cls(value.get('id'), value.get('carrier_id'), value.get('rows'),
+                   value.get('cols'), value.get('label'))
+
+
 def plate_dimensions(format: PlateFormat) -> tuple[int, int]:
     return PLATE_DIMENSIONS[PLATE_FORMAT.validate(format)]
 

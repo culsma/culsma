@@ -11,7 +11,7 @@ from culsma.pipeline.external_inputs import (
     ExternalInputStatus,
     external_parameter_resolution,
 )
-from culsma.pipeline.ir_nodes import IRArg, IRIdentifier, IRQuantity, IRStep
+from culsma.pipeline.ir_nodes import IRArg, IRCall, IRIdentifier, IRQuantity, IRStep
 
 from .contracts import (
     AGITATION_MODE,
@@ -53,15 +53,20 @@ class AgitationContractValidator:
         if mode is None or mode not in AGIT_MODES:
             return [Diagnostic(
                 code='SEM_AGIT_MODE_UNKNOWN',
-                message='agit(...): mode must be one of vortex, invert, flick, shake, stir, rotation, centrifuge',
+                message='agit(...): mode must be one of ' + ', '.join(AGITATION_MODE.wire_values),
                 span=mode_arg.span or self.step.span,
                 node_id=self.step.id,
             )]
 
-        if mode is AgitationMode.CENTRIFUGE:
-            return self.validate_centrifuge()
-
         diagnostics: list[Diagnostic] = []
+        sample_arg = self.find_argument('sample')
+        if (mode is AgitationMode.TAP and isinstance(getattr(sample_arg, 'value', None), IRCall)
+                and sample_arg.value.name == 'plate'):
+            diagnostics.append(Diagnostic(code='SEM_AGIT_ARG_CONFLICT',
+                message='Whole-plate TAP requires a declared plate instance, not an inline descriptor',
+                span=sample_arg.span or self.step.span, node_id=self.step.id))
+        if mode is AgitationMode.CENTRIFUGE:
+            return diagnostics + self.validate_centrifuge()
         drive_arg = self.find_argument('drive')
         if drive_arg is not None:
             diagnostics.append(Diagnostic(
@@ -98,7 +103,7 @@ class AgitationContractValidator:
     def validate_without_motion(self, mode: AgitationMode) -> list[Diagnostic]:
         diagnostics: list[Diagnostic] = []
         arguments = {name: self.find_argument(name) for name in ('duration', 'rate', 'cycles')}
-        if mode not in {AgitationMode.INVERT, AgitationMode.FLICK, AgitationMode.ROTATION}:
+        if mode not in {AgitationMode.INVERT, AgitationMode.FLICK, AgitationMode.TAP, AgitationMode.ROTATION}:
             rate = arguments['rate']
             value = self.resolve_bound_value(rate.value) if rate is not None else None
             if isinstance(value, IRQuantity) and value.unit in {'Hz', 'cycle/min'}:
@@ -119,10 +124,10 @@ class AgitationContractValidator:
                     diagnostics.extend(self.validate_quantity_argument(arg, name, validate_rotation_quantity))
         for name in conflicting_arguments(mode, {name for name, arg in arguments.items() if arg is not None}):
             arg = arguments[name]
-            alternative = 'cycles' if name in {'duration', 'rate'} else 'duration/rate'
+            suffix = '' if mode is AgitationMode.TAP else '; use ' + ('cycles' if name in {'duration', 'rate'} else 'duration/rate')
             diagnostics.append(Diagnostic(
                 code='SEM_AGIT_ARG_CONFLICT',
-                message=f'agit(mode = {mode}): {name} is not allowed; use {alternative}',
+                message=f'agit(mode = {mode}): {name} is not allowed{suffix}',
                 span=arg.span or self.step.span, node_id=self.step.id,
             ))
         return diagnostics

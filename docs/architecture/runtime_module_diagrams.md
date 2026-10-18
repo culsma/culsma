@@ -1208,6 +1208,15 @@ classDiagram
         +resolve_step_args(step, state) PlanStep
     }
 
+    class PlateRuntimeValueResolver {
+        +optional_text(expression, state)
+        +descriptors(value)
+        +arguments(step, state)
+    }
+    RuntimeValueResolver --> PlateRuntimeValueResolver : preserve descriptor consumers
+    LocalStateStepHandler --> PlateRuntimeValueResolver : optional declaration metadata
+    PlateRuntimeValueResolver --> PlateReference : allocated TAP target only
+
     class ObservationRecorder {
         +record(step, session, driver_code, driver_payload) dict
     }

@@ -427,13 +427,23 @@ classDiagram
 
 ```mermaid
 classDiagram
-    LetPlanHandler --> PlateDescriptorResolver : resolve actual arguments
+    class PlateDeclarationResolver {
+        +definition(name, env)
+    }
+    LetPlanHandler --> PlateDeclarationResolver : identity with optional metadata
+    PlateDeclarationResolver --> PlateDescriptorResolver : resolve available geometry
+    PlateDeclarationResolver --> PlateDefinition
+    LetPlanHandler --> PlateDescriptorResolver : well selectors require bound geometry
     PlateDescriptorResolver --> PlanExpressionSerializer
     PlateDescriptorResolver --> PlanStaticEvaluator
     PlateDescriptorResolver --> ExternalParameterNormalizer : validate format
     PlateDescriptorResolver --> ResolvedPlateDescriptor : create snapshot
     ResolvedPlateDescriptor *-- PlateGeometry
-    ResolvedPlateDescriptor --> IRCall : allocation
+    ResolvedPlateDescriptor --> IRCall : allocation with bound geometry
+    LetPlanHandler --> PlateDefinition : carrier declaration as local-state step
+    PlateDefinition --> PlateReference : runtime invocation identity
+    IRCall --> PlateReference : well allocation retains carrier reference
+    PlateReference --> TAP : one carrier action, not well-group expansion
     class PlateGeometry {
         +rows
         +cols
@@ -450,10 +460,30 @@ classDiagram
 
 `plan/plates.py` resolves each plate against the current bindings without caching
 mutable environments. `domains/labware.py` owns positive dimensions, format layouts
-and coordinate bounds. Allocation checks the well before constructing its IR call.
+and coordinate bounds. Allocation checks the well before constructing its IR call
+and retains `carrier_rows` / `carrier_cols` as dimensionless quantities.
 
 Invalid bound descriptors or wells produce `PLAN_PLATE_SELECTOR_INVALID`; a blocking
 plate error leaves no executable plans. Source type errors remain in typecheck.
 
 Boundary services: [Validation: Shared Boundary](./validate_module_diagrams.md#shared-boundary).
 Coverage: `tests/test_plate_plan_binding.py`, `tests/test_external_boundary_classes.py`.
+
+### Bound Geometry Contract (2026-10-16)
+
+| Invariant / owner | Diagnostic stage | Conformance |
+| --- | --- | --- |
+| `ResolvedPlateDescriptor.allocation` retains bound `carrier_rows/cols`; no shape inference from selected wells | Existing `PLAN_PLATE_SELECTOR_INVALID` during lowering | `test_bound_geometry_is_preserved_in_allocation` |
+| Dimensionless plan metadata preserves syntax, reference identity and material arithmetic; no vendor imports | Existing binding validation before plan emission | `test_actual_format_and_explicit_capacity_reach_runtime`, plate binding suite |
+
+Old serialized plate plans omit shape and must be recompiled for hosts requiring exact geometry; existing language execution remains readable. Checkpoint fingerprints continue to distinguish old and newly compiled plans.
+
+| TAP carrier boundary | Owner |
+| --- | --- |
+| Emit carrier identity independently of optional metadata; validate geometry when lowering well selectors | `LetPlanHandler`, `PlateDeclarationResolver`, `PlateDescriptorResolver` |
+| Allocate one carrier instance per executing declaration; preserve aliases and protocol arguments | `LocalStateStepHandler.assign_plate`, `PlateReference` |
+| Validate mode/target combinations through the shared agitation contract; resolve carrier identity with separate malformed-reference and missing-binding diagnostics | `AgitationArgumentsRule`, `runtime/material/refs.py::resolve_plate_reference` |
+| Dispatch once, then commit only that plate's contents-organization changes | `MaterialIndexedPartsStateManager.apply_plate_tap`, driver-backed runtime lifecycle |
+
+Decision and conformance: `conformance/agitation_tap.json`, `AGIT-TAP-01`–`05`.
+Carrier compatibility review: [Culsma PM #146](https://github.com/culsma/culsma-pm/issues/146).

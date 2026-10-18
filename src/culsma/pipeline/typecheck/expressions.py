@@ -691,7 +691,9 @@ class TypecheckExpressionServices:
         if isinstance(resolved, IRCall):
             if resolved.name == "AllocContainer":
                 return "container_ref"
-            if resolved.name in {"group", "plate"}:
+            if resolved.name == 'plate':
+                return 'plate_ref'
+            if resolved.name == "group":
                 return "group_ref"
             if resolved.name == "schedule":
                 return "schedule"

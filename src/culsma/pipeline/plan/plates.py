@@ -43,6 +43,8 @@ class ResolvedPlateDescriptor:
             'carrier_kind': IRString('plate', span=span),
             'carrier_id': IRString(self.carrier_id, span=span),
             'carrier_position': IRString(position, span=span),
+            'carrier_rows': IRQuantity(self.geometry.rows, None, span=span),
+            'carrier_cols': IRQuantity(self.geometry.cols, None, span=span),
         }
         if self.label is not None:
             fields['label'] = IRString(f'{self.label}_{position}', span=span)
@@ -112,3 +114,24 @@ class PlateDescriptorResolver:
         return ResolvedPlateDescriptor.validate_capacity(
             IRQuantity(value=value.get('value'), unit=value.get('unit'))
         )
+
+
+class PlateDeclarationResolver:
+    """Bind identity independently of optional descriptor metadata; selectors own validation."""
+    def __init__(self, serializer=DEFAULT_PLAN_EXPRESSION_SERIALIZER, evaluator=None):
+        self.resolver = PlateDescriptorResolver(serializer, evaluator)
+        self.serializer = serializer
+
+    def definition(self, name, env):
+        value = self.serializer.serialize_expr(IRIdentifier(name), env)
+        args = {arg['name']: arg['value'] for arg in value.get('args', [])}
+        definition = {'kind': 'PlateDefinition', 'carrier_id': args.get('carrier_id', name),
+                      'rows': None, 'cols': None, 'label': args.get('label')}
+        try:
+            descriptor = self.resolver.resolve(IRIdentifier(name), env)
+        except (TypeError, ValueError):
+            # Missing/unbound metadata is legal until a selector consumes it.
+            return definition
+        definition.update(carrier_id=descriptor.carrier_id, rows=descriptor.geometry.rows,
+                          cols=descriptor.geometry.cols, label=descriptor.label)
+        return definition

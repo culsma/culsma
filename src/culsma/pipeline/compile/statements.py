@@ -360,6 +360,8 @@ class LetHandler(BaseStatementCompileHandler):
         state = cast(LetState, state)
         ctx = lowering_ctx.ctx
         ctx.local_names.add(stmt.name)
+        if isinstance(stmt.value, CallExpr) and stmt.value.name == 'plate':
+            lowering_ctx.session.state.begin_plate_declaration(stmt.name)
         if stmt.name in ctx.mutable_local_names:
             ctx.const_env.pop(stmt.name, None)
             ctx.let_bindings.pop(stmt.name, None)

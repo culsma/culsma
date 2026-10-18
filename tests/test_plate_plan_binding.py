@@ -136,3 +136,22 @@ def test_bound_plate_diagnostic_keeps_selector_source():
     diagnostic = next(d for d in plan.diagnostics if d.code == 'PLAN_PLATE_SELECTOR_INVALID')
     assert diagnostic.span == reference.value.span
     assert diagnostic.node_id == reference.id
+
+
+@pytest.mark.parametrize('params,args,expected', [
+    ('format="96well"', {}, (8, 12)),
+    ('format="96well"', {'format': '24well'}, (4, 6)),
+    ('format="384well"', {}, (16, 24)),
+    ('rows=2,cols=2', {'rows': 27, 'cols': 3}, (27, 3)),
+])
+def test_bound_geometry_is_preserved_in_allocation(params, args, expected):
+    ir = compile_plate('let p=plate(format=format); let w=p[A1];'
+                       if 'format' in params else 'let p=plate(rows=rows,cols=cols); let w=p[A1];', params)
+    plan = plan_plate(ir, **args)
+    assert not plan.diagnostics
+    allocation, = allocation_steps(plan)
+    geometry = tuple(allocation.args[name] for name in ('carrier_rows', 'carrier_cols'))
+    assert tuple(value['value'] for value in geometry) == expected
+    assert all(value['kind'] == 'IRQuantity' and value['unit'] is None for value in geometry)
+    assert run(plan=plan, driver=StubDriver()).ok
+    json.dumps(plan.to_dict())
