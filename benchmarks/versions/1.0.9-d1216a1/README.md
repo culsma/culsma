@@ -4,10 +4,9 @@ Release evaluation dated 2026-10-19 for Culsma 1.0.9, implementation
 `d1216a16f7adaa41ac0aac763a60c84bb7be3f64`. Python 3.12.8 and Lark 1.3.1.
 
 This snapshot retains the same seven modules, two composites, 173 source steps
-and counting rule as the [1.0.7 paper snapshot](../../README.md#paper-results-107-section-35).
-Module 07 S37 uses whole-plate TAP with GENTLE. Its program inputs are identical
-to the [development evaluation](../1.0.9-dev-ca7a098/README.md); this run verifies
-the versioned 1.0.9 package metadata and implementation together.
+and counting rule as the [1.0.7 baseline](../../EVALUATION.md#historical-results-107).
+Module 07 S37 uses whole-plate TAP with GENTLE. This run verifies the
+versioned 1.0.9 package metadata and implementation together.
 
 ## Recorded result
 

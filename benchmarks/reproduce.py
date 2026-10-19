@@ -231,7 +231,10 @@ def reproduce(runtime, output, update_readme=False, manifest_path=None):
     if update_readme:
         if not summary[comparison_key]:
             raise ValueError('README is not updated because the run differs from the manifest')
-        readme = inputs / 'README.md'
+        # The root overview compares versions; detailed tables live separately.
+        readme = inputs / 'EVALUATION.md'
+        if not readme.is_file():
+            readme = inputs / 'README.md'
         text = readme.read_text()
         marker = 'paper-table' if role == 'paper' else 'benchmark-table'
         start, end = f'<!-- {marker}:start -->', f'<!-- {marker}:end -->'
