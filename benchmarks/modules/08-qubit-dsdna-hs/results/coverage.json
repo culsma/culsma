@@ -1,0 +1,23 @@
+{
+  "schema": "modular-source-coverage-v1",
+  "rules": "modular-source-step-correspondence-v1",
+  "metric": "source_step_correspondence",
+  "artifact": "08-qubit-dsdna-hs",
+  "implementation": "e96c97ebe8211d0c92880887db7e58703c693cad",
+  "language_version": "1.0.9",
+  "source_sha256": "cb1bcc97b592604a990ddcac0c84255b6231cf4dffe97e8afebce0b3610eabd8",
+  "program_sha256": {
+    "Qubit.culs": "32f9ecec00bf7c30fb0051548f2df4c781b6f70d81b1840eb4688675ba71e176",
+    "protocol.culs": "2e15f8331733ba88852b2055f7aad35d5730357518abbb00e3556d27c0652ea7"
+  },
+  "total_steps": 13,
+  "matched_steps": 12,
+  "coverage_percent": 92.307692,
+  "status": "incomplete",
+  "issues": [
+    {
+      "step": 8,
+      "reason": "no_code_region"
+    }
+  ]
+}

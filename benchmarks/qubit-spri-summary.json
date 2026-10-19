@@ -1,0 +1,150 @@
+{
+  "schema": "patterns-modular-run-v2",
+  "source_commit": "e96c97ebe8211d0c92880887db7e58703c693cad",
+  "runtime_commit": "e96c97ebe8211d0c92880887db7e58703c693cad",
+  "python": "3.12.8",
+  "versions": {
+    "culsma": "1.0.9",
+    "lark": "1.3.1"
+  },
+  "table_version": "1.0.9",
+  "manifest_sha256": "c9d7ceb0ee5a8acde529c2fbd2e1cc9b833218aa3571b8d87f0fccf9dc3593fa",
+  "runner_sha256": "342eae152a1de42ab5253b4db74a8f6b649163926eef6ebc93d3ef7362aba7a7",
+  "input_sha256": {
+    "modules/08-qubit-dsdna-hs/Qubit.culs": "32f9ecec00bf7c30fb0051548f2df4c781b6f70d81b1840eb4688675ba71e176",
+    "modules/08-qubit-dsdna-hs/protocol.culs": "2e15f8331733ba88852b2055f7aad35d5730357518abbb00e3556d27c0652ea7",
+    "modules/08-qubit-dsdna-hs/source.md": "cb1bcc97b592604a990ddcac0c84255b6231cf4dffe97e8afebce0b3610eabd8",
+    "modules/09-double-sided-spri/SPRI.culs": "8233edb67cbc8f714005b96a0492a0b3cb4a2ecd782d149bb84331800bada2cf",
+    "modules/09-double-sided-spri/protocol.culs": "7b599b54ba4b2cc1fa2d01920b7ddd61ce038b465b2f0b8888bbf062d49dec9b",
+    "modules/09-double-sided-spri/source.md": "cb4164ac75ab422cad1af52591a6d8394993ea74a21289d97d8f7b3c37061460",
+    "composites/03-qubit-double-sided-spri/protocol.culs": "97975b698f9d65a435b37d4cd9c3ed506f22d0cbacfc9982ba7ded257cb1a2d6",
+    "composites/03-qubit-double-sided-spri/source.md": "69d5aae6d519a42674ea3f640191bb329cd5953002dac827c54cbadffaaaffdc"
+  },
+  "matched_steps": 36,
+  "total_steps": 37,
+  "coverage_percent": 97.29729729729729,
+  "matches_manifest": true,
+  "artifacts": [
+    {
+      "artifact": "modules/08-qubit-dsdna-hs",
+      "name": "Module 08: Qubit 1X dsDNA HS quantification",
+      "coverage": {
+        "schema": "modular-source-coverage-v1",
+        "rules": "modular-source-step-correspondence-v1",
+        "metric": "source_step_correspondence",
+        "artifact": "08-qubit-dsdna-hs",
+        "implementation": "e96c97ebe8211d0c92880887db7e58703c693cad",
+        "language_version": "1.0.9",
+        "source_sha256": "cb1bcc97b592604a990ddcac0c84255b6231cf4dffe97e8afebce0b3610eabd8",
+        "program_sha256": {
+          "Qubit.culs": "32f9ecec00bf7c30fb0051548f2df4c781b6f70d81b1840eb4688675ba71e176",
+          "protocol.culs": "2e15f8331733ba88852b2055f7aad35d5730357518abbb00e3556d27c0652ea7"
+        },
+        "total_steps": 13,
+        "matched_steps": 12,
+        "coverage_percent": 92.307692,
+        "status": "incomplete",
+        "issues": [
+          {
+            "step": 8,
+            "reason": "no_code_region"
+          }
+        ]
+      },
+      "execution": {
+        "completed_steps": 35,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 35
+      },
+      "matches_manifest": true,
+      "output_sha256": {
+        "results.json": "382862f5e6fc0176a12715762833e87f307935abab722cfa433e4ea95709dffe",
+        "stderr.txt": "d69333b3d1f1feab29d9ad5b14465c4f47a87d025d05b21791d48ec9d7cb76b9",
+        "coverage.json": "f3a7ffa7d2752e8dea9381a9a476ad49f1bc17e9fe97ac80dfea3920c1a79eac",
+        "results.stderr.txt": "d69333b3d1f1feab29d9ad5b14465c4f47a87d025d05b21791d48ec9d7cb76b9",
+        "run.json": "c4c50a0ee114b8be2809a3f5b34452fa19c87e520cc0469d91287bdaddde0be7"
+      }
+    },
+    {
+      "artifact": "modules/09-double-sided-spri",
+      "name": "Module 09: Double-sided SPRI selection",
+      "coverage": {
+        "schema": "modular-source-coverage-v1",
+        "rules": "modular-source-step-correspondence-v1",
+        "metric": "source_step_correspondence",
+        "artifact": "09-double-sided-spri",
+        "implementation": "e96c97ebe8211d0c92880887db7e58703c693cad",
+        "language_version": "1.0.9",
+        "source_sha256": "cb4164ac75ab422cad1af52591a6d8394993ea74a21289d97d8f7b3c37061460",
+        "program_sha256": {
+          "SPRI.culs": "8233edb67cbc8f714005b96a0492a0b3cb4a2ecd782d149bb84331800bada2cf",
+          "protocol.culs": "7b599b54ba4b2cc1fa2d01920b7ddd61ce038b465b2f0b8888bbf062d49dec9b"
+        },
+        "total_steps": 21,
+        "matched_steps": 21,
+        "coverage_percent": 100.0,
+        "status": "pass",
+        "issues": []
+      },
+      "execution": {
+        "completed_steps": 56,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 56
+      },
+      "matches_manifest": true,
+      "output_sha256": {
+        "results.json": "f5af5c3cf46608d9053d39a37afbd2ebc76df408254bc7be28c7493448ff59f1",
+        "stderr.txt": "b5053754978d39301aadae0172ff7bfe94e3fb6a41da7f1dc384d589f623a985",
+        "coverage.json": "d6e79f20b281197d1680affa05e987093d079899cfcefce2cac9aed2e0715522",
+        "results.stderr.txt": "b5053754978d39301aadae0172ff7bfe94e3fb6a41da7f1dc384d589f623a985",
+        "run.json": "f0b23fdf4793a92fdcf8c3de6875a3924e15ac1c927c3de33a1f7261d2e64cc1"
+      }
+    },
+    {
+      "artifact": "composites/03-qubit-double-sided-spri",
+      "name": "Composite 03: Qubit quantification and double-sided SPRI selection",
+      "coverage": {
+        "schema": "modular-source-coverage-v1",
+        "rules": "modular-source-step-correspondence-v1",
+        "metric": "source_step_correspondence",
+        "artifact": "03-qubit-double-sided-spri",
+        "implementation": "e96c97ebe8211d0c92880887db7e58703c693cad",
+        "language_version": "1.0.9",
+        "source_sha256": "69d5aae6d519a42674ea3f640191bb329cd5953002dac827c54cbadffaaaffdc",
+        "program_sha256": {
+          "protocol.culs": "97975b698f9d65a435b37d4cd9c3ed506f22d0cbacfc9982ba7ded257cb1a2d6"
+        },
+        "total_steps": 3,
+        "matched_steps": 3,
+        "coverage_percent": 100.0,
+        "status": "pass",
+        "issues": []
+      },
+      "execution": {
+        "completed_steps": 86,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 86
+      },
+      "matches_manifest": true,
+      "output_sha256": {
+        "results.json": "3997050a682d6d04a3fe4c0739f3263396095e2e738bd1952a2ce757425b0664",
+        "stderr.txt": "dd57495746cf77e4ecda7cd22e538430b0ef704d0118e490bd54a5da4ea6c88a",
+        "coverage.json": "0123cd5bc9f4864ae752a9a0ccab4e75fe5034138241600f4e792a01846c9841",
+        "results.stderr.txt": "dd57495746cf77e4ecda7cd22e538430b0ef704d0118e490bd54a5da4ea6c88a",
+        "run.json": "9cfac5e8eb88901f3bdb908dfffa515a6917f7113b5325380cdae3cd287a84ba"
+      }
+    }
+  ],
+  "evaluation_role": "additional-workflow",
+  "baseline_version": "1.0.9",
+  "benchmark_base_commit": "e96c97ebe8211d0c92880887db7e58703c693cad"
+}

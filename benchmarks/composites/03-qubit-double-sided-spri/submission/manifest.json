@@ -1,0 +1,90 @@
+{
+  "case": "Qubit 1X dsDNA HS quantification and double-sided SPRI selection",
+  "issue": "https://github.com/culsma/culsma-pm/issues/142",
+  "culsma_version": "1.0.9",
+  "entrypoint": "Qubit_to_Double_Sided_SPRI_composite.culs",
+  "library_root": ".",
+  "validation": {
+    "completed_steps": 86,
+    "failed_steps": 0,
+    "inputs": [
+      "/Users/mengsun/Documents/Labword/Qubit_to_Double_Sided_SPRI_composite.culs"
+    ],
+    "plan_diagnostic_count": 0,
+    "runtime_diagnostic_count": 0,
+    "runtime_ok": true,
+    "semantic_error_count": 0,
+    "skipped_steps": 0,
+    "total_steps": 86,
+    "type_error_count": 0,
+    "user_result_available": true
+  },
+  "files": [
+    {
+      "path": "Qubit_1X_HS_complete_20261013.culs",
+      "role": "module",
+      "bytes": 6355,
+      "sha256": "dd448c05b3ec547df925b0f89d4ad4f51adc03c4ccaf8a17cf35ae9c47fd5887"
+    },
+    {
+      "path": "Double_Sided_SPRI_50uL_protocol.culs",
+      "role": "module",
+      "bytes": 9165,
+      "sha256": "5e8ae4c74037f1c665eb069dd3da0d33354eb9ccb520a5bba907b2f840283b39"
+    },
+    {
+      "path": "Qubit_to_Double_Sided_SPRI_composite.culs",
+      "role": "entrypoint",
+      "bytes": 1800,
+      "sha256": "462607bb70f4ed4ec2eeabb96f1b0d4b88c70eccc72e2bf02c1de1d272471f1b"
+    },
+    {
+      "path": "sources/Qubit_source.md",
+      "role": "source",
+      "bytes": 1947,
+      "sha256": "eeb36fbc66fe41a9acde65d47cbe6bf06ebc4a1e4387a42c7c2f4c1eccfe32fa"
+    },
+    {
+      "path": "sources/Double_Sided_SPRI_source.md",
+      "role": "source",
+      "bytes": 2663,
+      "sha256": "2d749f6159ac21c40b80ffe7222c6f2a3aba1db1d7b93b7b6b82a0b005b13e4a"
+    },
+    {
+      "path": "records/Qubit_record.md",
+      "role": "record",
+      "bytes": 1010,
+      "sha256": "f602f0064f7b060ba984bcf797564a5b41ee1fbc6cf8061dc99347034074b9e9"
+    },
+    {
+      "path": "records/Double_Sided_SPRI_record.md",
+      "role": "record",
+      "bytes": 10776,
+      "sha256": "27142fd577a35c1efd107f7cc76ba3a3dddbe647aefadfe6500c77733537b7c0"
+    },
+    {
+      "path": "validation/summary.json",
+      "role": "validation",
+      "bytes": 364,
+      "sha256": "c94f4f326f45d540611eb002ebda08dc2e4387305d51b919f64ac26d0b5bebe3"
+    },
+    {
+      "path": "validation/validate.json",
+      "role": "validation",
+      "bytes": 2397,
+      "sha256": "4b84fe3b09c0e2bb43a2879aadbb49ab3f95abee0eb35853553569784212cd33"
+    },
+    {
+      "path": "validation/plan.json",
+      "role": "validation",
+      "bytes": 249515,
+      "sha256": "724817b8da17e4b3e4a2911f72141bba6cecbaaf49c2a11a212e24d602c1f222"
+    },
+    {
+      "path": "validation/run.json",
+      "role": "validation",
+      "bytes": 3597399,
+      "sha256": "1fdc7852d43ecb023d5e880dd438577cd6fe1e9243695cea0fe465025358cc52"
+    }
+  ]
+}

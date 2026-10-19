@@ -1,0 +1,139 @@
+{
+  "materials": [
+    {
+      "amount": 380.0,
+      "name": "Qubit1xDsDnaHsWorkingSolution",
+      "unit": "uL"
+    },
+    {
+      "amount": 199.0,
+      "name": "QubitSampleWorkingSolution",
+      "unit": "uL"
+    },
+    {
+      "amount": 10.0,
+      "name": "QubitDsDnaHsStandard1",
+      "unit": "uL"
+    },
+    {
+      "amount": 10.0,
+      "name": "QubitDsDnaHsStandard2",
+      "unit": "uL"
+    },
+    {
+      "amount": 1.0,
+      "name": "DnaSample",
+      "unit": "uL"
+    }
+  ],
+  "resources": [
+    {
+      "capacity_uL": 100.0,
+      "count": 3,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 500.0,
+      "count": 3,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 1000.0,
+      "count": 2,
+      "kind": "tube"
+    }
+  ],
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": [],
+      "value": {
+        "data_kind": "dna_concentration",
+        "items": [
+          {
+            "binding": "__cmp_entry_s0_RunQubitDsDnaHsQuantification_s5_dna_concentration",
+            "contract_kind": "customized",
+            "data_id": "entry.s28::data",
+            "data_kind": "observation",
+            "driver_payload": {
+              "op": "img",
+              "step_id": "entry.s28"
+            },
+            "export_refs": {
+              "driver_profile": {
+                "artifact_id": "entry.s28::data::raw",
+                "export_id": "entry.s28::data::driver_profile",
+                "format": "json",
+                "kind": "img",
+                "profile": "driver:DRV_OK"
+              }
+            },
+            "family": "img",
+            "gate": {
+              "entry_kind": "script",
+              "entry_name": "entry"
+            },
+            "kind": "data_ref",
+            "observation_id": "entry.s28::data",
+            "op": "img",
+            "program": null,
+            "program_kind": null,
+            "raw_artifact": {
+              "artifact_id": "entry.s28::data::raw",
+              "driver_code": "DRV_OK",
+              "op": "img",
+              "step_id": "entry.s28"
+            },
+            "resolved_sample": "container/entry/entry.s22%3A%3Aalloc/__cmp_entry_s0_RunQubitDsDnaHsQuantification_s5_QubitDsDnaHsBatch_s4_repeat_s0_dna_sample_assay",
+            "result": {
+              "assay_sample_volume_uL": 1,
+              "calibration_status": null,
+              "channel": null,
+              "dna_concentration_ng_per_uL": null,
+              "sample_id": null,
+              "signal": null
+            },
+            "sample": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_RunQubitDsDnaHsQuantification_s5_QubitDsDnaHsBatch_s4_repeat_s0_dna_sample_assay",
+              "span": {
+                "col": 14,
+                "end": 4792,
+                "line": 112,
+                "start": 4776
+              }
+            },
+            "sample_ref": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_RunQubitDsDnaHsQuantification_s5_QubitDsDnaHsBatch_s4_repeat_s0_dna_sample_assay",
+              "span": {
+                "col": 14,
+                "end": 4792,
+                "line": 112,
+                "start": 4776
+              }
+            },
+            "save_raw": true,
+            "status": "ok",
+            "step_id": "entry.s28",
+            "subject_ref": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_RunQubitDsDnaHsQuantification_s5_QubitDsDnaHsBatch_s4_repeat_s0_dna_sample_assay",
+              "span": {
+                "col": 14,
+                "end": 4792,
+                "line": 112,
+                "start": 4776
+              }
+            }
+          }
+        ],
+        "kind": "data_group_ref",
+        "result": {},
+        "schema_ref": null
+      }
+    }
+  }
+}

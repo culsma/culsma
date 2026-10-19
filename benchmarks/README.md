@@ -2,9 +2,10 @@
 
 This is the canonical public benchmark for Section 3.5 of
 *Culsma: An Executable Specification Language for Laboratory Protocols*.
-It contains seven experimental modules and two composite workflows. Source
+The paper inventory contains seven experimental modules and two composite workflows. Source
 procedures, programs, results, and reproduction instructions are maintained
-here together; no documentation-site export is needed.
+here together; additional workflows follow the same source/program/results
+layout and are evaluated separately from the fixed paper inventory.
 
 ## Results by version
 
@@ -55,6 +56,61 @@ fidelity, biological success, or hardware execution. In particular, a transfer
 may match a source step while a finer detail such as dropwise delivery remains
 only in its annotation.
 
+## Additional workflows
+
+The Qubit-to-SPRI submission adds two modules and one composite, evaluated with
+Culsma 1.0.9 at `e96c97ebe8211d0c92880887db7e58703c693cad`. These entries use
+the same source-step correspondence rule and `reproduce.py` as the paper set.
+
+<!-- benchmark-table:start -->
+Evaluated with Culsma 1.0.9.
+
+| Module | Source steps | Coverage |
+| --- | ---: | ---: |
+| Module 08: Qubit 1X dsDNA HS quantification | 12/13 | 92.3% |
+| Module 09: Double-sided SPRI selection | 21/21 | 100% |
+| Composite 03: Qubit quantification and double-sided SPRI selection | 3/3 | 100% |
+<!-- benchmark-table:end -->
+
+The submitted module procedures cover **33/34 source steps (97.06%)**:
+Qubit **12/13** and SPRI **21/21**. Qubit S8 is an explicit gap: declaring a
+calibration result schema and reading two standards does not configure assay
+selection or start a new calibration. These matches describe structural
+correspondence; they do not establish every detail or physical endpoint.
+The separate three-step composite source summarizes input setup and module
+handoff. Including it gives **36/37 (97.30%)** across the three new entries.
+The earlier composition-only 3/3 does not describe coverage of the complete
+workflow.
+
+All three entry programs complete: **35/35**, **56/56**, and **86/86** execution
+steps respectively (**177/177** across the three runs), with zero failed or
+skipped steps and zero runtime diagnostics. The composite retains six
+nonblocking deprecated-return warnings. Its material check verifies the same
+51 uL DNA tube, the 1 uL Qubit aliquot, and the final 50 uL eluate. Stub
+concentration remains unset, and DNA masses remain unknown.
+
+The [manifest](qubit-spri-manifest.json) freezes all three source inventories,
+program hashes, runtime and expected results. The [summary](qubit-spri-summary.json),
+[coverage table](qubit-spri-table.md), each entry's `results/`, and the composite
+[verification](composites/03-qubit-double-sided-spri/results/verification.json)
+retain the evidence. The [original submission](composites/03-qubit-double-sided-spri/submission/)
+preserves all 11 files and the author's integrity manifest unchanged. The module
+sources retain the submitted 13 and 21 numbered steps; the composite source is
+an explicitly identified editorial summary of their handoff.
+
+To reproduce these entries with a clean runtime checkout at the pinned commit:
+
+```sh
+python benchmarks/reproduce.py \
+  --manifest benchmarks/qubit-spri-manifest.json \
+  --runtime-repo /path/to/culsma-runtime \
+  --output benchmarks/local-results/qubit-spri-reproduction
+```
+
+A passing comparison reproduces the documented Qubit S8 gap, as well as the
+expected execution results. This additional inventory is recorded separately
+from the nine-entry paper and versioned snapshots, preserving their denominators.
+
 ## Known gaps and extension targets
 
 The results above describe the fixed evaluated version, not an exhaustive
@@ -78,8 +134,8 @@ references; structural correspondence does not establish that automatic link.
 
 | Path | Contents |
 | --- | --- |
-| [`modules/`](modules/) | Seven numbered benchmark modules and manuscript `example-00`–`example-04`; programs and results are kept together in each directory. |
-| [`composites/`](composites/) | Two composite workflows, each with its source, entry program, and results. |
+| [`modules/`](modules/) | Benchmark modules and manuscript `example-00`–`example-04`; the paper inventory uses modules 01–07, and the additional Qubit/SPRI inventory uses 08–09. |
+| [`composites/`](composites/) | Composite workflows, each with its source, entry program, and results; the paper inventory uses entries 01–02. |
 | [`reproduce.py`](reproduce.py) | Coverage and execution checks for the seven benchmark modules and two composites. |
 | [`check_manuscript_examples.py`](check_manuscript_examples.py) | Material-state and result checks for Examples 01–04. |
 | [`check_introduction_example.py`](check_introduction_example.py) | Checks for introductory Example 00. |
@@ -91,14 +147,21 @@ references; structural correspondence does not establish that automatic link.
 Composite entry programs use explicit, source-relative `include` paths to load
 reusable module definitions. Composite 01 includes Module 04's `Module04.culs`;
 Composite 02 includes Module 05's `Module05.culs` and Module 06's `two-lane-gfp.culs`.
+Composite 03 includes the reusable definitions from Modules 08 and 09.
 Paths resolve relative to the composite file, independently of the working
 directory. No import search-path configuration or wrapper files are required.
-With Culsma 1.0.7 installed, both entry programs can run directly from the
+With Culsma 1.0.7 installed, the two paper entry programs can run directly from the
 repository root:
 
 ```sh
 culsma benchmarks/composites/01-flow-cytometry-immunophenotyping/protocol.culs
 culsma benchmarks/composites/02-magnetic-bead-ip-western-blot/protocol.culs
+```
+
+Composite 03 requires Culsma 1.0.9 for non-fractionating centrifuge agitation:
+
+```sh
+culsma benchmarks/composites/03-qubit-double-sided-spri/protocol.culs
 ```
 
 Each source procedure retains its references and context in `source.md`.

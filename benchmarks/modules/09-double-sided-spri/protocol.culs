@@ -1,0 +1,15 @@
+include "SPRI.culs";
+
+// Standalone fixture: the caller supplies a 50 uL DNA tube and an unset result
+// field. This local data declaration performs no measurement or calibration.
+let input_dna = tube(label = "DnaSample", capacity = 100uL, load = [
+  content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.DNA,
+    code = "DNA_SAMPLE", attrs = { role: sample }):50uL
+]);
+let schema = data_schema(label = "SuppliedQubitResult", fields = [dna_concentration_ng_per_uL]);
+let supplied_result = data_ref(kind = DataKind.OBSERVATION, schema_ref = schema);
+let size_selected_dna = DoubleSidedSpriSelection(
+  input_dna = input_dna,
+  dna_concentration_ng_per_uL = supplied_result.result.dna_concentration_ng_per_uL
+);
+return size_selected_dna;

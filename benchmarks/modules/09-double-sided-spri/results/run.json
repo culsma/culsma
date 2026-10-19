@@ -1,0 +1,371 @@
+{
+  "ok": true,
+  "report": {
+    "alerts": [],
+    "execution": {
+      "completed_steps": 56,
+      "diagnostic_count": 0,
+      "failed_steps": 0,
+      "ok": true,
+      "skipped_steps": 0,
+      "total_steps": 56
+    },
+    "external_inventory": {
+      "checked": false,
+      "items": [],
+      "reason": "inventory_not_supplied",
+      "schema": "culsma_inventory_reconciliation_v1",
+      "shortages": [],
+      "sufficient": null
+    },
+    "headline": "Experiment completed successfully with no runtime errors.",
+    "materials": {
+      "final_products": [
+        {
+          "mass_mg": null,
+          "name": "SPRISelectionLiquidWaste",
+          "primary_component": "ROUND2_FREE_FRAGMENT",
+          "volume_mL": 0.445,
+          "volume_uL": 445.0
+        },
+        {
+          "mass_mg": null,
+          "name": "SizeSelectedDNA",
+          "primary_component": "ROUND2_BOUND_FRAGMENT",
+          "volume_mL": 0.05,
+          "volume_uL": 50.0
+        },
+        {
+          "mass_mg": 10.0,
+          "name": "SPRIBeads",
+          "primary_component": "SPRI_BEAD_SLURRY",
+          "volume_mL": 0.01,
+          "volume_uL": 10.0
+        },
+        {
+          "mass_mg": null,
+          "name": "DnaSample",
+          "primary_component": null,
+          "volume_mL": 0.005,
+          "volume_uL": 5.0
+        },
+        {
+          "mass_mg": null,
+          "name": "SecondSPRISelection",
+          "primary_component": "ROUND2_SPRI_BEADS",
+          "volume_mL": 0.0,
+          "volume_uL": 0.0
+        }
+      ],
+      "has_material_state": true,
+      "input_inventory": [
+        {
+          "initial_mL": 0.36,
+          "initial_mg": 0.0,
+          "initial_uL": 360.0,
+          "name": "Fresh85PercentEthanol"
+        },
+        {
+          "initial_mL": 0.05,
+          "initial_mg": 0.0,
+          "initial_uL": 50.0,
+          "name": "DnaSample"
+        },
+        {
+          "initial_mL": 0.05,
+          "initial_mg": 0.0,
+          "initial_uL": 50.0,
+          "name": "NucleaseFreeWater"
+        },
+        {
+          "initial_mL": 0.05,
+          "initial_mg": 0.0,
+          "initial_uL": 50.0,
+          "name": "SPRIBeads"
+        }
+      ],
+      "intermediate_materials": [],
+      "reagent_consumption": [
+        {
+          "consumed_mL": 0.36,
+          "consumed_mg": null,
+          "consumed_uL": 360.0,
+          "name": "Fresh85PercentEthanol",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.05,
+          "consumed_mg": null,
+          "consumed_uL": 50.0,
+          "name": "NucleaseFreeWater",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.046875,
+          "consumed_mg": null,
+          "consumed_uL": 46.875,
+          "name": "DnaSample",
+          "roles": [
+            "dest",
+            "sample"
+          ]
+        },
+        {
+          "consumed_mL": 0.04,
+          "consumed_mg": null,
+          "consumed_uL": 40.0,
+          "name": "SPRIBeads",
+          "roles": [
+            "sample",
+            "source"
+          ]
+        }
+      ]
+    },
+    "process_summary": {
+      "environment_steps": 7,
+      "mutation_steps": 20,
+      "readout_steps": 0,
+      "separation_steps": 5
+    },
+    "qc_results": [],
+    "resource_summary": {
+      "containers": {
+        "allocated_count": 7,
+        "container_kinds": [
+          {
+            "count": 7,
+            "kind": "tube"
+          }
+        ],
+        "touched_count": 7,
+        "touched_names": [
+          "DnaSample",
+          "Fresh85PercentEthanol",
+          "NucleaseFreeWater",
+          "SPRIBeads",
+          "SPRISelectionLiquidWaste",
+          "SecondSPRISelection",
+          "SizeSelectedDNA"
+        ]
+      },
+      "instruments": {
+        "devices": [],
+        "tools": []
+      }
+    },
+    "schema": "lab_report_v1"
+  },
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": [],
+      "value": {
+        "aggregate_quantity_policy": "known_subtotals_only",
+        "component_entries": [
+          {
+            "amount": 0,
+            "associated_with": null,
+            "association_target_kind": null,
+            "content_ref": "DNA_INPUT_CARRIER",
+            "entry_id": "DNA_INPUT_CARRIER",
+            "label": null,
+            "material_state_source": null,
+            "preservation": null,
+            "quantity": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0
+            },
+            "relation": "free",
+            "relationship_source": null
+          },
+          {
+            "amount": 0,
+            "associated_with": null,
+            "association_target_kind": null,
+            "content_ref": "ROUND1_SPRI_BINDING_SOLUTION",
+            "entry_id": "ROUND1_SPRI_BINDING_SOLUTION",
+            "label": null,
+            "material_state_source": null,
+            "preservation": null,
+            "quantity": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0
+            },
+            "relation": "free",
+            "relationship_source": null
+          },
+          {
+            "amount": 0,
+            "associated_with": null,
+            "association_target_kind": null,
+            "content_ref": "ROUND2_SPRI_BINDING_SOLUTION",
+            "entry_id": "ROUND2_SPRI_BINDING_SOLUTION",
+            "label": null,
+            "material_state_source": null,
+            "preservation": null,
+            "quantity": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0
+            },
+            "relation": "free",
+            "relationship_source": null
+          },
+          {
+            "amount": 0,
+            "associated_with": null,
+            "association_target_kind": null,
+            "content_ref": "ROUND2_FREE_FRAGMENT",
+            "entry_id": "ROUND2_FREE_FRAGMENT",
+            "label": null,
+            "material_state_source": null,
+            "preservation": null,
+            "quantity": {
+              "cross_axis_projection": false,
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 0
+            },
+            "relation": "free",
+            "relationship_source": null
+          },
+          {
+            "amount": 0,
+            "associated_with": null,
+            "association_target_kind": null,
+            "content_ref": "ETHANOL_85",
+            "entry_id": "ETHANOL_85",
+            "label": null,
+            "material_state_source": null,
+            "partition_class": null,
+            "preservation": null,
+            "quantity": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0
+            },
+            "relation": "free",
+            "relationship_source": null
+          },
+          {
+            "amount": null,
+            "associated_with": null,
+            "association_target_kind": null,
+            "content_ref": "ROUND2_BOUND_FRAGMENT",
+            "entry_id": "ROUND2_BOUND_FRAGMENT",
+            "label": null,
+            "material_state_source": "author_replace",
+            "preservation": null,
+            "provenance": {
+              "operation_id": "entry.s23",
+              "source": "author",
+              "source_container_id": "container/entry/entry.s8%3A%3Aalloc/__cmp_entry_s3_second_selection_tube",
+              "source_entry_id": "ROUND1_FREE_FRAGMENT"
+            },
+            "quantity": {
+              "cross_axis_projection": false,
+              "dimension": "mass",
+              "shares": {
+                "container/entry/entry.s8%3A%3Aalloc/__cmp_entry_s3_second_selection_tube:entry.s23:0:0": 1
+              },
+              "status": "unknown",
+              "unit": "mg",
+              "value": null
+            },
+            "relation": "free",
+            "relationship_source": "author_replace"
+          },
+          {
+            "amount": 50,
+            "associated_with": null,
+            "association_target_kind": null,
+            "content_ref": "NUCLEASE_FREE_WATER",
+            "entry_id": "NUCLEASE_FREE_WATER",
+            "label": null,
+            "material_state_source": "scientific_model_provider",
+            "preservation": null,
+            "provenance": {
+              "configuration": {},
+              "model_id": null,
+              "model_version": null,
+              "provider_id": "culsma.builtin.material_rulebook",
+              "provider_version": "1.0"
+            },
+            "quantity": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 50
+            },
+            "relation": "free",
+            "relationship_source": "scientific_model"
+          }
+        ],
+        "component_quantities": {
+          "DNA_INPUT_CARRIER": {
+            "dimension": "volume",
+            "unit": "uL",
+            "value": 0
+          },
+          "ETHANOL_85": {
+            "dimension": "volume",
+            "unit": "uL",
+            "value": 0
+          },
+          "NUCLEASE_FREE_WATER": {
+            "dimension": "volume",
+            "unit": "uL",
+            "value": 50
+          },
+          "ROUND1_SPRI_BINDING_SOLUTION": {
+            "dimension": "volume",
+            "unit": "uL",
+            "value": 0
+          },
+          "ROUND2_BOUND_FRAGMENT": {
+            "cross_axis_projection": false,
+            "dimension": "mass",
+            "shares": {
+              "container/entry/entry.s8%3A%3Aalloc/__cmp_entry_s3_second_selection_tube:entry.s23:0:0": 1
+            },
+            "status": "unknown",
+            "unit": "mg",
+            "value": null
+          },
+          "ROUND2_FREE_FRAGMENT": {
+            "cross_axis_projection": false,
+            "dimension": "mass",
+            "unit": "mg",
+            "value": 0
+          },
+          "ROUND2_SPRI_BINDING_SOLUTION": {
+            "dimension": "volume",
+            "unit": "uL",
+            "value": 0
+          }
+        },
+        "container_kind": "tube",
+        "count_cells": 0,
+        "id": "container/entry/entry.s9%3A%3Aalloc/size_selected_dna",
+        "kind": "container_ref",
+        "known_mass_subtotal_mg": 50,
+        "label": "SizeSelectedDNA",
+        "mass_mg": null,
+        "material_relationships": [],
+        "unknown_quantity_dimensions": [
+          "mass"
+        ],
+        "volume_uL": 50
+      }
+    }
+  },
+  "schema": "culsma_run_output_v1"
+}

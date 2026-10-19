@@ -1,0 +1,231 @@
+protocol DoubleSidedSpriSelection(input_dna, dna_concentration_ng_per_uL) returns (size_selected_dna) {
+  // Source step S1: Gather freshly prepared 85% ethanol.
+  let ethanol_85 = tube(
+    label = "Fresh85PercentEthanol",
+    capacity = 1mL,
+    load = [
+      content(
+        kind = ContentKind.CHEMICAL,
+        type = ContentType.SOLVENT,
+        code = "ETHANOL_85",
+        attrs = { concentration: "85_percent", role: wash }
+      ):360uL
+    ]
+  );
+  // Source step S2: Gather room-temperature SPRI beads, approximately 50 uL per DNA sample. Ensure that the SPRI beads have equilibrated to room temperature for at least 30 minutes.
+  let spri_beads = tube(
+    label = "SPRIBeads",
+    capacity = 200uL,
+    load = [
+      content(
+        kind = ContentKind.PARTICULATE,
+        type = ContentType.BEADS,
+        code = "SPRI_BEAD_SLURRY",
+        attrs = { bead_property: "magnetic", role: size_selection }
+      ):50uL
+    ]
+  );
+  let nuclease_free_water = tube(
+    label = "NucleaseFreeWater",
+    capacity = 200uL,
+    load = [
+      content(
+        kind = ContentKind.FORMULATION,
+        type = ContentType.BUFFER,
+        code = "NUCLEASE_FREE_WATER",
+        attrs = { role: elution }
+      ):50uL
+    ]
+  );
+  let second_selection_tube = tube(label = "SecondSPRISelection", capacity = 200uL);
+  let size_selected_dna = tube(label = "SizeSelectedDNA", capacity = 200uL);
+  let liquid_waste = tube(label = "SPRISelectionLiquidWaste", capacity = 1.5mL);
+
+  with env(thermal = 22C, duration = 30min) {
+    hold(sample = spri_beads);
+  }
+
+  // Source step S3: Vortex the SPRI beads until fully mixed. Add 30 uL of SPRI beads to the tube containing 50 uL of fragmented and end-prepared DNA solution.
+  agit(sample = spri_beads, mode = "vortex", duration = 30s);
+  input_dna << [spri_beads:30uL];
+
+  // Source step S4: Vortex the tube for 5 seconds, then briefly centrifuge.
+  agit(sample = input_dna, mode = "vortex", duration = 5s);
+  with env(thermal = 22C) {
+    agit(
+      sample = input_dna,
+      mode = AgitationMode.CENTRIFUGE,
+      drive = 3000g,
+      duration = 5s
+    );
+  }
+
+  // Source step S5: Incubate for 5 minutes at room temperature.
+  with env(thermal = 22C, duration = 5min) {
+    hold(sample = input_dna);
+  }
+
+  input_dna.materials.replace({
+    input_dna.materials[0]: [
+      content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+        type = ContentType.DNA, code = "ROUND1_BOUND_FRAGMENT",
+        attrs = { selection_round: "first", role: bound_fraction }
+      ):unknown(dimension = mass),
+      content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+        type = ContentType.DNA, code = "ROUND1_FREE_FRAGMENT",
+        attrs = { selection_round: "first", role: free_fraction }
+      ):unknown(dimension = mass),
+      content(kind = ContentKind.FORMULATION,
+        type = ContentType.BUFFER, code = "DNA_INPUT_CARRIER",
+        attrs = { role: sample_carrier, composition: unspecified }
+      ):50uL
+    ],
+    input_dna.materials[1]: [
+      content(kind = ContentKind.PARTICULATE,
+        type = ContentType.BEADS, code = "ROUND1_SPRI_BEADS",
+        attrs = { bead_property: magnetic, role: size_selection }
+      ):unknown(dimension = mass),
+      content(kind = ContentKind.FORMULATION,
+        type = ContentType.BUFFER, code = "ROUND1_SPRI_BINDING_SOLUTION",
+        attrs = { role: bead_suspension_carrier, composition: unspecified }
+      ):30uL
+    ]
+  });
+
+  with env(field = magnetic_rack) {
+    // Source step S6: Place the tube on the high position of a magnetic rack for 0.2 mL tubes. Incubate until the solution clears, approximately 2 minutes.
+    sep(
+      sample = input_dna,
+      program = magnetic_program(duration = 2min),
+      component_fates = {
+        ROUND1_BOUND_FRAGMENT: { bound: 100%, flowthrough: 0% },
+        ROUND1_FREE_FRAGMENT: { bound: 0%, flowthrough: 100% },
+        ROUND1_SPRI_BEADS: { bound: 100%, flowthrough: 0% },
+        DNA_INPUT_CARRIER: { bound: 0%, flowthrough: 100% },
+        ROUND1_SPRI_BINDING_SOLUTION: { bound: 0%, flowthrough: 100% }
+      }
+    );
+
+    // Source step S7: While the tube remains on the magnetic rack, transfer 75 uL of supernatant containing the fragmented and end-prepared DNA into a new 0.2 mL tube. Discard the tube containing the bead pellet.
+    second_selection_tube << [input_dna.contents[1]:75uL];
+  }
+
+  // Source step S8: Add 10 uL of SPRI beads to the retained supernatant.
+  second_selection_tube << [spri_beads:10uL];
+
+  // Source step S9: Vortex the tube for 5 seconds, then briefly centrifuge.
+  agit(sample = second_selection_tube, mode = "vortex", duration = 5s);
+  with env(thermal = 22C) {
+    agit(
+      sample = second_selection_tube,
+      mode = AgitationMode.CENTRIFUGE,
+      drive = 3000g,
+      duration = 5s
+    );
+  }
+
+  // Source step S10: Incubate for 5 minutes at room temperature.
+  with env(thermal = 22C, duration = 5min) {
+    hold(sample = second_selection_tube);
+  }
+
+  second_selection_tube.materials.replace({
+    second_selection_tube.materials[0]: [
+      content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+        type = ContentType.DNA, code = "ROUND2_BOUND_FRAGMENT",
+        attrs = { selection_round: "second", role: bound_fraction }
+      ):unknown(dimension = mass),
+      content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+        type = ContentType.DNA, code = "ROUND2_FREE_FRAGMENT",
+        attrs = { selection_round: "second", role: free_fraction }
+      ):unknown(dimension = mass)
+    ],
+    second_selection_tube.materials[3]: [
+      content(kind = ContentKind.PARTICULATE,
+        type = ContentType.BEADS, code = "ROUND2_SPRI_BEADS",
+        attrs = { bead_property: magnetic, role: size_selection }
+      ):unknown(dimension = mass),
+      content(kind = ContentKind.FORMULATION,
+        type = ContentType.BUFFER, code = "ROUND2_SPRI_BINDING_SOLUTION",
+        attrs = { role: bead_suspension_carrier, composition: unspecified }
+      ):10uL
+    ]
+  });
+
+  with env(field = magnetic_rack) {
+    // Source step S11: Place the tube on the high position of the magnetic rack. Incubate until the solution clears, approximately 3 minutes. Ensure that the solution is completely clear before proceeding.
+    sep(
+      sample = second_selection_tube,
+      program = magnetic_program(duration = 3min),
+      component_fates = {
+        ROUND2_BOUND_FRAGMENT: { bound: 100%, flowthrough: 0% },
+        ROUND2_FREE_FRAGMENT: { bound: 0%, flowthrough: 100% },
+        ROUND2_SPRI_BEADS: { bound: 100%, flowthrough: 0% },
+        DNA_INPUT_CARRIER: { bound: 0%, flowthrough: 100% },
+        ROUND1_SPRI_BINDING_SOLUTION: { bound: 0%, flowthrough: 100% },
+        ROUND2_SPRI_BINDING_SOLUTION: { bound: 0%, flowthrough: 100% }
+      }
+    );
+
+    // Source step S12: While the tube remains on the magnetic rack, remove and discard the supernatant.
+    liquid_waste << [second_selection_tube.contents[1]];
+
+    // Source step S16: Repeat steps 13-15 once for a total of two ethanol washes. Remove any residual ethanol with a P20 pipette.
+    repeat ethanol_wash_cycle in schedule(start = 1, end = 2, step = 1) {
+      // Source step S13: While the tube remains on the magnetic rack, add 180 uL of 85% ethanol.
+      second_selection_tube << [ethanol_85:180uL];
+
+      // Source step S14: Incubate for 1 minute at room temperature.
+      with env(thermal = 22C, duration = 1min) {
+        hold(sample = second_selection_tube);
+      }
+
+      // Source step S15: While the tube remains on the magnetic rack, remove and discard the supernatant.
+      sep(
+        sample = second_selection_tube,
+        program = magnetic_program(),
+        component_fates = {
+          ROUND2_BOUND_FRAGMENT: { bound: 100%, flowthrough: 0% },
+          ROUND2_SPRI_BEADS: { bound: 100%, flowthrough: 0% },
+          ETHANOL_85: { bound: 0%, flowthrough: 100% }
+        }
+      );
+      liquid_waste << [second_selection_tube.contents[1]];
+    }
+
+
+    // Source step S17: While the tube remains on the magnetic rack, air-dry the SPRI beads for approximately 30 seconds. Do not over-dry the beads because this can substantially reduce yield. Cracking of the beads indicates over-drying.
+    with env(thermal = 22C, duration = 30s) {
+      hold(sample = second_selection_tube);
+    }
+  }
+
+  // Source step S18: Remove the tube from the magnetic rack. Fully resuspend the bead pellet with 50 uL of nuclease-free water.
+  second_selection_tube << [nuclease_free_water:50uL];
+  repeat bead_resuspension_mix in schedule(start = 1, end = 10, step = 1) {
+    second_selection_tube << [second_selection_tube:40uL];
+  }
+
+  // Source step S19: Incubate for 5 minutes at room temperature.
+  with env(thermal = 22C, duration = 5min) {
+    hold(sample = second_selection_tube);
+  }
+
+  with env(field = magnetic_rack) {
+    // Source step S20: Place the tube on the high position of the magnetic rack. Incubate until the solution clears, approximately 2 minutes.
+    sep(
+      sample = second_selection_tube,
+      program = magnetic_program(duration = 2min),
+      component_fates = {
+        ROUND2_BOUND_FRAGMENT: { bound: 0%, flowthrough: 100% },
+        ROUND2_SPRI_BEADS: { bound: 100%, flowthrough: 0% },
+        NUCLEASE_FREE_WATER: { bound: 0%, flowthrough: 100% }
+      }
+    );
+
+    // Source step S21: While the tube remains on the magnetic rack, transfer 50 uL of supernatant into a new 0.2 mL tube.
+    size_selected_dna << [second_selection_tube.contents[1]:50uL];
+  }
+
+  return size_selected_dna;
+}

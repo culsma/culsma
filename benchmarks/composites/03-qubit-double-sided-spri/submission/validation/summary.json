@@ -1,0 +1,15 @@
+{
+  "completed_steps": 86,
+  "failed_steps": 0,
+  "inputs": [
+    "/Users/mengsun/Documents/Labword/Qubit_to_Double_Sided_SPRI_composite.culs"
+  ],
+  "plan_diagnostic_count": 0,
+  "runtime_diagnostic_count": 0,
+  "runtime_ok": true,
+  "semantic_error_count": 0,
+  "skipped_steps": 0,
+  "total_steps": 86,
+  "type_error_count": 0,
+  "user_result_available": true
+}

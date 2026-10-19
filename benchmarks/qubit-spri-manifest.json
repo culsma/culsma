@@ -1,0 +1,58 @@
+{
+  "schema": "patterns-modular-reproduction-v1",
+  "evaluation_role": "additional-workflow",
+  "source_commit": "e96c97ebe8211d0c92880887db7e58703c693cad",
+  "benchmark_base_commit": "e96c97ebe8211d0c92880887db7e58703c693cad",
+  "baseline_version": "1.0.9",
+  "runtime_commit": "e96c97ebe8211d0c92880887db7e58703c693cad",
+  "table_version": "1.0.9",
+  "runtime_package_version": "1.0.9",
+  "lark_version": "1.3.1",
+  "artifacts": [
+    {
+      "path": "modules/08-qubit-dsdna-hs",
+      "name": "Module 08: Qubit 1X dsDNA HS quantification",
+      "matched_steps": 12,
+      "total_steps": 13,
+      "issues": [
+        {
+          "step": 8,
+          "reason": "no_code_region"
+        }
+      ],
+      "completed_steps": 35
+    },
+    {
+      "path": "modules/09-double-sided-spri",
+      "name": "Module 09: Double-sided SPRI selection",
+      "matched_steps": 21,
+      "total_steps": 21,
+      "issues": [],
+      "completed_steps": 56
+    },
+    {
+      "path": "composites/03-qubit-double-sided-spri",
+      "name": "Composite 03: Qubit quantification and double-sided SPRI selection",
+      "matched_steps": 3,
+      "total_steps": 3,
+      "issues": [],
+      "completed_steps": 86
+    }
+  ],
+  "input_sha256": {
+    "modules/08-qubit-dsdna-hs/Qubit.culs": "32f9ecec00bf7c30fb0051548f2df4c781b6f70d81b1840eb4688675ba71e176",
+    "modules/08-qubit-dsdna-hs/protocol.culs": "2e15f8331733ba88852b2055f7aad35d5730357518abbb00e3556d27c0652ea7",
+    "modules/08-qubit-dsdna-hs/source.md": "cb1bcc97b592604a990ddcac0c84255b6231cf4dffe97e8afebce0b3610eabd8",
+    "modules/09-double-sided-spri/SPRI.culs": "8233edb67cbc8f714005b96a0492a0b3cb4a2ecd782d149bb84331800bada2cf",
+    "modules/09-double-sided-spri/protocol.culs": "7b599b54ba4b2cc1fa2d01920b7ddd61ce038b465b2f0b8888bbf062d49dec9b",
+    "modules/09-double-sided-spri/source.md": "cb4164ac75ab422cad1af52591a6d8394993ea74a21289d97d8f7b3c37061460",
+    "composites/03-qubit-double-sided-spri/protocol.culs": "97975b698f9d65a435b37d4cd9c3ed506f22d0cbacfc9982ba7ded257cb1a2d6",
+    "composites/03-qubit-double-sided-spri/source.md": "69d5aae6d519a42674ea3f640191bb329cd5953002dac827c54cbadffaaaffdc"
+  },
+  "submission": {
+    "issue": "https://github.com/culsma/culsma-pm/issues/142",
+    "manifest": "composites/03-qubit-double-sided-spri/submission/manifest.json",
+    "manifest_sha256": "8fb407be7f6fec823f6faf67feae85b7f4eeec264dc048a0c7cc15a2e4d2e052"
+  },
+  "coverage_scope": "34 submitted module source steps (Qubit 13 + SPRI 21), plus 3 separately identified composition steps."
+}

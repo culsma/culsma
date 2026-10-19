@@ -1,0 +1,4 @@
+warning: Protocol 'QubitDsDnaHsBatch' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)
+warning: Protocol 'QubitDsDnaHsCalibration' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)
+warning: Protocol 'QubitDsDnaHsSingleSample' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)
+warning: Protocol 'RunQubitDsDnaHsQuantification' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)

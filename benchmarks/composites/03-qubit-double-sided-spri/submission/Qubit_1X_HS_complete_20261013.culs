@@ -1,0 +1,179 @@
+protocol QubitDsDnaHsBatch(standards, sample_group) returns (concentration_group) {
+  let calibration_readouts = QubitDsDnaHsCalibration(standards = standards);
+  let concentration_group = data_group_ref(kind = "dna_concentration");
+  repeat dna_sample in sample_group {
+    let dna_concentration = QubitDsDnaHsSingleSample(
+      dna_sample = dna_sample
+    );
+    concentration_group.items.append(dna_concentration);
+  }
+  return concentration_group;
+}
+
+protocol QubitDsDnaHsCalibration(standards) returns (calibration_readouts) {
+  let qubit_1x_working_solution = tube(
+    label = "Qubit1xDsDnaHsWorkingSolution",
+    capacity = 1mL,
+    load = [
+      content(
+        kind = ContentKind.FORMULATION,
+        type = ContentType.OTHER_FORMULATION,
+        code = "QUBIT_1X_DSDNA_HS_WORKING_SOLUTION",
+        attrs = { role: assay_working_solution, concentration: "1x", ready_to_use: true }
+      ):380uL
+    ]
+  );
+  let standard_1_assay = tube(label = "QubitStandard1Assay", capacity = 500uL);
+  let standard_2_assay = tube(label = "QubitStandard2Assay", capacity = 500uL);
+
+  // Source step 1 (standards): Set up two clear, thin-wall 0.5 mL assay tubes.
+  // Label their lids Standard 1 and Standard 2 rather than labeling the sides.
+
+  // Source steps 2-3: Add 10 uL of each member of the ordered standards group
+  // to its corresponding assay tube.
+  standard_1_assay << [standards[0]:10uL] with constraint(high_precision, low_carryover);
+  standard_2_assay << [standards[1]:10uL] with constraint(high_precision, low_carryover);
+
+  // Source step 5 (standards): Add 190 uL ready-to-use working solution to each
+  // standard tube, giving a final volume of 200 uL per tube.
+  standard_1_assay << [qubit_1x_working_solution:190uL] with constraint(high_precision, low_carryover);
+  standard_2_assay << [qubit_1x_working_solution:190uL] with constraint(high_precision, low_carryover);
+
+  // Source step 6 (standards): Vortex both standard tubes for 3-5 seconds
+  // without creating bubbles. Use the source-permitted upper duration of 5 s.
+  agit(
+    sample = group([standard_1_assay, standard_2_assay]),
+    mode = "vortex",
+    duration = 5s
+  );
+
+  // Source step 7 (standards): Incubate both tubes at room temperature for 2 min.
+  with env(thermal = 22C, duration = 2min) {
+    hold(sample = group([standard_1_assay, standard_2_assay]));
+  }
+
+  // Source steps 8-10: Select the 1X dsDNA High Sensitivity assay, start a new
+  // calibration, and read Standard 1 followed by Standard 2.
+  let qubit_calibration_schema = data_schema(
+    label = "QubitDsDnaHsTwoStandardCalibration",
+    fields = [
+      standard_id,
+      standard_concentration_ng_per_uL,
+      fluorescence_signal,
+      calibration_status
+    ]
+  );
+  let calibration_readouts = img(
+    sample = group([standard_1_assay, standard_2_assay]),
+    quantity = customized,
+    schema_ref = qubit_calibration_schema,
+    save_raw = true
+  );
+
+  return calibration_readouts;
+}
+
+protocol QubitDsDnaHsSingleSample(dna_sample) returns (dna_concentration) {
+  let qubit_1x_working_solution = tube(
+    label = "QubitSampleWorkingSolution",
+    capacity = 1mL,
+    load = [
+      content(
+        kind = ContentKind.FORMULATION,
+        type = ContentType.OTHER_FORMULATION,
+        code = "QUBIT_1X_DSDNA_HS_WORKING_SOLUTION",
+        attrs = { role: assay_working_solution, concentration: "1x", ready_to_use: true }
+      ):199uL
+    ]
+  );
+  // Source step 1 (sample): Set up a clear, thin-wall 0.5 mL assay tube.
+  // Label its lid DNA Sample rather than labeling the side.
+  let dna_sample_assay = tube(label = "QubitDnaSampleAssay", capacity = 500uL);
+
+  // Source step 4: Add 1 uL of the undiluted DNA sample.
+  dna_sample_assay << [dna_sample:1uL] with constraint(high_precision, low_carryover);
+
+  // Source step 5 (sample): Add 199 uL ready-to-use working solution.
+  // The final assay volume is 200 uL.
+  dna_sample_assay << [qubit_1x_working_solution:199uL] with constraint(high_precision, low_carryover);
+
+  // Source step 6 (sample): Vortex for the source-permitted upper duration of 5 s.
+  agit(sample = dna_sample_assay, mode = "vortex", duration = 5s);
+
+  // Source step 7 (sample): Incubate at room temperature for 2 min.
+  with env(thermal = 22C, duration = 2min) {
+    hold(sample = dna_sample_assay);
+  }
+
+  // Source steps 11-13: Read the sample using a 1 uL assay input. The fluorometer
+  // uses the entered sample volume to return the original sample concentration.
+  let qubit_concentration_schema = data_schema(
+    label = "QubitDsDnaHsCalculatedConcentration",
+    fields = [
+      sample_id,
+      assay_sample_volume_uL,
+      calibration_status,
+      dna_concentration_ng_per_uL
+    ]
+  );
+  let dna_concentration = img(
+    sample = dna_sample_assay,
+    quantity = customized,
+    schema_ref = qubit_concentration_schema,
+    save_raw = true
+  );
+  dna_concentration.result.assay_sample_volume_uL = 1;
+
+  return dna_concentration;
+}
+
+protocol RunQubitDsDnaHsQuantification() returns (concentration_group) {
+  let qubit_standard_1 = tube(
+    label = "QubitDsDnaHsStandard1",
+    capacity = 100uL,
+    load = [
+      content(
+        kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+        type = ContentType.DNA,
+        code = "QUBIT_DSDNA_HS_STANDARD_1",
+        attrs = { role: calibration_standard, standard_order: 1, stock_concentration: 0ng_per_uL }
+      ):10uL
+    ]
+  );
+  let qubit_standard_2 = tube(
+    label = "QubitDsDnaHsStandard2",
+    capacity = 100uL,
+    load = [
+      content(
+        kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+        type = ContentType.DNA,
+        code = "QUBIT_DSDNA_HS_STANDARD_2",
+        attrs = { role: calibration_standard, standard_order: 2, stock_concentration: 10ng_per_uL }
+      ):10uL
+    ]
+  );
+  let standards = group([qubit_standard_1, qubit_standard_2]);
+  let dna_sample = tube(
+    label = "DnaSample",
+    capacity = 100uL,
+    load = [
+      content(
+        kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+        type = ContentType.DNA,
+        code = "DNA_SAMPLE",
+        attrs = { role: sample }
+      ):51uL
+    ]
+  );
+
+  let sample_group = [dna_sample];
+  let concentration_group = QubitDsDnaHsBatch(
+    standards = standards,
+    sample_group = sample_group
+  );
+  return concentration_group;
+}
+
+let qubit_dna_concentrations = RunQubitDsDnaHsQuantification();
+return qubit_dna_concentrations;
+

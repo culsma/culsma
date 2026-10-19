@@ -1,0 +1,62 @@
+import Qubit_1X_HS_complete_20261013;
+import Double_Sided_SPRI_50uL_protocol;
+
+protocol QubitToDoubleSidedSpri(standards, input_dna) returns (size_selected_dna) {
+  let sample_group = [input_dna];
+  let concentration_group = Qubit_1X_HS_complete_20261013.QubitDsDnaHsBatch(
+    standards = standards,
+    sample_group = sample_group
+  );
+  let qubit_readout = concentration_group[0];
+  let dna_concentration_ng_per_uL = qubit_readout.result.dna_concentration_ng_per_uL;
+
+  let size_selected_dna = Double_Sided_SPRI_50uL_protocol.DoubleSidedSpriSelection(
+    input_dna = input_dna,
+    dna_concentration_ng_per_uL = dna_concentration_ng_per_uL
+  );
+  return size_selected_dna;
+}
+
+let qubit_standard_1 = tube(
+  label = "QubitDsDnaHsStandard1",
+  capacity = 100uL,
+  load = [
+    content(
+      kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+      type = ContentType.DNA,
+      code = "QUBIT_DSDNA_HS_STANDARD_1",
+      attrs = { role: calibration_standard, standard_order: 1, stock_concentration: 0ng_per_uL }
+    ):10uL
+  ]
+);
+let qubit_standard_2 = tube(
+  label = "QubitDsDnaHsStandard2",
+  capacity = 100uL,
+  load = [
+    content(
+      kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+      type = ContentType.DNA,
+      code = "QUBIT_DSDNA_HS_STANDARD_2",
+      attrs = { role: calibration_standard, standard_order: 2, stock_concentration: 10ng_per_uL }
+    ):10uL
+  ]
+);
+let standards = group([qubit_standard_1, qubit_standard_2]);
+let dna_sample = tube(
+  label = "DnaSample",
+  capacity = 100uL,
+  load = [
+    content(
+      kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+      type = ContentType.DNA,
+      code = "DNA_SAMPLE",
+      attrs = { role: sample }
+    ):51uL
+  ]
+);
+
+let size_selected_dna = QubitToDoubleSidedSpri(
+  standards = standards,
+  input_dna = dna_sample
+);
+return size_selected_dna;

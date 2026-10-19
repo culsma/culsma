@@ -1,0 +1,257 @@
+{
+  "ok": true,
+  "report": {
+    "alerts": [],
+    "execution": {
+      "completed_steps": 35,
+      "diagnostic_count": 0,
+      "failed_steps": 0,
+      "ok": true,
+      "skipped_steps": 0,
+      "total_steps": 35
+    },
+    "external_inventory": {
+      "checked": false,
+      "items": [],
+      "reason": "inventory_not_supplied",
+      "schema": "culsma_inventory_reconciliation_v1",
+      "shortages": [],
+      "sufficient": null
+    },
+    "headline": "Experiment completed successfully with no runtime errors.",
+    "materials": {
+      "final_products": [
+        {
+          "mass_mg": 200.0,
+          "name": "QubitStandard2Assay",
+          "primary_component": "QUBIT_1X_DSDNA_HS_WORKING_SOLUTION",
+          "volume_mL": 0.2,
+          "volume_uL": 200.0
+        },
+        {
+          "mass_mg": 200.0,
+          "name": "QubitDnaSampleAssay",
+          "primary_component": "QUBIT_1X_DSDNA_HS_WORKING_SOLUTION",
+          "volume_mL": 0.2,
+          "volume_uL": 200.0
+        },
+        {
+          "mass_mg": 200.0,
+          "name": "QubitStandard1Assay",
+          "primary_component": "QUBIT_1X_DSDNA_HS_WORKING_SOLUTION",
+          "volume_mL": 0.2,
+          "volume_uL": 200.0
+        }
+      ],
+      "has_material_state": true,
+      "input_inventory": [
+        {
+          "initial_mL": 0.38,
+          "initial_mg": 0.0,
+          "initial_uL": 380.0,
+          "name": "Qubit1xDsDnaHsWorkingSolution"
+        },
+        {
+          "initial_mL": 0.199,
+          "initial_mg": 0.0,
+          "initial_uL": 199.0,
+          "name": "QubitSampleWorkingSolution"
+        },
+        {
+          "initial_mL": 0.051,
+          "initial_mg": 0.0,
+          "initial_uL": 51.0,
+          "name": "DnaSample"
+        },
+        {
+          "initial_mL": 0.01,
+          "initial_mg": 0.0,
+          "initial_uL": 10.0,
+          "name": "QubitDsDnaHsStandard1"
+        },
+        {
+          "initial_mL": 0.01,
+          "initial_mg": 0.0,
+          "initial_uL": 10.0,
+          "name": "QubitDsDnaHsStandard2"
+        }
+      ],
+      "intermediate_materials": [],
+      "reagent_consumption": [
+        {
+          "consumed_mL": 0.38,
+          "consumed_mg": null,
+          "consumed_uL": 380.0,
+          "name": "Qubit1xDsDnaHsWorkingSolution",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.199,
+          "consumed_mg": null,
+          "consumed_uL": 199.0,
+          "name": "QubitSampleWorkingSolution",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.01,
+          "consumed_mg": null,
+          "consumed_uL": 10.0,
+          "name": "QubitDsDnaHsStandard1",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.01,
+          "consumed_mg": null,
+          "consumed_uL": 10.0,
+          "name": "QubitDsDnaHsStandard2",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.001,
+          "consumed_mg": null,
+          "consumed_uL": 1.0,
+          "name": "DnaSample",
+          "roles": [
+            "source"
+          ]
+        }
+      ]
+    },
+    "process_summary": {
+      "environment_steps": 2,
+      "mutation_steps": 6,
+      "readout_steps": 3,
+      "separation_steps": 0
+    },
+    "qc_results": [],
+    "resource_summary": {
+      "containers": {
+        "allocated_count": 8,
+        "container_kinds": [
+          {
+            "count": 8,
+            "kind": "tube"
+          }
+        ],
+        "touched_count": 8,
+        "touched_names": [
+          "DnaSample",
+          "Qubit1xDsDnaHsWorkingSolution",
+          "QubitDnaSampleAssay",
+          "QubitDsDnaHsStandard1",
+          "QubitDsDnaHsStandard2",
+          "QubitSampleWorkingSolution",
+          "QubitStandard1Assay",
+          "QubitStandard2Assay"
+        ]
+      },
+      "instruments": {
+        "devices": [],
+        "tools": []
+      }
+    },
+    "schema": "lab_report_v1"
+  },
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": [],
+      "value": {
+        "data_kind": "dna_concentration",
+        "items": [
+          {
+            "binding": "__cmp_entry_s0_RunQubitDsDnaHsQuantification_s5_dna_concentration",
+            "contract_kind": "customized",
+            "data_id": "entry.s28::data",
+            "data_kind": "observation",
+            "driver_payload": {
+              "op": "img",
+              "step_id": "entry.s28"
+            },
+            "export_refs": {
+              "driver_profile": {
+                "artifact_id": "entry.s28::data::raw",
+                "export_id": "entry.s28::data::driver_profile",
+                "format": "json",
+                "kind": "img",
+                "profile": "driver:DRV_OK"
+              }
+            },
+            "family": "img",
+            "gate": {
+              "entry_kind": "script",
+              "entry_name": "entry"
+            },
+            "kind": "data_ref",
+            "observation_id": "entry.s28::data",
+            "op": "img",
+            "program": null,
+            "program_kind": null,
+            "raw_artifact": {
+              "artifact_id": "entry.s28::data::raw",
+              "driver_code": "DRV_OK",
+              "op": "img",
+              "step_id": "entry.s28"
+            },
+            "resolved_sample": "container/entry/entry.s22%3A%3Aalloc/__cmp_entry_s0_RunQubitDsDnaHsQuantification_s5_QubitDsDnaHsBatch_s4_repeat_s0_dna_sample_assay",
+            "result": {
+              "assay_sample_volume_uL": 1,
+              "calibration_status": null,
+              "channel": null,
+              "dna_concentration_ng_per_uL": null,
+              "sample_id": null,
+              "signal": null
+            },
+            "sample": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_RunQubitDsDnaHsQuantification_s5_QubitDsDnaHsBatch_s4_repeat_s0_dna_sample_assay",
+              "span": {
+                "col": 14,
+                "end": 4792,
+                "line": 112,
+                "start": 4776
+              }
+            },
+            "sample_ref": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_RunQubitDsDnaHsQuantification_s5_QubitDsDnaHsBatch_s4_repeat_s0_dna_sample_assay",
+              "span": {
+                "col": 14,
+                "end": 4792,
+                "line": 112,
+                "start": 4776
+              }
+            },
+            "save_raw": true,
+            "status": "ok",
+            "step_id": "entry.s28",
+            "subject_ref": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_RunQubitDsDnaHsQuantification_s5_QubitDsDnaHsBatch_s4_repeat_s0_dna_sample_assay",
+              "span": {
+                "col": 14,
+                "end": 4792,
+                "line": 112,
+                "start": 4776
+              }
+            }
+          }
+        ],
+        "kind": "data_group_ref",
+        "result": {},
+        "schema_ref": null
+      }
+    }
+  },
+  "schema": "culsma_run_output_v1"
+}

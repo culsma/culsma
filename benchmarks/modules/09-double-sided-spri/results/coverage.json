@@ -1,0 +1,18 @@
+{
+  "schema": "modular-source-coverage-v1",
+  "rules": "modular-source-step-correspondence-v1",
+  "metric": "source_step_correspondence",
+  "artifact": "09-double-sided-spri",
+  "implementation": "e96c97ebe8211d0c92880887db7e58703c693cad",
+  "language_version": "1.0.9",
+  "source_sha256": "cb4164ac75ab422cad1af52591a6d8394993ea74a21289d97d8f7b3c37061460",
+  "program_sha256": {
+    "SPRI.culs": "8233edb67cbc8f714005b96a0492a0b3cb4a2ecd782d149bb84331800bada2cf",
+    "protocol.culs": "7b599b54ba4b2cc1fa2d01920b7ddd61ce038b465b2f0b8888bbf062d49dec9b"
+  },
+  "total_steps": 21,
+  "matched_steps": 21,
+  "coverage_percent": 100.0,
+  "status": "pass",
+  "issues": []
+}
