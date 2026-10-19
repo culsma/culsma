@@ -33,7 +33,7 @@
     "AGIT-DIAG-01": "tests/language/agitation/test_plate_diagnostics.py"
   },
   "verification": {
-    "core": "2692 passed, 68 skipped on 2026-10-18, including 25 released-source/plan/payload compatibility tests and returned-carrier identity coverage",
+    "core": "2697 passed, 68 skipped on 2026-10-19, including 25 released-source/plan/payload compatibility tests, returned-carrier identity coverage and versioned benchmark integrity checks",
     "documentation": "Reference and public DOC production builds passed; new plate selector and TAP examples executed successfully; modified class/sequence diagrams validated",
     "benchmark": "Current-runtime copy of Module 07: 42/42 source steps; one TAP after stop solution and before readout; 16 wells retain 150 uL each",
     "published_snapshot": "1.0.7 manifest, programs and recorded results preserved",
@@ -42,7 +42,7 @@
   },
   "coordination": {
     "issue": "https://github.com/culsma/culsma-pm/issues/146",
-    "state": "Compatibility implementation verified locally; no public release or PM status mutation",
+    "state": "Language compatibility verified; PM #146 closed as completed; included in the 1.0.9 release preparation",
     "scope": "Source/payload preservation, old-plan replay, explicit carrier membership, instance-based OS binding and fresh-state/checkpoint admission"
   },
   "compatibility_decision": {

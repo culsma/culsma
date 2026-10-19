@@ -301,7 +301,7 @@ classDiagram
     Translator --> DriverProjection : returns
 ```
 
-## Generic CLI program execution extension (unreleased)
+## Generic CLI program execution extension (1.0.9)
 
 ```mermaid
 flowchart TB
@@ -359,4 +359,4 @@ classDiagram
     ProgramExecutorFactory --> ProgramExecutorPort
 ```
 
-The per-step `Driver` contract remains unchanged. The optional CLI extension selects an installed whole-program executor; its factory and implementation are external. Core imports no concrete OS or vendor code. Without `--driver`, the previous standalone CLI path is preserved. This extension is on the development branch, not the published 1.0.8 package.
+The per-step `Driver` contract remains unchanged. The optional CLI extension selects an installed whole-program executor; its factory and implementation are external. Core imports no concrete OS or vendor code. Without `--driver`, the previous standalone CLI path is preserved. This extension is available from Culsma 1.0.9.
