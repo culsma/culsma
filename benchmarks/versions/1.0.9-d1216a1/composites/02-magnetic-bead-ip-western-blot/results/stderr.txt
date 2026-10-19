@@ -1,0 +1,6 @@
+warning: Protocol 'Module05_CaptureTargetProtein' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)
+warning: Protocol 'Module05_ReleaseDenaturingEluate' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)
+warning: Protocol 'Module05_MagneticBeadImmunoprecipitation' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)
+warning: Protocol 'Module06_WesternBlot' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)
+warning: Protocol 'Module06_TwoLaneGfpWesternBlot' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)
+warning: Protocol 'Composite02_MagneticBeadIpWesternBlot' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)

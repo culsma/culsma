@@ -1,0 +1,109 @@
+protocol Module03_AdherentCellLysatePreparation() returns (clarified_protein_lysate) {
+  // Source step S1: Use one well of a 6-well plate containing 5 x 10^6 adherent mammalian cells at the protein-harvest point.
+  let cultured_cell_well = well(
+    label = "AdherentMammalianCellWell",
+    carrier_id = "SixWellCellCulturePlate",
+    carrier_position = "A1",
+    capacity = 4mL,
+    load = [
+      content(kind = "bio_cellular", type = "adherent_mammalian_cells", code = "MAMMALIAN_CELLS", attrs = { culture_state: adherent_monolayer }):5000000cells,
+      content(kind = "chemical", type = "culture_medium", code = "COMPLETE_CULTURE_MEDIUM"):2mL
+    ]
+  );
+  let liquid_waste = tube(label = "Module03LiquidWaste", capacity = 5mL);
+
+  // Source step S2: Aspirate and discard the culture medium without disturbing the adherent cell monolayer.
+  sep(
+    sample = cultured_cell_well,
+    program = filtration_program(membrane = "adherent_cell_surface", drive = "aspiration"),
+    component_fates = {
+      MAMMALIAN_CELLS: { filtrate: 0%, retentate: 100% },
+      COMPLETE_CULTURE_MEDIUM: { filtrate: 100%, retentate: 0% }
+    }
+  );
+  liquid_waste << [cultured_cell_well.contents[0]];
+
+  // Source step S3: Wash the adherent cell monolayer twice with 1 mL cold 1x PBS per wash. For each wash, add the PBS, rinse the complete monolayer, and aspirate and discard the PBS without disturbing the cells.
+  let cold_pbs = tube(label = "ColdPBS1X", capacity = 3mL, load = [
+    content(kind = "chemical", type = "wash_buffer", code = "PBS_1X", attrs = { thermal_state: cold }):2mL
+  ]);
+  repeat monolayer_wash in schedule(start = 1, end = 2, step = 1) {
+    cultured_cell_well << [cold_pbs:1mL];
+    sep(
+      sample = cultured_cell_well,
+      program = filtration_program(membrane = "adherent_cell_surface", drive = "aspiration"),
+      component_fates = {
+        MAMMALIAN_CELLS: { filtrate: 0%, retentate: 100% },
+        PBS_1X: { filtrate: 100%, retentate: 0% }
+      }
+    );
+    liquid_waste << [cultured_cell_well.contents[0]];
+  }
+
+  // Source step S4: Prepare 300 uL cold complete RIPA lysis buffer by combining 297 uL RIPA buffer with 3 uL 100x protease and phosphatase inhibitor cocktail, giving a final inhibitor concentration of 1x. Add the complete 300 uL mixture directly to the washed cell monolayer.
+  let cold_ripa_buffer = tube(label = "ColdRIPABuffer", capacity = 500uL, load = [
+    content(kind = "chemical", type = "lysis_buffer", code = "RIPA_BUFFER", attrs = { thermal_state: cold }):297uL
+  ]);
+  let inhibitor_cocktail = tube(label = "ProteasePhosphataseInhibitorCocktail100X", capacity = 20uL, load = [
+    content(kind = "chemical", type = "inhibitor_cocktail", code = "PROTEASE_PHOSPHATASE_INHIBITOR", attrs = { stock_concentration: "100x" }):3uL
+  ]);
+  let complete_ripa_buffer = tube(label = "CompleteRIPABuffer1X", capacity = 500uL);
+  complete_ripa_buffer << [cold_ripa_buffer:297uL, inhibitor_cocktail:3uL];
+  cultured_cell_well << [complete_ripa_buffer:300uL];
+
+  // Source step S5: Incubate the cells in the lysis buffer on ice for 20 min.
+  with env(thermal = 0C, duration = 20min) {
+    hold(sample = cultured_cell_well);
+  }
+
+  // Source step S6: Transfer the complete crude lysate from the well to a clean 1.5 mL microcentrifuge tube.
+  cultured_cell_well.materials.replace({
+    cultured_cell_well.materials[0]: [
+      content(
+        kind = ContentKind.BIO_MOLECULE_OR_VIRUS,
+        type = ContentType.PROTEIN,
+        code = "CRUDE_CELL_LYSATE_PROTEIN",
+        attrs = { source_cell_count: "5e6", preparation: ripa_lysis }
+      ):unknown(dimension = mass),
+      content(
+        kind = ContentKind.BIO_CELLULAR,
+        type = ContentType.OTHER_CELLULAR_MATERIAL,
+        code = "INSOLUBLE_CELL_DEBRIS",
+        attrs = { source_cell_count: "5e6", preparation: ripa_lysis, fraction_role: insoluble_debris }
+      ):unknown(dimension = mass)
+    ]
+  });
+  let crude_lysate = tube(label = "CrudeCellLysate", capacity = 1.5mL);
+  crude_lysate << [cultured_cell_well];
+
+  // Source step S7: Mix the crude lysate by pipetting 10 times with the pipette set to 240 uL.
+  repeat crude_lysate_mix in schedule(start = 1, end = 10, step = 1) {
+    crude_lysate << [crude_lysate:240uL];
+  }
+
+  // Source step S8: Centrifuge the crude lysate at 12,000 x g for 10 min at 4 C.
+  with env(thermal = 4C, duration = 10min) {
+    sep(
+      sample = crude_lysate,
+      program = centrifuge_program(drive = 12000g),
+      component_fates = {
+        CRUDE_CELL_LYSATE_PROTEIN: { supernatant: 100%, pellet: 0% },
+        INSOLUBLE_CELL_DEBRIS: { supernatant: 0%, pellet: 100% },
+        RIPA_BUFFER: { supernatant: 100%, pellet: 0% },
+        PROTEASE_PHOSPHATASE_INHIBITOR: { supernatant: 100%, pellet: 0% }
+      }
+    );
+  }
+
+  // Source step S9: Transfer the clarified supernatant to a clean 1.5 mL microcentrifuge tube without disturbing the insoluble pellet, and discard the pellet.
+  // The source does not quantify insoluble material or recovery. The complete
+  // tracked liquid fraction is therefore routed to the supernatant without an
+  // invented pellet mass or recovery percentage.
+  let clarified_protein_lysate = tube(label = "ClarifiedProteinLysate", capacity = 1.5mL);
+  clarified_protein_lysate << [crude_lysate.contents[0]] with constraint(low_carryover);
+
+  // Source step S10: Return the clarified protein lysate for downstream protein quantification, purification, or detection.
+  return clarified_protein_lysate;
+}
+
+Module03_AdherentCellLysatePreparation();

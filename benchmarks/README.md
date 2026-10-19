@@ -16,12 +16,13 @@ fixed paper evaluation; newer runs are added under `versions/`.
 | --- | --- | ---: | ---: | ---: | --- |
 | 1.0.7 | Paper evaluation | 160/161 | 172/173 | 2675/2675 | [Manifest](manifest.json), [results](summary.json) |
 | 1.0.9-dev | Unreleased; runtime `ca7a098` | 161/161 | 173/173 | 2700/2700 | [Snapshot](versions/1.0.9-dev-ca7a098/README.md), [results](versions/1.0.9-dev-ca7a098/summary.json) |
+| 1.0.9 | Release evaluation; runtime `d1216a1` | 161/161 | 173/173 | 2700/2700 | [Snapshot](versions/1.0.9-d1216a1/README.md), [results](versions/1.0.9-d1216a1/summary.json) |
 
-The development snapshot resolves Module 07 S37 with a whole-plate TAP and an
-independent GENTLE requirement. Its complete nine-entry rerun has no failures,
-skips or runtime diagnostics. It is a development evaluation, not a 1.0.9
-release: package metadata at its pinned runtime still reports 1.0.8. No 1.0.8
-benchmark result is inferred from that metadata.
+Culsma 1.0.9 resolves Module 07 S37 with a whole-plate TAP and an independent
+GENTLE requirement. The release evaluation reruns all nine entries with package
+metadata 1.0.9 and has no failures, skips or runtime diagnostics. The earlier
+development evaluation is retained separately; its package metadata still
+reports 1.0.8 and does not represent an evaluation of the released 1.0.8 code.
 
 ## Paper results (1.0.7, Section 3.5)
 
@@ -61,11 +62,11 @@ inventory of laboratory operations. The collection can grow as additional
 workflows are added; compare versions using the same source inventory and
 coverage rules when assessing improvements in operation support.
 
-| Source step | Gap in 1.0.7 | Status in 1.0.9-dev |
+| Source step | Gap in 1.0.7 | Status in 1.0.9 |
 | --- | --- | --- |
-| [Module 07 S37](modules/07-sandwich-elisa/source.md) | Gentle plate tapping to mix the stopped reaction has no executable action in the paper program. | Resolved by `AgitationMode.TAP` with GENTLE in the [versioned ELISA program](versions/1.0.9-dev-ca7a098/modules/07-sandwich-elisa/protocol.culs); 42/42 source steps, with TAP after stopping and before readout. |
+| [Module 07 S37](modules/07-sandwich-elisa/source.md) | Gentle plate tapping to mix the stopped reaction has no executable action in the paper program. | Resolved by `AgitationMode.TAP` with GENTLE in the [versioned ELISA program](versions/1.0.9-d1216a1/modules/07-sandwich-elisa/protocol.culs); 42/42 source steps, with TAP after stopping and before readout. |
 
-The recorded development run and agitation regressions verify language and
+The recorded release run and agitation regressions verify language and
 simulated execution support. The published 1.0.7 program, manifest and results
 retain their original 41/42 ELISA result; the new snapshot records 42/42.
 Successful software execution alone does not demonstrate physical performance.

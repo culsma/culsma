@@ -27,8 +27,9 @@ The executable core is organized in:
 The repository also maintains the Patterns benchmark cases and reproduction tools under
 [`benchmarks/`](benchmarks/README.md), separate from the language
 implementation and its PyPI package. This is the canonical maintenance location
-for the paper's cases. Culsma 1.0.7 is available on PyPI; the benchmark is
-included in the [v1.0.7 source release](https://github.com/culsma/culsma/releases/tag/v1.0.7).
+for the paper's cases. The Culsma 1.0.9 evaluation covers 173/173 source steps;
+inputs and results are retained by version. The paper's fixed evaluation remains
+available in the [v1.0.7 source release](https://github.com/culsma/culsma/releases/tag/v1.0.7).
 
 It intentionally leaves out full manuscript sources, MCP tooling, editor
 integrations, and internal design-workspace documents.

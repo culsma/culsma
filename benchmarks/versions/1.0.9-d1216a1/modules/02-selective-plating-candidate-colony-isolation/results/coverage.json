@@ -1,0 +1,17 @@
+{
+  "schema": "modular-source-coverage-v1",
+  "rules": "modular-source-step-correspondence-v1",
+  "metric": "source_step_correspondence",
+  "artifact": "02-selective-plating-candidate-colony-isolation",
+  "implementation": "d1216a16f7adaa41ac0aac763a60c84bb7be3f64",
+  "language_version": "1.0.9",
+  "source_sha256": "e5435bd242807c625302bf0680c4c6b12904ae22b075675cedad2ce35eb63dfb",
+  "program_sha256": {
+    "protocol.culs": "50b2540012ff59f5a4741a4b71fc25e46e4e0bcbeb2d8ca309244729d99ba066"
+  },
+  "total_steps": 12,
+  "matched_steps": 12,
+  "coverage_percent": 100.0,
+  "status": "pass",
+  "issues": []
+}

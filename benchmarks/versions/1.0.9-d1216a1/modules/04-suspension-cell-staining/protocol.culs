@@ -1,0 +1,24 @@
+include "Module04.culs";
+
+let anti_cd45_stock = tube(label = "AntiCD45FITC", capacity = 100uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ANTI_CD45", attrs = { role: antibody, stock_concentration_mg_per_mL: 5, marker: CD45, fluorophore: FITC }):10uL]);
+let anti_cd3_stock = tube(label = "AntiCD3PE", capacity = 100uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ANTI_CD3", attrs = { role: antibody, stock_concentration_mg_per_mL: 5, marker: CD3, fluorophore: PE }):10uL]);
+let anti_cd4_stock = tube(label = "AntiCD4Cy5", capacity = 100uL, load = [content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "ANTI_CD4", attrs = { role: antibody, stock_concentration_mg_per_mL: 5, marker: CD4, fluorophore: Cy5 }):10uL]);
+// Source step S2: Assign six 5 mL staining tubes: one fully stained sample, one unstained control, one isotype-control panel, and three single-antibody controls corresponding to the three antibody fluorophores in the full panel.
+let fully_stained_sample_tube = tube(label = "FullyStainedSample", capacity = 5mL);
+let unstained_control_tube = tube(label = "UnstainedControl", capacity = 5mL);
+let isotype_control_tube = tube(label = "IsotypeControlPanel", capacity = 5mL);
+let single_cd45_control_tube = tube(label = "SingleAntibodyControlCD45", capacity = 5mL);
+let single_cd3_control_tube = tube(label = "SingleAntibodyControlCD3", capacity = 5mL);
+let single_cd4_control_tube = tube(label = "SingleAntibodyControlCD4", capacity = 5mL);
+
+Module04_SuspensionCellAntibodyStaining(
+  antibody_1 = anti_cd45_stock,
+  antibody_2 = anti_cd3_stock,
+  antibody_3 = anti_cd4_stock,
+  full_stain_tube = fully_stained_sample_tube,
+  unstained_tube = unstained_control_tube,
+  isotype_tube = isotype_control_tube,
+  single_control_tube_1 = single_cd45_control_tube,
+  single_control_tube_2 = single_cd3_control_tube,
+  single_control_tube_3 = single_cd4_control_tube
+);

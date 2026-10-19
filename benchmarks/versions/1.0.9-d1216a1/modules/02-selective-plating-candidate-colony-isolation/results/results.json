@@ -1,0 +1,54 @@
+{
+  "materials": [
+    {
+      "amount": 100.0,
+      "name": "NoDnaControlSuspension",
+      "unit": "uL"
+    },
+    {
+      "amount": 100.0,
+      "name": "NoLigaseVectorControlSuspension",
+      "unit": "uL"
+    },
+    {
+      "amount": 100.0,
+      "name": "RecombinantLigationSuspension",
+      "unit": "uL"
+    },
+    {
+      "amount": 100.0,
+      "name": "UncutPuc19PositiveControlSuspension",
+      "unit": "uL"
+    },
+    {
+      "amount": 100.0,
+      "name": "VectorOnlyLigationControlSuspension",
+      "unit": "uL"
+    }
+  ],
+  "resources": [
+    {
+      "capacity_uL": null,
+      "count": 13,
+      "kind": "surface"
+    },
+    {
+      "capacity_uL": 1500.0,
+      "count": 5,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 5000.0,
+      "count": 8,
+      "kind": "tube"
+    }
+  ],
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": []
+    }
+  }
+}

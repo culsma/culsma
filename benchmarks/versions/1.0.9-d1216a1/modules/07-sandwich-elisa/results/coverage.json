@@ -1,0 +1,17 @@
+{
+  "schema": "modular-source-coverage-v1",
+  "rules": "modular-source-step-correspondence-v1",
+  "metric": "source_step_correspondence",
+  "artifact": "07-sandwich-elisa",
+  "implementation": "d1216a16f7adaa41ac0aac763a60c84bb7be3f64",
+  "language_version": "1.0.9",
+  "source_sha256": "fbd40a4f9851eff8f3817396f80c77951b10a7ad9ac75d43e21e8e9910482192",
+  "program_sha256": {
+    "protocol.culs": "e9e4e70dc37103d79bd35ca80d256e81df6c616df52d177d0ab1c30a390edf64"
+  },
+  "total_steps": 42,
+  "matched_steps": 42,
+  "coverage_percent": 100.0,
+  "status": "pass",
+  "issues": []
+}

@@ -1,0 +1,975 @@
+{
+  "ok": true,
+  "report": {
+    "alerts": [],
+    "execution": {
+      "completed_steps": 608,
+      "diagnostic_count": 0,
+      "failed_steps": 0,
+      "ok": true,
+      "skipped_steps": 0,
+      "total_steps": 608
+    },
+    "external_inventory": {
+      "checked": false,
+      "items": [],
+      "reason": "inventory_not_supplied",
+      "schema": "culsma_inventory_reconciliation_v1",
+      "shortages": [],
+      "sufficient": null
+    },
+    "headline": "Experiment completed successfully with no runtime errors.",
+    "materials": {
+      "final_products": [
+        {
+          "mass_mg": 50999.15,
+          "name": "SuspensionCellStainingWaste",
+          "primary_component": "FC_BLOCK",
+          "volume_mL": 50.99915,
+          "volume_uL": 50999.15
+        },
+        {
+          "count_cells": 1000000.0,
+          "mass_mg": 500.25,
+          "name": "FullyStainedSample",
+          "primary_component": "PBMC",
+          "volume_mL": 0.50025,
+          "volume_uL": 500.25
+        },
+        {
+          "count_cells": 1000000.0,
+          "mass_mg": 500.25,
+          "name": "IsotypeControlPanel",
+          "primary_component": "PBMC",
+          "volume_mL": 0.50025,
+          "volume_uL": 500.25
+        },
+        {
+          "count_cells": 1000000.0,
+          "mass_mg": 500.1,
+          "name": "SingleAntibodyControlCD45",
+          "primary_component": "PBMC",
+          "volume_mL": 0.5001,
+          "volume_uL": 500.1
+        },
+        {
+          "count_cells": 1000000.0,
+          "mass_mg": 500.1,
+          "name": "SingleAntibodyControlCD3",
+          "primary_component": "PBMC",
+          "volume_mL": 0.5001,
+          "volume_uL": 500.1
+        },
+        {
+          "count_cells": 1000000.0,
+          "mass_mg": 500.1,
+          "name": "SingleAntibodyControlCD4",
+          "primary_component": "PBMC",
+          "volume_mL": 0.5001,
+          "volume_uL": 500.1
+        },
+        {
+          "count_cells": 1000000.0,
+          "mass_mg": 500.05,
+          "name": "UnstainedControl",
+          "primary_component": "PBMC",
+          "volume_mL": 0.50005,
+          "volume_uL": 500.05
+        }
+      ],
+      "has_material_state": true,
+      "input_inventory": [
+        {
+          "initial_mL": 51.515,
+          "initial_mg": 0.0,
+          "initial_uL": 51515.0,
+          "name": "FlowStainingBuffer"
+        },
+        {
+          "initial_mL": 1.62,
+          "initial_mg": 0.0,
+          "initial_uL": 1620.0,
+          "name": "FixationPBS"
+        },
+        {
+          "initial_cells": 6000000.0,
+          "initial_mL": 0.6,
+          "initial_mg": 0.0,
+          "initial_uL": 600.0,
+          "name": "InputPBMCSuspension"
+        },
+        {
+          "initial_mL": 0.18,
+          "initial_mg": 0.0,
+          "initial_uL": 180.0,
+          "name": "FixationBuffer10X"
+        },
+        {
+          "initial_mL": 0.03,
+          "initial_mg": 0.0,
+          "initial_uL": 30.0,
+          "name": "HumanFcBlock"
+        },
+        {
+          "initial_mL": 0.01,
+          "initial_mg": 0.0,
+          "initial_uL": 10.0,
+          "name": "AntiCD3PE"
+        },
+        {
+          "initial_mL": 0.01,
+          "initial_mg": 0.0,
+          "initial_uL": 10.0,
+          "name": "AntiCD45FITC"
+        },
+        {
+          "initial_mL": 0.01,
+          "initial_mg": 0.0,
+          "initial_uL": 10.0,
+          "name": "AntiCD4Cy5"
+        },
+        {
+          "initial_mL": 0.01,
+          "initial_mg": 0.0,
+          "initial_uL": 10.0,
+          "name": "LiveDeadViabilityDye"
+        },
+        {
+          "initial_mL": 0.005,
+          "initial_mg": 0.0,
+          "initial_uL": 5.0,
+          "name": "IsotypeCy5"
+        },
+        {
+          "initial_mL": 0.005,
+          "initial_mg": 0.0,
+          "initial_uL": 5.0,
+          "name": "IsotypeFITC"
+        },
+        {
+          "initial_mL": 0.005,
+          "initial_mg": 0.0,
+          "initial_uL": 5.0,
+          "name": "IsotypePE"
+        }
+      ],
+      "intermediate_materials": [],
+      "reagent_consumption": [
+        {
+          "consumed_mL": 51.515,
+          "consumed_mg": null,
+          "consumed_uL": 51515.0,
+          "name": "FlowStainingBuffer",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 1.62,
+          "consumed_mg": null,
+          "consumed_uL": 1620.0,
+          "name": "FixationPBS",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_cells": 6000000.0,
+          "consumed_mL": 0.6,
+          "consumed_mg": null,
+          "consumed_uL": 600.0,
+          "name": "InputPBMCSuspension",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.18,
+          "consumed_mg": null,
+          "consumed_uL": 180.0,
+          "name": "FixationBuffer10X",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.03,
+          "consumed_mg": null,
+          "consumed_uL": 30.0,
+          "name": "HumanFcBlock",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.01,
+          "consumed_mg": null,
+          "consumed_uL": 10.0,
+          "name": "AntiCD3PE",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.01,
+          "consumed_mg": null,
+          "consumed_uL": 10.0,
+          "name": "AntiCD45FITC",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.01,
+          "consumed_mg": null,
+          "consumed_uL": 10.0,
+          "name": "AntiCD4Cy5",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.01,
+          "consumed_mg": null,
+          "consumed_uL": 10.0,
+          "name": "LiveDeadViabilityDye",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.005,
+          "consumed_mg": null,
+          "consumed_uL": 5.0,
+          "name": "IsotypeCy5",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.005,
+          "consumed_mg": null,
+          "consumed_uL": 5.0,
+          "name": "IsotypeFITC",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.005,
+          "consumed_mg": null,
+          "consumed_uL": 5.0,
+          "name": "IsotypePE",
+          "roles": [
+            "source"
+          ]
+        }
+      ]
+    },
+    "process_summary": {
+      "environment_steps": 24,
+      "mutation_steps": 451,
+      "readout_steps": 6,
+      "separation_steps": 24
+    },
+    "qc_results": [],
+    "resource_summary": {
+      "containers": {
+        "allocated_count": 26,
+        "container_kinds": [
+          {
+            "count": 26,
+            "kind": "tube"
+          }
+        ],
+        "touched_count": 26,
+        "touched_names": [
+          "AntiCD3PE",
+          "AntiCD45FITC",
+          "AntiCD4Cy5",
+          "FixationBuffer10X",
+          "FixationBuffer1X",
+          "FixationPBS",
+          "FlowStainingBuffer",
+          "FullAntibodyPanel",
+          "FullyStainedSample",
+          "HumanFcBlock",
+          "InputPBMCSuspension",
+          "IsotypeControlPanel",
+          "IsotypeControlPanel",
+          "IsotypeCy5",
+          "IsotypeFITC",
+          "IsotypePE",
+          "LiveDeadViabilityDye",
+          "SingleAntibodyControlCD3",
+          "SingleAntibodyControlCD4",
+          "SingleAntibodyControlCD45",
+          "SingleCD3Reagent",
+          "SingleCD45Reagent",
+          "SingleCD4Reagent",
+          "SuspensionCellStainingWaste",
+          "UnstainedControl",
+          "UnstainedControlReagent"
+        ]
+      },
+      "instruments": {
+        "devices": [],
+        "tools": []
+      }
+    },
+    "schema": "lab_report_v1"
+  },
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": [],
+      "value": {
+        "data_kind": "flow_cytometry_acquisition",
+        "items": [
+          {
+            "binding": "__cmp_entry_s0_fully_stained_readout",
+            "contract_kind": "customized",
+            "data_id": "entry.s696::data",
+            "data_kind": "observation",
+            "driver_payload": {
+              "op": "img",
+              "step_id": "entry.s696"
+            },
+            "export_refs": {
+              "driver_profile": {
+                "artifact_id": "entry.s696::data::raw",
+                "export_id": "entry.s696::data::driver_profile",
+                "format": "json",
+                "kind": "img",
+                "profile": "driver:DRV_OK"
+              }
+            },
+            "family": "img",
+            "gate": {
+              "entry_kind": "script",
+              "entry_name": "entry"
+            },
+            "kind": "data_ref",
+            "observation_id": "entry.s696::data",
+            "op": "img",
+            "program": null,
+            "program_kind": null,
+            "raw_artifact": {
+              "artifact_id": "entry.s696::data::raw",
+              "driver_code": "DRV_OK",
+              "op": "img",
+              "step_id": "entry.s696"
+            },
+            "resolved_sample": null,
+            "result": {
+              "acquisition_config_id": null,
+              "acquisition_qc_pass": null,
+              "cd3_raw_signal": null,
+              "cd45_raw_signal": null,
+              "cd4_raw_signal": null,
+              "channel": null,
+              "control_role": "experimental_sample",
+              "event_id": null,
+              "fsc_a": null,
+              "fsc_h": null,
+              "sample_id": "fully_stained",
+              "signal": null,
+              "ssc_a": null,
+              "viability_raw_signal": null
+            },
+            "sample": {
+              "id": "__cmp_entry_s0_Composite01_FlowCytometryImmunophenotyping_s29_event_stream",
+              "items": [],
+              "kind": "unit_stream_ref",
+              "panel_ref": {
+                "items": [
+                  "CD45",
+                  "CD3",
+                  "CD4",
+                  "LiveDead"
+                ],
+                "kind": "marker_panel_ref",
+                "label": "__cmp_entry_s0_acquisition_panel"
+              },
+              "source_ref": "container/entry/entry.s3%3A%3Aalloc/__cmp_entry_s0_fully_stained_tube",
+              "unit_kind": "single_cell"
+            },
+            "sample_ref": {
+              "id": "__cmp_entry_s0_Composite01_FlowCytometryImmunophenotyping_s29_event_stream",
+              "items": [],
+              "kind": "unit_stream_ref",
+              "panel_ref": {
+                "items": [
+                  "CD45",
+                  "CD3",
+                  "CD4",
+                  "LiveDead"
+                ],
+                "kind": "marker_panel_ref",
+                "label": "__cmp_entry_s0_acquisition_panel"
+              },
+              "source_ref": "container/entry/entry.s3%3A%3Aalloc/__cmp_entry_s0_fully_stained_tube",
+              "unit_kind": "single_cell"
+            },
+            "save_raw": true,
+            "status": "ok",
+            "step_id": "entry.s696",
+            "subject_ref": {
+              "id": "__cmp_entry_s0_Composite01_FlowCytometryImmunophenotyping_s29_event_stream",
+              "items": [],
+              "kind": "unit_stream_ref",
+              "panel_ref": {
+                "items": [
+                  "CD45",
+                  "CD3",
+                  "CD4",
+                  "LiveDead"
+                ],
+                "kind": "marker_panel_ref",
+                "label": "__cmp_entry_s0_acquisition_panel"
+              },
+              "source_ref": "container/entry/entry.s3%3A%3Aalloc/__cmp_entry_s0_fully_stained_tube",
+              "unit_kind": "single_cell"
+            }
+          },
+          {
+            "binding": "__cmp_entry_s0_unstained_readout",
+            "contract_kind": "customized",
+            "data_id": "entry.s705::data",
+            "data_kind": "observation",
+            "driver_payload": {
+              "op": "img",
+              "step_id": "entry.s705"
+            },
+            "export_refs": {
+              "driver_profile": {
+                "artifact_id": "entry.s705::data::raw",
+                "export_id": "entry.s705::data::driver_profile",
+                "format": "json",
+                "kind": "img",
+                "profile": "driver:DRV_OK"
+              }
+            },
+            "family": "img",
+            "gate": {
+              "entry_kind": "script",
+              "entry_name": "entry"
+            },
+            "kind": "data_ref",
+            "observation_id": "entry.s705::data",
+            "op": "img",
+            "program": null,
+            "program_kind": null,
+            "raw_artifact": {
+              "artifact_id": "entry.s705::data::raw",
+              "driver_code": "DRV_OK",
+              "op": "img",
+              "step_id": "entry.s705"
+            },
+            "resolved_sample": null,
+            "result": {
+              "acquisition_config_id": null,
+              "acquisition_qc_pass": null,
+              "cd3_raw_signal": null,
+              "cd45_raw_signal": null,
+              "cd4_raw_signal": null,
+              "channel": null,
+              "control_role": "autofluorescence_control",
+              "event_id": null,
+              "fsc_a": null,
+              "fsc_h": null,
+              "sample_id": "unstained",
+              "signal": null,
+              "ssc_a": null,
+              "viability_raw_signal": null
+            },
+            "sample": {
+              "id": "__cmp_entry_s0_Composite01_FlowCytometryImmunophenotyping_s30_event_stream",
+              "items": [],
+              "kind": "unit_stream_ref",
+              "panel_ref": {
+                "items": [
+                  "CD45",
+                  "CD3",
+                  "CD4",
+                  "LiveDead"
+                ],
+                "kind": "marker_panel_ref",
+                "label": "__cmp_entry_s0_acquisition_panel"
+              },
+              "source_ref": "container/entry/entry.s4%3A%3Aalloc/__cmp_entry_s0_unstained_tube",
+              "unit_kind": "single_cell"
+            },
+            "sample_ref": {
+              "id": "__cmp_entry_s0_Composite01_FlowCytometryImmunophenotyping_s30_event_stream",
+              "items": [],
+              "kind": "unit_stream_ref",
+              "panel_ref": {
+                "items": [
+                  "CD45",
+                  "CD3",
+                  "CD4",
+                  "LiveDead"
+                ],
+                "kind": "marker_panel_ref",
+                "label": "__cmp_entry_s0_acquisition_panel"
+              },
+              "source_ref": "container/entry/entry.s4%3A%3Aalloc/__cmp_entry_s0_unstained_tube",
+              "unit_kind": "single_cell"
+            },
+            "save_raw": true,
+            "status": "ok",
+            "step_id": "entry.s705",
+            "subject_ref": {
+              "id": "__cmp_entry_s0_Composite01_FlowCytometryImmunophenotyping_s30_event_stream",
+              "items": [],
+              "kind": "unit_stream_ref",
+              "panel_ref": {
+                "items": [
+                  "CD45",
+                  "CD3",
+                  "CD4",
+                  "LiveDead"
+                ],
+                "kind": "marker_panel_ref",
+                "label": "__cmp_entry_s0_acquisition_panel"
+              },
+              "source_ref": "container/entry/entry.s4%3A%3Aalloc/__cmp_entry_s0_unstained_tube",
+              "unit_kind": "single_cell"
+            }
+          },
+          {
+            "binding": "__cmp_entry_s0_isotype_readout",
+            "contract_kind": "customized",
+            "data_id": "entry.s714::data",
+            "data_kind": "observation",
+            "driver_payload": {
+              "op": "img",
+              "step_id": "entry.s714"
+            },
+            "export_refs": {
+              "driver_profile": {
+                "artifact_id": "entry.s714::data::raw",
+                "export_id": "entry.s714::data::driver_profile",
+                "format": "json",
+                "kind": "img",
+                "profile": "driver:DRV_OK"
+              }
+            },
+            "family": "img",
+            "gate": {
+              "entry_kind": "script",
+              "entry_name": "entry"
+            },
+            "kind": "data_ref",
+            "observation_id": "entry.s714::data",
+            "op": "img",
+            "program": null,
+            "program_kind": null,
+            "raw_artifact": {
+              "artifact_id": "entry.s714::data::raw",
+              "driver_code": "DRV_OK",
+              "op": "img",
+              "step_id": "entry.s714"
+            },
+            "resolved_sample": null,
+            "result": {
+              "acquisition_config_id": null,
+              "acquisition_qc_pass": null,
+              "cd3_raw_signal": null,
+              "cd45_raw_signal": null,
+              "cd4_raw_signal": null,
+              "channel": null,
+              "control_role": "isotype_control",
+              "event_id": null,
+              "fsc_a": null,
+              "fsc_h": null,
+              "sample_id": "isotype_panel",
+              "signal": null,
+              "ssc_a": null,
+              "viability_raw_signal": null
+            },
+            "sample": {
+              "id": "__cmp_entry_s0_Composite01_FlowCytometryImmunophenotyping_s31_event_stream",
+              "items": [],
+              "kind": "unit_stream_ref",
+              "panel_ref": {
+                "items": [
+                  "CD45",
+                  "CD3",
+                  "CD4",
+                  "LiveDead"
+                ],
+                "kind": "marker_panel_ref",
+                "label": "__cmp_entry_s0_acquisition_panel"
+              },
+              "source_ref": "container/entry/entry.s5%3A%3Aalloc/__cmp_entry_s0_isotype_tube",
+              "unit_kind": "single_cell"
+            },
+            "sample_ref": {
+              "id": "__cmp_entry_s0_Composite01_FlowCytometryImmunophenotyping_s31_event_stream",
+              "items": [],
+              "kind": "unit_stream_ref",
+              "panel_ref": {
+                "items": [
+                  "CD45",
+                  "CD3",
+                  "CD4",
+                  "LiveDead"
+                ],
+                "kind": "marker_panel_ref",
+                "label": "__cmp_entry_s0_acquisition_panel"
+              },
+              "source_ref": "container/entry/entry.s5%3A%3Aalloc/__cmp_entry_s0_isotype_tube",
+              "unit_kind": "single_cell"
+            },
+            "save_raw": true,
+            "status": "ok",
+            "step_id": "entry.s714",
+            "subject_ref": {
+              "id": "__cmp_entry_s0_Composite01_FlowCytometryImmunophenotyping_s31_event_stream",
+              "items": [],
+              "kind": "unit_stream_ref",
+              "panel_ref": {
+                "items": [
+                  "CD45",
+                  "CD3",
+                  "CD4",
+                  "LiveDead"
+                ],
+                "kind": "marker_panel_ref",
+                "label": "__cmp_entry_s0_acquisition_panel"
+              },
+              "source_ref": "container/entry/entry.s5%3A%3Aalloc/__cmp_entry_s0_isotype_tube",
+              "unit_kind": "single_cell"
+            }
+          },
+          {
+            "binding": "__cmp_entry_s0_single_cd45_readout",
+            "contract_kind": "customized",
+            "data_id": "entry.s723::data",
+            "data_kind": "observation",
+            "driver_payload": {
+              "op": "img",
+              "step_id": "entry.s723"
+            },
+            "export_refs": {
+              "driver_profile": {
+                "artifact_id": "entry.s723::data::raw",
+                "export_id": "entry.s723::data::driver_profile",
+                "format": "json",
+                "kind": "img",
+                "profile": "driver:DRV_OK"
+              }
+            },
+            "family": "img",
+            "gate": {
+              "entry_kind": "script",
+              "entry_name": "entry"
+            },
+            "kind": "data_ref",
+            "observation_id": "entry.s723::data",
+            "op": "img",
+            "program": null,
+            "program_kind": null,
+            "raw_artifact": {
+              "artifact_id": "entry.s723::data::raw",
+              "driver_code": "DRV_OK",
+              "op": "img",
+              "step_id": "entry.s723"
+            },
+            "resolved_sample": null,
+            "result": {
+              "acquisition_config_id": null,
+              "acquisition_qc_pass": null,
+              "cd3_raw_signal": null,
+              "cd45_raw_signal": null,
+              "cd4_raw_signal": null,
+              "channel": null,
+              "control_role": "single_stained_control",
+              "event_id": null,
+              "fsc_a": null,
+              "fsc_h": null,
+              "sample_id": "single_cd45",
+              "signal": null,
+              "ssc_a": null,
+              "viability_raw_signal": null
+            },
+            "sample": {
+              "id": "__cmp_entry_s0_Composite01_FlowCytometryImmunophenotyping_s32_event_stream",
+              "items": [],
+              "kind": "unit_stream_ref",
+              "panel_ref": {
+                "items": [
+                  "CD45",
+                  "CD3",
+                  "CD4",
+                  "LiveDead"
+                ],
+                "kind": "marker_panel_ref",
+                "label": "__cmp_entry_s0_acquisition_panel"
+              },
+              "source_ref": "container/entry/entry.s6%3A%3Aalloc/__cmp_entry_s0_single_cd45_tube",
+              "unit_kind": "single_cell"
+            },
+            "sample_ref": {
+              "id": "__cmp_entry_s0_Composite01_FlowCytometryImmunophenotyping_s32_event_stream",
+              "items": [],
+              "kind": "unit_stream_ref",
+              "panel_ref": {
+                "items": [
+                  "CD45",
+                  "CD3",
+                  "CD4",
+                  "LiveDead"
+                ],
+                "kind": "marker_panel_ref",
+                "label": "__cmp_entry_s0_acquisition_panel"
+              },
+              "source_ref": "container/entry/entry.s6%3A%3Aalloc/__cmp_entry_s0_single_cd45_tube",
+              "unit_kind": "single_cell"
+            },
+            "save_raw": true,
+            "status": "ok",
+            "step_id": "entry.s723",
+            "subject_ref": {
+              "id": "__cmp_entry_s0_Composite01_FlowCytometryImmunophenotyping_s32_event_stream",
+              "items": [],
+              "kind": "unit_stream_ref",
+              "panel_ref": {
+                "items": [
+                  "CD45",
+                  "CD3",
+                  "CD4",
+                  "LiveDead"
+                ],
+                "kind": "marker_panel_ref",
+                "label": "__cmp_entry_s0_acquisition_panel"
+              },
+              "source_ref": "container/entry/entry.s6%3A%3Aalloc/__cmp_entry_s0_single_cd45_tube",
+              "unit_kind": "single_cell"
+            }
+          },
+          {
+            "binding": "__cmp_entry_s0_single_cd3_readout",
+            "contract_kind": "customized",
+            "data_id": "entry.s732::data",
+            "data_kind": "observation",
+            "driver_payload": {
+              "op": "img",
+              "step_id": "entry.s732"
+            },
+            "export_refs": {
+              "driver_profile": {
+                "artifact_id": "entry.s732::data::raw",
+                "export_id": "entry.s732::data::driver_profile",
+                "format": "json",
+                "kind": "img",
+                "profile": "driver:DRV_OK"
+              }
+            },
+            "family": "img",
+            "gate": {
+              "entry_kind": "script",
+              "entry_name": "entry"
+            },
+            "kind": "data_ref",
+            "observation_id": "entry.s732::data",
+            "op": "img",
+            "program": null,
+            "program_kind": null,
+            "raw_artifact": {
+              "artifact_id": "entry.s732::data::raw",
+              "driver_code": "DRV_OK",
+              "op": "img",
+              "step_id": "entry.s732"
+            },
+            "resolved_sample": null,
+            "result": {
+              "acquisition_config_id": null,
+              "acquisition_qc_pass": null,
+              "cd3_raw_signal": null,
+              "cd45_raw_signal": null,
+              "cd4_raw_signal": null,
+              "channel": null,
+              "control_role": "single_stained_control",
+              "event_id": null,
+              "fsc_a": null,
+              "fsc_h": null,
+              "sample_id": "single_cd3",
+              "signal": null,
+              "ssc_a": null,
+              "viability_raw_signal": null
+            },
+            "sample": {
+              "id": "__cmp_entry_s0_Composite01_FlowCytometryImmunophenotyping_s33_event_stream",
+              "items": [],
+              "kind": "unit_stream_ref",
+              "panel_ref": {
+                "items": [
+                  "CD45",
+                  "CD3",
+                  "CD4",
+                  "LiveDead"
+                ],
+                "kind": "marker_panel_ref",
+                "label": "__cmp_entry_s0_acquisition_panel"
+              },
+              "source_ref": "container/entry/entry.s7%3A%3Aalloc/__cmp_entry_s0_single_cd3_tube",
+              "unit_kind": "single_cell"
+            },
+            "sample_ref": {
+              "id": "__cmp_entry_s0_Composite01_FlowCytometryImmunophenotyping_s33_event_stream",
+              "items": [],
+              "kind": "unit_stream_ref",
+              "panel_ref": {
+                "items": [
+                  "CD45",
+                  "CD3",
+                  "CD4",
+                  "LiveDead"
+                ],
+                "kind": "marker_panel_ref",
+                "label": "__cmp_entry_s0_acquisition_panel"
+              },
+              "source_ref": "container/entry/entry.s7%3A%3Aalloc/__cmp_entry_s0_single_cd3_tube",
+              "unit_kind": "single_cell"
+            },
+            "save_raw": true,
+            "status": "ok",
+            "step_id": "entry.s732",
+            "subject_ref": {
+              "id": "__cmp_entry_s0_Composite01_FlowCytometryImmunophenotyping_s33_event_stream",
+              "items": [],
+              "kind": "unit_stream_ref",
+              "panel_ref": {
+                "items": [
+                  "CD45",
+                  "CD3",
+                  "CD4",
+                  "LiveDead"
+                ],
+                "kind": "marker_panel_ref",
+                "label": "__cmp_entry_s0_acquisition_panel"
+              },
+              "source_ref": "container/entry/entry.s7%3A%3Aalloc/__cmp_entry_s0_single_cd3_tube",
+              "unit_kind": "single_cell"
+            }
+          },
+          {
+            "binding": "__cmp_entry_s0_single_cd4_readout",
+            "contract_kind": "customized",
+            "data_id": "entry.s741::data",
+            "data_kind": "observation",
+            "driver_payload": {
+              "op": "img",
+              "step_id": "entry.s741"
+            },
+            "export_refs": {
+              "driver_profile": {
+                "artifact_id": "entry.s741::data::raw",
+                "export_id": "entry.s741::data::driver_profile",
+                "format": "json",
+                "kind": "img",
+                "profile": "driver:DRV_OK"
+              }
+            },
+            "family": "img",
+            "gate": {
+              "entry_kind": "script",
+              "entry_name": "entry"
+            },
+            "kind": "data_ref",
+            "observation_id": "entry.s741::data",
+            "op": "img",
+            "program": null,
+            "program_kind": null,
+            "raw_artifact": {
+              "artifact_id": "entry.s741::data::raw",
+              "driver_code": "DRV_OK",
+              "op": "img",
+              "step_id": "entry.s741"
+            },
+            "resolved_sample": null,
+            "result": {
+              "acquisition_config_id": null,
+              "acquisition_qc_pass": null,
+              "cd3_raw_signal": null,
+              "cd45_raw_signal": null,
+              "cd4_raw_signal": null,
+              "channel": null,
+              "control_role": "single_stained_control",
+              "event_id": null,
+              "fsc_a": null,
+              "fsc_h": null,
+              "sample_id": "single_cd4",
+              "signal": null,
+              "ssc_a": null,
+              "viability_raw_signal": null
+            },
+            "sample": {
+              "id": "__cmp_entry_s0_Composite01_FlowCytometryImmunophenotyping_s34_event_stream",
+              "items": [],
+              "kind": "unit_stream_ref",
+              "panel_ref": {
+                "items": [
+                  "CD45",
+                  "CD3",
+                  "CD4",
+                  "LiveDead"
+                ],
+                "kind": "marker_panel_ref",
+                "label": "__cmp_entry_s0_acquisition_panel"
+              },
+              "source_ref": "container/entry/entry.s8%3A%3Aalloc/__cmp_entry_s0_single_cd4_tube",
+              "unit_kind": "single_cell"
+            },
+            "sample_ref": {
+              "id": "__cmp_entry_s0_Composite01_FlowCytometryImmunophenotyping_s34_event_stream",
+              "items": [],
+              "kind": "unit_stream_ref",
+              "panel_ref": {
+                "items": [
+                  "CD45",
+                  "CD3",
+                  "CD4",
+                  "LiveDead"
+                ],
+                "kind": "marker_panel_ref",
+                "label": "__cmp_entry_s0_acquisition_panel"
+              },
+              "source_ref": "container/entry/entry.s8%3A%3Aalloc/__cmp_entry_s0_single_cd4_tube",
+              "unit_kind": "single_cell"
+            },
+            "save_raw": true,
+            "status": "ok",
+            "step_id": "entry.s741",
+            "subject_ref": {
+              "id": "__cmp_entry_s0_Composite01_FlowCytometryImmunophenotyping_s34_event_stream",
+              "items": [],
+              "kind": "unit_stream_ref",
+              "panel_ref": {
+                "items": [
+                  "CD45",
+                  "CD3",
+                  "CD4",
+                  "LiveDead"
+                ],
+                "kind": "marker_panel_ref",
+                "label": "__cmp_entry_s0_acquisition_panel"
+              },
+              "source_ref": "container/entry/entry.s8%3A%3Aalloc/__cmp_entry_s0_single_cd4_tube",
+              "unit_kind": "single_cell"
+            }
+          }
+        ],
+        "kind": "data_group_ref",
+        "result": {},
+        "schema_ref": null
+      }
+    }
+  },
+  "schema": "culsma_run_output_v1"
+}
