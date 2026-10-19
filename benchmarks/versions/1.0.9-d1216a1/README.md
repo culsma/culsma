@@ -4,7 +4,7 @@ Release evaluation dated 2026-10-19 for Culsma 1.0.9, implementation
 `d1216a16f7adaa41ac0aac763a60c84bb7be3f64`. Python 3.12.8 and Lark 1.3.1.
 
 This snapshot retains the same seven modules, two composites, 173 source steps
-and counting rule as the [1.0.7 baseline](../../EVALUATION.md#historical-results-107).
+and counting rule as the [1.0.7 baseline](../../README.md#historical-runs-and-examples).
 Module 07 S37 uses whole-plate TAP with GENTLE. This run verifies the
 versioned 1.0.9 package metadata and implementation together.
 
@@ -47,12 +47,11 @@ From the repository root with Python 3.12.8 and Lark 1.3.1:
 
 ```sh
 git clone . /tmp/culsma-benchmark-runtime-1.0.9
-git -C /tmp/culsma-benchmark-runtime-1.0.9 checkout --detach d1216a16f7adaa41ac0aac763a60c84bb7be3f64
+git -C /tmp/culsma-benchmark-runtime-1.0.9 checkout v1.0.9
 python benchmarks/reproduce.py \
   --manifest benchmarks/versions/1.0.9-d1216a1/manifest.json \
   --runtime-repo /tmp/culsma-benchmark-runtime-1.0.9 \
   --output benchmarks/local-results/1.0.9-reproduction
 ```
 
-Use a fresh checkout and output directory. The runner verifies the exact runtime
-commit, clean source, dependency versions, input hashes and expected results.
+Use a fresh checkout and output directory. The runner verifies the pinned runtime code, clean source, dependency versions, input hashes and expected results.

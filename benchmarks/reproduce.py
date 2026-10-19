@@ -1,4 +1,4 @@
-"""Reproduce the versioned modular benchmark used in Patterns Section 3.5."""
+"""Reproduce versioned Culsma workflow benchmarks."""
 from __future__ import annotations
 import argparse
 import hashlib
@@ -154,8 +154,15 @@ def reproduce(runtime, output, update_readme=False, manifest_path=None):
     role = manifest.get('evaluation_role', 'paper')
     comparison_key = 'matches_paper' if role == 'paper' else 'matches_manifest'
     runtime = runtime.resolve()
-    if git(runtime, 'rev-parse', 'HEAD') != manifest['runtime_commit']:
-        raise ValueError('Runtime checkout must be at ' + manifest['runtime_commit'])
+    runtime_commit = git(runtime, 'rev-parse', 'HEAD')
+    if runtime_commit != manifest['runtime_commit']:
+        release = 'v' + manifest['runtime_package_version']
+        release_commit = git(runtime, 'rev-parse', release + '^{}')
+        if runtime_commit != release_commit or git(
+            runtime, 'diff', '--name-only', manifest['runtime_commit'], runtime_commit,
+            '--', 'src', 'pyproject.toml',
+        ):
+            raise ValueError('Runtime must match the pinned commit or its code-identical release tag')
     if git(runtime, 'status', '--porcelain', '--', 'src', 'pyproject.toml'):
         raise ValueError('Runtime source or package metadata has local changes')
     actual_files = {
@@ -181,7 +188,7 @@ def reproduce(runtime, output, update_readme=False, manifest_path=None):
         artifact = inputs / entry['path']
         target = output / entry['path'] / 'results'
         target.mkdir(parents=True)
-        coverage = assess(artifact, manifest['runtime_commit'], manifest['table_version'])
+        coverage = assess(artifact, runtime_commit, manifest['table_version'])
         write_json(target / 'coverage.json', coverage)
         command = [sys.executable, '-m', 'culsma', 'run', str(artifact / 'protocol.culs'),
                    '--output', str(target / 'run.json')]
@@ -211,7 +218,7 @@ def reproduce(runtime, output, update_readme=False, manifest_path=None):
     matched = sum(r['coverage']['matched_steps'] for r in rows)
     total = sum(r['coverage']['total_steps'] for r in rows)
     summary = {'schema': 'patterns-modular-run-v1' if role == 'paper' else 'patterns-modular-run-v2', 'source_commit': manifest['source_commit'],
-        'runtime_commit': manifest['runtime_commit'], 'python': platform.python_version(),
+        'runtime_commit': runtime_commit, 'pinned_runtime_commit': manifest['runtime_commit'], 'python': platform.python_version(),
         'versions': versions, 'table_version': manifest['table_version'],
         'manifest_sha256': digest(manifest_path),
         'runner_sha256': digest(Path(__file__)), 'input_sha256': manifest['input_sha256'],
@@ -231,18 +238,33 @@ def reproduce(runtime, output, update_readme=False, manifest_path=None):
     if update_readme:
         if not summary[comparison_key]:
             raise ValueError('README is not updated because the run differs from the manifest')
-        # The root overview compares versions; detailed tables live separately.
-        readme = inputs / 'EVALUATION.md'
-        if not readme.is_file():
-            readme = inputs / 'README.md'
+        readme = inputs / 'README.md'
         text = readme.read_text()
-        marker = 'paper-table' if role == 'paper' else 'benchmark-table'
-        start, end = f'<!-- {marker}:start -->', f'<!-- {marker}:end -->'
-        if text.count(start) != 1 or text.count(end) != 1 or text.index(start) > text.index(end):
-            raise ValueError(f'README requires one ordered pair of {marker} markers')
-        before, rest = text.split(start)
-        _, after = rest.split(end)
-        readme.write_text(before + start + '\n' + '\n'.join(table) + '\n' + end + after)
+        heading = f"Source-step coverage ({manifest['table_version']})"
+        if heading in text:
+            lines = text.splitlines()
+            header = next(line for line in lines if heading in line)
+            column = header.split('|').index(' ' + heading + ' ')
+            for row in rows:
+                link = f"]({row['artifact']}/source.md)"
+                indices = [i for i, line in enumerate(lines) if link in line and line.startswith('|')]
+                if len(indices) != 1:
+                    raise ValueError('Overview requires one row for ' + row['artifact'])
+                coverage = row['coverage']
+                percent = coverage['coverage_percent']
+                label = '100%' if percent == 100 else f'{percent:.1f}%'
+                cells = lines[indices[0]].split('|')
+                cells[column] = f" {coverage['matched_steps']}/{coverage['total_steps']} ({label}) "
+                lines[indices[0]] = '|'.join(cells)
+            readme.write_text('\n'.join(lines) + '\n')
+        else:
+            marker = 'paper-table' if role == 'paper' else 'benchmark-table'
+            start, end = f'<!-- {marker}:start -->', f'<!-- {marker}:end -->'
+            if text.count(start) != 1 or text.count(end) != 1 or text.index(start) > text.index(end):
+                raise ValueError(f'README requires one ordered pair of {marker} markers')
+            before, rest = text.split(start)
+            _, after = rest.split(end)
+            readme.write_text(before + start + '\n' + '\n'.join(table) + '\n' + end + after)
     return 0 if summary[comparison_key] else 1
 
 def main():
