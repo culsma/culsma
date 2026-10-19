@@ -18,7 +18,7 @@
     "severity": "warning",
     "span": {
       "col": 1,
-      "end": 3394,
+      "end": 3305,
       "line": 13,
       "start": 456
     }
@@ -30,9 +30,9 @@
     "severity": "warning",
     "span": {
       "col": 1,
-      "end": 5224,
-      "line": 75,
-      "start": 3396
+      "end": 5135,
+      "line": 74,
+      "start": 3307
     }
   },
   {
@@ -42,9 +42,9 @@
     "severity": "warning",
     "span": {
       "col": 1,
-      "end": 6543,
-      "line": 124,
-      "start": 5226
+      "end": 6454,
+      "line": 123,
+      "start": 5137
     }
   },
   {

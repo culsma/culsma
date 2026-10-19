@@ -100,9 +100,9 @@
               "name": "__cmp_entry_s0_RunQubitDsDnaHsQuantification_s5_QubitDsDnaHsBatch_s4_repeat_s0_dna_sample_assay",
               "span": {
                 "col": 14,
-                "end": 4792,
-                "line": 112,
-                "start": 4776
+                "end": 4703,
+                "line": 111,
+                "start": 4687
               }
             },
             "sample_ref": {
@@ -110,9 +110,9 @@
               "name": "__cmp_entry_s0_RunQubitDsDnaHsQuantification_s5_QubitDsDnaHsBatch_s4_repeat_s0_dna_sample_assay",
               "span": {
                 "col": 14,
-                "end": 4792,
-                "line": 112,
-                "start": 4776
+                "end": 4703,
+                "line": 111,
+                "start": 4687
               }
             },
             "save_raw": true,
@@ -123,9 +123,9 @@
               "name": "__cmp_entry_s0_RunQubitDsDnaHsQuantification_s5_QubitDsDnaHsBatch_s4_repeat_s0_dna_sample_assay",
               "span": {
                 "col": 14,
-                "end": 4792,
-                "line": 112,
-                "start": 4776
+                "end": 4703,
+                "line": 111,
+                "start": 4687
               }
             }
           }

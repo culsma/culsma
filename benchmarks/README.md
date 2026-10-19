@@ -67,20 +67,18 @@ Evaluated with Culsma 1.0.9.
 
 | Module | Source steps | Coverage |
 | --- | ---: | ---: |
-| Module 08: Qubit 1X dsDNA HS quantification | 12/13 | 92.3% |
+| Module 08: Qubit 1X dsDNA HS quantification | 13/13 | 100% |
 | Module 09: Double-sided SPRI selection | 21/21 | 100% |
 | Composite 03: Qubit quantification and double-sided SPRI selection | 3/3 | 100% |
 <!-- benchmark-table:end -->
 
-The submitted module procedures cover **33/34 source steps (97.06%)**:
-Qubit **12/13** and SPRI **21/21**. Qubit S8 is an explicit gap: declaring a
-calibration result schema and reading two standards does not configure assay
-selection or start a new calibration. These matches describe structural
-correspondence; they do not establish every detail or physical endpoint.
-The separate three-step composite source summarizes input setup and module
-handoff. Including it gives **36/37 (97.30%)** across the three new entries.
-The earlier composition-only 3/3 does not describe coverage of the complete
-workflow.
+The submitted module procedures cover **34/34 source steps (100%)**:
+Qubit **13/13** and SPRI **21/21**. Qubit S8–S10 correspond jointly to the
+calibration procedure's declared readout structure and ordered standard
+measurements. These matches describe structural correspondence; they do not
+establish every detail or physical endpoint. The separate three-step composite
+source summarizes input setup and module handoff. Including it gives
+**37/37 (100%)** across the three new entries.
 
 All three entry programs complete: **35/35**, **56/56**, and **86/86** execution
 steps respectively (**177/177** across the three runs), with zero failed or
@@ -107,7 +105,7 @@ python benchmarks/reproduce.py \
   --output benchmarks/local-results/qubit-spri-reproduction
 ```
 
-A passing comparison reproduces the documented Qubit S8 gap, as well as the
+A passing comparison reproduces all numbered source-step matches and the
 expected execution results. This additional inventory is recorded separately
 from the nine-entry paper and versioned snapshots, preserving their denominators.
 

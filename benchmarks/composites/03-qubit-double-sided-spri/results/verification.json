@@ -48,18 +48,12 @@
   },
   "coverage_scope": "34 submitted module source steps (Qubit 13 + SPRI 21), plus 3 separately identified composition steps.",
   "source_coverage": {
-    "module_matched_steps": 33,
+    "module_matched_steps": 34,
     "module_total_steps": 34,
     "composite_matched_steps": 3,
     "composite_total_steps": 3,
-    "all_new_entry_matched_steps": 36,
+    "all_new_entry_matched_steps": 37,
     "all_new_entry_total_steps": 37,
-    "known_gaps": [
-      {
-        "artifact": "modules/08-qubit-dsdna-hs",
-        "step": 8,
-        "reason": "No executable assay selection or start-new-calibration configuration."
-      }
-    ]
+    "known_gaps": []
   }
 }

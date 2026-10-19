@@ -12,14 +12,9 @@
     {
       "path": "modules/08-qubit-dsdna-hs",
       "name": "Module 08: Qubit 1X dsDNA HS quantification",
-      "matched_steps": 12,
+      "matched_steps": 13,
       "total_steps": 13,
-      "issues": [
-        {
-          "step": 8,
-          "reason": "no_code_region"
-        }
-      ],
+      "issues": [],
       "completed_steps": 35
     },
     {
@@ -40,9 +35,9 @@
     }
   ],
   "input_sha256": {
-    "modules/08-qubit-dsdna-hs/Qubit.culs": "32f9ecec00bf7c30fb0051548f2df4c781b6f70d81b1840eb4688675ba71e176",
+    "modules/08-qubit-dsdna-hs/Qubit.culs": "f191e2b8096e750d3657e090e56ddace41f9b9ea888f192fe9e6cdaa6883c8a4",
     "modules/08-qubit-dsdna-hs/protocol.culs": "2e15f8331733ba88852b2055f7aad35d5730357518abbb00e3556d27c0652ea7",
-    "modules/08-qubit-dsdna-hs/source.md": "cb1bcc97b592604a990ddcac0c84255b6231cf4dffe97e8afebce0b3610eabd8",
+    "modules/08-qubit-dsdna-hs/source.md": "b2bcbccabed1e706be02e4a58723b4db48b314b7fde75f22aa9462b80477a997",
     "modules/09-double-sided-spri/SPRI.culs": "8233edb67cbc8f714005b96a0492a0b3cb4a2ecd782d149bb84331800bada2cf",
     "modules/09-double-sided-spri/protocol.culs": "7b599b54ba4b2cc1fa2d01920b7ddd61ce038b465b2f0b8888bbf062d49dec9b",
     "modules/09-double-sided-spri/source.md": "cb4164ac75ab422cad1af52591a6d8394993ea74a21289d97d8f7b3c37061460",

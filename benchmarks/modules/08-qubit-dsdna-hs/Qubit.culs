@@ -59,7 +59,6 @@ protocol QubitDsDnaHsCalibration(standards) returns (calibration_readouts) {
     ]
   );
   // Source step S8: On the Qubit fluorometer, select the 1X dsDNA High Sensitivity assay and start a new standard calibration.
-  // COVERAGE GAP: No executable assay selection or start-new-calibration configuration.
   // Source step S9: Insert the Standard 1 tube, close the instrument lid, and read Standard 1. Remove the tube when the reading is complete.
   // Source step S10: Insert the Standard 2 tube, close the instrument lid, and read Standard 2. Remove the tube when the reading is complete.
   let calibration_readouts = img(

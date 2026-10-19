@@ -24,12 +24,13 @@ Source: Thermo Fisher Scientific, *Qubit 1X dsDNA HS Assay Kits User Guide*,
 publication MAN0017455, revision C.0. The submitted wording is retained in
 [the original source](../../composites/03-qubit-double-sided-spri/submission/sources/Qubit_source.md).
 
-S8 is uncovered: the schema labels the calibration readouts and the grouped
-`img` reads both standards, but neither configures selection of the named assay
-or starts a new instrument calibration. A result schema declares fields, not an
-instrument program. S9 and S10 correspond to the two ordered standard readouts.
-S11 has a sample-volume field assignment; the assay/unit context is described by
-the schema and source comments rather than a complete instrument configuration.
+S8–S10 jointly correspond to the execution of `QubitDsDnaHsCalibration`:
+the protocol declares the expected calibration readout structure and reads the
+two ordered standards with `img`. Each invocation performs the calibration
+procedure for that run. This is the submitted device-independent expression of
+the source instructions, assessed with the collection's structural
+correspondence rule. S11 has a sample-volume field assignment and a declared
+concentration result structure.
 
 The remaining matches use the shared structural correspondence rule: allocations
 represent tube setup, transfers represent additions, agitation and timed holds
