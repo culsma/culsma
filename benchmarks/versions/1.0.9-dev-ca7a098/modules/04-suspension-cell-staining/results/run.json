@@ -1,0 +1,331 @@
+{
+  "ok": true,
+  "report": {
+    "alerts": [],
+    "execution": {
+      "completed_steps": 552,
+      "diagnostic_count": 0,
+      "failed_steps": 0,
+      "ok": true,
+      "skipped_steps": 0,
+      "total_steps": 552
+    },
+    "external_inventory": {
+      "checked": false,
+      "items": [],
+      "reason": "inventory_not_supplied",
+      "schema": "culsma_inventory_reconciliation_v1",
+      "shortages": [],
+      "sufficient": null
+    },
+    "headline": "Experiment completed successfully with no runtime errors.",
+    "materials": {
+      "final_products": [
+        {
+          "mass_mg": 50999.15,
+          "name": "SuspensionCellStainingWaste",
+          "primary_component": "FC_BLOCK",
+          "volume_mL": 50.99915,
+          "volume_uL": 50999.15
+        },
+        {
+          "count_cells": 1000000.0,
+          "mass_mg": 500.25,
+          "name": "FullyStainedSample",
+          "primary_component": "PBMC",
+          "volume_mL": 0.50025,
+          "volume_uL": 500.25
+        },
+        {
+          "count_cells": 1000000.0,
+          "mass_mg": 500.25,
+          "name": "IsotypeControlPanel",
+          "primary_component": "PBMC",
+          "volume_mL": 0.50025,
+          "volume_uL": 500.25
+        },
+        {
+          "count_cells": 1000000.0,
+          "mass_mg": 500.1,
+          "name": "SingleAntibodyControlCD45",
+          "primary_component": "PBMC",
+          "volume_mL": 0.5001,
+          "volume_uL": 500.1
+        },
+        {
+          "count_cells": 1000000.0,
+          "mass_mg": 500.1,
+          "name": "SingleAntibodyControlCD3",
+          "primary_component": "PBMC",
+          "volume_mL": 0.5001,
+          "volume_uL": 500.1
+        },
+        {
+          "count_cells": 1000000.0,
+          "mass_mg": 500.1,
+          "name": "SingleAntibodyControlCD4",
+          "primary_component": "PBMC",
+          "volume_mL": 0.5001,
+          "volume_uL": 500.1
+        },
+        {
+          "count_cells": 1000000.0,
+          "mass_mg": 500.05,
+          "name": "UnstainedControl",
+          "primary_component": "PBMC",
+          "volume_mL": 0.50005,
+          "volume_uL": 500.05
+        }
+      ],
+      "has_material_state": true,
+      "input_inventory": [
+        {
+          "initial_mL": 51.515,
+          "initial_mg": 0.0,
+          "initial_uL": 51515.0,
+          "name": "FlowStainingBuffer"
+        },
+        {
+          "initial_mL": 1.62,
+          "initial_mg": 0.0,
+          "initial_uL": 1620.0,
+          "name": "FixationPBS"
+        },
+        {
+          "initial_cells": 6000000.0,
+          "initial_mL": 0.6,
+          "initial_mg": 0.0,
+          "initial_uL": 600.0,
+          "name": "InputPBMCSuspension"
+        },
+        {
+          "initial_mL": 0.18,
+          "initial_mg": 0.0,
+          "initial_uL": 180.0,
+          "name": "FixationBuffer10X"
+        },
+        {
+          "initial_mL": 0.03,
+          "initial_mg": 0.0,
+          "initial_uL": 30.0,
+          "name": "HumanFcBlock"
+        },
+        {
+          "initial_mL": 0.01,
+          "initial_mg": 0.0,
+          "initial_uL": 10.0,
+          "name": "AntiCD3PE"
+        },
+        {
+          "initial_mL": 0.01,
+          "initial_mg": 0.0,
+          "initial_uL": 10.0,
+          "name": "AntiCD45FITC"
+        },
+        {
+          "initial_mL": 0.01,
+          "initial_mg": 0.0,
+          "initial_uL": 10.0,
+          "name": "AntiCD4Cy5"
+        },
+        {
+          "initial_mL": 0.01,
+          "initial_mg": 0.0,
+          "initial_uL": 10.0,
+          "name": "LiveDeadViabilityDye"
+        },
+        {
+          "initial_mL": 0.005,
+          "initial_mg": 0.0,
+          "initial_uL": 5.0,
+          "name": "IsotypeCy5"
+        },
+        {
+          "initial_mL": 0.005,
+          "initial_mg": 0.0,
+          "initial_uL": 5.0,
+          "name": "IsotypeFITC"
+        },
+        {
+          "initial_mL": 0.005,
+          "initial_mg": 0.0,
+          "initial_uL": 5.0,
+          "name": "IsotypePE"
+        }
+      ],
+      "intermediate_materials": [],
+      "reagent_consumption": [
+        {
+          "consumed_mL": 51.515,
+          "consumed_mg": null,
+          "consumed_uL": 51515.0,
+          "name": "FlowStainingBuffer",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 1.62,
+          "consumed_mg": null,
+          "consumed_uL": 1620.0,
+          "name": "FixationPBS",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_cells": 6000000.0,
+          "consumed_mL": 0.6,
+          "consumed_mg": null,
+          "consumed_uL": 600.0,
+          "name": "InputPBMCSuspension",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.18,
+          "consumed_mg": null,
+          "consumed_uL": 180.0,
+          "name": "FixationBuffer10X",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.03,
+          "consumed_mg": null,
+          "consumed_uL": 30.0,
+          "name": "HumanFcBlock",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.01,
+          "consumed_mg": null,
+          "consumed_uL": 10.0,
+          "name": "AntiCD3PE",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.01,
+          "consumed_mg": null,
+          "consumed_uL": 10.0,
+          "name": "AntiCD45FITC",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.01,
+          "consumed_mg": null,
+          "consumed_uL": 10.0,
+          "name": "AntiCD4Cy5",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.01,
+          "consumed_mg": null,
+          "consumed_uL": 10.0,
+          "name": "LiveDeadViabilityDye",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.005,
+          "consumed_mg": null,
+          "consumed_uL": 5.0,
+          "name": "IsotypeCy5",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.005,
+          "consumed_mg": null,
+          "consumed_uL": 5.0,
+          "name": "IsotypeFITC",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.005,
+          "consumed_mg": null,
+          "consumed_uL": 5.0,
+          "name": "IsotypePE",
+          "roles": [
+            "source"
+          ]
+        }
+      ]
+    },
+    "process_summary": {
+      "environment_steps": 24,
+      "mutation_steps": 451,
+      "readout_steps": 0,
+      "separation_steps": 24
+    },
+    "qc_results": [],
+    "resource_summary": {
+      "containers": {
+        "allocated_count": 26,
+        "container_kinds": [
+          {
+            "count": 26,
+            "kind": "tube"
+          }
+        ],
+        "touched_count": 26,
+        "touched_names": [
+          "AntiCD3PE",
+          "AntiCD45FITC",
+          "AntiCD4Cy5",
+          "FixationBuffer10X",
+          "FixationBuffer1X",
+          "FixationPBS",
+          "FlowStainingBuffer",
+          "FullAntibodyPanel",
+          "FullyStainedSample",
+          "HumanFcBlock",
+          "InputPBMCSuspension",
+          "IsotypeControlPanel",
+          "IsotypeControlPanel",
+          "IsotypeCy5",
+          "IsotypeFITC",
+          "IsotypePE",
+          "LiveDeadViabilityDye",
+          "SingleAntibodyControlCD3",
+          "SingleAntibodyControlCD4",
+          "SingleAntibodyControlCD45",
+          "SingleCD3Reagent",
+          "SingleCD45Reagent",
+          "SingleCD4Reagent",
+          "SuspensionCellStainingWaste",
+          "UnstainedControl",
+          "UnstainedControlReagent"
+        ]
+      },
+      "instruments": {
+        "devices": [],
+        "tools": []
+      }
+    },
+    "schema": "lab_report_v1"
+  },
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": []
+    }
+  },
+  "schema": "culsma_run_output_v1"
+}

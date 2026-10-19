@@ -1,0 +1,383 @@
+{
+  "schema": "patterns-modular-run-v2",
+  "source_commit": "f7b744e8efbafd9176a5b4fa07761358a4aee214",
+  "runtime_commit": "ca7a0984d0b5b0d47a63c39725d8f70529961687",
+  "python": "3.12.8",
+  "versions": {
+    "culsma": "1.0.8",
+    "lark": "1.3.1"
+  },
+  "table_version": "1.0.9-dev",
+  "manifest_sha256": "3f1ecc10d3e81690a554b61eee61bb6a8753ebf98679f6f8bcd236d1334cfdc4",
+  "runner_sha256": "342eae152a1de42ab5253b4db74a8f6b649163926eef6ebc93d3ef7362aba7a7",
+  "input_sha256": {
+    "modules/01-cell-transfection/protocol.culs": "8d41432d25b48fb0243da6894c4a94cea9c2823ab5da62f3e8211ffa5df7fd19",
+    "modules/01-cell-transfection/source.md": "f6469969054b859cc804859008213dbde21ddb00d7dba4cc04c0502ec4f73ec0",
+    "modules/02-selective-plating-candidate-colony-isolation/protocol.culs": "50b2540012ff59f5a4741a4b71fc25e46e4e0bcbeb2d8ca309244729d99ba066",
+    "modules/02-selective-plating-candidate-colony-isolation/source.md": "e5435bd242807c625302bf0680c4c6b12904ae22b075675cedad2ce35eb63dfb",
+    "modules/03-cell-lysate-preparation/protocol.culs": "13f04c12560f152aeeaf0c19466869b81b22637889e1ea5eaeef6d6f09ab809f",
+    "modules/03-cell-lysate-preparation/source.md": "82b74d75d92bbeaae835c7196c39b7c50dbbe252172591d8c75860e92afc0249",
+    "modules/04-suspension-cell-staining/Module04.culs": "d313d40ca63ca452cffc7957c608469aa769a3a9c2c6fd668a21842ecda590c0",
+    "modules/04-suspension-cell-staining/protocol.culs": "ea6bb253b5e17ef5573554facce9aaefa112ec0af9468ce297fadbb7da436f60",
+    "modules/04-suspension-cell-staining/source.md": "af891f53ec8aeb3a4c35ac34d5ade079cde2ed5ed115f1cf6ef23bad50c73444",
+    "modules/05-magnetic-bead-immunoprecipitation/Module05.culs": "5ffc962fa6d234f5270c2fbed28a7733d6aff547ed42549a4f2a5265b552675b",
+    "modules/05-magnetic-bead-immunoprecipitation/protocol.culs": "b24661756c02dd86aad9395f4c4e632d7632acaeb94f5c32d38fb3add30b8dbf",
+    "modules/05-magnetic-bead-immunoprecipitation/source.md": "7b327d0e1f56da2c3733b580953b60941828ab3e574f93fad9232de3b71dfd95",
+    "modules/06-western-blot/Module06.culs": "c9ae2c74a93588dbfcd1ac08b36d139da6d1edb955ad7e9be4df01d8b90c7189",
+    "modules/06-western-blot/protocol.culs": "741bb0247c30247bc7e38bc2b6471e8f4031fd8f78ab507eedfea95863290c20",
+    "modules/06-western-blot/source.md": "7d56da32ad704ae13cc62c2e0fc8d152b390ad49212fd5b0ae00c0a6712bf1fb",
+    "modules/06-western-blot/two-lane-gfp.culs": "679511255d62a23cbf334b2e35a083a48d2b1d2ffde9ecf75802fa7fb59f0bd4",
+    "modules/07-sandwich-elisa/protocol.culs": "e9e4e70dc37103d79bd35ca80d256e81df6c616df52d177d0ab1c30a390edf64",
+    "modules/07-sandwich-elisa/source.md": "fbd40a4f9851eff8f3817396f80c77951b10a7ad9ac75d43e21e8e9910482192",
+    "composites/01-flow-cytometry-immunophenotyping/protocol.culs": "d3d0e26552879e08dec3c52abb493f37af51f390f28ac912d545f0e273925728",
+    "composites/01-flow-cytometry-immunophenotyping/source.md": "b4df60eece954847ea3a727564d273bfa2ca6f91ffeab016ff58e67de21508a1",
+    "composites/02-magnetic-bead-ip-western-blot/protocol.culs": "1563a21f7239d5231cc416ca35124b24f9b550eb46ca5c5eaba9ed9a2693d8b2",
+    "composites/02-magnetic-bead-ip-western-blot/source.md": "2d0e46ea6972dbdebab8131353df38a087791b958910ce18591abd96483910f9"
+  },
+  "matched_steps": 173,
+  "total_steps": 173,
+  "coverage_percent": 100.0,
+  "matches_manifest": true,
+  "artifacts": [
+    {
+      "artifact": "modules/01-cell-transfection",
+      "name": "Module 01: Cell transfection",
+      "coverage": {
+        "schema": "modular-source-coverage-v1",
+        "rules": "modular-source-step-correspondence-v1",
+        "metric": "source_step_correspondence",
+        "artifact": "01-cell-transfection",
+        "implementation": "ca7a0984d0b5b0d47a63c39725d8f70529961687",
+        "language_version": "1.0.9-dev",
+        "source_sha256": "f6469969054b859cc804859008213dbde21ddb00d7dba4cc04c0502ec4f73ec0",
+        "program_sha256": {
+          "protocol.culs": "8d41432d25b48fb0243da6894c4a94cea9c2823ab5da62f3e8211ffa5df7fd19"
+        },
+        "total_steps": 13,
+        "matched_steps": 13,
+        "coverage_percent": 100.0,
+        "status": "pass",
+        "issues": []
+      },
+      "execution": {
+        "completed_steps": 64,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 64
+      },
+      "matches_manifest": true,
+      "output_sha256": {
+        "results.json": "358ffb24dad611e7e3f0af82e167adf24c2fe0db567ec9b98d4ed0fbe4899cfb",
+        "stderr.txt": "4781ceca87fdc6ecafe44a052791bebdd9d4fd6b688c7896bd5f180badf043f4",
+        "coverage.json": "6ec3cdcf265076f6c6614babcdd871e7752f915f4db0b06b3b7960931e415c85",
+        "results.stderr.txt": "4781ceca87fdc6ecafe44a052791bebdd9d4fd6b688c7896bd5f180badf043f4",
+        "run.json": "8bf529257d8117c5d71fb4d5e7d40341dabf2847ee7ec401897c9f73ad82f4ad"
+      }
+    },
+    {
+      "artifact": "modules/02-selective-plating-candidate-colony-isolation",
+      "name": "Module 02: Selective plating and colony isolation",
+      "coverage": {
+        "schema": "modular-source-coverage-v1",
+        "rules": "modular-source-step-correspondence-v1",
+        "metric": "source_step_correspondence",
+        "artifact": "02-selective-plating-candidate-colony-isolation",
+        "implementation": "ca7a0984d0b5b0d47a63c39725d8f70529961687",
+        "language_version": "1.0.9-dev",
+        "source_sha256": "e5435bd242807c625302bf0680c4c6b12904ae22b075675cedad2ce35eb63dfb",
+        "program_sha256": {
+          "protocol.culs": "50b2540012ff59f5a4741a4b71fc25e46e4e0bcbeb2d8ca309244729d99ba066"
+        },
+        "total_steps": 12,
+        "matched_steps": 12,
+        "coverage_percent": 100.0,
+        "status": "pass",
+        "issues": []
+      },
+      "execution": {
+        "completed_steps": 71,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 71
+      },
+      "matches_manifest": true,
+      "output_sha256": {
+        "results.json": "2f8c431dbaa5ba8eeea0d7e275c58f41c3184b1d92e2ff3a9b8ef20911353555",
+        "stderr.txt": "920d7cbf2e9a36f03ec102ad70b2f128adcb3447b8bba6684e77bf4762f78527",
+        "coverage.json": "c9b0474ae3061bcd11b4b20e6936d409d1a76359e0ceab99859db660e8e71f06",
+        "results.stderr.txt": "920d7cbf2e9a36f03ec102ad70b2f128adcb3447b8bba6684e77bf4762f78527",
+        "run.json": "b70758f90defe6417776c0d56f7eff02a9801e4b076f8ddf0bc2da2abefa3f77"
+      }
+    },
+    {
+      "artifact": "modules/03-cell-lysate-preparation",
+      "name": "Module 03: Cell lysate preparation",
+      "coverage": {
+        "schema": "modular-source-coverage-v1",
+        "rules": "modular-source-step-correspondence-v1",
+        "metric": "source_step_correspondence",
+        "artifact": "03-cell-lysate-preparation",
+        "implementation": "ca7a0984d0b5b0d47a63c39725d8f70529961687",
+        "language_version": "1.0.9-dev",
+        "source_sha256": "82b74d75d92bbeaae835c7196c39b7c50dbbe252172591d8c75860e92afc0249",
+        "program_sha256": {
+          "protocol.culs": "13f04c12560f152aeeaf0c19466869b81b22637889e1ea5eaeef6d6f09ab809f"
+        },
+        "total_steps": 10,
+        "matched_steps": 10,
+        "coverage_percent": 100.0,
+        "status": "pass",
+        "issues": []
+      },
+      "execution": {
+        "completed_steps": 44,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 44
+      },
+      "matches_manifest": true,
+      "output_sha256": {
+        "results.json": "175800a772ac30c1f7e2a48ed599f598dc41ed985267075701bbf6172d9cee26",
+        "stderr.txt": "d514244434cc93409deff3e01d71e640fe7d0fd24ddc46d7d8d530c48239c93b",
+        "coverage.json": "1a9b8d1cbc78bcc5b4cf2e06ca0776d7ef24e4f634a368ed1cc84aae3f12e17b",
+        "results.stderr.txt": "d514244434cc93409deff3e01d71e640fe7d0fd24ddc46d7d8d530c48239c93b",
+        "run.json": "e215b09d9553bb71417b2f98036618d1545ef308aae39155234353c45ff4acfd"
+      }
+    },
+    {
+      "artifact": "modules/04-suspension-cell-staining",
+      "name": "Module 04: Suspension-cell staining",
+      "coverage": {
+        "schema": "modular-source-coverage-v1",
+        "rules": "modular-source-step-correspondence-v1",
+        "metric": "source_step_correspondence",
+        "artifact": "04-suspension-cell-staining",
+        "implementation": "ca7a0984d0b5b0d47a63c39725d8f70529961687",
+        "language_version": "1.0.9-dev",
+        "source_sha256": "af891f53ec8aeb3a4c35ac34d5ade079cde2ed5ed115f1cf6ef23bad50c73444",
+        "program_sha256": {
+          "Module04.culs": "d313d40ca63ca452cffc7957c608469aa769a3a9c2c6fd668a21842ecda590c0",
+          "protocol.culs": "ea6bb253b5e17ef5573554facce9aaefa112ec0af9468ce297fadbb7da436f60"
+        },
+        "total_steps": 29,
+        "matched_steps": 29,
+        "coverage_percent": 100.0,
+        "status": "pass",
+        "issues": []
+      },
+      "execution": {
+        "completed_steps": 552,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 552
+      },
+      "matches_manifest": true,
+      "output_sha256": {
+        "results.json": "5079fd65cb0328153628526ef22f5894e94bce4aac1d80f39ee39cff9fa15abe",
+        "stderr.txt": "98a277b10641c89d6bb874ada0bb0bb8aff3fa22548512b32c0eee488018dbe8",
+        "coverage.json": "eb290d82c67ac3d235b950971d91e7631120585e5c5de5ff7fd0d9b5fe117f8a",
+        "results.stderr.txt": "98a277b10641c89d6bb874ada0bb0bb8aff3fa22548512b32c0eee488018dbe8",
+        "run.json": "2378bac6f916879329472ec17ef3c91fb1fccc369f0f1df3428f8ae5f6bd78bd"
+      }
+    },
+    {
+      "artifact": "modules/05-magnetic-bead-immunoprecipitation",
+      "name": "Module 05: Magnetic-bead immunoprecipitation",
+      "coverage": {
+        "schema": "modular-source-coverage-v1",
+        "rules": "modular-source-step-correspondence-v1",
+        "metric": "source_step_correspondence",
+        "artifact": "05-magnetic-bead-immunoprecipitation",
+        "implementation": "ca7a0984d0b5b0d47a63c39725d8f70529961687",
+        "language_version": "1.0.9-dev",
+        "source_sha256": "7b327d0e1f56da2c3733b580953b60941828ab3e574f93fad9232de3b71dfd95",
+        "program_sha256": {
+          "Module05.culs": "5ffc962fa6d234f5270c2fbed28a7733d6aff547ed42549a4f2a5265b552675b",
+          "protocol.culs": "b24661756c02dd86aad9395f4c4e632d7632acaeb94f5c32d38fb3add30b8dbf"
+        },
+        "total_steps": 23,
+        "matched_steps": 23,
+        "coverage_percent": 100.0,
+        "status": "pass",
+        "issues": []
+      },
+      "execution": {
+        "completed_steps": 115,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 115
+      },
+      "matches_manifest": true,
+      "output_sha256": {
+        "results.json": "fe39c31babb94c1a2e2afa00c52d15faf9f1c2e2bc9c387c97a68649ca8a875a",
+        "stderr.txt": "5fbc33822ced407af9aafc1f2d923f30d8bcd8e9d79d5b24bc9d1e8b5337e06d",
+        "coverage.json": "daf0777be56405a00fdd9f716e12b922ca721137d4475f20beac826ea2459367",
+        "results.stderr.txt": "5fbc33822ced407af9aafc1f2d923f30d8bcd8e9d79d5b24bc9d1e8b5337e06d",
+        "run.json": "35b15e347c283d5fca7b4afe0a87cb56be05b232ed63993748cfe56c88071dbd"
+      }
+    },
+    {
+      "artifact": "modules/06-western-blot",
+      "name": "Module 06: Western blot",
+      "coverage": {
+        "schema": "modular-source-coverage-v1",
+        "rules": "modular-source-step-correspondence-v1",
+        "metric": "source_step_correspondence",
+        "artifact": "06-western-blot",
+        "implementation": "ca7a0984d0b5b0d47a63c39725d8f70529961687",
+        "language_version": "1.0.9-dev",
+        "source_sha256": "7d56da32ad704ae13cc62c2e0fc8d152b390ad49212fd5b0ae00c0a6712bf1fb",
+        "program_sha256": {
+          "Module06.culs": "c9ae2c74a93588dbfcd1ac08b36d139da6d1edb955ad7e9be4df01d8b90c7189",
+          "protocol.culs": "741bb0247c30247bc7e38bc2b6471e8f4031fd8f78ab507eedfea95863290c20",
+          "two-lane-gfp.culs": "679511255d62a23cbf334b2e35a083a48d2b1d2ffde9ecf75802fa7fb59f0bd4"
+        },
+        "total_steps": 32,
+        "matched_steps": 32,
+        "coverage_percent": 100.0,
+        "status": "pass",
+        "issues": []
+      },
+      "execution": {
+        "completed_steps": 144,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 144
+      },
+      "matches_manifest": true,
+      "output_sha256": {
+        "results.json": "6f10615bc9fd147b5f6cd8566a01622bdd300e918f16dfaf4efef7845e4931e8",
+        "stderr.txt": "8eb0284934262a14f8e611dad66fc6a85ac0400b5d1131d65d878a64a3bf4140",
+        "coverage.json": "2f4ce092bb0c325f48f441bac6531f1affd83078eb005a92b3d02f06571ce1ce",
+        "results.stderr.txt": "8eb0284934262a14f8e611dad66fc6a85ac0400b5d1131d65d878a64a3bf4140",
+        "run.json": "86d205c2a966f44405a8ca01b14ab8c1e74949e167b32b02b3a5d61cc92f9c77"
+      }
+    },
+    {
+      "artifact": "modules/07-sandwich-elisa",
+      "name": "Module 07: Sandwich ELISA",
+      "coverage": {
+        "schema": "modular-source-coverage-v1",
+        "rules": "modular-source-step-correspondence-v1",
+        "metric": "source_step_correspondence",
+        "artifact": "07-sandwich-elisa",
+        "implementation": "ca7a0984d0b5b0d47a63c39725d8f70529961687",
+        "language_version": "1.0.9-dev",
+        "source_sha256": "fbd40a4f9851eff8f3817396f80c77951b10a7ad9ac75d43e21e8e9910482192",
+        "program_sha256": {
+          "protocol.culs": "e9e4e70dc37103d79bd35ca80d256e81df6c616df52d177d0ab1c30a390edf64"
+        },
+        "total_steps": 42,
+        "matched_steps": 42,
+        "coverage_percent": 100.0,
+        "status": "pass",
+        "issues": []
+      },
+      "execution": {
+        "completed_steps": 834,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 834
+      },
+      "matches_manifest": true,
+      "output_sha256": {
+        "results.json": "2075a3d27ad8aec9a3c0fe632bb72e0eafcdd6498e9d27e270cebd6922c50a4c",
+        "stderr.txt": "ad8ed973841c75842f2f369be4a3377a3a48bf3a5c65fee369f22a56c8a031ee",
+        "coverage.json": "cbe99aaf73f67bff03d079786f251cf376e5a260f5a1942b8de3624fdee213ae",
+        "results.stderr.txt": "ad8ed973841c75842f2f369be4a3377a3a48bf3a5c65fee369f22a56c8a031ee",
+        "run.json": "aad596ba0da07745d4edca4feb4340391bbbfc4744765b82de93c090c8428224"
+      }
+    },
+    {
+      "artifact": "composites/01-flow-cytometry-immunophenotyping",
+      "name": "Composite 01: Flow-cytometry immunophenotyping",
+      "coverage": {
+        "schema": "modular-source-coverage-v1",
+        "rules": "modular-source-step-correspondence-v1",
+        "metric": "source_step_correspondence",
+        "artifact": "01-flow-cytometry-immunophenotyping",
+        "implementation": "ca7a0984d0b5b0d47a63c39725d8f70529961687",
+        "language_version": "1.0.9-dev",
+        "source_sha256": "b4df60eece954847ea3a727564d273bfa2ca6f91ffeab016ff58e67de21508a1",
+        "program_sha256": {
+          "protocol.culs": "d3d0e26552879e08dec3c52abb493f37af51f390f28ac912d545f0e273925728"
+        },
+        "total_steps": 5,
+        "matched_steps": 5,
+        "coverage_percent": 100.0,
+        "status": "pass",
+        "issues": []
+      },
+      "execution": {
+        "completed_steps": 608,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 608
+      },
+      "matches_manifest": true,
+      "output_sha256": {
+        "results.json": "9967f5ce4b7d40fa12433869f19c43ddfd7518007b653fdcf53bbd894a32a08c",
+        "stderr.txt": "f2e41ee2ac7b7ae966b91eea64eb121cc020a18a67ac67d096cc782c27560799",
+        "coverage.json": "e87089f61a20d56dcec82390b052a8f307679bc3d95726a7db2c6f2198f914dc",
+        "results.stderr.txt": "f2e41ee2ac7b7ae966b91eea64eb121cc020a18a67ac67d096cc782c27560799",
+        "run.json": "a917bf426016c4fac5a6da760af5f15e0e8984a77c1ea63b9bca4d35e9d50d77"
+      }
+    },
+    {
+      "artifact": "composites/02-magnetic-bead-ip-western-blot",
+      "name": "Composite 02: Magnetic-bead IP with Western blot",
+      "coverage": {
+        "schema": "modular-source-coverage-v1",
+        "rules": "modular-source-step-correspondence-v1",
+        "metric": "source_step_correspondence",
+        "artifact": "02-magnetic-bead-ip-western-blot",
+        "implementation": "ca7a0984d0b5b0d47a63c39725d8f70529961687",
+        "language_version": "1.0.9-dev",
+        "source_sha256": "2d0e46ea6972dbdebab8131353df38a087791b958910ce18591abd96483910f9",
+        "program_sha256": {
+          "protocol.culs": "1563a21f7239d5231cc416ca35124b24f9b550eb46ca5c5eaba9ed9a2693d8b2"
+        },
+        "total_steps": 7,
+        "matched_steps": 7,
+        "coverage_percent": 100.0,
+        "status": "pass",
+        "issues": []
+      },
+      "execution": {
+        "completed_steps": 268,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 268
+      },
+      "matches_manifest": true,
+      "output_sha256": {
+        "results.json": "c7d5c0168c43359d29ff0be538b20420184415eb7a87d5395ec09e28c45d908b",
+        "stderr.txt": "546d959d1a9150faf2b97e9153632345842d7b7885d08a82a32e1c2ab3a8f1f9",
+        "coverage.json": "db7f652a540bde5221cd5af6514482e9613b880f31ee5bd322d34569d97b7a59",
+        "results.stderr.txt": "546d959d1a9150faf2b97e9153632345842d7b7885d08a82a32e1c2ab3a8f1f9",
+        "run.json": "24e391b047223a95e6fa0c010672085df318dd6142f6ec242cc5ec5471a73b79"
+      }
+    }
+  ],
+  "evaluation_role": "development",
+  "baseline_version": "1.0.7",
+  "benchmark_base_commit": "ca7a0984d0b5b0d47a63c39725d8f70529961687"
+}

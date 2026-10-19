@@ -1,0 +1,8 @@
+warning: Protocol 'Module04_SuspensionCellAntibodyStaining' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)
+warning: Protocol 'PrepareFullPanel' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)
+warning: Protocol 'PrepareIsotypePanel' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)
+warning: Protocol 'PrepareSingleAntibodyControl' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)
+warning: Protocol 'PrepareUnstainedControl' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)
+warning: Protocol 'FirstStainingWash' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)
+warning: Protocol 'WashRetainedStains' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)
+warning: Protocol 'StainAndFixOneTube' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)

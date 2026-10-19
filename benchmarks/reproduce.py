@@ -147,24 +147,28 @@ def write_json(path, value):
 def git(repo, *args):
     return subprocess.check_output(['git', '-C', str(repo), *args], text=True).strip()
 
-def reproduce(runtime, output, update_readme=False):
-    manifest = json.loads((ROOT / 'manifest.json').read_text())
+def reproduce(runtime, output, update_readme=False, manifest_path=None):
+    manifest_path = (manifest_path or ROOT / 'manifest.json').resolve()
+    inputs = manifest_path.parent
+    manifest = json.loads(manifest_path.read_text())
+    role = manifest.get('evaluation_role', 'paper')
+    comparison_key = 'matches_paper' if role == 'paper' else 'matches_manifest'
     runtime = runtime.resolve()
     if git(runtime, 'rev-parse', 'HEAD') != manifest['runtime_commit']:
         raise ValueError('Runtime checkout must be at ' + manifest['runtime_commit'])
     if git(runtime, 'status', '--porcelain', '--', 'src', 'pyproject.toml'):
         raise ValueError('Runtime source or package metadata has local changes')
     actual_files = {
-        str(p.relative_to(ROOT))
+        str(p.relative_to(inputs))
         for entry in manifest['artifacts']
-        for d in [ROOT / entry['path']]
+        for d in [inputs / entry['path']]
         for p in d.iterdir() if p.suffix in ('.culs', '.md')
     }
     if actual_files != set(manifest['input_sha256']):
-        raise ValueError('Benchmark input inventory differs from the paper snapshot')
+        raise ValueError('Benchmark input inventory differs from the selected manifest')
     for name, expected in manifest['input_sha256'].items():
-        if digest(ROOT / name) != expected:
-            raise ValueError('Benchmark input differs from paper snapshot: ' + name)
+        if digest(inputs / name) != expected:
+            raise ValueError('Benchmark input differs from selected manifest: ' + name)
     env = dict(os.environ, PYTHONPATH=str(runtime / 'src'), PYTHONNOUSERSITE='1', PYTHONDONTWRITEBYTECODE='1')
     versions = json.loads(subprocess.check_output([
         sys.executable, '-c', 'import json,culsma,lark; print(json.dumps({"culsma":culsma.__version__,"lark":lark.__version__}))'
@@ -174,10 +178,10 @@ def reproduce(runtime, output, update_readme=False):
     output.mkdir(parents=True, exist_ok=False)
     rows = []
     for entry in manifest['artifacts']:
-        artifact = ROOT / entry['path']
+        artifact = inputs / entry['path']
         target = output / entry['path'] / 'results'
         target.mkdir(parents=True)
-        coverage = assess(artifact, manifest['runtime_commit'], versions['culsma'])
+        coverage = assess(artifact, manifest['runtime_commit'], manifest['table_version'])
         write_json(target / 'coverage.json', coverage)
         command = [sys.executable, '-m', 'culsma', 'run', str(artifact / 'protocol.culs'),
                    '--output', str(target / 'run.json')]
@@ -198,21 +202,25 @@ def reproduce(runtime, output, update_readme=False):
             execution.get('total_steps') == entry['completed_steps'] and
             all(execution.get(k) == 0 for k in ('failed_steps', 'skipped_steps', 'diagnostic_count')))
         row = {'artifact': entry['path'], 'name': entry['name'], 'coverage': coverage, 'execution': execution,
-               'matches_paper': coverage_matches and execution_matches,
+               comparison_key: coverage_matches and execution_matches,
                'output_sha256': {p.name: digest(p) for p in target.iterdir() if p.is_file()}}
         rows.append(row)
         print(f"{entry['path']}: {coverage['matched_steps']}/{coverage['total_steps']}; "
               f"execution {execution.get('completed_steps', 0)}/{entry['completed_steps']}; "
-              f"{'PASS' if row['matches_paper'] else 'FAIL'}", flush=True)
+              f"{'PASS' if row[comparison_key] else 'FAIL'}", flush=True)
     matched = sum(r['coverage']['matched_steps'] for r in rows)
     total = sum(r['coverage']['total_steps'] for r in rows)
-    summary = {'schema': 'patterns-modular-run-v1', 'source_commit': manifest['source_commit'],
+    summary = {'schema': 'patterns-modular-run-v1' if role == 'paper' else 'patterns-modular-run-v2', 'source_commit': manifest['source_commit'],
         'runtime_commit': manifest['runtime_commit'], 'python': platform.python_version(),
         'versions': versions, 'table_version': manifest['table_version'],
-        'manifest_sha256': digest(ROOT / 'manifest.json'),
+        'manifest_sha256': digest(manifest_path),
         'runner_sha256': digest(Path(__file__)), 'input_sha256': manifest['input_sha256'],
         'matched_steps': matched, 'total_steps': total, 'coverage_percent': 100 * matched / total,
-        'matches_paper': all(r['matches_paper'] for r in rows), 'artifacts': rows}
+        comparison_key: all(r[comparison_key] for r in rows), 'artifacts': rows}
+    if role != 'paper':
+        summary['evaluation_role'] = role
+        summary['baseline_version'] = manifest.get('baseline_version')
+        summary['benchmark_base_commit'] = manifest.get('benchmark_base_commit')
     write_json(output / 'summary.json', summary)
     table = [f"Evaluated with Culsma {manifest['table_version']}.", '', '| Module | Source steps | Coverage |', '| --- | ---: | ---: |']
     for r in rows:
@@ -221,26 +229,29 @@ def reproduce(runtime, output, update_readme=False):
         table.append(f"| {r['name']} | {r['coverage']['matched_steps']}/{r['coverage']['total_steps']} | {label} |")
     (output / 'table.md').write_text('\n'.join(table) + '\n')
     if update_readme:
-        if not summary['matches_paper']:
+        if not summary[comparison_key]:
             raise ValueError('README is not updated because the run differs from the manifest')
-        readme = ROOT / 'README.md'
+        readme = inputs / 'README.md'
         text = readme.read_text()
-        start, end = '<!-- paper-table:start -->', '<!-- paper-table:end -->'
+        marker = 'paper-table' if role == 'paper' else 'benchmark-table'
+        start, end = f'<!-- {marker}:start -->', f'<!-- {marker}:end -->'
         if text.count(start) != 1 or text.count(end) != 1 or text.index(start) > text.index(end):
-            raise ValueError('README requires one ordered pair of paper-table markers')
+            raise ValueError(f'README requires one ordered pair of {marker} markers')
         before, rest = text.split(start)
         _, after = rest.split(end)
         readme.write_text(before + start + '\n' + '\n'.join(table) + '\n' + end + after)
-    return 0 if summary['matches_paper'] else 1
+    return 0 if summary[comparison_key] else 1
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--runtime-repo', required=True, type=Path, help='Clean checkout of the pinned runtime commit')
     parser.add_argument('--output', required=True, type=Path, help='New directory for results; existing directories are rejected')
+    parser.add_argument('--manifest', type=Path, default=ROOT / 'manifest.json',
+                        help='Version manifest; source inputs are resolved relative to this file')
     parser.add_argument('--update-readme', action='store_true', help='Refresh the README table only after all comparisons pass')
     args = parser.parse_args()
     try:
-        return reproduce(args.runtime_repo, args.output.resolve(), args.update_readme)
+        return reproduce(args.runtime_repo, args.output.resolve(), args.update_readme, args.manifest)
     except (ValueError, OSError, subprocess.CalledProcessError) as error:
         parser.exit(2, f'Reproduction failed: {error}\n')
 

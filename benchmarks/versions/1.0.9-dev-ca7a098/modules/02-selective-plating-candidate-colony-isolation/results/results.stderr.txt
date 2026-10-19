@@ -1,0 +1,2 @@
+warning: Protocol 'Module02_PickAndExpandCandidateColony' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)
+warning: Protocol 'Module02_SelectivePlatingAndCandidateColonyIsolation' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)

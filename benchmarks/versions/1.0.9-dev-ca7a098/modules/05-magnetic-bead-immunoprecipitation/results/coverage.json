@@ -1,0 +1,18 @@
+{
+  "schema": "modular-source-coverage-v1",
+  "rules": "modular-source-step-correspondence-v1",
+  "metric": "source_step_correspondence",
+  "artifact": "05-magnetic-bead-immunoprecipitation",
+  "implementation": "ca7a0984d0b5b0d47a63c39725d8f70529961687",
+  "language_version": "1.0.9-dev",
+  "source_sha256": "7b327d0e1f56da2c3733b580953b60941828ab3e574f93fad9232de3b71dfd95",
+  "program_sha256": {
+    "Module05.culs": "5ffc962fa6d234f5270c2fbed28a7733d6aff547ed42549a4f2a5265b552675b",
+    "protocol.culs": "b24661756c02dd86aad9395f4c4e632d7632acaeb94f5c32d38fb3add30b8dbf"
+  },
+  "total_steps": 23,
+  "matched_steps": 23,
+  "coverage_percent": 100.0,
+  "status": "pass",
+  "issues": []
+}

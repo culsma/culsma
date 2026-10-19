@@ -1,0 +1,89 @@
+{
+  "materials": [
+    {
+      "amount": 100000.0,
+      "name": "DeletionCellSuspension",
+      "unit": "cells"
+    },
+    {
+      "amount": 100000.0,
+      "name": "NonTargetingCellSuspension",
+      "unit": "cells"
+    },
+    {
+      "amount": 100000.0,
+      "name": "WTCellSuspension",
+      "unit": "cells"
+    },
+    {
+      "amount": 1000.0,
+      "name": "DeletionCellSuspension",
+      "unit": "uL"
+    },
+    {
+      "amount": 1000.0,
+      "name": "NonTargetingCellSuspension",
+      "unit": "uL"
+    },
+    {
+      "amount": 1000.0,
+      "name": "WTCellSuspension",
+      "unit": "uL"
+    },
+    {
+      "amount": 120.0,
+      "name": "OptiMEMI",
+      "unit": "uL"
+    },
+    {
+      "amount": 8.0,
+      "name": "RNPAssemblyBuffer",
+      "unit": "uL"
+    },
+    {
+      "amount": 7.2,
+      "name": "CRISPRMAX",
+      "unit": "uL"
+    },
+    {
+      "amount": 4.0,
+      "name": "Cas9ProteinStock",
+      "unit": "uL"
+    },
+    {
+      "amount": 4.0,
+      "name": "NonTargetingSgRNAStock",
+      "unit": "uL"
+    },
+    {
+      "amount": 2.0,
+      "name": "SgRNA1Stock",
+      "unit": "uL"
+    },
+    {
+      "amount": 2.0,
+      "name": "SgRNA2Stock",
+      "unit": "uL"
+    }
+  ],
+  "resources": [
+    {
+      "capacity_uL": null,
+      "count": 1,
+      "kind": "plate"
+    },
+    {
+      "capacity_uL": 1500.0,
+      "count": 14,
+      "kind": "tube"
+    }
+  ],
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": []
+    }
+  }
+}

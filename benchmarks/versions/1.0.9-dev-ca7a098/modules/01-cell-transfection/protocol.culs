@@ -1,0 +1,101 @@
+protocol Module01_CellTransfection() returns (cell_group) {
+  // Source step S1: Seed HEK293T-GENE-X-positive cells into a 24-well plate as three groups: WT control in well A1, non-targeting control in well A2, and deletion-RNP treatment in well A3.
+  let editing_plate = plate(label = "Module01EditingPlate", format = "24well");
+  let editing_wells = editing_plate[A1:A3];
+  let wt_cells = editing_wells[0];
+  let non_targeting_cells = editing_wells[1];
+  let deletion_cells = editing_wells[2];
+
+  // Source step S2: Use 1.0 x 10^5 cells in 1 mL DMEM supplemented with 10% (v/v) FBS per well.
+  let wt_input = tube(label = "WTCellSuspension", load = [
+    content(kind = ContentKind.BIO_CELLULAR, type = ContentType.CELL_LINE, code = "HEK293T_GENE_X_POSITIVE"):100000cells,
+    content(kind = ContentKind.FORMULATION, type = ContentType.MEDIUM, code = "DMEM_10_PERCENT_FBS", attrs = { base_medium: "DMEM", fbs: "10% v/v" }):1mL
+  ]);
+  let non_targeting_input = tube(label = "NonTargetingCellSuspension", load = [
+    content(kind = ContentKind.BIO_CELLULAR, type = ContentType.CELL_LINE, code = "HEK293T_GENE_X_POSITIVE"):100000cells,
+    content(kind = ContentKind.FORMULATION, type = ContentType.MEDIUM, code = "DMEM_10_PERCENT_FBS", attrs = { base_medium: "DMEM", fbs: "10% v/v" }):1mL
+  ]);
+  let deletion_input = tube(label = "DeletionCellSuspension", load = [
+    content(kind = ContentKind.BIO_CELLULAR, type = ContentType.CELL_LINE, code = "HEK293T_GENE_X_POSITIVE"):100000cells,
+    content(kind = ContentKind.FORMULATION, type = ContentType.MEDIUM, code = "DMEM_10_PERCENT_FBS", attrs = { base_medium: "DMEM", fbs: "10% v/v" }):1mL
+  ]);
+  wt_cells << [wt_input];
+  non_targeting_cells << [non_targeting_input];
+  deletion_cells << [deletion_input];
+
+  // Source step S3: Culture the cells in the 24-well plate for 72 h at 37 C with 5% CO2.
+  with env(thermal = 37C, co2 = 5%, duration = 72h) {
+    hold(sample = editing_wells);
+  }
+
+  // Source step S4: Prepare one 10 uL deletion RNP reaction by combining 2 uL Cas9 protein stock at approximately 0.5 ug/uL, 2 uL sgRNA-1 stock at 0.5 ug/uL, 2 uL sgRNA-2 stock at 0.5 ug/uL, and 4 uL RNP assembly buffer.
+  let cas9_protein = tube(label = "Cas9ProteinStock", load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.PROTEIN, code = "CAS9_PROTEIN", attrs = { stock_concentration: 500ng_per_uL }):4uL
+  ]);
+  let sgrna_1 = tube(label = "SgRNA1Stock", load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.RNA, code = "SGRNA_1", attrs = { stock_concentration: 500ng_per_uL }):2uL
+  ]);
+  let sgrna_2 = tube(label = "SgRNA2Stock", load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.RNA, code = "SGRNA_2", attrs = { stock_concentration: 500ng_per_uL }):2uL
+  ]);
+  let rnp_assembly_buffer = tube(label = "RNPAssemblyBuffer", load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "RNP_ASSEMBLY_BUFFER", attrs = { role: reaction_environment }):8uL
+  ]);
+  let deletion_rnp = tube(label = "DeletionRNP");
+  deletion_rnp << [cas9_protein:2uL, sgrna_1:2uL, sgrna_2:2uL, rnp_assembly_buffer:4uL];
+
+  // Source step S5: Prepare one 10 uL non-targeting RNP reaction by combining 2 uL Cas9 protein stock at approximately 0.5 ug/uL, 4 uL non-targeting sgRNA stock at 0.5 ug/uL, and 4 uL RNP assembly buffer.
+  let non_targeting_sgrna = tube(label = "NonTargetingSgRNAStock", load = [
+    content(kind = ContentKind.BIO_MOLECULE_OR_VIRUS, type = ContentType.RNA, code = "NON_TARGETING_SGRNA", attrs = { stock_concentration: 500ng_per_uL }):4uL
+  ]);
+  let non_targeting_rnp = tube(label = "NonTargetingRNP");
+  non_targeting_rnp << [cas9_protein:2uL, non_targeting_sgrna:4uL, rnp_assembly_buffer:4uL];
+
+  // Source step S6: Incubate the deletion RNP and non-targeting RNP reactions for 10 min at room temperature.
+  with env(thermal = 22C, duration = 10min) {
+    hold(sample = group([deletion_rnp, non_targeting_rnp]));
+  }
+
+  // Source step S7: Dilute 3.6 uL CRISPRMAX lipid transfection reagent in 60 uL Opti-MEM I medium, then combine with the full 10 uL deletion RNP reaction from step 4 to prepare the deletion delivery mixture.
+  let lipid_transfection_reagent = tube(label = "CRISPRMAX", load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.OTHER_FORMULATION, code = "CRISPRMAX", attrs = { role: transfection_reagent }):7.2uL
+  ]);
+  let opti_mem = tube(label = "OptiMEMI", load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.MEDIUM, code = "OPTI_MEM_I"):120uL
+  ]);
+  let deletion_delivery_mix = tube(label = "DeletionDeliveryMixture");
+  deletion_delivery_mix << [opti_mem:60uL];
+  deletion_delivery_mix << [lipid_transfection_reagent:3.6uL];
+  deletion_delivery_mix << [deletion_rnp:10uL];
+
+  // Source step S8: Separately dilute 3.6 uL CRISPRMAX lipid transfection reagent in 60 uL Opti-MEM I medium, then combine with the full 10 uL non-targeting RNP reaction from step 5 to prepare the non-targeting delivery mixture.
+  let non_targeting_delivery_mix = tube(label = "NonTargetingDeliveryMixture");
+  non_targeting_delivery_mix << [opti_mem:60uL];
+  non_targeting_delivery_mix << [lipid_transfection_reagent:3.6uL];
+  non_targeting_delivery_mix << [non_targeting_rnp:10uL];
+
+  // Source step S9: Incubate both delivery mixtures for 15 min at room temperature.
+  with env(thermal = 22C, duration = 15min) {
+    hold(sample = group([deletion_delivery_mix, non_targeting_delivery_mix]));
+  }
+
+  // Source step S10: Add the full non-targeting delivery mixture from step 8 dropwise to the non-targeting control well A2.
+  // COVERAGE GAP: transfer below encodes destination and full amount, not
+  // dropwise delivery. No verified dropwise syntax is substituted.
+  non_targeting_cells << [non_targeting_delivery_mix];
+
+  // Source step S11: Add the full deletion delivery mixture from step 7 dropwise to the deletion-RNP treatment well A3.
+  // COVERAGE GAP: dropwise delivery remains annotation only, as in step 12.
+  deletion_cells << [deletion_delivery_mix];
+
+  // Source step S12: Incubate the WT control, non-targeting control, and deletion-RNP-treated cells for 72 h at 37 C with 5% CO2.
+  with env(thermal = 37C, co2 = 5%, duration = 72h) {
+    hold(sample = editing_wells);
+  }
+
+  // Source step S13: Return the WT control cells in A1, non-targeting-RNP-treated cells in A2, and deletion-RNP-treated cells in A3, retaining their original well identities for downstream use. Editing outcomes remain to be determined by downstream assays.
+  let cell_group = group([wt_cells, non_targeting_cells, deletion_cells]);
+  return cell_group;
+}
+
+Module01_CellTransfection();

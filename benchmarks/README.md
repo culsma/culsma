@@ -6,7 +6,24 @@ It contains seven experimental modules and two composite workflows. Source
 procedures, programs, results, and reproduction instructions are maintained
 here together; no documentation-site export is needed.
 
-## Current results (paper Section 3.5)
+## Results by version
+
+Each recorded version keeps its program inputs, pinned runtime, manifest,
+aggregate summary and per-artifact results. The root snapshot below is the
+fixed paper evaluation; newer runs are added under `versions/`.
+
+| Version | Status | Seven modules | All nine entries | Completed execution steps | Records |
+| --- | --- | ---: | ---: | ---: | --- |
+| 1.0.7 | Paper evaluation | 160/161 | 172/173 | 2675/2675 | [Manifest](manifest.json), [results](summary.json) |
+| 1.0.9-dev | Unreleased; runtime `ca7a098` | 161/161 | 173/173 | 2700/2700 | [Snapshot](versions/1.0.9-dev-ca7a098/README.md), [results](versions/1.0.9-dev-ca7a098/summary.json) |
+
+The development snapshot resolves Module 07 S37 with a whole-plate TAP and an
+independent GENTLE requirement. Its complete nine-entry rerun has no failures,
+skips or runtime diagnostics. It is a development evaluation, not a 1.0.9
+release: package metadata at its pinned runtime still reports 1.0.8. No 1.0.8
+benchmark result is inferred from that metadata.
+
+## Paper results (1.0.7, Section 3.5)
 
 <!-- paper-table:start -->
 Evaluated with Culsma 1.0.7.
@@ -44,19 +61,15 @@ inventory of laboratory operations. The collection can grow as additional
 workflows are added; compare versions using the same source inventory and
 coverage rules when assessing improvements in operation support.
 
-| Source step | Current gap | Candidate extension and verification |
+| Source step | Gap in 1.0.7 | Status in 1.0.9-dev |
 | --- | --- | --- |
-| [Module 07 S37](modules/07-sandwich-elisa/source.md) | Gentle plate tapping to mix the stopped reaction has no verified action in the evaluated program. | Define plate tap-mixing and its target and requirements, then provide execution support. Verify that it occurs after stopping the reaction and before readout, without substituting a different mixing method. |
+| [Module 07 S37](modules/07-sandwich-elisa/source.md) | Gentle plate tapping to mix the stopped reaction has no executable action in the paper program. | Resolved by `AgitationMode.TAP` with GENTLE in the [versioned ELISA program](versions/1.0.9-dev-ca7a098/modules/07-sandwich-elisa/protocol.culs); 42/42 source steps, with TAP after stopping and before readout. |
 
-The development runtime now represents plate tapping with `AgitationMode.TAP`
-and an independent gentle requirement. The agitation regression suite runs a
-copy of Module 07 with that action at S37, checking one whole-plate dispatch
-after stop-solution addition and before readout. This verifies language and
-simulated execution support; the published 1.0.7 program, manifest and results
-above retain their original gap. A later benchmark revision should
-record the revised program/runtime versions and rerun coverage and execution;
-successful software execution alone does not demonstrate physical performance.
-Module 02 is 12/12; Module 07 remains 41/42. Module 02 still requires an
+The recorded development run and agitation regressions verify language and
+simulated execution support. The published 1.0.7 program, manifest and results
+retain their original 41/42 ELISA result; the new snapshot records 42/42.
+Successful software execution alone does not demonstrate physical performance.
+Module 02 remains 12/12 and still requires an
 operator-supplied mapping from selected observation rows to colony material
 references; structural correspondence does not establish that automatic link.
 
@@ -71,6 +84,7 @@ references; structural correspondence does not establish that automatic link.
 | [`check_introduction_example.py`](check_introduction_example.py) | Checks for introductory Example 00. |
 | [`manifest.json`](manifest.json) | Fixed versions, input hashes, expected counts and known gaps. |
 | [`summary.json`](summary.json) | Aggregate benchmark results; per-artifact records are in each artifact's `results/`. |
+| [`versions/`](versions/) | Additional version snapshots, each with its own inputs, manifest, summary, coverage table and per-artifact results. |
 | [`examples-summary.json`](examples-summary.json) | Aggregate checks for Examples 01–04, excluded from coverage totals. |
 
 Composite entry programs use explicit, source-relative `include` paths to load
@@ -121,6 +135,14 @@ programs with the expected execution counts and zero failures, skips, or
 runtime diagnostics. Reproducing the remaining known gap is a successful comparison.
 The checker and its counting rule are included in the single script.
 
+To reproduce a different recorded version, select its manifest with
+`--manifest`. Inputs resolve relative to that manifest, and its runtime commit
+and dependency versions are checked before execution. For the development
+snapshot, use a separate runtime checkout containing commit
+`ca7a0984d0b5b0d47a63c39725d8f70529961687` (see the snapshot's
+[reproduction command](versions/1.0.9-dev-ca7a098/README.md#reproduce)).
+The default command above continues to reproduce the 1.0.7 paper snapshot.
+
 Each output directory mirrors the module/composite layout, with `summary.json`,
 `table.md`, and per-artifact `results/coverage.json`, `results/run.json`, and
 `results/results.json`. Nonempty console/error logs
@@ -133,21 +155,22 @@ the source directories.
 
 ## Maintain the benchmark and paper together
 
-1. Revise source procedures and programs together. Keep complete source-step
-   annotations and source references; retain gaps explicitly.
-2. Review the expected counts, gap records, input hashes, and runtime identity
-   in `manifest.json`. Update them only for an intended, reviewed change;
-   do not replace expectations merely to make a failing comparison pass.
-3. Run `reproduce.py` into a new directory. Add `--update-readme` to regenerate
-   the marked three-column table above after all comparisons pass. The same
-   table is written to `table.md`, using the paper's module names and rounding,
-   with one version label for the entire run.
-4. Review the resulting records. When advancing to a new runtime version,
-   rerun the full collection and archive the previous aggregate summary and per-artifact `results/` sets
-   under `archive/benchmark-results/<version>-<commit>/` before replacing them.
-   Update the aggregate figures above and the paper's table and Methods
-   if the evidence changes. Commit inputs, manifest, README, and results
-   together, and cite the new package commit in the paper.
+1. Add a new `versions/<version>-<runtime-commit>/` snapshot for each evaluated
+   release or development revision. Retain previous records. Copy the complete
+   source inventory and program dependencies, then revise the intended program
+   steps with their complete annotations and references.
+2. Freeze its manifest with runtime commit, actual package/dependency versions,
+   expected coverage and execution counts, remaining gaps and input hashes.
+   Explain intentional execution-count changes; do not replace expectations
+   merely to make a failing comparison pass.
+3. Run all nine entries into a fresh output directory with `--manifest`.
+   `--update-readme` refreshes only the selected snapshot's marked table after
+   every comparison passes. Keep its summary, table and per-artifact results
+   together with those inputs.
+4. Add the reviewed result to the version index above and commit the snapshot
+   and runner changes together. Keep development results labeled as unreleased.
+   A manuscript evaluation changes only when its paper table and Methods are
+   deliberately advanced to the newly cited benchmark package commit.
 
 Historical Cases 00–14 and their original tools are preserved outside this
 active directory in [`archive/benchmarks-legacy/`](../archive/benchmarks-legacy/).
