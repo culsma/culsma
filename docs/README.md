@@ -1,48 +1,12 @@
-# Culsma Docs Layout
+# Culsma documentation
 
-## Purpose
+- [Project overview and CLI usage](../README.md)
+- [User documentation](https://culsma.dev/)
+- [Language reference](https://github.com/culsma/culsma-reference)
+- [Conformance contracts and checks](../conformance/)
+- [Benchmark cases and reproduction](../benchmarks/README.md)
+- [Release notes](../CHANGELOG.md)
 
-Implementation architecture and module diagrams. Language semantics belong to
-the independent `culsma-reference` repository; derived conformance data and test
-mappings belong to this repository's `conformance/` directory.
-
-## Structure
-
-```text
-docs/
-  README.md
-  global_architecture_diagrams.md
-  architecture/
-    pipeline/
-  assets/
-```
-
-## Directory Rules
-
-| Directory | What goes here | What does not go here |
-| --- | --- | --- |
-| `docs/` root | repository-level docs layout and global architecture maps | module-internal architecture diagrams |
-| `architecture/` | current module implementation structure, module boundaries, and design diagrams | temporary refactor notes, reading plans, release checklists |
-| `architecture/pipeline/` | pipeline-wide, IR, compile, validation, typecheck, and plan-lowering diagrams | parser, runtime, material-compute, or driver diagrams |
-| `assets/` | repository logo, wordmark, and affiliation marks used by public docs | generated scratch images or temporary diagrams |
-
-## Global Architecture
-
-- [global_architecture_diagrams.md](global_architecture_diagrams.md): execution flow and the shared Domain/Common language-contract boundaries.
-
-## Current Module Architecture Notes
-
-- [pipeline_module_diagrams.md](architecture/pipeline/pipeline_module_diagrams.md)
-- [parser_module_diagrams.md](architecture/parser_module_diagrams.md)
-- [ir_structure_diagrams.md](architecture/pipeline/ir_structure_diagrams.md)
-- [compile_module_diagrams.md](architecture/pipeline/compile_module_diagrams.md)
-- [validate_module_diagrams.md](architecture/pipeline/validate_module_diagrams.md)
-- [typecheck_module_diagrams.md](architecture/pipeline/typecheck_module_diagrams.md)
-- [plan_module_diagrams.md](architecture/pipeline/plan_module_diagrams.md)
-- [scope_module_diagrams.md](architecture/pipeline/scope_module_diagrams.md)
-- [runtime_module_diagrams.md](architecture/runtime_module_diagrams.md)
-- [material_compute_module_diagrams.md](architecture/material_compute_module_diagrams.md)
-- [driver_module_diagrams.md](architecture/driver_module_diagrams.md)
-
-Release notes belong in the repository changelog and GitHub Releases, not in
-this `docs/` tree.
+Detailed implementation design documents are maintained outside this repository.
+Earlier versions remain available in Git history. This directory retains the image
+assets used by the public README.
