@@ -1,5 +1,6 @@
 """Readout quantities and operation-specific membership contracts."""
 
+from culsma.common.value_contracts import VALUE_CONTRACTS, ReadCallContract
 from dataclasses import dataclass
 from enum import StrEnum
 from types import MappingProxyType
@@ -59,3 +60,7 @@ class ReadoutQuantityRule:
 
 
 CALL_PARAMETER_CONTRACTS = MappingProxyType({operation: CallParameterContract({'quantity': contract}, (ReadoutQuantityRule(operation),)) for operation, contract in READOUT_QUANTITIES.items()})
+
+
+VALUE_CONTRACTS.register_call('detects', ReadCallContract('material.predicate',
+    parameters=('self', 'arg0'), capture_at_binding=True))

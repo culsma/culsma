@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
-from culsma.pipeline.ir_nodes import IRArg, IRCall, IRQuantity, IRWithEnv
+from culsma.pipeline.ir_nodes import IRArg, IRCall, IRQuantity, IRStep, IRWithEnv
 
 from .resolution import ExprResolver
 
@@ -163,4 +163,5 @@ def _find_arg_by_name(args: list[IRArg], name: str) -> IRArg | None:
 
 
 def _requires_scalar_thermal_duration(stmt: IRWithEnv) -> bool:
-    return bool(getattr(stmt, "explicit_hold", False)) and not stmt.statements
+    return bool(getattr(stmt, "explicit_hold", False)) and all(
+        isinstance(child, IRStep) and child.name == "print" for child in stmt.statements)

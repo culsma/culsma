@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+from culsma.common.value_contracts import VALUE_CONTRACTS, UNRESOLVED_VALUE
+from culsma.runtime.value_adapters import AdaptedValue, create_value_adapter_registry
+from culsma.runtime.value_adapters.contracts import QuantityDisplayValue
 from culsma.runtime.data_values import DataReferenceBuilder
 from culsma.enum_services import PARAMETER_ENUM_TYPES
 from culsma.runtime.stream_values import StreamValueBuilder
 from culsma.pipeline.external_boundary import DEFAULT_EXTERNAL_ENUM_CODEC, DEFAULT_EXTERNAL_PARAMETER_NORMALIZER, RuntimeParameterError
 
 from culsma.pipeline.expression_resolution import project_record_member, ResolutionStatus
-from culsma.pipeline.container_views import is_container_contents_volume, split_member_path
+from culsma.pipeline.container_views import is_container_contents_volume, split_member_path, is_container_target_view
 from culsma.runtime.material.refs import MaterialRefResolver
 
 from copy import deepcopy
@@ -21,7 +24,7 @@ from culsma.runtime.state import RuntimeState
 
 
 _LOCAL_RUNTIME_CONSTRUCTORS = {"markers", "stream", "data_ref", "data_group_ref", "data_schema"}
-UNRESOLVED = object()
+UNRESOLVED = UNRESOLVED_VALUE
 
 
 def evaluate_content_enum(expr: Any) -> Any:
@@ -30,10 +33,148 @@ def evaluate_content_enum(expr: Any) -> Any:
 
 
 class RuntimeValueResolver:
+    def __init__(self, adapters=None) -> None:
+        self.adapters = adapters if adapters is not None else create_value_adapter_registry()
+
+    def read_adapted(self, type_id: str, value: Any, state: RuntimeState) -> Any:
+        if not VALUE_CONTRACTS.resolve(type_id):
+            return UNRESOLVED
+        adapter = self.adapters.resolve(type_id)
+        return adapter.read(type_id, value, state, self) if adapter is not None else UNRESOLVED
+
+    def read_detection(self, value: Any, state: RuntimeState) -> Any:
+        args = {arg['name']: arg['value'] for arg in value['args']}
+        candidates = []
+        for expr in (args['self'], args['arg0']):
+            resolved = self.read_value(expr, state)
+            if resolved is UNRESOLVED:
+                return UNRESOLVED
+            keys = [expr['name']] if isinstance(expr, dict) and expr.get('kind') == 'IRIdentifier' else []
+            identity = resolved.get('id') if isinstance(resolved, dict) else None
+            if isinstance(identity, str) and identity not in keys:
+                keys.append(identity)
+            candidates.append(keys)
+        return read_detection_hits(candidates[0], candidates[1], state)
+
+    def read_value(self, expr: Any, state: RuntimeState) -> Any:
+        """Read a print operand without evaluating constructors or consuming streams."""
+        if isinstance(expr, dict):
+            raw_kind = expr.get("kind")
+            kind = raw_kind if isinstance(raw_kind, str) else None
+            if kind == "IRIdentifier":
+                return self.read_identifier(expr, state)
+            if kind == "IRCall":
+                if 'runtime_ref' in expr:
+                    return self.read_value(expr['runtime_ref'], state)
+                contract = VALUE_CONTRACTS.resolve_call(expr.get('name'))
+                return self.read_adapted(contract.type_id, expr, state) if contract is not None else UNRESOLVED
+            if kind in {"IRList", "IRGroup"}:
+                if kind == "IRGroup":
+                    group = self.read_adapted('material.reference', expr, state)
+                    if group is not UNRESOLVED:
+                        return group
+                values = [self.read_value(item, state) for item in expr.get("elements", [])]
+                return UNRESOLVED if any(item is UNRESOLVED for item in values) else values
+            if kind == "IRMember":
+                if is_container_target_view(expr):
+                    view = self.read_adapted('material.target_view', expr, state)
+                    if view is not UNRESOLVED:
+                        return view
+                if is_container_contents_volume(expr):
+                    volume = read_container_volume(expr, state)
+                    if volume is not UNRESOLVED:
+                        return volume
+                # Qualified enum members have already been serialized to enum values.
+                base = self.read_value(expr.get("base"), state)
+                if isinstance(base, dict):
+                    if isinstance(base, AdaptedValue) and base.type_id == "material.container" and expr.get("member") == "materials":
+                        return base.get("component_entries", [])
+                    return base.get(expr.get('member'), UNRESOLVED)
+                return UNRESOLVED
+            if kind == "IRIndex":
+                base = self.read_value(expr.get('base'), state)
+                index = self.read_value(expr.get('index'), state)
+                members = base.get('members') if isinstance(base, AdaptedValue) and base.type_id == 'material.group' else base
+                if isinstance(members, list) and isinstance(index, (int, float)) and not isinstance(index, bool):
+                    if float(index).is_integer() and 0 <= index < len(members):
+                        return members[int(index)]
+                    return UNRESOLVED
+                value = _resolve_runtime_index(expr, state)
+                if value is not UNRESOLVED:
+                    return value
+                return self.read_adapted('material.reference', expr, state)
+            if kind == "IRBinary":
+                return evaluate_runtime_binary_values(expr.get("op"),
+                    self.read_operand(expr.get("left"), state), self.read_operand(expr.get("right"), state))
+            if kind == "IRUnary":
+                operand = self.read_operand(expr.get("operand"), state)
+                if expr.get("op") != "-" or operand is UNRESOLVED:
+                    return UNRESOLVED
+                try:
+                    return quantity_binary("*", -1, operand)
+                except QuantityArithmeticError:
+                    return UNRESOLVED
+            if kind is None:
+                values = {key: self.read_value(value, state) for key, value in expr.items()}
+                return UNRESOLVED if any(item is UNRESOLVED for item in values.values()) else values
+        return evaluate_runtime_expression(expr, state)
+
+    def read_operand(self, expr: Any, state: RuntimeState) -> Any:
+        """Decode typed scalar operands without interpreting record fields as calls."""
+        value = self.read_value(expr, state)
+        if isinstance(value, dict) and set(value) == {"kind", "value", "unit"} and value.get("kind") == "IRQuantity":
+            number, unit = value["value"], value["unit"]
+            return number if unit is None else (number, unit)
+        return value
+
+    def read_identifier(self, expr: dict[str, Any], state: RuntimeState) -> Any:
+        """Resolve existing bindings through the read-only path, never constructor evaluation."""
+        name = expr.get("name")
+        if not isinstance(name, str):
+            return UNRESOLVED
+        locals_ = state.artifacts.get("local_bindings", {})
+        if name in locals_:
+            value = locals_[name]
+            type_id = state.artifacts.get('local_value_types', {}).get(name)
+            if type_id == 'record':
+                return value
+            if type_id is not None and isinstance(value, dict):
+                if type_id == 'material.container':
+                    return self.read_adapted(type_id, value, state)
+                return AdaptedValue(type_id, value)
+            kind = value.get("kind") if isinstance(value, dict) else None
+            if isinstance(kind, str) and (kind.startswith("IR") or kind in {
+                "ContentEnum", "ExternalEnum", "DomainEnum", "ChromatographyEnum"
+            }):
+                return self.read_value(value, state)
+            return self.project_read_value(value, state) if isinstance(value, AdaptedValue) else value
+        for bindings_key, values_key in (("data_bindings", "data_objects"), ("data_group_bindings", "data_groups")):
+            reference = state.artifacts.get(bindings_key, {}).get(name)
+            value = state.artifacts.get(values_key, {}).get(reference)
+            if isinstance(value, dict):
+                return value
+        return self.read_adapted('material.reference', expr, state)
+
+    def project_read_value(self, value: Any, state: RuntimeState) -> Any:
+        """Project current material references using the selection path's entry order."""
+        if isinstance(value, AdaptedValue):
+            if value.type_id == 'material.container':
+                return self.read_adapted(value.type_id, value, state)
+            return value
+        return value
+
+    def material_group_payload(self, material: Any, expr: Any) -> Any:
+        return _container_group_ref_payload(material, expr)
+
+    def material_value_payload(self, material: Any, expr: Any) -> Any:
+        return _resolve_runtime_material_value(material, expr)
+
     def eval_expr(self, expr: Any, state: RuntimeState) -> Any:
         return evaluate_runtime_expression(expr, state)
 
     def eval_local_value(self, target: str, expr: Any, state: RuntimeState) -> Any:
+        if VALUE_CONTRACTS.requires_capture(expr):
+            return self.read_value(expr, state)
         return _eval_runtime_local_value(target, expr, state)
 
     def eval_method_arg(self, expr: Any, state: RuntimeState) -> Any:
@@ -79,6 +220,19 @@ class RuntimeValueResolver:
         return UNRESOLVED
 
 
+def read_container_volume(expr: Any, state: RuntimeState) -> Any:
+    """Read the authoritative quantity without projecting or changing material entries."""
+    path = split_member_path(expr)
+    material = state.artifacts.get("material_state")
+    if path is None or not isinstance(material, dict):
+        return UNRESOLVED
+    container_id = _resolve_runtime_ref(material, path[0])
+    containers = material.get("containers", {})
+    container = containers.get(container_id) if isinstance(containers, dict) else None
+    volume = container.get("volume_uL") if isinstance(container, dict) else None
+    return (float(volume), "uL") if isinstance(volume, (int, float)) else UNRESOLVED
+
+
 def evaluate_runtime_expression(expr: Any, state: RuntimeState) -> Any:
     if isinstance(expr, dict):
         kind = expr.get("kind")
@@ -115,15 +269,9 @@ def evaluate_runtime_expression(expr: Any, state: RuntimeState) -> Any:
             return _resolve_runtime_index(expr, state)
         if kind == "IRMember":
             if is_container_contents_volume(expr):
-                path = split_member_path(expr)
-                material_state = state.artifacts.get("material_state")
-                if path is not None and isinstance(material_state, dict):
-                    container_id = MaterialRefResolver.resolve_target_ref(material_state, path[0])
-                    containers = material_state.get("containers", {})
-                    container = containers.get(container_id) if isinstance(containers, dict) else None
-                    volume = container.get("volume_uL") if isinstance(container, dict) else None
-                    if isinstance(volume, (int, float)):
-                        return (float(volume), "uL")
+                volume = read_container_volume(expr, state)
+                if volume is not UNRESOLVED:
+                    return volume
             base = evaluate_runtime_expression(expr.get("base"), state)
             if base is UNRESOLVED:
                 return UNRESOLVED
@@ -301,6 +449,11 @@ def _eval_runtime_detects(expr: dict[str, Any], state: RuntimeState) -> Any:
     target_expr = raw_args[1].get("value") if isinstance(raw_args[1], dict) else None
     receiver_candidates = _runtime_detect_key_candidates(receiver_expr, state)
     target_candidates = _runtime_detect_key_candidates(target_expr, state)
+    return read_detection_hits(receiver_candidates, target_candidates, state)
+
+
+def read_detection_hits(receiver_candidates: list[str], target_candidates: list[str], state: RuntimeState) -> Any:
+    """Read existing sensing-hook results without invoking a detector or consuming data."""
     if not receiver_candidates or not target_candidates:
         return UNRESOLVED
     detect_hits = state.artifacts.get("detect_hits", {})
@@ -482,6 +635,11 @@ def evaluate_runtime_binary(expr: dict[str, Any], state: RuntimeState) -> Any:
     op = expr.get("op")
     left = evaluate_runtime_expression(expr.get("left"), state)
     right = evaluate_runtime_expression(expr.get("right"), state)
+    return evaluate_runtime_binary_values(op, left, right)
+
+
+def evaluate_runtime_binary_values(op: Any, left: Any, right: Any) -> Any:
+    """Apply existing operators to resolved values, without evaluating code-shaped data."""
     if left is UNRESOLVED or right is UNRESOLVED:
         return UNRESOLVED
     if op == "and":
@@ -543,6 +701,8 @@ def _runtime_bound_value(value: Any, state: RuntimeState) -> Any:
 
 
 def serialize_runtime_value(value: Any) -> Any:
+    if isinstance(value, AdaptedValue):
+        return {key: _runtime_deep_serialize(item) for key, item in value.items()}
     if type(value) in PARAMETER_ENUM_TYPES.values():
         return DEFAULT_EXTERNAL_ENUM_CODEC.encode(value)
     if type(value) in CONTENT_ENUM_TYPES.values():
@@ -555,6 +715,12 @@ def serialize_runtime_value(value: Any) -> Any:
 
 
 def _runtime_deep_serialize(value: Any) -> Any:
+    if isinstance(value, QuantityDisplayValue):
+        return QuantityDisplayValue(value)
+    if isinstance(value, tuple) and len(value) == 2 and isinstance(value[0], (int, float)) and isinstance(value[1], str):
+        return QuantityDisplayValue(serialize_runtime_value(value))
+    if isinstance(value, AdaptedValue):
+        return AdaptedValue(value.type_id, {key: _runtime_deep_serialize(item) for key, item in value.items()})
     if isinstance(value, list):
         return [_runtime_deep_serialize(item) for item in value]
     if isinstance(value, dict):

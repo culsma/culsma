@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from culsma.common.value_contracts import VALUE_CONTRACTS, ReadCallContract
 from culsma.common.enum_parameters import CallParameterContract
 from culsma.enum_services import CALL_PARAMETER_CONTRACTS
 
@@ -264,6 +265,15 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         ),
     ),
 }
+
+
+def register_program_value_contracts() -> None:
+    """All concrete program definitions share one value adapter."""
+    for name in PROGRAM_REGISTRY:
+        VALUE_CONTRACTS.register_call(name, ReadCallContract('configuration.program'))
+
+
+register_program_value_contracts()
 
 
 LEGACY_GENERIC_PROGRAMS = frozenset(

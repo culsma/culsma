@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import Any
+from dataclasses import fields, is_dataclass
 from culsma.pipeline.expression_resolution import resolve_expression, ResolutionStatus
 
 from culsma.common.diagnostics import Diagnostic
@@ -36,6 +37,26 @@ from .programs import ProgramContractValidator, is_legacy_program_kind, is_progr
 from .resolution import ExprResolver
 
 PROGRAM_OWNER_FAMILY = {"sep", "frac"}
+
+
+def validate_print_expression_position(expr: Any, *, node_id: str | None) -> list[Diagnostic]:
+    """Reject unresolved builtin print in expression slots, including returns."""
+    diagnostics = []
+    if isinstance(expr, IRCall) and expr.name == "print":
+        diagnostics.append(Diagnostic(
+            code="SEM_PRINT_EXPRESSION", message="builtin print is a statement and has no expression result",
+            span=expr.span, node_id=node_id))
+    if is_dataclass(expr):
+        children = [getattr(expr, item.name) for item in fields(expr) if item.name != "span"]
+    elif isinstance(expr, dict):
+        children = expr.values()
+    elif isinstance(expr, (list, tuple)):
+        children = expr
+    else:
+        children = ()
+    for child in children:
+        diagnostics.extend(validate_print_expression_position(child, node_id=node_id))
+    return diagnostics
 
 
 def validate_expr_contracts(
@@ -198,6 +219,8 @@ def validate_expr_contracts(
         return diagnostics
 
     if isinstance(expr, IRCall):
+        if expr.name == "print":
+            return validate_print_expression_position(expr, node_id=node_id)
         diagnostics.extend(ExpressionParameterValidator.validate(expr,
             bindings={**expr_bindings, **literal_bindings},
             defined_names=defined_names or frozenset(), node_id=node_id))

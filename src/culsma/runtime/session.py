@@ -59,20 +59,24 @@ class RuntimeSession:
         self,
         step: PlanStep,
         *,
-        driver_code: str,
-        driver_payload: dict[str, Any],
+        driver_code: str | None = None,
+        driver_payload: dict[str, Any] | None = None,
         material_delta: dict[str, Any] | None = None,
         observation_delta: dict[str, Any] | None = None,
         history_extra: dict[str, Any] | None = None,
         payload_extra: dict[str, Any] | None = None,
     ) -> None:
         self.state.step_status[step.step_id] = "completed"
-        history = {"step_id": step.step_id, "status": "completed", "driver_code": driver_code}
+        history = {"step_id": step.step_id, "status": "completed"}
+        if driver_code is not None:
+            history["driver_code"] = driver_code
         if history_extra:
             history.update(history_extra)
         self.state.history.append(history)
 
-        payload = {"driver_code": driver_code, "driver_payload": driver_payload}
+        payload = {}
+        if driver_code is not None:
+            payload.update(driver_code=driver_code, driver_payload=driver_payload)
         if step.gate is not None:
             payload["gate"] = step.gate
         if material_delta is not None:

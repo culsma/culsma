@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 from culsma.pipeline.external_inputs import ExternalInputResolver, ExternalInputScope, ExternalInputStatus, deferred_external_bindings
-from culsma.enum_services import PARAMETER_ENUM_TYPES
+from culsma.enum_services import PARAMETER_ENUM_TYPES, PARAMETER_CONTRACTS
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields, is_dataclass
 from typing import Any, Iterable, Mapping, cast
 
+from culsma.common.value_contracts import VALUE_CONTRACTS
 from culsma.common.diagnostics import Diagnostic
+from culsma.common.content_contracts import CONTENT_ENUM_TYPES
 from culsma.pipeline.content_inputs import ContentArgumentResolver, ContentArgumentScope, ContentInputSource, DeferredContentEnum, deferred_content_enum_bindings
 from culsma.pipeline.analysis import CompileAnalysis, ProtocolAnalysis
 from culsma.pipeline.ir_nodes import (
@@ -19,6 +21,7 @@ from culsma.pipeline.ir_nodes import (
     IRIdentifier,
     IRInclude,
     IRLet,
+    IRMember,
     IRMutation,
     IRMutationGroup,
     IRPair,
@@ -814,6 +817,58 @@ class StepState(HandlerState):
 
 
 class StepHandler(BaseStatementHandler):
+    def validate_print(self, stmt: IRStep, ctx: StatementValidationContext) -> None:
+        if len(stmt.args) != 1 or stmt.args[0].name != "$arg0":
+            ctx.diagnostics.append(Diagnostic(
+                code="SEM_PRINT_ARGUMENTS", message="print requires exactly one positional expression",
+                span=stmt.span, node_id=stmt.id))
+            return
+        self.validate_print_expression(stmt.args[0].value, stmt, ctx)
+        self.validate_expr(stmt.args[0].value, ctx, node_id=stmt.id)
+
+    def validate_print_expression(self, expr: Any, stmt: IRStep, ctx: StatementValidationContext) -> None:
+        if isinstance(expr, IRCall):
+            contract = VALUE_CONTRACTS.resolve_call(expr.name)
+            if contract is None or not contract.accepts(expr.args):
+                ctx.diagnostics.append(Diagnostic(
+                    code="SEM_PRINT_EXPRESSION", message="print requires a declared read-only value expression",
+                    span=expr.span or stmt.span, node_id=stmt.id))
+                return
+            if contract.receiver_member is not None:
+                receiver = next(arg.value for arg in expr.args if arg.name == 'self')
+                if not isinstance(receiver, IRMember) or receiver.member != contract.receiver_member:
+                    ctx.diagnostics.append(Diagnostic(code='SEM_PRINT_EXPRESSION',
+                        message='Read selector requires its declared receiver', span=expr.span or stmt.span, node_id=stmt.id))
+                    return
+            for arg in expr.args:
+                enum_contract = PARAMETER_CONTRACTS.get((expr.name, arg.name))
+                if enum_contract is not None and isinstance(arg.value, IRIdentifier) and arg.value.name not in (
+                        ctx.defined_names | ctx.expr_bindings.keys() | ctx.literal_bindings.keys()):
+                    # The owning parameter contract validates its legacy enum token.
+                    continue
+                self.validate_print_expression(arg.value, stmt, ctx)
+            return
+        if isinstance(expr, IRIdentifier):
+            if ctx.enforce_binding and expr.name not in (ctx.defined_names | ctx.expr_bindings.keys() | ctx.literal_bindings.keys()):
+                ctx.diagnostics.append(Diagnostic(
+                    code="SEM_UNBOUND_NAME_REFERENCE", message=f"Name '{expr.name}' is used before binding",
+                    span=expr.span or stmt.span, node_id=stmt.id))
+            return
+        # Qualified enum members are values, not reads of an unbound variable.
+        if isinstance(expr, IRMember) and isinstance(expr.base, IRIdentifier):
+            if expr.base.name in {**CONTENT_ENUM_TYPES, **PARAMETER_ENUM_TYPES}:
+                return
+        if is_dataclass(expr):
+            for item in fields(expr):
+                if item.name != "span":
+                    self.validate_print_expression(getattr(expr, item.name), stmt, ctx)
+        elif isinstance(expr, (list, tuple)):
+            for item in expr:
+                self.validate_print_expression(item, stmt, ctx)
+        elif isinstance(expr, dict):
+            for item in expr.values():
+                self.validate_print_expression(item, stmt, ctx)
+
     def prepare(self, stmt: IRStatement, ctx: StatementValidationContext) -> HandlerState:
         stmt = cast(IRStep, stmt)
         if stmt.name in BUILTIN_METHOD_STEPS:
@@ -828,6 +883,10 @@ class StepHandler(BaseStatementHandler):
     ) -> None:
         stmt = cast(IRStep, stmt)
         state = cast(StepState, state)
+        if stmt.name == "print":
+            self.validate_print(stmt, ctx)
+            state.stop = True
+            return
         ctx.diagnostics.extend(ExpressionParameterValidator.validate(stmt,
             bindings={**ctx.expr_bindings, **ctx.literal_bindings},
             defined_names=ctx.defined_names, node_id=stmt.id))

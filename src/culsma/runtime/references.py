@@ -34,6 +34,36 @@ class RefDecision:
 
 
 class RefReuseDecider:
+    def prepare_step(self, step: PlanStep, session: RuntimeSession) -> bool:
+        """Apply reference reuse uniformly to laboratory and utility steps."""
+        ref_group = self.group_for_step(step.step_id, session)
+        if ref_group is not None:
+            ref_decision = self.decide(ref_group, session)
+            session.event_log.emit(
+                "REF_DECISION",
+                step.step_id,
+                payload={
+                    "ref_protocol": ref_group.ref_protocol,
+                    "ref_call_id": ref_group.ref_call_id,
+                    "call_path": ref_group.call_path,
+                    "ref_policy": ref_decision.policy,
+                    "ref_decision": ref_decision.action,
+                    "reason": ref_decision.reason,
+                    "cache_key": ref_decision.cache_key,
+                    "input_signature": ref_decision.input_signature,
+                },
+                span=step.span,
+            )
+            if ref_decision.action == "reuse":
+                self.mark_reused(ref_group, session)
+                return True
+            session.ref_pending_updates[ref_group.last_step_id] = self.cache_update_payload(
+                ref_group,
+                ref_decision,
+            )
+
+        return False
+
     def build_groups(self, steps: list[PlanStep]) -> dict[str, RefGroup]:
         base: dict[str, dict[str, Any]] = {}
         for step in steps:

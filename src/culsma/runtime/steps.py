@@ -15,6 +15,8 @@ from culsma.driver.framework.chromatography import ChromatographyCapability
 from culsma.driver.framework.requirements import RequirementCapability
 from culsma.pipeline.plan_nodes import PlanProgram, PlanStep, ProtocolPlan, PlanStepTree
 from culsma.runtime.session import RuntimeSession
+from culsma.runtime.output import format_print_value
+from culsma.runtime.value_adapters import AdaptedValue
 from culsma.runtime.values import UNRESOLVED
 from culsma.pipeline.external_boundary import RuntimeParameterError
 
@@ -77,32 +79,9 @@ class BaseRuntimeStepHandler:
                 session.record_failed(step, reason="constraint_invalid", diagnostic=constraint_diagnostics[0])
                 return session.fail_fast
 
-        ref_group = session.ref_reuse_decider.group_for_step(step.step_id, session)
-        if ref_group is not None:
-            ref_decision = session.ref_reuse_decider.decide(ref_group, session)
-            session.event_log.emit(
-                "REF_DECISION",
-                step.step_id,
-                payload={
-                    "ref_protocol": ref_group.ref_protocol,
-                    "ref_call_id": ref_group.ref_call_id,
-                    "call_path": ref_group.call_path,
-                    "ref_policy": ref_decision.policy,
-                    "ref_decision": ref_decision.action,
-                    "reason": ref_decision.reason,
-                    "cache_key": ref_decision.cache_key,
-                    "input_signature": ref_decision.input_signature,
-                },
-                span=step.span,
-            )
-            if ref_decision.action == "reuse":
-                session.ref_reuse_decider.mark_reused(ref_group, session)
-                state.recorded = True
-                return False
-            session.ref_pending_updates[ref_group.last_step_id] = session.ref_reuse_decider.cache_update_payload(
-                ref_group,
-                ref_decision,
-            )
+        if session.ref_reuse_decider.prepare_step(step, session):
+            state.recorded = True
+            return False
 
         session.mark_running(step)
         aborted = self.execute_current_step(step, session, state)
@@ -241,6 +220,11 @@ class LocalStateStepHandler(BaseRuntimeStepHandler):
         serialized_value = session.value_resolver.value_to_serialized(value)
         if isinstance(local_bindings, dict):
             local_bindings[target] = serialized_value
+            types = session.state.artifacts.setdefault('local_value_types', {})
+            if isinstance(value, dict):
+                types[target] = value.type_id if isinstance(value, AdaptedValue) else 'record'
+            else:
+                types.pop(target, None)
         state.driver_code = "LOCAL_ASSIGN"
         state.driver_payload = {"target": target, "value": serialized_value}
         return False
@@ -644,8 +628,44 @@ class MutationGroupStepHandler:
         return True
 
 
+class PrintStepHandler:
+    """Execute language output independently of laboratory capability checks."""
+
+    def handle(self, step: PlanStep, session: RuntimeSession) -> bool:
+        decision = session.gate_evaluator.evaluate(step, session.state, session=session)
+        if decision == "skip":
+            session.record_skipped(step, "runtime_condition_false")
+            return False
+        if decision == "error":
+            session.record_failed(step, reason="runtime_condition_unresolved", diagnostic=Diagnostic(
+                code="RT_RUNTIME_CONDITION_UNRESOLVED", message="print condition could not be evaluated",
+                span=step.span, node_id=step.step_id))
+            return session.fail_fast
+        if session.ref_reuse_decider.prepare_step(step, session):
+            return False
+        session.mark_running(step)
+        try:
+            value = (session.value_resolver.read_value(step.args["value"], session.state)
+                     if set(step.args) == {"value"} else UNRESOLVED)
+            if value is UNRESOLVED:
+                session.record_failed(step, reason="print_value_unresolved", diagnostic=Diagnostic(
+                    code="RT_PRINT_VALUE_UNRESOLVED", message="print operand could not be read as a value",
+                    span=step.span, node_id=step.step_id))
+                return session.fail_fast
+            text = format_print_value(session.value_resolver.deep_serialize(value), registry=session.value_resolver.adapters)
+        except (TypeError, ValueError, RecursionError) as error:
+            session.record_failed(step, reason="print_value_invalid", diagnostic=Diagnostic(
+                code="RT_PRINT_VALUE_INVALID", message=f"print value cannot be displayed: {error}",
+                span=step.span, node_id=step.step_id))
+            return session.fail_fast
+        print(text, flush=True)
+        session.record_completed(step)
+        return False
+
+
 class RuntimeStepDispatcher:
     def __init__(self) -> None:
+        self.print_handler = PrintStepHandler()
         self.control_handler = ControlStepHandler()
         self.local_state_handler = LocalStateStepHandler()
         self.repeat_handler = RepeatStepHandler()
@@ -654,6 +674,8 @@ class RuntimeStepDispatcher:
         self.group_handler = MutationGroupStepHandler(self.driver_handler)
 
     def dispatch(self, step: PlanStep, session: RuntimeSession) -> bool:
+        if step.op == "print":
+            return self.print_handler.handle(step, session)
         if step.op == "MutationGroup":
             return self.group_handler.handle(step, session)
         if step.op in {"control_break", "control_continue"}:

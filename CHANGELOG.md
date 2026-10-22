@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Added `print(expression);` to display the current value immediately on the
+  console during execution, without a driver call or material change. Printed
+  values are separate from protocol returns and saved run results. Shared value
+  contracts and registered adapters support program/schedule configurations,
+  container target views, exact material selection and read-only predicates.
+
 ## 1.0.9 — 2026-10-19
 
 ### Added

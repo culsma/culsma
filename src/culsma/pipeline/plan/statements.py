@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Mapping, cast
 
+from culsma.common.value_contracts import VALUE_CONTRACTS
 from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.container_views import contains_container_contents_volume
 from culsma.pipeline.expression_resolution import quantity_expression_unit
@@ -195,7 +196,8 @@ class LetPlanHandler(BasePlanStatementHandler):
                 binding = f'{ctx.step_id_prefix}{stmt.id}::plate'
                 value['runtime_ref'] = {'kind': 'IRIdentifier', 'name': binding}
                 return
-            if self.is_runtime_local_alias(stmt.value, ctx.local_env) or contains_container_contents_volume(stmt.value):
+            if (self.is_runtime_local_alias(stmt.value, ctx.local_env) or contains_container_contents_volume(stmt.value)
+                    or VALUE_CONTRACTS.requires_capture(stmt.value) or VALUE_CONTRACTS.requires_capture(value)):
                 state.runtime_alias_value = value
                 ctx.local_env[stmt.name] = {"kind": "IRIdentifier", "name": stmt.name}
             else:
@@ -765,7 +767,11 @@ class StepPlanHandler(BasePlanStatementHandler):
             PlanStep(
                 step_id=f"{ctx.step_id_prefix}{stmt.id}",
                 op=stmt.name,
-                args={arg.name: self.serializer.serialize_expr(arg.value, ctx.local_env) for arg in stmt.args},
+                args={
+                    ("value" if stmt.name == "print" and arg.name == "$arg0" else arg.name):
+                    self.serializer.serialize_expr(arg.value, ctx.local_env)
+                    for arg in stmt.args
+                },
                 deps=[],
                 gate=merge_gate(ctx.gate_base),
                 span=stmt.span,

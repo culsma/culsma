@@ -1,6 +1,7 @@
 """Container target-view member-path semantics."""
 
 from __future__ import annotations
+from culsma.common.value_contracts import VALUE_CONTRACTS, ReadCallContract
 
 from dataclasses import dataclass
 from typing import Any
@@ -213,3 +214,9 @@ def _is_member_expr(expr: Any) -> bool:
     return (
         isinstance(expr, dict) and expr.get("kind") == "IRMember"
     ) or (hasattr(expr, "base") and hasattr(expr, "member"))
+
+
+for type_id in ('material.reference', 'material.container', 'material.group', 'material.target_view'):
+    VALUE_CONTRACTS.register_type(type_id)
+VALUE_CONTRACTS.register_call('get', ReadCallContract('material.entry',
+    parameters=('self', 'arg0'), receiver_member='materials'))

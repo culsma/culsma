@@ -1144,7 +1144,7 @@ class TestEdgeCases:
     def test_step_call_rejects_positional_args_except_hold(self):
         with pytest.raises(VisitError) as exc_info:
             parse('protocol T { Step(tube); }')
-        assert "hold(...) is the only positional step form" in str(exc_info.value.orig_exc)
+        assert "except hold(...) and print(...)" in str(exc_info.value.orig_exc)
 
     def test_multiple_protocols(self):
         src = """

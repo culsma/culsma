@@ -108,7 +108,9 @@ To save those results as JSON:
 culsma run /tmp/culsma-smoke.culs --results results.json
 ```
 
-The file has exactly three fields: `materials`, `resources`, and `returns`.
+The file contains `materials`, `resources`, and `returns`.
+`print(expression);` displays the current value immediately on the console
+during execution. Printed text is separate from saved results.
 Material rows contain `name`, `amount`, and `unit`; processed samples use their
 declared input amount, while stock reagents use the amount withdrawn at runtime.
 Container resource rows contain `kind`, `capacity_uL`, and `count`. Explicit

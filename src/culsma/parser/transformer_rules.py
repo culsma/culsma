@@ -414,11 +414,11 @@ class StepCallHandler(StatementRuleHandler):
             if isinstance(raw_arg, Arg):
                 args.append(raw_arg)
                 continue
-            if name != "hold":
-                raise ValueError("step calls only accept named args; hold(...) is the only positional step form")
+            if name not in {"hold", "print"}:
+                raise ValueError("step calls only accept named args except hold(...) and print(...)")
             args.append(
                 Arg(
-                    name="target" if index == 0 else f"arg{index}",
+                    name=(f"$arg{index}" if name == "print" else "target" if index == 0 else f"arg{index}"),
                     value=raw_arg,
                     span=getattr(raw_arg, "span", state.span),
                 )

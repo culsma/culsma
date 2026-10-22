@@ -13,6 +13,7 @@ from culsma.pipeline.operation_specs import BUILTIN_OPERATION_SPECS, OperationSp
 from culsma.pipeline.scope import ScopeQueryService
 
 from .context import ValidationResult, _GroupBinding
+from .expression_contracts import validate_print_expression_position
 from .groups import GroupIndexValidator
 from .statements import StatementValidationContext, validate_statement_list_with_context
 
@@ -31,6 +32,12 @@ def validate(
     diagnostics: list[Diagnostic] = returns_header_diagnostics(ir)
     operations = operation_specs
     scope_query = ScopeQueryService.from_model(analysis.scope)
+
+    for unit in [*ir.protocols, *([ir.script_entry] if ir.script_entry is not None else [])]:
+        expressions = [unit.return_value, *(arg.value for arg in unit.return_bindings)]
+        expressions.extend(param.default for param in getattr(unit, "params", []))
+        for expr in expressions:
+            diagnostics.extend(validate_print_expression_position(expr, node_id=unit.id))
 
     if ir.script_entry is not None:
         validate_script_entry(

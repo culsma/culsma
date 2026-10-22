@@ -4,8 +4,11 @@ from __future__ import annotations
 
 from culsma.pipeline.external_inputs import external_parameter_type_diagnostics, ExternalInputScope, ExternalInputResolver, ExternalInputStatus, deferred_external_bindings
 
-from dataclasses import dataclass
+from dataclasses import dataclass, fields, is_dataclass
 from typing import Any, Iterable, Mapping, cast
+
+from culsma.common.diagnostics import Diagnostic
+from culsma.common.quantity_arithmetic import QuantityArithmeticError
 
 from culsma.pipeline.content_inputs import ContentArgumentResolver, ContentInputSource, DeferredContentEnum, deferred_content_enum_bindings
 from culsma.pipeline.ir_nodes import (
@@ -26,7 +29,7 @@ from culsma.pipeline.program_registry import is_known_program_kind
 
 from .context import TypecheckContext
 
-from .expressions import DEFAULT_TYPECHECK_EXPRESSION_SERVICES, DeferredNumeric, TypecheckExpressionServices
+from .expressions import DEFAULT_TYPECHECK_EXPRESSION_SERVICES, DeferredNumeric, DeferredQuantity, TypecheckExpressionServices
 
 
 @dataclass
@@ -336,8 +339,32 @@ class StepTypecheckState(TypecheckStatementState):
 
 
 class StepTypecheckHandler(BaseTypecheckStatementHandler):
+    def check_print_expression(self, expr: Any, stmt: IRStep, ctx: TypecheckContext) -> None:
+        try:
+            self.services.evaluate_quantity(expr, ctx.expr_bindings)
+        except DeferredQuantity:
+            pass
+        except QuantityArithmeticError as error:
+            code = {"zero": "TYPE_QUANTITY_DIVISION_BY_ZERO", "unit": "TYPE_UNKNOWN_UNIT",
+                    "nonfinite": "TYPE_QUANTITY_VALUE_NONFINITE", "dimension": "TYPE_DIMENSION_MISMATCH"}.get(
+                        error.reason, "TYPE_UNIT_NOT_ALLOWED")
+            ctx.extend([Diagnostic(code=code, message=str(error), span=getattr(expr, "span", stmt.span), node_id=stmt.id)])
+            return
+        if is_dataclass(expr):
+            for item in fields(expr):
+                if item.name != "span":
+                    self.check_print_expression(getattr(expr, item.name), stmt, ctx)
+        elif isinstance(expr, (list, tuple)):
+            for item in expr:
+                self.check_print_expression(item, stmt, ctx)
+        elif isinstance(expr, dict):
+            for item in expr.values():
+                self.check_print_expression(item, stmt, ctx)
+
     def prepare(self, stmt: IRStatement, ctx: TypecheckContext) -> TypecheckStatementState:
         stmt = cast(IRStep, stmt)
+        if stmt.name == "print":
+            return StepTypecheckState()
         op_spec = ctx.operation_specs.get(stmt.name)
         if op_spec is None:
             return StepTypecheckState(stop=True)
@@ -353,6 +380,8 @@ class StepTypecheckHandler(BaseTypecheckStatementHandler):
         state = cast(StepTypecheckState, state)
         arg_dims = state.op_arg_dimensions or {}
         for arg in stmt.args:
+            if stmt.name == "print":
+                self.check_print_expression(arg.value, stmt, ctx)
             ctx.extend(
                 self.services.typecheck_program_calls_in_expr(
                     arg.value,

@@ -474,7 +474,7 @@ def _bind_component_params(
     param_by_name = {param.name: param for param in protocol.params}
     for index, arg in enumerate(call_args):
         arg_name = arg.name
-        if arg_name == f"arg{index}" and arg_name not in param_by_name:
+        if arg_name == f"$arg{index}" or (arg_name == f"arg{index}" and arg_name not in param_by_name):
             if index >= len(protocol.params):
                 raise ValueError(f"Component '{protocol.name}' received too many positional arguments")
             arg_name = protocol.params[index].name
