@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import Any
 
 from culsma.runtime.event_log import RuntimeEvent
@@ -32,7 +33,7 @@ def replay_events(events: list[RuntimeEvent] | list[dict[str, Any]]) -> RuntimeS
             )
             material_snapshot = event.payload.get("material_state_snapshot")
             if isinstance(material_snapshot, dict):
-                state.artifacts["material_state"] = material_snapshot
+                state.artifacts["material_state"] = deepcopy(material_snapshot)
             continue
 
         if event.kind == "STEP_FAILED":
@@ -40,6 +41,7 @@ def replay_events(events: list[RuntimeEvent] | list[dict[str, Any]]) -> RuntimeS
             status = "failed"
             if reason == "unsatisfied_dependency":
                 status = "skipped"
+                state.artifacts.setdefault("skip_reasons", {})[step_id] = reason
             state.step_status[step_id] = status
             state.history.append(
                 {
@@ -53,6 +55,7 @@ def replay_events(events: list[RuntimeEvent] | list[dict[str, Any]]) -> RuntimeS
 
         if event.kind == "STEP_SKIPPED":
             state.step_status[step_id] = "skipped"
+            state.artifacts.setdefault("skip_reasons", {})[step_id] = event.payload.get("reason")
             state.history.append(
                 {
                     "step_id": step_id,

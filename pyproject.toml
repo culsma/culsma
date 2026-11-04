@@ -29,6 +29,7 @@ Changelog = "https://github.com/culsma/culsma/blob/main/CHANGELOG.md"
 [project.optional-dependencies]
 dev = [
   "pytest>=7.0.0",
+  "pytest-cov>=6.0.0",
 ]
 
 [project.scripts]
@@ -44,3 +45,13 @@ include = ["culsma", "culsma.*"]
 [tool.setuptools.package-data]
 "culsma" = ["stdlib/*.culs"]
 "culsma.parser" = ["culsma.lark"]
+
+[tool.coverage.run]
+branch = true
+source = ["culsma"]
+
+[tool.coverage.report]
+fail_under = 87
+precision = 2
+show_missing = true
+skip_covered = true

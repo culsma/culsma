@@ -162,8 +162,21 @@ culsma replay --run-json tmp/run/run.json --out tmp/replayed_state.json
 ## Run Tests
 
 ```bash
+python -m pip install -e '.[dev]'
 python -m pytest -q
 ```
+
+Measure line and branch coverage for the full implementation, including modules
+that the tests never import:
+
+```bash
+python -m pytest -q --cov --cov-report=term:skip-covered --cov-report=html --cov-report=xml
+```
+
+Open `htmlcov/index.html` to inspect missing lines and branches. The Python 3.12
+Release Check job runs this command and retains HTML and XML reports for 14 days.
+Coverage settings and the minimum combined line/branch score live in
+`pyproject.toml`.
 
 ## More
 

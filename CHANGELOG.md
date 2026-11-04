@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Fixed
+
+- Event replay preserves skip reasons so control-flow skips still satisfy
+  downstream dependencies on continuation. Restored material snapshots are
+  independent copies of the saved events.
+- Runs with unresolved in-flight steps are no longer reported as successful.
+  Continuing such a state does not automatically repeat the unresolved action.
+
 ### Added
 
 - Added `print(expression);` to display the current value immediately on the

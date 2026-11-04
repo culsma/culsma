@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import runpy
+import shutil
 import subprocess
 
 import pytest
@@ -13,8 +14,26 @@ ROOT = Path(__file__).resolve().parents[1]
 BENCHMARK = runpy.run_path(str(ROOT / 'benchmarks/reproduce.py'))
 
 
+@pytest.fixture
+def runtime_checkout(tmp_path):
+    """Pin the actual source under test without depending on the user's git status."""
+    runtime = tmp_path / 'runtime'
+    shutil.copytree(ROOT / 'src', runtime / 'src', ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
+    shutil.copy2(ROOT / 'pyproject.toml', runtime / 'pyproject.toml')
+    commands = [
+        ['init', '-q'],
+        ['add', 'src', 'pyproject.toml'],
+        ['-c', 'user.name=Culsma Tests', '-c', 'user.email=tests@example.invalid',
+         '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null',
+         'commit', '-qm', 'Test runtime snapshot'],
+    ]
+    for args in commands:
+        subprocess.run(['git', '-C', str(runtime), *args], check=True, capture_output=True, text=True)
+    return runtime
+
+
 class BenchmarkVersionFixture:
-    def create(self, directory, role):
+    def create(self, directory, role, runtime):
         import culsma
         import lark
 
@@ -23,7 +42,7 @@ class BenchmarkVersionFixture:
         (artifact / 'source.md').write_text('## Steps\n\n1. Prepare a sample tube.\n')
         (artifact / 'protocol.culs').write_text(
             '// Source step S1: Prepare a sample tube.\nlet sample=tube();\nreturn sample;\n')
-        commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+        commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=runtime, text=True).strip()
         manifest = {
             'source_commit': commit, 'runtime_commit': commit,
             'runtime_package_version': culsma.__version__, 'lark_version': lark.__version__,
@@ -44,11 +63,11 @@ class BenchmarkVersionFixture:
 
 
 @pytest.mark.parametrize('role', [None, 'development'])
-def test_versioned_run_checks_selected_inputs_and_updates_only_selected_table(tmp_path, role):
-    manifest = BenchmarkVersionFixture().create(tmp_path / 'version', role)
+def test_versioned_run_checks_selected_inputs_and_updates_only_selected_table(tmp_path, role, runtime_checkout):
+    manifest = BenchmarkVersionFixture().create(tmp_path / 'version', role, runtime_checkout)
     published = (ROOT / 'benchmarks/README.md').read_bytes()
     output = tmp_path / 'results'
-    assert BENCHMARK['reproduce'](ROOT, output, True, manifest) == 0
+    assert BENCHMARK['reproduce'](runtime_checkout, output, True, manifest) == 0
     summary = json.loads((output / 'summary.json').read_text())
     key = 'matches_manifest' if role else 'matches_paper'
     assert summary[key] is True
@@ -60,16 +79,27 @@ def test_versioned_run_checks_selected_inputs_and_updates_only_selected_table(tm
     assert '| Example | 1/1 | 100% |' in text
     assert (ROOT / 'benchmarks/README.md').read_bytes() == published
     with pytest.raises(FileExistsError):
-        BENCHMARK['reproduce'](ROOT, output, manifest_path=manifest)
+        BENCHMARK['reproduce'](runtime_checkout, output, manifest_path=manifest)
 
 
-def test_changed_version_input_rejects_before_writing_results(tmp_path):
-    manifest = BenchmarkVersionFixture().create(tmp_path / 'version', 'development')
+def test_changed_version_input_rejects_before_writing_results(tmp_path, runtime_checkout):
+    manifest = BenchmarkVersionFixture().create(tmp_path / 'version', 'development', runtime_checkout)
     program = manifest.parent / 'modules/example/protocol.culs'
     program.write_text(program.read_text() + '// changed input\n')
     output = tmp_path / 'results'
     with pytest.raises(ValueError, match='input differs'):
-        BENCHMARK['reproduce'](ROOT, output, manifest_path=manifest)
+        BENCHMARK['reproduce'](runtime_checkout, output, manifest_path=manifest)
+    assert not output.exists()
+
+
+@pytest.mark.parametrize('changed_file', ['src/culsma/__init__.py', 'pyproject.toml'])
+def test_changed_runtime_rejects_before_writing_results(tmp_path, runtime_checkout, changed_file):
+    manifest = BenchmarkVersionFixture().create(tmp_path / 'version', 'development', runtime_checkout)
+    path = runtime_checkout / changed_file
+    path.write_text(path.read_text() + '\n# Local change\n')
+    output = tmp_path / 'results'
+    with pytest.raises(ValueError, match='Runtime source or package metadata has local changes'):
+        BENCHMARK['reproduce'](runtime_checkout, output, manifest_path=manifest)
     assert not output.exists()
 
 

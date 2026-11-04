@@ -40,7 +40,9 @@ class RunResult:
     def ok(self) -> bool:
         if any(d.severity == "error" for d in self.diagnostics):
             return False
-        if any(status == "failed" for status in self.state.step_status.values()):
+        # A restored in-flight step has an unknown outcome. It must neither be
+        # dispatched again automatically nor make an incomplete run look OK.
+        if any(status not in {"completed", "skipped"} for status in self.state.step_status.values()):
             return False
         return True
 
