@@ -840,6 +840,10 @@ def apply_transfer_mass(
     material_effect_adapter: ScientificModelMaterialAdapter | None,
 ) -> MaterialUpdateResult:
     src = state["containers"][src_id]
+    from .solution import has_solution_solutes
+    if has_solution_solutes(src):
+        return diagnostic_result(step, state, "MAT_SOLUTION_OPERATION_UNSUPPORTED",
+                                 "Use volume transfers for concentration-bearing solutions")
     dst = state["containers"][dst_id]
     if container_has_unknown(src):
         return diagnostic_result(step, state, "MAT_QUANTITY_UNKNOWN", "Mass-based transfer requires a known source mass; declared component mass is unknown")

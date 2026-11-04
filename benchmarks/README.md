@@ -21,6 +21,11 @@ Coverage is matched / total numbered source steps. **—** means not evaluated i
 version. Composite rows count their own steps, not the steps of reused modules.
 Coverage measures source–program correspondence, not experimental success.
 
+The [concentration accounting case](concentration/README.md) separately checks
+optional concentration initialization, mixing, splitting, dilution and exact
+per-solute accounting in the local implementation. It is not included in these
+historical workflow coverage totals.
+
 The original seven modules and two composites cover **172/173** steps in 1.0.7
 and **173/173** in 1.0.9. The three added entries cover **37/37** in 1.0.9 and
 are recorded separately.

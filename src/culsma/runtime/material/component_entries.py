@@ -384,6 +384,8 @@ def quantities_compatible(left: Any, right: Any) -> bool:
         return left is None and right is None
     if not isinstance(left, dict) or not isinstance(right, dict):
         return False
+    if bool(left.get("solution_solute")) != bool(right.get("solution_solute")):
+        return False
     if is_unknown(left) != is_unknown(right):
         known = right if is_unknown(left) else left
         if known.get("value") != 0:
@@ -667,16 +669,17 @@ def split_component_entry(entry: dict[str, Any], ratio: float) -> tuple[dict[str
         moved["amount"] = None if ratio > 0 else 0.0
         return remaining, moved
     amount = float(entry.get("amount", 0.0))
-    moved_amount = clamp_entry_value(amount * ratio)
-    remaining["amount"] = clamp_entry_value(amount - moved_amount)
-    moved["amount"] = moved_amount
     quantity = entry.get("quantity")
+    preserve_positive = isinstance(quantity, dict) and bool(quantity.get("solution_solute"))
+    moved_amount = clamp_entry_value(amount * ratio, preserve_positive=preserve_positive)
+    remaining["amount"] = clamp_entry_value(amount - moved_amount, preserve_positive=preserve_positive)
+    moved["amount"] = moved_amount
     if isinstance(quantity, dict):
         value = float(quantity.get("value", amount))
         remaining_quantity = deepcopy(quantity)
         moved_quantity = deepcopy(quantity)
-        moved_value = clamp_entry_value(value * ratio)
-        remaining_quantity["value"] = clamp_entry_value(value - moved_value)
+        moved_value = clamp_entry_value(value * ratio, preserve_positive=preserve_positive)
+        remaining_quantity["value"] = clamp_entry_value(value - moved_value, preserve_positive=preserve_positive)
         moved_quantity["value"] = moved_value
         remaining["quantity"] = remaining_quantity
         moved["quantity"] = moved_quantity
@@ -688,6 +691,8 @@ def component_entry_has_quantity(entry: dict[str, Any]) -> bool:
     if is_unknown(quantity):
         return any(value > 0 for value in quantity["shares"].values())
     if isinstance(quantity, dict):
+        if quantity.get("solution_solute"):
+            return float(quantity.get("value", 0.0)) != 0.0
         return abs(float(quantity.get("value", 0.0))) > ENTRY_EPSILON
     return abs(float(entry.get("amount", 0.0))) > ENTRY_EPSILON
 
@@ -708,7 +713,9 @@ def plan_component_entry_transfer(
     moved_entries: list[dict[str, Any]] = []
     for source_entry in source_entries:
         remaining, moved = split_component_entry(source_entry, ratio)
-        if component_entry_has_quantity(remaining):
+        if component_entry_has_quantity(remaining) or (
+            ratio < 1.0 and remaining.get("quantity", {}).get("solution_solute")
+        ):
             remaining_entries.append(remaining)
         if not component_entry_has_quantity(moved):
             if ratio > 0.0 and not any(
@@ -1140,7 +1147,9 @@ def append_component_quantity(
     replace_component_entries(container, entries)
 
 
-def clamp_entry_value(value: float) -> float:
+def clamp_entry_value(value: float, *, preserve_positive: bool = False) -> float:
     if value < -ENTRY_EPSILON:
         raise ValueError("Component entry quantity became negative")
+    if preserve_positive:
+        return max(0.0, value)
     return 0.0 if abs(value) <= ENTRY_EPSILON else value

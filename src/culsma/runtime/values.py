@@ -746,6 +746,7 @@ def _runtime_protocol_output_serialize(value: Any) -> Any:
                 "mass_mg",
                 "count_cells",
                 "component_quantities",
+                "component_concentrations",
                 "component_entries",
                 "unknown_quantity_dimensions",
                 "aggregate_quantity_policy",
@@ -893,6 +894,10 @@ def _container_ref_payload(material_state: Any, container_id: str) -> dict[str, 
         relationships = raw.get("material_relationships")
         if isinstance(relationships, list):
             payload["material_relationships"] = deepcopy(relationships)
+    if raw.get("component_concentrations"):
+        payload["component_quantities"] = component_quantities
+        payload["component_entries"] = deepcopy(raw.get("component_entries", []))
+        payload["component_concentrations"] = deepcopy(raw["component_concentrations"])
     container_kind = metadata_out.get("kind")
     if isinstance(container_kind, str):
         payload["container_kind"] = container_kind

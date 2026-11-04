@@ -14,6 +14,7 @@ QuantityValue = Scalar | tuple[Scalar, str]
 UNIT_SCALES = {
     "volume": {"uL": 1, "ul": 1, "mL": 1000, "ml": 1000, "L": 1000000},
     "mass": {"ug": .001, "mg": 1, "g": 1000, "kg": 1000000},
+    "mass_concentration": {"mg_per_uL": 1},
     "time": {"ms": .001, "s": 1, "sec": 1, "min": 60, "h": 3600, "hr": 3600, "day": 86400},
     "temperature": {"C": 1, "K": 1},
     "percent": {"%": 1, "pct": 1},
@@ -72,6 +73,9 @@ def quantity_result_unit(op: str, left_unit: str | None, right_unit: str | None)
     for unit in (left_unit, right_unit):
         if unit is not None and unit not in UNIT_TO_DIMENSION:
             raise QuantityArithmeticError("unit", f"Unknown quantity unit '{unit}'")
+    if (op == "/" and UNIT_TO_DIMENSION.get(left_unit) == "mass"
+            and UNIT_TO_DIMENSION.get(right_unit) == "volume"):
+        return "mg_per_uL"
     if op in {"+", "-"}:
         if (left_unit is None) != (right_unit is None):
             raise QuantityArithmeticError("dimension", "Cannot add or subtract a scalar and a unit-bearing quantity")
@@ -95,14 +99,21 @@ def quantity_result_unit(op: str, left_unit: str | None, right_unit: str | None)
 def quantity_binary(op: str, left: Any, right: Any) -> QuantityValue:
     """Keep the quantity operand's unit; additive operations use the left unit.
 
-    Compatible quantity ratios are scalar. Compound/inverse units are outside
-    the current language quantity model. No display rounding occurs here.
+    Compatible quantity ratios are scalar. Mass/volume yields concentration.
+    Other compound/inverse units are outside the current quantity model. No display rounding occurs here.
     """
     lv, lu = quantity_parts(left)
     rv, ru = quantity_parts(right)
     unit = quantity_result_unit(op, lu, ru)
     if op == "/" and rv == 0:
         raise QuantityArithmeticError("zero", "Division by zero in quantity expression")
+    if unit == "mg_per_uL" and op == "/" and lu in UNIT_SCALES["mass"] and ru in UNIT_SCALES["volume"]:
+        numerator = require_finite_number(lv * UNIT_SCALES["mass"][lu])
+        denominator = require_finite_number(rv * UNIT_SCALES["volume"][ru])
+        if denominator == 0:
+            raise QuantityArithmeticError("nonfinite", "Concentration denominator underflowed")
+        value = numerator / denominator
+        return (require_finite_number(value), unit)
     if lu is not None and ru is not None:
         rv = convert_value(rv, ru, lu)
         if op == "/" and rv == 0:

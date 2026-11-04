@@ -357,6 +357,17 @@ class TypecheckExpressionServices:
                 continue
             if isinstance(item.left, IRCall) and item.left.name == "DefineContent":
                 diagnostics.extend(self.typecheck_define_content_args(item.left.args, item.left.span, node_id, scope=scope or ContentArgumentScope(expr_bindings=expr_bindings)))
+            if isinstance(item.left, IRCall):
+                for arg in item.left.args:
+                    if arg.name == "concentration":
+                        diagnostics.extend(self.validate_quantity_dimensions(
+                            arg.value, expr_bindings=expr_bindings,
+                            expected=["mass_concentration"],
+                            non_quantity_code="TYPE_CONCENTRATION_DIMENSION_MISMATCH",
+                            mismatch_code="TYPE_CONCENTRATION_DIMENSION_MISMATCH",
+                            unknown_code="TYPE_UNKNOWN_UNIT",
+                            missing_unit_code="TYPE_CONCENTRATION_DIMENSION_MISMATCH",
+                            label="content concentration", span=arg.span, node_id=node_id))
             amount = self.resolve_bound_expr(item.right, expr_bindings)
             diagnostics.extend(
                 self.validate_quantity_dimensions(

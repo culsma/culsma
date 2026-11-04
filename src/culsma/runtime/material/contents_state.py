@@ -424,6 +424,10 @@ class MaterialIndexedPartsStateManager:
         if source is None:
             return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", f"Unknown frac sample '{ref_display(sample_arg)}'")
 
+        from .solution import has_solution_solutes
+        if has_solution_solutes(source):
+            return diagnostic_result(step, state, "MAT_SOLUTION_OPERATION_UNSUPPORTED",
+                                     "Concentration-bearing solution fractionation is not supported")
         working = deepcopy(state)
         source = container(working, source_id)
         if source is None:

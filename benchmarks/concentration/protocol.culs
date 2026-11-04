@@ -1,0 +1,27 @@
+// Synthetic accounting benchmark: homogeneous stocks, additive liquid volumes.
+// These are declared starting conditions, not a laboratory recipe.
+protocol ConcentrationAccounting {
+  let antibody_c = 5mg / 1mL;
+  let antibody = tube(label="Antibody", load=[
+    content(kind=ContentKind.BIO_MOLECULE_OR_VIRUS, type=ContentType.PROTEIN,
+            code="ANTI_CD45", concentration=antibody_c):10uL
+  ]);
+  let rna = tube(label="RNA", load=[
+    content(kind=ContentKind.BIO_MOLECULE_OR_VIRUS, type=ContentType.RNA,
+            code="RNA", concentration=1mg / 1mL):10uL
+  ]);
+  let compound = tube(label="Compound", load=[
+    content(kind=ContentKind.CHEMICAL, type=ContentType.ORGANIC_COMPOUND,
+            code="COMPOUND", concentration=2mg / 1mL):10uL
+  ]);
+  let diluent = tube(label="Diluent", load=[
+    content(kind=ContentKind.FORMULATION, type=ContentType.BUFFER, code="PBS"):20uL
+  ]);
+  let mix = tube(label="Mix");
+  mix << [antibody:4uL, rna:2uL, compound:4uL];
+  let aliquot = tube(label="Aliquot");
+  aliquot << [mix:5uL];
+  mix << [diluent:10uL];
+  aliquot << [diluent:5uL];
+  return aliquot;
+}

@@ -248,6 +248,10 @@ def apply_load_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateR
         }
         slot = container_contents[content_id]
 
+    if "concentration" in step.args:
+        from culsma.runtime.material.solution import load_solution
+        return load_solution(step, state, container_id, content_id, amount)
+
     unit = str(amount["unit"])
     value = float(amount["value"])
     if unit in VOLUME_TO_UL:
@@ -292,6 +296,9 @@ def apply_load_content(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateR
     if cap_diag is not None:
         return cap_diag
 
+    if container.get("component_quantities", {}).get(content_id, {}).get("solution_solute"):
+        return diagnostic_result(step, state, "MAT_CONTENT_LOAD_AXIS_MISMATCH",
+                                 "Solution solute requires an explicit solution quantity basis")
     existing_axis = slot.get("axis")
     if existing_axis is not None and existing_axis != axis:
         return diagnostic_result(

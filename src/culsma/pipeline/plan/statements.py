@@ -320,7 +320,7 @@ class LetPlanHandler(BasePlanStatementHandler):
                 PlanStep(
                     step_id=define_step_id,
                     op="DefineContent",
-                    args={arg.name: self.serializer.serialize_expr(arg.value, ctx.local_env) for arg in item.left.args},
+                    args={arg.name: self.serializer.serialize_expr(arg.value, ctx.local_env) for arg in item.left.args if arg.name != "concentration"},
                     deps=[],
                     gate=merge_gate(ctx.gate_base),
                     span=item.left.span,
@@ -334,6 +334,8 @@ class LetPlanHandler(BasePlanStatementHandler):
                         "container": self.serializer.serialize_expr(IRIdentifier(name=stmt.name, span=stmt.span), ctx.local_env),
                         "content": self.serializer.serialize_expr(content_ref, ctx.local_env),
                         "amount": self.serializer.serialize_expr(item.right, ctx.local_env),
+                        **{arg.name: self.serializer.serialize_expr(arg.value, ctx.local_env)
+                           for arg in item.left.args if arg.name == "concentration"},
                     },
                     deps=[],
                     gate=merge_gate(ctx.gate_base),

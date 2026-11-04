@@ -12,6 +12,14 @@
 
 ### Added
 
+- Optional mass/volume `concentration` on initial content loads derives solute
+  mass from declared solution volume. Whole and volume transfers conserve each
+  solute through mixing and dilution; result data exposes current concentration.
+  Unsupported solid/unknown/associated mixtures fail atomically. Separation,
+  fractionation, mass transfers and material replacement remain unsupported for
+  these homogeneous solutions. A dedicated accounting benchmark covers protein,
+  RNA, small molecules and event replay.
+
 - Added `print(expression);` to display the current value immediately on the
   console during execution, without a driver call or material change. Printed
   values are separate from protocol returns and saved run results. Shared value

@@ -1,0 +1,8 @@
+{
+  "Antibody": {"volume_uL": 6, "mass_mg": {"ANTI_CD45": 0.03}},
+  "RNA": {"volume_uL": 8, "mass_mg": {"RNA": 0.008}},
+  "Compound": {"volume_uL": 6, "mass_mg": {"COMPOUND": 0.012}},
+  "Diluent": {"volume_uL": 5},
+  "Mix": {"volume_uL": 15, "mass_mg": {"ANTI_CD45": 0.01, "RNA": 0.001, "COMPOUND": 0.004}},
+  "Aliquot": {"volume_uL": 10, "mass_mg": {"ANTI_CD45": 0.01, "RNA": 0.001, "COMPOUND": 0.004}}
+}

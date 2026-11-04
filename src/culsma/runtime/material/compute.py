@@ -29,6 +29,7 @@ from culsma.runtime.material.scientific_model_adapter import (
     ScientificModelMaterialAdapter,
 )
 from culsma.runtime.material.state import MaterialStateManager
+from culsma.runtime.material.solution import solution_state_error
 
 
 class MaterialCompute:
@@ -73,6 +74,16 @@ class MaterialCompute:
             result = self.state_manager.apply_change(change_plan, state)
         else:
             result = MaterialUpdateResult(material_state=state, diagnostics=[], delta={})
+
+        if result.ok:
+            solution_error = solution_state_error(result.material_state)
+            if solution_error is not None:
+                return diagnostic_result(
+                    step=step,
+                    state=movement_before_state,
+                    code="MAT_SOLUTION_MIXTURE_UNSUPPORTED",
+                    message=solution_error,
+                )
 
         operation_result_state = deepcopy(result.material_state)
         refresh_material_state_aggregates(result.material_state)

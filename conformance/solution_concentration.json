@@ -1,0 +1,30 @@
+{
+  "decision": "SOLUTION-CONCENTRATION-20261104",
+  "status": "implemented_local",
+  "scope": "Optional mass/volume concentration on homogeneous solution initialization and ordinary volume transfers",
+  "invariants": [
+    "Concentration belongs to a load, never shared content identity",
+    "Solute mass equals declared concentration times solution volume",
+    "Solute mass cannot contribute additional solution volume",
+    "Each solute retains identity and conserves quantity through ordinary transfer",
+    "Unknown/undeclared same-solute quantity bases are rejected, not treated as zero",
+    "Current concentrations derive from current mass and volume; zero volume yields no value",
+    "Unsupported solid, bare-mass, unknown and associated mixtures roll back the rejected material step",
+    "Explicit zero and positive trace solutes survive ordinary volume transfer"
+  ],
+  "requirements": {
+    "INIT": "tests/test_solution_concentration.py::test_equivalent_units",
+    "TRANSFER": "tests/test_solution_concentration.py::test_variable_and_continued_transfer_preserve_volume_and_mass",
+    "MIX": "tests/test_solution_concentration.py::test_same_and_different_solutes_mix_and_dilute",
+    "OPTIONAL": "tests/test_solution_concentration.py::test_zero_and_omitted_are_distinct",
+    "ATOMIC": "tests/test_solution_concentration.py::test_failed_transfer_preserves_source",
+    "TYPE": "tests/test_solution_concentration.py::test_invalid_concentration_rejected_before_execution",
+    "PARAMETER": "tests/test_solution_concentration.py::test_protocol_parameter_and_whole_transfer",
+    "MIXTURE_BOUNDARY": "tests/test_solution_concentration.py::test_unsupported_mixture_preserves_both_containers",
+    "LOAD_BOUNDARY": "tests/test_solution_concentration.py::test_mixed_initial_loads_reject_undeclared_mass_in_either_order",
+    "UNKNOWN": "tests/test_solution_concentration.py::test_unknown_material_cannot_enter_declared_solution",
+    "REPLACEMENT": "tests/test_solution_concentration.py::test_solution_replacement_is_rejected_without_retiring_material",
+    "PRECISION": "tests/test_solution_concentration.py::test_zero_and_trace_concentrations_survive_partial_transfer",
+    "BENCHMARK_REPLAY": "tests/test_solution_concentration.py::test_solution_benchmark_and_replay"
+  }
+}

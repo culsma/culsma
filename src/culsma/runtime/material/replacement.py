@@ -38,6 +38,10 @@ def apply_material_replace(step: PlanStep, state: dict[str, Any]) -> MaterialUpd
     source = state.get("containers", {}).get(source_id)
     if not isinstance(source, dict):
         return fail("MAT_BINDING_NOT_FOUND", "Replacement container does not exist")
+    from .solution import has_solution_solutes
+    if has_solution_solutes(source):
+        return fail("MAT_SOLUTION_OPERATION_UNSUPPORTED",
+                    "Replacement of concentration-bearing solution components is not supported")
     contents = state.get("contents_states", {}).get(source_id)
     if isinstance(contents, dict) and contents.get("valid") is not False:
         return fail(

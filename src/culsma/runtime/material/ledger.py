@@ -309,6 +309,8 @@ def container_detail_aggregates(container: Any) -> tuple[float, float]:
             quantity_density = None
         cross_axis_projection = quantity.get("cross_axis_projection", True) is not False
         density = quantity_density or container_density or (1.0 if cross_axis_projection else None)
+        if quantity.get("solution_solute"):
+            density = None
         if density is not None and density <= 0.0:
             density = None
         if dimension == "volume" and unit in VOLUME_TO_UL:
@@ -332,6 +334,8 @@ def refresh_container_aggregates(container: Any) -> None:
     volume_uL, mass_mg = container_detail_aggregates(container)
     container["volume_uL"] = volume_uL
     container["mass_mg"] = mass_mg
+    from culsma.runtime.material.solution import project_concentrations
+    project_concentrations(container)
     unknown_dimensions = sorted({q["dimension"] for q in container.get("component_quantities", {}).values() if is_unknown(q)})
     if unknown_dimensions:
         container["unknown_quantity_dimensions"] = unknown_dimensions

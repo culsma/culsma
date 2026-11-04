@@ -462,6 +462,12 @@ def apply_separation_material(
     output_ids_by_part: dict[str, str] | None = None,
 ) -> SeparationApplicationResult:
     """Resolve and apply one separation through the primary Runtime boundary."""
+    from .solution import has_solution_solutes
+    if has_solution_solutes(source):
+        return SeparationApplicationResult(record={}, failure=MaterialEffectFailure(
+            code="MAT_SOLUTION_OPERATION_UNSUPPORTED",
+            message="Concentration-bearing solutions currently support ordinary volume transfers, not separation"))
+
 
     program_kind = (
         str(program.get("name"))

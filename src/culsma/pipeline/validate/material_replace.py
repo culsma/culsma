@@ -91,6 +91,8 @@ def _validate_replacement_material(value: Any, bindings: dict[str, Any], defined
         or value.left.name != "DefineContent"
     ):
         return "each replacement value must be one content(...):quantity material"
+    if any(arg.name == "concentration" for arg in value.left.args):
+        return "concentration is supported only in initial container loads"
     resolved = resolve_expression(value.right, bindings)
     if resolved.status is ResolutionStatus.DEFERRED and resolved.detail in defined_names:
         return None  # Concrete expanded calls validate formal configuration fields.

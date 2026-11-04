@@ -79,11 +79,11 @@ BUILTIN_OPERATION_SPECS: Mapping[str, OperationSpec] = MappingProxyType(
         ),
         "DefineContent": _spec(
             required={"kind"},
-            allowed={"kind", "type", "code", "name", "attrs"},
+            allowed={"kind", "type", "code", "name", "attrs", "concentration"},
         ),
         "LoadContent": _spec(
             required={"container", "content", "amount"},
-            allowed={"container", "content", "amount"},
+            allowed={"container", "content", "amount", "concentration"},
             dimensions={"amount": {"volume", "mass", "count"}},
         ),
         "AnnotateContent": _spec(
