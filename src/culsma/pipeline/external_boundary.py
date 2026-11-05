@@ -12,6 +12,9 @@ from culsma.pipeline.external_inputs import (
     KNOWN_ENUM_TYPES, ExternalInputResolution, ExternalInputStatus, ExternalInputIssue,
 )
 from culsma.pipeline.compat.external_enums import resolve_legacy_enum
+from culsma.pipeline.environment_boundary import (  # public environment boundary
+    EnvironmentParameterNormalizer, DEFAULT_ENVIRONMENT_PARAMETER_NORMALIZER,
+)
 
 
 class ExternalEnumCodec:

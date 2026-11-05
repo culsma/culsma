@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from culsma.common.quantity_arithmetic import UNIT_SCALES
+from culsma.common.quantity_arithmetic import QuantityDimension, UNIT_SCALES
+from culsma.domains.environment import EnvironmentKey
 
 from culsma.pipeline.expression_resolution import resolve_expression, ResolutionStatus
 
@@ -42,7 +43,7 @@ from culsma.pipeline.ir_nodes import IRControl, IRStatement
 
 from .context import BlockContext
 
-_TIME_UNIT_SCALE = UNIT_SCALES["time"]
+_TIME_UNIT_SCALE = UNIT_SCALES[QuantityDimension.TIME]
 
 
 class ScheduleEvaluator:
@@ -96,12 +97,12 @@ class ScheduleEvaluator:
         return result.value if result.status is not ResolutionStatus.INVALID else expr
 
     def extract_env_time_boundary(self, stmt: WithEnvStmt, *, ctx: BlockContext) -> Quantity | None:
-        duration_arg = next((arg for arg in stmt.env_args if arg.name == "duration"), None)
+        duration_arg = next((arg for arg in stmt.env_args if arg.name == EnvironmentKey.DURATION.value), None)
         if duration_arg is not None:
             resolved = self.resolve_bound_expr(duration_arg.value, ctx=ctx)
             return resolved if isinstance(resolved, Quantity) and self.is_time_point(resolved) else None
 
-        thermal_arg = next((arg for arg in stmt.env_args if arg.name == "thermal"), None)
+        thermal_arg = next((arg for arg in stmt.env_args if arg.name == EnvironmentKey.THERMAL.value), None)
         if thermal_arg is None:
             return None
         thermal_value = self.resolve_bound_expr(thermal_arg.value, ctx=ctx)

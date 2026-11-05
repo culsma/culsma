@@ -6,11 +6,21 @@ import sys
 import pytest
 
 from culsma.enum_services import SOURCE_TYPE_NAMES
+from culsma.common.quantity_arithmetic import QuantityDimension
+from culsma.domains.environment import EnvironmentKey
 from culsma.domains.stream import ObservationUnitBase, OBSERVATION_UNITS, STANDARD_OBSERVATION_UNITS
 from culsma.domains.fractionation import (
     ChromatographyAxisBase, STANDARD_CHROMATOGRAPHY_REGISTRY, ACTIVE_CHROMATOGRAPHY_REGISTRY,
 )
 from culsma.pipeline.external_inputs import KNOWN_ENUM_TYPES
+from culsma.pipeline.external_boundary import DEFAULT_EXTERNAL_ENUM_CODEC
+
+
+@pytest.mark.parametrize('member', [QuantityDimension.PERCENT, EnvironmentKey.CO2])
+def test_internal_enums_are_not_exposed_as_language_types(member):
+    assert type(member).__name__ not in SOURCE_TYPE_NAMES
+    with pytest.raises(TypeError, match='Not an external parameter enum'):
+        DEFAULT_EXTERNAL_ENUM_CODEC.encode(member)
 
 
 @pytest.mark.parametrize('name', sorted(set(SOURCE_TYPE_NAMES.builtins) | SOURCE_TYPE_NAMES.reserved))

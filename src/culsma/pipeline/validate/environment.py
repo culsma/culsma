@@ -5,7 +5,8 @@ from __future__ import annotations
 from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
-from culsma.pipeline.ir_nodes import IRArg, IRCall, IRQuantity, IRStep, IRWithEnv
+from culsma.domains.environment import ENVIRONMENT_MODIFIERS, SOURCE_ENVIRONMENT_KEYS, EnvironmentKey
+from culsma.pipeline.ir_nodes import IRArg, IRBinary, IRCall, IRQuantity, IRStep, IRUnary, IRWithEnv
 
 from .resolution import ExprResolver
 
@@ -19,11 +20,12 @@ class EnvContractValidator:
         expr_bindings: dict[str, Any],
     ) -> list[Diagnostic]:
         diagnostics: list[Diagnostic] = []
-        allowed_arg_names = {"thermal", "field", "co2", "rh", "duration"}
+        args_by_key: dict[EnvironmentKey, IRArg] = {}
         seen_arg_names: set[str] = set()
         duplicate_arg_names: list[str] = []
         for arg in stmt.env_args:
-            if arg.name not in allowed_arg_names:
+            key = SOURCE_ENVIRONMENT_KEYS.get(arg.name)
+            if key is None:
                 diagnostics.append(
                     Diagnostic(
                         code="SEM_UNKNOWN_ARG",
@@ -32,6 +34,8 @@ class EnvContractValidator:
                         node_id=stmt.id,
                     )
                 )
+            else:
+                args_by_key[key] = arg
             if arg.name in seen_arg_names and arg.name not in duplicate_arg_names:
                 duplicate_arg_names.append(arg.name)
             seen_arg_names.add(arg.name)
@@ -65,11 +69,10 @@ class EnvContractValidator:
                     node_id=stmt.id,
                 )
             )
-        thermal_arg = _find_arg_by_name(stmt.env_args, "thermal")
-        field_arg = _find_arg_by_name(stmt.env_args, "field")
-        co2_arg = _find_arg_by_name(stmt.env_args, "co2")
-        rh_arg = _find_arg_by_name(stmt.env_args, "rh")
-        duration_arg = _find_arg_by_name(stmt.env_args, "duration")
+        thermal_arg = args_by_key.get(EnvironmentKey.THERMAL)
+        field_arg = args_by_key.get(EnvironmentKey.FIELD)
+        modifier_arg = next((arg for key, arg in args_by_key.items() if key in ENVIRONMENT_MODIFIERS), None)
+        duration_arg = args_by_key.get(EnvironmentKey.DURATION)
         if thermal_arg is None and field_arg is None:
             if duration_arg is not None:
                 diagnostics.append(
@@ -91,12 +94,12 @@ class EnvContractValidator:
             )
             return diagnostics
 
-        if thermal_arg is None and (co2_arg is not None or rh_arg is not None):
-            conflict_arg = co2_arg or rh_arg
+        if thermal_arg is None and modifier_arg is not None:
+            conflict_arg = modifier_arg
             diagnostics.append(
                 Diagnostic(
                     code="SEM_ENV_ARG_CONFLICT",
-                    message="with env(...): co2/rh require thermal",
+                    message="with env(...): co2/o2/rh require scalar thermal",
                     span=(conflict_arg.span if conflict_arg is not None else stmt.span) or stmt.span,
                     node_id=stmt.id,
                 )
@@ -116,16 +119,16 @@ class EnvContractValidator:
 
         thermal_value = ExprResolver.resolve_bound_expr(thermal_arg.value, expr_bindings)
         thermal_program = isinstance(thermal_value, IRCall) and thermal_value.name == "thermal_program"
-        scalar_thermal = isinstance(thermal_value, IRQuantity) or (
-            isinstance(thermal_arg.value, IRQuantity) and not thermal_program
-        )
+        # An unresolved parameter may still be a thermal_program. Require the
+        # scalar duration only once that distinction is decidable.
+        scalar_thermal = isinstance(thermal_value, (IRQuantity, IRUnary, IRBinary))
 
-        if thermal_program and (co2_arg is not None or rh_arg is not None):
-            conflict_arg = co2_arg or rh_arg
+        if thermal_program and modifier_arg is not None:
+            conflict_arg = modifier_arg
             diagnostics.append(
                 Diagnostic(
                     code="SEM_ENV_ARG_CONFLICT",
-                    message="with env(...): co2/rh are forbidden when thermal uses thermal_program(...)",
+                    message="with env(...): co2/o2/rh are forbidden when thermal uses thermal_program(...)",
                     span=(conflict_arg.span if conflict_arg is not None else stmt.span) or stmt.span,
                     node_id=stmt.id,
                 )
@@ -153,13 +156,6 @@ class EnvContractValidator:
                 )
             )
         return diagnostics
-
-
-def _find_arg_by_name(args: list[IRArg], name: str) -> IRArg | None:
-    for arg in args:
-        if arg.name == name:
-            return arg
-    return None
 
 
 def _requires_scalar_thermal_duration(stmt: IRWithEnv) -> bool:

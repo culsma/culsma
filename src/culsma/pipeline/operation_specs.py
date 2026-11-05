@@ -6,8 +6,10 @@ from dataclasses import dataclass, field
 from types import MappingProxyType
 from typing import Mapping
 
+from culsma.common.quantity_arithmetic import QuantityDimension
 
-def _empty_dimensions() -> Mapping[str, frozenset[str]]:
+
+def _empty_dimensions() -> Mapping[str, frozenset[QuantityDimension]]:
     return MappingProxyType({})
 
 
@@ -15,14 +17,14 @@ def _empty_dimensions() -> Mapping[str, frozenset[str]]:
 class OperationSpec:
     required_args: frozenset[str]
     allowed_args: frozenset[str]
-    arg_dimensions: Mapping[str, frozenset[str]] = field(default_factory=_empty_dimensions)
+    arg_dimensions: Mapping[str, frozenset[QuantityDimension]] = field(default_factory=_empty_dimensions)
 
 
 def _spec(
     *,
     required: set[str] | frozenset[str] = frozenset(),
     allowed: set[str] | frozenset[str],
-    dimensions: dict[str, set[str] | frozenset[str]] | None = None,
+    dimensions: dict[str, set[QuantityDimension] | frozenset[QuantityDimension]] | None = None,
 ) -> OperationSpec:
     return OperationSpec(
         required_args=frozenset(required),
@@ -39,8 +41,8 @@ BUILTIN_OPERATION_SPECS: Mapping[str, OperationSpec] = MappingProxyType(
             required={"sample", "mode"},
             allowed={"sample", "mode", "motion", "duration", "rate", "cycles", "drive"},
             dimensions={
-                "duration": {"time"},
-                "rate": {"rotation_rate", "frequency"},
+                "duration": {QuantityDimension.TIME},
+                "rate": {QuantityDimension.ROTATION_RATE, QuantityDimension.FREQUENCY},
             },
         ),
         "sep": _spec(
@@ -75,7 +77,7 @@ BUILTIN_OPERATION_SPECS: Mapping[str, OperationSpec] = MappingProxyType(
                 "label",
                 "barcode",
             },
-            dimensions={"capacity": {"volume"}},
+            dimensions={"capacity": {QuantityDimension.VOLUME}},
         ),
         "DefineContent": _spec(
             required={"kind"},
@@ -84,7 +86,7 @@ BUILTIN_OPERATION_SPECS: Mapping[str, OperationSpec] = MappingProxyType(
         "LoadContent": _spec(
             required={"container", "content", "amount"},
             allowed={"container", "content", "amount", "concentration"},
-            dimensions={"amount": {"volume", "mass", "count"}},
+            dimensions={"amount": {QuantityDimension.VOLUME, QuantityDimension.MASS, QuantityDimension.COUNT}},
         ),
         "AnnotateContent": _spec(
             required={"content"},

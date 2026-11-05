@@ -6,7 +6,7 @@ from typing import Any
 from culsma.pipeline.expression_resolution import resolve_expression, ResolutionStatus
 
 from culsma.common.diagnostics import Diagnostic
-from culsma.common.quantity_arithmetic import UNIT_TO_DIMENSION
+from culsma.common.quantity_arithmetic import QuantityDimension, UNIT_TO_DIMENSION
 from culsma.pipeline.container_views import resolve_materials_get, resolve_materials_index
 from culsma.pipeline.ir_nodes import (
     IRCall,
@@ -101,11 +101,11 @@ def _validate_replacement_material(value: Any, bindings: dict[str, Any], defined
         if quantity.unit is None:
             return "replacement material quantities must carry a unit"
         dimension = UNIT_TO_DIMENSION.get(quantity.unit)
-        if dimension not in {"mass", "volume", "count"}:
+        if dimension not in {QuantityDimension.MASS, QuantityDimension.VOLUME, QuantityDimension.COUNT}:
             return "replacement quantities must use a mass, volume, or count unit"
         if quantity.value < 0:
             return "replacement quantities must be non-negative"
-        if dimension == "count" and not float(quantity.value).is_integer():
+        if dimension is QuantityDimension.COUNT and not float(quantity.value).is_integer():
             return "replacement counts must be whole numbers"
         return None
     if (

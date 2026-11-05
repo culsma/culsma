@@ -8,7 +8,7 @@ from dataclasses import dataclass, fields, is_dataclass
 from typing import Any, Iterable, Mapping, cast
 
 from culsma.common.diagnostics import Diagnostic
-from culsma.common.quantity_arithmetic import QuantityArithmeticError
+from culsma.common.quantity_arithmetic import QuantityDimension, QuantityArithmeticError
 
 from culsma.pipeline.content_inputs import ContentArgumentResolver, ContentInputSource, DeferredContentEnum, deferred_content_enum_bindings
 from culsma.pipeline.ir_nodes import (
@@ -335,7 +335,7 @@ class MutationTypecheckHandler(BaseTypecheckStatementHandler):
 
 @dataclass
 class StepTypecheckState(TypecheckStatementState):
-    op_arg_dimensions: Mapping[str, frozenset[str]] | None = None
+    op_arg_dimensions: Mapping[str, frozenset[QuantityDimension]] | None = None
 
 
 class StepTypecheckHandler(BaseTypecheckStatementHandler):

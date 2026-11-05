@@ -7,6 +7,7 @@ from typing import Any, Mapping, cast
 
 from culsma.common.value_contracts import VALUE_CONTRACTS
 from culsma.common.diagnostics import Diagnostic
+from culsma.pipeline.environment_boundary import DEFAULT_ENVIRONMENT_PARAMETER_NORMALIZER
 from culsma.pipeline.container_views import contains_container_contents_volume
 from culsma.pipeline.expression_resolution import quantity_expression_unit
 from culsma.pipeline.ir_nodes import (
@@ -437,7 +438,8 @@ class WithEnvPlanHandler(BasePlanStatementHandler):
         _state: PlanStatementLoweringState,
     ) -> list[PlanStep]:
         stmt = cast(IRWithEnv, stmt)
-        env_payload = self.serializer.serialize_arg_list(stmt.env_args, ctx.local_env)
+        env_payload = DEFAULT_ENVIRONMENT_PARAMETER_NORMALIZER.normalize_plan_environment(
+            self.serializer.serialize_arg_list(stmt.env_args, ctx.local_env))
         env_targets = self.serializer.serialize_expr(stmt.targets, ctx.local_env)
         gate = append_env_layer(
             ctx.gate_base,

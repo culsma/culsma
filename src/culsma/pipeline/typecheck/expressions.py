@@ -4,17 +4,24 @@ from __future__ import annotations
 
 from culsma.domains.fractionation import ACTIVE_CHROMATOGRAPHY_REGISTRY
 from culsma.domains.content import CONTENT_CONTRACT
+from culsma.domains.environment import (
+    ENVIRONMENT_DIMENSIONS, SOURCE_ENVIRONMENT_KEYS, EnvironmentKey, EnvironmentValueError,
+    validate_environment_gas_total, validate_environment_quantity,
+)
 from culsma.enum_services import PARAMETER_CONTRACTS, PARAMETER_ENUM_TYPES
 from culsma.pipeline.external_inputs import ExternalInputResolver, ExternalInputScope, ExternalInputStatus, DeferredExternalEnum
 
 from dataclasses import dataclass
 from culsma.pipeline.expression_resolution import resolve_expression, ResolutionStatus
 
-from typing import Any
+from typing import Any, Literal
 
 from culsma.common.content_contracts import CONTENT_ENUM_TYPES, parse_content_classification, parse_content_kind
 from culsma.common.diagnostics import Diagnostic
-from culsma.common.quantity_arithmetic import UNIT_TO_DIMENSION, QuantityArithmeticError, quantity_binary, quantity_parts, quantity_result_unit
+from culsma.common.quantity_arithmetic import (
+    UNIT_TO_DIMENSION, QuantityArithmeticError, QuantityDimension,
+    quantity_binary, quantity_parts, quantity_result_unit,
+)
 from culsma.pipeline.content_inputs import (
     ContentArgumentResolver, ContentArgumentScope, ContentInputSource, ContentResolutionIssue, DeferredContentEnum,
 )
@@ -49,6 +56,11 @@ from culsma.pipeline.program_registry import get_program_spec, is_known_program_
 
 
 _UNIT_TO_DIMENSION = UNIT_TO_DIMENSION
+_ENV_DIMENSION_DIAGNOSTICS = {
+    QuantityDimension.TEMPERATURE: "TYPE_ENV_THERMAL_DIMENSION_MISMATCH",
+    QuantityDimension.TIME: "TYPE_ENV_DURATION_DIMENSION_MISMATCH",
+    QuantityDimension.PERCENT: "TYPE_ENV_PERCENT_DIMENSION_MISMATCH",
+}
 
 
 @dataclass(frozen=True)
@@ -91,53 +103,49 @@ _MATERIAL_SAMPLE_STEPS = _MATERIAL_SAMPLE_CALLS | {"agit"}
 class TypecheckExpressionServices:
     def typecheck_with_env(self, stmt: IRWithEnv, *, expr_bindings: dict[str, Any]) -> list[Diagnostic]:
         diagnostics: list[Diagnostic] = []
+        bounds_diagnostics: list[Diagnostic] = []
+        percentages = {}
         for arg in stmt.env_args:
+            key = SOURCE_ENVIRONMENT_KEYS.get(arg.name)
+            if key is None:
+                continue
+            dimension = ENVIRONMENT_DIMENSIONS.get(key)
+            if dimension is None:
+                continue
             resolved = self.resolve_bound_expr(arg.value, expr_bindings)
-            if arg.name == "thermal":
-                if isinstance(resolved, IRCall) and resolved.name == "thermal_program":
-                    diagnostics.extend(self.typecheck_thermal_program_call(resolved, node_id=stmt.id, expr_bindings=expr_bindings))
-                    continue
-                diagnostics.extend(
-                    self.validate_quantity_dimensions(
-                        resolved,
-                        expr_bindings=expr_bindings,
-                        expected=["temperature"],
-                        non_quantity_code="TYPE_ENV_THERMAL_DIMENSION_MISMATCH",
-                        mismatch_code="TYPE_ENV_THERMAL_DIMENSION_MISMATCH",
-                        unknown_code="TYPE_UNKNOWN_UNIT",
-                        label="with env arg 'thermal'",
-                        span=arg.span or stmt.span,
-                        node_id=stmt.id,
-                    )
-                )
-            elif arg.name == "duration":
-                diagnostics.extend(
-                    self.validate_quantity_dimensions(
-                        resolved,
-                        expr_bindings=expr_bindings,
-                        expected=["time"],
-                        non_quantity_code="TYPE_ENV_DURATION_DIMENSION_MISMATCH",
-                        mismatch_code="TYPE_ENV_DURATION_DIMENSION_MISMATCH",
-                        unknown_code="TYPE_UNKNOWN_UNIT",
-                        label="with env arg 'duration'",
-                        span=arg.span or stmt.span,
-                        node_id=stmt.id,
-                    )
-                )
-            elif arg.name in {"co2", "rh"}:
-                diagnostics.extend(
-                    self.validate_quantity_dimensions(
-                        resolved,
-                        expr_bindings=expr_bindings,
-                        expected=["percent"],
-                        non_quantity_code="TYPE_ENV_PERCENT_DIMENSION_MISMATCH",
-                        mismatch_code="TYPE_ENV_PERCENT_DIMENSION_MISMATCH",
-                        unknown_code="TYPE_UNKNOWN_UNIT",
-                        label=f"with env arg '{arg.name}'",
-                        span=arg.span or stmt.span,
-                        node_id=stmt.id,
-                    )
-                )
+            if key is EnvironmentKey.THERMAL and isinstance(resolved, IRCall) and resolved.name == "thermal_program":
+                diagnostics.extend(self.typecheck_thermal_program_call(resolved, node_id=stmt.id, expr_bindings=expr_bindings))
+                continue
+            dimension_code = _ENV_DIMENSION_DIAGNOSTICS[dimension]
+            diagnostics.extend(self.validate_quantity_dimensions(
+                resolved,
+                expr_bindings=expr_bindings,
+                expected=[dimension],
+                non_quantity_code=dimension_code,
+                mismatch_code=dimension_code,
+                unknown_code="TYPE_UNKNOWN_UNIT",
+                label=f"with env arg '{arg.name}'",
+                span=arg.span or stmt.span,
+                node_id=stmt.id,
+            ))
+            quantity = self.coerce_quantity_like(arg.value, expr_bindings)
+            if quantity is None or _UNIT_TO_DIMENSION.get(quantity.unit) is not dimension:
+                continue
+            try:
+                validate_environment_quantity(key, quantity.value, quantity.unit, source_name=arg.name)
+                if key in {EnvironmentKey.CO2, EnvironmentKey.O2}:
+                    percentages[key] = quantity.value
+            except EnvironmentValueError as error:
+                bounds_diagnostics.append(Diagnostic(
+                    code="TYPE_ENV_VALUE_OUT_OF_RANGE", message=str(error),
+                    span=arg.span or stmt.span, node_id=stmt.id))
+        diagnostics.extend(bounds_diagnostics)
+        try:
+            validate_environment_gas_total(percentages)
+        except EnvironmentValueError as error:
+            diagnostics.append(Diagnostic(
+                code="TYPE_ENV_GAS_TOTAL_OUT_OF_RANGE", message=str(error),
+                span=stmt.span, node_id=stmt.id))
         return diagnostics
 
     def typecheck_mutation(self, stmt: IRMutation, *, expr_bindings: dict[str, Any]) -> list[Diagnostic]:
@@ -176,7 +184,7 @@ class TypecheckExpressionServices:
                 self.validate_quantity_dimensions(
                     amount,
                     expr_bindings=expr_bindings,
-                    expected=["volume", "mass", "count"],
+                    expected=[QuantityDimension.VOLUME, QuantityDimension.MASS, QuantityDimension.COUNT],
                     non_quantity_code="TYPE_MUTATION_QUANTITY_UNIT_REQUIRED",
                     mismatch_code="TYPE_MUTATION_QUANTITY_DIMENSION_MISMATCH",
                     unknown_code="TYPE_UNKNOWN_UNIT",
@@ -233,7 +241,7 @@ class TypecheckExpressionServices:
                     self.validate_quantity_dimensions(
                         self.resolve_bound_expr(arg.value, expr_bindings),
                         expr_bindings=expr_bindings,
-                        expected=["volume"],
+                        expected=[QuantityDimension.VOLUME],
                         non_quantity_code="TYPE_CONTAINER_CAPACITY_DIMENSION_MISMATCH",
                         mismatch_code="TYPE_CONTAINER_CAPACITY_DIMENSION_MISMATCH",
                         unknown_code="TYPE_UNKNOWN_UNIT",
@@ -325,7 +333,7 @@ class TypecheckExpressionServices:
                     self.validate_quantity_dimensions(
                         arg.value,
                         expr_bindings=expr_bindings,
-                        expected=["temperature"],
+                        expected=[QuantityDimension.TEMPERATURE],
                         non_quantity_code="TYPE_ENV_THERMAL_DIMENSION_MISMATCH",
                         mismatch_code="TYPE_ENV_THERMAL_DIMENSION_MISMATCH",
                         unknown_code="TYPE_UNKNOWN_UNIT",
@@ -339,7 +347,7 @@ class TypecheckExpressionServices:
                     self.validate_quantity_dimensions(
                         arg.value,
                         expr_bindings=expr_bindings,
-                        expected=["time"],
+                        expected=[QuantityDimension.TIME],
                         non_quantity_code="TYPE_ENV_DURATION_DIMENSION_MISMATCH",
                         mismatch_code="TYPE_ENV_DURATION_DIMENSION_MISMATCH",
                         unknown_code="TYPE_UNKNOWN_UNIT",
@@ -365,7 +373,7 @@ class TypecheckExpressionServices:
                     if arg.name == "concentration":
                         diagnostics.extend(self.validate_quantity_dimensions(
                             arg.value, expr_bindings=expr_bindings,
-                            expected=["mass_concentration"],
+                            expected=[QuantityDimension.MASS_CONCENTRATION],
                             non_quantity_code="TYPE_CONCENTRATION_DIMENSION_MISMATCH",
                             mismatch_code="TYPE_CONCENTRATION_DIMENSION_MISMATCH",
                             unknown_code="TYPE_UNKNOWN_UNIT",
@@ -376,7 +384,7 @@ class TypecheckExpressionServices:
                 self.validate_quantity_dimensions(
                     amount,
                     expr_bindings=expr_bindings,
-                    expected=["volume", "mass", "count"],
+                    expected=[QuantityDimension.VOLUME, QuantityDimension.MASS, QuantityDimension.COUNT],
                     non_quantity_code="TYPE_LOAD_QUANTITY_UNIT_REQUIRED",
                     mismatch_code="TYPE_LOAD_QUANTITY_DIMENSION_MISMATCH",
                     unknown_code="TYPE_UNKNOWN_UNIT",
@@ -426,7 +434,7 @@ class TypecheckExpressionServices:
         self,
         value: Any,
         *,
-        expected: list[str],
+        expected: list[QuantityDimension],
         non_quantity_code: str,
         mismatch_code: str,
         unknown_code: str,
@@ -454,7 +462,7 @@ class TypecheckExpressionServices:
             return [
                 Diagnostic(
                     code=non_quantity_code,
-                    message=f"{label} expects quantity with unit in dimensions {expected}",
+                    message=f"{label} expects quantity with unit in dimensions {list(map(str, expected))}",
                     span=span,
                     node_id=node_id,
                 )
@@ -485,7 +493,7 @@ class TypecheckExpressionServices:
             return [
                 Diagnostic(
                     code=mismatch_code,
-                    message=f"{label} expects {expected}, got unit '{unit}' ({got_dim})",
+                    message=f"{label} expects {list(map(str, expected))}, got unit '{unit}' ({got_dim})",
                     span=resolved.span or span,
                     node_id=node_id,
                 )
@@ -1035,7 +1043,7 @@ class TypecheckExpressionServices:
         *,
         field_name: str,
         program_name: str,
-        dimension: str | None,
+        dimension: QuantityDimension | Literal["centrifuge_speed"] | None,
         span,
         node_id: str,
         expr_bindings: dict[str, Any] | None = None,
@@ -1043,7 +1051,7 @@ class TypecheckExpressionServices:
         if dimension == "centrifuge_speed":
             diagnostics = self.validate_quantity_dimensions(
                 value, expr_bindings=expr_bindings,
-                expected=["mass", "rotation_rate"],
+                expected=[QuantityDimension.MASS, QuantityDimension.ROTATION_RATE],
                 non_quantity_code="TYPE_PROGRAM_FIELD_KIND_MISMATCH",
                 mismatch_code="TYPE_PROGRAM_FIELD_DIMENSION_MISMATCH",
                 unknown_code="TYPE_UNKNOWN_UNIT",
@@ -1129,7 +1137,7 @@ def _typecheck_constructor_load(value: Any, *, node_id: str, expr_bindings: dict
 def _validate_quantity_dimensions(
     value: Any,
     *,
-    expected: list[str],
+    expected: list[QuantityDimension],
     non_quantity_code: str,
     mismatch_code: str,
     unknown_code: str,
@@ -1219,7 +1227,7 @@ def _validate_program_quantity_field(
     *,
     field_name: str,
     program_name: str,
-    dimension: str | None,
+    dimension: QuantityDimension | Literal["centrifuge_speed"] | None,
     span,
     node_id: str,
 ) -> list[Diagnostic]:

@@ -11,6 +11,7 @@ from .unknown_quantity import container_has_unknown
 from culsma.common.diagnostics import Diagnostic
 from culsma.domains.agitation import AgitationMode
 from culsma.domains.agitation.contracts import validate_agitation_target
+from culsma.domains.environment import EnvironmentKey
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.material.args import arg_call, arg_quantity, arg_string, call_arg_int, call_arg_string
 from culsma.runtime.material.author_transition import parse_explicit_material_transitions
@@ -1356,7 +1357,7 @@ def _preservation_contract_satisfied(
     if contract.get("kind") != "field_retention":
         return False
     required_field = contract.get("field")
-    if not isinstance(required_field, str) or not _step_gate_has_env_value(step, "field", required_field):
+    if not isinstance(required_field, str) or not _step_gate_has_env_value(step, EnvironmentKey.FIELD.value, required_field):
         return False
     return True
 

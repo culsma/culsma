@@ -7,6 +7,7 @@ from dataclasses import dataclass, field, replace
 from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
+from culsma.domains.environment import EnvironmentValueError
 from culsma.domains.labware import PlateReference
 from culsma.driver.base import DriverResult
 from culsma.driver.groups import PreparedDriverStep, PreparedExecutionGroup, GroupDriverResult
@@ -335,6 +336,11 @@ class DriverBackedStepHandler(BaseRuntimeStepHandler):
     def prepare_step(self, step, session, state):
         try:
             runtime_step = session.value_resolver.resolve_step_args(step, session.state)
+        except EnvironmentValueError as error:
+            session.record_failed(step, reason="environment_invalid", diagnostic=Diagnostic(
+                code="RT_ENV_ARGUMENT_INVALID", message=str(error), span=step.span, node_id=step.step_id))
+            state.recorded = True
+            return None
         except (TypeError, ValueError) as error:
             session.record_failed(step, reason="external_enum_invalid", diagnostic=Diagnostic(
                 code="RT_EXTERNAL_ENUM_INVALID", message=str(error), span=step.span, node_id=step.step_id))
@@ -462,6 +468,11 @@ class InternalMaterialStepHandler(BaseRuntimeStepHandler):
     def execute_current_step(self, step: PlanStep, session: RuntimeSession, state: RuntimeStepState) -> bool:
         try:
             runtime_step = session.value_resolver.resolve_step_args(step, session.state)
+        except EnvironmentValueError as error:
+            session.record_failed(step, reason="environment_invalid", diagnostic=Diagnostic(
+                code="RT_ENV_ARGUMENT_INVALID", message=str(error), span=step.span, node_id=step.step_id))
+            state.recorded = True
+            return session.fail_fast
         except (TypeError, ValueError) as error:
             session.record_failed(step, reason="external_enum_invalid", diagnostic=Diagnostic(
                 code="RT_EXTERNAL_ENUM_INVALID", message=str(error), span=step.span, node_id=step.step_id))

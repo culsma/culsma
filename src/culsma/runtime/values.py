@@ -798,12 +798,19 @@ class PlateRuntimeValueResolver:
 
 
 def _resolve_step_runtime_args(step: PlanStep, state: RuntimeState) -> PlanStep:
+    from culsma.pipeline.environment_boundary import DEFAULT_ENVIRONMENT_PARAMETER_NORMALIZER
+
+    gate = DEFAULT_ENVIRONMENT_PARAMETER_NORMALIZER.normalize_runtime_gate(
+        PlateRuntimeValueResolver().descriptors(step.gate),
+        resolve_environment=lambda environment: resolve_runtime_arg_value(environment, state),
+        require_duration=step.op == "env_hold",
+    )
     return PlanStep(
         step_id=step.step_id,
         op=step.op,
         args=DEFAULT_EXTERNAL_PARAMETER_NORMALIZER.normalize_runtime_arguments(step.op, PlateRuntimeValueResolver().arguments(step, state)),
         deps=list(step.deps),
-        gate=PlateRuntimeValueResolver().descriptors(step.gate),
+        gate=gate,
         span=step.span,
     )
 

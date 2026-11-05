@@ -1,6 +1,7 @@
 """Source adapters for action applicability and environment conflicts."""
 from typing import Any
 from culsma.common.diagnostics import Diagnostic
+from culsma.domains.environment import EnvironmentKey
 from culsma.pipeline.ir_nodes import IRStatement, IRMutation, IRWithEnv, IRStep, IRLet, IRCall, IRQuantity
 from culsma.pipeline.validate.resolution import ExprResolver
 from .rules import ConstraintRules
@@ -48,7 +49,7 @@ class ConstraintSourceValidator:
         active_requirements: tuple[str, ...],
     ) -> list[Diagnostic]:
         diagnostics: list[Diagnostic] = []
-        thermal_arg = ConstraintSourceValidator._find_arg_by_name(stmt.env_args, "thermal")
+        thermal_arg = ConstraintSourceValidator._find_arg_by_name(stmt.env_args, EnvironmentKey.THERMAL.value)
         if thermal_arg is None:
             return diagnostics
         thermal_value = ExprResolver.resolve_bound_expr(thermal_arg.value, expr_bindings)

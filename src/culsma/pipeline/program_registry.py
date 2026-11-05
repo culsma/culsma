@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Literal
+
+from culsma.common.quantity_arithmetic import QuantityDimension
 from culsma.common.value_contracts import VALUE_CONTRACTS, ReadCallContract
 from culsma.common.enum_parameters import CallParameterContract
 from culsma.enum_services import CALL_PARAMETER_CONTRACTS
@@ -37,7 +40,7 @@ class ProgramFieldSpec:
     name: str
     required: bool
     value_kind: str
-    dimension: str | None = None
+    dimension: QuantityDimension | Literal["centrifuge_speed"] | None = None
     enum_values: tuple[str, ...] | None = None
 
 
@@ -70,7 +73,7 @@ def _field(
     *,
     required: bool = False,
     value_kind: str = "text",
-    dimension: str | None = None,
+    dimension: QuantityDimension | Literal["centrifuge_speed"] | None = None,
     enum_values: tuple[str, ...] | None = None,
 ) -> ProgramFieldSpec:
     return ProgramFieldSpec(
@@ -141,7 +144,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         family="sep",
         owners=("sep", "partition"),
         fields=(
-            _field("duration", value_kind="quantity", dimension="time"),
+            _field("duration", value_kind="quantity", dimension=QuantityDimension.TIME),
             _field("device", value_kind="text"),
         ),
         result_contract_key="sep_container_group",
@@ -158,7 +161,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
                 value_kind="text_enum",
                 enum_values=DISRUPTION_METHOD_VALUES,
             ),
-            _field("duration", value_kind="quantity", dimension="time"),
+            _field("duration", value_kind="quantity", dimension=QuantityDimension.TIME),
         ),
         result_contract_key="sep_container_group",
         material_effect_kind="disrupt",
@@ -169,10 +172,10 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         family="sep",
         owners=("sep", "partition"),
         fields=(
-            _field("voltage", value_kind="quantity", dimension="electric_potential"),
-            _field("current", value_kind="quantity", dimension="electric_current"),
-            _field("field", value_kind="quantity", dimension="electric_potential"),
-            _field("duration", value_kind="quantity", dimension="time"),
+            _field("voltage", value_kind="quantity", dimension=QuantityDimension.ELECTRIC_POTENTIAL),
+            _field("current", value_kind="quantity", dimension=QuantityDimension.ELECTRIC_CURRENT),
+            _field("field", value_kind="quantity", dimension=QuantityDimension.ELECTRIC_POTENTIAL),
+            _field("duration", value_kind="quantity", dimension=QuantityDimension.TIME),
         ),
         required_one_of=(("voltage", "current", "field"),),
         argument_aliases=(
@@ -205,7 +208,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         fields=(
             _field("membrane", required=True, value_kind="text"),
             _field("drive", required=True, value_kind="quantity", dimension="centrifuge_speed"),
-            _field("duration", value_kind="quantity", dimension="time"),
+            _field("duration", value_kind="quantity", dimension=QuantityDimension.TIME),
         ),
         result_contract_key="sep_container_group",
         material_effect_kind="separation_fate",
@@ -226,7 +229,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         owners=("sep", "partition"),
         fields=(
             _field("reagent", required=True, value_kind="text"),
-            _field("duration", value_kind="quantity", dimension="time"),
+            _field("duration", value_kind="quantity", dimension=QuantityDimension.TIME),
         ),
         result_contract_key="sep_container_group",
         material_effect_kind="separation_fate",
@@ -259,9 +262,9 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
         family="thermal",
         owners=("with_env",),
         fields=(
-            _field("from", value_kind="quantity", dimension="temperature"),
-            _field("to", value_kind="quantity", dimension="temperature"),
-            _field("duration", value_kind="quantity", dimension="time"),
+            _field("from", value_kind="quantity", dimension=QuantityDimension.TEMPERATURE),
+            _field("to", value_kind="quantity", dimension=QuantityDimension.TEMPERATURE),
+            _field("duration", value_kind="quantity", dimension=QuantityDimension.TIME),
         ),
     ),
 }

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from culsma.domains.environment import EnvironmentKey
+
 from culsma.pipeline.expression_resolution import resolve_expression, ResolutionStatus
 
 from culsma.parser.ast_nodes import (
@@ -44,10 +46,10 @@ class StaticControlClassifier:
         return any(self.contains_unresolved_param_reference(value, ctx=ctx) for value in args.values())
 
     def can_defer_env_time_boundary(self, stmt: WithEnvStmt, *, ctx: BlockContext) -> bool:
-        duration_arg = next((arg for arg in stmt.env_args if arg.name == "duration"), None)
+        duration_arg = next((arg for arg in stmt.env_args if arg.name == EnvironmentKey.DURATION.value), None)
         if duration_arg is not None:
             return self.contains_unresolved_param_reference(duration_arg.value, ctx=ctx)
-        thermal_arg = next((arg for arg in stmt.env_args if arg.name == "thermal"), None)
+        thermal_arg = next((arg for arg in stmt.env_args if arg.name == EnvironmentKey.THERMAL.value), None)
         if thermal_arg is None:
             return False
         thermal_value = self.resolve_bound_expr(thermal_arg.value, ctx=ctx)

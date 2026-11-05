@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from enum import StrEnum
 from math import isfinite
 from typing import Any
 
@@ -9,27 +10,43 @@ Scalar = int | float
 QuantityValue = Scalar | tuple[Scalar, str]
 
 
+class QuantityDimension(StrEnum):
+    """Internal quantity categories used by kernel modules."""
+
+    VOLUME = "volume"
+    MASS = "mass"
+    MASS_CONCENTRATION = "mass_concentration"
+    TIME = "time"
+    TEMPERATURE = "temperature"
+    PERCENT = "percent"
+    COUNT = "count"
+    ELECTRIC_POTENTIAL = "electric_potential"
+    ELECTRIC_CURRENT = "electric_current"
+    ROTATION_RATE = "rotation_rate"
+    FREQUENCY = "frequency"
+
+
 # Multipliers within each dimension. Temperature conversion is affine and is
 # deliberately excluded from implicit mixed-unit arithmetic.
 UNIT_SCALES = {
-    "volume": {"uL": 1, "ul": 1, "mL": 1000, "ml": 1000, "L": 1000000},
-    "mass": {"ug": .001, "mg": 1, "g": 1000, "kg": 1000000},
-    "mass_concentration": {"mg_per_uL": 1},
-    "time": {"ms": .001, "s": 1, "sec": 1, "min": 60, "h": 3600, "hr": 3600, "day": 86400},
-    "temperature": {"C": 1, "K": 1},
-    "percent": {"%": 1, "pct": 1},
-    "count": {"cells": 1},
-    "electric_potential": {"V": 1, "mV": .001},
-    "electric_current": {"A": 1, "mA": .001, "uA": .000001},
-    "rotation_rate": {"rpm": 1},
-    "frequency": {"Hz": 1, "cycle/min": 1 / 60},
+    QuantityDimension.VOLUME: {"uL": 1, "ul": 1, "mL": 1000, "ml": 1000, "L": 1000000},
+    QuantityDimension.MASS: {"ug": .001, "mg": 1, "g": 1000, "kg": 1000000},
+    QuantityDimension.MASS_CONCENTRATION: {"mg_per_uL": 1},
+    QuantityDimension.TIME: {"ms": .001, "s": 1, "sec": 1, "min": 60, "h": 3600, "hr": 3600, "day": 86400},
+    QuantityDimension.TEMPERATURE: {"C": 1, "K": 1},
+    QuantityDimension.PERCENT: {"%": 1, "pct": 1},
+    QuantityDimension.COUNT: {"cells": 1},
+    QuantityDimension.ELECTRIC_POTENTIAL: {"V": 1, "mV": .001},
+    QuantityDimension.ELECTRIC_CURRENT: {"A": 1, "mA": .001, "uA": .000001},
+    QuantityDimension.ROTATION_RATE: {"rpm": 1},
+    QuantityDimension.FREQUENCY: {"Hz": 1, "cycle/min": 1 / 60},
 }
 UNIT_TO_DIMENSION = {unit: dim for dim, units in UNIT_SCALES.items() for unit in units}
 DERIVED_QUANTITY_UNITS = {
-    ("/", "mass", "volume"): "mg_per_uL",
-    ("*", "mass_concentration", "volume"): "mg",
-    ("*", "volume", "mass_concentration"): "mg",
-    ("/", "mass", "mass_concentration"): "uL",
+    ("/", QuantityDimension.MASS, QuantityDimension.VOLUME): "mg_per_uL",
+    ("*", QuantityDimension.MASS_CONCENTRATION, QuantityDimension.VOLUME): "mg",
+    ("*", QuantityDimension.VOLUME, QuantityDimension.MASS_CONCENTRATION): "mg",
+    ("/", QuantityDimension.MASS, QuantityDimension.MASS_CONCENTRATION): "uL",
 }
 
 
@@ -68,7 +85,7 @@ def convert_value(value: Scalar, source_unit: str, target_unit: str) -> Scalar:
         raise QuantityArithmeticError("dimension", f"Incompatible units '{source_unit}' and '{target_unit}'")
     if source_unit == target_unit:
         return require_finite_number(value)
-    if dimension == "temperature":
+    if dimension is QuantityDimension.TEMPERATURE:
         raise QuantityArithmeticError("dimension", "Mixed C/K arithmetic requires an explicit temperature conversion")
     scales = UNIT_SCALES[dimension]
     return require_finite_number(require_finite_number(value) * (scales[source_unit] / scales[target_unit]))
@@ -97,7 +114,7 @@ def quantity_result_unit(op: str, left_unit: str | None, right_unit: str | None)
     if left_unit is not None and right_unit is not None:
         if UNIT_TO_DIMENSION[left_unit] != UNIT_TO_DIMENSION[right_unit]:
             raise QuantityArithmeticError("dimension", f"Incompatible units '{left_unit}' and '{right_unit}'")
-        if UNIT_TO_DIMENSION[left_unit] == "temperature" and left_unit != right_unit:
+        if UNIT_TO_DIMENSION[left_unit] is QuantityDimension.TEMPERATURE and left_unit != right_unit:
             raise QuantityArithmeticError("dimension", "Mixed C/K arithmetic requires an explicit temperature conversion")
     return None if op == "/" and right_unit is not None else left_unit
 

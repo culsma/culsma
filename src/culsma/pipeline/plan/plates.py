@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 from typing import Any
 
-from culsma.common.quantity_arithmetic import UNIT_TO_DIMENSION, require_finite_number
+from culsma.common.quantity_arithmetic import QuantityDimension, UNIT_TO_DIMENSION, require_finite_number
 from culsma.domains.labware import (
     PLATE_FORMAT, PlateGeometry, plate_dimensions, plate_default_well_capacity,
 )
@@ -32,7 +32,7 @@ class ResolvedPlateDescriptor:
         if not isinstance(capacity, IRQuantity):
             raise TypeError('Plate capacity must be a volume quantity')
         require_finite_number(capacity.value)
-        if capacity.value < 0 or UNIT_TO_DIMENSION.get(capacity.unit) != 'volume':
+        if capacity.value < 0 or UNIT_TO_DIMENSION.get(capacity.unit) is not QuantityDimension.VOLUME:
             raise ValueError('Plate capacity must be a nonnegative volume')
         return capacity
 

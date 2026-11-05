@@ -1,5 +1,6 @@
 """Runtime adapter invoked once by the shared action entry, before effects."""
 from culsma.common.diagnostics import Diagnostic
+from culsma.domains.environment import EnvironmentKey
 from .contracts import CONSTRAINT_REQUIREMENTS
 from .rules import ConstraintRules
 from .checks import ConstraintContext
@@ -37,8 +38,8 @@ class RuntimeConstraintValidator:
         layers = gate.get('env_layers')
         environments = [layer.get('env', {}) for layer in layers] if isinstance(layers, list) else [gate.get('env', {})]
         for env in environments:
-            if 'thermal' in env:
-                yield ConstraintContext(thermal=evaluate(env['thermal']))
+            if EnvironmentKey.THERMAL.value in env:
+                yield ConstraintContext(thermal=evaluate(env[EnvironmentKey.THERMAL.value]))
 
     @staticmethod
     def _diagnostic(step, code, message):

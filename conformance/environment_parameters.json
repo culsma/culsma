@@ -1,0 +1,20 @@
+{
+  "decision": "ENV-PARAMETERS-151",
+  "status": "implemented_local",
+  "reference_sections": ["6.3.14", "11.12"],
+  "scope": "Device-independent scalar environment parameters and public execution preservation; no OS or hardware conformance claim",
+  "requirements": {
+    "CF-ENVP-001": "tests/language/environment/test_validation.py::test_environment_names",
+    "CF-ENVP-002": "tests/language/environment/test_validation.py::test_environment_combinations",
+    "CF-ENVP-003": "tests/language/environment/test_typecheck.py::test_environment_dimensions",
+    "CF-ENVP-004": "tests/language/environment/test_typecheck.py::test_environment_bounds",
+    "CF-ENVP-005": "tests/language/environment/test_execution_contract.py::test_omitted_and_explicit_conditions_stay_distinct",
+    "CF-ENVP-006": "tests/language/environment/test_execution_contract.py::test_environment_round_trip",
+    "CF-ENVP-007": "tests/language/environment/test_execution_contract.py::test_legacy_humidity_boundary",
+    "CF-ENVP-008": "tests/language/environment/test_runtime.py::test_deferred_environment_validation",
+    "CF-ENVP-009": "tests/language/environment/test_execution_contract.py::test_nested_environment_layers",
+    "CF-ENVP-010": "tests/language/environment/test_runtime.py::test_unsupported_environment_rejected_before_execute",
+    "CF-ENVP-011": "tests/language/environment/test_execution_contract.py::test_cell_transfection_preserves_22c_requirements",
+    "CF-ENVP-012": "tests/test_source_type_namespace.py::test_internal_enums_are_not_exposed_as_language_types"
+  }
+}

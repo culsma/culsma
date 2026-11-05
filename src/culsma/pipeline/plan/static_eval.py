@@ -2,14 +2,15 @@
 
 from __future__ import annotations
 
-from culsma.common.quantity_arithmetic import UNIT_SCALES
+from culsma.common.quantity_arithmetic import QuantityDimension, UNIT_SCALES
+from culsma.domains.environment import EnvironmentKey
 
 from culsma.domains.scheduling import SCHEDULE_MODE, DEFAULT_SCHEDULE_MODE
 from culsma.pipeline.external_boundary import DEFAULT_EXTERNAL_PARAMETER_NORMALIZER
 
 from typing import Any, Mapping
 
-TIME_UNIT_SCALE = UNIT_SCALES["time"]
+TIME_UNIT_SCALE = UNIT_SCALES[QuantityDimension.TIME]
 
 
 class PlanStaticEvaluator:
@@ -346,10 +347,10 @@ class PlanStaticEvaluator:
         }
 
     def env_time_boundary_from_payload(self, env_payload: dict[str, Any]) -> Any:
-        duration = env_payload.get("duration")
+        duration = env_payload.get(EnvironmentKey.DURATION.value)
         if self.is_time_quantity_payload(duration):
             return duration
-        thermal = env_payload.get("thermal")
+        thermal = env_payload.get(EnvironmentKey.THERMAL.value)
         if not isinstance(thermal, dict) or thermal.get("kind") != "IRCall" or thermal.get("name") != "thermal_program":
             return None
         args = thermal.get("args")

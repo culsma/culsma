@@ -1,7 +1,7 @@
 """Agitation vocabulary."""
 
 from enum import StrEnum
-from culsma.common.quantity_arithmetic import UNIT_TO_DIMENSION, require_finite_number
+from culsma.common.quantity_arithmetic import QuantityDimension, UNIT_TO_DIMENSION, require_finite_number
 from culsma.common.enum_parameters import EnumParameter
 from types import MappingProxyType
 from culsma.common.enum_parameters import CallParameterContract
@@ -66,10 +66,10 @@ def validate_agitation_arguments(mode: AgitationMode, *, has_duration: bool, has
 
 
 def validate_centrifuge_quantity(name, value):
-    expected = 'time' if name == 'duration' else 'centrifugal drive'
+    expected = QuantityDimension.TIME if name == 'duration' else 'centrifugal drive'
     units = set(UNIT_TO_DIMENSION) if name == 'duration' else {'g', 'rpm'}
     if not isinstance(value, tuple) or len(value) != 2 or value[1] not in units or (
-        name == 'duration' and UNIT_TO_DIMENSION.get(value[1]) != 'time'
+        name == 'duration' and UNIT_TO_DIMENSION.get(value[1]) is not QuantityDimension.TIME
     ):
         raise ValueError(f'centrifuge {name} must be a {expected} quantity')
     try:
@@ -84,9 +84,9 @@ def validate_rotation_quantity(name, value):
     """Check a shared (number, unit) value, independent of stage representation."""
     if not isinstance(value, tuple) or len(value) != 2:
         raise ValueError(f"rotation {name} must be a unit-bearing quantity")
-    expected = "time" if name == "duration" else "rotation_rate"
+    expected = QuantityDimension.TIME if name == "duration" else QuantityDimension.ROTATION_RATE
     number, unit = value
-    if UNIT_TO_DIMENSION.get(unit) != expected:
+    if UNIT_TO_DIMENSION.get(unit) is not expected:
         raise ValueError(f"rotation {name} must have dimension {expected}")
     try:
         number = require_finite_number(number)
@@ -170,9 +170,11 @@ class ShakeMotionRule:
         if not isinstance(value, tuple) or len(value) != 2:
             raise ValueError(f'{motion} {name} must be a unit-bearing quantity')
         number, unit = value
-        dimension = ('time' if name == 'duration' else
-                     'frequency' if motion in {ShakeMotion.LINEAR, ShakeMotion.ROCK} else 'rotation_rate')
-        if not isinstance(unit, str) or UNIT_TO_DIMENSION.get(unit) != dimension:
+        dimension = QuantityDimension.TIME
+        if name != 'duration':
+            dimension = (QuantityDimension.FREQUENCY if motion in {ShakeMotion.LINEAR, ShakeMotion.ROCK}
+                         else QuantityDimension.ROTATION_RATE)
+        if not isinstance(unit, str) or UNIT_TO_DIMENSION.get(unit) is not dimension:
             raise ValueError(f'{motion} {name} must have dimension {dimension}')
         try:
             number = require_finite_number(number)
