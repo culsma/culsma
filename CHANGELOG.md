@@ -4,6 +4,8 @@
 
 ### Fixed
 
+- Protocol returns recursively project container references inside records and
+  lists, preserving nested values instead of exporting the composite as `null`.
 - Event replay preserves skip reasons so control-flow skips still satisfy
   downstream dependencies on continuation. Restored material snapshots are
   independent copies of the saved events.

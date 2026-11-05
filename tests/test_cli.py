@@ -594,6 +594,95 @@ def test_cli_machine_output_preserves_return_value_types(tmp_path, monkeypatch, 
     assert payload["report"]["schema"] == "lab_report_v1"
 
 
+@pytest.mark.parametrize("output_mode", ["--json", "--output"])
+def test_cli_machine_output_projects_record_container_return(tmp_path, monkeypatch, capsys, output_mode):
+    source = tmp_path / "record_return.culs"
+    source.write_text(
+        """
+let sample = tube(capacity = 2mL);
+let bundle = { sample: sample, predicted_cell_count: 123 };
+return bundled = bundle, sample_only = sample, number_only = 123;
+""",
+        encoding="utf-8",
+    )
+    output = tmp_path / "output.json"
+    args = ["culsma", "run", str(source), output_mode]
+    if output_mode == "--output":
+        args.append(str(output))
+    monkeypatch.setattr(sys, "argv", args)
+
+    main()
+
+    captured = capsys.readouterr()
+    payload = json.loads(output.read_text() if output_mode == "--output" else captured.out)
+    bindings = payload["returns"]["entry"]["bindings"]
+    assert payload["ok"]
+    assert payload["report"]["execution"]["diagnostic_count"] == 0
+    assert bindings["sample_only"]["kind"] == "container_ref"
+    assert bindings["bundled"] == {
+        "sample": bindings["sample_only"],
+        "predicted_cell_count": bindings["number_only"],
+    }
+    assert bindings["number_only"] == 123
+    assert captured.err == ""
+
+
+def test_composite_returns_recursively_project_material_and_data_values(tmp_path):
+    source = tmp_path / "nested_returns.culs"
+    source.write_text(
+        """
+let stock = tube(capacity = 100uL, load = [content(kind = biosample, code = "S1", type = dna_sample):50uL]);
+let sample = tube(capacity = 100uL);
+let reads = data_group_ref(kind = sequence_read);
+let bundled = { nested: [{ sample: sample, wells: group([stock, sample]), reads: reads }], volume: 9uL };
+sample << [stock:20uL];
+return bundled = bundled, samples = [stock, sample], sample_only = sample, stock_only = stock,
+  group_only = group([stock, sample]), reads_only = reads;
+""",
+        encoding="utf-8",
+    )
+
+    bundle = execute_pipeline([source])
+
+    assert bundle["output"]["ok"]
+    bindings = bundle["returns"]["entry"]["bindings"]
+    assert bindings["sample_only"]["volume_uL"] == 20
+    assert bindings["stock_only"]["volume_uL"] == 30
+    assert bindings["samples"] == [bindings["stock_only"], bindings["sample_only"]]
+    assert bindings["group_only"]["kind"] == "container_group_ref"
+    assert bindings["group_only"]["members"] == bindings["samples"]
+    assert bindings["bundled"] == {
+        "nested": [{
+            "sample": bindings["sample_only"],
+            "wells": bindings["group_only"],
+            "reads": bindings["reads_only"],
+        }],
+        "volume": {"kind": "IRQuantity", "unit": "uL", "value": 9},
+    }
+
+
+@pytest.mark.parametrize("return_prefix", ["return", "return result ="])
+def test_component_record_return_preserves_container_reference(tmp_path, return_prefix):
+    source = tmp_path / "component_record.culs"
+    source.write_text(
+        """
+protocol Child(sample) {
+  RETURN_PREFIX { sample: sample, predicted_cell_count: 123 };
+}
+let sample = tube(capacity = 2mL);
+let bundled = Child(sample = sample);
+return bundled = bundled, sample_only = sample;
+""".replace("RETURN_PREFIX", return_prefix),
+        encoding="utf-8",
+    )
+
+    bundle = execute_pipeline([source])
+
+    assert bundle["output"]["ok"]
+    bindings = bundle["returns"]["entry"]["bindings"]
+    assert bindings["bundled"] == {"sample": bindings["sample_only"], "predicted_cell_count": 123}
+
+
 def test_cli_machine_output_projects_named_container_group_return(tmp_path, monkeypatch, capsys):
     source = tmp_path / "group_return.culs"
     source.write_text(

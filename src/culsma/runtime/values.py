@@ -211,6 +211,23 @@ class RuntimeValueResolver:
         return _container_ref_payload(material_state, container_id)
 
     def eval_protocol_output_expr(self, expr: Any, state: RuntimeState) -> Any:
+        # Composite members need the same material-reference fallback as a top-level return.
+        if isinstance(expr, dict):
+            kind = expr.get("kind")
+            if not isinstance(kind, str):
+                record = {}
+                for key, member in expr.items():
+                    value = self.eval_protocol_output_expr(member, state)
+                    if value is UNRESOLVED:
+                        return UNRESOLVED
+                    record[key] = value
+                return record
+            if kind == "IRList":
+                elements = expr.get("elements")
+                if not isinstance(elements, list):
+                    return UNRESOLVED
+                values = [self.eval_protocol_output_expr(member, state) for member in elements]
+                return UNRESOLVED if any(value is UNRESOLVED for value in values) else values
         value = evaluate_runtime_expression(expr, state)
         if value is not UNRESOLVED:
             return value
