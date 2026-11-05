@@ -25,6 +25,10 @@
     "UNKNOWN": "tests/test_solution_concentration.py::test_unknown_material_cannot_enter_declared_solution",
     "REPLACEMENT": "tests/test_solution_concentration.py::test_solution_replacement_is_rejected_without_retiring_material",
     "PRECISION": "tests/test_solution_concentration.py::test_zero_and_trace_concentrations_survive_partial_transfer",
-    "BENCHMARK_REPLAY": "tests/test_solution_concentration.py::test_solution_benchmark_and_replay"
+    "BENCHMARK_REPLAY": "tests/test_solution_concentration.py::test_solution_benchmark_and_replay",
+    "CONCENTRATION_ARITHMETIC": "tests/test_concentration_expressions.py::test_concentration_unit_conversion",
+    "CURRENT_CONCENTRATION": "tests/test_concentration_expressions.py::test_current_concentration_after_dilution_drives_dose_transfer",
+    "READ_FAILURE": "tests/test_concentration_expressions.py::test_unavailable_or_zero_current_concentration_cannot_move_material",
+    "CALCULATED_DOSE": "tests/test_concentration_expressions.py::test_calculated_dose_benchmark"
   }
 }

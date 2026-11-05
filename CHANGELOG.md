@@ -12,6 +12,11 @@
 
 ### Added
 
+- Concentration expressions support concentration × volume and mass ÷
+  concentration with unit conversion. An exact `materials.get(...)` selection
+  exposes current `.concentration` as a read-only quantity; scalar bindings
+  capture the read value for subsequent calculations and volume transfers.
+
 - Optional mass/volume `concentration` on initial content loads derives solute
   mass from declared solution volume. Whole and volume transfers conserve each
   solute through mixing and dilution; result data exposes current concentration.

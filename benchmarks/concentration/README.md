@@ -25,3 +25,16 @@ This case is separate from historical workflow coverage and does not change
 versioned benchmark inputs or recorded results. It does not use inventory checks.
 Separation, chemical reactions, cell association, unknown quantities and mixing
 bare solids into these stocks remain outside the supported solution model.
+
+## Calculated dose
+
+`calculated-dose.culs` reads current concentration through an exact material-entry
+selection, saves the original value, dilutes the stock, reads again and computes
+the volume carrying 10ug. The final target is 4uL with 10ug antibody at 2.5mg/mL.
+
+```sh
+.venv/bin/culsma run benchmarks/concentration/calculated-dose.culs
+.venv/bin/python -m pytest -q tests/test_concentration_expressions.py
+```
+
+The test checks displayed values, actual transfer quantities and event replay.

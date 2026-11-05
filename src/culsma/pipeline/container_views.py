@@ -216,6 +216,27 @@ def _is_member_expr(expr: Any) -> bool:
     ) or (hasattr(expr, "base") and hasattr(expr, "member"))
 
 
+def is_material_concentration_read(expr: Any, bindings: dict[str, Any]) -> bool:
+    """Recognize a typed property on an existing exact material-entry query."""
+    from .expression_resolution import resolve_expression
+    seen = set()
+    while isinstance(expr, IRIdentifier) and expr.name in bindings:
+        if expr.name in seen:
+            return False
+        seen.add(expr.name)
+        expr = bindings[expr.name]
+    if not isinstance(expr, IRMember) or expr.member != 'concentration':
+        return False
+    base = resolve_expression(expr.base, bindings).value
+    if not isinstance(base, IRCall) or base.name != 'get':
+        return False
+    contract = VALUE_CONTRACTS.resolve_call('get')
+    if not contract.accepts(base.args):
+        return False
+    receiver = next(arg.value for arg in base.args if arg.name == 'self')
+    return isinstance(receiver, IRMember) and receiver.member == 'materials'
+
+
 for type_id in ('material.reference', 'material.container', 'material.group', 'material.target_view'):
     VALUE_CONTRACTS.register_type(type_id)
 VALUE_CONTRACTS.register_call('get', ReadCallContract('material.entry',

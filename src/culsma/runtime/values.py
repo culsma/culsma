@@ -268,6 +268,8 @@ def evaluate_runtime_expression(expr: Any, state: RuntimeState) -> Any:
         if kind == "IRIndex":
             return _resolve_runtime_index(expr, state)
         if kind == "IRMember":
+            if expr.get("member") == "concentration" and VALUE_CONTRACTS.contains_read_call(expr):
+                return RuntimeValueResolver().read_operand(expr, state)
             if is_container_contents_volume(expr):
                 volume = read_container_volume(expr, state)
                 if volume is not UNRESOLVED:

@@ -1,0 +1,25 @@
+// Deterministic arithmetic example under the homogeneous/additive-volume model.
+protocol CalculatedDose {
+  let c = 5mg / 1mL;
+  let stock = tube(label="Stock", capacity=100uL, load=[
+    content(kind=ContentKind.BIO_MOLECULE_OR_VIRUS, type=ContentType.PROTEIN,
+            code="ANTI_CD45", concentration=c):10uL
+  ]);
+  let antibody = stock.materials.get("ANTI_CD45");
+  let before = antibody.concentration;
+  let diluent = tube(load=[
+    content(kind=ContentKind.FORMULATION, type=ContentType.BUFFER, code="PBS"):10uL
+  ]);
+  stock << [diluent];
+  let current = antibody.concentration;
+  let wanted = 10ug;
+  let volume = wanted / current;
+  let mass_check = current * volume;
+  print(before);
+  print(current);
+  print(volume);
+  print(mass_check);
+  let target = tube(label="Target");
+  target << [stock:volume];
+  return target;
+}

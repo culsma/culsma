@@ -53,8 +53,22 @@ class MaterialValueAdapter:
         key = resolver.read_value(args['arg0'], state)
         if not isinstance(container, AdaptedValue) or container.type_id != 'material.container' or not isinstance(key, str):
             return UNRESOLVED_VALUE
-        entries = [entry for entry in container['component_entries'] if entry.get('entry_id') == key]
-        return AdaptedValue(type_id, entries[0]) if len(entries) == 1 else UNRESOLVED_VALUE
+        material = state.artifacts.get('material_state', {})
+        container_id = container['id']
+        raw = material['containers'][container_id]
+        concentrations = container.get('component_concentrations', {})
+        matches = []
+        for entry in normalize_component_entries(deepcopy(raw), state=material, container_id=container_id):
+            if entry.get('entry_id') != key:
+                continue
+            quantity = entry.get('quantity') or {}
+            concentration = concentrations.get(entry.get('content_ref'))
+            if quantity.get('solution_solute') and concentration is not None and concentration['value'] is not None:
+                entry['concentration'] = (concentration['value'], concentration['unit'])
+            # A declared zero solute can carry a defined concentration.
+            if 'concentration' in entry or component_entry_has_quantity(entry):
+                matches.append(entry)
+        return AdaptedValue(type_id, matches[0]) if len(matches) == 1 else UNRESOLVED_VALUE
 
     def read_container(self, value, state, resolver):
         container_id = value.get('id')

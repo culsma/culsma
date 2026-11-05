@@ -25,6 +25,12 @@ UNIT_SCALES = {
     "frequency": {"Hz": 1, "cycle/min": 1 / 60},
 }
 UNIT_TO_DIMENSION = {unit: dim for dim, units in UNIT_SCALES.items() for unit in units}
+DERIVED_QUANTITY_UNITS = {
+    ("/", "mass", "volume"): "mg_per_uL",
+    ("*", "mass_concentration", "volume"): "mg",
+    ("*", "volume", "mass_concentration"): "mg",
+    ("/", "mass", "mass_concentration"): "uL",
+}
 
 
 class QuantityArithmeticError(ValueError):
@@ -73,9 +79,9 @@ def quantity_result_unit(op: str, left_unit: str | None, right_unit: str | None)
     for unit in (left_unit, right_unit):
         if unit is not None and unit not in UNIT_TO_DIMENSION:
             raise QuantityArithmeticError("unit", f"Unknown quantity unit '{unit}'")
-    if (op == "/" and UNIT_TO_DIMENSION.get(left_unit) == "mass"
-            and UNIT_TO_DIMENSION.get(right_unit) == "volume"):
-        return "mg_per_uL"
+    derived = DERIVED_QUANTITY_UNITS.get((op, UNIT_TO_DIMENSION.get(left_unit), UNIT_TO_DIMENSION.get(right_unit)))
+    if derived is not None:
+        return derived
     if op in {"+", "-"}:
         if (left_unit is None) != (right_unit is None):
             raise QuantityArithmeticError("dimension", "Cannot add or subtract a scalar and a unit-bearing quantity")
@@ -99,20 +105,21 @@ def quantity_result_unit(op: str, left_unit: str | None, right_unit: str | None)
 def quantity_binary(op: str, left: Any, right: Any) -> QuantityValue:
     """Keep the quantity operand's unit; additive operations use the left unit.
 
-    Compatible quantity ratios are scalar. Mass/volume yields concentration.
-    Other compound/inverse units are outside the current quantity model. No display rounding occurs here.
+    Compatible quantity ratios are scalar. Concentration, mass and volume
+    interconvert through the explicitly registered operations. Other compound
+    units are unsupported. No display rounding occurs here.
     """
     lv, lu = quantity_parts(left)
     rv, ru = quantity_parts(right)
     unit = quantity_result_unit(op, lu, ru)
     if op == "/" and rv == 0:
         raise QuantityArithmeticError("zero", "Division by zero in quantity expression")
-    if unit == "mg_per_uL" and op == "/" and lu in UNIT_SCALES["mass"] and ru in UNIT_SCALES["volume"]:
-        numerator = require_finite_number(lv * UNIT_SCALES["mass"][lu])
-        denominator = require_finite_number(rv * UNIT_SCALES["volume"][ru])
-        if denominator == 0:
-            raise QuantityArithmeticError("nonfinite", "Concentration denominator underflowed")
-        value = numerator / denominator
+    if (op, UNIT_TO_DIMENSION.get(lu), UNIT_TO_DIMENSION.get(ru)) in DERIVED_QUANTITY_UNITS:
+        numerator = require_finite_number(lv * UNIT_SCALES[UNIT_TO_DIMENSION[lu]][lu])
+        denominator = require_finite_number(rv * UNIT_SCALES[UNIT_TO_DIMENSION[ru]][ru])
+        if op == "/" and denominator == 0:
+            raise QuantityArithmeticError("nonfinite", "Quantity denominator underflowed")
+        value = numerator / denominator if op == "/" else numerator * denominator
         return (require_finite_number(value), unit)
     if lu is not None and ru is not None:
         rv = convert_value(rv, ru, lu)

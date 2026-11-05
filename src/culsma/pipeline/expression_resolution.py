@@ -144,6 +144,9 @@ def infer_quantity_unit(
     expr: Any, bindings: Mapping[str, Any], seen: frozenset[Any] = frozenset(),
 ) -> Any:
     """Return the known unit, unitless None, or the unknown-unit sentinel."""
+    from .container_views import is_material_concentration_read
+    if is_material_concentration_read(expr, bindings):
+        return "mg_per_uL"
     result = resolve_expression(expr, bindings, seen)
     if result.status is not ResolutionStatus.RESOLVED:
         return UNKNOWN_UNIT
