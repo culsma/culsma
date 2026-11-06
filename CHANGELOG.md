@@ -14,6 +14,19 @@
 
 ### Added
 
+- Magnetic separation preserves explicitly declared binding and release
+  transitions for solution solutes. Solute mass and carrier volume remain
+  independent; bead-associated mixtures do not expose a homogeneous
+  concentration. Unknown dissolved protein products preserve their carrier
+  volume without inventing mass. Benchmark 05 includes an explicit stock-
+  concentration workflow simulation variant.
+
+- Environment scopes accept `o2` alongside existing `co2/rh`. Percent, scalar
+  temperature and duration values receive physical-bound checks, repeated after
+  runtime binding. Public execution gates preserve every declared condition,
+  normalize `rh` to `humidity`, and accept legacy serialized `rh` without adding
+  defaults. Invalid values that previously escaped range checking now fail.
+
 - Concentration expressions support concentration × volume and mass ÷
   concentration with unit conversion. An exact `materials.get(...)` selection
   exposes current `.concentration` as a read-only quantity; scalar bindings
