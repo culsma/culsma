@@ -47,7 +47,7 @@ BUILTIN_OPERATION_SPECS: Mapping[str, OperationSpec] = MappingProxyType(
         ),
         "sep": _spec(
             required={"sample", "program"},
-            allowed={"sample", "program", "component_fates"},
+            allowed={"sample", "program", "component_fates", "transitions"},
         ),
         "frac": _spec(
             required={"sample", "program"},

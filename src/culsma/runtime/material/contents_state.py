@@ -14,7 +14,7 @@ from culsma.domains.agitation.contracts import validate_agitation_target
 from culsma.domains.environment import EnvironmentKey
 from culsma.pipeline.plan_nodes import PlanStep
 from culsma.runtime.material.args import arg_call, arg_quantity, arg_string, call_arg_int, call_arg_string
-from culsma.runtime.material.author_transition import parse_explicit_material_transitions
+from culsma.runtime.material.author_transition import ExplicitMaterialTransition, parse_explicit_material_transitions
 from culsma.runtime.material.component_entries import (
     container_component_entries,
     project_component_entries,
@@ -314,6 +314,7 @@ class MaterialIndexedPartsStateManager:
                 program=program,
                 keep_source=keep_source,
                 explicit_fates=explicit_fates,
+                explicit_transitions=transition_parse.transitions,
             )
             if isinstance(transition, MaterialUpdateResult):
                 return transition
@@ -848,6 +849,7 @@ class MaterialIndexedPartsStateManager:
         program: dict[str, Any],
         keep_source: str | None,
         explicit_fates: dict[str, ExplicitContentFate],
+        explicit_transitions: tuple[ExplicitMaterialTransition, ...] = (),
     ) -> ContentsPartitionTransition | MaterialUpdateResult:
         detail_error = normalize_material_state_detail_ledger(state)
         if detail_error is not None:
@@ -887,6 +889,7 @@ class MaterialIndexedPartsStateManager:
             slot1=slot1,
             program=program,
             explicit_fates=explicit_fates,
+            explicit_transitions=explicit_transitions,
             material_effect_adapter=self.material_effect_adapter,
             request_id=step.step_id,
             source_id=source_id,

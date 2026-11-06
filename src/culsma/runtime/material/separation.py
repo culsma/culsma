@@ -462,18 +462,20 @@ def apply_separation_material(
     output_ids_by_part: dict[str, str] | None = None,
 ) -> SeparationApplicationResult:
     """Resolve and apply one separation through the primary Runtime boundary."""
-    from .solution import has_solution_solutes
-    if has_solution_solutes(source):
-        return SeparationApplicationResult(record={}, failure=MaterialEffectFailure(
-            code="MAT_SOLUTION_OPERATION_UNSUPPORTED",
-            message="Concentration-bearing solutions currently support ordinary volume transfers, not separation"))
-
+    from .solution import has_magnetic_bead_phase, has_solution_solutes
 
     program_kind = (
         str(program.get("name"))
         if isinstance(program.get("name"), str)
         else "sep_program"
     )
+    if has_solution_solutes(source) and (
+        program_kind != "magnetic_program"
+        or not has_magnetic_bead_phase(source, state.get("content_registry", {}))
+    ):
+        return SeparationApplicationResult(record={}, failure=MaterialEffectFailure(
+            code="MAT_SOLUTION_OPERATION_UNSUPPORTED",
+            message="Solution separation requires a declared magnetic bead phase and magnetic program"))
     if program_kind not in SCIENTIFIC_MODEL_SEPARATION_PROGRAMS:
         return SeparationApplicationResult(
             record=apply_legacy_partition_material(

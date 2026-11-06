@@ -20,7 +20,7 @@ from culsma.runtime.material.diagnostics import diagnostic_result
 from culsma.runtime.material.refs import resolve_target_ref
 from culsma.runtime.material.result import MaterialUpdateResult
 from culsma.runtime.material.units import COUNT_TO_CELLS, MASS_TO_MG, VOLUME_TO_UL
-from culsma.runtime.material.unknown_quantity import unknown_mass
+from culsma.runtime.material.unknown_quantity import is_unknown, unknown_mass
 
 
 def apply_material_replace(step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
@@ -39,9 +39,7 @@ def apply_material_replace(step: PlanStep, state: dict[str, Any]) -> MaterialUpd
     if not isinstance(source, dict):
         return fail("MAT_BINDING_NOT_FOUND", "Replacement container does not exist")
     from .solution import has_solution_solutes
-    if has_solution_solutes(source):
-        return fail("MAT_SOLUTION_OPERATION_UNSUPPORTED",
-                    "Replacement of concentration-bearing solution components is not supported")
+    solution_basis = has_solution_solutes(source)
     contents = state.get("contents_states", {}).get(source_id)
     if isinstance(contents, dict) and contents.get("valid") is not False:
         return fail(
@@ -156,6 +154,15 @@ def apply_material_replace(step: PlanStep, state: dict[str, Any]) -> MaterialUpd
                     "Replacement quantity must be unit-bearing or unknown(dimension = mass)",
                 )
             content = candidate.get("content_registry", {}).get(content_id, {})
+            if solution_basis:
+                if (original["quantity"].get("solution_solute") is not True
+                        or original.get("relation") != "free" or not is_unknown(quantity)
+                        or content.get("content_type") != "protein"):
+                    return fail(
+                        "MAT_SOLUTION_OPERATION_UNSUPPORTED",
+                        "Solution replacement requires a free dissolved entry and unknown protein masses",
+                    )
+                quantity["solution_solute"] = True
             if (
                 quantity.get("dimension") == "count"
                 and content.get("content_kind") != "bio_cellular"

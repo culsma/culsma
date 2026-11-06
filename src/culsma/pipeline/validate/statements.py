@@ -46,6 +46,8 @@ from .expression_contracts import validate_expr_contracts
 from .groups import GroupIndexValidator
 from .programs import ProgramContractValidator
 from .parameters import ExpressionParameterValidator
+from .material_transition import validate_material_transitions_contract
+from .resolution import ExprResolver
 from .separation import validate_component_fates_contract
 from .statement_contracts import (
     BUILTIN_METHOD_STEPS,
@@ -1052,6 +1054,21 @@ class StepHandler(BaseStatementHandler):
                     stmt.args,
                     defined_names=ctx.defined_names,
                     expr_bindings=ctx.expr_bindings,
+                    node_id=stmt.id,
+                    span=stmt.span,
+                ),
+            )
+            program = (
+                ExprResolver.resolve_call_expr(program_arg.value, ctx.expr_bindings)
+                if program_arg is not None
+                else None
+            )
+            self.append_diagnostics(
+                ctx,
+                validate_material_transitions_contract(
+                    stmt.args,
+                    expr_bindings=ctx.expr_bindings,
+                    program_kind=program.name if isinstance(program, IRCall) else None,
                     node_id=stmt.id,
                     span=stmt.span,
                 ),

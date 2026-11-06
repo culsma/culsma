@@ -1,4 +1,4 @@
-"""Declared homogeneous solution loads, using the existing component ledger.
+"""Declared solution loads and magnetic mixtures using the existing ledger.
 
 A stock's unspecified liquid matrix has its own volume entry. Its solute has
 an independent mass entry, with no mass-to-volume compatibility projection.
@@ -14,8 +14,25 @@ from .result import MaterialUpdateResult
 from .units import VOLUME_TO_UL
 
 
+def magnetic_bead_content(content: dict[str, Any]) -> bool:
+    return (
+        content.get("content_kind") == "particulate"
+        and content.get("content_type") == "beads"
+        and content.get("content_attrs", {}).get("bead_property") == "magnetic"
+    )
+
+
+def has_magnetic_bead_phase(container: dict[str, Any], registry: dict[str, Any]) -> bool:
+    return any(
+        magnetic_bead_content(registry.get(entry.get("content_ref"), {}))
+        and entry.get("quantity", {}).get("dimension") == "volume"
+        and (entry["quantity"].get("value") or 0) > 0
+        for entry in container.get("component_entries", ())
+    )
+
+
 def solution_state_error(state: dict[str, Any]) -> str | None:
-    """Validate the bounded homogeneous-solution model before committing a step.
+    """Validate the supported solution and magnetic states before committing a step.
 
     Legacy bare masses have a compatibility volume, not a declared solution
     volume. They must not enter this model, even under a different identity.
@@ -26,6 +43,7 @@ def solution_state_error(state: dict[str, Any]) -> str | None:
     for container_id, container in state.get("containers", {}).items():
         if not has_solution_solutes(container):
             continue
+        has_beads = has_magnetic_bead_phase(container, registry)
         for entry in container.get("component_entries", []):
             quantity = entry.get("quantity", {})
             if quantity.get("value") == 0:
@@ -36,13 +54,19 @@ def solution_state_error(state: dict[str, Any]) -> str | None:
                 quantity.get("dimension") == "volume"
                 or (quantity.get("dimension") == "mass" and quantity.get("solution_solute"))
             )
-            if (quantity.get("status") == "unknown" or not supported_axis
-                    or entry.get("relation", "free") != "free"
-                    or content.get("content_kind") == "bio_cellular"
-                    or physical_state not in (None, "liquid", "solution")):
+            relation = entry.get("relation", "free")
+            bead_phase = magnetic_bead_content(content) and quantity.get("dimension") == "volume"
+            bound_solute = quantity.get("solution_solute") and relation == "bead_bound"
+            supported_relation = relation == "free" or (
+                has_beads and (bound_solute or (bead_phase and relation == "field_retained"))
+            )
+            unknown_bare_mass = quantity.get("status") == "unknown" and not quantity.get("solution_solute")
+            if (unknown_bare_mass or not supported_axis
+                    or not supported_relation or content.get("content_kind") == "bio_cellular"
+                    or (not bead_phase and physical_state not in (None, "liquid", "solution"))):
                 return (f"Container '{container_id}' cannot combine a declared solution with "
-                        f"component '{entry.get('content_ref')}': only known free solution "
-                        "solutes and liquid volume loads are supported")
+                        f"component '{entry.get('content_ref')}': expected liquid, a tracked dissolved mass, or "
+                        "a declared magnetic bead phase with supported relations")
     return None
 
 
@@ -99,8 +123,15 @@ def load_solution(step, state, container_id, content_id, amount):
                "declared_concentration": concentration})
 
 
-def project_concentrations(container: dict[str, Any]) -> None:
+def project_concentrations(container: dict[str, Any], registry: dict[str, Any] | None = None) -> None:
     """Expose current per-solute concentrations, never original stock labels."""
+    if has_magnetic_bead_phase(container, registry or {}) or any(
+        entry.get("relation", "free") != "free"
+        and (entry.get("quantity", {}).get("value") or 0) > 0
+        for entry in container.get("component_entries", ())
+    ):
+        container.pop("component_concentrations", None)
+        return
     volume = sum(q.get("value", 0) * VOLUME_TO_UL.get(q.get("unit"), 0)
                  for q in container.get("component_quantities", {}).values()
                  if q.get("dimension") == "volume")

@@ -1,7 +1,7 @@
 {
   "decision": "SOLUTION-CONCENTRATION-20261104",
   "status": "implemented_local",
-  "scope": "Optional mass/volume concentration on homogeneous solution initialization and ordinary volume transfers",
+  "scope": "Optional mass/volume concentration on homogeneous solution initialization and ordinary volume transfers, with declared magnetic-bead capture and release",
   "invariants": [
     "Concentration belongs to a load, never shared content identity",
     "Solute mass equals declared concentration times solution volume",
@@ -9,8 +9,9 @@
     "Each solute retains identity and conserves quantity through ordinary transfer",
     "Unknown/undeclared same-solute quantity bases are rejected, not treated as zero",
     "Current concentrations derive from current mass and volume; zero volume yields no value",
-    "Unsupported solid, bare-mass, unknown and associated mixtures roll back the rejected material step",
-    "Explicit zero and positive trace solutes survive ordinary volume transfer"
+    "Unsupported solid, bare-mass, and unrelated associated mixtures roll back the rejected material step",
+    "Explicit zero and positive trace solutes survive ordinary volume transfer",
+    "Magnetic-bead mixtures preserve solute mass and volume independently and suppress homogeneous concentration reads"
   ],
   "requirements": {
     "INIT": "tests/test_solution_concentration.py::test_equivalent_units",
@@ -29,6 +30,9 @@
     "CONCENTRATION_ARITHMETIC": "tests/test_concentration_expressions.py::test_concentration_unit_conversion",
     "CURRENT_CONCENTRATION": "tests/test_concentration_expressions.py::test_current_concentration_after_dilution_drives_dose_transfer",
     "READ_FAILURE": "tests/test_concentration_expressions.py::test_unavailable_or_zero_current_concentration_cannot_move_material",
-    "CALCULATED_DOSE": "tests/test_concentration_expressions.py::test_calculated_dose_benchmark"
+    "CALCULATED_DOSE": "tests/test_concentration_expressions.py::test_calculated_dose_benchmark",
+    "MAG-SOLUTE-01": "tests/test_solution_concentration.py::test_magnetic_capture_and_release_conserve_volume_and_solute_mass",
+    "MAG-SOLUTE-02": "tests/test_solution_concentration.py::test_solution_magnetic_separation_requires_declared_beads",
+    "MAG-SOLUTE-03": "tests/test_solution_concentration.py::test_replacement_of_dissolved_protein_preserves_carrier_and_unknown_mass"
   }
 }

@@ -539,6 +539,30 @@ def test_author_transition_runs_after_provider_resolves_separation_fate() -> Non
     assert retained[0]["relationship_source"] == "author_transition"
 
 
+def test_in_place_separation_applies_author_transition_to_indexed_contents() -> None:
+    source = _source().replace("let result = sep(", "sep(")
+    result = run(plan=_plan(source), driver=StubDriver())
+
+    assert result.ok, [diagnostic.to_dict() for diagnostic in result.diagnostics]
+    material_state = result.state.artifacts["material_state"]
+    contents, = material_state["contents_states"].values()
+    retained = contents["parts"]["1"]["component_entries"]
+    cell, = [entry for entry in retained if entry["amount"] > 0]
+    assert cell["content_ref"] == "RPE1"
+    assert cell["amount"] == 100000.0
+    assert cell["relation"] == "free"
+    assert cell["relationship_source"] == "author_transition"
+
+
+def test_in_place_separation_rejects_a_cross_program_transition_output() -> None:
+    source = _source(output="MagneticProgramOutput.BOUND").replace("let result = sep(", "sep(")
+    _, semantic = _compile(source)
+
+    assert "SEM_MATERIAL_TRANSITION_OUTPUT_INVALID" in {
+        diagnostic.code for diagnostic in semantic.diagnostics
+    }
+
+
 def test_author_transition_selects_cells_from_mixed_tube_materials() -> None:
     source = '''protocol T {
   let source = tube(

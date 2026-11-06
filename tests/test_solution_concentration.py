@@ -234,3 +234,71 @@ def test_solution_benchmark_and_replay():
     events = json.loads(json.dumps([event.to_dict() for event in result.events]))
     replayed = replay_events(events)
     assert replayed.artifacts['material_state'] == result.state.artifacts['material_state']
+
+
+def test_solution_magnetic_separation_requires_declared_beads():
+    result = run_source('protocol T {' + stock() +
+        'sep(sample=Stock,program=magnetic_program(duration=2min));}')
+    assert not result.ok
+    assert 'MAT_SOLUTION_OPERATION_UNSUPPORTED' in [d.code for d in result.diagnostics]
+    assert material(result, 'Stock')['volume_uL'] == 10
+    assert mass(material(result, 'Stock')) == pytest.approx(.05)
+
+
+def test_magnetic_capture_and_release_conserve_volume_and_solute_mass():
+    result = run_source('protocol T {' + stock() + '''
+      let bead_sample=tube(label="Beads",load=[
+        content(kind=particulate,type=beads,code="MAG",attrs={bead_property:magnetic}):20uL
+      ]);
+      bead_sample << [Stock:5uL];
+      let captured=sep(sample=bead_sample,program=magnetic_program(duration=2min),component_fates={
+        MAG:{bound:100%,flowthrough:0%}, A:{bound:100%,flowthrough:0%}
+      });
+      let retained=captured[0];
+      let buffer=tube(load=[''' + BUFFER + ''':30uL]);
+      retained << [buffer];
+      let released=sep(sample=retained,program=magnetic_program(duration=2min),component_fates={
+        MAG:{bound:100%,flowthrough:0%}, A:{bound:0%,flowthrough:100%}
+      },transitions=[
+        transition(subject=retained.materials.get("A"),output=MagneticProgramOutput.FLOWTHROUGH,to=MaterialRelation.FREE)
+      ]);
+      let eluate=tube(label="Eluate");
+      eluate << [released[1]];
+    }''')
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    state = result.state.artifacts['material_state']
+    bound = state['containers'][state['indexed_bindings']['released']['0']]
+    eluate = material(result, 'Eluate')
+    assert bound['volume_uL'] == 20
+    assert eluate['volume_uL'] == 30
+    assert mass(eluate) == pytest.approx(.025)
+    assert concentration(eluate) == pytest.approx(.025 / 30)
+    assert 'component_concentrations' not in bound
+    assert sum(c['volume_uL'] for c in state['containers'].values()) == 60
+    assert sum(c['component_quantities'].get('A', {}).get('value', 0)
+               for c in state['containers'].values()) == pytest.approx(.05)
+    from culsma.runtime.replay import replay_events
+    assert replay_events([e.to_dict() for e in result.events]).artifacts['material_state'] == state
+
+
+def test_replacement_of_dissolved_protein_preserves_carrier_and_unknown_mass():
+    result = run_source('protocol T {' + stock() + '''
+      Stock.materials.replace({
+        Stock.materials.get("A"):[
+          ''' + protein('TARGET', None) + ''':unknown(dimension=mass),
+          ''' + protein('BACKGROUND', None) + ''':unknown(dimension=mass)
+        ]
+      });
+      let target=tube(label="Target"); target << [Stock:5uL];
+    }''')
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
+    for label in ('Stock', 'Target'):
+        c = material(result, label)
+        assert c['volume_uL'] == 5
+        assert 'A' not in c['component_quantities']
+        for code in ('TARGET', 'BACKGROUND'):
+            quantity = c['component_quantities'][code]
+            assert quantity['solution_solute'] is True
+            assert quantity['value'] is None
+            assert list(quantity['shares'].values()) == [.5]
+            assert concentration(c, code) is None

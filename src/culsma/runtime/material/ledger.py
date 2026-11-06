@@ -326,7 +326,7 @@ def container_detail_aggregates(container: Any) -> tuple[float, float]:
     return volume_uL, mass_mg
 
 
-def refresh_container_aggregates(container: Any) -> None:
+def refresh_container_aggregates(container: Any, registry: dict[str, Any] | None = None) -> None:
     """Refresh aggregate compatibility fields from the authoritative detail ledger."""
 
     if not isinstance(container, dict):
@@ -335,7 +335,7 @@ def refresh_container_aggregates(container: Any) -> None:
     container["volume_uL"] = volume_uL
     container["mass_mg"] = mass_mg
     from culsma.runtime.material.solution import project_concentrations
-    project_concentrations(container)
+    project_concentrations(container, registry)
     unknown_dimensions = sorted({q["dimension"] for q in container.get("component_quantities", {}).values() if is_unknown(q)})
     if unknown_dimensions:
         container["unknown_quantity_dimensions"] = unknown_dimensions
@@ -441,8 +441,9 @@ def refresh_material_state_aggregates(state: dict[str, Any]) -> None:
     containers = state.get("containers")
     if not isinstance(containers, dict):
         return
+    registry = state.get("content_registry", {})
     for raw_container in containers.values():
-        refresh_container_aggregates(raw_container)
+        refresh_container_aggregates(raw_container, registry)
 
 
 def _normalize_container_detail_ledger(container_id: str, container: dict[str, Any]) -> None:
