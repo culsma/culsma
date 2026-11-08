@@ -29,6 +29,7 @@ from culsma.pipeline.ir_nodes import (
     IRStatement,
     IRStep,
     IRWithConstraint,
+    IRWithSep,
     IRWithEnv,
 )
 from culsma.pipeline.operation_specs import OperationSpec
@@ -522,6 +523,11 @@ class IncludeHandler(BaseStatementHandler):
             target_analysis = ctx.analysis.protocols.get(target_id)
             if target_analysis is not None:
                 ctx.defined_names.update(target_analysis.runtime_exports)
+
+
+class WithSepHandler(BaseStatementHandler):
+    def iter_child_blocks(self, stmt, ctx, state):
+        yield ChildBlock(stmt.statements, active_requirements=ctx.active_requirements)
 
 
 class WithEnvHandler(BaseStatementHandler):
@@ -1097,6 +1103,7 @@ _STATEMENT_HANDLERS_BY_TYPE: dict[type[object], BaseStatementHandler] = {
     IRLet: LetHandler(),
     IRAssign: AssignHandler(),
     IRInclude: IncludeHandler(),
+    IRWithSep: WithSepHandler(),
     IRWithEnv: WithEnvHandler(),
     IRWithConstraint: WithConstraintHandler(),
     IRRepeat: RepeatHandler(),

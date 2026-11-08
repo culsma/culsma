@@ -14,6 +14,7 @@ from culsma.pipeline.ir_nodes import (
     IRRepeat,
     IRStatement,
     IRWithConstraint,
+    IRWithSep,
     IRWithEnv,
 )
 
@@ -124,7 +125,7 @@ def collect_referenced_protocol_names(statements: list[IRStatement]) -> list[str
     for stmt in statements:
         if isinstance(stmt, IRInclude):
             names.append(stmt.name)
-        elif isinstance(stmt, IRWithEnv):
+        elif isinstance(stmt, (IRWithSep, IRWithEnv)):
             names.extend(collect_referenced_protocol_names(stmt.statements))
         elif isinstance(stmt, IRWithConstraint):
             names.extend(collect_referenced_protocol_names(stmt.statements))

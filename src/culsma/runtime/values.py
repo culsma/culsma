@@ -822,6 +822,8 @@ def _resolve_step_runtime_args(step: PlanStep, state: RuntimeState) -> PlanStep:
         resolve_environment=lambda environment: resolve_runtime_arg_value(environment, state),
         require_duration=step.op == "env_hold",
     )
+    if gate is not None and "separation_scopes" in gate:
+        gate["separation_scopes"] = resolve_runtime_arg_value(gate["separation_scopes"], state)
     return PlanStep(
         step_id=step.step_id,
         op=step.op,

@@ -174,6 +174,13 @@ class IRStep:
 
 
 @dataclass(frozen=True)
+class IRWithSep:
+    id: str
+    statements: list[IRStatement] = field(default_factory=list)
+    span: Span | None = None
+
+
+@dataclass(frozen=True)
 class IRWithEnv:
     id: str
     env_args: list[IRArg] = field(default_factory=list)
@@ -234,7 +241,7 @@ class IRRepeat:
     span: Span | None = None
 
 
-IRStatement = IRInclude | IRLet | IRAssign | IRStep | IRWithEnv | IRWithConstraint | IRMutation | IRMutationGroup | IRConditional | IRControl | IRRepeat
+IRStatement = IRInclude | IRLet | IRAssign | IRStep | IRWithSep | IRWithEnv | IRWithConstraint | IRMutation | IRMutationGroup | IRConditional | IRControl | IRRepeat
 
 
 @dataclass(frozen=True)

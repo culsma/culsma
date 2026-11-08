@@ -16,6 +16,12 @@ def replay_events(events: list[RuntimeEvent] | list[dict[str, Any]]) -> RuntimeS
     for raw in events:
         event = _as_event(raw)
         step_id = event.step_id
+        if event.kind == "SEPARATION_SCOPES_EXPIRED":
+            from culsma.runtime.material.contents_state import invalidate_contents_state
+            for source in event.payload["sources"]:
+                invalidate_contents_state(state.artifacts.get("material_state", {}), source,
+                                          reason="separation_scope_ended")
+            continue
 
         if event.kind == "STEP_STARTED":
             state.step_status[step_id] = "running"

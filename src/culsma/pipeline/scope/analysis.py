@@ -14,6 +14,7 @@ from culsma.parser.ast_nodes import (
     RepeatStatement,
     Statement,
     WithConstraintStmt,
+    WithSepStmt,
     WithEnvStmt,
 )
 from culsma.pipeline.ir_nodes import (
@@ -26,6 +27,7 @@ from culsma.pipeline.ir_nodes import (
     IRMutationGroup,
     IRStatement,
     IRWithConstraint,
+    IRWithSep,
     IRWithEnv,
 )
 
@@ -106,7 +108,7 @@ class ScopeAnalyzer:
                     declared=declared,
                     active_bindings=nested_bindings,
                 )
-            elif isinstance(stmt, (WithEnvStmt, WithConstraintStmt)):
+            elif isinstance(stmt, (WithSepStmt, WithEnvStmt, WithConstraintStmt)):
                 self._validate_source_block_names(
                     stmt.statements,
                     protocol_name=protocol_name,
@@ -392,7 +394,7 @@ class ScopeAnalyzer:
             ]
         if isinstance(stmt, IRRepeat):
             return [ScopeChildBlock(label="body", statements=stmt.statements, repeat_binding=stmt.binding)]
-        if isinstance(stmt, (IRWithEnv, IRWithConstraint)):
+        if isinstance(stmt, (IRWithSep, IRWithEnv, IRWithConstraint)):
             return [ScopeChildBlock(label="body", statements=stmt.statements)]
         return []
 
@@ -406,7 +408,7 @@ class ScopeAnalyzer:
                 names.update(self.collect_assigned_source_local_names(stmt.else_statements))
             elif isinstance(stmt, RepeatStatement):
                 names.update(self.collect_assigned_source_local_names(stmt.statements))
-            elif isinstance(stmt, (WithEnvStmt, WithConstraintStmt)):
+            elif isinstance(stmt, (WithSepStmt, WithEnvStmt, WithConstraintStmt)):
                 names.update(self.collect_assigned_source_local_names(stmt.statements))
         return names
 

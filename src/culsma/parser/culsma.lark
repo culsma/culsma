@@ -47,6 +47,7 @@ statement: constrained_simple_statement ";"
     | let_statement ";"
     | return_statement ";"
     | assign_statement ";"
+    | with_sep_stmt
     | with_env_stmt
     | with_constraint_stmt
     | mutation_stmt ";"
@@ -93,6 +94,7 @@ call_statement_arg_list: call_statement_arg ("," call_statement_arg)*
 step_call: IDENTIFIER "(" step_arg_list? ")"
 step_arg_list: step_arg ("," step_arg)*
 ?step_arg: arg | expression
+with_sep_stmt: "with" "sep" "(" arg_list? ")" "{" statement* "}"
 with_env_stmt: "with" "env" "(" env_arg_block ")" "{" statement* "}"
 with_constraint_stmt: "with" "constraint" "(" constraint_item_block ")" "{" statement* "}"
 env_arg_block: arg_list?

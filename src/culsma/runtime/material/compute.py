@@ -30,6 +30,7 @@ from culsma.runtime.material.scientific_model_adapter import (
 )
 from culsma.runtime.material.state import MaterialStateManager
 from culsma.runtime.material.solution import solution_state_error
+from culsma.runtime.material.separation_scope import bind_result, expire, scopes
 
 
 class MaterialCompute:
@@ -57,6 +58,7 @@ class MaterialCompute:
         """Apply deterministic material update for one runtime step."""
         state = deepcopy(material_state)
         state.setdefault("containers", {})
+        expire(state, active={scope["scope_id"] for scope in scopes(step)})
         detail_error = normalize_material_state_detail_ledger(state)
         if detail_error is not None:
             return diagnostic_result(
@@ -76,6 +78,9 @@ class MaterialCompute:
             result = MaterialUpdateResult(material_state=state, diagnostics=[], delta={})
 
         if result.ok:
+            if step.op in {"sep", "frac"}:
+                bind_result(step, result.material_state)
+            expire(result.material_state, ended=set((step.gate or {}).get("separation_scope_ends", [])))
             solution_error = solution_state_error(result.material_state)
             if solution_error is not None:
                 return diagnostic_result(

@@ -114,6 +114,9 @@ class CulsmaTransformer(Transformer):
     def mutation_source_list(self, meta, items):
         return self._dispatch("mutation_source_list", meta, items)
 
+    def with_sep_stmt(self, meta, items):
+        return self._dispatch("with_sep_stmt", meta, items)
+
     def with_env_stmt(self, meta, items):
         return self._dispatch("with_env_stmt", meta, items)
 

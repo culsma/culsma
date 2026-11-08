@@ -23,6 +23,7 @@ from culsma.pipeline.ir_nodes import (
     IRRepeat,
     IRString,
     IRWithConstraint,
+    IRWithSep,
     IRWithEnv,
 )
 from culsma.pipeline.plan_nodes import PlanStep
@@ -79,7 +80,7 @@ class PlanExpressionSerializer:
             elif isinstance(stmt, IRConditional):
                 names.update(self.assigned_local_names_ir(stmt.then_statements))
                 names.update(self.assigned_local_names_ir(stmt.else_statements))
-            elif isinstance(stmt, IRWithEnv):
+            elif isinstance(stmt, (IRWithSep, IRWithEnv)):
                 names.update(self.assigned_local_names_ir(stmt.statements))
             elif isinstance(stmt, IRWithConstraint):
                 names.update(self.assigned_local_names_ir(stmt.statements))

@@ -1359,6 +1359,11 @@ def _preservation_contract_satisfied(
         return False
     if contract.get("kind") != "field_retention":
         return False
+    scope_id = contract.get("separation_scope")
+    if scope_id is not None:
+        return any(scope.get("scope_id") == scope_id
+                   and scope.get("program", {}).get("name") == "magnetic_program"
+                   for scope in (step.gate or {}).get("separation_scopes", []))
     required_field = contract.get("field")
     if not isinstance(required_field, str) or not _step_gate_has_env_value(step, EnvironmentKey.FIELD.value, required_field):
         return False

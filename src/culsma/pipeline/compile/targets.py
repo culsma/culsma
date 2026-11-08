@@ -30,6 +30,7 @@ from culsma.parser.ast_nodes import (
     StepCall,
     StringLiteral,
     WithConstraintStmt,
+    WithSepStmt,
     WithEnvStmt,
 )
 from culsma.pipeline.ir_nodes import IRLet, IRPlateWellRef, IRIdentifier
@@ -245,6 +246,8 @@ def _collect_env_target_exprs_from_statement(
         return _collect_env_target_exprs_from_expr(stmt.value)
     if isinstance(stmt, ExprStatement):
         return _collect_env_target_exprs_from_expr(stmt.value)
+    if isinstance(stmt, WithSepStmt):
+        return _collect_env_target_exprs_from_args(stmt.args)
     if isinstance(stmt, WithEnvStmt):
         nested: list[Expression] = []
         for nested_stmt in stmt.statements:
@@ -548,7 +551,7 @@ def _contains_invalid_hold_statement(statements: list[Statement]) -> bool:
             return True
         if isinstance(stmt, WithEnvStmt):
             continue
-        if isinstance(stmt, WithConstraintStmt):
+        if isinstance(stmt, (WithSepStmt, WithConstraintStmt)):
             if _contains_invalid_hold_statement(stmt.statements):
                 return True
             continue

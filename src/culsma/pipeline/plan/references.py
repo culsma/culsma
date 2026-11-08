@@ -12,6 +12,7 @@ from culsma.pipeline.ir_nodes import (
     IRProtocol,
     IRRepeat,
     IRWithConstraint,
+    IRWithSep,
     IRWithEnv,
 )
 from culsma.pipeline.plan_nodes import PlanStep
@@ -30,7 +31,7 @@ class PlanReferenceResolver:
         for stmt in statements:
             if isinstance(stmt, IRInclude):
                 names.append(stmt.name)
-            elif isinstance(stmt, IRWithEnv):
+            elif isinstance(stmt, (IRWithSep, IRWithEnv)):
                 names.extend(self.collect_referenced_protocol_names(stmt.statements))
             elif isinstance(stmt, IRWithConstraint):
                 names.extend(self.collect_referenced_protocol_names(stmt.statements))

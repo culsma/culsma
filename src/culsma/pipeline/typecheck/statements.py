@@ -23,6 +23,7 @@ from culsma.pipeline.ir_nodes import (
     IRStatement,
     IRStep,
     IRWithConstraint,
+    IRWithSep,
     IRWithEnv,
 )
 from culsma.pipeline.program_registry import is_known_program_kind
@@ -126,7 +127,7 @@ class BaseTypecheckStatementHandler:
         _ctx: TypecheckContext,
         _state: TypecheckStatementState,
     ) -> None:
-        if isinstance(_stmt, (IRConditional, IRRepeat, IRWithEnv, IRWithConstraint)):
+        if isinstance(_stmt, (IRConditional, IRRepeat, IRWithSep, IRWithEnv, IRWithConstraint)):
             self.defer_assignments(_stmt, _ctx)
 
     def defer_assignments(self, stmt: IRStatement, ctx: TypecheckContext) -> None:
@@ -266,6 +267,12 @@ class WithEnvTypecheckHandler(BaseTypecheckStatementHandler):
         _state: TypecheckStatementState,
     ) -> Iterable[ChildStatementBlock]:
         stmt = cast(IRWithEnv, stmt)
+        return (ChildStatementBlock(stmt.statements, dict(ctx.expr_bindings)),)
+
+
+class WithSepTypecheckHandler(BaseTypecheckStatementHandler):
+    def iter_child_blocks(self, stmt, ctx, state):
+        stmt = cast(IRWithSep, stmt)
         return (ChildStatementBlock(stmt.statements, dict(ctx.expr_bindings)),)
 
 
@@ -422,6 +429,7 @@ class StepTypecheckHandler(BaseTypecheckStatementHandler):
 _STATEMENT_HANDLERS_BY_TYPE: dict[type[object], BaseTypecheckStatementHandler] = {
     IRLet: LetTypecheckHandler(),
     IRAssign: AssignTypecheckHandler(),
+    IRWithSep: WithSepTypecheckHandler(),
     IRWithEnv: WithEnvTypecheckHandler(),
     IRWithConstraint: WithConstraintTypecheckHandler(),
     IRRepeat: RepeatTypecheckHandler(),

@@ -28,6 +28,7 @@ from culsma.pipeline.ir_nodes import (
     IRString,
     IRUnary,
     IRWithConstraint,
+    IRWithSep,
     IRWithEnv,
     IRCall,
 )
@@ -154,7 +155,7 @@ def _collect_include_targets(
 def _nested_statements(stmt: IRStatement) -> list[IRStatement]:
     if isinstance(stmt, IRMutationGroup):
         return list(stmt.members)
-    if isinstance(stmt, IRWithEnv):
+    if isinstance(stmt, (IRWithSep, IRWithEnv)):
         return stmt.statements
     if isinstance(stmt, IRWithConstraint):
         return stmt.statements

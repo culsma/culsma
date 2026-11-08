@@ -322,5 +322,8 @@
   ],
   "PRINT-48": [
     "tests/test_value_adapters.py::test_query_values_serialize_without_adapter_objects"
+  ],
+  "SEP-CONTEXT-01": [
+    "tests/test_separation_scope.py"
   ]
 }

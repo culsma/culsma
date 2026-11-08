@@ -42,6 +42,7 @@ from culsma.parser.ast_nodes import (
     StringLiteral,
     UnaryOp,
     WithConstraintStmt,
+    WithSepStmt,
     WithEnvStmt,
 )
 
@@ -248,6 +249,22 @@ def _expand_statement(
             _assert_no_nested_component_calls(stmt.value, lookup, owner="return")
         return [stmt]
 
+    if isinstance(stmt, WithSepStmt):
+        for arg in stmt.args:
+            _assert_no_nested_component_calls(arg.value, lookup, owner="with sep")
+        return [
+            WithSepStmt(
+                args=list(stmt.args),
+                statements=_expand_statement_list(
+                    stmt.statements,
+                    lookup=lookup,
+                    call_stack=call_stack,
+                    token_seed=f"{token_seed}_sep",
+                ),
+                span=stmt.span,
+            )
+        ]
+
     if isinstance(stmt, WithEnvStmt):
         for arg in stmt.env_args:
             _assert_no_nested_component_calls(arg.value, lookup, owner="with env")
@@ -422,7 +439,9 @@ def _split_component_body(protocol: ProtocolDecl) -> tuple[list[object], ReturnS
 def _ensure_no_nested_return(statements: list[object], *, protocol_name: str) -> None:
     for stmt in statements:
         nested: list[object] = []
-        if isinstance(stmt, WithEnvStmt):
+        if isinstance(stmt, WithSepStmt):
+            nested = stmt.statements
+        elif isinstance(stmt, WithEnvStmt):
             nested = stmt.statements
         elif isinstance(stmt, RepeatStatement):
             nested = stmt.statements
@@ -455,6 +474,8 @@ def _collect_declared_names(statements: list[object]) -> set[str]:
         elif isinstance(stmt, IfStatement):
             names.update(_collect_declared_names(stmt.then_statements))
             names.update(_collect_declared_names(stmt.else_statements))
+        elif isinstance(stmt, WithSepStmt):
+            names.update(_collect_declared_names(stmt.statements))
         elif isinstance(stmt, WithEnvStmt):
             names.update(_collect_declared_names(stmt.statements))
         elif isinstance(stmt, WithConstraintStmt):
@@ -523,6 +544,12 @@ def _rename_statement(stmt: object, rename_map: dict[str, str]) -> object:
         return StepCall(
             name=stmt.name,
             args=[Arg(name=arg.name, value=_rename_expr(arg.value, rename_map), span=arg.span) for arg in stmt.args],
+            span=stmt.span,
+        )
+    if isinstance(stmt, WithSepStmt):
+        return WithSepStmt(
+            args=[Arg(name=arg.name, value=_rename_expr(arg.value, rename_map), span=arg.span) for arg in stmt.args],
+            statements=[_rename_statement(nested, rename_map) for nested in stmt.statements],
             span=stmt.span,
         )
     if isinstance(stmt, WithEnvStmt):

@@ -27,6 +27,7 @@ from culsma.parser.ast_nodes import (
     Statement,
     StepCall,
     WithConstraintStmt,
+    WithSepStmt,
     WithEnvStmt,
 )
 from culsma.pipeline.ir_nodes import (
@@ -40,6 +41,7 @@ from culsma.pipeline.ir_nodes import (
     IRStatement,
     IRStep,
     IRWithConstraint,
+    IRWithSep,
     IRWithEnv,
 )
 from culsma.pipeline.scope import ScopeAnalyzer
@@ -641,6 +643,20 @@ class WithEnvHandler(BaseStatementCompileHandler):
             )
         ]
 
+class WithSepHandler(BaseStatementCompileHandler):
+    def lower_current_or_children(self, stmt, lowering_ctx, state):
+        ctx = lowering_ctx.ctx
+        # The ordinary sep entry receives exactly the same argument validation
+        # and enclosing action-time boundary as a standalone sep.
+        children = [StepCall(name="sep", args=stmt.args, span=stmt.span), *stmt.statements]
+        return [IRWithSep(
+            id=lowering_ctx.stmt_id,
+            statements=lowering_ctx.statement_compiler.compile_list(children, ctx=ctx.derive(
+                scope_id=f"{lowering_ctx.stmt_id}.b", const_env=ctx.const_env,
+                let_bindings=dict(ctx.let_bindings), local_names=set(ctx.local_names))),
+            span=stmt.span)]
+
+
 class WithConstraintHandler(BaseStatementCompileHandler):
     def lower_current_or_children(
         self,
@@ -951,6 +967,7 @@ _STATEMENT_HANDLERS_BY_TYPE: dict[type[object], BaseStatementCompileHandler] = {
     AssignStatement: AssignHandler(),
     ExprStatement: ExprStatementHandler(),
     ReturnStatement: ReturnHandler(),
+    WithSepStmt: WithSepHandler(),
     WithEnvStmt: WithEnvHandler(),
     WithConstraintStmt: WithConstraintHandler(),
     MutationStmt: MutationHandler(),

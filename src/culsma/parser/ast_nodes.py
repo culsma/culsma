@@ -136,6 +136,14 @@ class StepCall:
 
 
 @dataclass
+class WithSepStmt:
+    """with sep(...) { ... }: one separation and its result-access scope."""
+    args: list[Arg] = field(default_factory=list)
+    statements: list[Statement] = field(default_factory=list)
+    span: Span | None = None
+
+
+@dataclass
 class WithEnvStmt:
     """with env(<env_args>) { <statements> }"""
     env_args: list[Arg] = field(default_factory=list)
@@ -357,6 +365,7 @@ Statement = (
     | AssignStatement
     | ExprStatement
     | StepCall
+    | WithSepStmt
     | WithEnvStmt
     | WithConstraintStmt
     | MutationStmt

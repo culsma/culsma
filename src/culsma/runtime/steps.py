@@ -19,6 +19,8 @@ from culsma.runtime.session import RuntimeSession
 from culsma.runtime.output import format_print_value
 from culsma.runtime.value_adapters import AdaptedValue
 from culsma.runtime.values import UNRESOLVED
+from culsma.runtime.separation_scope import expire_session_scopes
+from culsma.runtime.material.separation_scope import scopes
 from culsma.pipeline.external_boundary import RuntimeParameterError
 
 
@@ -685,6 +687,18 @@ class RuntimeStepDispatcher:
         self.group_handler = MutationGroupStepHandler(self.driver_handler)
 
     def dispatch(self, step: PlanStep, session: RuntimeSession) -> bool:
+        expire_session_scopes(session, step_id=step.step_id,
+                              active={scope["scope_id"] for scope in scopes(step)})
+        try:
+            return self._dispatch(step, session)
+        finally:
+            # Hosted drivers may suspend before an external effect is committed.
+            # A pending step is not a lexical exit and must keep its guarantee.
+            if session.state.step_status.get(step.step_id) in {"completed", "skipped"}:
+                expire_session_scopes(session, step_id=step.step_id,
+                                      ended=set((step.gate or {}).get("separation_scope_ends", [])))
+
+    def _dispatch(self, step: PlanStep, session: RuntimeSession) -> bool:
         if step.op == "print":
             return self.print_handler.handle(step, session)
         if step.op == "MutationGroup":

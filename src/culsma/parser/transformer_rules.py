@@ -45,6 +45,7 @@ from culsma.parser.ast_nodes import (
     StringLiteral,
     UnaryOp,
     WithConstraintStmt,
+    WithSepStmt,
     WithEnvStmt,
     is_statement_node,
 )
@@ -444,6 +445,13 @@ def _split_constraint_items(raw_items: list[Any]) -> tuple[list[str], list[Arg]]
     return requirements, options
 
 
+class WithSepStmtHandler(StatementRuleHandler):
+    def construct_ast(self, meta, items, ctx, state):
+        args = items[0] if items and isinstance(items[0], list) else []
+        body = items[1:] if items and isinstance(items[0], list) else items
+        return WithSepStmt(args=args, statements=list(body), span=state.span)
+
+
 class WithEnvStmtHandler(StatementRuleHandler):
     def construct_ast(self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState) -> WithEnvStmt:
         del meta, ctx
@@ -764,6 +772,7 @@ def create_parse_rule_dispatcher() -> ParseRuleDispatcher:
             "constraint_item_list": list_handler,
             "constraint_name": ConstraintNameHandler(),
             "mutation_source_list": list_handler,
+            "with_sep_stmt": WithSepStmtHandler(),
             "with_env_stmt": WithEnvStmtHandler(),
             "with_constraint_stmt": WithConstraintStmtHandler(),
             "constrained_simple_statement": ConstrainedSimpleStatementHandler(),

@@ -6,6 +6,7 @@ from culsma.common.diagnostics import Diagnostic
 from culsma.runtime.report import LabReport
 from culsma.runtime.session import RuntimeSession
 from culsma.runtime.user_result import ReportBuilder
+from culsma.runtime.separation_scope import expire_session_scopes
 
 
 class RuntimeFinalizer:
@@ -13,6 +14,9 @@ class RuntimeFinalizer:
         self.report_builder = report_builder or ReportBuilder()
 
     def finalize(self, session: RuntimeSession, *, aborted_due_to_error: bool) -> None:
+        ended = {scope for step in session.step_by_id.values()
+                 for scope in (step.gate or {}).get("separation_scope_ends", [])}
+        expire_session_scopes(session, step_id="runtime::finalize", ended=ended)
         if aborted_due_to_error:
             for step in session.step_by_id.values():
                 if session.state.step_status.get(step.step_id) != "pending":

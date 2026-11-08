@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Any, Mapping, cast
 
 from culsma.common.value_contracts import VALUE_CONTRACTS
@@ -29,6 +29,7 @@ from culsma.pipeline.ir_nodes import (
     IRStatement,
     IRStep,
     IRWithConstraint,
+    IRWithSep,
     IRWithEnv,
 )
 from culsma.pipeline.plan_nodes import PlanStep
@@ -430,6 +431,37 @@ class IncludePlanHandler(BasePlanStatementHandler):
         )
 
 
+class WithSepPlanHandler(BasePlanStatementHandler):
+    def lower_current_or_children(self, stmt, ctx, state):
+        if ctx.statement_lowerer is None:
+            return []
+        child_ctx = ctx.derive(local_env=dict(ctx.local_env))
+        steps = ctx.statement_lowerer.lower_list(stmt.statements, child_ctx)
+        entry = next(step for step in steps if step.op == "sep")
+        program = entry.args.get("program", {})
+        scope = {"scope_id": f"{ctx.step_id_prefix}{stmt.id}::sep",
+                 "sample": entry.args.get("sample"),
+                 "program": program}
+        def attach(step):
+            gate = dict(step.gate or {})
+            gate["separation_scopes"] = [scope, *gate.get("separation_scopes", [])]
+            if step.step_id == entry.step_id:
+                gate["separation_entry"] = scope["scope_id"]
+            args = step.args
+            if step.op == "MutationGroup":
+                args = {**args, "members": [attach(member) for member in args["members"]]}
+            return replace(step, gate=gate, args=args)
+        steps = [attach(step) for step in steps]
+        last = steps[-1]
+        gate = dict(last.gate or {})
+        gate["separation_scope_ends"] = [*gate.get("separation_scope_ends", []), scope["scope_id"]]
+        steps[-1] = replace(last, gate=gate)
+        return steps
+
+    def apply_post_lowering_effects(self, stmt, ctx, state, output):
+        self.serializer.invalidate_local_env_names(ctx.local_env, stmt.statements)
+
+
 class WithEnvPlanHandler(BasePlanStatementHandler):
     def lower_current_or_children(
         self,
@@ -787,6 +819,7 @@ _STATEMENT_HANDLERS_BY_TYPE: dict[type[object], BasePlanStatementHandler] = {
     IRLet: LetPlanHandler(),
     IRAssign: AssignPlanHandler(),
     IRInclude: IncludePlanHandler(),
+    IRWithSep: WithSepPlanHandler(),
     IRWithEnv: WithEnvPlanHandler(),
     IRWithConstraint: WithConstraintPlanHandler(),
     IRRepeat: RepeatPlanHandler(),

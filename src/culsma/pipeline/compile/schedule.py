@@ -37,6 +37,7 @@ from culsma.parser.ast_nodes import (
     StringLiteral,
     UnaryOp,
     WithConstraintStmt,
+    WithSepStmt,
     WithEnvStmt,
 )
 from culsma.pipeline.ir_nodes import IRControl, IRStatement
@@ -160,6 +161,8 @@ def _assigned_names_in_statements(statements: list[object]) -> set[str]:
         elif isinstance(stmt, IfStatement):
             names.update(_assigned_names_in_statements(stmt.then_statements))
             names.update(_assigned_names_in_statements(stmt.else_statements))
+        elif isinstance(stmt, WithSepStmt):
+            names.update(_assigned_names_in_statements(stmt.statements))
         elif isinstance(stmt, WithEnvStmt):
             names.update(_assigned_names_in_statements(stmt.statements))
         elif isinstance(stmt, WithConstraintStmt):
@@ -413,6 +416,12 @@ def _substitute_statement(stmt, binding: str, value: Expression):
             args=[Arg(name=arg.name, value=_substitute_expr(arg.value, binding, value), span=arg.span) for arg in stmt.args],
             span=stmt.span,
         )
+    if isinstance(stmt, WithSepStmt):
+        return WithSepStmt(
+            args=[Arg(name=arg.name, value=_substitute_expr(arg.value, binding, value), span=arg.span) for arg in stmt.args],
+            statements=[_substitute_statement(nested, binding, value) for nested in stmt.statements],
+            span=stmt.span,
+        )
     if isinstance(stmt, WithEnvStmt):
         return WithEnvStmt(
             env_args=[Arg(name=arg.name, value=_substitute_expr(arg.value, binding, value), span=arg.span) for arg in stmt.env_args],
@@ -531,6 +540,8 @@ def _statement_requires_runtime_control(stmt: object, const_env: dict[str, float
         selected = stmt.then_statements if condition else stmt.else_statements
         return any(_statement_requires_runtime_control(nested, const_env) for nested in selected)
     if isinstance(stmt, RepeatStatement):
+        return any(_statement_requires_runtime_control(nested, const_env) for nested in stmt.statements)
+    if isinstance(stmt, WithSepStmt):
         return any(_statement_requires_runtime_control(nested, const_env) for nested in stmt.statements)
     if isinstance(stmt, WithEnvStmt):
         return any(_statement_requires_runtime_control(nested, const_env) for nested in stmt.statements)
