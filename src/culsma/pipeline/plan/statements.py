@@ -437,9 +437,9 @@ class WithSepPlanHandler(BasePlanStatementHandler):
             return []
         child_ctx = ctx.derive(local_env=dict(ctx.local_env))
         steps = ctx.statement_lowerer.lower_list(stmt.statements, child_ctx)
-        entry = next(step for step in steps if step.op == "sep")
+        entry = next(step for step in steps if step.op == stmt.operation)
         program = entry.args.get("program", {})
-        scope = {"scope_id": f"{ctx.step_id_prefix}{stmt.id}::sep",
+        scope = {"scope_id": f"{ctx.step_id_prefix}{stmt.id}::{stmt.operation}",
                  "sample": entry.args.get("sample"),
                  "program": program}
         def attach(step):

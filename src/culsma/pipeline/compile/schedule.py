@@ -418,6 +418,7 @@ def _substitute_statement(stmt, binding: str, value: Expression):
         )
     if isinstance(stmt, WithSepStmt):
         return WithSepStmt(
+            operation=stmt.operation,
             args=[Arg(name=arg.name, value=_substitute_expr(arg.value, binding, value), span=arg.span) for arg in stmt.args],
             statements=[_substitute_statement(nested, binding, value) for nested in stmt.statements],
             span=stmt.span,

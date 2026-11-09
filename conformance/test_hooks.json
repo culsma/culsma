@@ -325,5 +325,8 @@
   ],
   "SEP-CONTEXT-01": [
     "tests/test_separation_scope.py"
+  ],
+  "FRAC-CONTEXT-01": [
+    "tests/test_fractionation_scope.py"
   ]
 }

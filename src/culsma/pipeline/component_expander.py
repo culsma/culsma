@@ -251,15 +251,16 @@ def _expand_statement(
 
     if isinstance(stmt, WithSepStmt):
         for arg in stmt.args:
-            _assert_no_nested_component_calls(arg.value, lookup, owner="with sep")
+            _assert_no_nested_component_calls(arg.value, lookup, owner=f"with {stmt.operation}")
         return [
             WithSepStmt(
+                operation=stmt.operation,
                 args=list(stmt.args),
                 statements=_expand_statement_list(
                     stmt.statements,
                     lookup=lookup,
                     call_stack=call_stack,
-                    token_seed=f"{token_seed}_sep",
+                    token_seed=f"{token_seed}_{stmt.operation}",
                 ),
                 span=stmt.span,
             )
@@ -548,6 +549,7 @@ def _rename_statement(stmt: object, rename_map: dict[str, str]) -> object:
         )
     if isinstance(stmt, WithSepStmt):
         return WithSepStmt(
+            operation=stmt.operation,
             args=[Arg(name=arg.name, value=_rename_expr(arg.value, rename_map), span=arg.span) for arg in stmt.args],
             statements=[_rename_statement(nested, rename_map) for nested in stmt.statements],
             span=stmt.span,

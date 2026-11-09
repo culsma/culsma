@@ -446,10 +446,13 @@ def _split_constraint_items(raw_items: list[Any]) -> tuple[list[str], list[Arg]]
 
 
 class WithSepStmtHandler(StatementRuleHandler):
+    def __init__(self, operation="sep"):
+        self.operation = operation
+
     def construct_ast(self, meta, items, ctx, state):
         args = items[0] if items and isinstance(items[0], list) else []
         body = items[1:] if items and isinstance(items[0], list) else items
-        return WithSepStmt(args=args, statements=list(body), span=state.span)
+        return WithSepStmt(args=args, statements=list(body), span=state.span, operation=self.operation)
 
 
 class WithEnvStmtHandler(StatementRuleHandler):
@@ -773,6 +776,7 @@ def create_parse_rule_dispatcher() -> ParseRuleDispatcher:
             "constraint_name": ConstraintNameHandler(),
             "mutation_source_list": list_handler,
             "with_sep_stmt": WithSepStmtHandler(),
+            "with_frac_stmt": WithSepStmtHandler("frac"),
             "with_env_stmt": WithEnvStmtHandler(),
             "with_constraint_stmt": WithConstraintStmtHandler(),
             "constrained_simple_statement": ConstrainedSimpleStatementHandler(),

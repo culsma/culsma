@@ -117,6 +117,9 @@ class CulsmaTransformer(Transformer):
     def with_sep_stmt(self, meta, items):
         return self._dispatch("with_sep_stmt", meta, items)
 
+    def with_frac_stmt(self, meta, items):
+        return self._dispatch("with_frac_stmt", meta, items)
+
     def with_env_stmt(self, meta, items):
         return self._dispatch("with_env_stmt", meta, items)
 

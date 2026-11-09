@@ -137,10 +137,11 @@ class StepCall:
 
 @dataclass
 class WithSepStmt:
-    """with sep(...) { ... }: one separation and its result-access scope."""
+    """One sep/frac action and its source-local result-access scope."""
     args: list[Arg] = field(default_factory=list)
     statements: list[Statement] = field(default_factory=list)
     span: Span | None = None
+    operation: str = "sep"
 
 
 @dataclass

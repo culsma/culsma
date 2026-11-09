@@ -178,6 +178,7 @@ class IRWithSep:
     id: str
     statements: list[IRStatement] = field(default_factory=list)
     span: Span | None = None
+    operation: str = "sep"
 
 
 @dataclass(frozen=True)
