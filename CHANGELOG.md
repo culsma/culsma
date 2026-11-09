@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.10 — 2026-11-09
 
 ### Fixed
 
@@ -13,6 +13,13 @@
   Continuing such a state does not automatically repeat the unresolved action.
 
 ### Added
+
+- Scoped separation and fractionation use `with sep(...) { ... }`
+  and `with frac(...) { ... }`. Entry runs once; the block can
+  access the sample's indexed contents under the enclosing ENV requirements. Existing
+  statement/assignment forms and legacy indexed contents access remain valid,
+  including disruption's `contents[0]`. Environment timing remains independent
+  of the separation or fractionation context.
 
 - Magnetic separation preserves explicitly declared binding and release
   transitions for solution solutes. Solute mass and carrier volume remain
@@ -35,10 +42,11 @@
 - Optional mass/volume `concentration` on initial content loads derives solute
   mass from declared solution volume. Whole and volume transfers conserve each
   solute through mixing and dilution; result data exposes current concentration.
-  Unsupported solid/unknown/associated mixtures fail atomically. Separation,
-  fractionation, mass transfers and material replacement remain unsupported for
-  these homogeneous solutions. A dedicated accounting benchmark covers protein,
-  RNA, small molecules and event replay.
+  Unsupported solid/unknown/associated mixtures fail atomically. Magnetic
+  separation supports the explicit binding/release path described above;
+  other separation, fractionation, mass transfers and material replacement
+  remain unsupported for these homogeneous solutions. A dedicated accounting
+  benchmark covers protein, RNA, small molecules and event replay.
 
 - Added `print(expression);` to display the current value immediately on the
   console during execution, without a driver call or material change. Printed
