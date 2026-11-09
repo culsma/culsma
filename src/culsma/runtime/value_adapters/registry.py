@@ -23,6 +23,7 @@ class ValueAdapterRegistry:
 def create_value_adapter_registry() -> ValueAdapterRegistry:
     from culsma.runtime.value_adapters.material import MaterialValueAdapter
     from culsma.runtime.value_adapters.configuration import ConfigurationValueAdapter
+    from culsma.runtime.value_adapters.medium import MediumValueAdapter
     registry = ValueAdapterRegistry()
     material = MaterialValueAdapter()
     for type_id in material.type_ids:
@@ -30,4 +31,5 @@ def create_value_adapter_registry() -> ValueAdapterRegistry:
     configuration = ConfigurationValueAdapter()
     for type_id in configuration.type_ids:
         registry.register(type_id, configuration)
+    registry.register('configuration.medium', MediumValueAdapter())
     return registry

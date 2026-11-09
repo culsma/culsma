@@ -6,7 +6,7 @@ from types import MappingProxyType
 
 # Stage ownership: program/readout/agitation handlers retain their existing diagnostics.
 EXPRESSION_PARAMETER_CONTRACTS = MappingProxyType({
-    **{name: CALL_PARAMETER_CONTRACTS[name] for name in ('stream', 'content', 'DefineContent', 'data_ref', 'data_group_ref')},
+    **{name: CALL_PARAMETER_CONTRACTS[name] for name in ('stream', 'content', 'DefineContent', 'data_ref', 'data_group_ref', 'composition', 'medium_component')},
 })
 
 

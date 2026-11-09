@@ -10,6 +10,7 @@ class EnvironmentKey(Enum):
 
     THERMAL = "thermal"
     FIELD = "field"
+    MEDIUM = "medium"
     DURATION = "duration"
     CO2 = "co2"
     O2 = "o2"

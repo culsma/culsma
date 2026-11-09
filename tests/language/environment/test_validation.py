@@ -26,7 +26,7 @@ def test_environment_names(compile_source, env_source, extra, code):
     ("field=mz_separation, o2=20%", "SEM_ENV_ARG_CONFLICT"),
     ("field=mz_separation, rh=80%", "SEM_ENV_ARG_CONFLICT"),
     ("field=mz_separation, duration=1min", "SEM_ENV_DURATION_WITHOUT_THERMAL"),
-    ("duration=1min", "SEM_ENV_DURATION_WITHOUT_THERMAL"),
+    ("duration=1min", None),
     ("thermal=22C", "SEM_ENV_DURATION_REQUIRED"),
     ("thermal=-20C", "SEM_ENV_DURATION_REQUIRED"),
     ("thermal=thermal_program(from=22C, duration=1min), o2=20%", "SEM_ENV_ARG_CONFLICT"),

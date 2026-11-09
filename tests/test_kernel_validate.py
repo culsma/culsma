@@ -514,18 +514,18 @@ def test_validate_with_env_accepts_day_scale_duration():
     assert result.ok, [d.to_dict() for d in result.diagnostics]
 
 
-def test_validate_with_env_requires_at_least_one_dimension():
+def test_validate_default_atmosphere_hold_requires_duration():
     src = "protocol T { with env() { hold(sample = tube); } }"
     ir = _compile_source(src)
     result = validate(ir)
-    assert "SEM_ENV_THERMAL_REQUIRED" in _codes(result)
+    assert "SEM_ENV_DURATION_REQUIRED" in _codes(result)
 
 
-def test_validate_with_env_duration_without_thermal_is_rejected():
+def test_validate_with_env_duration_uses_default_atmosphere():
     src = "protocol T { with env(duration = 10min) { hold(sample = tube); } }"
     ir = _compile_source(src)
     result = validate(ir)
-    assert "SEM_ENV_DURATION_WITHOUT_THERMAL" in _codes(result)
+    assert result.ok, [d.to_dict() for d in result.diagnostics]
 
 
 def test_validate_with_env_field_only_is_accepted():

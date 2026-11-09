@@ -1,0 +1,32 @@
+{
+  "decision": "ENV-MEDIUM-156",
+  "status": "implemented_local",
+  "reference_sections": [
+    "6.3.14",
+    "8.2.3",
+    "11.12"
+  ],
+  "scope": "Typed medium values, ENV propagation and runtime checks; physical exposure adapters are not provided",
+  "requirements": {
+    "CF-MEDIUM-001": "tests/language/environment/test_medium.py::test_typed_medium_roundtrip",
+    "CF-MEDIUM-002": "tests/language/environment/test_medium.py::test_invalid_composition",
+    "CF-MEDIUM-003": "tests/language/environment/test_medium.py::test_liquid_concentration_is_not_gas_fraction",
+    "CF-MEDIUM-004": "tests/language/environment/test_medium.py::test_successive_baths_preserve_identity_and_materials",
+    "CF-MEDIUM-005": "tests/language/environment/test_medium.py::test_protocol_medium_arguments_and_return",
+    "CF-MEDIUM-006": "tests/language/environment/test_medium.py::test_medium_json_plan_roundtrip",
+    "CF-MEDIUM-007": "tests/language/environment/test_medium.py::test_nested_bath_conflicts_use_target_identity",
+    "CF-MEDIUM-008": "tests/language/environment/test_medium.py::test_pure_medium_requires_duration",
+    "CF-MEDIUM-009": "tests/language/environment/test_medium.py::test_partial_composition_and_legacy_modifiers_cannot_overfill",
+    "CF-MEDIUM-010": "tests/language/environment/test_medium.py::test_unsupported_medium_rejected_before_hold",
+    "CF-MEDIUM-011": "tests/language/environment/test_medium.py::test_medium_exposure_preserves_loaded_inventory",
+    "CF-MEDIUM-012": "tests/language/environment/test_medium.py::test_returned_medium_can_be_used_again",
+    "CF-MEDIUM-013": "tests/language/environment/test_medium.py::test_medium_condition_does_not_leak_after_scope",
+    "CF-MEDIUM-014": "tests/language/environment/test_medium.py::test_medium_source_options_require_enum_members",
+    "CF-MEDIUM-015": "tests/language/environment/test_medium.py::test_medium_phase_and_driver_options_are_typed",
+    "CF-MEDIUM-016": "tests/language/environment/test_medium.py::test_source_strings_rejected_but_wire_enums_decode",
+    "CF-MEDIUM-017": "tests/language/environment/test_medium.py::test_ordinary_atmosphere_is_the_implicit_default",
+    "CF-MEDIUM-018": "tests/language/environment/test_medium.py::test_atmosphere_only_timed_hold_needs_no_explicit_medium",
+    "CF-MEDIUM-019": "tests/language/environment/test_medium.py::test_implicit_atmosphere_does_not_override_enclosing_bath",
+    "CF-MEDIUM-020": "tests/language/environment/test_medium.py::test_gas_modifiers_refine_default_atmosphere_without_fabricated_balance"
+  }
+}

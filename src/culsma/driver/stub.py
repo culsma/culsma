@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 from culsma.driver.base import DriverCapabilityResult, DriverResult
+from culsma.domains.medium import MediumPhase
 from culsma.driver.framework.capability import CapabilityPolicy
 from culsma.pipeline.plan_nodes import PlanStep
 
@@ -17,11 +18,18 @@ class StubDriver:
     step_payloads: dict[str, dict[str, object]] = field(default_factory=dict)
     supported_requirements: set[str] | None = None
     supported_constraint_option_keys: set[str] | None = None
+    supported_medium_phases: frozenset[MediumPhase] = frozenset(MediumPhase)
+
+    def __post_init__(self):
+        if any(type(phase) is not MediumPhase for phase in self.supported_medium_phases):
+            raise TypeError("supported_medium_phases requires MediumPhase members")
+        self.supported_medium_phases = frozenset(self.supported_medium_phases)
 
     def check(self, step: PlanStep) -> DriverCapabilityResult:
         return CapabilityPolicy(
             supported_requirements=self.supported_requirements,
             supported_constraint_option_keys=self.supported_constraint_option_keys,
+            supported_medium_phases=self.supported_medium_phases,
         ).evaluate(step)
 
     def execute(self, step: PlanStep) -> DriverResult:

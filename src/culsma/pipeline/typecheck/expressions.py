@@ -109,6 +109,11 @@ class TypecheckExpressionServices:
             key = SOURCE_ENVIRONMENT_KEYS.get(arg.name)
             if key is None:
                 continue
+            if key is EnvironmentKey.MEDIUM:
+                from .medium import check_medium
+                diagnostics.extend(check_medium(arg.value, expr_bindings, self,
+                    node_id=stmt.id, require_medium=True))
+                continue
             dimension = ENVIRONMENT_DIMENSIONS.get(key)
             if dimension is None:
                 continue
@@ -218,6 +223,9 @@ class TypecheckExpressionServices:
         scope: ContentArgumentScope | None = None,
     ) -> list[Diagnostic]:
         scope = scope or ContentArgumentScope(expr_bindings=expr_bindings)
+        from .medium import check_medium, MEDIUM_CALLS
+        if call.name in MEDIUM_CALLS:
+            return check_medium(call, expr_bindings, self, node_id=node_id)
         if call.name == "thermal_program":
             return self.typecheck_thermal_program_call(call, node_id=node_id, expr_bindings=expr_bindings)
         diagnostics = self.typecheck_call_container_target_view_positions(

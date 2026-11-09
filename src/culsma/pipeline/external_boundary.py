@@ -15,6 +15,7 @@ from culsma.pipeline.compat.external_enums import resolve_legacy_enum
 from culsma.pipeline.environment_boundary import (  # public environment boundary
     EnvironmentParameterNormalizer, DEFAULT_ENVIRONMENT_PARAMETER_NORMALIZER,
 )
+from culsma.pipeline.medium_boundary import resolve_medium  # public effective-medium lookup
 
 
 class ExternalEnumCodec:

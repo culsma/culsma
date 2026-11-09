@@ -9,11 +9,11 @@ from culsma.common.enum_parameters import EnumParameter
 from culsma.common.enum_type_table import EnumTypeTable
 from culsma.common.type_names import SourceTypeNamespace
 from culsma.common.type_name_contracts import TypeNamespace
-from culsma.domains import agitation, content, constraints, data, fractionation, labware, readout, scheduling, separation, stream
+from culsma.domains import agitation, content, constraints, data, fractionation, labware, medium, readout, scheduling, separation, stream
 
 CALL_PARAMETER_CONTRACTS = MappingProxyType({
     operation: contract
-    for module in (agitation, content, data, fractionation, labware, readout, scheduling, separation, stream)
+    for module in (agitation, content, data, fractionation, labware, medium, readout, scheduling, separation, stream)
     for operation, contract in module.CALL_PARAMETER_CONTRACTS.items()
 })
 PARAMETER_CONTRACTS = MappingProxyType({

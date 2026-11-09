@@ -1,10 +1,12 @@
 """Public environment projection for plans, checkpoints and external executors.
 
-Source `rh` and legacy wire `rh` become `humidity`. No conditions or defaults are
-invented. Runtime callers must resolve each environment expression first.
+Source `rh` and legacy wire `rh` become `humidity`. Omitted medium means ordinary
+atmosphere (or an enclosing medium); defaults are not expanded into stored gates.
+Runtime callers must resolve each environment expression first.
 """
 
 from copy import deepcopy
+from culsma.pipeline.medium_boundary import normalize_medium, validate_medium_modifiers
 
 from culsma.common.quantity_arithmetic import QuantityDimension
 from culsma.domains.environment import (
@@ -38,22 +40,25 @@ class EnvironmentParameterNormalizer:
             raise EnvironmentValueError(f"Unknown environment conditions: {sorted(map(str, unknown))}", reason="name")
         return result
 
-    def normalize_runtime_environment(self, environment, *, require_duration=False):
+    def normalize_runtime_environment(self, environment, *, require_duration=False, resolve_medium_source=None):
         result = self._decode_environment(environment)
-        if EnvironmentKey.THERMAL not in result and EnvironmentKey.FIELD not in result:
-            raise EnvironmentValueError("env requires thermal or field", reason="combination")
+        has_medium = EnvironmentKey.MEDIUM in result
+        field_only = EnvironmentKey.FIELD in result and EnvironmentKey.THERMAL not in result and not has_medium
         has_thermal = EnvironmentKey.THERMAL in result
         has_duration = EnvironmentKey.DURATION in result
         thermal = result.get(EnvironmentKey.THERMAL)
         program = isinstance(thermal, dict) and thermal.get("kind") == "IRCall" and thermal.get("name") == "thermal_program"
         if ENVIRONMENT_MODIFIERS.intersection(result) and (not has_thermal or program):
             raise EnvironmentValueError("env co2/o2/humidity require scalar thermal", reason="combination")
-        if has_duration and (not has_thermal or program):
+        if has_duration and (field_only or program):
             raise EnvironmentValueError("env duration requires scalar thermal", reason="combination")
-        if require_duration and has_thermal and not program and not has_duration:
-            raise EnvironmentValueError("Pure scalar environment hold requires duration", reason="combination")
+        if require_duration and not field_only and not program and not has_duration:
+            raise EnvironmentValueError("Pure environment hold requires duration", reason="combination")
         percentages = {}
         for key, value in result.items():
+            if key is EnvironmentKey.MEDIUM:
+                result[key] = normalize_medium(value, resolve_source=resolve_medium_source)
+                continue
             if key is EnvironmentKey.FIELD or (key is EnvironmentKey.THERMAL and program):
                 continue
             if isinstance(value, tuple) and len(value) == 2:
@@ -67,9 +72,12 @@ class EnvironmentParameterNormalizer:
                 if value["unit"] == "pct":
                     result[key] = {**value, "unit": "%"}
         validate_environment_gas_total(percentages)
-        return {key.value: value for key, value in result.items()}
+        normalized = {key.value: value for key, value in result.items()}
+        if has_medium:
+            validate_medium_modifiers(normalized['medium'], normalized)
+        return normalized
 
-    def normalize_runtime_gate(self, gate, *, resolve_environment=lambda value: value, require_duration=False):
+    def normalize_runtime_gate(self, gate, *, resolve_environment=lambda value: value, require_duration=False, resolve_medium_source=None):
         """Normalize every layer, preserving target references and unrelated gates."""
         if gate is None:
             return None
@@ -78,7 +86,7 @@ class EnvironmentParameterNormalizer:
         result = deepcopy(gate)
         if "env" in result:
             result["env"] = self.normalize_runtime_environment(
-                resolve_environment(result["env"]), require_duration=require_duration)
+                resolve_environment(result["env"]), require_duration=require_duration, resolve_medium_source=resolve_medium_source)
         if "env_layers" in result:
             layers = result["env_layers"]
             if not isinstance(layers, list) or any(not isinstance(layer, dict) or "env" not in layer for layer in layers):
@@ -86,7 +94,8 @@ class EnvironmentParameterNormalizer:
             for index, layer in enumerate(layers):
                 layer["env"] = self.normalize_runtime_environment(
                     resolve_environment(layer["env"]),
-                    require_duration=require_duration and index == len(layers) - 1)
+                    require_duration=require_duration and index == len(layers) - 1,
+                    resolve_medium_source=resolve_medium_source)
             if result["env_layers"] and "env" in result and result["env"] != result["env_layers"][-1]["env"]:
                 raise EnvironmentValueError("Innermost env layer disagrees with gate.env", reason="structure")
         return result

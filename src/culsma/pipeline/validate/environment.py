@@ -71,27 +71,13 @@ class EnvContractValidator:
             )
         thermal_arg = args_by_key.get(EnvironmentKey.THERMAL)
         field_arg = args_by_key.get(EnvironmentKey.FIELD)
+        medium_arg = args_by_key.get(EnvironmentKey.MEDIUM)
         modifier_arg = next((arg for key, arg in args_by_key.items() if key in ENVIRONMENT_MODIFIERS), None)
         duration_arg = args_by_key.get(EnvironmentKey.DURATION)
-        if thermal_arg is None and field_arg is None:
-            if duration_arg is not None:
-                diagnostics.append(
-                    Diagnostic(
-                        code="SEM_ENV_DURATION_WITHOUT_THERMAL",
-                        message="with env(...): duration requires thermal",
-                        span=duration_arg.span or stmt.span,
-                        node_id=stmt.id,
-                    )
-                )
-                return diagnostics
-            diagnostics.append(
-                Diagnostic(
-                    code="SEM_ENV_THERMAL_REQUIRED",
-                    message="with env(...): at least one environment dimension is required",
-                    span=stmt.span,
-                    node_id=stmt.id,
-                )
-            )
+        if thermal_arg is None and field_arg is None and medium_arg is None and modifier_arg is not None:
+            diagnostics.append(Diagnostic(code="SEM_ENV_THERMAL_REQUIRED",
+                message="with env(...): co2/o2/rh require scalar thermal",
+                span=modifier_arg.span or stmt.span, node_id=stmt.id))
             return diagnostics
 
         if thermal_arg is None and modifier_arg is not None:
@@ -106,7 +92,7 @@ class EnvContractValidator:
             )
 
         if thermal_arg is None:
-            if duration_arg is not None:
+            if duration_arg is not None and medium_arg is None and field_arg is not None:
                 diagnostics.append(
                     Diagnostic(
                         code="SEM_ENV_DURATION_WITHOUT_THERMAL",
@@ -115,6 +101,10 @@ class EnvContractValidator:
                         node_id=stmt.id,
                     )
                 )
+            if (medium_arg is not None or field_arg is None) and duration_arg is None and _requires_scalar_thermal_duration(stmt):
+                diagnostics.append(Diagnostic(code="SEM_ENV_DURATION_REQUIRED",
+                    message="Pure medium environment hold requires duration",
+                    span=(medium_arg.span if medium_arg is not None else stmt.span) or stmt.span, node_id=stmt.id))
             return diagnostics
 
         thermal_value = ExprResolver.resolve_bound_expr(thermal_arg.value, expr_bindings)

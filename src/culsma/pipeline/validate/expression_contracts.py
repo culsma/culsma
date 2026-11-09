@@ -219,6 +219,20 @@ def validate_expr_contracts(
         return diagnostics
 
     if isinstance(expr, IRCall):
+        from culsma.pipeline.medium_boundary import CALL_FIELDS
+        if expr.name in CALL_FIELDS:
+            allowed, required = CALL_FIELDS[expr.name]
+            names = [arg.name for arg in expr.args]
+            for arg in expr.args:
+                if arg.name not in allowed:
+                    diagnostics.append(Diagnostic(code='SEM_UNKNOWN_ARG',
+                        message=f"Unknown arg '{arg.name}' in {expr.name}", span=arg.span or expr.span, node_id=node_id))
+            for name in required - set(names):
+                diagnostics.append(Diagnostic(code='SEM_MISSING_ARG',
+                    message=f"Missing arg '{name}' in {expr.name}", span=expr.span, node_id=node_id))
+            if len(names) != len(set(names)):
+                diagnostics.append(Diagnostic(code='SEM_DUPLICATE_ARG',
+                    message=f'Duplicate argument in {expr.name}', span=expr.span, node_id=node_id))
         if expr.name == "print":
             return validate_print_expression_position(expr, node_id=node_id)
         diagnostics.extend(ExpressionParameterValidator.validate(expr,

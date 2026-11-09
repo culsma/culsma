@@ -355,6 +355,9 @@ def _eval_runtime_call(expr: dict[str, Any], state: RuntimeState) -> Any:
     name = expr.get("name")
     if not isinstance(name, str):
         return UNRESOLVED
+    contract = VALUE_CONTRACTS.resolve_call(name)
+    if contract is not None and contract.type_id == 'configuration.medium':
+        return RuntimeValueResolver().read_adapted(contract.type_id, expr, state)
     if name == 'plate' and 'runtime_ref' in expr:
         return evaluate_runtime_expression(expr['runtime_ref'], state)
     if name in _LOCAL_RUNTIME_CONSTRUCTORS:
@@ -821,7 +824,10 @@ def _resolve_step_runtime_args(step: PlanStep, state: RuntimeState) -> PlanStep:
         PlateRuntimeValueResolver().descriptors(step.gate),
         resolve_environment=lambda environment: resolve_runtime_arg_value(environment, state),
         require_duration=step.op == "env_hold",
+        resolve_medium_source=lambda value: _resolve_medium_source(value, state),
     )
+    from culsma.runtime.environment_media import validate_medium_layers
+    validate_medium_layers(gate, state)
     if gate is not None and "separation_scopes" in gate:
         gate["separation_scopes"] = resolve_runtime_arg_value(gate["separation_scopes"], state)
     return PlanStep(
@@ -832,6 +838,16 @@ def _resolve_step_runtime_args(step: PlanStep, state: RuntimeState) -> PlanStep:
         gate=gate,
         span=step.span,
     )
+
+
+def _resolve_medium_source(value: Any, state: RuntimeState) -> str | None:
+    material_state = state.artifacts.get('material_state', {})
+    if isinstance(value, dict) and value.get('kind') == 'container_ref':
+        identity = value.get('id')
+        return identity if isinstance(identity, str) and identity in material_state.get('containers', {}) else None
+    if isinstance(value, dict) and 'runtime_ref' in value:
+        value = value['runtime_ref']
+    return _resolve_runtime_ref(material_state, value)
 
 
 def resolve_runtime_arg_value(value: Any, state: RuntimeState) -> Any:
