@@ -394,3 +394,95 @@ def test_gas_modifiers_refine_default_atmosphere_without_fabricated_balance(buil
     env = next(s.gate['env'] for s in driver.steps if s.op == 'env_hold')
     assert set(env) == {'thermal', 'co2', 'humidity', 'duration'}
     assert env['co2']['value'] == 5
+
+
+ETHANOL_CONTENTS = """
+    let ethanol = content(kind=ContentKind.CHEMICAL, type=ContentType.SOLVENT, code="ETHANOL");
+    let water = content(kind=ContentKind.CHEMICAL, type=ContentType.SOLVENT, code="WATER");
+"""
+
+
+def test_liquid_contents_reach_driver_without_allocating_bath(build_plan):
+    source = ETHANOL_CONTENTS + """
+    protocol Expose(sample, alcohol, solvent, ratio, final_volume) {
+      let medium = liquid_medium(
+        contents={alcohol: ratio, solvent: 100% - ratio},
+        basis=CompositionBasis.VOLUME_FRACTION, volume=final_volume);
+      with env(medium=medium, duration=45min, thermal=22C) { hold(sample); }
+      return medium;
+    }
+    let sample = tube();
+    let medium = Expose(sample=sample, alcohol=ethanol, solvent=water, ratio=80%, final_volume=500mL);
+    return medium;
+    """
+    from culsma.pipeline.plan_nodes import PlanProgram, PlanStep, ProtocolPlan
+
+    payload = json.loads(json.dumps(build_plan(source).to_dict()))
+    plans = [
+        ProtocolPlan(**{key: value for key, value in plan.items() if key not in {'kind', 'span', 'steps'}}, steps=[
+            PlanStep(step_id=s['step_id'], op=s['op'], args=s['args'], deps=s['deps'], gate=s['gate'])
+            for s in plan['steps']
+        ])
+        for plan in payload['plans']
+    ]
+    driver = RecordingDriver()
+    result = run(PlanProgram(plans=plans), driver)
+    assert result.ok, result.diagnostics
+    held = next(s.gate['env']['medium'] for s in driver.steps if s.op == 'env_hold')
+    assert result.state.artifacts['protocol_outputs']['entry']['value'] == held
+    assert decode_descriptor(held).contents == {'ETHANOL': (80, '%'), 'WATER': (20, '%')}
+    assert decode_descriptor(held).volume == (500000, 'uL')
+    assert set(held) == {'kind', 'contents', 'basis', 'volume'}
+    assert len(result.state.artifacts['material_state']['containers']) == 1
+    assert not result.state.artifacts['material_state'].get('content_registry')
+
+
+def test_liquid_contents_can_use_absolute_volume(build_plan):
+    driver = RecordingDriver()
+    result = run(build_plan(ETHANOL_CONTENTS + """
+      let sample = tube();
+      with env(medium=liquid_medium(contents={ethanol: 400mL, water: 100mL}), duration=1min) {
+        hold(sample);
+      }
+    """), driver)
+    assert result.ok, result.diagnostics
+    medium = decode_descriptor(next(s.gate['env']['medium'] for s in driver.steps if s.op == 'env_hold'))
+    assert medium.contents == {'ETHANOL': (400000, 'uL'), 'WATER': (100000, 'uL')}
+    assert medium.volume == (500000, 'uL')
+
+
+@pytest.mark.parametrize('args, message', [
+    ('contents={ethanol: 80%, water: 10%}, basis=CompositionBasis.VOLUME_FRACTION', 'total 100%'),
+    ('contents={ethanol: 80%, ethanol: 20%}, basis=CompositionBasis.VOLUME_FRACTION', 'duplicate'),
+    ('contents={ethanol: 80%, alias: 20%}, basis=CompositionBasis.VOLUME_FRACTION', 'duplicate'),
+    ('contents={"ethanol": 80%, water: 20%}, basis=CompositionBasis.VOLUME_FRACTION', 'declared content'),
+    ('contents={ethanol: 80%, water: 20%}', 'volume quantities'),
+    ('contents={ethanol: 400mL, water: 100mL}, volume=400mL', 'sum of its contents'),
+    ('contents={ethanol: 80%, water: 20%}, basis=CompositionBasis.VOLUME_FRACTION, volume=500mg', 'positive volume'),
+    ('contents={ethanol: 80%, water: 20%}, basis="volume_fraction"', 'CompositionBasis'),
+    ('contents=[content(kind=ContentKind.CHEMICAL, type=ContentType.SOLVENT, code="ETHANOL"):10mL]', 'map keyed'),
+])
+def test_invalid_liquid_contents(compile_source, args, message):
+    compiled = compile_source(ETHANOL_CONTENTS + f"""
+        let alias=ethanol;
+        let medium=liquid_medium({args});
+    """)
+    checked = typecheck(compiled.ir, analysis=compiled.analysis)
+    assert any(d.code == 'TYPE_ENV_MEDIUM_INVALID' and message in d.message for d in checked.diagnostics)
+
+
+def test_liquid_fraction_recipe_requires_volume_only_when_used(build_plan):
+    recipe = ETHANOL_CONTENTS + """
+      let recipe = liquid_medium(contents={ethanol: 80%, water: 20%},
+                                basis=CompositionBasis.VOLUME_FRACTION);
+    """
+    described = run(build_plan(recipe + 'return recipe;'), RecordingDriver())
+    assert described.ok, described.diagnostics
+    driver = RecordingDriver()
+    used = run(build_plan(recipe + """
+      let sample=tube();
+      with env(medium=recipe, duration=1min) { hold(sample); }
+    """), driver)
+    assert not used.ok
+    assert any(d.code == 'RT_ENV_ARGUMENT_INVALID' and 'final volume' in d.message for d in used.diagnostics)
+    assert not any(step.op == 'env_hold' for step in driver.steps)

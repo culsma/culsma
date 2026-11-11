@@ -4,23 +4,25 @@ from culsma.domains.medium import (
     GasMedium, LiquidMedium, Medium, MediumPhase, DEFAULT_MEDIUM,
 )
 from culsma.domains.environment import EnvironmentValueError
+from culsma.common.content_contracts import ContentKind, ContentType
+from culsma.pipeline.content_boundary import read_bound_content_token, resolve_bound_content_classification
 
 MEDIUM_CALLS = frozenset({'gas_medium', 'liquid_medium', 'composition', 'medium_component'})
 CALL_FIELDS = {
     'gas_medium': ({'composition', 'source'}, set()),
-    'liquid_medium': ({'composition', 'source'}, set()),
+    'liquid_medium': ({'contents', 'basis', 'volume', 'source'}, set()),
     'composition': ({'components', 'coverage'}, {'components'}),
     'medium_component': ({'material', 'quantity', 'basis'}, {'material', 'quantity', 'basis'}),
 }
 
 
-def _fields(value, allowed, required):
+def validate_descriptor_fields(value, allowed, required):
     if not isinstance(value, dict) or set(value) - allowed or required - set(value):
         raise ValueError(f"medium fields must be {sorted(allowed)}; required: {sorted(required)}")
     return value
 
 
-def _enum(value, family, *, allow_wire_text=False):
+def decode_descriptor_enum(value, family, *, allow_wire_text=False):
     if isinstance(value, dict) and value.get('kind') == 'ExternalEnum':
         if value.get('enum') != family.__name__:
             raise ValueError(f"expected {family.__name__}")
@@ -35,13 +37,58 @@ def _enum(value, family, *, allow_wire_text=False):
     raise ValueError(f"expected {family.__name__}")
 
 
-def _literal(value):
+def decode_descriptor_literal(value):
     if isinstance(value, dict):
         if value.get('kind') == 'IRString':
             return value.get('value')
         if value.get('kind') == 'IRQuantity':
             return (value.get('value'), value.get('unit'))
     return value
+
+
+def parse_descriptor_arguments(value):
+    """Read named arguments without losing duplicate argument diagnostics."""
+    args = value.get("args")
+    if not isinstance(args, list) or any(
+        not isinstance(arg, dict) or type(arg.get("name")) is not str or "value" not in arg
+        for arg in args
+    ):
+        raise ValueError("invalid descriptor arguments")
+    fields = {arg["name"]: arg["value"] for arg in args}
+    if len(fields) != len(args):
+        raise ValueError("duplicate descriptor argument")
+    return fields
+
+
+def decode_liquid_contents(value):
+    """Resolve contents entries by material identity and reject duplicate aliases."""
+    if not isinstance(value, dict) or value.get("kind") != "IRCall" or value.get("name") != "$contents_map":
+        raise ValueError("liquid medium contents require a map keyed by content references")
+    items = validate_descriptor_fields(parse_descriptor_arguments(value), {"entries"}, {"entries"})["entries"]
+    if not isinstance(items, dict) or items.get("kind") != "IRList" or not isinstance(items.get("elements"), list):
+        raise ValueError("invalid liquid medium contents map")
+    contents = {}
+    for pair in items["elements"]:
+        if not isinstance(pair, dict) or pair.get("kind") != "IRPair":
+            raise ValueError("invalid liquid medium contents entry")
+        content = pair.get("left")
+        if not isinstance(content, dict) or content.get("kind") != "IRCall" or content.get("name") != "DefineContent":
+            raise ValueError("liquid medium contents key must reference a declared content")
+        args = parse_descriptor_arguments(content)
+        kind = read_bound_content_token(args.get("kind"), ContentKind)
+        content_type = read_bound_content_token(args.get("type"), ContentType)
+        if type(kind) is not ContentKind or type(content_type) is not ContentType:
+            raise ValueError("liquid medium contents require typed ContentKind and ContentType")
+        resolve_bound_content_classification(kind, content_type)
+        identity = decode_descriptor_literal(args.get("code"))
+        if type(identity) is not str or not identity.strip():
+            raise ValueError("liquid medium contents require content with an explicit code")
+        if "concentration" in args:
+            raise ValueError("liquid medium contents keys describe material identity, not a stock concentration")
+        if identity in contents:
+            raise ValueError(f"duplicate liquid medium content '{identity}'")
+        contents[identity] = decode_descriptor_literal(pair.get("right"))
+    return contents
 
 
 def decode_descriptor(value, *, resolve_source=None):
@@ -53,21 +100,18 @@ def decode_descriptor(value, *, resolve_source=None):
         name = value.get('name')
         if name not in MEDIUM_CALLS:
             raise ValueError("expected a medium constructor")
-        args = value.get('args')
-        if not isinstance(args, list) or any(not isinstance(a, dict) or 'name' not in a or 'value' not in a for a in args):
-            raise ValueError("invalid medium constructor arguments")
-        names = [a['name'] for a in args]
-        if any(not isinstance(n, str) for n in names) or len(names) != len(set(names)):
-            raise ValueError("duplicate or invalid medium constructor argument")
-        fields = _fields({a['name']: a['value'] for a in args}, *CALL_FIELDS[name])
+        fields = validate_descriptor_fields(parse_descriptor_arguments(value), *CALL_FIELDS[name])
     else:
         name = value.get('kind')
         if name not in MEDIUM_CALLS:
             raise ValueError("unknown medium descriptor kind")
-        fields = _fields({k: v for k, v in value.items() if k != 'kind'}, *CALL_FIELDS[name])
+        allowed, required = CALL_FIELDS[name]
+        if name == 'liquid_medium':
+            allowed = allowed | {'composition'}  # Previously serialized draft plans.
+        fields = validate_descriptor_fields({k: v for k, v in value.items() if k != 'kind'}, allowed, required)
     if name == 'medium_component':
-        return ComponentRequirement(_literal(fields['material']), _literal(fields['quantity']),
-                                    _enum(_literal(fields['basis']), CompositionBasis, allow_wire_text=not source_call))
+        return ComponentRequirement(decode_descriptor_literal(fields['material']), decode_descriptor_literal(fields['quantity']),
+                                    decode_descriptor_enum(decode_descriptor_literal(fields['basis']), CompositionBasis, allow_wire_text=not source_call))
     if name == 'composition':
         items = fields['components']
         if isinstance(items, dict) and items.get('kind') == 'IRList':
@@ -75,7 +119,7 @@ def decode_descriptor(value, *, resolve_source=None):
         if not isinstance(items, list):
             raise ValueError("composition components must be a list")
         return CompositionSpec(tuple(decode_descriptor(item) for item in items),
-                               _enum(_literal(fields.get('coverage', CompositionCoverage.PARTIAL)),
+                               decode_descriptor_enum(decode_descriptor_literal(fields.get('coverage', CompositionCoverage.PARTIAL)),
                                      CompositionCoverage, allow_wire_text=not source_call))
     composition = decode_descriptor(fields['composition']) if 'composition' in fields else CompositionSpec()
     source = None
@@ -87,18 +131,44 @@ def decode_descriptor(value, *, resolve_source=None):
             source = raw.get('id')
         if not isinstance(source, str) or not source:
             raise ValueError("medium source must resolve to an existing container reference")
-    cls = GasMedium if name == 'gas_medium' else LiquidMedium
-    return cls(composition=composition, source=source)
+    if name == 'gas_medium':
+        return GasMedium(composition=composition, source=source)
+    contents = None
+    if 'contents' in fields:
+        raw = fields['contents']
+        if source_call:
+            contents = decode_liquid_contents(raw)
+        elif isinstance(raw, dict):
+            contents = {identity: decode_descriptor_literal(quantity) for identity, quantity in raw.items()}
+        else:
+            raise ValueError("invalid serialized liquid medium contents")
+    basis = (decode_descriptor_enum(fields['basis'], CompositionBasis, allow_wire_text=not source_call)
+             if 'basis' in fields else None)
+    volume = decode_descriptor_literal(fields['volume']) if 'volume' in fields else None
+    return LiquidMedium(composition=composition, source=source, contents=contents, basis=basis, volume=volume)
+
+
+def encode_medium_quantity(quantity):
+    number, unit = quantity
+    return {'kind': 'IRQuantity', 'value': number, 'unit': unit}
 
 
 def encode_descriptor(value):
     if isinstance(value, ComponentRequirement):
         return {'kind': 'medium_component', 'material': value.material,
-                'quantity': {'kind': 'IRQuantity', 'value': value.quantity[0], 'unit': value.quantity[1]},
+                'quantity': encode_medium_quantity(value.quantity),
                 'basis': value.basis.value}
     if isinstance(value, CompositionSpec):
         return {'kind': 'composition', 'coverage': value.coverage.value,
                 'components': [encode_descriptor(c) for c in value.components]}
+    if isinstance(value, LiquidMedium) and value.contents is not None:
+        result = {'kind': 'liquid_medium',
+                  'contents': {identity: encode_medium_quantity(quantity) for identity, quantity in value.contents.items()}}
+        if value.basis is not None:
+            result['basis'] = value.basis.value
+        if value.volume is not None:
+            result['volume'] = encode_medium_quantity(value.volume)
+        return result
     if isinstance(value, Medium):
         result = {'kind': f'{value.phase.value}_medium', 'composition': encode_descriptor(value.composition)}
         if value.source is not None:

@@ -6,10 +6,10 @@ from culsma.runtime.value_adapters.contracts import AdaptedValue
 
 class MediumValueAdapter:
     def read(self, type_id, value, state, resolver):
-        from culsma.runtime.values import resolve_runtime_arg_value, _resolve_medium_source
+        from culsma.runtime.values import resolve_runtime_arg_value, resolve_medium_source
         try:
             medium = decode_descriptor(resolve_runtime_arg_value(value, state),
-                resolve_source=lambda source: _resolve_medium_source(source, state))
+                resolve_source=lambda source: resolve_medium_source(source, state))
             return AdaptedValue(type_id, encode_descriptor(medium))
         except (TypeError, ValueError, KeyError):
             return UNRESOLVED_VALUE

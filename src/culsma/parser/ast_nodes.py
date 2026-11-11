@@ -270,6 +270,9 @@ class RecordLiteral:
     """{key: <expr>, ...}"""
     entries: dict[str, Expression] = field(default_factory=dict)
     span: Span | None = None
+    key_items: list[tuple[Identifier | StringLiteral, Expression]] = field(
+        default_factory=list, repr=False, compare=False
+    )
 
 
 @dataclass

@@ -590,28 +590,26 @@ class ListLiteralHandler(ExpressionRuleHandler):
         return ListLiteral(elements=list(items), span=state.span)
 
 
-class RecordKeyIdentifierHandler(ExpressionRuleHandler):
-    def construct_ast(self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState) -> str:
-        del meta, ctx, state
-        return str(items[0])
+class RecordKeyIdentifierHandler(IdentifierRefHandler):
+    pass
 
 
-class RecordKeyStringHandler(ExpressionRuleHandler):
-    def construct_ast(self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState) -> str:
-        del meta, state
-        return ctx.decode_string_token(items[0])
+class RecordKeyStringHandler(StringLiteralHandler):
+    pass
 
 
 class RecordItemHandler(ExpressionRuleHandler):
-    def construct_ast(self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState) -> tuple[str, Any]:
-        del meta, ctx, state
-        return str(items[0]), items[1]
+    def construct_ast(self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState) -> tuple[Any, Any]:
+        return items[0], items[1]
 
 
 class RecordLiteralHandler(ExpressionRuleHandler):
     def construct_ast(self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState) -> RecordLiteral:
-        del meta, ctx
-        return RecordLiteral(entries=dict(items), span=state.span)
+        return RecordLiteral(
+            entries={key.name if isinstance(key, Identifier) else key.value: value for key, value in items},
+            span=state.span,
+            key_items=list(items),
+        )
 
 
 class GroupExprHandler(ExpressionRuleHandler):
@@ -647,8 +645,29 @@ class PlateSelectorExprHandler(ExpressionRuleHandler):
 class CallExprHandler(ExpressionRuleHandler):
     def construct_ast(self, meta: Any, items: list[Any], ctx: ParseRuleContext, state: ParseRuleState) -> CallExpr:
         del meta, ctx
+        name = str(items[0])
         args = items[1] if len(items) > 1 else []
-        return CallExpr(name=str(items[0]), args=args, span=state.span)
+        if name == "liquid_medium":
+            args = [lower_liquid_contents_argument(arg) for arg in args]
+        return CallExpr(name=name, args=args, span=state.span)
+
+
+def lower_liquid_contents_argument(arg: Arg) -> Arg:
+    """Keep contents keys as references until the medium boundary validates them."""
+    if arg.name != "contents" or not isinstance(arg.value, RecordLiteral):
+        return arg
+    record = arg.value
+    # Preserve keys as expressions and keep duplicate entries until identity validation.
+    pairs = ListLiteral(
+        elements=[PairExpr(left=key, right=value, span=key.span) for key, value in record.key_items],
+        span=record.span,
+    )
+    value = CallExpr(
+        name="$contents_map",
+        args=[Arg(name="entries", value=pairs, span=record.span)],
+        span=record.span,
+    )
+    return Arg(name=arg.name, value=value, span=arg.span)
 
 
 class MarkersExprHandler(SurfaceRuleHandler):

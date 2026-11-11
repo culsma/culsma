@@ -3,11 +3,12 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from enum import StrEnum
 from math import isclose
-from typing import ClassVar
+from types import MappingProxyType
+from typing import ClassVar, Mapping
 
 from culsma.common.enum_parameters import CallParameterContract, EnumParameter
 from culsma.common.value_contracts import VALUE_CONTRACTS, ReadCallContract
-from culsma.common.quantity_arithmetic import QuantityDimension, quantity_parts, UNIT_TO_DIMENSION
+from culsma.common.quantity_arithmetic import QuantityDimension, quantity_parts, UNIT_TO_DIMENSION, convert_value
 
 
 class MediumPhase(StrEnum):
@@ -91,8 +92,6 @@ class Medium(ABC):
             raise ValueError("medium composition must be CompositionSpec")
         if self.source is not None and (not isinstance(self.source, str) or not self.source.strip()):
             raise ValueError("medium source must be a nonempty resolved container identity")
-        if self.phase is MediumPhase.LIQUID and self.source is None and not self.composition.components:
-            raise ValueError("liquid medium requires composition requirements or an actual source")
         self.validate_composition()
 
     def validate_composition(self) -> None:
@@ -120,12 +119,71 @@ class LiquidMedium(Medium):
     phase: ClassVar[MediumPhase] = MediumPhase.LIQUID
 
     allowed_bases: ClassVar[frozenset[CompositionBasis]] = frozenset(CompositionBasis)
+    contents: Mapping[str, tuple[float, str]] | None = None
+    basis: CompositionBasis | None = None
+    volume: tuple[float, str] | None = None
+
+    def __post_init__(self):
+        super().__post_init__()
+        if self.contents is None:
+            if self.source is None and not self.composition.components:
+                raise ValueError("liquid medium requires contents or an actual source")
+            if self.basis is not None or self.volume is not None:
+                raise ValueError("basis and volume require liquid medium contents")
+            return
+        if self.source is not None or self.composition.components:
+            raise ValueError("liquid medium contents must be specified separately from source or composition")
+        contents, volume = normalize_liquid_contents(self.contents, basis=self.basis, volume=self.volume)
+        object.__setattr__(self, "contents", contents)
+        object.__setattr__(self, "volume", volume)
+
+
+def normalize_liquid_contents(
+    contents: Mapping[str, tuple[float, str]],
+    *,
+    basis: CompositionBasis | None = None,
+    volume: tuple[float, str] | None = None,
+) -> tuple[Mapping[str, tuple[float, str]], tuple[float, str] | None]:
+    """Validate one liquid composition and normalize its quantities and final volume."""
+    if not isinstance(contents, Mapping) or not contents:
+        raise ValueError("liquid medium contents must be a nonempty map")
+    if volume is not None:
+        value, unit = quantity_parts(volume)
+        if UNIT_TO_DIMENSION.get(unit) is not QuantityDimension.VOLUME or value <= 0:
+            raise ValueError("liquid medium volume must be a positive volume quantity")
+        volume = (convert_value(value, unit, "uL"), "uL")
+    if basis is not None and (type(basis) is not CompositionBasis or basis is CompositionBasis.MASS_CONCENTRATION):
+        raise ValueError("liquid medium basis must be a fraction member of CompositionBasis")
+
+    expected = QuantityDimension.PERCENT if basis is not None else QuantityDimension.VOLUME
+    canonical_unit = "%" if basis is not None else "uL"
+    normalized = {}
+    for identity, quantity in contents.items():
+        if type(identity) is not str or not identity.strip():
+            raise ValueError("liquid medium contents require a content identity")
+        number, unit = quantity_parts(quantity)
+        if UNIT_TO_DIMENSION.get(unit) is not expected or number < 0:
+            raise ValueError(f"liquid medium contents require nonnegative {expected.value} quantities")
+        normalized[identity] = (convert_value(number, unit, canonical_unit), canonical_unit)
+
+    total, _ = quantity_parts(sum(value for value, _ in normalized.values()))
+    if basis is not None:
+        if not isclose(total, 100, rel_tol=0, abs_tol=1e-9):
+            raise ValueError("liquid medium fractions must total 100%")
+    else:
+        if total <= 0:
+            raise ValueError("liquid medium contents must have positive total volume")
+        if volume is not None and not isclose(total, volume[0], rel_tol=1e-12, abs_tol=1e-9):
+            raise ValueError("liquid medium volume conflicts with the sum of its contents")
+        volume = (total, "uL")
+    return MappingProxyType(normalized), volume
 
 
 DEFAULT_MEDIUM: Medium = GasMedium()
 
 
 CALL_PARAMETER_CONTRACTS = {
+    "liquid_medium": CallParameterContract({"basis": EnumParameter(CompositionBasis)}),
     "medium_component": CallParameterContract({"basis": EnumParameter(CompositionBasis)}),
     "composition": CallParameterContract({"coverage": EnumParameter(CompositionCoverage)}),
 }

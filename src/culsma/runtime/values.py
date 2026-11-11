@@ -824,7 +824,7 @@ def _resolve_step_runtime_args(step: PlanStep, state: RuntimeState) -> PlanStep:
         PlateRuntimeValueResolver().descriptors(step.gate),
         resolve_environment=lambda environment: resolve_runtime_arg_value(environment, state),
         require_duration=step.op == "env_hold",
-        resolve_medium_source=lambda value: _resolve_medium_source(value, state),
+        resolve_medium_source=lambda value: resolve_medium_source(value, state),
     )
     from culsma.runtime.environment_media import validate_medium_layers
     validate_medium_layers(gate, state)
@@ -840,7 +840,7 @@ def _resolve_step_runtime_args(step: PlanStep, state: RuntimeState) -> PlanStep:
     )
 
 
-def _resolve_medium_source(value: Any, state: RuntimeState) -> str | None:
+def resolve_medium_source(value: Any, state: RuntimeState) -> str | None:
     material_state = state.artifacts.get('material_state', {})
     if isinstance(value, dict) and value.get('kind') == 'container_ref':
         identity = value.get('id')

@@ -1,30 +1,32 @@
 """Check simultaneous medium requirements against resolved target identities."""
+from dataclasses import replace
+
 from culsma.domains.environment import EnvironmentValueError
-from culsma.domains.medium import CompositionCoverage, CompositionSpec
+from culsma.domains.medium import CompositionCoverage, CompositionSpec, LiquidMedium
 from culsma.pipeline.medium_boundary import resolve_medium, encode_descriptor, validate_medium_modifiers
+
+
+def resolve_medium_targets(value, state):
+    from culsma.runtime.values import resolve_medium_source, resolve_runtime_arg_value
+    value = resolve_runtime_arg_value(value, state)
+    if isinstance(value, list):
+        return [target for child in value for target in resolve_medium_targets(child, state)]
+    if isinstance(value, dict) and value.get('kind') in {'IRGroup', 'IRList'}:
+        return resolve_medium_targets(value.get('elements', []), state)
+    members = []
+    while isinstance(value, dict) and value.get('kind') == 'IRMember':
+        members.insert(0, value.get('member'))
+        value = value.get('base')
+    identity = resolve_medium_source(value, state)
+    if identity is None:
+        raise EnvironmentValueError('medium target must resolve to a container', reason='medium')
+    # Bare hold targets and their contents accessor have the same meaning.
+    return [(identity, tuple(members) if members != ['contents'] else ())]
 
 
 def validate_medium_layers(gate, state):
     if not gate:
         return
-    from culsma.runtime.values import _resolve_medium_source, resolve_runtime_arg_value
-
-    def targets(value):
-        value = resolve_runtime_arg_value(value, state)
-        if isinstance(value, list):
-            return [target for child in value for target in targets(child)]
-        if isinstance(value, dict) and value.get('kind') in {'IRGroup', 'IRList'}:
-            return targets(value.get('elements', []))
-        members = []
-        while isinstance(value, dict) and value.get('kind') == 'IRMember':
-            members.insert(0, value.get('member'))
-            value = value.get('base')
-        identity = _resolve_medium_source(value, state)
-        if identity is None:
-            raise EnvironmentValueError('medium target must resolve to a container', reason='medium')
-        # Bare hold targets and their contents accessor have the same meaning.
-        return [(identity, tuple(members) if members != ['contents'] else ())]
-
     active = {}
     modifier_layers = []
     layers = gate.get('env_layers', [{'env': gate.get('env', {}), 'env_targets': gate.get('env_targets', [])}])
@@ -36,7 +38,7 @@ def validate_medium_layers(gate, state):
         if payload is None:
             continue
         declared = resolve_medium(environment)
-        resolved_targets = targets(layer.get('env_targets', []))
+        resolved_targets = resolve_medium_targets(layer.get('env_targets', []), state)
         if not resolved_targets:
             raise EnvironmentValueError('medium environment requires a target', reason='medium')
         for target in resolved_targets:
@@ -47,6 +49,15 @@ def validate_medium_layers(gate, state):
                         previous.source is not None and current.source is not None
                         and previous.source != current.source):
                     raise EnvironmentValueError('one target cannot occupy different nested media', reason='medium')
+                if isinstance(current, LiquidMedium) and isinstance(previous, LiquidMedium) and (
+                    current.contents is not None or previous.contents is not None
+                ):
+                    if current.contents != previous.contents or current.basis is not previous.basis or (
+                        current.volume is not None and previous.volume is not None and current.volume != previous.volume
+                    ):
+                        raise EnvironmentValueError('conflicting nested liquid medium contents or volume', reason='medium')
+                    active[target] = replace(current, volume=current.volume or previous.volume)
+                    continue
                 components = {c.material: c for c in previous.composition.components}
                 for component in current.composition.components:
                     if component.material in components and components[component.material] != component:
@@ -66,10 +77,13 @@ def validate_medium_layers(gate, state):
                 except ValueError as error:
                     raise EnvironmentValueError(str(error), reason='medium') from error
             active[target] = current
+    for medium in active.values():
+        if isinstance(medium, LiquidMedium) and medium.contents is not None and medium.volume is None:
+            raise EnvironmentValueError('liquid medium requires a final volume for execution', reason='medium')
     if active:
         modifiers = {}
         for layer in modifier_layers:
-            for target in targets(layer.get('env_targets', [])):
+            for target in resolve_medium_targets(layer.get('env_targets', []), state):
                 if target not in active:
                     continue
                 merged = modifiers.setdefault(target, {})

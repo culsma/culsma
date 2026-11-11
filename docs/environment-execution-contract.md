@@ -55,41 +55,29 @@ nor a default humidity may be inferred.
 
 ## Typed media
 
-`culsma.domains.medium` owns immutable `Medium`, `GasMedium`, `LiquidMedium`,
-`CompositionSpec`, and `ComponentRequirement` values. Gas media permit explicitly
-based fractions; liquid media also permit mass concentration. All validation
-uses the same domain rules at static and runtime boundaries. A source is a
-resolved container identity stored directly on `Medium`; there is no separate
-source-binding wrapper or duplicate inventory.
+`culsma.domains.medium` owns the typed gas and liquid medium values. An inline
+liquid descriptor uses `contents` with content-reference keys, an optional
+fraction `basis`, and a final `volume`. It reuses existing content identities
+and quantity units. A source descriptor instead uses a resolved container
+identity. Source resolution accepts actual container references.
 
-Closed choices use exact enum families: `MediumPhase` for medium categories and
-driver capability declarations, `CompositionCoverage` for completeness, and
-`CompositionBasis` for composition measures. Internal APIs reject plain strings
-and members from other enum families. Source `coverage` and `basis` arguments
-require enum members; their omission defaults, where defined, are enum members
-as well. Material codes and source identities remain identifiers.
+In a liquid contents map, all values are absolute volumes or all are fractions
+on one common basis. Fractions must total 100%. The final volume is explicit
+for fractions and derived from absolute entries. A fraction descriptor may
+omit the volume as data, but a final volume is required before execution.
+Resolving content descriptors and normalizing these quantities does not add
+container inventory.
 
-The source constructors are `gas_medium(composition=..., source=...)`,
-`liquid_medium(composition=..., source=...)`, `composition(components=..., coverage=...)`,
-and `medium_component(material=..., quantity=..., basis=...)`. Composition uses
-existing material codes and unit-bearing quantities. These constructors use the
-same named-argument expression form as program constructors, both inline and
-through bindings or protocol arguments. The source is optional; a liquid medium
-with empty composition requires one. An empty source-free `GasMedium` denotes
-ordinary atmosphere. A source expression must resolve to an
-existing container, not a display label or a string supplied by the author.
+`pipeline.medium_boundary` decodes constructors and validates the canonical
+JSON representation. An inline liquid descriptor has `kind: liquid_medium`
+and a `contents` map from resolved material codes to quantity objects. It
+includes `basis` for fractions and `volume` when known. Volumes use microliters
+and fractions use percent. The `source` form uses a `container_ref` with `id`.
+The runtime revalidates source references against live allocations.
 
-`pipeline.medium_boundary` decodes constructors and validates the canonical JSON
-representation. `encode_descriptor` and `decode_descriptor` round-trip the typed
-values. Canonical `kind` values match the constructor names; composition contains
-`coverage` and `components`, and a bound source is a `container_ref` with `id`.
-Unknown fields, duplicate arguments, unknown kinds and invalid quantities are
-rejected. `normalize_runtime_gate` accepts a `resolve_medium_source` callback;
-the runtime supplies its live allocation resolver. Stored canonical references
-are revalidated against current allocations, not trusted merely because they
-carry a `container_ref` tag.
-Enum text in the canonical JSON representation is decoded and validated at that
-boundary; this does not permit string-valued enum options in source constructors.
+Gas descriptors retain their composition coverage, components and optional
+source. The canonical wire representation uses enum text. At source, basis
+and coverage require members of their exact enum families.
 
 `resolve_medium(environment, inherited=...)`, exported through
 `pipeline.external_boundary`, resolves an explicit descriptor, the caller-supplied

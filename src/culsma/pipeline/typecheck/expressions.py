@@ -223,7 +223,8 @@ class TypecheckExpressionServices:
         scope: ContentArgumentScope | None = None,
     ) -> list[Diagnostic]:
         scope = scope or ContentArgumentScope(expr_bindings=expr_bindings)
-        from .medium import check_medium, MEDIUM_CALLS
+        from culsma.pipeline.medium_boundary import MEDIUM_CALLS
+        from .medium import check_medium
         if call.name in MEDIUM_CALLS:
             return check_medium(call, expr_bindings, self, node_id=node_id)
         if call.name == "thermal_program":

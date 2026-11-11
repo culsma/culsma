@@ -11,7 +11,9 @@ from dataclasses import dataclass
 from typing import Any, Mapping
 
 from culsma.common.diagnostics import Diagnostic
-from culsma.pipeline.content_inputs import ContentArgumentScope
+from culsma.common.content_contracts import ContentKind, ContentType
+from culsma.pipeline.content_inputs import ContentArgumentResolver, ContentArgumentScope, ContentInputSource
+from culsma.pipeline.expression_resolution import resolve_expression, ResolutionStatus
 from culsma.common.source import Span
 from culsma.pipeline.ir_nodes import (
     IRArg,
@@ -22,6 +24,7 @@ from culsma.pipeline.ir_nodes import (
     IRQuantity,
     IRStatement,
     IRStep,
+    IRString,
     IRWithConstraint,
     IRWithEnv,
 )
@@ -269,14 +272,28 @@ def validate_let_call_contract(
     if not isinstance(value, IRCall):
         return []
     if value.name == "DefineContent":
+        scope = ContentArgumentScope(literal_bindings, expr_bindings, defined_names or frozenset())
         diagnostics = ConstructorValidator.validate_define_content_call(
             value,
             literal_bindings=literal_bindings,
             node_id=stmt.id,
             content_whitelist_mode=content_whitelist_mode,
             content_type_policy=content_type_policy,
-            scope=ContentArgumentScope(literal_bindings, expr_bindings, defined_names or frozenset()),
+            scope=scope,
         )
+        args = {arg.name: arg.value for arg in value.args}
+        code = resolve_expression(args.get("code"), expr_bindings)
+        code_value = code.value.value if isinstance(code.value, IRString) else code.value
+        if (
+            "concentration" not in args and "code" in args
+            and (code.status is ResolutionStatus.DEFERRED or (isinstance(code_value, str) and code_value.strip()))
+            and all(
+                ContentArgumentResolver.resolve_argument(args.get(name), family, scope).source is ContentInputSource.ENUM
+                for name, family in (("kind", ContentKind), ("type", ContentType))
+            )
+        ):
+            # A typed material descriptor is a value, with no load or allocation.
+            return diagnostics
         diagnostics.append(
             Diagnostic(
                 code="SEM_STANDALONE_CONTENT_INIT_FORBIDDEN",

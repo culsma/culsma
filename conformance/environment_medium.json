@@ -27,6 +27,11 @@
     "CF-MEDIUM-017": "tests/language/environment/test_medium.py::test_ordinary_atmosphere_is_the_implicit_default",
     "CF-MEDIUM-018": "tests/language/environment/test_medium.py::test_atmosphere_only_timed_hold_needs_no_explicit_medium",
     "CF-MEDIUM-019": "tests/language/environment/test_medium.py::test_implicit_atmosphere_does_not_override_enclosing_bath",
-    "CF-MEDIUM-020": "tests/language/environment/test_medium.py::test_gas_modifiers_refine_default_atmosphere_without_fabricated_balance"
+    "CF-MEDIUM-020": "tests/language/environment/test_medium.py::test_gas_modifiers_refine_default_atmosphere_without_fabricated_balance",
+    "CF-MEDIUM-021": "tests/language/environment/test_medium.py::test_liquid_contents_reach_driver_without_allocating_bath",
+    "CF-MEDIUM-022": "tests/language/environment/test_medium.py::test_liquid_contents_can_use_absolute_volume",
+    "CF-MEDIUM-023": "tests/language/environment/test_medium.py::test_invalid_liquid_contents",
+    "CF-MEDIUM-024": "tests/language/environment/test_medium.py::test_liquid_fraction_recipe_requires_volume_only_when_used",
+    "CF-MEDIUM-025": "tests/language/environment/test_medium_units.py::test_validate_medium_layers_checks_liquid_volume_per_target"
   }
 }
