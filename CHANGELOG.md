@@ -2,11 +2,28 @@
 
 ## Unreleased
 
+### Added
+
+- Environment scopes support typed gas and liquid media. Liquid media accept
+  contents maps keyed by declared content references, with explicit component
+  volumes or percentages on a declared composition basis. Ordinary atmosphere
+  remains the default. Media describe execution requirements without inferring
+  material uptake, reactions, or inventory consumption.
+- Fractionation accepts optional `component_fates` with an ordered ratio list
+  per source content identity. Scoped, standalone and returned-group forms
+  preserve the declared composition through collection. Unmentioned content
+  retains equal allocation; no automatic fractionation prediction or absolute
+  allocation quantities are introduced.
+
 ### Fixed
 
 - Input-lot accounting follows the actual components transferred from separated
   fractions, including partial collection, instead of applying the original
   container's bulk mixture proportions to the collected volume.
+
+## 1.0.10 — 2026-11-09
+
+### Fixed
 
 - Protocol returns recursively project container references inside records and
   lists, preserving nested values instead of exporting the composite as `null`.
@@ -18,11 +35,12 @@
 
 ### Added
 
-- Fractionation accepts optional `component_fates` with an ordered ratio list
-  per source content identity. Scoped, standalone and returned-group forms
-  preserve the declared composition through collection. Unmentioned content
-  retains equal allocation; no automatic fractionation prediction or absolute
-  allocation quantities are introduced.
+- Scoped separation and fractionation use `with sep(...) { ... }`
+  and `with frac(...) { ... }`. Entry runs once; the block can
+  access the sample's indexed contents under the enclosing ENV requirements. Existing
+  statement/assignment forms and legacy indexed contents access remain valid,
+  including disruption's `contents[0]`. Environment timing remains independent
+  of the separation or fractionation context.
 
 - Magnetic separation preserves explicitly declared binding and release
   transitions for solution solutes. Solute mass and carrier volume remain
@@ -45,10 +63,11 @@
 - Optional mass/volume `concentration` on initial content loads derives solute
   mass from declared solution volume. Whole and volume transfers conserve each
   solute through mixing and dilution; result data exposes current concentration.
-  Unsupported solid/unknown/associated mixtures fail atomically. Separation,
-  fractionation, mass transfers and material replacement remain unsupported for
-  these homogeneous solutions. A dedicated accounting benchmark covers protein,
-  RNA, small molecules and event replay.
+  Unsupported solid/unknown/associated mixtures fail atomically. Magnetic
+  separation supports the explicit binding/release path described above;
+  other separation, fractionation, mass transfers and material replacement
+  remain unsupported for these homogeneous solutions. A dedicated accounting
+  benchmark covers protein, RNA, small molecules and event replay.
 
 - Added `print(expression);` to display the current value immediately on the
   console during execution, without a driver call or material change. Printed
