@@ -64,8 +64,11 @@ class MaterialAccounting:
         source: str,
         destination: str | None,
         quantity: MaterialQuantity,
+        component_quantities: dict[str, dict[str, float]] | None = None,
     ) -> None:
-        lot_allocations = self._withdraw(source=source, quantity=quantity)
+        lot_allocations = self.withdraw_components(
+            source=source, quantity=quantity, component_quantities=component_quantities,
+        )
         if not lot_allocations:
             return
         if destination is not None:
@@ -96,15 +99,42 @@ class MaterialAccounting:
     def container_allocation(self, container_id: str) -> dict[str, MaterialQuantity]:
         return dict(self.container_allocations.get(container_id, {}))
 
-    def _withdraw(self, *, source: str, quantity: MaterialQuantity) -> dict[str, MaterialQuantity]:
+    def withdraw_components(
+        self, *, source: str, quantity: MaterialQuantity,
+        component_quantities: dict[str, dict[str, float]] | None,
+    ) -> dict[str, MaterialQuantity]:
+        """Allocate known component lots by identity; preserve opaque-lot compatibility."""
+        allocations = self.container_allocations.get(source, {})
+        identities = {self.input_lots[lot_id].content_id for lot_id in allocations}
+        if not component_quantities or None in identities or not set(component_quantities).issubset(identities):
+            return self.withdraw(source=source, quantity=quantity)
+        # Older solution loads can describe a content lot by carrier volume,
+        # while its current material entry is quantified by solute mass.
+        # Do not silently drop such provenance when the axes are incompatible.
+        for content_id, axes in component_quantities.items():
+            for axis, amount in axes.items():
+                available = sum(getattr(item, axis) for lot_id, item in allocations.items()
+                                if self.input_lots[lot_id].content_id == content_id)
+                if amount > available + EPSILON:
+                    return self.withdraw(source=source, quantity=quantity)
+        moved = {}
+        for content_id, axes in component_quantities.items():
+            moved.update(self.withdraw(source=source, quantity=MaterialQuantity(**axes), content_id=content_id))
+        return moved
+
+    def withdraw(
+        self, *, source: str, quantity: MaterialQuantity, content_id: str | None = None,
+    ) -> dict[str, MaterialQuantity]:
         allocations = self.container_allocations.get(source)
         if not allocations:
             return {}
-        total_volume = sum(item.volume_uL for item in allocations.values())
-        total_mass = sum(item.mass_mg for item in allocations.values())
-        total_cells = sum(item.count_cells for item in allocations.values())
+        selected = {lot_id: item for lot_id, item in allocations.items()
+                    if content_id is None or self.input_lots[lot_id].content_id == content_id}
+        total_volume = sum(item.volume_uL for item in selected.values())
+        total_mass = sum(item.mass_mg for item in selected.values())
+        total_cells = sum(item.count_cells for item in selected.values())
         moved: dict[str, MaterialQuantity] = {}
-        for lot_id, current in list(allocations.items()):
+        for lot_id, current in selected.items():
             moved_volume = (
                 min(current.volume_uL, quantity.volume_uL * current.volume_uL / total_volume)
                 if total_volume > EPSILON and quantity.volume_uL > EPSILON
@@ -192,6 +222,7 @@ class MaterialAccountingRecorder:
                     mass_mg=movement.mass_mg,
                     count_cells=movement.count_cells,
                 ),
+                component_quantities=movement.component_quantities,
             )
 
     def _record_load(

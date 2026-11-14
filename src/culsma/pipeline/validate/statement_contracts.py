@@ -39,6 +39,7 @@ from .material_transition import validate_material_transitions_contract
 from .operations import OperationContractValidator
 from .resolution import ExprResolver
 from .separation import validate_component_fates_contract
+from .fractionation import validate_fraction_fates_contract
 
 BUILTIN_METHOD_STEPS = {"append", "replace"}
 CONSTRAINT_CUSTOMIZED = ConstraintRequirement.CUSTOMIZED
@@ -329,6 +330,11 @@ def validate_let_call_contract(
                 span=value.span,
             )
         )
+        if value.name == "frac":
+            diagnostics.extend(validate_fraction_fates_contract(
+                value.args, expr_bindings=expr_bindings,
+                defined_names=defined_names or frozenset(), node_id=stmt.id, span=value.span,
+            ))
         if value.name == "sep":
             diagnostics.extend(
                 validate_component_fates_contract(

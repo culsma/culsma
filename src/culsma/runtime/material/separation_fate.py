@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from culsma.domains.material_allocation import allocation_ratio, validate_allocation_ratios
 from culsma.pipeline.program_registry import (
     CentrifugeProgramOutput,
     CentrifugalFiltrationProgramOutput,
@@ -17,9 +18,6 @@ from culsma.pipeline.program_registry import (
 )
 from culsma.domains.separation import FiltrationDrive, FiltrationDriveBase
 from culsma.runtime.material.args import arg_string, call_arg_string, call_arg_value
-
-
-_RATIO_EPSILON = 1e-9
 
 
 @dataclass(frozen=True)
@@ -337,7 +335,7 @@ def parse_explicit_content_fates(
                 )
                 invalid = True
                 continue
-            value = _runtime_ratio_value(raw_value)
+            value = runtime_allocation_ratio(raw_value)
             if value is None or value < 0.0 or value > 1.0:
                 issues.append(
                     SeparationRuleIssue(
@@ -368,7 +366,7 @@ def parse_explicit_content_fates(
                 )
             )
             invalid = True
-        if not invalid and abs(sum(slot_values.values()) - 1.0) > _RATIO_EPSILON:
+        if not invalid and validate_allocation_ratios(tuple(slot_values.values()), len(expected_slots)) == "TOTAL_INVALID":
             issues.append(
                 SeparationRuleIssue(
                     code="MAT_SEPARATION_FATE_RULE_TOTAL_INVALID",
@@ -392,20 +390,10 @@ def _slot_aliases(slot_contract: dict[str, str]) -> dict[str, str]:
     return aliases
 
 
-def _runtime_ratio_value(value: Any) -> float | None:
-    if isinstance(value, (int, float)):
-        return float(value)
-    if not isinstance(value, dict) or value.get("kind") != "IRQuantity":
-        return None
-    raw = value.get("value")
-    if not isinstance(raw, (int, float)):
-        return None
-    unit = value.get("unit")
-    if unit is None:
-        return float(raw)
-    if unit in {"%", "pct"}:
-        return float(raw) / 100.0
-    return None
+def runtime_allocation_ratio(value: Any) -> float | None:
+    if isinstance(value, dict) and value.get("kind") == "IRQuantity":
+        return allocation_ratio(value.get("value"), value.get("unit"))
+    return allocation_ratio(value)
 
 
 def _serialized_program_args(program: dict[str, Any]) -> dict[str, Any]:

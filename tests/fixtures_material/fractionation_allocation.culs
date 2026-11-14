@@ -1,0 +1,40 @@
+// Author-declared bookkeeping quantities, not predicted biological recovery.
+// Blood input is represented explicitly: 10 mL plasma + 2.5 mL RBC material;
+// the remaining cell populations are counted independently of carrier volume.
+protocol FractionAllocation {
+  let sample = tube(label = "Source", capacity = 50mL, load = [
+    content(kind = ContentKind.BIO_FLUID, type = ContentType.PLASMA, code = "PLASMA"):10mL,
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "PBS_FBS"):12.5mL,
+    content(kind = ContentKind.FORMULATION, type = ContentType.GRADIENT_MEDIUM, code = "FICOLL"):15mL,
+    content(kind = ContentKind.BIO_CELLULAR, type = ContentType.PRIMARY_CELLS, code = "RBC"):2.5mL,
+    content(kind = ContentKind.BIO_CELLULAR, type = ContentType.PRIMARY_CELLS, code = "PBMC"):300cells,
+    content(kind = ContentKind.BIO_CELLULAR, type = ContentType.PRIMARY_CELLS, code = "GRANULOCYTES"):800cells,
+    content(kind = ContentKind.BIO_CELLULAR, type = ContentType.PRIMARY_CELLS, code = "PLATELETS"):2000cells
+  ]);
+  let upper = tube(label = "Upper", capacity = 30mL);
+  let middle = tube(label = "Middle", capacity = 2mL);
+  let lower = tube(label = "Lower", capacity = 30mL);
+
+  with frac(
+      sample = sample,
+      program = density_gradient_program(
+          axis = DensityGradientAxis.DENSITY,
+          order = DensityGradientOrder.TOP_TO_BOTTOM,
+          bins = 3
+      ),
+      component_fates = {
+        PLASMA: [95%, 5%, 0%],
+        PBS_FBS: [96%, 4%, 0%],
+        FICOLL: [0%, 0%, 100%],
+        RBC: [0%, 0%, 100%],
+        PBMC: [0%, 100%, 0%],
+        GRANULOCYTES: [0%, 0%, 100%],
+        PLATELETS: [0%, 0%, 100%]
+      }
+  ) {
+    upper << [sample.contents[0]];
+    middle << [sample.contents[1]:1mL];
+    lower << [sample.contents[2]];
+  }
+  return {upper: upper, middle: middle, lower: lower};
+}

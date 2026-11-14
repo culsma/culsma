@@ -15,6 +15,7 @@ class MaterialMovementSpec:
     volume_uL: float = 0.0
     mass_mg: float = 0.0
     count_cells: float = 0.0
+    component_quantities: dict[str, dict[str, float]] | None = None
 
 
 @dataclass(frozen=True)

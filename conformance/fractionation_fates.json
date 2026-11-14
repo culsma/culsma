@@ -1,0 +1,26 @@
+{
+  "decision": "FRAC-FATES-162",
+  "status": "implemented_local",
+  "reference_sections": [
+    "6.3.13"
+  ],
+  "scope": "Authored ordered N-way ratios; unmentioned content remains equally allocated; no fractionation prediction model or absolute allocation values",
+  "requirements": {
+    "FRAC-FATES-001": "tests/test_fractionation_fates.py::test_authored_fraction_composition_survives_collection_and_replay",
+    "FRAC-FATES-002": "tests/test_fractionation_fates.py::test_unmentioned_components_keep_equal_split",
+    "FRAC-FATES-003": "tests/test_fractionation_fates.py::test_empty_rules_preserve_legacy_result",
+    "FRAC-FATES-004": "tests/test_fractionation_fates.py::test_invalid_fraction_fates_rejected_in_all_forms",
+    "FRAC-FATES-005": "tests/test_fractionation_fates.py::test_runtime_rejects_unknown_component_atomically",
+    "FRAC-FATES-006": "tests/test_fractionation_fates.py::test_protocol_aliases_and_return_preserve_authored_fates",
+    "FRAC-FATES-007": "tests/test_fractionation_fates.py::test_parse_fraction_fates",
+    "FRAC-FATES-008": "tests/test_fractionation_fates.py::test_allocate_fraction_parts_and_apply_frac_directly",
+    "FRAC-FATES-009": "tests/test_fractionation_fates.py::test_fraction_projection_conserves_each_quantity_axis_without_prediction",
+    "FRAC-FATES-010": "tests/test_fractionation_fates.py::test_fraction_projection_failure_does_not_publish_partial_outputs",
+    "FRAC-FATES-011": "tests/test_fractionation_fates.py::test_zero_destinations_do_not_receive_rounding_residue",
+    "FRAC-FATES-012": "tests/test_fractionation_runtime.py::test_publish_frac_shares_output_contract",
+    "FRAC-FATES-013": "tests/test_fractionation_runtime.py::test_apply_frac_discards_failed_candidate",
+    "FRAC-FATES-014": "tests/test_fractionation_runtime.py::test_separation_retains_two_output_validation",
+    "FRAC-FATES-015": "tests/test_fractionation_acceptance.py::test_pm162_material_return_and_input_lots_agree",
+    "FRAC-FATES-016": "tests/test_fractionation_acceptance.py::test_returned_middle_fraction_preserves_composition_on_further_transfer"
+  }
+}

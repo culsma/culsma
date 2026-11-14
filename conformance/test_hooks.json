@@ -328,5 +328,11 @@
   ],
   "FRAC-CONTEXT-01": [
     "tests/test_fractionation_scope.py"
+  ],
+  "FRAC-FATES-162": [
+    "tests/test_fractionation_fates.py",
+    "tests/test_fractionation_runtime.py",
+    "tests/test_fractionation_acceptance.py",
+    "tests/test_component_accounting.py"
   ]
 }

@@ -6,13 +6,12 @@ from typing import Any
 
 from culsma.common.diagnostics import Diagnostic
 from culsma.common.source import Span
+from culsma.domains.material_allocation import allocation_ratio, validate_allocation_ratios
 from culsma.pipeline.ir_nodes import IRArg, IRCall, IRQuantity, IRRecord
 from culsma.pipeline.program_registry import get_separation_slot_contract
 
 from .resolution import ExprResolver
 from culsma.pipeline.expression_resolution import resolve_expression, ResolutionStatus
-
-_RATIO_EPSILON = 1e-9
 
 
 def validate_component_fates_contract(
@@ -96,7 +95,7 @@ def validate_component_fates_contract(
                 )
                 invalid = True
                 continue
-            ratio = _static_ratio(raw_value, expr_bindings)
+            ratio = static_allocation_ratio(raw_value, expr_bindings)
             if ratio is None or ratio < 0.0 or ratio > 1.0:
                 diagnostics.append(
                     _diagnostic(
@@ -135,7 +134,7 @@ def validate_component_fates_contract(
                 )
             )
             invalid = True
-        if not invalid and abs(sum(slot_values.values()) - 1.0) > _RATIO_EPSILON:
+        if not invalid and validate_allocation_ratios(tuple(slot_values.values()), len(expected_slots)) == "TOTAL_INVALID":
             diagnostics.append(
                 _diagnostic(
                     "SEM_SEPARATION_FATE_RULE_TOTAL_INVALID",
@@ -147,15 +146,11 @@ def validate_component_fates_contract(
     return diagnostics
 
 
-def _static_ratio(value: Any, expr_bindings: dict[str, Any]) -> float | None:
+def static_allocation_ratio(value: Any, expr_bindings: dict[str, Any]) -> float | None:
     value = ExprResolver.resolve_bound_expr(value, expr_bindings)
     if not isinstance(value, IRQuantity):
         return None
-    if value.unit is None:
-        return float(value.value)
-    if value.unit in {"%", "pct"}:
-        return float(value.value) / 100.0
-    return None
+    return allocation_ratio(value.value, value.unit)
 
 
 def _diagnostic(code: str, message: str, span: Span | None, node_id: str | None) -> Diagnostic:

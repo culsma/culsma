@@ -4,6 +4,10 @@
 
 ### Fixed
 
+- Input-lot accounting follows the actual components transferred from separated
+  fractions, including partial collection, instead of applying the original
+  container's bulk mixture proportions to the collected volume.
+
 - Protocol returns recursively project container references inside records and
   lists, preserving nested values instead of exporting the composite as `null`.
 - Event replay preserves skip reasons so control-flow skips still satisfy
@@ -13,6 +17,12 @@
   Continuing such a state does not automatically repeat the unresolved action.
 
 ### Added
+
+- Fractionation accepts optional `component_fates` with an ordered ratio list
+  per source content identity. Scoped, standalone and returned-group forms
+  preserve the declared composition through collection. Unmentioned content
+  retains equal allocation; no automatic fractionation prediction or absolute
+  allocation quantities are introduced.
 
 - Magnetic separation preserves explicitly declared binding and release
   transitions for solution solutes. Solute mass and carrier volume remain

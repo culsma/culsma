@@ -13,7 +13,7 @@ from culsma.domains.agitation import AgitationMode
 from culsma.domains.agitation.contracts import validate_agitation_target
 from culsma.domains.environment import EnvironmentKey
 from culsma.pipeline.plan_nodes import PlanStep
-from culsma.runtime.material.args import arg_call, arg_quantity, arg_string, call_arg_int, call_arg_string
+from culsma.runtime.material.args import arg_call, arg_quantity, arg_string, call_arg_string
 from culsma.runtime.material.author_transition import ExplicitMaterialTransition, parse_explicit_material_transitions
 from culsma.runtime.material.component_entries import (
     container_component_entries,
@@ -23,6 +23,10 @@ from culsma.runtime.material.component_entries import (
     subtract_component_entries,
 )
 from culsma.runtime.material.diagnostics import diagnostic_result
+from culsma.runtime.material.fractionation import (
+    FractionationRequest, allocate_equal_fraction_parts, allocate_fraction_parts,
+    resolve_fractionation_request,
+)
 from culsma.runtime.material.precision import resolve_available_amount
 from culsma.runtime.material.ledger import (
     check_capacity_guard,
@@ -49,12 +53,14 @@ from culsma.runtime.material.refs import (
     resolve_target_ref,
 )
 from culsma.runtime.material.result import MaterialUpdateResult
+from culsma.runtime.material.movements import component_quantity_increase
 from culsma.runtime.material.movement import (
     MaterialMovementApplicationResult,
     apply_material_movement,
     moved_component_entries,
 )
 from culsma.runtime.material.scientific_model_adapter import (
+    MaterialEffectFailure,
     ResolvedMaterialEffect,
     ScientificModelMaterialAdapter,
 )
@@ -404,141 +410,78 @@ class MaterialIndexedPartsStateManager:
         )
 
     def apply_frac(self, step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
-        sample_arg = step.args.get("sample")
-        bind_name = arg_string(step.args.get("bind"))
-        program = arg_call(step.args.get("program"))
-        if program is None:
-            return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "frac requires sample/program")
+        request = resolve_fractionation_request(step, state)
+        if isinstance(request, MaterialEffectFailure):
+            return diagnostic_result(step, state, request.code, request.message)
 
-        bins = call_arg_int(program, "bins")
-        if bins is None or bins <= 0:
-            return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "frac requires positive bins")
-
-        source_id = resolve_structured_ref(state, sample_arg, create_if_identifier=False)
-        if source_id is None:
-            return diagnostic_result(
-                step,
-                state,
-                "MAT_BINDING_NOT_FOUND",
-                f"Unknown frac sample '{ref_display(sample_arg)}'",
-            )
-        source = container(state, source_id)
-        if source is None:
-            return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", f"Unknown frac sample '{ref_display(sample_arg)}'")
-
-        from .solution import has_solution_solutes
-        if has_solution_solutes(source):
-            return diagnostic_result(step, state, "MAT_SOLUTION_OPERATION_UNSUPPORTED",
-                                     "Concentration-bearing solution fractionation is not supported")
         working = deepcopy(state)
-        source = container(working, source_id)
-        if source is None:
-            return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", f"Unknown frac sample '{ref_display(sample_arg)}'")
+        detail_error = normalize_material_state_detail_ledger(working)
+        if detail_error is not None:
+            return diagnostic_result(step, state, detail_error.code, detail_error.message)
+        if request.fates:
+            parts = allocate_fraction_parts(
+                state=working, source=working["containers"][request.source_id],
+                source_id=request.source_id, bins=request.bins, fates=request.fates,
+                step_id=step.step_id, material_effect_adapter=self.material_effect_adapter,
+            )
+        else:
+            parts = allocate_equal_fraction_parts(
+                state=working, source_id=request.source_id, bins=request.bins,
+                step_id=step.step_id, material_effect_adapter=self.material_effect_adapter,
+            )
+        if isinstance(parts, MaterialEffectFailure):
+            return diagnostic_result(step, state, parts.code, parts.message)
+        return self.publish_frac(step=step, state=working, request=request, parts=parts)
 
-        program_kind = str(program.get("name")) if isinstance(program.get("name"), str) else "frac_program"
-        if bind_name is None:
-            transition = self.record_frac_transition(
-                step=step,
-                state=working,
-                source_id=source_id,
-                bins=bins,
-                program_kind=program_kind,
+    def publish_frac(
+        self, *, step: PlanStep, state: dict[str, Any], request: FractionationRequest,
+        parts: dict[str, dict[str, Any]],
+    ) -> MaterialUpdateResult:
+        """Publish validated outputs as a group or source-local contents view."""
+        source = state["containers"][request.source_id]
+        replace_component_entries(source, [])
+        refresh_container_aggregates(source)
+        slot_bindings = {slot: f"{step.step_id}::{slot}" for slot in parts}
+        for slot, part in parts.items():
+            ensure_container(state, slot_bindings[slot]).update(part)
+            refresh_cell_suspension_relationship(state, slot_bindings[slot], forced_state="suspension")
+        refresh_cell_suspension_relationship(state, request.source_id)
+        delta = {"op": "frac", "source": request.source_id, "bins": request.bins}
+        if request.fates:
+            delta.update(component_fates={key: list(value) for key, value in request.fates.items()},
+                         default_split_ratio=1.0 / request.bins)
+        else:
+            delta["split_ratio"] = 1.0 / request.bins
+        if request.bind_name is not None:
+            delta.update(bind=request.bind_name, slots=slot_bindings,
+                         binding_events=bind_indexed_group(state, request.bind_name, slot_bindings, step.step_id))
+        else:
+            transition = self.record_fraction_contents(
+                step=step, state=state, source=source, source_id=request.source_id,
+                parts={slot: state["containers"][slot_id] for slot, slot_id in slot_bindings.items()},
+                program_kind=request.program_kind,
+                split_ratio=None if request.fates else 1.0 / request.bins,
             )
-            if isinstance(transition, MaterialUpdateResult):
-                return transition
-            return MaterialUpdateResult(
-                material_state=working,
-                diagnostics=[],
-                delta={
-                    "op": "frac",
-                    "mode": "contents_state",
-                    "source": source_id,
-                    "bins": bins,
-                    "split_ratio": transition.split_ratio,
-                    "contents_state": transition.contents_state,
-                },
-            )
+            delta.update(mode="contents_state", contents_state=transition.contents_state)
+        return MaterialUpdateResult(material_state=state, diagnostics=[], delta=delta)
 
-        source_volume = float(source.get("volume_uL", 0.0))
-        source_mass = float(source.get("mass_mg", 0.0))
-        source_cells = container_count_cells(source)
-        split_ratio = 1.0 / bins
-        slot_bindings: dict[str, str] = {}
-        for i in range(bins - 1):
-            slot_id = f"{step.step_id}::{i}"
-            slot = ensure_container(working, slot_id)
-            moved_volume = source_volume * split_ratio
-            moved_mass = source_mass * split_ratio
-            current_volume = float(source.get("volume_uL", 0.0))
-            current_mass = float(source.get("mass_mg", 0.0))
-            current_cells = container_count_cells(source)
-            component_ratio = (
-                moved_volume / current_volume
-                if current_volume > 0
-                else (
-                    moved_mass / current_mass
-                    if current_mass > 0
-                    else (source_cells * split_ratio / current_cells if current_cells > 0 else 0.0)
-                )
-            )
-            movement = apply_material_movement(
-                state=working,
-                source=source,
-                target=slot,
-                source_id=source_id,
-                destination_id=slot_id,
-                ratio=component_ratio,
-                material_effect_adapter=self.material_effect_adapter,
-                request_id=f"{step.step_id}:fraction:{i}",
-            )
-            if movement.failure is not None:
-                return diagnostic_result(
-                    step,
-                    working,
-                    movement.failure.code,
-                    movement.failure.message,
-                )
-            refresh_cell_suspension_relationship(working, slot_id, forced_state="suspension")
-            slot_bindings[str(i)] = slot_id
-
-        last_slot_id = f"{step.step_id}::{bins - 1}"
-        last_slot = ensure_container(working, last_slot_id)
-        residual_volume = float(source.get("volume_uL", 0.0))
-        residual_mass = float(source.get("mass_mg", 0.0))
-        movement = apply_material_movement(
-            state=working,
-            source=source,
-            target=last_slot,
-            source_id=source_id,
-            destination_id=last_slot_id,
-            ratio=1.0,
-            material_effect_adapter=self.material_effect_adapter,
-            request_id=f"{step.step_id}:fraction:last",
+    def record_fraction_contents(
+        self, *, step: PlanStep, state: dict[str, Any], source: dict[str, Any],
+        source_id: str, parts: dict[str, dict[str, Any]], program_kind: str,
+        split_ratio: float | None = None,
+    ) -> ContentsPartitionTransition:
+        """Store the ordered source view and remove its transient output containers."""
+        slot_bindings = {slot: f"{step.step_id}::{slot}" for slot in parts}
+        contents_state = record_partitioned_contents_state(
+            state=state, source_id=source_id, source=source, parts=parts,
+            kind="fractionated", producer_op="frac", program_kind=program_kind,
+            slot_contract={slot: f"fraction_{slot}" for slot in parts},
+            preservation_contract=None, step_id=step.step_id,
         )
-        if movement.failure is not None:
-            return diagnostic_result(
-                step,
-                working,
-                movement.failure.code,
-                movement.failure.message,
-            )
-        refresh_cell_suspension_relationship(working, last_slot_id, forced_state="suspension")
-        refresh_cell_suspension_relationship(working, source_id)
-        slot_bindings[str(bins - 1)] = last_slot_id
-
-        binding_events = bind_indexed_group(working, bind_name, slot_bindings, step.step_id)
-        return MaterialUpdateResult(
-            material_state=working,
-            diagnostics=[],
-            delta={
-                "op": "frac",
-                "bind": bind_name,
-                "source": source_id,
-                "bins": bins,
-                "slots": dict(slot_bindings),
-                "split_ratio": split_ratio,
-                "binding_events": binding_events,
-            },
+        remove_transient_containers(state, list(slot_bindings.values()), preserve=source_id)
+        return ContentsPartitionTransition(
+            contents_state=contents_state, partition={}, slot_ids=slot_bindings,
+            split_ratio=split_ratio,
         )
 
     def apply_agit(self, step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
@@ -651,6 +594,7 @@ class MaterialIndexedPartsStateManager:
         diagnostics: list[Diagnostic] = []
         dispatcher = MutationSourceDispatcher()
         for source_ordinal, source_expr in enumerate(source_exprs):
+            target_before = deepcopy(container(working, target_id))
             contents_ref = _contents_ref_from_mutation_source(source_expr)
             if contents_ref is None:
                 result = dispatcher.apply(
@@ -675,7 +619,9 @@ class MaterialIndexedPartsStateManager:
                 return result
             working = result.material_state
             diagnostics.extend(result.diagnostics)
-            applied_sources.append(result.delta)
+            applied_sources.append({**result.delta, "component_quantities": component_quantity_increase(
+                target_before, container(working, target_id),
+            )})
 
         return MaterialUpdateResult(
             material_state=working,
@@ -932,114 +878,23 @@ class MaterialIndexedPartsStateManager:
         )
 
     def record_frac_transition(
-        self,
-        *,
-        step: PlanStep,
-        state: dict[str, Any],
-        source_id: str,
-        bins: int,
-        program_kind: str,
+        self, *, step: PlanStep, state: dict[str, Any], source_id: str,
+        bins: int, program_kind: str,
     ) -> ContentsPartitionTransition | MaterialUpdateResult:
+        """Retain the direct equal-fraction transition API using the shared allocator."""
         detail_error = normalize_material_state_detail_ledger(state)
         if detail_error is not None:
-            return diagnostic_result(
-                step,
-                state,
-                detail_error.code,
-                detail_error.message,
-            )
-        source = container(state, source_id)
-        if source is None:
-            return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", f"Unknown frac sample '{source_id}'")
-
-        source_volume = float(source.get("volume_uL", 0.0))
-        source_mass = float(source.get("mass_mg", 0.0))
-        source_cells = container_count_cells(source)
-        split_ratio = 1.0 / bins
-        slot_bindings: dict[str, str] = {}
-
-        for i in range(bins - 1):
-            slot_id = f"{step.step_id}::{i}"
-            slot = ensure_container(state, slot_id)
-            moved_volume = source_volume * split_ratio
-            moved_mass = source_mass * split_ratio
-            current_volume = float(source.get("volume_uL", 0.0))
-            current_mass = float(source.get("mass_mg", 0.0))
-            current_cells = container_count_cells(source)
-            component_ratio = (
-                moved_volume / current_volume
-                if current_volume > 0
-                else (
-                    moved_mass / current_mass
-                    if current_mass > 0
-                    else (source_cells * split_ratio / current_cells if current_cells > 0 else 0.0)
-                )
-            )
-            movement = apply_material_movement(
-                state=state,
-                source=source,
-                target=slot,
-                source_id=source_id,
-                destination_id=slot_id,
-                ratio=component_ratio,
-                material_effect_adapter=self.material_effect_adapter,
-                request_id=f"{step.step_id}:fraction:{i}",
-            )
-            if movement.failure is not None:
-                return diagnostic_result(
-                    step,
-                    state,
-                    movement.failure.code,
-                    movement.failure.message,
-                )
-            refresh_cell_suspension_relationship(state, slot_id, forced_state="suspension")
-            slot_bindings[str(i)] = slot_id
-
-        last_slot_id = f"{step.step_id}::{bins - 1}"
-        last_slot = ensure_container(state, last_slot_id)
-        residual_volume = float(source.get("volume_uL", 0.0))
-        residual_mass = float(source.get("mass_mg", 0.0))
-        movement = apply_material_movement(
-            state=state,
-            source=source,
-            target=last_slot,
-            source_id=source_id,
-            destination_id=last_slot_id,
-            ratio=1.0,
+            return diagnostic_result(step, state, detail_error.code, detail_error.message)
+        parts = allocate_equal_fraction_parts(
+            state=state, source_id=source_id, bins=bins, step_id=step.step_id,
             material_effect_adapter=self.material_effect_adapter,
-            request_id=f"{step.step_id}:fraction:last",
         )
-        if movement.failure is not None:
-            return diagnostic_result(
-                step,
-                state,
-                movement.failure.code,
-                movement.failure.message,
-            )
-        refresh_cell_suspension_relationship(state, last_slot_id, forced_state="suspension")
-        refresh_cell_suspension_relationship(state, source_id)
-        slot_bindings[str(bins - 1)] = last_slot_id
-
-        parts = {slot: container(state, slot_id) for slot, slot_id in slot_bindings.items()}
-        concrete_parts = {slot: part for slot, part in parts.items() if isinstance(part, dict)}
-        contents_state = record_partitioned_contents_state(
-            state=state,
-            source_id=source_id,
-            source=source,
-            parts=concrete_parts,
-            kind="fractionated",
-            producer_op="frac",
-            program_kind=program_kind,
-            slot_contract={slot: f"fraction_{slot}" for slot in slot_bindings},
-            preservation_contract=None,
-            step_id=step.step_id,
-        )
-        remove_transient_containers(state, list(slot_bindings.values()), preserve=source_id)
-        return ContentsPartitionTransition(
-            contents_state=contents_state,
-            partition={},
-            slot_ids=dict(slot_bindings),
-            split_ratio=split_ratio,
+        if isinstance(parts, MaterialEffectFailure):
+            return diagnostic_result(step, state, parts.code, parts.message)
+        return self.record_fraction_contents(
+            step=step, state=state, source=state["containers"][source_id],
+            source_id=source_id, parts=parts, program_kind=program_kind,
+            split_ratio=1.0 / bins,
         )
 
     def resolve_indexed_part(

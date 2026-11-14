@@ -8,6 +8,7 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from dataclasses import dataclass
 from typing import Any
+from culsma.runtime.material.movements import component_quantity_increase
 
 from culsma.common.diagnostics import Diagnostic
 from culsma.pipeline.plan_nodes import PlanStep
@@ -369,6 +370,7 @@ def apply_mutation(
     diagnostics: list[Diagnostic] = []
     dispatcher = MutationSourceDispatcher()
     for source_ordinal, source_expr in enumerate(source_exprs):
+        target_before = deepcopy(container(working, target_id))
         result = dispatcher.apply(
             MutationSourceContext(
                 step=step,
@@ -383,7 +385,9 @@ def apply_mutation(
             return result
         working = result.material_state
         diagnostics.extend(result.diagnostics)
-        applied_sources.append(result.delta)
+        applied_sources.append({**result.delta, "component_quantities": component_quantity_increase(
+            target_before, container(working, target_id),
+        )})
 
     return MaterialUpdateResult(
         material_state=working,

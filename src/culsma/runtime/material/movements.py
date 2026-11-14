@@ -3,12 +3,47 @@
 from __future__ import annotations
 
 from typing import Any
+from dataclasses import replace
 
 from culsma.runtime.material.result import MaterialMovementSpec
 from culsma.runtime.material.ledger import container_count_cells
+from culsma.runtime.material.units import VOLUME_TO_UL, MASS_TO_MG, COUNT_TO_CELLS
 
 
 EPSILON = 1e-9
+
+
+def native_component_quantities(raw: Any) -> dict[str, dict[str, float]]:
+    """Project known native quantities for provenance without bulk proxy axes."""
+    if not isinstance(raw, dict):
+        return {}
+    quantities = {}
+    records = raw.get("component_quantities")
+    if not isinstance(records, dict):
+        return quantities
+    for content_id, quantity in records.items():
+        if not isinstance(quantity, dict):
+            continue
+        value, unit = quantity.get("value"), quantity.get("unit")
+        if not isinstance(value, (int, float)):
+            continue
+        for axis, units in (("volume_uL", VOLUME_TO_UL), ("mass_mg", MASS_TO_MG), ("count_cells", COUNT_TO_CELLS)):
+            if unit in units:
+                quantities[content_id] = {axis: float(value) * units[unit]}
+                break
+    return quantities
+
+
+def component_quantity_increase(before: Any, after: Any) -> dict[str, dict[str, float]]:
+    """Capture one transfer's actual composition, including indexed selections."""
+    previous = native_component_quantities(before)
+    result = {}
+    for content_id, axes in native_component_quantities(after).items():
+        increase = {axis: value - previous.get(content_id, {}).get(axis, 0.0) for axis, value in axes.items()}
+        positive = {axis: value for axis, value in increase.items() if value > EPSILON}
+        if positive:
+            result[content_id] = positive
+    return result
 
 
 def material_quantities_changed(
@@ -48,6 +83,8 @@ def derive_material_movements(
         for source_delta in delta.get("sources", []):
             movement = _mutation_source_movement(source_delta, default_target=delta.get("target"))
             if movement is not None:
+                if "component_quantities" in source_delta:
+                    movement = replace(movement, component_quantities=source_delta["component_quantities"])
                 movements.append(movement)
         return movements
 
@@ -101,6 +138,7 @@ def _movement_from_dict(
         volume_uL=_first_number(raw, "moved_uL", "removed_uL", "requested_uL", "converted_uL"),
         mass_mg=_first_number(raw, "moved_mg", "removed_mg", "requested_mg", "converted_mg"),
         count_cells=_first_number(raw, "moved_cells", "removed_cells", "requested_cells"),
+        component_quantities=raw.get("component_quantities") if isinstance(raw.get("component_quantities"), dict) else None,
     )
     return movement if movement.volume_uL > EPSILON or movement.mass_mg > EPSILON or movement.count_cells > EPSILON else None
 
@@ -129,6 +167,7 @@ def _source_to_slots_movements(
                 0.0,
                 container_count_cells(after.get(destination)) - container_count_cells(before.get(destination)),
             ),
+            component_quantities=component_quantity_increase(before.get(destination), after.get(destination)),
         )
         if movement.volume_uL > EPSILON or movement.mass_mg > EPSILON or movement.count_cells > EPSILON:
             movements.append(movement)

@@ -110,19 +110,19 @@ def test_results_report_declared_sample_input_instead_of_routed_fraction(tmp_pat
     source.write_text(FLOW_MATERIAL_SOURCE)
     bundle = execute_pipeline([source])
     assert bundle["output"]["ok"]
+    containers = bundle["run"]["state"]["artifacts"]["material_state"]["containers"]
+    retained = next(item for item in containers.values() if item.get("metadata", {}).get("label") == "Cells for staining")
+    waste = next(item for item in containers.values() if item.get("metadata", {}).get("label") == "Wash waste")
+    assert retained["components"]["PBMC"] == 70.0
+    assert waste["components"].get("PBMC", 0) == 0
+    # PBMC stays in its original container: the provenance report must not
+    # infer cell consumption from the large supernatant volume discarded.
     assert bundle["output"]["report"]["materials"]["reagent_consumption"] == [
         {
             "name": "Wash buffer",
             "roles": ["source"],
             "consumed_uL": 2000.0,
             "consumed_mL": 2.0,
-            "consumed_mg": None,
-        },
-        {
-            "name": "Cells for staining",
-            "roles": ["dest", "sample"],
-            "consumed_uL": 67.666,
-            "consumed_mL": 0.067666,
             "consumed_mg": None,
         },
         {

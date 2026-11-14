@@ -50,6 +50,7 @@ from .parameters import ExpressionParameterValidator
 from .material_transition import validate_material_transitions_contract
 from .resolution import ExprResolver
 from .separation import validate_component_fates_contract
+from .fractionation import validate_fraction_fates_contract
 from .statement_contracts import (
     BUILTIN_METHOD_STEPS,
     dedupe_requirement_names,
@@ -1053,6 +1054,11 @@ class StepHandler(BaseStatementHandler):
                         literal_bindings=ctx.literal_bindings,
                     ),
                 )
+        if stmt.name == "frac":
+            self.append_diagnostics(ctx, validate_fraction_fates_contract(
+                stmt.args, expr_bindings=ctx.expr_bindings,
+                defined_names=ctx.defined_names, node_id=stmt.id, span=stmt.span,
+            ))
         if stmt.name == "sep":
             self.append_diagnostics(
                 ctx,
