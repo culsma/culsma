@@ -1,6 +1,7 @@
 """Agitation vocabulary."""
 
 from enum import StrEnum
+from culsma.domains.separation import validate_centrifugal_drive
 from culsma.common.quantity_arithmetic import QuantityDimension, UNIT_TO_DIMENSION, require_finite_number
 from culsma.common.enum_parameters import EnumParameter
 from types import MappingProxyType
@@ -66,6 +67,8 @@ def validate_agitation_arguments(mode: AgitationMode, *, has_duration: bool, has
 
 
 def validate_centrifuge_quantity(name, value):
+    if name == 'drive':
+        return validate_centrifugal_drive(value)
     expected = QuantityDimension.TIME if name == 'duration' else 'centrifugal drive'
     units = set(UNIT_TO_DIMENSION) if name == 'duration' else {'g', 'rpm'}
     if not isinstance(value, tuple) or len(value) != 2 or value[1] not in units or (

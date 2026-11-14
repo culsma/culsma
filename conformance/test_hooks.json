@@ -334,5 +334,8 @@
     "tests/test_fractionation_runtime.py",
     "tests/test_fractionation_acceptance.py",
     "tests/test_component_accounting.py"
+  ],
+  "FRAC-DRIVE-164": [
+    "tests/test_fractionation_drive.py"
   ]
 }

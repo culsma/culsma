@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from culsma.domains.fractionation import ACTIVE_CHROMATOGRAPHY_REGISTRY
+from culsma.domains.separation import validate_centrifugal_drive
 from culsma.domains.content import CONTENT_CONTRACT
 from culsma.domains.environment import (
     ENVIRONMENT_DIMENSIONS, SOURCE_ENVIRONMENT_KEYS, EnvironmentKey, EnvironmentValueError,
@@ -1117,6 +1118,15 @@ class TypecheckExpressionServices:
                     node_id=node_id,
                 )
             ]
+        if isinstance(value, IRQuantity):
+            try:
+                validate_centrifugal_drive((value.value, value.unit))
+            except ValueError as error:
+                return [Diagnostic(
+                    code="TYPE_PROGRAM_FIELD_VALUE_INVALID",
+                    message=f"Program arg '{field_name}' in '{program_name}': {error}",
+                    span=span, node_id=node_id,
+                )]
         return []
 
 

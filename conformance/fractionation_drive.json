@@ -1,0 +1,17 @@
+{
+  "decision": "FRAC-DRIVE-164",
+  "status": "implemented_local",
+  "reference_sections": [
+    "6.3.13",
+    "11.11"
+  ],
+  "scope": "Optional centrifugal setting; shared g/rpm quantity contract; preserved execution conditions without changing allocation",
+  "requirements": {
+    "FRAC-DRIVE-001": "tests/test_fractionation_drive.py::test_fraction_drive_source_validation_through_binding",
+    "FRAC-DRIVE-002": "tests/test_fractionation_drive.py::test_fraction_drive_reaches_driver_and_preserves_allocations",
+    "FRAC-DRIVE-003": "tests/test_fractionation_drive.py::test_fraction_drive_survives_protocol_argument_and_program_binding",
+    "FRAC-DRIVE-004": "tests/test_fractionation_drive.py::test_fraction_rejects_invalid_serialized_drive_before_execution",
+    "FRAC-DRIVE-005": "tests/test_fractionation_drive.py::test_fraction_omitted_drive_has_no_invented_default",
+    "FRAC-DRIVE-006": "tests/test_fractionation_drive.py::test_centrifugal_programs_share_bound_quantity_validation"
+  }
+}

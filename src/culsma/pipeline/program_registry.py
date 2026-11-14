@@ -243,6 +243,7 @@ PROGRAM_REGISTRY: dict[str, ProgramSpec] = {
             _field("axis", required=True, value_kind="text_enum", enum_values=DENSITY_GRADIENT_AXIS.wire_values),
             _field("order", required=True, value_kind="text_enum", enum_values=DENSITY_GRADIENT_ORDER.wire_values),
             _field("bins", required=True, value_kind="int"),
+            _field("drive", value_kind="quantity", dimension="centrifuge_speed"),
         ),
         result_contract_key="fraction_group",
     ),

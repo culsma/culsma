@@ -248,6 +248,9 @@ def render_program_aware_separation_summary(record: HumanMappingRecord, sample: 
         bins = value_to_text(program_args.get("bins"))
         axis = value_to_text(program_args.get("axis"))
         order = value_to_text(program_args.get("order"))
+        if "drive" in program_args:
+            drive = value_to_text(program_args["drive"])
+            return f"Run density-gradient centrifugation on {sample} at {drive}; collect {bins} ordered fractions along the {axis} axis ({order})."
         return f"Collect {bins} ordered fractions from {sample} along the {axis} axis ({order})."
     if record.semantic_op == "frac" and record.program_kind == "chromatography_program":
         bins = value_to_text(program_args.get("bins"))

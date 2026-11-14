@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- Density-gradient fractionation accepts optional centrifugal `drive` in `g`
+  or `rpm`, preserved alongside ENV temperature and duration through execution.
+  Centrifugal programs share finite positive setting validation, including
+  bound values. Omitted drive retains existing fractionation behavior.
+
 ## 1.0.11rc1 — 2026-11-14
 
 ### Added

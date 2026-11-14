@@ -7,6 +7,26 @@ from culsma.common.enum_registration import EnumTypeRegistry
 from types import MappingProxyType
 from culsma.common.enum_parameters import EnumParameter
 from culsma.common.enum_parameters import CallParameterContract
+from culsma.common.quantity_arithmetic import require_finite_number
+
+
+def validate_centrifugal_drive(value) -> None:
+    """Require a finite positive setting; preserve g/rpm without conversion."""
+    if not isinstance(value, tuple) or len(value) != 2 or value[1] not in {"g", "rpm"}:
+        raise ValueError("centrifugal drive requires a quantity in g or rpm")
+    number = require_finite_number(value[0])
+    if number <= 0:
+        raise ValueError("centrifugal drive must be finite and positive")
+
+
+class CentrifugalDriveRule:
+    """Validate program settings shared with fractionation and agitation."""
+
+    parameters = frozenset()
+
+    def validate(self, values, present) -> None:
+        if "drive" in values:
+            validate_centrifugal_drive(values["drive"])
 
 
 class ProgramOutput(Enum):
@@ -131,7 +151,8 @@ STANDARD_FILTRATION_DRIVES = EnumTypeRegistry.create(FiltrationDriveBase, Filtra
 FILTRATION_DRIVES = FiltrationDriveContract(STANDARD_FILTRATION_DRIVES)
 
 CALL_PARAMETER_CONTRACTS = MappingProxyType({
-    'centrifuge_program': CallParameterContract({'keep_source': CENTRIFUGE_KEEP_SOURCE}),
+    'centrifuge_program': CallParameterContract({'keep_source': CENTRIFUGE_KEEP_SOURCE}, (CentrifugalDriveRule(),)),
+    'centrifugal_filtration_program': CallParameterContract({}, (CentrifugalDriveRule(),)),
     'disrupt_program': CallParameterContract({'method': DISRUPTION_METHOD}),
     'filtration_program': CallParameterContract({'drive': FILTRATION_DRIVES}),
 })

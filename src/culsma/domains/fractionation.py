@@ -10,6 +10,7 @@ from enum import Enum
 from types import MappingProxyType
 import re
 from culsma.common.type_name_contracts import NamespaceBinding
+from culsma.domains.separation import CentrifugalDriveRule
 from culsma.common.enum_parameters import CallParameterContract
 
 
@@ -216,4 +217,11 @@ class ChromatographyPairRule:
         ACTIVE_CHROMATOGRAPHY_REGISTRY.get().validate_pair(values['axis'], values['order'])
 
 
-CALL_PARAMETER_CONTRACTS = MappingProxyType({'density_gradient_program': CallParameterContract({'axis': DENSITY_GRADIENT_AXIS, 'order': DENSITY_GRADIENT_ORDER}), 'chromatography_program': CallParameterContract({'axis': CHROMATOGRAPHY_AXIS, 'order': CHROMATOGRAPHY_ORDER}, (ChromatographyPairRule(),))})
+CALL_PARAMETER_CONTRACTS = MappingProxyType({
+    'density_gradient_program': CallParameterContract(
+        {'axis': DENSITY_GRADIENT_AXIS, 'order': DENSITY_GRADIENT_ORDER},
+        (CentrifugalDriveRule(),)),
+    'chromatography_program': CallParameterContract(
+        {'axis': CHROMATOGRAPHY_AXIS, 'order': CHROMATOGRAPHY_ORDER},
+        (ChromatographyPairRule(),)),
+})
