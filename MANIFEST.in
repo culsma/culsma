@@ -1,1 +1,2 @@
 recursive-include conformance *.py *.json
+recursive-include tests/fixtures_material *.culs

@@ -48,6 +48,13 @@ You can also install directly from the `v1.0.10` tag:
 python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@v1.0.10"
 ```
 
+The 1.0.11 release candidate adds environment media and per-component fraction
+allocation. Install the pre-release from its GitHub tag:
+
+```bash
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@internal-1.0.11rc1"
+```
+
 Release notes are in [CHANGELOG.md](CHANGELOG.md).
 
 The public language reference is maintained in the companion
