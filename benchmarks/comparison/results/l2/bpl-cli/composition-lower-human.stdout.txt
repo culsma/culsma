@@ -1,0 +1,1 @@
+{"artifacts": {"plan": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/results/l2/bpl-cli/composition-human-plan.json"}, "command": "lower", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l2/bpl/composition.bpl", "ok": true, "target": "human"}

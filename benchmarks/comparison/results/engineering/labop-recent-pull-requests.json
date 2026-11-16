@@ -1,0 +1,41 @@
+[
+  {
+    "html_url": "https://github.com/Bioprotocols/labop/pull/213",
+    "merged_at": "2024-10-07T18:54:08Z",
+    "number": 213,
+    "state": "closed",
+    "title": "Update labop.io about page to 2024-2025 elected terms",
+    "updated_at": "2024-10-07T18:54:24Z"
+  },
+  {
+    "html_url": "https://github.com/Bioprotocols/labop/pull/211",
+    "merged_at": "2024-01-02T19:59:39Z",
+    "number": 211,
+    "state": "closed",
+    "title": "Removed submodule for container-ontology",
+    "updated_at": "2024-01-02T19:59:48Z"
+  },
+  {
+    "html_url": "https://github.com/Bioprotocols/labop/pull/209",
+    "merged_at": "2023-12-27T17:35:42Z",
+    "number": 209,
+    "state": "closed",
+    "title": "Pylabrobot specialization rebase",
+    "updated_at": "2023-12-27T17:35:50Z"
+  },
+  {
+    "html_url": "https://github.com/Bioprotocols/labop/pull/208",
+    "merged_at": "2023-12-27T17:34:50Z",
+    "number": 208,
+    "state": "closed",
+    "title": "Labop harness",
+    "updated_at": "2023-12-27T17:34:55Z"
+  },
+  {
+    "html_url": "https://github.com/Bioprotocols/labop/pull/203",
+    "number": 203,
+    "state": "closed",
+    "title": " commit all the recent changes made on the  specialization file",
+    "updated_at": "2023-10-27T13:38:29Z"
+  }
+]

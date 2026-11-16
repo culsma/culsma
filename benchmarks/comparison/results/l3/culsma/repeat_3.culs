@@ -1,0 +1,7 @@
+let source = tube(label = "source", capacity = 1.5mL, load = [
+    content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "BUFFER"):100uL]);
+let target = tube(label = "target", capacity = 1.5mL);
+let alternative = tube(label = "alternative", capacity = 1.5mL);
+repeat i in schedule(start = 1, end = 3, step = 1) {
+    target << [source:10uL];
+}

@@ -1,0 +1,107 @@
+{
+  "coords": {
+    "container": {
+      "dims": [
+        "container"
+      ],
+      "attrs": {},
+      "data": [
+        "https://example.org/gfp-native/location_continuation/assay_plate"
+      ]
+    },
+    "location": {
+      "dims": [
+        "location"
+      ],
+      "attrs": {},
+      "data": [
+        "A1",
+        "A2",
+        "A3"
+      ]
+    },
+    "reagent": {
+      "dims": [
+        "reagent"
+      ],
+      "attrs": {},
+      "data": []
+    },
+    "sample": {
+      "dims": [
+        "sample"
+      ],
+      "attrs": {},
+      "data": [
+        "sample_Assay plate_0",
+        "sample_Assay plate_8",
+        "sample_Assay plate_16"
+      ]
+    }
+  },
+  "attrs": {},
+  "dims": {
+    "container": 1,
+    "location": 3,
+    "reagent": 0,
+    "sample": 3
+  },
+  "data_vars": {
+    "https://example.org/gfp-native/location_continuation/gfp_native_execution/ActivityEdgeFlow80/LiteralIdentified1/Dataset1/SampleData1": {
+      "dims": [
+        "container",
+        "location"
+      ],
+      "attrs": {},
+      "data": [
+        [
+          null,
+          null,
+          null
+        ]
+      ]
+    },
+    "excitationWavelength": {
+      "dims": [
+        "container",
+        "location"
+      ],
+      "attrs": {},
+      "data": [
+        [
+          "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction19/ValuePin1/LiteralIdentified1/Measure1",
+          "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction19/ValuePin1/LiteralIdentified1/Measure1",
+          "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction19/ValuePin1/LiteralIdentified1/Measure1"
+        ]
+      ]
+    },
+    "emissionWavelength": {
+      "dims": [
+        "container",
+        "location"
+      ],
+      "attrs": {},
+      "data": [
+        [
+          "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction19/ValuePin2/LiteralIdentified1/Measure1",
+          "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction19/ValuePin2/LiteralIdentified1/Measure1",
+          "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction19/ValuePin2/LiteralIdentified1/Measure1"
+        ]
+      ]
+    },
+    "emissionBandpassWidth": {
+      "dims": [
+        "container",
+        "location"
+      ],
+      "attrs": {},
+      "data": [
+        [
+          "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction19/ValuePin3/LiteralIdentified1/Measure1",
+          "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction19/ValuePin3/LiteralIdentified1/Measure1",
+          "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction19/ValuePin3/LiteralIdentified1/Measure1"
+        ]
+      ]
+    }
+  }
+}

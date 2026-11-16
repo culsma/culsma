@@ -1,0 +1,39 @@
+{
+  "mode": "spin_prefix",
+  "fraction_output_names": [],
+  "fraction_output_lookup": {
+    "supernatant": {
+      "found": false,
+      "stage": "authoring/output lookup",
+      "type": "ValueError",
+      "message": "Could not find output pin named supernatant"
+    },
+    "pellet": {
+      "found": false,
+      "stage": "authoring/output lookup",
+      "type": "ValueError",
+      "message": "Could not find output pin named pellet"
+    }
+  },
+  "spin_behavior": "https://bioprotocols.org/labop/primitives/plate_handling/Spin",
+  "spin_has_default_material_handler": false,
+  "validation_errors": [],
+  "validation_warnings": [],
+  "completed_normally": true,
+  "execution_exception": null,
+  "issues": [],
+  "executed_behaviors": [
+    "https://example.org/gfp-native/spin_prefix/gfp_spin_prefix",
+    "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+    "https://bioprotocols.org/labop/primitives/liquid_handling/Provision",
+    "https://bioprotocols.org/labop/primitives/plate_handling/Hold",
+    "https://bioprotocols.org/labop/primitives/plate_handling/Spin"
+  ],
+  "provenance_edges": [
+    [
+      "sample_GFP lysate_0",
+      "sample_GFP lysate_1",
+      "Provision(160.0, microliter, GFP lysate with 100000 suspended cellular units)@1"
+    ]
+  ]
+}

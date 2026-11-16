@@ -1,0 +1,30 @@
+{
+  "plan_id": "Main_plan",
+  "protocol_name": "Main",
+  "steps": [
+    {
+      "annotations": {
+        "source_call": "wait(duration: 1 s)",
+        "source_line": "wait(duration: 1 s)",
+        "source_span": {
+          "end_col": 24,
+          "end_line": 2,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l3/bpl/loop_2.bpl",
+          "start_col": 5,
+          "start_line": 2
+        }
+      },
+      "dependencies": [],
+      "primitive": {
+        "__type__": "Wait",
+        "duration_s": 1.0,
+        "primitive_type": "WAIT"
+      },
+      "primitive_type": "WAIT",
+      "source_intent": "wait",
+      "status": "PENDING",
+      "step_id": "step_0001"
+    }
+  ],
+  "target": "human"
+}

@@ -1,0 +1,27 @@
+{
+  "mode": "subprotocol_explicit",
+  "validation_errors": [],
+  "validation_warnings": [],
+  "planned_calls": 2,
+  "entered_calls": [
+    {
+      "call": 1,
+      "amount_ul": 10.0
+    }
+  ],
+  "executed_child_inputs": [
+    "destination",
+    "source"
+  ],
+  "executed_transfers": [],
+  "completed_normally": true,
+  "issues": {
+    "execution": []
+  },
+  "latest_recorded_buffer_ul": {
+    "stock": 100.0,
+    "first": null,
+    "second": null
+  },
+  "null_means": "No finite buffer quantity recorded; null is not converted to zero."
+}

@@ -1,0 +1,1 @@
+{"artifacts": {"plan": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/results/upstream-examples/bpl-plan.json"}, "command": "lower", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/examples/minimal_protocol.bpl", "ok": true, "target": "simulation"}

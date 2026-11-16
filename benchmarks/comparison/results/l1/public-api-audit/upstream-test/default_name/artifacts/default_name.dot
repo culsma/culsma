@@ -1,0 +1,41 @@
+digraph _root {
+	compound=true
+	subgraph _root {
+		compound=true
+		subgraph cluster_sub1 {
+			graph [label=sub1 shape=box]
+			sub1_InitialNode1 -> sub1_FinalNode1 [label="" color=blue]
+			sub1_InitialNode1 -> sub1_FinalNode1 [label="" color=blue]
+			sub1_InitialNode1 [label="" fillcolor=black shape=circle style=filled]
+			sub1_FinalNode1 [label="" fillcolor=black shape=doublecircle style=filled]
+		}
+	}
+	subgraph _root {
+		compound=true
+		subgraph cluster_sub2 {
+			graph [label=sub2 shape=box]
+			sub2_InitialNode1 -> sub2_FinalNode1 [label="" color=blue]
+			sub2_InitialNode1 -> sub2_FinalNode1 [label="" color=blue]
+			sub2_InitialNode1 [label="" fillcolor=black shape=circle style=filled]
+			sub2_FinalNode1 [label="" fillcolor=black shape=doublecircle style=filled]
+		}
+	}
+	subgraph cluster_default_name {
+		graph [label="default name" shape=box]
+		default_name_InitialNode1 -> default_name_FinalNode1 [label="" color=blue]
+		default_name_InitialNode1 -> default_name_CallBehaviorAction1:"node" [label="" color=blue]
+		default_name_CallBehaviorAction1:"node" -> default_name_CallBehaviorAction2:"node" [label="" color=blue]
+		default_name_CallBehaviorAction2:"node" -> default_name_CallBehaviorAction3:"node" [label="" color=blue]
+		default_name_InitialNode1 [label="" fillcolor=black shape=circle style=filled]
+		default_name_FinalNode1 [label="" fillcolor=black shape=doublecircle style=filled]
+		default_name_CallBehaviorAction1 [label=<<table border="0" cellspacing="0">
+  <tr><td port="node" border="1">sub1</td></tr>
+</table>> fillcolor=white shape=none style=rounded]
+		default_name_CallBehaviorAction2 [label=<<table border="0" cellspacing="0">
+  <tr><td port="node" border="1">primitive1</td></tr>
+</table>> fillcolor=white shape=none style=rounded]
+		default_name_CallBehaviorAction3 [label=<<table border="0" cellspacing="0">
+  <tr><td port="node" border="1">sub2</td></tr>
+</table>> fillcolor=white shape=none style=rounded]
+	}
+}

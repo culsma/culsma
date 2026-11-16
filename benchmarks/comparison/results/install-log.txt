@@ -1,0 +1,263 @@
+Collecting lark==1.3.1
+  Using cached lark-1.3.1-py3-none-any.whl.metadata (1.8 kB)
+Using cached lark-1.3.1-py3-none-any.whl (113 kB)
+Installing collected packages: lark
+Successfully installed lark-1.3.1
+
+[notice] A new release of pip is available: 24.3.1 -> 26.3
+[notice] To update, run: /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/culsma-env/bin/python -m pip install --upgrade pip
+Processing ./output/labop-comparison/labop-source
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting container-ontology@ https://github.com/rpgoldman/container-ontology/tarball/e699f03d13f858606484e097f15f9f71f36e34d6#sha256=451fa51aa4fc23fd3f203a71ad689d8bf9046e59bc0ebbbf6d208b8e2426251c (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 7))
+  Downloading https://github.com/rpgoldman/container-ontology/tarball/e699f03d13f858606484e097f15f9f71f36e34d6
+     \ 137.0 kB 958.3 kB/s 0:00:00
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting owlery-client@ https://github.com/rpgoldman/owlery-client/tarball/e0ea473080a7b9be76744d485ddde04f04687bd2#sha256=b20e44fcd169775bbbf4eda835f1032e8597a8efd6358615e34498f80280da49 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 29))
+  Downloading https://github.com/rpgoldman/owlery-client/tarball/e0ea473080a7b9be76744d485ddde04f04687bd2
+     - 44.7 kB 7.8 MB/s 0:00:00
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting appdirs==1.4.4 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 1))
+  Using cached appdirs-1.4.4-py2.py3-none-any.whl.metadata (9.0 kB)
+Collecting asttokens==3.0.2 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 2))
+  Using cached asttokens-3.0.2-py3-none-any.whl.metadata (5.7 kB)
+Collecting beautifulsoup4==4.15.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 3))
+  Using cached beautifulsoup4-4.15.0-py3-none-any.whl.metadata (3.8 kB)
+Collecting bs4==0.0.2 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 4))
+  Using cached bs4-0.0.2-py2.py3-none-any.whl.metadata (411 bytes)
+Collecting certifi==2026.10.23 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 5))
+  Using cached certifi-2026.10.23-py3-none-any.whl.metadata (2.5 kB)
+Collecting charset-normalizer==3.5.2 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 6))
+  Using cached charset_normalizer-3.5.2-cp311-cp311-macosx_10_9_universal2.whl.metadata (46 kB)
+Collecting cssselect==1.6.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 8))
+  Using cached cssselect-1.6.0-py3-none-any.whl.metadata (2.4 kB)
+Collecting decorator==5.3.1 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 9))
+  Using cached decorator-5.3.1-py3-none-any.whl.metadata (3.9 kB)
+Collecting et_xmlfile==2.0.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 10))
+  Using cached et_xmlfile-2.0.0-py3-none-any.whl.metadata (2.7 kB)
+Collecting executing==2.3.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 11))
+  Using cached executing-2.3.0-py3-none-any.whl.metadata (9.1 kB)
+Collecting fake-useragent==2.2.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 12))
+  Using cached fake_useragent-2.2.0-py3-none-any.whl.metadata (17 kB)
+Collecting flexcache==0.3 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 13))
+  Using cached flexcache-0.3-py3-none-any.whl.metadata (7.0 kB)
+Collecting flexparser==0.4 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 14))
+  Using cached flexparser-0.4-py3-none-any.whl.metadata (18 kB)
+Collecting frostwork==0.2.2 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 15))
+  Using cached frostwork-0.2.2-cp310-abi3-macosx_11_0_arm64.whl.metadata (8.1 kB)
+Collecting graphviz==0.21 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 16))
+  Using cached graphviz-0.21-py3-none-any.whl.metadata (12 kB)
+Collecting html5lib==1.1 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 17))
+  Using cached html5lib-1.1-py2.py3-none-any.whl.metadata (16 kB)
+Collecting idna==3.20 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 18))
+  Using cached idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+Collecting importlib_metadata==10.1.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 19))
+  Using cached importlib_metadata-10.1.0-py3-none-any.whl.metadata (4.5 kB)
+Collecting ipython==8.39.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 20))
+  Using cached ipython-8.39.0-py3-none-any.whl.metadata (5.1 kB)
+Collecting isodate==0.6.1 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 21))
+  Using cached isodate-0.6.1-py2.py3-none-any.whl.metadata (9.6 kB)
+Collecting jedi==0.20.1 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 22))
+  Using cached jedi-0.20.1-py2.py3-none-any.whl.metadata (23 kB)
+Collecting lxml==6.1.3 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 23))
+  Using cached lxml-6.1.3-cp311-cp311-macosx_10_9_universal2.whl.metadata (3.3 kB)
+Collecting lxml_html_clean==0.4.6 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 24))
+  Using cached lxml_html_clean-0.4.6-py3-none-any.whl.metadata (2.4 kB)
+Collecting matplotlib-inline==0.2.2 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 25))
+  Using cached matplotlib_inline-0.2.2-py3-none-any.whl.metadata (2.4 kB)
+Collecting numpy==1.26.4 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 26))
+  Using cached numpy-1.26.4-cp311-cp311-macosx_11_0_arm64.whl.metadata (114 kB)
+Collecting openpyxl==3.1.5 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 27))
+  Using cached openpyxl-3.1.5-py2.py3-none-any.whl.metadata (2.5 kB)
+Collecting ordered-set==4.1.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 28))
+  Using cached ordered_set-4.1.0-py3-none-any.whl.metadata (5.3 kB)
+Collecting owlrl==6.0.2 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 30))
+  Using cached owlrl-6.0.2-py3-none-any.whl.metadata (3.4 kB)
+Collecting packaging==26.3 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 31))
+  Using cached packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+Collecting pandas==2.1.4 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 32))
+  Using cached pandas-2.1.4-cp311-cp311-macosx_11_0_arm64.whl.metadata (18 kB)
+Collecting parse==1.22.4 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 33))
+  Using cached parse-1.22.4-py2.py3-none-any.whl.metadata (22 kB)
+Collecting parso==0.8.7 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 34))
+  Using cached parso-0.8.7-py2.py3-none-any.whl.metadata (8.2 kB)
+Collecting pexpect==4.9.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 35))
+  Using cached pexpect-4.9.0-py2.py3-none-any.whl.metadata (2.5 kB)
+Collecting Pint==0.25.3 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 36))
+  Using cached pint-0.25.3-py3-none-any.whl.metadata (10 kB)
+Collecting platformdirs==4.14.5 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 37))
+  Using cached platformdirs-4.14.5-py3-none-any.whl.metadata (5.7 kB)
+Collecting prettytable==3.18.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 38))
+  Using cached prettytable-3.18.0-py3-none-any.whl.metadata (37 kB)
+Collecting prompt_toolkit==3.0.53 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 39))
+  Using cached prompt_toolkit-3.0.53-py3-none-any.whl.metadata (6.4 kB)
+Collecting ptyprocess==0.7.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 40))
+  Using cached ptyprocess-0.7.0-py2.py3-none-any.whl.metadata (1.3 kB)
+Collecting pure_eval==0.2.4 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 41))
+  Using cached pure_eval-0.2.4-py3-none-any.whl.metadata (6.4 kB)
+Collecting pyee==11.1.1 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 42))
+  Using cached pyee-11.1.1-py3-none-any.whl.metadata (2.8 kB)
+Collecting Pygments==2.21.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 43))
+  Using cached pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+Collecting PyLaTeX==1.4.2 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 44))
+  Using cached pylatex-1.4.2-py3-none-any.whl
+Collecting pyparsing==2.4.7 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 45))
+  Using cached pyparsing-2.4.7-py2.py3-none-any.whl.metadata (3.6 kB)
+Collecting PyPDF2==3.0.1 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 46))
+  Using cached pypdf2-3.0.1-py3-none-any.whl.metadata (6.8 kB)
+Collecting pyppeteer==2.0.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 47))
+  Using cached pyppeteer-2.0.0-py3-none-any.whl.metadata (7.1 kB)
+Collecting pyquery==2.1.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 48))
+  Using cached pyquery-2.1.0-py3-none-any.whl.metadata (9.5 kB)
+Collecting pyshacl==0.28.1 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 49))
+  Using cached pyshacl-0.28.1-py3-none-any.whl.metadata (22 kB)
+Collecting python-dateutil==2.9.0.post0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 50))
+  Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+Collecting pytz==2026.6 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 51))
+  Using cached pytz-2026.6-py2.py3-none-any.whl.metadata (22 kB)
+Collecting rdflib==6.3.2 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 52))
+  Using cached rdflib-6.3.2-py3-none-any.whl.metadata (11 kB)
+Collecting requests==2.34.2 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 53))
+  Using cached requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+Collecting requests-html==0.10.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 54))
+  Using cached requests_html-0.10.0-py3-none-any.whl.metadata (15 kB)
+Collecting sbol-factory==1.1.2 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 55))
+  Using cached sbol_factory-1.1.2-py3-none-any.whl.metadata (359 bytes)
+Collecting sbol3==1.2.0.post0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 56))
+  Using cached sbol3-1.2.0.post0-py3-none-any.whl.metadata (886 bytes)
+Collecting six==1.17.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 57))
+  Using cached six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+Collecting soupsieve==4.0.1 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 58))
+  Using cached soupsieve-4.0.1-py3-none-any.whl.metadata (4.4 kB)
+Collecting SPARQLWrapper==2.0.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 59))
+  Using cached SPARQLWrapper-2.0.0-py3-none-any.whl.metadata (2.0 kB)
+Collecting stack-data==0.6.3 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 60))
+  Using cached stack_data-0.6.3-py3-none-any.whl.metadata (18 kB)
+Collecting tqdm==4.70.1 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 61))
+  Using cached tqdm-4.70.1-py3-none-any.whl.metadata (57 kB)
+Collecting traitlets==5.16.1 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 62))
+  Using cached traitlets-5.16.1-py3-none-any.whl.metadata (10 kB)
+Collecting typing_extensions==4.16.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 63))
+  Using cached typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting tyto==1.4 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 64))
+  Using cached tyto-1.4-py3-none-any.whl.metadata (657 bytes)
+Collecting tzdata==2026.6 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 65))
+  Using cached tzdata-2026.6-py2.py3-none-any.whl.metadata (1.4 kB)
+Collecting urllib3==1.26.20 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 66))
+  Using cached urllib3-1.26.20-py2.py3-none-any.whl.metadata (50 kB)
+Collecting w3lib==2.6.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 67))
+  Using cached w3lib-2.6.0-py3-none-any.whl.metadata (2.2 kB)
+Collecting wcwidth==0.9.4 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 68))
+  Using cached wcwidth-0.9.4-cp310-abi3-macosx_11_0_arm64.whl.metadata (23 kB)
+Collecting webencodings==0.6.1 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 69))
+  Using cached webencodings-0.6.1-py3-none-any.whl.metadata (3.4 kB)
+Collecting websockets==10.4 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 70))
+  Using cached websockets-10.4-cp311-cp311-macosx_11_0_arm64.whl.metadata (6.4 kB)
+Collecting xarray==2023.12.0 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 71))
+  Using cached xarray-2023.12.0-py3-none-any.whl.metadata (11 kB)
+Collecting zipp==4.1.2 (from -r /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/labop-requirements.txt (line 72))
+  Using cached zipp-4.1.2-py3-none-any.whl.metadata (3.6 kB)
+Using cached appdirs-1.4.4-py2.py3-none-any.whl (9.6 kB)
+Using cached asttokens-3.0.2-py3-none-any.whl (28 kB)
+Using cached beautifulsoup4-4.15.0-py3-none-any.whl (109 kB)
+Using cached bs4-0.0.2-py2.py3-none-any.whl (1.2 kB)
+Using cached certifi-2026.10.23-py3-none-any.whl (135 kB)
+Using cached charset_normalizer-3.5.2-cp311-cp311-macosx_10_9_universal2.whl (370 kB)
+Using cached cssselect-1.6.0-py3-none-any.whl (22 kB)
+Using cached decorator-5.3.1-py3-none-any.whl (10 kB)
+Using cached et_xmlfile-2.0.0-py3-none-any.whl (18 kB)
+Using cached executing-2.3.0-py3-none-any.whl (29 kB)
+Using cached fake_useragent-2.2.0-py3-none-any.whl (161 kB)
+Using cached flexcache-0.3-py3-none-any.whl (13 kB)
+Using cached flexparser-0.4-py3-none-any.whl (27 kB)
+Using cached frostwork-0.2.2-cp310-abi3-macosx_11_0_arm64.whl (833 kB)
+Using cached graphviz-0.21-py3-none-any.whl (47 kB)
+Using cached html5lib-1.1-py2.py3-none-any.whl (112 kB)
+Using cached idna-3.20-py3-none-any.whl (69 kB)
+Using cached importlib_metadata-10.1.0-py3-none-any.whl (32 kB)
+Using cached ipython-8.39.0-py3-none-any.whl (831 kB)
+Using cached isodate-0.6.1-py2.py3-none-any.whl (41 kB)
+Using cached jedi-0.20.1-py2.py3-none-any.whl (4.9 MB)
+Using cached lxml-6.1.3-cp311-cp311-macosx_10_9_universal2.whl (8.6 MB)
+Using cached lxml_html_clean-0.4.6-py3-none-any.whl (14 kB)
+Using cached matplotlib_inline-0.2.2-py3-none-any.whl (9.5 kB)
+Using cached numpy-1.26.4-cp311-cp311-macosx_11_0_arm64.whl (14.0 MB)
+Using cached openpyxl-3.1.5-py2.py3-none-any.whl (250 kB)
+Using cached ordered_set-4.1.0-py3-none-any.whl (7.6 kB)
+Using cached owlrl-6.0.2-py3-none-any.whl (54 kB)
+Using cached packaging-26.3-py3-none-any.whl (129 kB)
+Using cached pandas-2.1.4-cp311-cp311-macosx_11_0_arm64.whl (10.8 MB)
+Using cached parse-1.22.4-py2.py3-none-any.whl (21 kB)
+Using cached parso-0.8.7-py2.py3-none-any.whl (107 kB)
+Using cached pexpect-4.9.0-py2.py3-none-any.whl (63 kB)
+Using cached pint-0.25.3-py3-none-any.whl (307 kB)
+Using cached platformdirs-4.14.5-py3-none-any.whl (35 kB)
+Using cached prettytable-3.18.0-py3-none-any.whl (37 kB)
+Using cached prompt_toolkit-3.0.53-py3-none-any.whl (392 kB)
+Using cached ptyprocess-0.7.0-py2.py3-none-any.whl (13 kB)
+Using cached pure_eval-0.2.4-py3-none-any.whl (11 kB)
+Using cached pyee-11.1.1-py3-none-any.whl (15 kB)
+Using cached pygments-2.21.0-py3-none-any.whl (1.3 MB)
+Using cached pyparsing-2.4.7-py2.py3-none-any.whl (67 kB)
+Using cached pypdf2-3.0.1-py3-none-any.whl (232 kB)
+Using cached pyppeteer-2.0.0-py3-none-any.whl (82 kB)
+Using cached pyquery-2.1.0-py3-none-any.whl (22 kB)
+Using cached pyshacl-0.28.1-py3-none-any.whl (1.3 MB)
+Using cached python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+Using cached pytz-2026.6-py2.py3-none-any.whl (506 kB)
+Using cached rdflib-6.3.2-py3-none-any.whl (528 kB)
+Using cached requests-2.34.2-py3-none-any.whl (73 kB)
+Using cached requests_html-0.10.0-py3-none-any.whl (13 kB)
+Using cached sbol_factory-1.1.2-py3-none-any.whl (248 kB)
+Using cached sbol3-1.2.0.post0-py3-none-any.whl (73 kB)
+Using cached six-1.17.0-py2.py3-none-any.whl (11 kB)
+Using cached soupsieve-4.0.1-py3-none-any.whl (50 kB)
+Using cached SPARQLWrapper-2.0.0-py3-none-any.whl (28 kB)
+Using cached stack_data-0.6.3-py3-none-any.whl (24 kB)
+Using cached tqdm-4.70.1-py3-none-any.whl (80 kB)
+Using cached traitlets-5.16.1-py3-none-any.whl (86 kB)
+Using cached typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+Using cached tyto-1.4-py3-none-any.whl (824 kB)
+Using cached tzdata-2026.6-py2.py3-none-any.whl (348 kB)
+Using cached urllib3-1.26.20-py2.py3-none-any.whl (144 kB)
+Using cached w3lib-2.6.0-py3-none-any.whl (40 kB)
+Using cached wcwidth-0.9.4-cp310-abi3-macosx_11_0_arm64.whl (618 kB)
+Using cached webencodings-0.6.1-py3-none-any.whl (8.7 kB)
+Using cached websockets-10.4-cp311-cp311-macosx_11_0_arm64.whl (97 kB)
+Using cached xarray-2023.12.0-py3-none-any.whl (1.1 MB)
+Using cached zipp-4.1.2-py3-none-any.whl (10 kB)
+Building wheels for collected packages: labop, container-ontology, owlery-client
+  Building wheel for labop (pyproject.toml): started
+  Building wheel for labop (pyproject.toml): finished with status 'done'
+  Created wheel for labop: filename=labop-1.0a2-py3-none-any.whl size=216489 sha256=43e3a75e5fd7cb5639378461d5cb707ab95e8bb96f6bdeb14836ff16bc8a5fa2
+  Stored in directory: /Users/yangchen/Library/Caches/pip/wheels/f1/d4/79/42c9924e7a5b57f1743364d4a43d77ff2b581687dfb00694a4
+  Building wheel for container-ontology (pyproject.toml): started
+  Building wheel for container-ontology (pyproject.toml): finished with status 'done'
+  Created wheel for container-ontology: filename=container_ontology-1.0.0-py3-none-any.whl size=8711 sha256=f571901658847183b7bd2cb1c3f9c64927d25c657a26b97ab6093d98d41a9f2c
+  Stored in directory: /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/build/pip-ephem-wheel-cache-4uzuc8x3/wheels/d7/19/91/167eb981da848389f2945d82d93fe2bafb279a836717b44b35
+  Building wheel for owlery-client (pyproject.toml): started
+  Building wheel for owlery-client (pyproject.toml): finished with status 'done'
+  Created wheel for owlery-client: filename=owlery_client-1.0.0-py3-none-any.whl size=46147 sha256=1cd83b96ff894b0bde6825777fcb69d1434a7e3a5dc8848b33032d5a82a2c060
+  Stored in directory: /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/build/pip-ephem-wheel-cache-4uzuc8x3/wheels/d8/ba/e7/988bfa92fe2312162c30f1aa80ac33aebf8afcc5722d3a5314
+Successfully built labop container-ontology owlery-client
+Installing collected packages: stack-data, sbol-factory, pytz, pyquery, PyLaTeX, pure_eval, ptyprocess, pexpect, parse, owlrl, lxml_html_clean, isodate, bs4, appdirs, zipp, xarray, websockets, webencodings, wcwidth, w3lib, urllib3, tzdata, tyto, typing_extensions, traitlets, tqdm, SPARQLWrapper, soupsieve, six, sbol3, requests-html, requests, rdflib, python-dateutil, pyshacl, pyppeteer, PyPDF2, pyparsing, Pygments, pyee, prompt_toolkit, prettytable, platformdirs, Pint, parso, pandas, packaging, owlery-client, ordered-set, openpyxl, numpy, matplotlib-inline, lxml, labop, jedi, ipython, importlib_metadata, idna, html5lib, graphviz, frostwork, flexparser, flexcache, fake-useragent, executing, et_xmlfile, decorator, cssselect, container-ontology, charset-normalizer, certifi, beautifulsoup4, asttokens
+Successfully installed Pint-0.25.3 PyLaTeX-1.4.2 PyPDF2-3.0.1 Pygments-2.21.0 SPARQLWrapper-2.0.0 appdirs-1.4.4 asttokens-3.0.2 beautifulsoup4-4.15.0 bs4-0.0.2 certifi-2026.10.23 charset-normalizer-3.5.2 container-ontology-1.0.0 cssselect-1.6.0 decorator-5.3.1 et_xmlfile-2.0.0 executing-2.3.0 fake-useragent-2.2.0 flexcache-0.3 flexparser-0.4 frostwork-0.2.2 graphviz-0.21 html5lib-1.1 idna-3.20 importlib_metadata-10.1.0 ipython-8.39.0 isodate-0.6.1 jedi-0.20.1 labop-1.0a2 lxml-6.1.3 lxml_html_clean-0.4.6 matplotlib-inline-0.2.2 numpy-1.26.4 openpyxl-3.1.5 ordered-set-4.1.0 owlery-client-1.0.0 owlrl-6.0.2 packaging-26.3 pandas-2.1.4 parse-1.22.4 parso-0.8.7 pexpect-4.9.0 platformdirs-4.14.5 prettytable-3.18.0 prompt_toolkit-3.0.53 ptyprocess-0.7.0 pure_eval-0.2.4 pyee-11.1.1 pyparsing-2.4.7 pyppeteer-2.0.0 pyquery-2.1.0 pyshacl-0.28.1 python-dateutil-2.9.0.post0 pytz-2026.6 rdflib-6.3.2 requests-2.34.2 requests-html-0.10.0 sbol-factory-1.1.2 sbol3-1.2.0.post0 six-1.17.0 soupsieve-4.0.1 stack-data-0.6.3 tqdm-4.70.1 traitlets-5.16.1 typing_extensions-4.16.0 tyto-1.4 tzdata-2026.6 urllib3-1.26.20 w3lib-2.6.0 wcwidth-0.9.4 webencodings-0.6.1 websockets-10.4 xarray-2023.12.0 zipp-4.1.2
+
+[notice] A new release of pip is available: 24.0 -> 26.3
+[notice] To update, run: /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/bin/python -m pip install --upgrade pip
+No broken requirements found.
+No broken requirements found.

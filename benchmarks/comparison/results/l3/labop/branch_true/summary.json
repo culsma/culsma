@@ -1,0 +1,23 @@
+{
+  "kind": "branch",
+  "runtime_values": [
+    true
+  ],
+  "model_sha256": "86e4632632b4071143b9e238acffb56bbd2d3b00e5010f27d475caa80072b3fa",
+  "validation_errors": [],
+  "validation_warnings": [],
+  "use_defined_primitives": false,
+  "completed_normally": true,
+  "consumed_values": [
+    true
+  ],
+  "calls": [
+    "main",
+    "TestPredicate",
+    "TrueBranch",
+    "FalseBranch"
+  ],
+  "issues": {
+    "execution": []
+  }
+}

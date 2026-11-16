@@ -1,0 +1,63 @@
+digraph _root {
+	compound=true
+	subgraph cluster_iGEM_LUDOX_OD_calibration_2018 {
+		graph [label="iGEM 2018 LUDOX OD calibration protocol" shape=box]
+		iGEM_LUDOX_OD_calibration_2018_InitialNode1 -> iGEM_LUDOX_OD_calibration_2018_FinalNode1 [label="" color=blue]
+		iGEM_LUDOX_OD_calibration_2018_InitialNode1 -> iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction1:"node" [label="" color=blue]
+		iGEM_LUDOX_OD_calibration_2018_ForkNode1 -> iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction2:InputPin1 [label="" color=black]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction1:"node" -> iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction2:"node" [label="" color=blue]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction2:OutputPin1 -> iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction3:InputPin1 [label="" color=black]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction2:"node" -> iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction3:"node" [label="" color=blue]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction1:OutputPin1 -> iGEM_LUDOX_OD_calibration_2018_ForkNode1 [label="" color=black]
+		iGEM_LUDOX_OD_calibration_2018_ForkNode1 -> iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction4:InputPin1 [label="" color=black]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction3:"node" -> iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction4:"node" [label="" color=blue]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction4:OutputPin1 -> iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction5:InputPin1 [label="" color=black]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction4:"node" -> iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction5:"node" [label="" color=blue]
+		iGEM_LUDOX_OD_calibration_2018_ForkNode1 -> iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction6:InputPin1 [label="" color=black]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction5:"node" -> iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction6:"node" [label="" color=blue]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction6:OutputPin1 -> iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction7:InputPin1 [label="" color=black]
+		iGEM_LUDOX_OD_calibration_2018_ActivityParameterNode1 -> iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction7:InputPin2 [label="" color=black]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction6:"node" -> iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction7:"node" [label="" color=blue]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction7:OutputPin1 -> iGEM_LUDOX_OD_calibration_2018_ActivityParameterNode2 [label="" color=black]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction7:"node" -> iGEM_LUDOX_OD_calibration_2018_ActivityParameterNode2 [label="" color=blue]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction7:"node" -> iGEM_LUDOX_OD_calibration_2018_FinalNode1 [label="" color=blue]
+		iGEM_LUDOX_OD_calibration_2018_InitialNode1 [label="" fillcolor=black shape=circle style=filled]
+		iGEM_LUDOX_OD_calibration_2018_FinalNode1 [label="" fillcolor=black shape=doublecircle style=filled]
+		iGEM_LUDOX_OD_calibration_2018_ActivityParameterNode1 [label=wavelength fillcolor=black peripheries=2 shape=rectangle]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction1 [label=<<table border="0" cellspacing="0">
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="ValuePin1" border="1">specification: calibration plate</td><td> </td><td port="InputPin1" border="1">sample_array</td><td> </td><td> </td></tr></table></td></tr>
+  <tr><td port="node" border="1">EmptyContainer</td></tr>
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="OutputPin1" border="1">samples</td><td> </td></tr></table></td></tr>
+</table>> fillcolor=white shape=none style=rounded]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction2 [label=<<table border="0" cellspacing="0">
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="InputPin1" border="1">source</td><td> </td><td port="ValuePin1" border="1">coordinates: A1:D1</td><td> </td><td> </td></tr></table></td></tr>
+  <tr><td port="node" border="1">PlateCoordinates</td></tr>
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="OutputPin1" border="1">samples</td><td> </td></tr></table></td></tr>
+</table>> fillcolor=white shape=none style=rounded]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction3 [label=<<table border="0" cellspacing="0">
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="ValuePin1" border="1">resource: Water, sterile-filtered, BioReagent, suitable for cell culture</td><td> </td><td port="InputPin1" border="1">destination</td><td> </td><td port="ValuePin2" border="1">amount: 100.0 microliter</td><td> </td><td port="InputPin2" border="1">dispenseVelocity</td><td> </td><td> </td></tr></table></td></tr>
+  <tr><td port="node" border="1">Provision</td></tr>
+</table>> fillcolor=white shape=none style=rounded]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction4 [label=<<table border="0" cellspacing="0">
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="InputPin1" border="1">source</td><td> </td><td port="ValuePin1" border="1">coordinates: A2:D2</td><td> </td><td> </td></tr></table></td></tr>
+  <tr><td port="node" border="1">PlateCoordinates</td></tr>
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="OutputPin1" border="1">samples</td><td> </td></tr></table></td></tr>
+</table>> fillcolor=white shape=none style=rounded]
+		iGEM_LUDOX_OD_calibration_2018_ForkNode1 [label="" fillcolor=black height=0.02 shape=rectangle style=filled]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction5 [label=<<table border="0" cellspacing="0">
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="ValuePin1" border="1">resource: LUDOX(R) CL-X colloidal silica, 45 wt. % suspension in H2O</td><td> </td><td port="InputPin1" border="1">destination</td><td> </td><td port="ValuePin2" border="1">amount: 100.0 microliter</td><td> </td><td port="InputPin2" border="1">dispenseVelocity</td><td> </td><td> </td></tr></table></td></tr>
+  <tr><td port="node" border="1">Provision</td></tr>
+</table>> fillcolor=white shape=none style=rounded]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction6 [label=<<table border="0" cellspacing="0">
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="InputPin1" border="1">source</td><td> </td><td port="ValuePin1" border="1">coordinates: A1:D2</td><td> </td><td> </td></tr></table></td></tr>
+  <tr><td port="node" border="1">PlateCoordinates</td></tr>
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="OutputPin1" border="1">samples</td><td> </td></tr></table></td></tr>
+</table>> fillcolor=white shape=none style=rounded]
+		iGEM_LUDOX_OD_calibration_2018_CallBehaviorAction7 [label=<<table border="0" cellspacing="0">
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="InputPin1" border="1">samples</td><td> </td><td port="InputPin2" border="1">wavelength</td><td> </td><td port="InputPin3" border="1">numFlashes</td><td> </td><td port="InputPin4" border="1">timepoints</td><td> </td><td> </td></tr></table></td></tr>
+  <tr><td port="node" border="1">MeasureAbsorbance</td></tr>
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="OutputPin1" border="1">measurements</td><td> </td></tr></table></td></tr>
+</table>> fillcolor=white shape=none style=rounded]
+		iGEM_LUDOX_OD_calibration_2018_ActivityParameterNode2 [label=absorbance fillcolor=black peripheries=2 shape=rectangle]
+	}
+}

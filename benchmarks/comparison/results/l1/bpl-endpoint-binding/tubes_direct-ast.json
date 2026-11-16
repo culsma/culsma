@@ -1,0 +1,306 @@
+{
+  "declarations": [
+    {
+      "annotations": [],
+      "barcode": null,
+      "category": "TUBE",
+      "fields": [],
+      "footprint": "CUSTOM",
+      "name": "StockTube",
+      "node_type": "LabwareDecl",
+      "set_identifier": null,
+      "span": {
+        "end_col": 2,
+        "end_line": 6,
+        "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+        "node_type": "SourceSpan",
+        "start_col": 1,
+        "start_line": 1
+      },
+      "well_count": 1,
+      "well_volume": {
+        "node_type": "QuantityExpr",
+        "span": {
+          "end_col": 24,
+          "end_line": 4,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+          "node_type": "SourceSpan",
+          "start_col": 18,
+          "start_line": 4
+        },
+        "unit": {
+          "kind": "SIMPLE",
+          "node_type": "UnitExpr",
+          "span": null,
+          "text": "mL"
+        },
+        "value": {
+          "node_type": "NumberLit",
+          "span": null,
+          "value": 1.5
+        }
+      }
+    },
+    {
+      "annotations": [],
+      "barcode": null,
+      "category": "TUBE",
+      "fields": [],
+      "footprint": "CUSTOM",
+      "name": "TargetTube",
+      "node_type": "LabwareDecl",
+      "set_identifier": null,
+      "span": {
+        "end_col": 2,
+        "end_line": 12,
+        "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+        "node_type": "SourceSpan",
+        "start_col": 1,
+        "start_line": 7
+      },
+      "well_count": 1,
+      "well_volume": {
+        "node_type": "QuantityExpr",
+        "span": {
+          "end_col": 24,
+          "end_line": 10,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+          "node_type": "SourceSpan",
+          "start_col": 18,
+          "start_line": 10
+        },
+        "unit": {
+          "kind": "SIMPLE",
+          "node_type": "UnitExpr",
+          "span": null,
+          "text": "mL"
+        },
+        "value": {
+          "node_type": "NumberLit",
+          "span": null,
+          "value": 1.5
+        }
+      }
+    },
+    {
+      "annotations": [],
+      "body": [
+        {
+          "annotations": [],
+          "arguments": [
+            {
+              "name": "from",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 29,
+                "end_line": 14,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 14,
+                "start_line": 14
+              },
+              "value": {
+                "name": "StockTube",
+                "node_type": "IdentifierExpr",
+                "span": {
+                  "end_col": 29,
+                  "end_line": 14,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 20,
+                  "start_line": 14
+                }
+              }
+            },
+            {
+              "name": "to",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 45,
+                "end_line": 14,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 31,
+                "start_line": 14
+              },
+              "value": {
+                "name": "TargetTube",
+                "node_type": "IdentifierExpr",
+                "span": {
+                  "end_col": 45,
+                  "end_line": 14,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 35,
+                  "start_line": 14
+                }
+              }
+            },
+            {
+              "name": "volume",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 60,
+                "end_line": 14,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 47,
+                "start_line": 14
+              },
+              "value": {
+                "node_type": "QuantityExpr",
+                "span": {
+                  "end_col": 60,
+                  "end_line": 14,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 55,
+                  "start_line": 14
+                },
+                "unit": {
+                  "kind": "SIMPLE",
+                  "node_type": "UnitExpr",
+                  "span": null,
+                  "text": "uL"
+                },
+                "value": {
+                  "node_type": "NumberLit",
+                  "span": null,
+                  "value": 10.0
+                }
+              }
+            }
+          ],
+          "name": "transfer",
+          "node_type": "CallStmt",
+          "span": {
+            "end_col": 61,
+            "end_line": 14,
+            "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+            "node_type": "SourceSpan",
+            "start_col": 5,
+            "start_line": 14
+          }
+        },
+        {
+          "annotations": [],
+          "arguments": [
+            {
+              "name": "from",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 29,
+                "end_line": 15,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 14,
+                "start_line": 15
+              },
+              "value": {
+                "name": "StockTube",
+                "node_type": "IdentifierExpr",
+                "span": {
+                  "end_col": 29,
+                  "end_line": 15,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 20,
+                  "start_line": 15
+                }
+              }
+            },
+            {
+              "name": "to",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 45,
+                "end_line": 15,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 31,
+                "start_line": 15
+              },
+              "value": {
+                "name": "TargetTube",
+                "node_type": "IdentifierExpr",
+                "span": {
+                  "end_col": 45,
+                  "end_line": 15,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 35,
+                  "start_line": 15
+                }
+              }
+            },
+            {
+              "name": "volume",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 60,
+                "end_line": 15,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 47,
+                "start_line": 15
+              },
+              "value": {
+                "node_type": "QuantityExpr",
+                "span": {
+                  "end_col": 60,
+                  "end_line": 15,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 55,
+                  "start_line": 15
+                },
+                "unit": {
+                  "kind": "SIMPLE",
+                  "node_type": "UnitExpr",
+                  "span": null,
+                  "text": "uL"
+                },
+                "value": {
+                  "node_type": "NumberLit",
+                  "span": null,
+                  "value": 20.0
+                }
+              }
+            }
+          ],
+          "name": "transfer",
+          "node_type": "CallStmt",
+          "span": {
+            "end_col": 61,
+            "end_line": 15,
+            "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+            "node_type": "SourceSpan",
+            "start_col": 5,
+            "start_line": 15
+          }
+        }
+      ],
+      "name": "Main",
+      "node_type": "ProtocolDecl",
+      "parameters": [],
+      "settings": [],
+      "span": {
+        "end_col": 2,
+        "end_line": 16,
+        "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+        "node_type": "SourceSpan",
+        "start_col": 1,
+        "start_line": 13
+      }
+    }
+  ],
+  "node_type": "Program",
+  "span": {
+    "end_col": 2,
+    "end_line": 16,
+    "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_direct.bpl",
+    "node_type": "SourceSpan",
+    "start_col": 1,
+    "start_line": 1
+  }
+}

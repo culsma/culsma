@@ -1,0 +1,133 @@
+{
+  "coords": {
+    "reagent": {
+      "dims": [
+        "reagent"
+      ],
+      "attrs": {},
+      "data": [
+        "https://example.org/gfp-native/spin_prefix/lysate_liquid"
+      ]
+    },
+    "container": {
+      "dims": [
+        "container"
+      ],
+      "attrs": {},
+      "data": [
+        "https://example.org/gfp-native/spin_prefix/lysate_tube"
+      ]
+    },
+    "location": {
+      "dims": [
+        "location"
+      ],
+      "attrs": {},
+      "data": [
+        "A1"
+      ]
+    },
+    "sample": {
+      "dims": [
+        "sample"
+      ],
+      "attrs": {},
+      "data": [
+        "sample_GFP lysate_0",
+        "sample_GFP lysate_1"
+      ]
+    },
+    "node": {
+      "dims": [
+        "node"
+      ],
+      "attrs": {},
+      "data": [
+        "sample_location",
+        "next_sample_location",
+        "label"
+      ]
+    },
+    "tick": {
+      "dims": [
+        "tick"
+      ],
+      "attrs": {},
+      "data": [
+        1,
+        0
+      ]
+    }
+  },
+  "attrs": {},
+  "dims": {
+    "reagent": 1,
+    "container": 1,
+    "location": 1,
+    "sample": 2,
+    "node": 3,
+    "tick": 2,
+    "edge": 1
+  },
+  "data_vars": {
+    "contents": {
+      "dims": [
+        "tick",
+        "container",
+        "location",
+        "reagent"
+      ],
+      "attrs": {},
+      "data": [
+        [
+          [
+            [
+              160.0
+            ]
+          ]
+        ],
+        [
+          [
+            [
+              null
+            ]
+          ]
+        ]
+      ]
+    },
+    "sample_location": {
+      "dims": [
+        "tick",
+        "container",
+        "location"
+      ],
+      "attrs": {},
+      "data": [
+        [
+          [
+            "sample_GFP lysate_1"
+          ]
+        ],
+        [
+          [
+            "sample_GFP lysate_0"
+          ]
+        ]
+      ]
+    },
+    "edges": {
+      "dims": [
+        "edge",
+        "node"
+      ],
+      "attrs": {},
+      "data": [
+        [
+          "sample_GFP lysate_0",
+          "sample_GFP lysate_1",
+          "Provision(160.0, microliter, GFP lysate with 100000 suspended cellular units)@1"
+        ]
+      ]
+    }
+  }
+}

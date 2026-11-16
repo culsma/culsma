@@ -1,0 +1,1 @@
+{"artifacts": {"plan": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/results/l2/bpl-consumption/body_20-plan.json"}, "command": "lower", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/results/l2/bpl-consumption/inputs/body_20.bpl", "ok": true, "target": "human"}

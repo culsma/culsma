@@ -1,0 +1,19 @@
+{
+  "plan_id": "GFPClarification_plan",
+  "status": "SimulationStatus.FAILED",
+  "started_at": "2026-11-14 19:17:26.022821",
+  "completed_at": "2026-11-14 19:17:26.023530",
+  "initial_state_hash": "52cb79c78e69a20bce1ce26942e01aff",
+  "final_state_hash": "52cb79c78e69a20bce1ce26942e01aff",
+  "steps_executed": 0,
+  "steps_failed": 0,
+  "step_traces": [],
+  "validation_errors": [
+    "Strict capability failure (simulation): human_step"
+  ],
+  "warnings": [],
+  "unsupported_step_count": 0,
+  "unsupported_primitives": [
+    "human_step"
+  ]
+}

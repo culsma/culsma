@@ -1,0 +1,32 @@
+{
+  "kind": "material_branch",
+  "runtime_values": [
+    false
+  ],
+  "model_sha256": "3853cade3039ba0bfa1a822260507de01a49c629eae167d7a45b15129e029912",
+  "validation_errors": [],
+  "validation_warnings": [],
+  "use_defined_primitives": true,
+  "completed_normally": true,
+  "consumed_values": [
+    false
+  ],
+  "calls": [
+    "main",
+    "EmptyContainer",
+    "EmptyContainer",
+    "EmptyContainer",
+    "Provision",
+    "TestPredicate",
+    "Transfer",
+    "Transfer"
+  ],
+  "issues": {
+    "execution": []
+  },
+  "volumes_ul": {
+    "stock": 70.0,
+    "target": 10.0,
+    "alternative": 20.0
+  }
+}

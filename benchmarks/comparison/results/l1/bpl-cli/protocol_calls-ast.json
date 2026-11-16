@@ -1,0 +1,375 @@
+{
+  "declarations": [
+    {
+      "annotations": [],
+      "body": [
+        {
+          "annotations": [],
+          "arguments": [
+            {
+              "name": "source",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 33,
+                "end_line": 2,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 13,
+                "start_line": 2
+              },
+              "value": {
+                "node_type": "StringLit",
+                "span": {
+                  "end_col": 33,
+                  "end_line": 2,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 21,
+                  "start_line": 2
+                },
+                "value": "plate_1:A1"
+              }
+            },
+            {
+              "name": "destination",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 60,
+                "end_line": 2,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 35,
+                "start_line": 2
+              },
+              "value": {
+                "node_type": "StringLit",
+                "span": {
+                  "end_col": 60,
+                  "end_line": 2,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 48,
+                  "start_line": 2
+                },
+                "value": "plate_1:A2"
+              }
+            },
+            {
+              "name": "amount",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 75,
+                "end_line": 2,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 62,
+                "start_line": 2
+              },
+              "value": {
+                "node_type": "QuantityExpr",
+                "span": {
+                  "end_col": 75,
+                  "end_line": 2,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 70,
+                  "start_line": 2
+                },
+                "unit": {
+                  "kind": "SIMPLE",
+                  "node_type": "UnitExpr",
+                  "span": null,
+                  "text": "uL"
+                },
+                "value": {
+                  "node_type": "NumberLit",
+                  "span": null,
+                  "value": 10.0
+                }
+              }
+            }
+          ],
+          "name": "aliquot",
+          "node_type": "CallStmt",
+          "span": {
+            "end_col": 76,
+            "end_line": 2,
+            "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+            "node_type": "SourceSpan",
+            "start_col": 5,
+            "start_line": 2
+          }
+        },
+        {
+          "annotations": [],
+          "arguments": [
+            {
+              "name": "source",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 33,
+                "end_line": 3,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 13,
+                "start_line": 3
+              },
+              "value": {
+                "node_type": "StringLit",
+                "span": {
+                  "end_col": 33,
+                  "end_line": 3,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 21,
+                  "start_line": 3
+                },
+                "value": "plate_1:A1"
+              }
+            },
+            {
+              "name": "destination",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 60,
+                "end_line": 3,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 35,
+                "start_line": 3
+              },
+              "value": {
+                "node_type": "StringLit",
+                "span": {
+                  "end_col": 60,
+                  "end_line": 3,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 48,
+                  "start_line": 3
+                },
+                "value": "plate_1:A3"
+              }
+            },
+            {
+              "name": "amount",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 75,
+                "end_line": 3,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 62,
+                "start_line": 3
+              },
+              "value": {
+                "node_type": "QuantityExpr",
+                "span": {
+                  "end_col": 75,
+                  "end_line": 3,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 70,
+                  "start_line": 3
+                },
+                "unit": {
+                  "kind": "SIMPLE",
+                  "node_type": "UnitExpr",
+                  "span": null,
+                  "text": "uL"
+                },
+                "value": {
+                  "node_type": "NumberLit",
+                  "span": null,
+                  "value": 20.0
+                }
+              }
+            }
+          ],
+          "name": "aliquot",
+          "node_type": "CallStmt",
+          "span": {
+            "end_col": 76,
+            "end_line": 3,
+            "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+            "node_type": "SourceSpan",
+            "start_col": 5,
+            "start_line": 3
+          }
+        }
+      ],
+      "name": "Main",
+      "node_type": "ProtocolDecl",
+      "parameters": [],
+      "settings": [],
+      "span": {
+        "end_col": 2,
+        "end_line": 4,
+        "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+        "node_type": "SourceSpan",
+        "start_col": 1,
+        "start_line": 1
+      }
+    },
+    {
+      "annotations": [],
+      "body": [
+        {
+          "annotations": [],
+          "arguments": [
+            {
+              "name": "from",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 26,
+                "end_line": 6,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 14,
+                "start_line": 6
+              },
+              "value": {
+                "name": "source",
+                "node_type": "IdentifierExpr",
+                "span": {
+                  "end_col": 26,
+                  "end_line": 6,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 20,
+                  "start_line": 6
+                }
+              }
+            },
+            {
+              "name": "to",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 43,
+                "end_line": 6,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 28,
+                "start_line": 6
+              },
+              "value": {
+                "name": "destination",
+                "node_type": "IdentifierExpr",
+                "span": {
+                  "end_col": 43,
+                  "end_line": 6,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 32,
+                  "start_line": 6
+                }
+              }
+            },
+            {
+              "name": "volume",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 59,
+                "end_line": 6,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 45,
+                "start_line": 6
+              },
+              "value": {
+                "name": "amount",
+                "node_type": "IdentifierExpr",
+                "span": {
+                  "end_col": 59,
+                  "end_line": 6,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 53,
+                  "start_line": 6
+                }
+              }
+            }
+          ],
+          "name": "transfer",
+          "node_type": "CallStmt",
+          "span": {
+            "end_col": 60,
+            "end_line": 6,
+            "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+            "node_type": "SourceSpan",
+            "start_col": 5,
+            "start_line": 6
+          }
+        }
+      ],
+      "name": "aliquot",
+      "node_type": "ProtocolDecl",
+      "parameters": [
+        {
+          "default_value": null,
+          "name": "source",
+          "node_type": "Parameter",
+          "span": {
+            "end_col": 24,
+            "end_line": 5,
+            "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+            "node_type": "SourceSpan",
+            "start_col": 18,
+            "start_line": 5
+          },
+          "type_annotation": null
+        },
+        {
+          "default_value": null,
+          "name": "destination",
+          "node_type": "Parameter",
+          "span": {
+            "end_col": 37,
+            "end_line": 5,
+            "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+            "node_type": "SourceSpan",
+            "start_col": 26,
+            "start_line": 5
+          },
+          "type_annotation": null
+        },
+        {
+          "default_value": null,
+          "name": "amount",
+          "node_type": "Parameter",
+          "span": {
+            "end_col": 53,
+            "end_line": 5,
+            "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+            "node_type": "SourceSpan",
+            "start_col": 39,
+            "start_line": 5
+          },
+          "type_annotation": {
+            "name": "Volume",
+            "node_type": "SimpleTypeExpr",
+            "span": null
+          }
+        }
+      ],
+      "settings": [],
+      "span": {
+        "end_col": 2,
+        "end_line": 7,
+        "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+        "node_type": "SourceSpan",
+        "start_col": 1,
+        "start_line": 5
+      }
+    }
+  ],
+  "node_type": "Program",
+  "span": {
+    "end_col": 2,
+    "end_line": 7,
+    "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/protocol_calls.bpl",
+    "node_type": "SourceSpan",
+    "start_col": 1,
+    "start_line": 1
+  }
+}

@@ -1,0 +1,91 @@
+2026-11-12 11:39:22,504 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document
+2026-11-12 11:39:22,935 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol
+2026-11-12 11:39:22,938 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol
+2026-11-12 11:39:23,455 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l1-reproduction/subprotocol/main
+2026-11-12 11:39:23,457 INFO labop.execution.behavior_dynamics - Behavior L1 reproduction is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-12 11:39:24,440 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l1-reproduction/subprotocol/Aliquot
+2026-11-12 11:39:24,443 INFO labop.execution.behavior_dynamics - Behavior Aliquot is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-12 11:39:24,886 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document
+2026-11-12 11:39:25,040 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol
+2026-11-12 11:39:25,044 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol
+2026-11-12 11:39:25,482 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l1-reproduction/direct/main
+2026-11-12 11:39:25,484 INFO labop.execution.behavior_dynamics - Behavior L1 reproduction is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-12 11:39:25,812 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://bioprotocols.org/labop/primitives/liquid_handling/Transfer
+2026-11-12 11:39:25,916 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://bioprotocols.org/labop/primitives/liquid_handling/Transfer
+{
+  "labop_commit": "2e2bd88150c71a440771fd369f40295dfd622324",
+  "script_sha256": "7b1df01c0638383cc3713e933989388282da9cb80f8592fe5166985b3b873e54",
+  "expected_buffer_ul": {
+    "stock": 70,
+    "first": 10,
+    "second": 20
+  },
+  "results": {
+    "subprotocol": {
+      "mode": "subprotocol",
+      "validation_errors": [],
+      "validation_warnings": [],
+      "planned_calls": 2,
+      "entered_calls": [
+        {
+          "call": 1,
+          "amount_ul": 10.0
+        }
+      ],
+      "executed_child_inputs": [
+        "destination",
+        "source"
+      ],
+      "executed_transfers": [],
+      "completed_normally": true,
+      "issues": {
+        "execution": []
+      },
+      "latest_recorded_buffer_ul": {
+        "stock": 100.0,
+        "first": null,
+        "second": null
+      },
+      "null_means": "No finite buffer quantity recorded; null is not converted to zero."
+    },
+    "direct": {
+      "mode": "direct",
+      "validation_errors": [],
+      "validation_warnings": [],
+      "planned_calls": 2,
+      "entered_calls": [
+        {
+          "call": 1,
+          "amount_ul": 10.0
+        },
+        {
+          "call": 2,
+          "amount_ul": 20.0
+        }
+      ],
+      "executed_child_inputs": [],
+      "executed_transfers": [
+        {
+          "amount_ul": 10.0,
+          "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre",
+          "destination": "https://example.org/l1-reproduction/direct/main/CallBehaviorAction2/ValuePin2/LiteralIdentified1/SampleArray1"
+        },
+        {
+          "amount_ul": 20.0,
+          "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre",
+          "destination": "https://example.org/l1-reproduction/direct/main/CallBehaviorAction3/ValuePin2/LiteralIdentified1/SampleArray1"
+        }
+      ],
+      "completed_normally": true,
+      "issues": {
+        "execution": []
+      },
+      "latest_recorded_buffer_ul": {
+        "stock": 70.0,
+        "first": 10.0,
+        "second": 20.0
+      },
+      "null_means": "No finite buffer quantity recorded; null is not converted to zero."
+    }
+  }
+}

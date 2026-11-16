@@ -1,0 +1,287 @@
+{
+  "diagnostics": [],
+  "kind": "PlanProgram",
+  "plans": [
+    {
+      "entry_kind": "script",
+      "output_name": "entry",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "return_bindings": {},
+      "return_value": {
+        "kind": "IRIdentifier",
+        "name": "target",
+        "span": {
+          "col": 59,
+          "end": 471,
+          "line": 12,
+          "start": 465
+        }
+      },
+      "returns": [],
+      "span": {
+        "col": 5,
+        "end": 193,
+        "line": 2,
+        "start": 29
+      },
+      "steps": [
+        {
+          "args": {
+            "bind": "prepared",
+            "capacity": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 54,
+                "end": 83,
+                "line": 2,
+                "start": 78
+              },
+              "unit": "mL",
+              "value": 1.5
+            },
+            "container_name": "prepared",
+            "container_namespace": "entry",
+            "kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 18,
+                "end": 193,
+                "line": 2,
+                "start": 42
+              },
+              "value": "tube"
+            },
+            "label": {
+              "kind": "IRString",
+              "span": {
+                "col": 31,
+                "end": 65,
+                "line": 2,
+                "start": 55
+              },
+              "value": "prepared"
+            }
+          },
+          "deps": [],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "AllocContainer",
+          "span": {
+            "col": 5,
+            "end": 193,
+            "line": 2,
+            "start": 29
+          },
+          "step_id": "entry.s0::alloc"
+        },
+        {
+          "args": {
+            "code": {
+              "kind": "IRString",
+              "span": {
+                "col": 83,
+                "end": 184,
+                "line": 3,
+                "start": 176
+              },
+              "value": "BUFFER"
+            },
+            "kind": {
+              "enum": "ContentKind",
+              "kind": "ContentEnum",
+              "member": "FORMULATION"
+            },
+            "type": {
+              "enum": "ContentType",
+              "kind": "ContentEnum",
+              "member": "BUFFER"
+            }
+          },
+          "deps": [
+            "entry.s0::alloc"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "DefineContent",
+          "span": {
+            "col": 9,
+            "end": 185,
+            "line": 3,
+            "start": 102
+          },
+          "step_id": "entry.s0::load0::define"
+        },
+        {
+          "args": {
+            "amount": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 93,
+                "end": 191,
+                "line": 3,
+                "start": 186
+              },
+              "unit": "uL",
+              "value": 100.0
+            },
+            "container": {
+              "kind": "IRIdentifier",
+              "name": "prepared",
+              "span": {
+                "col": 5,
+                "end": 193,
+                "line": 2,
+                "start": 29
+              }
+            },
+            "content": {
+              "kind": "IRString",
+              "span": {
+                "col": 83,
+                "end": 184,
+                "line": 3,
+                "start": 176
+              },
+              "value": "BUFFER"
+            }
+          },
+          "deps": [
+            "entry.s0::load0::define"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "LoadContent",
+          "span": {
+            "col": 9,
+            "end": 191,
+            "line": 3,
+            "start": 102
+          },
+          "step_id": "entry.s0::load0::load"
+        },
+        {
+          "args": {
+            "bind": "target",
+            "capacity": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 48,
+                "end": 404,
+                "line": 11,
+                "start": 399
+              },
+              "unit": "mL",
+              "value": 1.5
+            },
+            "container_name": "target",
+            "container_namespace": "entry",
+            "kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 14,
+                "end": 405,
+                "line": 11,
+                "start": 365
+              },
+              "value": "tube"
+            },
+            "label": {
+              "kind": "IRString",
+              "span": {
+                "col": 27,
+                "end": 386,
+                "line": 11,
+                "start": 378
+              },
+              "value": "target"
+            }
+          },
+          "deps": [
+            "entry.s0::load0::load"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "AllocContainer",
+          "span": {
+            "col": 1,
+            "end": 405,
+            "line": 11,
+            "start": 352
+          },
+          "step_id": "entry.s1::alloc"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "prepared",
+                  "span": {
+                    "col": 35,
+                    "end": 449,
+                    "line": 12,
+                    "start": 441
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 28,
+                    "end": 291,
+                    "line": 7,
+                    "start": 287
+                  },
+                  "unit": "uL",
+                  "value": 10.0
+                },
+                "span": {
+                  "col": 21,
+                  "end": 291,
+                  "line": 7,
+                  "start": 280
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "target",
+              "span": {
+                "col": 59,
+                "end": 471,
+                "line": 12,
+                "start": 465
+              }
+            }
+          },
+          "deps": [
+            "entry.s1::alloc"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 5,
+            "end": 292,
+            "line": 7,
+            "start": 264
+          },
+          "step_id": "entry.s4"
+        }
+      ]
+    }
+  ],
+  "span": null
+}

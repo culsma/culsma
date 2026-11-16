@@ -1,0 +1,586 @@
+@prefix ns1: <http://bioprotocols.org/labop#> .
+@prefix ns2: <http://bioprotocols.org/uml#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix sbol: <http://sbols.org/v3#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://example.org/l3/branch/execution> a ns1:ProtocolExecution,
+        sbol:TopLevel ;
+    ns1:activityCallEdge <https://example.org/l3/branch/execution/ControlFlow1>,
+        <https://example.org/l3/branch/execution/ControlFlow2>,
+        <https://example.org/l3/branch/execution/ControlFlow3>,
+        <https://example.org/l3/branch/execution/ControlFlow4>,
+        <https://example.org/l3/branch/execution/ControlFlow5> ;
+    ns1:activityCallNode <https://example.org/l3/branch/execution/CallBehaviorAction1>,
+        <https://example.org/l3/branch/execution/FinalNode1>,
+        <https://example.org/l3/branch/execution/InitialNode1> ;
+    ns1:completedNormally true ;
+    ns1:execution <https://example.org/l3/branch/execution/ActivityNodeExecution1>,
+        <https://example.org/l3/branch/execution/ActivityNodeExecution2>,
+        <https://example.org/l3/branch/execution/ActivityNodeExecution3>,
+        <https://example.org/l3/branch/execution/ActivityNodeExecution4>,
+        <https://example.org/l3/branch/execution/ActivityNodeExecution5>,
+        <https://example.org/l3/branch/execution/ActivityNodeExecution6>,
+        <https://example.org/l3/branch/execution/CallBehaviorExecution1>,
+        <https://example.org/l3/branch/execution/CallBehaviorExecution2>,
+        <https://example.org/l3/branch/execution/CallBehaviorExecution3>,
+        <https://example.org/l3/branch/execution/CallBehaviorExecution4> ;
+    ns1:flow <https://example.org/l3/branch/execution/ActivityEdgeFlow1>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow10>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow11>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow12>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow13>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow14>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow15>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow16>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow2>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow3>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow4>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow5>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow6>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow7>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow8>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow9> ;
+    ns1:protocol <https://example.org/l3/branch/main> ;
+    sbol:displayId "execution" ;
+    sbol:hasNamespace <https://example.org/l3/branch/> ;
+    prov:endedAtTime "2000-01-01T00:00:08"^^xsd:dateTime ;
+    prov:qualifiedAssociation <https://example.org/l3/branch/execution/Association1> ;
+    prov:startedAtTime "2000-01-01T00:00:00"^^xsd:dateTime .
+
+<https://example.org/l3/branch/FalseBranch> a ns1:Primitive,
+        sbol:TopLevel ;
+    sbol:displayId "FalseBranch" ;
+    sbol:hasNamespace <https://example.org/l3/branch/> .
+
+<https://example.org/l3/branch/TestPredicate/OrderedPropertyValue1/Parameter1> a ns2:Parameter,
+        sbol:Identified ;
+    ns2:direction ns2:out ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:lowerValue <https://example.org/l3/branch/TestPredicate/OrderedPropertyValue1/Parameter1/LiteralInteger2> ;
+    ns2:type xsd:boolean ;
+    ns2:upperValue <https://example.org/l3/branch/TestPredicate/OrderedPropertyValue1/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "return" .
+
+<https://example.org/l3/branch/TestPredicate/OrderedPropertyValue1/Parameter1/LiteralInteger1> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://example.org/l3/branch/TestPredicate/OrderedPropertyValue1/Parameter1/LiteralInteger2> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://example.org/l3/branch/TrueBranch> a ns1:Primitive,
+        sbol:TopLevel ;
+    sbol:displayId "TrueBranch" ;
+    sbol:hasNamespace <https://example.org/l3/branch/> .
+
+<https://example.org/l3/branch/execute_0> a ns1:BehaviorExecution,
+        sbol:TopLevel ;
+    ns1:completedNormally true ;
+    sbol:displayId "execute_0" ;
+    sbol:hasNamespace <https://example.org/l3/branch/> ;
+    prov:endedAtTime "2000-01-01T00:00:01"^^xsd:dateTime ;
+    prov:startedAtTime "2000-01-01T00:00:00"^^xsd:dateTime .
+
+<https://example.org/l3/branch/execute_1> a ns1:BehaviorExecution,
+        sbol:TopLevel ;
+    ns1:completedNormally true ;
+    ns1:parameterValuePair <https://example.org/l3/branch/execute_1/ParameterValue1> ;
+    sbol:displayId "execute_1" ;
+    sbol:hasNamespace <https://example.org/l3/branch/> ;
+    prov:endedAtTime "2000-01-01T00:00:03"^^xsd:dateTime ;
+    prov:startedAtTime "2000-01-01T00:00:02"^^xsd:dateTime .
+
+<https://example.org/l3/branch/execute_1/ParameterValue1> a ns1:ParameterValue,
+        sbol:Identified ;
+    ns1:parameter <https://example.org/l3/branch/TestPredicate/OrderedPropertyValue1> ;
+    ns1:parameterValue <https://example.org/l3/branch/execute_1/ParameterValue1/LiteralBoolean1> ;
+    sbol:displayId "ParameterValue1" .
+
+<https://example.org/l3/branch/execute_1/ParameterValue1/LiteralBoolean1> a ns2:LiteralBoolean,
+        sbol:Identified ;
+    ns2:booleanValue false ;
+    sbol:displayId "LiteralBoolean1" .
+
+<https://example.org/l3/branch/execute_2> a ns1:BehaviorExecution,
+        sbol:TopLevel ;
+    ns1:completedNormally true ;
+    sbol:displayId "execute_2" ;
+    sbol:hasNamespace <https://example.org/l3/branch/> ;
+    prov:endedAtTime "2000-01-01T00:00:05"^^xsd:dateTime ;
+    prov:startedAtTime "2000-01-01T00:00:04"^^xsd:dateTime .
+
+<https://example.org/l3/branch/execute_3> a ns1:BehaviorExecution,
+        sbol:TopLevel ;
+    ns1:completedNormally true ;
+    sbol:displayId "execute_3" ;
+    sbol:hasNamespace <https://example.org/l3/branch/> ;
+    prov:endedAtTime "2000-01-01T00:00:07"^^xsd:dateTime ;
+    prov:startedAtTime "2000-01-01T00:00:06"^^xsd:dateTime .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow1/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow10/LiteralBoolean1> a ns2:LiteralBoolean,
+        sbol:Identified ;
+    ns2:booleanValue false ;
+    sbol:displayId "LiteralBoolean1" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow11/LiteralBoolean1> a ns2:LiteralBoolean,
+        sbol:Identified ;
+    ns2:booleanValue false ;
+    sbol:displayId "LiteralBoolean1" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow12/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow13/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow14/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow15/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow16/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow2/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow3/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow4/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow5/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow6/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow7/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow8/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow9/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l3/branch/execution/ActivityNodeExecution6> a ns1:ActivityNodeExecution,
+        sbol:Identified ;
+    ns1:incomingFlow <https://example.org/l3/branch/execution/ActivityEdgeFlow16>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow2>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow3> ;
+    ns1:node <https://example.org/l3/branch/execution/FinalNode1> ;
+    sbol:displayId "ActivityNodeExecution6" .
+
+<https://example.org/l3/branch/execution/Association1> a sbol:Identified,
+        prov:Association ;
+    sbol:displayId "Association1" ;
+    prov:agent <https://example.org/l3/branch/software_runner> ;
+    prov:hadPlan <https://example.org/l3/branch/main> .
+
+<https://example.org/l3/branch/main/ControlFlow5/LiteralBoolean1> a ns2:LiteralBoolean,
+        sbol:Identified ;
+    ns2:booleanValue true ;
+    sbol:displayId "LiteralBoolean1" .
+
+<https://example.org/l3/branch/main/ControlFlow6/LiteralBoolean1> a ns2:LiteralBoolean,
+        sbol:Identified ;
+    ns2:booleanValue false ;
+    sbol:displayId "LiteralBoolean1" .
+
+<https://example.org/l3/branch/TestPredicate> a ns1:Primitive,
+        sbol:TopLevel ;
+    ns2:ownedParameter <https://example.org/l3/branch/TestPredicate/OrderedPropertyValue1> ;
+    sbol:displayId "TestPredicate" ;
+    sbol:hasNamespace <https://example.org/l3/branch/> .
+
+<https://example.org/l3/branch/TestPredicate/OrderedPropertyValue1> a ns2:OrderedPropertyValue,
+        sbol:Identified ;
+    ns2:indexValue 0 ;
+    ns2:propertyValue <https://example.org/l3/branch/TestPredicate/OrderedPropertyValue1/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue1" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow1> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l3/branch/execution/ControlFlow1> ;
+    ns1:edgeValue <https://example.org/l3/branch/execution/ActivityEdgeFlow1/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l3/branch/execution/ActivityNodeExecution1> ;
+    sbol:displayId "ActivityEdgeFlow1" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow10> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l3/branch/main/ObjectFlow1> ;
+    ns1:edgeValue <https://example.org/l3/branch/execution/ActivityEdgeFlow10/LiteralBoolean1> ;
+    ns1:tokenSource <https://example.org/l3/branch/execution/CallBehaviorExecution2> ;
+    sbol:displayId "ActivityEdgeFlow10" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow11> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l3/branch/main/ObjectFlow2> ;
+    ns1:edgeValue <https://example.org/l3/branch/execution/ActivityEdgeFlow11/LiteralBoolean1> ;
+    ns1:tokenSource <https://example.org/l3/branch/execution/ActivityNodeExecution3> ;
+    sbol:displayId "ActivityEdgeFlow11" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow12> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l3/branch/main/ControlFlow5> ;
+    ns1:edgeValue <https://example.org/l3/branch/execution/ActivityEdgeFlow12/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l3/branch/execution/ActivityNodeExecution4> ;
+    sbol:displayId "ActivityEdgeFlow12" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow13> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l3/branch/main/ControlFlow6> ;
+    ns1:edgeValue <https://example.org/l3/branch/execution/ActivityEdgeFlow13/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l3/branch/execution/ActivityNodeExecution4> ;
+    sbol:displayId "ActivityEdgeFlow13" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow14> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l3/branch/main/ControlFlow7> ;
+    ns1:edgeValue <https://example.org/l3/branch/execution/ActivityEdgeFlow14/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l3/branch/execution/CallBehaviorExecution3> ;
+    sbol:displayId "ActivityEdgeFlow14" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow15> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l3/branch/main/ControlFlow8> ;
+    ns1:edgeValue <https://example.org/l3/branch/execution/ActivityEdgeFlow15/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l3/branch/execution/CallBehaviorExecution4> ;
+    sbol:displayId "ActivityEdgeFlow15" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow16> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l3/branch/execution/ControlFlow5> ;
+    ns1:edgeValue <https://example.org/l3/branch/execution/ActivityEdgeFlow16/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l3/branch/execution/ActivityNodeExecution5> ;
+    sbol:displayId "ActivityEdgeFlow16" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow2> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l3/branch/execution/ControlFlow3> ;
+    ns1:edgeValue <https://example.org/l3/branch/execution/ActivityEdgeFlow2/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l3/branch/execution/ActivityNodeExecution1> ;
+    sbol:displayId "ActivityEdgeFlow2" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow3> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l3/branch/execution/ControlFlow2> ;
+    ns1:edgeValue <https://example.org/l3/branch/execution/ActivityEdgeFlow3/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l3/branch/execution/CallBehaviorExecution1> ;
+    sbol:displayId "ActivityEdgeFlow3" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow4> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l3/branch/execution/ControlFlow4> ;
+    ns1:edgeValue <https://example.org/l3/branch/execution/ActivityEdgeFlow4/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l3/branch/execution/CallBehaviorExecution1> ;
+    sbol:displayId "ActivityEdgeFlow4" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow5> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l3/branch/main/ControlFlow1> ;
+    ns1:edgeValue <https://example.org/l3/branch/execution/ActivityEdgeFlow5/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l3/branch/execution/ActivityNodeExecution2> ;
+    sbol:displayId "ActivityEdgeFlow5" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow6> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l3/branch/main/ControlFlow2> ;
+    ns1:edgeValue <https://example.org/l3/branch/execution/ActivityEdgeFlow6/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l3/branch/execution/ActivityNodeExecution2> ;
+    sbol:displayId "ActivityEdgeFlow6" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow7> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l3/branch/main/ControlFlow3> ;
+    ns1:edgeValue <https://example.org/l3/branch/execution/ActivityEdgeFlow7/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l3/branch/execution/ActivityNodeExecution2> ;
+    sbol:displayId "ActivityEdgeFlow7" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow8> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l3/branch/main/ControlFlow4> ;
+    ns1:edgeValue <https://example.org/l3/branch/execution/ActivityEdgeFlow8/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l3/branch/execution/ActivityNodeExecution2> ;
+    sbol:displayId "ActivityEdgeFlow8" .
+
+<https://example.org/l3/branch/execution/ActivityEdgeFlow9> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l3/branch/main/ControlFlow9> ;
+    ns1:edgeValue <https://example.org/l3/branch/execution/ActivityEdgeFlow9/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l3/branch/execution/ActivityNodeExecution2> ;
+    sbol:displayId "ActivityEdgeFlow9" .
+
+<https://example.org/l3/branch/execution/ActivityNodeExecution3> a ns1:ActivityNodeExecution,
+        sbol:Identified ;
+    ns1:incomingFlow <https://example.org/l3/branch/execution/ActivityEdgeFlow10> ;
+    ns1:node <https://example.org/l3/branch/main/CallBehaviorAction3/OutputPin1> ;
+    sbol:displayId "ActivityNodeExecution3" .
+
+<https://example.org/l3/branch/execution/ActivityNodeExecution5> a ns1:ActivityNodeExecution,
+        sbol:Identified ;
+    ns1:incomingFlow <https://example.org/l3/branch/execution/ActivityEdgeFlow14>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow15>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow5>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow6>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow9> ;
+    ns1:node <https://example.org/l3/branch/main/FinalNode1> ;
+    sbol:displayId "ActivityNodeExecution5" .
+
+<https://example.org/l3/branch/execution/CallBehaviorExecution2> a ns1:CallBehaviorExecution,
+        sbol:Identified ;
+    ns1:call <https://example.org/l3/branch/execute_1> ;
+    ns1:incomingFlow <https://example.org/l3/branch/execution/ActivityEdgeFlow7> ;
+    ns1:node <https://example.org/l3/branch/main/CallBehaviorAction3> ;
+    sbol:displayId "CallBehaviorExecution2" .
+
+<https://example.org/l3/branch/execution/CallBehaviorExecution3> a ns1:CallBehaviorExecution,
+        sbol:Identified ;
+    ns1:call <https://example.org/l3/branch/execute_2> ;
+    ns1:incomingFlow <https://example.org/l3/branch/execution/ActivityEdgeFlow12> ;
+    ns1:node <https://example.org/l3/branch/main/CallBehaviorAction1> ;
+    sbol:displayId "CallBehaviorExecution3" .
+
+<https://example.org/l3/branch/execution/CallBehaviorExecution4> a ns1:CallBehaviorExecution,
+        sbol:Identified ;
+    ns1:call <https://example.org/l3/branch/execute_3> ;
+    ns1:incomingFlow <https://example.org/l3/branch/execution/ActivityEdgeFlow13> ;
+    ns1:node <https://example.org/l3/branch/main/CallBehaviorAction2> ;
+    sbol:displayId "CallBehaviorExecution4" .
+
+<https://example.org/l3/branch/execution/ControlFlow1> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l3/branch/execution/InitialNode1> ;
+    ns2:target <https://example.org/l3/branch/execution/CallBehaviorAction1> ;
+    sbol:displayId "ControlFlow1" .
+
+<https://example.org/l3/branch/execution/ControlFlow2> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l3/branch/execution/CallBehaviorAction1> ;
+    ns2:target <https://example.org/l3/branch/execution/FinalNode1> ;
+    sbol:displayId "ControlFlow2" .
+
+<https://example.org/l3/branch/execution/ControlFlow3> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l3/branch/execution/InitialNode1> ;
+    ns2:target <https://example.org/l3/branch/execution/FinalNode1> ;
+    sbol:displayId "ControlFlow3" .
+
+<https://example.org/l3/branch/execution/ControlFlow4> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l3/branch/execution/CallBehaviorAction1> ;
+    ns2:target <https://example.org/l3/branch/main/InitialNode1> ;
+    sbol:displayId "ControlFlow4" .
+
+<https://example.org/l3/branch/execution/ControlFlow5> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l3/branch/main/FinalNode1> ;
+    ns2:target <https://example.org/l3/branch/execution/FinalNode1> ;
+    sbol:displayId "ControlFlow5" .
+
+<https://example.org/l3/branch/main/ControlFlow1> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l3/branch/main/InitialNode1> ;
+    ns2:target <https://example.org/l3/branch/main/FinalNode1> ;
+    sbol:displayId "ControlFlow1" .
+
+<https://example.org/l3/branch/main/ControlFlow2> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l3/branch/main/InitialNode1> ;
+    ns2:target <https://example.org/l3/branch/main/FinalNode1> ;
+    sbol:displayId "ControlFlow2" .
+
+<https://example.org/l3/branch/main/ControlFlow3> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l3/branch/main/InitialNode1> ;
+    ns2:target <https://example.org/l3/branch/main/CallBehaviorAction3> ;
+    sbol:displayId "ControlFlow3" .
+
+<https://example.org/l3/branch/main/ControlFlow4> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l3/branch/main/InitialNode1> ;
+    ns2:target <https://example.org/l3/branch/main/DecisionNode1> ;
+    sbol:displayId "ControlFlow4" .
+
+<https://example.org/l3/branch/main/ControlFlow5> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:guard <https://example.org/l3/branch/main/ControlFlow5/LiteralBoolean1> ;
+    ns2:source <https://example.org/l3/branch/main/DecisionNode1> ;
+    ns2:target <https://example.org/l3/branch/main/CallBehaviorAction1> ;
+    sbol:displayId "ControlFlow5" .
+
+<https://example.org/l3/branch/main/ControlFlow6> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:guard <https://example.org/l3/branch/main/ControlFlow6/LiteralBoolean1> ;
+    ns2:source <https://example.org/l3/branch/main/DecisionNode1> ;
+    ns2:target <https://example.org/l3/branch/main/CallBehaviorAction2> ;
+    sbol:displayId "ControlFlow6" .
+
+<https://example.org/l3/branch/main/ControlFlow7> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l3/branch/main/CallBehaviorAction1> ;
+    ns2:target <https://example.org/l3/branch/main/FinalNode1> ;
+    sbol:displayId "ControlFlow7" .
+
+<https://example.org/l3/branch/main/ControlFlow8> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l3/branch/main/CallBehaviorAction2> ;
+    ns2:target <https://example.org/l3/branch/main/FinalNode1> ;
+    sbol:displayId "ControlFlow8" .
+
+<https://example.org/l3/branch/main/ControlFlow9> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l3/branch/main/InitialNode1> ;
+    ns2:target <https://example.org/l3/branch/main/FinalNode1> ;
+    sbol:displayId "ControlFlow9" .
+
+<https://example.org/l3/branch/main/ObjectFlow1> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l3/branch/main/CallBehaviorAction3> ;
+    ns2:target <https://example.org/l3/branch/main/CallBehaviorAction3/OutputPin1> ;
+    sbol:displayId "ObjectFlow1" .
+
+<https://example.org/l3/branch/main/ObjectFlow2> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l3/branch/main/CallBehaviorAction3/OutputPin1> ;
+    ns2:target <https://example.org/l3/branch/main/DecisionNode1> ;
+    sbol:displayId "ObjectFlow2" .
+
+<https://example.org/l3/branch/execution/ActivityNodeExecution1> a ns1:ActivityNodeExecution,
+        sbol:Identified ;
+    ns1:node <https://example.org/l3/branch/execution/InitialNode1> ;
+    sbol:displayId "ActivityNodeExecution1" .
+
+<https://example.org/l3/branch/execution/ActivityNodeExecution4> a ns1:ActivityNodeExecution,
+        sbol:Identified ;
+    ns1:incomingFlow <https://example.org/l3/branch/execution/ActivityEdgeFlow11>,
+        <https://example.org/l3/branch/execution/ActivityEdgeFlow8> ;
+    ns1:node <https://example.org/l3/branch/main/DecisionNode1> ;
+    sbol:displayId "ActivityNodeExecution4" .
+
+<https://example.org/l3/branch/execution/CallBehaviorExecution1> a ns1:CallBehaviorExecution,
+        sbol:Identified ;
+    ns1:call <https://example.org/l3/branch/execute_0> ;
+    ns1:incomingFlow <https://example.org/l3/branch/execution/ActivityEdgeFlow1> ;
+    ns1:node <https://example.org/l3/branch/execution/CallBehaviorAction1> ;
+    sbol:displayId "CallBehaviorExecution1" .
+
+<https://example.org/l3/branch/main> a ns1:Protocol,
+        sbol:TopLevel ;
+    ns2:edge <https://example.org/l3/branch/main/ControlFlow1>,
+        <https://example.org/l3/branch/main/ControlFlow2>,
+        <https://example.org/l3/branch/main/ControlFlow3>,
+        <https://example.org/l3/branch/main/ControlFlow4>,
+        <https://example.org/l3/branch/main/ControlFlow5>,
+        <https://example.org/l3/branch/main/ControlFlow6>,
+        <https://example.org/l3/branch/main/ControlFlow7>,
+        <https://example.org/l3/branch/main/ControlFlow8>,
+        <https://example.org/l3/branch/main/ControlFlow9>,
+        <https://example.org/l3/branch/main/ObjectFlow1>,
+        <https://example.org/l3/branch/main/ObjectFlow2> ;
+    ns2:node <https://example.org/l3/branch/main/CallBehaviorAction1>,
+        <https://example.org/l3/branch/main/CallBehaviorAction2>,
+        <https://example.org/l3/branch/main/CallBehaviorAction3>,
+        <https://example.org/l3/branch/main/DecisionNode1>,
+        <https://example.org/l3/branch/main/FinalNode1>,
+        <https://example.org/l3/branch/main/InitialNode1> ;
+    sbol:description "L3 control" ;
+    sbol:displayId "main" ;
+    sbol:hasNamespace <https://example.org/l3/branch/> ;
+    sbol:name "L3 control" .
+
+<https://example.org/l3/branch/execution/InitialNode1> a ns2:InitialNode,
+        sbol:Identified ;
+    sbol:displayId "InitialNode1" .
+
+<https://example.org/l3/branch/main/CallBehaviorAction1> a ns2:CallBehaviorAction,
+        sbol:Identified ;
+    ns2:behavior <https://example.org/l3/branch/TrueBranch> ;
+    sbol:displayId "CallBehaviorAction1" .
+
+<https://example.org/l3/branch/main/CallBehaviorAction2> a ns2:CallBehaviorAction,
+        sbol:Identified ;
+    ns2:behavior <https://example.org/l3/branch/FalseBranch> ;
+    sbol:displayId "CallBehaviorAction2" .
+
+<https://example.org/l3/branch/main/CallBehaviorAction3> a ns2:CallBehaviorAction,
+        sbol:Identified ;
+    ns2:behavior <https://example.org/l3/branch/TestPredicate> ;
+    ns2:output <https://example.org/l3/branch/main/CallBehaviorAction3/OutputPin1> ;
+    sbol:displayId "CallBehaviorAction3" .
+
+<https://example.org/l3/branch/main/CallBehaviorAction3/OutputPin1> a ns2:OutputPin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    sbol:displayId "OutputPin1" ;
+    sbol:name "return" .
+
+<https://example.org/l3/branch/execution/CallBehaviorAction1> a ns2:CallBehaviorAction,
+        sbol:Identified ;
+    ns2:behavior <https://example.org/l3/branch/main> ;
+    sbol:displayId "CallBehaviorAction1" .
+
+<https://example.org/l3/branch/execution/FinalNode1> a ns2:FinalNode,
+        sbol:Identified ;
+    sbol:displayId "FinalNode1" .
+
+<https://example.org/l3/branch/execution/ActivityNodeExecution2> a ns1:ActivityNodeExecution,
+        sbol:Identified ;
+    ns1:incomingFlow <https://example.org/l3/branch/execution/ActivityEdgeFlow4> ;
+    ns1:node <https://example.org/l3/branch/main/InitialNode1> ;
+    sbol:displayId "ActivityNodeExecution2" .
+
+<https://example.org/l3/branch/main/DecisionNode1> a ns2:DecisionNode,
+        sbol:Identified ;
+    ns2:decisionInput <https://example.org/l3/branch/TestPredicate> ;
+    sbol:displayId "DecisionNode1" .
+
+<https://example.org/l3/branch/main/FinalNode1> a ns2:FinalNode,
+        sbol:Identified ;
+    sbol:displayId "FinalNode1" .
+
+<https://example.org/l3/branch/main/InitialNode1> a ns2:InitialNode,
+        sbol:Identified ;
+    sbol:displayId "InitialNode1" .
+

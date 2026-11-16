@@ -1,0 +1,683 @@
+{
+  "kind": "IRProgram",
+  "protocols": [
+    {
+      "id": "p0",
+      "module": "reuse",
+      "name": "Aliquot",
+      "params": [
+        {
+          "default": null,
+          "name": "source",
+          "span": {
+            "col": 18,
+            "end": 23,
+            "line": 1,
+            "start": 17
+          }
+        },
+        {
+          "default": null,
+          "name": "destination",
+          "span": {
+            "col": 26,
+            "end": 36,
+            "line": 1,
+            "start": 25
+          }
+        },
+        {
+          "default": null,
+          "name": "amount",
+          "span": {
+            "col": 39,
+            "end": 44,
+            "line": 1,
+            "start": 38
+          }
+        }
+      ],
+      "return_bindings": [],
+      "return_value": null,
+      "returns": [],
+      "source_path": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/results/l1/reuse.culs",
+      "source_role": "entry",
+      "span": {
+        "col": 1,
+        "end": 82,
+        "line": 1,
+        "start": 0
+      },
+      "statements": [
+        {
+          "id": "p0.s0",
+          "sources": [
+            {
+              "left": {
+                "name": "source",
+                "span": {
+                  "col": 18,
+                  "end": 71,
+                  "line": 2,
+                  "start": 65
+                }
+              },
+              "right": {
+                "name": "amount",
+                "span": {
+                  "col": 25,
+                  "end": 78,
+                  "line": 2,
+                  "start": 72
+                }
+              },
+              "span": {
+                "col": 18,
+                "end": 78,
+                "line": 2,
+                "start": 65
+              }
+            }
+          ],
+          "span": {
+            "col": 2,
+            "end": 79,
+            "line": 2,
+            "start": 49
+          },
+          "target": {
+            "name": "destination",
+            "span": {
+              "col": 2,
+              "end": 60,
+              "line": 2,
+              "start": 49
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "script_entry": {
+    "id": "entry",
+    "return_bindings": [],
+    "return_value": {
+      "name": "second",
+      "span": {
+        "col": 8,
+        "end": 482,
+        "line": 10,
+        "start": 476
+      }
+    },
+    "returns": [],
+    "source_paths": [
+      "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/results/l1/reuse.culs"
+    ],
+    "span": {
+      "col": 1,
+      "end": 236,
+      "line": 4,
+      "start": 83
+    },
+    "statements": [
+      {
+        "id": "entry.s0",
+        "name": "stock",
+        "span": {
+          "col": 1,
+          "end": 236,
+          "line": 4,
+          "start": 83
+        },
+        "value": {
+          "args": [
+            {
+              "name": "kind",
+              "span": {
+                "col": 13,
+                "end": 236,
+                "line": 4,
+                "start": 95
+              },
+              "value": {
+                "span": {
+                  "col": 13,
+                  "end": 236,
+                  "line": 4,
+                  "start": 95
+                },
+                "value": "tube"
+              }
+            },
+            {
+              "name": "label",
+              "span": {
+                "col": 18,
+                "end": 115,
+                "line": 4,
+                "start": 100
+              },
+              "value": {
+                "span": {
+                  "col": 26,
+                  "end": 115,
+                  "line": 4,
+                  "start": 108
+                },
+                "value": "stock"
+              }
+            },
+            {
+              "name": "capacity",
+              "span": {
+                "col": 35,
+                "end": 133,
+                "line": 4,
+                "start": 117
+              },
+              "value": {
+                "span": {
+                  "col": 46,
+                  "end": 133,
+                  "line": 4,
+                  "start": 128
+                },
+                "unit": "mL",
+                "value": 1.5
+              }
+            },
+            {
+              "name": "load",
+              "span": {
+                "col": 53,
+                "end": 235,
+                "line": 4,
+                "start": 135
+              },
+              "value": {
+                "elements": [
+                  {
+                    "left": {
+                      "args": [
+                        {
+                          "name": "kind",
+                          "span": {
+                            "col": 10,
+                            "end": 183,
+                            "line": 5,
+                            "start": 153
+                          },
+                          "value": {
+                            "base": {
+                              "name": "ContentKind",
+                              "span": {
+                                "col": 17,
+                                "end": 171,
+                                "line": 5,
+                                "start": 160
+                              }
+                            },
+                            "member": "FORMULATION",
+                            "span": {
+                              "col": 17,
+                              "end": 183,
+                              "line": 5,
+                              "start": 160
+                            }
+                          }
+                        },
+                        {
+                          "name": "type",
+                          "span": {
+                            "col": 42,
+                            "end": 210,
+                            "line": 5,
+                            "start": 185
+                          },
+                          "value": {
+                            "base": {
+                              "name": "ContentType",
+                              "span": {
+                                "col": 49,
+                                "end": 203,
+                                "line": 5,
+                                "start": 192
+                              }
+                            },
+                            "member": "BUFFER",
+                            "span": {
+                              "col": 49,
+                              "end": 210,
+                              "line": 5,
+                              "start": 192
+                            }
+                          }
+                        },
+                        {
+                          "name": "code",
+                          "span": {
+                            "col": 69,
+                            "end": 227,
+                            "line": 5,
+                            "start": 212
+                          },
+                          "value": {
+                            "span": {
+                              "col": 76,
+                              "end": 227,
+                              "line": 5,
+                              "start": 219
+                            },
+                            "value": "BUFFER"
+                          }
+                        }
+                      ],
+                      "name": "DefineContent",
+                      "span": {
+                        "col": 2,
+                        "end": 228,
+                        "line": 5,
+                        "start": 145
+                      }
+                    },
+                    "right": {
+                      "span": {
+                        "col": 86,
+                        "end": 234,
+                        "line": 5,
+                        "start": 229
+                      },
+                      "unit": "uL",
+                      "value": 100.0
+                    },
+                    "span": {
+                      "col": 2,
+                      "end": 234,
+                      "line": 5,
+                      "start": 145
+                    }
+                  }
+                ],
+                "span": {
+                  "col": 60,
+                  "end": 235,
+                  "line": 4,
+                  "start": 142
+                }
+              }
+            }
+          ],
+          "name": "AllocContainer",
+          "span": {
+            "col": 13,
+            "end": 236,
+            "line": 4,
+            "start": 95
+          }
+        }
+      },
+      {
+        "id": "entry.s1",
+        "name": "first",
+        "span": {
+          "col": 1,
+          "end": 289,
+          "line": 6,
+          "start": 238
+        },
+        "value": {
+          "args": [
+            {
+              "name": "kind",
+              "span": {
+                "col": 13,
+                "end": 289,
+                "line": 6,
+                "start": 250
+              },
+              "value": {
+                "span": {
+                  "col": 13,
+                  "end": 289,
+                  "line": 6,
+                  "start": 250
+                },
+                "value": "tube"
+              }
+            },
+            {
+              "name": "label",
+              "span": {
+                "col": 18,
+                "end": 270,
+                "line": 6,
+                "start": 255
+              },
+              "value": {
+                "span": {
+                  "col": 26,
+                  "end": 270,
+                  "line": 6,
+                  "start": 263
+                },
+                "value": "first"
+              }
+            },
+            {
+              "name": "capacity",
+              "span": {
+                "col": 35,
+                "end": 288,
+                "line": 6,
+                "start": 272
+              },
+              "value": {
+                "span": {
+                  "col": 46,
+                  "end": 288,
+                  "line": 6,
+                  "start": 283
+                },
+                "unit": "mL",
+                "value": 1.5
+              }
+            }
+          ],
+          "name": "AllocContainer",
+          "span": {
+            "col": 13,
+            "end": 289,
+            "line": 6,
+            "start": 250
+          }
+        }
+      },
+      {
+        "id": "entry.s2",
+        "name": "second",
+        "span": {
+          "col": 1,
+          "end": 344,
+          "line": 7,
+          "start": 291
+        },
+        "value": {
+          "args": [
+            {
+              "name": "kind",
+              "span": {
+                "col": 14,
+                "end": 344,
+                "line": 7,
+                "start": 304
+              },
+              "value": {
+                "span": {
+                  "col": 14,
+                  "end": 344,
+                  "line": 7,
+                  "start": 304
+                },
+                "value": "tube"
+              }
+            },
+            {
+              "name": "label",
+              "span": {
+                "col": 19,
+                "end": 325,
+                "line": 7,
+                "start": 309
+              },
+              "value": {
+                "span": {
+                  "col": 27,
+                  "end": 325,
+                  "line": 7,
+                  "start": 317
+                },
+                "value": "second"
+              }
+            },
+            {
+              "name": "capacity",
+              "span": {
+                "col": 37,
+                "end": 343,
+                "line": 7,
+                "start": 327
+              },
+              "value": {
+                "span": {
+                  "col": 48,
+                  "end": 343,
+                  "line": 7,
+                  "start": 338
+                },
+                "unit": "mL",
+                "value": 1.5
+              }
+            }
+          ],
+          "name": "AllocContainer",
+          "span": {
+            "col": 14,
+            "end": 344,
+            "line": 7,
+            "start": 304
+          }
+        }
+      },
+      {
+        "id": "entry.s3",
+        "name": "__cmp_entry_s3_source",
+        "span": {
+          "col": 1,
+          "end": 405,
+          "line": 8,
+          "start": 346
+        },
+        "value": {
+          "name": "stock",
+          "span": {
+            "col": 18,
+            "end": 368,
+            "line": 8,
+            "start": 363
+          }
+        }
+      },
+      {
+        "id": "entry.s4",
+        "name": "__cmp_entry_s3_destination",
+        "span": {
+          "col": 1,
+          "end": 405,
+          "line": 8,
+          "start": 346
+        },
+        "value": {
+          "name": "first",
+          "span": {
+            "col": 39,
+            "end": 389,
+            "line": 8,
+            "start": 384
+          }
+        }
+      },
+      {
+        "id": "entry.s5",
+        "name": "__cmp_entry_s3_amount",
+        "span": {
+          "col": 1,
+          "end": 405,
+          "line": 8,
+          "start": 346
+        },
+        "value": {
+          "span": {
+            "col": 55,
+            "end": 404,
+            "line": 8,
+            "start": 400
+          },
+          "unit": "uL",
+          "value": 10.0
+        }
+      },
+      {
+        "id": "entry.s6",
+        "sources": [
+          {
+            "left": {
+              "name": "__cmp_entry_s3_source",
+              "span": {
+                "col": 18,
+                "end": 71,
+                "line": 2,
+                "start": 65
+              }
+            },
+            "right": {
+              "name": "__cmp_entry_s3_amount",
+              "span": {
+                "col": 25,
+                "end": 78,
+                "line": 2,
+                "start": 72
+              }
+            },
+            "span": {
+              "col": 18,
+              "end": 78,
+              "line": 2,
+              "start": 65
+            }
+          }
+        ],
+        "span": {
+          "col": 2,
+          "end": 79,
+          "line": 2,
+          "start": 49
+        },
+        "target": {
+          "name": "__cmp_entry_s3_destination",
+          "span": {
+            "col": 2,
+            "end": 60,
+            "line": 2,
+            "start": 49
+          }
+        }
+      },
+      {
+        "id": "entry.s7",
+        "name": "__cmp_entry_s4_source",
+        "span": {
+          "col": 1,
+          "end": 467,
+          "line": 9,
+          "start": 407
+        },
+        "value": {
+          "name": "stock",
+          "span": {
+            "col": 18,
+            "end": 429,
+            "line": 9,
+            "start": 424
+          }
+        }
+      },
+      {
+        "id": "entry.s8",
+        "name": "__cmp_entry_s4_destination",
+        "span": {
+          "col": 1,
+          "end": 467,
+          "line": 9,
+          "start": 407
+        },
+        "value": {
+          "name": "second",
+          "span": {
+            "col": 39,
+            "end": 451,
+            "line": 9,
+            "start": 445
+          }
+        }
+      },
+      {
+        "id": "entry.s9",
+        "name": "__cmp_entry_s4_amount",
+        "span": {
+          "col": 1,
+          "end": 467,
+          "line": 9,
+          "start": 407
+        },
+        "value": {
+          "span": {
+            "col": 56,
+            "end": 466,
+            "line": 9,
+            "start": 462
+          },
+          "unit": "uL",
+          "value": 20.0
+        }
+      },
+      {
+        "id": "entry.s10",
+        "sources": [
+          {
+            "left": {
+              "name": "__cmp_entry_s4_source",
+              "span": {
+                "col": 18,
+                "end": 71,
+                "line": 2,
+                "start": 65
+              }
+            },
+            "right": {
+              "name": "__cmp_entry_s4_amount",
+              "span": {
+                "col": 25,
+                "end": 78,
+                "line": 2,
+                "start": 72
+              }
+            },
+            "span": {
+              "col": 18,
+              "end": 78,
+              "line": 2,
+              "start": 65
+            }
+          }
+        ],
+        "span": {
+          "col": 2,
+          "end": 79,
+          "line": 2,
+          "start": 49
+        },
+        "target": {
+          "name": "__cmp_entry_s4_destination",
+          "span": {
+            "col": 2,
+            "end": 60,
+            "line": 2,
+            "start": 49
+          }
+        }
+      }
+    ]
+  },
+  "span": null
+}

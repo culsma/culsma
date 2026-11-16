@@ -1,0 +1,346 @@
+{
+  "scope": "Model construction, validation and RDF roundtrip; no protocol execution or physical experiment.",
+  "labop_commit": "2e2bd88150c71a440771fd369f40295dfd622324",
+  "pin_source": "Retained environment; selected installed files hashed, not a complete fresh installation audit.",
+  "python": "3.11.11 (main, Jun  6 2025, 11:38:50) [Clang 17.0.0 (clang-1700.0.13.5)]",
+  "volume_definition": {
+    "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre",
+    "base_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/litre",
+    "dimension": "http://www.ontology-of-units-of-measure.org/resource/om-2/volume-Dimension"
+  },
+  "versions": {
+    "labop": "1.0a2",
+    "sbol3": "1.2.0.post0",
+    "tyto": "1.4"
+  },
+  "sha256": {
+    "observer": "f34c39d1b13c35d4af6e1e213ac55026cf0060f2cdf2d329e4a7645506a2a8f9",
+    "tyto/ontologies/om-2.0.rdf": "401dd64dfca90514a211f8255e85f443582b447114cbad30292317ca10de86de",
+    "labop/lib/liquid_handling.ttl": "f848017ab3366f6e453caa48b8325b77ffcdc0bdb729f30a476ade52864a3355",
+    "labop/lib/sample_arrays.ttl": "826ceac438e9d54f16040ee1802db8a6f3b2a975674fc8ce3b9cfd26daaaf97e",
+    "uml/inner/uml.ttl": "698921e4482a4f43348f62e8e51e7c4bdc079010d910e9bc2f10e8a5c4586a2a",
+    "uml/activity.py": "24c5db8b4e6e40b7b8d75bed372394a5c3ffd5d346c2734ea1efa6dfddc6e43f",
+    "uml/behavior.py": "fcb553a034ccfc06ef42501799278f22b627fe28952d076d3533e11def736566",
+    "uml/action.py": "25a587ece4f15bf1d996d81a848c6d59a4fa9f12917d7c20f379a67b4fbde4a5",
+    "sbol3/component.py": "b8dd155ddcb0a5dacc097359f54101b93a42518222a3a97cb85b24aef771a57d",
+    "sbol3/subcomponent.py": "43e54e627ce31c24efb9e9deb2f863ee41b3718c02ce1969a9b51e40b67891bc",
+    "sbol3/om_unit.py": "56633a5f3b0ff3454ff9500541ac8ab50339ae27c78e930a61a43ebf997726d2",
+    "sbol3/constants.py": "7839ac423a3aa53afa1853cf9fcf6204d370ed56b893ad3e802c5312359a9ae0",
+    "labop_time/__init__.py": "0a0dab0cc4ddd3783c847fbfa1ebdbfccdddcbfa7a5cd9a0aad5c29995939fc8",
+    "labop_time/labop_time.ttl": "0799567997a605835fe67f0035298a5ebd0d3c7a52513eabde799859cc033ccf"
+  },
+  "cases": [
+    {
+      "case": "entities",
+      "validation": {
+        "errors": [],
+        "warnings": []
+      },
+      "before": {
+        "container_output_ids": [
+          "https://example.org/modeling-check/protocol/CallBehaviorAction1/OutputPin1",
+          "https://example.org/modeling-check/protocol/CallBehaviorAction2/OutputPin1"
+        ],
+        "source_flows": [
+          [
+            "https://example.org/modeling-check/protocol/CallBehaviorAction1/OutputPin1"
+          ],
+          [
+            "https://example.org/modeling-check/protocol/CallBehaviorAction2/OutputPin1"
+          ]
+        ],
+        "amount": {
+          "value": 20.0,
+          "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre"
+        }
+      },
+      "reread_validation": {
+        "errors": [],
+        "warnings": [
+          "https://example.org/modeling-check/protocol/FinalNode1: Node has no incoming edges, so cannot be executed"
+        ]
+      },
+      "after": {
+        "container_output_ids": [
+          "https://example.org/modeling-check/protocol/CallBehaviorAction1/OutputPin1",
+          "https://example.org/modeling-check/protocol/CallBehaviorAction2/OutputPin1"
+        ],
+        "source_flows": [
+          [
+            "https://example.org/modeling-check/protocol/CallBehaviorAction1/OutputPin1"
+          ],
+          [
+            "https://example.org/modeling-check/protocol/CallBehaviorAction2/OutputPin1"
+          ]
+        ],
+        "amount": {
+          "value": 20.0,
+          "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre"
+        }
+      },
+      "graph_isomorphic": true,
+      "passed": true
+    },
+    {
+      "case": "products",
+      "validation": {
+        "errors": [],
+        "warnings": []
+      },
+      "before": {
+        "container_output_ids": [
+          "https://example.org/modeling-check/protocol/CallBehaviorAction1/OutputPin1",
+          "https://example.org/modeling-check/protocol/CallBehaviorAction2/OutputPin1"
+        ],
+        "source_flows": [
+          [
+            "https://example.org/modeling-check/protocol/CallBehaviorAction3/OutputPin1"
+          ],
+          [
+            "https://example.org/modeling-check/protocol/CallBehaviorAction3/OutputPin2"
+          ]
+        ],
+        "amount": {
+          "value": 20.0,
+          "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre"
+        }
+      },
+      "reread_validation": {
+        "errors": [],
+        "warnings": [
+          "https://example.org/modeling-check/protocol/FinalNode1: Node has no incoming edges, so cannot be executed"
+        ]
+      },
+      "after": {
+        "container_output_ids": [
+          "https://example.org/modeling-check/protocol/CallBehaviorAction1/OutputPin1",
+          "https://example.org/modeling-check/protocol/CallBehaviorAction2/OutputPin1"
+        ],
+        "source_flows": [
+          [
+            "https://example.org/modeling-check/protocol/CallBehaviorAction3/OutputPin1"
+          ],
+          [
+            "https://example.org/modeling-check/protocol/CallBehaviorAction3/OutputPin2"
+          ]
+        ],
+        "amount": {
+          "value": 20.0,
+          "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre"
+        }
+      },
+      "graph_isomorphic": true,
+      "passed": true
+    },
+    {
+      "case": "quantity",
+      "validation": {
+        "errors": [],
+        "warnings": []
+      },
+      "before": {
+        "container_output_ids": [
+          "https://example.org/modeling-check/protocol/CallBehaviorAction1/OutputPin1",
+          "https://example.org/modeling-check/protocol/CallBehaviorAction2/OutputPin1"
+        ],
+        "source_flows": [
+          [
+            "https://example.org/modeling-check/protocol/CallBehaviorAction1/OutputPin1"
+          ],
+          [
+            "https://example.org/modeling-check/protocol/CallBehaviorAction2/OutputPin1"
+          ]
+        ],
+        "amount": {
+          "value": 20.0,
+          "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre"
+        }
+      },
+      "reread_validation": {
+        "errors": [],
+        "warnings": [
+          "https://example.org/modeling-check/protocol/FinalNode1: Node has no incoming edges, so cannot be executed"
+        ]
+      },
+      "after": {
+        "container_output_ids": [
+          "https://example.org/modeling-check/protocol/CallBehaviorAction1/OutputPin1",
+          "https://example.org/modeling-check/protocol/CallBehaviorAction2/OutputPin1"
+        ],
+        "source_flows": [
+          [
+            "https://example.org/modeling-check/protocol/CallBehaviorAction1/OutputPin1"
+          ],
+          [
+            "https://example.org/modeling-check/protocol/CallBehaviorAction2/OutputPin1"
+          ]
+        ],
+        "amount": {
+          "value": 20.0,
+          "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre"
+        }
+      },
+      "graph_isomorphic": true,
+      "passed": true
+    },
+    {
+      "case": "complex",
+      "validation": {
+        "errors": [],
+        "warnings": []
+      },
+      "before": {
+        "container_output_ids": [
+          "https://example.org/modeling-check/protocol/CallBehaviorAction1/OutputPin1",
+          "https://example.org/modeling-check/protocol/CallBehaviorAction2/OutputPin1"
+        ],
+        "material_types": [
+          "https://identifiers.org/SBO:0000253"
+        ],
+        "constituents": [
+          "https://example.org/modeling-check/ligand",
+          "https://example.org/modeling-check/protein"
+        ],
+        "protocol_resource": "https://example.org/modeling-check/material"
+      },
+      "reread_validation": {
+        "errors": [],
+        "warnings": [
+          "https://example.org/modeling-check/protocol/FinalNode1: Node has no incoming edges, so cannot be executed"
+        ]
+      },
+      "after": {
+        "container_output_ids": [
+          "https://example.org/modeling-check/protocol/CallBehaviorAction1/OutputPin1",
+          "https://example.org/modeling-check/protocol/CallBehaviorAction2/OutputPin1"
+        ],
+        "material_types": [
+          "https://identifiers.org/SBO:0000253"
+        ],
+        "constituents": [
+          "https://example.org/modeling-check/ligand",
+          "https://example.org/modeling-check/protein"
+        ],
+        "protocol_resource": "https://example.org/modeling-check/material"
+      },
+      "graph_isomorphic": true,
+      "passed": true
+    },
+    {
+      "case": "unspecified_association",
+      "validation": {
+        "errors": [],
+        "warnings": []
+      },
+      "before": {
+        "container_output_ids": [
+          "https://example.org/modeling-check/protocol/CallBehaviorAction1/OutputPin1",
+          "https://example.org/modeling-check/protocol/CallBehaviorAction2/OutputPin1"
+        ],
+        "material_types": [
+          "https://identifiers.org/SBO:0000241"
+        ],
+        "constituents": [
+          "https://example.org/modeling-check/ligand",
+          "https://example.org/modeling-check/protein"
+        ],
+        "protocol_resource": "https://example.org/modeling-check/material"
+      },
+      "reread_validation": {
+        "errors": [],
+        "warnings": [
+          "https://example.org/modeling-check/protocol/FinalNode1: Node has no incoming edges, so cannot be executed"
+        ]
+      },
+      "after": {
+        "container_output_ids": [
+          "https://example.org/modeling-check/protocol/CallBehaviorAction1/OutputPin1",
+          "https://example.org/modeling-check/protocol/CallBehaviorAction2/OutputPin1"
+        ],
+        "material_types": [
+          "https://identifiers.org/SBO:0000241"
+        ],
+        "constituents": [
+          "https://example.org/modeling-check/ligand",
+          "https://example.org/modeling-check/protein"
+        ],
+        "protocol_resource": "https://example.org/modeling-check/material"
+      },
+      "graph_isomorphic": true,
+      "passed": true
+    },
+    {
+      "case": "timing",
+      "validation": {
+        "errors": [],
+        "warnings": []
+      },
+      "before": {
+        "container_output_ids": [
+          "https://example.org/modeling-check/protocol/CallBehaviorAction1/OutputPin1",
+          "https://example.org/modeling-check/protocol/CallBehaviorAction2/OutputPin1"
+        ],
+        "source_flows": [
+          [
+            "https://example.org/modeling-check/protocol/CallBehaviorAction1/OutputPin1"
+          ],
+          [
+            "https://example.org/modeling-check/protocol/CallBehaviorAction2/OutputPin1"
+          ]
+        ],
+        "amount": {
+          "value": 20.0,
+          "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre"
+        },
+        "constraint_targets": [
+          "https://example.org/modeling-check/protocol/CallBehaviorAction3"
+        ],
+        "interval": [
+          10.0,
+          20.0
+        ],
+        "interval_units": [
+          "http://www.ontology-of-units-of-measure.org/resource/om-2/second-Time",
+          "http://www.ontology-of-units-of-measure.org/resource/om-2/second-Time"
+        ]
+      },
+      "reread_validation": {
+        "errors": [],
+        "warnings": [
+          "https://example.org/modeling-check/protocol/FinalNode1: Node has no incoming edges, so cannot be executed"
+        ]
+      },
+      "after": {
+        "container_output_ids": [
+          "https://example.org/modeling-check/protocol/CallBehaviorAction1/OutputPin1",
+          "https://example.org/modeling-check/protocol/CallBehaviorAction2/OutputPin1"
+        ],
+        "source_flows": [
+          [
+            "https://example.org/modeling-check/protocol/CallBehaviorAction1/OutputPin1"
+          ],
+          [
+            "https://example.org/modeling-check/protocol/CallBehaviorAction2/OutputPin1"
+          ]
+        ],
+        "amount": {
+          "value": 20.0,
+          "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre"
+        },
+        "constraint_targets": [
+          "https://example.org/modeling-check/protocol/CallBehaviorAction3"
+        ],
+        "interval": [
+          10.0,
+          20.0
+        ],
+        "interval_units": [
+          "http://www.ontology-of-units-of-measure.org/resource/om-2/second-Time",
+          "http://www.ontology-of-units-of-measure.org/resource/om-2/second-Time"
+        ]
+      },
+      "graph_isomorphic": true,
+      "passed": true
+    }
+  ]
+}

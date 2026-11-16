@@ -1,0 +1,23 @@
+strict digraph sample_graph {
+	graph [label=SampleGraph rankdir=TB]
+	node [ordering=out]
+	"sample_GFP lysate_0" -> "sample_GFP lysate_1"
+	subgraph cluster_lysate_tube {
+		graph [label=lysate_tube]
+		subgraph cluster_lysate_tube_A1 {
+			graph [label=lysate_tube_A1]
+			"sample_GFP lysate_1" [label="sample_GFP lysate_1 @1
+lysate_liquid: 160.0"]
+			"sample_GFP lysate_0" [label="sample_GFP lysate_0 @0
+lysate_liquid: nan"]
+		}
+	}
+	subgraph cluster_supernatant_tube {
+		graph [label=supernatant_tube]
+		subgraph cluster_supernatant_tube_A1 {
+			graph [label=supernatant_tube_A1]
+			"sample_Collected liquid_0" [label="sample_Collected liquid_0 @2
+lysate_liquid: nan"]
+		}
+	}
+}

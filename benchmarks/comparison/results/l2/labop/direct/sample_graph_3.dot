@@ -1,0 +1,30 @@
+strict digraph sample_graph {
+	graph [label=SampleGraph rankdir=TB]
+	node [ordering=out]
+	sample_None_1 -> sample_None_2
+	sample_target_0 -> sample_None_1
+	sample_None_1 -> sample_None_1
+	sample_prepared_0 -> sample_None_1
+	subgraph cluster_prepared_spec {
+		graph [label=prepared_spec]
+		subgraph cluster_prepared_spec_A1 {
+			graph [label=prepared_spec_A1]
+			sample_None_2 [label="sample_None_2 @3
+buffer: 90.0"]
+			sample_None_1 [label="sample_None_1 @2
+buffer: 100.0"]
+			sample_prepared_0 [label="sample_prepared_0 @1
+buffer: nan"]
+		}
+	}
+	subgraph cluster_target_spec {
+		graph [label=target_spec]
+		subgraph cluster_target_spec_A1 {
+			graph [label=target_spec_A1]
+			sample_None_1 [label="sample_None_1 @3
+buffer: 10.0"]
+			sample_target_0 [label="sample_target_0 @0
+buffer: nan"]
+		}
+	}
+}

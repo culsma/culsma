@@ -1,0 +1,1 @@
+{"artifacts": {"diagnostics": "artifacts/check/undefined_calls.diagnostics.json"}, "command": "check", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/undefined_calls.bpl", "ok": true}

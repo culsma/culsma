@@ -1,0 +1,1 @@
+{"diagnostics": [{"code": "CAPABILITY_UNSUPPORTED_SET", "hint": "Use non-strict mode or switch backend target.", "location": null, "message": "Strict capability failure for target 'simulation': human_step", "severity": "error"}]}

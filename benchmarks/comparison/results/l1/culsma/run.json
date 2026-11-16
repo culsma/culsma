@@ -1,0 +1,1391 @@
+{
+  "diagnostics": [],
+  "events": [
+    {
+      "kind": "STEP_STARTED",
+      "payload": {
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "op": "AllocContainer"
+      },
+      "seq": 1,
+      "span": {
+        "col": 1,
+        "end": 236,
+        "line": 4,
+        "start": 83
+      },
+      "step_id": "entry.s0::alloc"
+    },
+    {
+      "kind": "STEP_COMPLETED",
+      "payload": {
+        "driver_code": "DRV_OK",
+        "driver_payload": {
+          "op": "AllocContainer",
+          "step_id": "entry.s0::alloc"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "material_delta": {
+          "bind": "stock",
+          "container_id": "container/entry/entry.s0%3A%3Aalloc/stock",
+          "kind": "tube",
+          "op": "AllocContainer"
+        },
+        "material_state_snapshot": {
+          "bindings": {
+            "stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+            "tube::container/entry/entry.s0%3A%3Aalloc/stock": "container/entry/entry.s0%3A%3Aalloc/stock"
+          },
+          "containers": {
+            "container/entry/entry.s0%3A%3Aalloc/stock": {
+              "components": {},
+              "mass_mg": 0.0,
+              "metadata": {
+                "allocation_name": "stock",
+                "allocation_namespace": "entry",
+                "allocation_step_id": "entry.s0::alloc",
+                "capacity_uL": 1500.0,
+                "kind": "tube",
+                "label": "stock"
+              },
+              "volume_uL": 0.0
+            }
+          },
+          "indexed_bindings": {}
+        }
+      },
+      "seq": 2,
+      "span": {
+        "col": 1,
+        "end": 236,
+        "line": 4,
+        "start": 83
+      },
+      "step_id": "entry.s0::alloc"
+    },
+    {
+      "kind": "STEP_STARTED",
+      "payload": {
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "op": "DefineContent"
+      },
+      "seq": 3,
+      "span": {
+        "col": 2,
+        "end": 228,
+        "line": 5,
+        "start": 145
+      },
+      "step_id": "entry.s0::load0::define"
+    },
+    {
+      "kind": "STEP_COMPLETED",
+      "payload": {
+        "driver_code": "DRV_OK",
+        "driver_payload": {
+          "op": "DefineContent",
+          "step_id": "entry.s0::load0::define"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "material_delta": {
+          "content_id": "BUFFER",
+          "op": "DefineContent"
+        },
+        "material_state_snapshot": {
+          "bindings": {
+            "container/entry/entry.s0%3A%3Aalloc/stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+            "stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+            "tube::container/entry/entry.s0%3A%3Aalloc/stock": "container/entry/entry.s0%3A%3Aalloc/stock"
+          },
+          "containers": {
+            "container/entry/entry.s0%3A%3Aalloc/stock": {
+              "component_entries": [],
+              "component_quantities": {},
+              "components": {},
+              "mass_mg": 0.0,
+              "material_relationships": [],
+              "metadata": {
+                "allocation_name": "stock",
+                "allocation_namespace": "entry",
+                "allocation_step_id": "entry.s0::alloc",
+                "capacity_uL": 1500.0,
+                "kind": "tube",
+                "label": "stock"
+              },
+              "volume_uL": 0.0
+            }
+          },
+          "content_bindings": {
+            "BUFFER": "BUFFER"
+          },
+          "content_registry": {
+            "BUFFER": {
+              "content_code": "BUFFER",
+              "content_kind": "formulation",
+              "content_name": null,
+              "content_type": "buffer"
+            }
+          },
+          "indexed_bindings": {}
+        }
+      },
+      "seq": 4,
+      "span": {
+        "col": 2,
+        "end": 228,
+        "line": 5,
+        "start": 145
+      },
+      "step_id": "entry.s0::load0::define"
+    },
+    {
+      "kind": "STEP_STARTED",
+      "payload": {
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "op": "LoadContent"
+      },
+      "seq": 5,
+      "span": {
+        "col": 2,
+        "end": 234,
+        "line": 5,
+        "start": 145
+      },
+      "step_id": "entry.s0::load0::load"
+    },
+    {
+      "kind": "STEP_COMPLETED",
+      "payload": {
+        "driver_code": "DRV_OK",
+        "driver_payload": {
+          "op": "LoadContent",
+          "step_id": "entry.s0::load0::load"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "material_delta": {
+          "amount": 100.0,
+          "axis": "volume",
+          "container": "container/entry/entry.s0%3A%3Aalloc/stock",
+          "content_id": "BUFFER",
+          "op": "LoadContent",
+          "unit": "uL"
+        },
+        "material_state_snapshot": {
+          "bindings": {
+            "container/entry/entry.s0%3A%3Aalloc/stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+            "stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+            "tube::container/entry/entry.s0%3A%3Aalloc/stock": "container/entry/entry.s0%3A%3Aalloc/stock"
+          },
+          "container_content_index": {
+            "container/entry/entry.s0%3A%3Aalloc/stock": {
+              "BUFFER": {
+                "axis": "volume",
+                "count_cells": 0.0,
+                "mass_mg": 100.0,
+                "unit": "uL",
+                "volume_uL": 100.0
+              }
+            }
+          },
+          "containers": {
+            "container/entry/entry.s0%3A%3Aalloc/stock": {
+              "component_entries": [
+                {
+                  "amount": 100.0,
+                  "associated_with": null,
+                  "association_target_kind": null,
+                  "content_ref": "BUFFER",
+                  "entry_id": "BUFFER",
+                  "label": null,
+                  "material_state_source": "content_registry",
+                  "partition_class": null,
+                  "preservation": null,
+                  "quantity": {
+                    "dimension": "volume",
+                    "unit": "uL",
+                    "value": 100.0
+                  },
+                  "relation": "free",
+                  "relationship_source": null
+                }
+              ],
+              "component_quantities": {
+                "BUFFER": {
+                  "dimension": "volume",
+                  "unit": "uL",
+                  "value": 100.0
+                }
+              },
+              "components": {
+                "BUFFER": 100.0
+              },
+              "mass_mg": 100.0,
+              "material_relationships": [],
+              "metadata": {
+                "allocation_name": "stock",
+                "allocation_namespace": "entry",
+                "allocation_step_id": "entry.s0::alloc",
+                "capacity_uL": 1500.0,
+                "kind": "tube",
+                "label": "stock"
+              },
+              "volume_uL": 100.0
+            }
+          },
+          "content_bindings": {
+            "BUFFER": "BUFFER"
+          },
+          "content_registry": {
+            "BUFFER": {
+              "content_code": "BUFFER",
+              "content_kind": "formulation",
+              "content_name": null,
+              "content_type": "buffer"
+            }
+          },
+          "indexed_bindings": {}
+        }
+      },
+      "seq": 6,
+      "span": {
+        "col": 2,
+        "end": 234,
+        "line": 5,
+        "start": 145
+      },
+      "step_id": "entry.s0::load0::load"
+    },
+    {
+      "kind": "STEP_STARTED",
+      "payload": {
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "op": "AllocContainer"
+      },
+      "seq": 7,
+      "span": {
+        "col": 1,
+        "end": 289,
+        "line": 6,
+        "start": 238
+      },
+      "step_id": "entry.s1::alloc"
+    },
+    {
+      "kind": "STEP_COMPLETED",
+      "payload": {
+        "driver_code": "DRV_OK",
+        "driver_payload": {
+          "op": "AllocContainer",
+          "step_id": "entry.s1::alloc"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "material_delta": {
+          "bind": "first",
+          "container_id": "container/entry/entry.s1%3A%3Aalloc/first",
+          "kind": "tube",
+          "op": "AllocContainer"
+        },
+        "material_state_snapshot": {
+          "bindings": {
+            "container/entry/entry.s0%3A%3Aalloc/stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+            "first": "container/entry/entry.s1%3A%3Aalloc/first",
+            "stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+            "tube::container/entry/entry.s0%3A%3Aalloc/stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+            "tube::container/entry/entry.s1%3A%3Aalloc/first": "container/entry/entry.s1%3A%3Aalloc/first"
+          },
+          "container_content_index": {
+            "container/entry/entry.s0%3A%3Aalloc/stock": {
+              "BUFFER": {
+                "axis": "volume",
+                "count_cells": 0.0,
+                "mass_mg": 100.0,
+                "unit": "uL",
+                "volume_uL": 100.0
+              }
+            }
+          },
+          "containers": {
+            "container/entry/entry.s0%3A%3Aalloc/stock": {
+              "component_entries": [
+                {
+                  "amount": 100.0,
+                  "associated_with": null,
+                  "association_target_kind": null,
+                  "content_ref": "BUFFER",
+                  "entry_id": "BUFFER",
+                  "label": null,
+                  "material_state_source": "content_registry",
+                  "partition_class": null,
+                  "preservation": null,
+                  "quantity": {
+                    "dimension": "volume",
+                    "unit": "uL",
+                    "value": 100.0
+                  },
+                  "relation": "free",
+                  "relationship_source": null
+                }
+              ],
+              "component_quantities": {
+                "BUFFER": {
+                  "dimension": "volume",
+                  "unit": "uL",
+                  "value": 100.0
+                }
+              },
+              "components": {
+                "BUFFER": 100.0
+              },
+              "mass_mg": 100.0,
+              "material_relationships": [],
+              "metadata": {
+                "allocation_name": "stock",
+                "allocation_namespace": "entry",
+                "allocation_step_id": "entry.s0::alloc",
+                "capacity_uL": 1500.0,
+                "kind": "tube",
+                "label": "stock"
+              },
+              "volume_uL": 100.0
+            },
+            "container/entry/entry.s1%3A%3Aalloc/first": {
+              "components": {},
+              "mass_mg": 0.0,
+              "metadata": {
+                "allocation_name": "first",
+                "allocation_namespace": "entry",
+                "allocation_step_id": "entry.s1::alloc",
+                "capacity_uL": 1500.0,
+                "kind": "tube",
+                "label": "first"
+              },
+              "volume_uL": 0.0
+            }
+          },
+          "content_bindings": {
+            "BUFFER": "BUFFER"
+          },
+          "content_registry": {
+            "BUFFER": {
+              "content_code": "BUFFER",
+              "content_kind": "formulation",
+              "content_name": null,
+              "content_type": "buffer"
+            }
+          },
+          "indexed_bindings": {}
+        }
+      },
+      "seq": 8,
+      "span": {
+        "col": 1,
+        "end": 289,
+        "line": 6,
+        "start": 238
+      },
+      "step_id": "entry.s1::alloc"
+    },
+    {
+      "kind": "STEP_STARTED",
+      "payload": {
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "op": "AllocContainer"
+      },
+      "seq": 9,
+      "span": {
+        "col": 1,
+        "end": 344,
+        "line": 7,
+        "start": 291
+      },
+      "step_id": "entry.s2::alloc"
+    },
+    {
+      "kind": "STEP_COMPLETED",
+      "payload": {
+        "driver_code": "DRV_OK",
+        "driver_payload": {
+          "op": "AllocContainer",
+          "step_id": "entry.s2::alloc"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "material_delta": {
+          "bind": "second",
+          "container_id": "container/entry/entry.s2%3A%3Aalloc/second",
+          "kind": "tube",
+          "op": "AllocContainer"
+        },
+        "material_state_snapshot": {
+          "bindings": {
+            "container/entry/entry.s0%3A%3Aalloc/stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+            "container/entry/entry.s1%3A%3Aalloc/first": "container/entry/entry.s1%3A%3Aalloc/first",
+            "first": "container/entry/entry.s1%3A%3Aalloc/first",
+            "second": "container/entry/entry.s2%3A%3Aalloc/second",
+            "stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+            "tube::container/entry/entry.s0%3A%3Aalloc/stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+            "tube::container/entry/entry.s1%3A%3Aalloc/first": "container/entry/entry.s1%3A%3Aalloc/first",
+            "tube::container/entry/entry.s2%3A%3Aalloc/second": "container/entry/entry.s2%3A%3Aalloc/second"
+          },
+          "container_content_index": {
+            "container/entry/entry.s0%3A%3Aalloc/stock": {
+              "BUFFER": {
+                "axis": "volume",
+                "count_cells": 0.0,
+                "mass_mg": 100.0,
+                "unit": "uL",
+                "volume_uL": 100.0
+              }
+            }
+          },
+          "containers": {
+            "container/entry/entry.s0%3A%3Aalloc/stock": {
+              "component_entries": [
+                {
+                  "amount": 100.0,
+                  "associated_with": null,
+                  "association_target_kind": null,
+                  "content_ref": "BUFFER",
+                  "entry_id": "BUFFER",
+                  "label": null,
+                  "material_state_source": "content_registry",
+                  "partition_class": null,
+                  "preservation": null,
+                  "quantity": {
+                    "dimension": "volume",
+                    "unit": "uL",
+                    "value": 100.0
+                  },
+                  "relation": "free",
+                  "relationship_source": null
+                }
+              ],
+              "component_quantities": {
+                "BUFFER": {
+                  "dimension": "volume",
+                  "unit": "uL",
+                  "value": 100.0
+                }
+              },
+              "components": {
+                "BUFFER": 100.0
+              },
+              "mass_mg": 100.0,
+              "material_relationships": [],
+              "metadata": {
+                "allocation_name": "stock",
+                "allocation_namespace": "entry",
+                "allocation_step_id": "entry.s0::alloc",
+                "capacity_uL": 1500.0,
+                "kind": "tube",
+                "label": "stock"
+              },
+              "volume_uL": 100.0
+            },
+            "container/entry/entry.s1%3A%3Aalloc/first": {
+              "component_entries": [],
+              "component_quantities": {},
+              "components": {},
+              "mass_mg": 0.0,
+              "material_relationships": [],
+              "metadata": {
+                "allocation_name": "first",
+                "allocation_namespace": "entry",
+                "allocation_step_id": "entry.s1::alloc",
+                "capacity_uL": 1500.0,
+                "kind": "tube",
+                "label": "first"
+              },
+              "volume_uL": 0.0
+            },
+            "container/entry/entry.s2%3A%3Aalloc/second": {
+              "components": {},
+              "mass_mg": 0.0,
+              "metadata": {
+                "allocation_name": "second",
+                "allocation_namespace": "entry",
+                "allocation_step_id": "entry.s2::alloc",
+                "capacity_uL": 1500.0,
+                "kind": "tube",
+                "label": "second"
+              },
+              "volume_uL": 0.0
+            }
+          },
+          "content_bindings": {
+            "BUFFER": "BUFFER"
+          },
+          "content_registry": {
+            "BUFFER": {
+              "content_code": "BUFFER",
+              "content_kind": "formulation",
+              "content_name": null,
+              "content_type": "buffer"
+            }
+          },
+          "indexed_bindings": {}
+        }
+      },
+      "seq": 10,
+      "span": {
+        "col": 1,
+        "end": 344,
+        "line": 7,
+        "start": 291
+      },
+      "step_id": "entry.s2::alloc"
+    },
+    {
+      "kind": "STEP_STARTED",
+      "payload": {
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "op": "Mutation"
+      },
+      "seq": 11,
+      "span": {
+        "col": 2,
+        "end": 79,
+        "line": 2,
+        "start": 49
+      },
+      "step_id": "entry.s6"
+    },
+    {
+      "kind": "STEP_COMPLETED",
+      "payload": {
+        "driver_code": "DRV_OK",
+        "driver_payload": {
+          "op": "Mutation",
+          "step_id": "entry.s6"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "material_delta": {
+          "op": "Mutation",
+          "sources": [
+            {
+              "contents_state_impact": {
+                "source": {
+                  "action": "stale",
+                  "reason": "whole_container_transfer"
+                },
+                "target": {
+                  "action": "none",
+                  "reason": "no_contents_states"
+                }
+              },
+              "mode": "quantified",
+              "qty": {
+                "unit": "uL",
+                "value": 10.0
+              },
+              "source": "container/entry/entry.s0%3A%3Aalloc/stock",
+              "target": "container/entry/entry.s1%3A%3Aalloc/first",
+              "transfer_delta": {
+                "dest": "container/entry/entry.s1%3A%3Aalloc/first",
+                "mode": "volume",
+                "moved_cells": 0.0,
+                "moved_uL": 10.0,
+                "op": "material_move",
+                "requested_uL": 10.0,
+                "source": "container/entry/entry.s0%3A%3Aalloc/stock"
+              }
+            }
+          ],
+          "target": "container/entry/entry.s1%3A%3Aalloc/first"
+        },
+        "material_state_snapshot": {
+          "bindings": {
+            "container/entry/entry.s0%3A%3Aalloc/stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+            "container/entry/entry.s1%3A%3Aalloc/first": "container/entry/entry.s1%3A%3Aalloc/first",
+            "container/entry/entry.s2%3A%3Aalloc/second": "container/entry/entry.s2%3A%3Aalloc/second",
+            "first": "container/entry/entry.s1%3A%3Aalloc/first",
+            "second": "container/entry/entry.s2%3A%3Aalloc/second",
+            "stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+            "tube::container/entry/entry.s0%3A%3Aalloc/stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+            "tube::container/entry/entry.s1%3A%3Aalloc/first": "container/entry/entry.s1%3A%3Aalloc/first",
+            "tube::container/entry/entry.s2%3A%3Aalloc/second": "container/entry/entry.s2%3A%3Aalloc/second"
+          },
+          "container_content_index": {
+            "container/entry/entry.s0%3A%3Aalloc/stock": {
+              "BUFFER": {
+                "axis": "volume",
+                "count_cells": 0.0,
+                "mass_mg": 100.0,
+                "unit": "uL",
+                "volume_uL": 100.0
+              }
+            }
+          },
+          "containers": {
+            "container/entry/entry.s0%3A%3Aalloc/stock": {
+              "component_entries": [
+                {
+                  "amount": 90.0,
+                  "associated_with": null,
+                  "association_target_kind": null,
+                  "content_ref": "BUFFER",
+                  "entry_id": "BUFFER",
+                  "label": null,
+                  "material_state_source": "content_registry",
+                  "partition_class": null,
+                  "preservation": null,
+                  "quantity": {
+                    "dimension": "volume",
+                    "unit": "uL",
+                    "value": 90.0
+                  },
+                  "relation": "free",
+                  "relationship_source": null
+                }
+              ],
+              "component_quantities": {
+                "BUFFER": {
+                  "dimension": "volume",
+                  "unit": "uL",
+                  "value": 90.0
+                }
+              },
+              "components": {
+                "BUFFER": 90.0
+              },
+              "mass_mg": 90.0,
+              "material_relationships": [],
+              "metadata": {
+                "allocation_name": "stock",
+                "allocation_namespace": "entry",
+                "allocation_step_id": "entry.s0::alloc",
+                "capacity_uL": 1500.0,
+                "kind": "tube",
+                "label": "stock"
+              },
+              "volume_uL": 90.0
+            },
+            "container/entry/entry.s1%3A%3Aalloc/first": {
+              "component_entries": [
+                {
+                  "amount": 10.0,
+                  "associated_with": null,
+                  "association_target_kind": null,
+                  "content_ref": "BUFFER",
+                  "entry_id": "BUFFER",
+                  "label": null,
+                  "material_state_source": "scientific_model_provider",
+                  "partition_class": null,
+                  "preservation": null,
+                  "provenance": {
+                    "configuration": {},
+                    "model_id": null,
+                    "model_version": null,
+                    "provider_id": "culsma.builtin.material_rulebook",
+                    "provider_version": "1.0"
+                  },
+                  "quantity": {
+                    "dimension": "volume",
+                    "unit": "uL",
+                    "value": 10.0
+                  },
+                  "relation": "free",
+                  "relationship_source": "scientific_model"
+                }
+              ],
+              "component_quantities": {
+                "BUFFER": {
+                  "dimension": "volume",
+                  "unit": "uL",
+                  "value": 10.0
+                }
+              },
+              "components": {
+                "BUFFER": 10.0
+              },
+              "mass_mg": 10.0,
+              "material_relationships": [],
+              "metadata": {
+                "allocation_name": "first",
+                "allocation_namespace": "entry",
+                "allocation_step_id": "entry.s1::alloc",
+                "capacity_uL": 1500.0,
+                "kind": "tube",
+                "label": "first"
+              },
+              "volume_uL": 10.0
+            },
+            "container/entry/entry.s2%3A%3Aalloc/second": {
+              "component_entries": [],
+              "component_quantities": {},
+              "components": {},
+              "mass_mg": 0.0,
+              "material_relationships": [],
+              "metadata": {
+                "allocation_name": "second",
+                "allocation_namespace": "entry",
+                "allocation_step_id": "entry.s2::alloc",
+                "capacity_uL": 1500.0,
+                "kind": "tube",
+                "label": "second"
+              },
+              "volume_uL": 0.0
+            }
+          },
+          "content_bindings": {
+            "BUFFER": "BUFFER"
+          },
+          "content_registry": {
+            "BUFFER": {
+              "content_code": "BUFFER",
+              "content_kind": "formulation",
+              "content_name": null,
+              "content_type": "buffer"
+            }
+          },
+          "indexed_bindings": {}
+        }
+      },
+      "seq": 12,
+      "span": {
+        "col": 2,
+        "end": 79,
+        "line": 2,
+        "start": 49
+      },
+      "step_id": "entry.s6"
+    },
+    {
+      "kind": "STEP_STARTED",
+      "payload": {
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "op": "Mutation"
+      },
+      "seq": 13,
+      "span": {
+        "col": 2,
+        "end": 79,
+        "line": 2,
+        "start": 49
+      },
+      "step_id": "entry.s10"
+    },
+    {
+      "kind": "STEP_COMPLETED",
+      "payload": {
+        "driver_code": "DRV_OK",
+        "driver_payload": {
+          "op": "Mutation",
+          "step_id": "entry.s10"
+        },
+        "gate": {
+          "entry_kind": "script",
+          "entry_name": "entry"
+        },
+        "material_delta": {
+          "op": "Mutation",
+          "sources": [
+            {
+              "contents_state_impact": {
+                "source": {
+                  "action": "stale",
+                  "reason": "whole_container_transfer"
+                },
+                "target": {
+                  "action": "none",
+                  "reason": "no_contents_states"
+                }
+              },
+              "mode": "quantified",
+              "qty": {
+                "unit": "uL",
+                "value": 20.0
+              },
+              "source": "container/entry/entry.s0%3A%3Aalloc/stock",
+              "target": "container/entry/entry.s2%3A%3Aalloc/second",
+              "transfer_delta": {
+                "dest": "container/entry/entry.s2%3A%3Aalloc/second",
+                "mode": "volume",
+                "moved_cells": 0.0,
+                "moved_uL": 20.0,
+                "op": "material_move",
+                "requested_uL": 20.0,
+                "source": "container/entry/entry.s0%3A%3Aalloc/stock"
+              }
+            }
+          ],
+          "target": "container/entry/entry.s2%3A%3Aalloc/second"
+        },
+        "material_state_snapshot": {
+          "bindings": {
+            "container/entry/entry.s0%3A%3Aalloc/stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+            "container/entry/entry.s1%3A%3Aalloc/first": "container/entry/entry.s1%3A%3Aalloc/first",
+            "container/entry/entry.s2%3A%3Aalloc/second": "container/entry/entry.s2%3A%3Aalloc/second",
+            "first": "container/entry/entry.s1%3A%3Aalloc/first",
+            "second": "container/entry/entry.s2%3A%3Aalloc/second",
+            "stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+            "tube::container/entry/entry.s0%3A%3Aalloc/stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+            "tube::container/entry/entry.s1%3A%3Aalloc/first": "container/entry/entry.s1%3A%3Aalloc/first",
+            "tube::container/entry/entry.s2%3A%3Aalloc/second": "container/entry/entry.s2%3A%3Aalloc/second"
+          },
+          "container_content_index": {
+            "container/entry/entry.s0%3A%3Aalloc/stock": {
+              "BUFFER": {
+                "axis": "volume",
+                "count_cells": 0.0,
+                "mass_mg": 100.0,
+                "unit": "uL",
+                "volume_uL": 100.0
+              }
+            }
+          },
+          "containers": {
+            "container/entry/entry.s0%3A%3Aalloc/stock": {
+              "component_entries": [
+                {
+                  "amount": 70.0,
+                  "associated_with": null,
+                  "association_target_kind": null,
+                  "content_ref": "BUFFER",
+                  "entry_id": "BUFFER",
+                  "label": null,
+                  "material_state_source": "content_registry",
+                  "partition_class": null,
+                  "preservation": null,
+                  "quantity": {
+                    "dimension": "volume",
+                    "unit": "uL",
+                    "value": 70.0
+                  },
+                  "relation": "free",
+                  "relationship_source": null
+                }
+              ],
+              "component_quantities": {
+                "BUFFER": {
+                  "dimension": "volume",
+                  "unit": "uL",
+                  "value": 70.0
+                }
+              },
+              "components": {
+                "BUFFER": 70.0
+              },
+              "mass_mg": 70.0,
+              "material_relationships": [],
+              "metadata": {
+                "allocation_name": "stock",
+                "allocation_namespace": "entry",
+                "allocation_step_id": "entry.s0::alloc",
+                "capacity_uL": 1500.0,
+                "kind": "tube",
+                "label": "stock"
+              },
+              "volume_uL": 70.0
+            },
+            "container/entry/entry.s1%3A%3Aalloc/first": {
+              "component_entries": [
+                {
+                  "amount": 10.0,
+                  "associated_with": null,
+                  "association_target_kind": null,
+                  "content_ref": "BUFFER",
+                  "entry_id": "BUFFER",
+                  "label": null,
+                  "material_state_source": "scientific_model_provider",
+                  "partition_class": null,
+                  "preservation": null,
+                  "provenance": {
+                    "configuration": {},
+                    "model_id": null,
+                    "model_version": null,
+                    "provider_id": "culsma.builtin.material_rulebook",
+                    "provider_version": "1.0"
+                  },
+                  "quantity": {
+                    "dimension": "volume",
+                    "unit": "uL",
+                    "value": 10.0
+                  },
+                  "relation": "free",
+                  "relationship_source": "scientific_model"
+                }
+              ],
+              "component_quantities": {
+                "BUFFER": {
+                  "dimension": "volume",
+                  "unit": "uL",
+                  "value": 10.0
+                }
+              },
+              "components": {
+                "BUFFER": 10.0
+              },
+              "mass_mg": 10.0,
+              "material_relationships": [],
+              "metadata": {
+                "allocation_name": "first",
+                "allocation_namespace": "entry",
+                "allocation_step_id": "entry.s1::alloc",
+                "capacity_uL": 1500.0,
+                "kind": "tube",
+                "label": "first"
+              },
+              "volume_uL": 10.0
+            },
+            "container/entry/entry.s2%3A%3Aalloc/second": {
+              "component_entries": [
+                {
+                  "amount": 20.0,
+                  "associated_with": null,
+                  "association_target_kind": null,
+                  "content_ref": "BUFFER",
+                  "entry_id": "BUFFER",
+                  "label": null,
+                  "material_state_source": "scientific_model_provider",
+                  "partition_class": null,
+                  "preservation": null,
+                  "provenance": {
+                    "configuration": {},
+                    "model_id": null,
+                    "model_version": null,
+                    "provider_id": "culsma.builtin.material_rulebook",
+                    "provider_version": "1.0"
+                  },
+                  "quantity": {
+                    "dimension": "volume",
+                    "unit": "uL",
+                    "value": 20.0
+                  },
+                  "relation": "free",
+                  "relationship_source": "scientific_model"
+                }
+              ],
+              "component_quantities": {
+                "BUFFER": {
+                  "dimension": "volume",
+                  "unit": "uL",
+                  "value": 20.0
+                }
+              },
+              "components": {
+                "BUFFER": 20.0
+              },
+              "mass_mg": 20.0,
+              "material_relationships": [],
+              "metadata": {
+                "allocation_name": "second",
+                "allocation_namespace": "entry",
+                "allocation_step_id": "entry.s2::alloc",
+                "capacity_uL": 1500.0,
+                "kind": "tube",
+                "label": "second"
+              },
+              "volume_uL": 20.0
+            }
+          },
+          "content_bindings": {
+            "BUFFER": "BUFFER"
+          },
+          "content_registry": {
+            "BUFFER": {
+              "content_code": "BUFFER",
+              "content_kind": "formulation",
+              "content_name": null,
+              "content_type": "buffer"
+            }
+          },
+          "indexed_bindings": {}
+        }
+      },
+      "seq": 14,
+      "span": {
+        "col": 2,
+        "end": 79,
+        "line": 2,
+        "start": 49
+      },
+      "step_id": "entry.s10"
+    }
+  ],
+  "ok": true,
+  "state": {
+    "artifacts": {
+      "data_bindings": {},
+      "data_exports": {},
+      "data_group_bindings": {},
+      "data_group_indexed_bindings": {},
+      "data_groups": {},
+      "data_objects": {},
+      "local_bindings": {},
+      "material_state": {
+        "bindings": {
+          "container/entry/entry.s0%3A%3Aalloc/stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+          "container/entry/entry.s1%3A%3Aalloc/first": "container/entry/entry.s1%3A%3Aalloc/first",
+          "container/entry/entry.s2%3A%3Aalloc/second": "container/entry/entry.s2%3A%3Aalloc/second",
+          "first": "container/entry/entry.s1%3A%3Aalloc/first",
+          "second": "container/entry/entry.s2%3A%3Aalloc/second",
+          "stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+          "tube::container/entry/entry.s0%3A%3Aalloc/stock": "container/entry/entry.s0%3A%3Aalloc/stock",
+          "tube::container/entry/entry.s1%3A%3Aalloc/first": "container/entry/entry.s1%3A%3Aalloc/first",
+          "tube::container/entry/entry.s2%3A%3Aalloc/second": "container/entry/entry.s2%3A%3Aalloc/second"
+        },
+        "container_content_index": {
+          "container/entry/entry.s0%3A%3Aalloc/stock": {
+            "BUFFER": {
+              "axis": "volume",
+              "count_cells": 0.0,
+              "mass_mg": 100.0,
+              "unit": "uL",
+              "volume_uL": 100.0
+            }
+          }
+        },
+        "containers": {
+          "container/entry/entry.s0%3A%3Aalloc/stock": {
+            "component_entries": [
+              {
+                "amount": 70.0,
+                "associated_with": null,
+                "association_target_kind": null,
+                "content_ref": "BUFFER",
+                "entry_id": "BUFFER",
+                "label": null,
+                "material_state_source": "content_registry",
+                "partition_class": null,
+                "preservation": null,
+                "quantity": {
+                  "dimension": "volume",
+                  "unit": "uL",
+                  "value": 70.0
+                },
+                "relation": "free",
+                "relationship_source": null
+              }
+            ],
+            "component_quantities": {
+              "BUFFER": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 70.0
+              }
+            },
+            "components": {
+              "BUFFER": 70.0
+            },
+            "mass_mg": 70.0,
+            "material_relationships": [],
+            "metadata": {
+              "allocation_name": "stock",
+              "allocation_namespace": "entry",
+              "allocation_step_id": "entry.s0::alloc",
+              "capacity_uL": 1500.0,
+              "kind": "tube",
+              "label": "stock"
+            },
+            "volume_uL": 70.0
+          },
+          "container/entry/entry.s1%3A%3Aalloc/first": {
+            "component_entries": [
+              {
+                "amount": 10.0,
+                "associated_with": null,
+                "association_target_kind": null,
+                "content_ref": "BUFFER",
+                "entry_id": "BUFFER",
+                "label": null,
+                "material_state_source": "scientific_model_provider",
+                "partition_class": null,
+                "preservation": null,
+                "provenance": {
+                  "configuration": {},
+                  "model_id": null,
+                  "model_version": null,
+                  "provider_id": "culsma.builtin.material_rulebook",
+                  "provider_version": "1.0"
+                },
+                "quantity": {
+                  "dimension": "volume",
+                  "unit": "uL",
+                  "value": 10.0
+                },
+                "relation": "free",
+                "relationship_source": "scientific_model"
+              }
+            ],
+            "component_quantities": {
+              "BUFFER": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 10.0
+              }
+            },
+            "components": {
+              "BUFFER": 10.0
+            },
+            "mass_mg": 10.0,
+            "material_relationships": [],
+            "metadata": {
+              "allocation_name": "first",
+              "allocation_namespace": "entry",
+              "allocation_step_id": "entry.s1::alloc",
+              "capacity_uL": 1500.0,
+              "kind": "tube",
+              "label": "first"
+            },
+            "volume_uL": 10.0
+          },
+          "container/entry/entry.s2%3A%3Aalloc/second": {
+            "component_entries": [
+              {
+                "amount": 20.0,
+                "associated_with": null,
+                "association_target_kind": null,
+                "content_ref": "BUFFER",
+                "entry_id": "BUFFER",
+                "label": null,
+                "material_state_source": "scientific_model_provider",
+                "partition_class": null,
+                "preservation": null,
+                "provenance": {
+                  "configuration": {},
+                  "model_id": null,
+                  "model_version": null,
+                  "provider_id": "culsma.builtin.material_rulebook",
+                  "provider_version": "1.0"
+                },
+                "quantity": {
+                  "dimension": "volume",
+                  "unit": "uL",
+                  "value": 20.0
+                },
+                "relation": "free",
+                "relationship_source": "scientific_model"
+              }
+            ],
+            "component_quantities": {
+              "BUFFER": {
+                "dimension": "volume",
+                "unit": "uL",
+                "value": 20.0
+              }
+            },
+            "components": {
+              "BUFFER": 20.0
+            },
+            "mass_mg": 20.0,
+            "material_relationships": [],
+            "metadata": {
+              "allocation_name": "second",
+              "allocation_namespace": "entry",
+              "allocation_step_id": "entry.s2::alloc",
+              "capacity_uL": 1500.0,
+              "kind": "tube",
+              "label": "second"
+            },
+            "volume_uL": 20.0
+          }
+        },
+        "content_bindings": {
+          "BUFFER": "BUFFER"
+        },
+        "content_registry": {
+          "BUFFER": {
+            "content_code": "BUFFER",
+            "content_kind": "formulation",
+            "content_name": null,
+            "content_type": "buffer"
+          }
+        },
+        "indexed_bindings": {}
+      },
+      "protocol_outputs": {
+        "entry": {
+          "entry_kind": "script",
+          "protocol_id": "entry",
+          "protocol_name": "entry",
+          "returns": [],
+          "value": {
+            "container_kind": "tube",
+            "id": "container/entry/entry.s2%3A%3Aalloc/second",
+            "kind": "container_ref",
+            "label": "second",
+            "mass_mg": 20,
+            "volume_uL": 20
+          }
+        }
+      },
+      "raw_data": {},
+      "ref_cache": {},
+      "skip_reasons": {}
+    },
+    "history": [
+      {
+        "driver_code": "DRV_OK",
+        "status": "completed",
+        "step_id": "entry.s0::alloc"
+      },
+      {
+        "driver_code": "DRV_OK",
+        "status": "completed",
+        "step_id": "entry.s0::load0::define"
+      },
+      {
+        "driver_code": "DRV_OK",
+        "status": "completed",
+        "step_id": "entry.s0::load0::load"
+      },
+      {
+        "driver_code": "DRV_OK",
+        "status": "completed",
+        "step_id": "entry.s1::alloc"
+      },
+      {
+        "driver_code": "DRV_OK",
+        "status": "completed",
+        "step_id": "entry.s2::alloc"
+      },
+      {
+        "driver_code": "DRV_OK",
+        "status": "completed",
+        "step_id": "entry.s6"
+      },
+      {
+        "driver_code": "DRV_OK",
+        "status": "completed",
+        "step_id": "entry.s10"
+      }
+    ],
+    "locks": {},
+    "step_status": {
+      "entry.s0::alloc": "completed",
+      "entry.s0::load0::define": "completed",
+      "entry.s0::load0::load": "completed",
+      "entry.s10": "completed",
+      "entry.s1::alloc": "completed",
+      "entry.s2::alloc": "completed",
+      "entry.s6": "completed"
+    }
+  },
+  "user_result": {
+    "alerts": [],
+    "execution": {
+      "completed_steps": 7,
+      "diagnostic_count": 0,
+      "failed_steps": 0,
+      "ok": true,
+      "skipped_steps": 0,
+      "total_steps": 7
+    },
+    "external_inventory": {
+      "checked": false,
+      "items": [],
+      "reason": "inventory_not_supplied",
+      "schema": "culsma_inventory_reconciliation_v1",
+      "shortages": [],
+      "sufficient": null
+    },
+    "headline": "Experiment completed successfully with no runtime errors.",
+    "materials": {
+      "final_products": [
+        {
+          "mass_mg": 20.0,
+          "name": "second",
+          "primary_component": "BUFFER",
+          "volume_mL": 0.02,
+          "volume_uL": 20.0
+        },
+        {
+          "mass_mg": 10.0,
+          "name": "first",
+          "primary_component": "BUFFER",
+          "volume_mL": 0.01,
+          "volume_uL": 10.0
+        }
+      ],
+      "has_material_state": true,
+      "input_inventory": [
+        {
+          "initial_mL": 0.1,
+          "initial_mg": 0.0,
+          "initial_uL": 100.0,
+          "name": "stock"
+        }
+      ],
+      "intermediate_materials": [],
+      "reagent_consumption": [
+        {
+          "consumed_mL": 0.03,
+          "consumed_mg": null,
+          "consumed_uL": 30.0,
+          "name": "stock",
+          "roles": [
+            "source"
+          ]
+        }
+      ]
+    },
+    "process_summary": {
+      "environment_steps": 0,
+      "mutation_steps": 2,
+      "readout_steps": 0,
+      "separation_steps": 0
+    },
+    "qc_results": [],
+    "resource_summary": {
+      "containers": {
+        "allocated_count": 3,
+        "container_kinds": [
+          {
+            "count": 3,
+            "kind": "tube"
+          }
+        ],
+        "touched_count": 3,
+        "touched_names": [
+          "first",
+          "second",
+          "stock"
+        ]
+      },
+      "instruments": {
+        "devices": [],
+        "tools": []
+      }
+    },
+    "schema": "lab_report_v1"
+  }
+}

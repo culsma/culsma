@@ -1,0 +1,39 @@
+{
+  "mode": "direct",
+  "validation_errors": [],
+  "validation_warnings": [],
+  "planned_calls": 2,
+  "entered_calls": [
+    {
+      "call": 1,
+      "amount_ul": 10.0
+    },
+    {
+      "call": 2,
+      "amount_ul": 20.0
+    }
+  ],
+  "executed_child_inputs": [],
+  "executed_transfers": [
+    {
+      "amount_ul": 10.0,
+      "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre",
+      "destination": "https://example.org/l1-reproduction/direct/main/CallBehaviorAction2/ValuePin2/LiteralIdentified1/SampleArray1"
+    },
+    {
+      "amount_ul": 20.0,
+      "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre",
+      "destination": "https://example.org/l1-reproduction/direct/main/CallBehaviorAction3/ValuePin2/LiteralIdentified1/SampleArray1"
+    }
+  ],
+  "completed_normally": true,
+  "issues": {
+    "execution": []
+  },
+  "latest_recorded_buffer_ul": {
+    "stock": 70.0,
+    "first": 10.0,
+    "second": 20.0
+  },
+  "null_means": "No finite buffer quantity recorded; null is not converted to zero."
+}

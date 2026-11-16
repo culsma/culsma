@@ -1,0 +1,120 @@
+digraph "cluster_https://example.org/l1-api-audit/reuse_execution" {
+	graph [label="https://example.org/l1-api-audit/reuse_execution"]
+	subgraph _root {
+		compound=true
+		subgraph _root {
+			compound=true
+			subgraph cluster_Aliquot {
+				graph [label=Aliquot shape=box]
+				Aliquot_InitialNode1 -> Aliquot_FinalNode1 [label="" color=blue]
+				Aliquot_InitialNode1 -> Aliquot_FinalNode1 [label="" color=blue]
+				Aliquot_ActivityParameterNode3 -> Aliquot_CallBehaviorAction1:InputPin6 [label="" color=black]
+				Aliquot_ActivityParameterNode2 -> Aliquot_CallBehaviorAction1:InputPin2 [label="" color=black]
+				Aliquot_ActivityParameterNode1 -> Aliquot_CallBehaviorAction1:InputPin1 [label="" color=black]
+				Aliquot_InitialNode1 -> Aliquot_CallBehaviorAction1:"node" [label="" color=blue]
+				Aliquot_CallBehaviorAction1:"node" -> Aliquot_FinalNode1 [label="" color=blue]
+				Aliquot_InitialNode1 [label="" fillcolor=black shape=circle style=filled]
+				Aliquot_FinalNode1 [label="" fillcolor=black shape=doublecircle style=filled]
+				Aliquot_ActivityParameterNode1 [label=source fillcolor=black peripheries=2 shape=rectangle]
+				Aliquot_ActivityParameterNode2 [label=destination fillcolor=black peripheries=2 shape=rectangle]
+				Aliquot_ActivityParameterNode3 [label=amount fillcolor=black peripheries=2 shape=rectangle]
+				Aliquot_CallBehaviorAction1 [label=<<table border="0" cellspacing="0">
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="InputPin1" border="1">source</td><td> </td><td port="InputPin2" border="1">destination</td><td> </td><td port="InputPin3" border="1">coordinates</td><td> </td><td port="InputPin4" border="1">replicates</td><td> </td><td port="InputPin5" border="1">temperature</td><td> </td><td port="InputPin6" border="1">amount</td><td> </td><td port="InputPin7" border="1">dispenseVelocity</td><td> </td><td> </td></tr></table></td></tr>
+  <tr><td port="node" border="1">Transfer</td></tr>
+</table>> fillcolor=white shape=none style=rounded]
+			}
+		}
+		subgraph _root {
+			compound=true
+			subgraph cluster_Aliquot {
+				graph [label=Aliquot shape=box]
+				Aliquot_InitialNode1 -> Aliquot_FinalNode1 [label="" color=blue]
+				Aliquot_InitialNode1 -> Aliquot_FinalNode1 [label="" color=blue]
+				Aliquot_ActivityParameterNode3 -> Aliquot_CallBehaviorAction1:InputPin6 [label="" color=black]
+				Aliquot_ActivityParameterNode2 -> Aliquot_CallBehaviorAction1:InputPin2 [label="" color=black]
+				Aliquot_ActivityParameterNode1 -> Aliquot_CallBehaviorAction1:InputPin1 [label="" color=black]
+				Aliquot_InitialNode1 -> Aliquot_CallBehaviorAction1:"node" [label="" color=blue]
+				Aliquot_CallBehaviorAction1:"node" -> Aliquot_FinalNode1 [label="" color=blue]
+				Aliquot_InitialNode1 [label="" fillcolor=black shape=circle style=filled]
+				Aliquot_FinalNode1 [label="" fillcolor=black shape=doublecircle style=filled]
+				Aliquot_ActivityParameterNode1 [label=source fillcolor=black peripheries=2 shape=rectangle]
+				Aliquot_ActivityParameterNode2 [label=destination fillcolor=black peripheries=2 shape=rectangle]
+				Aliquot_ActivityParameterNode3 [label=amount fillcolor=black peripheries=2 shape=rectangle]
+				Aliquot_CallBehaviorAction1 [label=<<table border="0" cellspacing="0">
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="InputPin1" border="1">source</td><td> </td><td port="InputPin2" border="1">destination</td><td> </td><td port="InputPin3" border="1">coordinates</td><td> </td><td port="InputPin4" border="1">replicates</td><td> </td><td port="InputPin5" border="1">temperature</td><td> </td><td port="InputPin6" border="1">amount</td><td> </td><td port="InputPin7" border="1">dispenseVelocity</td><td> </td><td> </td></tr></table></td></tr>
+  <tr><td port="node" border="1">Transfer</td></tr>
+</table>> fillcolor=white shape=none style=rounded]
+			}
+		}
+		subgraph cluster_parameter_reuse {
+			graph [label="default name" shape=box]
+			parameter_reuse_InitialNode1 -> parameter_reuse_FinalNode1 [label="" color=blue]
+			parameter_reuse_InitialNode1 -> parameter_reuse_CallBehaviorAction1:"node" [label="" color=blue]
+			parameter_reuse_CallBehaviorAction1:"node" -> parameter_reuse_CallBehaviorAction2:"node" [label="" color=blue]
+			parameter_reuse_CallBehaviorAction2:"node" -> parameter_reuse_CallBehaviorAction3:"node" [label="" color=blue]
+			parameter_reuse_ForkNode1 -> parameter_reuse_CallBehaviorAction4:InputPin1 [label="" color=black]
+			parameter_reuse_CallBehaviorAction3:"node" -> parameter_reuse_CallBehaviorAction4:"node" [label="" color=blue]
+			parameter_reuse_CallBehaviorAction2:OutputPin1 -> parameter_reuse_CallBehaviorAction5:InputPin2 [label="" color=black]
+			parameter_reuse_CallBehaviorAction1:OutputPin1 -> parameter_reuse_ForkNode1 [label="" color=black]
+			parameter_reuse_ForkNode1 -> parameter_reuse_CallBehaviorAction5:InputPin1 [label="" color=black]
+			parameter_reuse_CallBehaviorAction4:"node" -> parameter_reuse_CallBehaviorAction5:"node" [label="" color=blue]
+			parameter_reuse_CallBehaviorAction3:OutputPin1 -> parameter_reuse_CallBehaviorAction6:InputPin2 [label="" color=black]
+			parameter_reuse_ForkNode1 -> parameter_reuse_CallBehaviorAction6:InputPin1 [label="" color=black]
+			parameter_reuse_CallBehaviorAction5:"node" -> parameter_reuse_CallBehaviorAction6:"node" [label="" color=blue]
+			parameter_reuse_CallBehaviorAction6:"node" -> parameter_reuse_FinalNode1 [label="" color=blue]
+			parameter_reuse_InitialNode1 [label="" fillcolor=black shape=circle style=filled]
+			parameter_reuse_FinalNode1 [label="" fillcolor=black shape=doublecircle style=filled]
+			parameter_reuse_CallBehaviorAction1 [label=<<table border="0" cellspacing="0">
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="ValuePin1" border="1">specification: stock_spec</td><td> </td><td port="ValuePin2" border="1">sample_array: SampleArray1</td><td> </td><td> </td></tr></table></td></tr>
+  <tr><td port="node" border="1">EmptyContainer</td></tr>
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="OutputPin1" border="1">samples</td><td> </td></tr></table></td></tr>
+</table>> fillcolor=white shape=none style=rounded]
+			parameter_reuse_CallBehaviorAction2 [label=<<table border="0" cellspacing="0">
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="ValuePin1" border="1">specification: first_spec</td><td> </td><td port="ValuePin2" border="1">sample_array: SampleArray1</td><td> </td><td> </td></tr></table></td></tr>
+  <tr><td port="node" border="1">EmptyContainer</td></tr>
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="OutputPin1" border="1">samples</td><td> </td></tr></table></td></tr>
+</table>> fillcolor=white shape=none style=rounded]
+			parameter_reuse_CallBehaviorAction3 [label=<<table border="0" cellspacing="0">
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="ValuePin1" border="1">specification: second_spec</td><td> </td><td port="ValuePin2" border="1">sample_array: SampleArray1</td><td> </td><td> </td></tr></table></td></tr>
+  <tr><td port="node" border="1">EmptyContainer</td></tr>
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="OutputPin1" border="1">samples</td><td> </td></tr></table></td></tr>
+</table>> fillcolor=white shape=none style=rounded]
+			parameter_reuse_CallBehaviorAction4 [label=<<table border="0" cellspacing="0">
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="ValuePin1" border="1">resource: buffer</td><td> </td><td port="InputPin1" border="1">destination</td><td> </td><td port="ValuePin2" border="1">amount: 100.0 microliter</td><td> </td><td port="InputPin2" border="1">dispenseVelocity</td><td> </td><td> </td></tr></table></td></tr>
+  <tr><td port="node" border="1">Provision</td></tr>
+</table>> fillcolor=white shape=none style=rounded]
+			parameter_reuse_CallBehaviorAction5 [label=<<table border="0" cellspacing="0">
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="InputPin1" border="1">source</td><td> </td><td port="InputPin2" border="1">destination</td><td> </td><td port="ValuePin1" border="1">amount: 10.0 microliter</td><td> </td><td> </td></tr></table></td></tr>
+  <tr><td port="node" border="1">Aliquot</td></tr>
+</table>> fillcolor=white shape=none style=rounded]
+			parameter_reuse_ForkNode1 [label="" fillcolor=black height=0.02 shape=rectangle style=filled]
+			parameter_reuse_CallBehaviorAction6 [label=<<table border="0" cellspacing="0">
+  <tr><td><table border="0" cellspacing="-2"><tr><td> </td><td port="InputPin1" border="1">source</td><td> </td><td port="InputPin2" border="1">destination</td><td> </td><td port="ValuePin1" border="1">amount: 20.0 microliter</td><td> </td><td> </td></tr></table></td></tr>
+  <tr><td port="node" border="1">Aliquot</td></tr>
+</table>> fillcolor=white shape=none style=rounded]
+		}
+	}
+	reuse_execution_InitialNode1 [label="" fillcolor=black shape=circle style=filled]
+	reuse_execution_CallBehaviorAction1 [label=<<table border="0" cellspacing="0">
+  <tr><td port="node" border="1">parameter_reuse</td></tr>
+</table>> shape=none style=rounded]
+	reuse_execution_InitialNode1 -> reuse_execution_CallBehaviorAction1:"node" [label="" color=blue]
+	reuse_execution_CallBehaviorAction1:"node" -> reuse_execution_CallBehaviorAction1:"node" [color=invis headport=w taillabel="[11:44:46]" tailport=w]
+	reuse_execution_CallBehaviorAction1:"node" -> parameter_reuse_InitialNode1 [label="4: uml.ControlFlow" color=blue]
+	parameter_reuse_CallBehaviorAction1:"node" -> parameter_reuse_CallBehaviorAction1:"node" [color=invis headport=w taillabel="[11:44:46]" tailport=w]
+	parameter_reuse_CallBehaviorAction2:"node" -> parameter_reuse_CallBehaviorAction2:"node" [color=invis headport=w taillabel="[11:44:46]" tailport=w]
+	parameter_reuse_ForkNode1 -> parameter_reuse_CallBehaviorAction1:OutputPin1 [label="9: SampleArray1" color=orange]
+	parameter_reuse_CallBehaviorAction3:"node" -> parameter_reuse_CallBehaviorAction3:"node" [color=invis headport=w taillabel="[11:44:46]" tailport=w]
+	parameter_reuse_CallBehaviorAction4:InputPin1 -> parameter_reuse_ForkNode1 [label="13: SampleArray1" color=orange]
+	parameter_reuse_CallBehaviorAction5:InputPin1 -> parameter_reuse_ForkNode1 [label="14: SampleArray1" color=orange]
+	parameter_reuse_CallBehaviorAction5:InputPin2 -> parameter_reuse_CallBehaviorAction2:OutputPin1 [label="12: SampleArray1" color=orange]
+	parameter_reuse_CallBehaviorAction6:InputPin1 -> parameter_reuse_ForkNode1 [label="15: SampleArray1" color=orange]
+	parameter_reuse_CallBehaviorAction6:InputPin2 -> parameter_reuse_CallBehaviorAction3:OutputPin1 [label="18: SampleArray1" color=orange]
+	parameter_reuse_CallBehaviorAction4:"node" -> parameter_reuse_CallBehaviorAction4:"node" [color=invis headport=w taillabel="[11:44:47]" tailport=w]
+	parameter_reuse_CallBehaviorAction5:"node" -> parameter_reuse_CallBehaviorAction5:"node" [color=invis headport=w taillabel="[11:44:47]" tailport=w]
+	Aliquot_ActivityParameterNode1 -> parameter_reuse_CallBehaviorAction5:InputPin1 [label="26: SampleArray1" color=orange]
+	Aliquot_ActivityParameterNode2 -> parameter_reuse_CallBehaviorAction5:InputPin2 [label="27: SampleArray1" color=orange]
+	parameter_reuse_CallBehaviorAction5:"node" -> Aliquot_InitialNode1 [label="28: uml.ControlFlow" color=blue]
+	Aliquot_CallBehaviorAction1:InputPin1 -> Aliquot_ActivityParameterNode1 [label="29: " color=orange]
+	Aliquot_CallBehaviorAction1:InputPin2 -> Aliquot_ActivityParameterNode2 [label="30: " color=orange]
+}

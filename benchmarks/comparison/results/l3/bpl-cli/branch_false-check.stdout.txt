@@ -1,0 +1,1 @@
+{"artifacts": {"diagnostics": "artifacts/check/branch_false.diagnostics.json"}, "command": "check", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l3/bpl/branch_false.bpl", "ok": true}

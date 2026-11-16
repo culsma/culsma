@@ -1,0 +1,157 @@
+{
+  "declarations": [
+    {
+      "annotations": [],
+      "body": [
+        {
+          "annotations": [],
+          "arguments": [
+            {
+              "name": "from",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 32,
+                "end_line": 2,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/default_10.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 14,
+                "start_line": 2
+              },
+              "value": {
+                "node_type": "StringLit",
+                "span": {
+                  "end_col": 32,
+                  "end_line": 2,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/default_10.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 20,
+                  "start_line": 2
+                },
+                "value": "plate_1:A1"
+              }
+            },
+            {
+              "name": "to",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 50,
+                "end_line": 2,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/default_10.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 34,
+                "start_line": 2
+              },
+              "value": {
+                "node_type": "StringLit",
+                "span": {
+                  "end_col": 50,
+                  "end_line": 2,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/default_10.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 38,
+                  "start_line": 2
+                },
+                "value": "plate_1:A2"
+              }
+            },
+            {
+              "name": "volume",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 66,
+                "end_line": 2,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/default_10.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 52,
+                "start_line": 2
+              },
+              "value": {
+                "name": "amount",
+                "node_type": "IdentifierExpr",
+                "span": {
+                  "end_col": 66,
+                  "end_line": 2,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/default_10.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 60,
+                  "start_line": 2
+                }
+              }
+            }
+          ],
+          "name": "transfer",
+          "node_type": "CallStmt",
+          "span": {
+            "end_col": 67,
+            "end_line": 2,
+            "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/default_10.bpl",
+            "node_type": "SourceSpan",
+            "start_col": 5,
+            "start_line": 2
+          }
+        }
+      ],
+      "name": "Aliquot",
+      "node_type": "ProtocolDecl",
+      "parameters": [
+        {
+          "default_value": {
+            "node_type": "QuantityExpr",
+            "span": {
+              "end_col": 40,
+              "end_line": 1,
+              "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/default_10.bpl",
+              "node_type": "SourceSpan",
+              "start_col": 35,
+              "start_line": 1
+            },
+            "unit": {
+              "kind": "SIMPLE",
+              "node_type": "UnitExpr",
+              "span": null,
+              "text": "uL"
+            },
+            "value": {
+              "node_type": "NumberLit",
+              "span": null,
+              "value": 10.0
+            }
+          },
+          "name": "amount",
+          "node_type": "Parameter",
+          "span": {
+            "end_col": 40,
+            "end_line": 1,
+            "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/default_10.bpl",
+            "node_type": "SourceSpan",
+            "start_col": 18,
+            "start_line": 1
+          },
+          "type_annotation": {
+            "name": "Volume",
+            "node_type": "SimpleTypeExpr",
+            "span": null
+          }
+        }
+      ],
+      "settings": [],
+      "span": {
+        "end_col": 2,
+        "end_line": 3,
+        "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/default_10.bpl",
+        "node_type": "SourceSpan",
+        "start_col": 1,
+        "start_line": 1
+      }
+    }
+  ],
+  "node_type": "Program",
+  "span": {
+    "end_col": 2,
+    "end_line": 3,
+    "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl/default_10.bpl",
+    "node_type": "SourceSpan",
+    "start_col": 1,
+    "start_line": 1
+  }
+}

@@ -1,0 +1,427 @@
+{
+  "plan_id": "GFPClarification_plan",
+  "protocol_name": "GFPClarification",
+  "steps": [
+    {
+      "annotations": {
+        "source_call": "centrifuge(container: \"sources:A1\", speed: 12000 rcf, duration: 10 min, temperature: 22 degC)",
+        "source_line": "centrifuge(container: \"sources:A1\", speed: 12000 rcf, duration: 10 min, temperature: 22 degC)",
+        "source_span": {
+          "end_col": 98,
+          "end_line": 9,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/gfp/gfp.bpl",
+          "start_col": 5,
+          "start_line": 9
+        }
+      },
+      "dependencies": [],
+      "primitive": {
+        "__type__": "HumanStep",
+        "checklist": [],
+        "data_fields": {},
+        "expected_time_s": null,
+        "instruction": "centrifuge(container: \"sources:A1\", speed: 12000 rcf, duration: 10 min, temperature: 22 degC)",
+        "primitive_type": "HUMAN_STEP",
+        "requires_confirmation": true,
+        "safety_tags": []
+      },
+      "primitive_type": "HUMAN_STEP",
+      "source_intent": "centrifuge",
+      "status": "PENDING",
+      "step_id": "step_0001"
+    },
+    {
+      "annotations": {
+        "source_call": "transfer(from: \"sources:A1\", to: \"sources:A3\", volume: 160 uL)",
+        "source_comment": "The operator selects supernatant. This transfer does not itself define\nselective fractionation or assert that cellular material was retained.",
+        "source_line": "transfer(from: \"sources:A1\", to: \"sources:A3\", volume: 160 uL)",
+        "source_span": {
+          "end_col": 67,
+          "end_line": 12,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/gfp/gfp.bpl",
+          "start_col": 5,
+          "start_line": 12
+        }
+      },
+      "dependencies": [
+        "step_0001"
+      ],
+      "primitive": {
+        "__type__": "Aspirate",
+        "air_gap_ul": null,
+        "flow_rate_ul_s": null,
+        "primitive_type": "ASPIRATE",
+        "source": {
+          "__type__": "WellRef",
+          "plate_id": "sources",
+          "well_id": "A1"
+        },
+        "touch_tip": false,
+        "volume_ul": 160.0
+      },
+      "primitive_type": "ASPIRATE",
+      "source_intent": "transfer",
+      "status": "PENDING",
+      "step_id": "step_0002"
+    },
+    {
+      "annotations": {
+        "source_call": "transfer(from: \"sources:A1\", to: \"sources:A3\", volume: 160 uL)",
+        "source_comment": "The operator selects supernatant. This transfer does not itself define\nselective fractionation or assert that cellular material was retained.",
+        "source_line": "transfer(from: \"sources:A1\", to: \"sources:A3\", volume: 160 uL)",
+        "source_span": {
+          "end_col": 67,
+          "end_line": 12,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/gfp/gfp.bpl",
+          "start_col": 5,
+          "start_line": 12
+        }
+      },
+      "dependencies": [
+        "step_0002"
+      ],
+      "primitive": {
+        "__type__": "Dispense",
+        "blow_out": false,
+        "destination": {
+          "__type__": "WellRef",
+          "plate_id": "sources",
+          "well_id": "A3"
+        },
+        "flow_rate_ul_s": null,
+        "primitive_type": "DISPENSE",
+        "touch_tip": false,
+        "volume_ul": 160.0
+      },
+      "primitive_type": "DISPENSE",
+      "source_intent": "transfer",
+      "status": "PENDING",
+      "step_id": "step_0003"
+    },
+    {
+      "annotations": {
+        "source_call": "transfer(from: \"sources:A3\", to: \"assay:A1\", volume: 20 uL)",
+        "source_line": "transfer(from: \"sources:A3\", to: \"assay:A1\", volume: 20 uL)",
+        "source_span": {
+          "end_col": 64,
+          "end_line": 13,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/gfp/gfp.bpl",
+          "start_col": 5,
+          "start_line": 13
+        }
+      },
+      "dependencies": [
+        "step_0003"
+      ],
+      "primitive": {
+        "__type__": "Aspirate",
+        "air_gap_ul": null,
+        "flow_rate_ul_s": null,
+        "primitive_type": "ASPIRATE",
+        "source": {
+          "__type__": "WellRef",
+          "plate_id": "sources",
+          "well_id": "A3"
+        },
+        "touch_tip": false,
+        "volume_ul": 20.0
+      },
+      "primitive_type": "ASPIRATE",
+      "source_intent": "transfer",
+      "status": "PENDING",
+      "step_id": "step_0004"
+    },
+    {
+      "annotations": {
+        "source_call": "transfer(from: \"sources:A3\", to: \"assay:A1\", volume: 20 uL)",
+        "source_line": "transfer(from: \"sources:A3\", to: \"assay:A1\", volume: 20 uL)",
+        "source_span": {
+          "end_col": 64,
+          "end_line": 13,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/gfp/gfp.bpl",
+          "start_col": 5,
+          "start_line": 13
+        }
+      },
+      "dependencies": [
+        "step_0004"
+      ],
+      "primitive": {
+        "__type__": "Dispense",
+        "blow_out": false,
+        "destination": {
+          "__type__": "WellRef",
+          "plate_id": "assay",
+          "well_id": "A1"
+        },
+        "flow_rate_ul_s": null,
+        "primitive_type": "DISPENSE",
+        "touch_tip": false,
+        "volume_ul": 20.0
+      },
+      "primitive_type": "DISPENSE",
+      "source_intent": "transfer",
+      "status": "PENDING",
+      "step_id": "step_0005"
+    },
+    {
+      "annotations": {
+        "source_call": "transfer(from: \"sources:A2\", to: \"sources:A1\", volume: 40 uL)",
+        "source_line": "transfer(from: \"sources:A2\", to: \"sources:A1\", volume: 40 uL)",
+        "source_span": {
+          "end_col": 66,
+          "end_line": 14,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/gfp/gfp.bpl",
+          "start_col": 5,
+          "start_line": 14
+        }
+      },
+      "dependencies": [
+        "step_0005"
+      ],
+      "primitive": {
+        "__type__": "Aspirate",
+        "air_gap_ul": null,
+        "flow_rate_ul_s": null,
+        "primitive_type": "ASPIRATE",
+        "source": {
+          "__type__": "WellRef",
+          "plate_id": "sources",
+          "well_id": "A2"
+        },
+        "touch_tip": false,
+        "volume_ul": 40.0
+      },
+      "primitive_type": "ASPIRATE",
+      "source_intent": "transfer",
+      "status": "PENDING",
+      "step_id": "step_0006"
+    },
+    {
+      "annotations": {
+        "source_call": "transfer(from: \"sources:A2\", to: \"sources:A1\", volume: 40 uL)",
+        "source_line": "transfer(from: \"sources:A2\", to: \"sources:A1\", volume: 40 uL)",
+        "source_span": {
+          "end_col": 66,
+          "end_line": 14,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/gfp/gfp.bpl",
+          "start_col": 5,
+          "start_line": 14
+        }
+      },
+      "dependencies": [
+        "step_0006"
+      ],
+      "primitive": {
+        "__type__": "Dispense",
+        "blow_out": false,
+        "destination": {
+          "__type__": "WellRef",
+          "plate_id": "sources",
+          "well_id": "A1"
+        },
+        "flow_rate_ul_s": null,
+        "primitive_type": "DISPENSE",
+        "touch_tip": false,
+        "volume_ul": 40.0
+      },
+      "primitive_type": "DISPENSE",
+      "source_intent": "transfer",
+      "status": "PENDING",
+      "step_id": "step_0007"
+    },
+    {
+      "annotations": {
+        "source_call": "mix(container: \"sources:A1\", volume: 32 uL, repetitions: 1)",
+        "source_line": "mix(container: \"sources:A1\", volume: 32 uL, repetitions: 1)",
+        "source_span": {
+          "end_col": 64,
+          "end_line": 15,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/gfp/gfp.bpl",
+          "start_col": 5,
+          "start_line": 15
+        }
+      },
+      "dependencies": [
+        "step_0007"
+      ],
+      "primitive": {
+        "__type__": "HumanStep",
+        "checklist": [],
+        "data_fields": {},
+        "expected_time_s": null,
+        "instruction": "mix(container: \"sources:A1\", volume: 32 uL, repetitions: 1)",
+        "primitive_type": "HUMAN_STEP",
+        "requires_confirmation": true,
+        "safety_tags": []
+      },
+      "primitive_type": "HUMAN_STEP",
+      "source_intent": "mix",
+      "status": "PENDING",
+      "step_id": "step_0008"
+    },
+    {
+      "annotations": {
+        "source_call": "transfer(from: \"sources:A1\", to: \"assay:A2\", volume: 20 uL)",
+        "source_line": "transfer(from: \"sources:A1\", to: \"assay:A2\", volume: 20 uL)",
+        "source_span": {
+          "end_col": 64,
+          "end_line": 16,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/gfp/gfp.bpl",
+          "start_col": 5,
+          "start_line": 16
+        }
+      },
+      "dependencies": [
+        "step_0008"
+      ],
+      "primitive": {
+        "__type__": "Aspirate",
+        "air_gap_ul": null,
+        "flow_rate_ul_s": null,
+        "primitive_type": "ASPIRATE",
+        "source": {
+          "__type__": "WellRef",
+          "plate_id": "sources",
+          "well_id": "A1"
+        },
+        "touch_tip": false,
+        "volume_ul": 20.0
+      },
+      "primitive_type": "ASPIRATE",
+      "source_intent": "transfer",
+      "status": "PENDING",
+      "step_id": "step_0009"
+    },
+    {
+      "annotations": {
+        "source_call": "transfer(from: \"sources:A1\", to: \"assay:A2\", volume: 20 uL)",
+        "source_line": "transfer(from: \"sources:A1\", to: \"assay:A2\", volume: 20 uL)",
+        "source_span": {
+          "end_col": 64,
+          "end_line": 16,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/gfp/gfp.bpl",
+          "start_col": 5,
+          "start_line": 16
+        }
+      },
+      "dependencies": [
+        "step_0009"
+      ],
+      "primitive": {
+        "__type__": "Dispense",
+        "blow_out": false,
+        "destination": {
+          "__type__": "WellRef",
+          "plate_id": "assay",
+          "well_id": "A2"
+        },
+        "flow_rate_ul_s": null,
+        "primitive_type": "DISPENSE",
+        "touch_tip": false,
+        "volume_ul": 20.0
+      },
+      "primitive_type": "DISPENSE",
+      "source_intent": "transfer",
+      "status": "PENDING",
+      "step_id": "step_0010"
+    },
+    {
+      "annotations": {
+        "source_call": "transfer(from: \"sources:A2\", to: \"assay:A3\", volume: 20 uL)",
+        "source_line": "transfer(from: \"sources:A2\", to: \"assay:A3\", volume: 20 uL)",
+        "source_span": {
+          "end_col": 64,
+          "end_line": 17,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/gfp/gfp.bpl",
+          "start_col": 5,
+          "start_line": 17
+        }
+      },
+      "dependencies": [
+        "step_0010"
+      ],
+      "primitive": {
+        "__type__": "Aspirate",
+        "air_gap_ul": null,
+        "flow_rate_ul_s": null,
+        "primitive_type": "ASPIRATE",
+        "source": {
+          "__type__": "WellRef",
+          "plate_id": "sources",
+          "well_id": "A2"
+        },
+        "touch_tip": false,
+        "volume_ul": 20.0
+      },
+      "primitive_type": "ASPIRATE",
+      "source_intent": "transfer",
+      "status": "PENDING",
+      "step_id": "step_0011"
+    },
+    {
+      "annotations": {
+        "source_call": "transfer(from: \"sources:A2\", to: \"assay:A3\", volume: 20 uL)",
+        "source_line": "transfer(from: \"sources:A2\", to: \"assay:A3\", volume: 20 uL)",
+        "source_span": {
+          "end_col": 64,
+          "end_line": 17,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/gfp/gfp.bpl",
+          "start_col": 5,
+          "start_line": 17
+        }
+      },
+      "dependencies": [
+        "step_0011"
+      ],
+      "primitive": {
+        "__type__": "Dispense",
+        "blow_out": false,
+        "destination": {
+          "__type__": "WellRef",
+          "plate_id": "assay",
+          "well_id": "A3"
+        },
+        "flow_rate_ul_s": null,
+        "primitive_type": "DISPENSE",
+        "touch_tip": false,
+        "volume_ul": 20.0
+      },
+      "primitive_type": "DISPENSE",
+      "source_intent": "transfer",
+      "status": "PENDING",
+      "step_id": "step_0012"
+    },
+    {
+      "annotations": {
+        "source_call": "measure(\"assay\", property: Fluorescence)",
+        "source_line": "measure(\"assay\", property: Fluorescence)",
+        "source_span": {
+          "end_col": 45,
+          "end_line": 18,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/gfp/gfp.bpl",
+          "start_col": 5,
+          "start_line": 18
+        }
+      },
+      "dependencies": [
+        "step_0012"
+      ],
+      "primitive": {
+        "__type__": "HumanStep",
+        "checklist": [],
+        "data_fields": {},
+        "expected_time_s": null,
+        "instruction": "measure(\"assay\", property: Fluorescence)",
+        "primitive_type": "HUMAN_STEP",
+        "requires_confirmation": true,
+        "safety_tags": []
+      },
+      "primitive_type": "HUMAN_STEP",
+      "source_intent": "measure",
+      "status": "PENDING",
+      "step_id": "step_0013"
+    }
+  ],
+  "target": "simulation"
+}

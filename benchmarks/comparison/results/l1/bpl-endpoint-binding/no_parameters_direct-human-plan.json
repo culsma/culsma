@@ -1,0 +1,137 @@
+{
+  "plan_id": "Main_plan",
+  "protocol_name": "Main",
+  "steps": [
+    {
+      "annotations": {
+        "source_call": "transfer(from: \"plate_1:A1\", to: \"plate_1:A2\", volume: 10 uL)",
+        "source_line": "transfer(from: \"plate_1:A1\", to: \"plate_1:A2\", volume: 10 uL)",
+        "source_span": {
+          "end_col": 66,
+          "end_line": 2,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/no_parameters_direct.bpl",
+          "start_col": 5,
+          "start_line": 2
+        }
+      },
+      "dependencies": [],
+      "primitive": {
+        "__type__": "Aspirate",
+        "air_gap_ul": null,
+        "flow_rate_ul_s": null,
+        "primitive_type": "ASPIRATE",
+        "source": {
+          "__type__": "WellRef",
+          "plate_id": "plate_1",
+          "well_id": "A1"
+        },
+        "touch_tip": false,
+        "volume_ul": 10.0
+      },
+      "primitive_type": "ASPIRATE",
+      "source_intent": "transfer",
+      "status": "PENDING",
+      "step_id": "step_0001"
+    },
+    {
+      "annotations": {
+        "source_call": "transfer(from: \"plate_1:A1\", to: \"plate_1:A2\", volume: 10 uL)",
+        "source_line": "transfer(from: \"plate_1:A1\", to: \"plate_1:A2\", volume: 10 uL)",
+        "source_span": {
+          "end_col": 66,
+          "end_line": 2,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/no_parameters_direct.bpl",
+          "start_col": 5,
+          "start_line": 2
+        }
+      },
+      "dependencies": [
+        "step_0001"
+      ],
+      "primitive": {
+        "__type__": "Dispense",
+        "blow_out": false,
+        "destination": {
+          "__type__": "WellRef",
+          "plate_id": "plate_1",
+          "well_id": "A2"
+        },
+        "flow_rate_ul_s": null,
+        "primitive_type": "DISPENSE",
+        "touch_tip": false,
+        "volume_ul": 10.0
+      },
+      "primitive_type": "DISPENSE",
+      "source_intent": "transfer",
+      "status": "PENDING",
+      "step_id": "step_0002"
+    },
+    {
+      "annotations": {
+        "source_call": "transfer(from: \"plate_1:A1\", to: \"plate_1:A2\", volume: 10 uL)",
+        "source_line": "transfer(from: \"plate_1:A1\", to: \"plate_1:A2\", volume: 10 uL)",
+        "source_span": {
+          "end_col": 66,
+          "end_line": 3,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/no_parameters_direct.bpl",
+          "start_col": 5,
+          "start_line": 3
+        }
+      },
+      "dependencies": [
+        "step_0002"
+      ],
+      "primitive": {
+        "__type__": "Aspirate",
+        "air_gap_ul": null,
+        "flow_rate_ul_s": null,
+        "primitive_type": "ASPIRATE",
+        "source": {
+          "__type__": "WellRef",
+          "plate_id": "plate_1",
+          "well_id": "A1"
+        },
+        "touch_tip": false,
+        "volume_ul": 10.0
+      },
+      "primitive_type": "ASPIRATE",
+      "source_intent": "transfer",
+      "status": "PENDING",
+      "step_id": "step_0003"
+    },
+    {
+      "annotations": {
+        "source_call": "transfer(from: \"plate_1:A1\", to: \"plate_1:A2\", volume: 10 uL)",
+        "source_line": "transfer(from: \"plate_1:A1\", to: \"plate_1:A2\", volume: 10 uL)",
+        "source_span": {
+          "end_col": 66,
+          "end_line": 3,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/no_parameters_direct.bpl",
+          "start_col": 5,
+          "start_line": 3
+        }
+      },
+      "dependencies": [
+        "step_0003"
+      ],
+      "primitive": {
+        "__type__": "Dispense",
+        "blow_out": false,
+        "destination": {
+          "__type__": "WellRef",
+          "plate_id": "plate_1",
+          "well_id": "A2"
+        },
+        "flow_rate_ul_s": null,
+        "primitive_type": "DISPENSE",
+        "touch_tip": false,
+        "volume_ul": 10.0
+      },
+      "primitive_type": "DISPENSE",
+      "source_intent": "transfer",
+      "status": "PENDING",
+      "step_id": "step_0004"
+    }
+  ],
+  "target": "human"
+}

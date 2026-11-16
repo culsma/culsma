@@ -1,0 +1,79 @@
+Writing protocol artifacts to: /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/results/upstream-examples/ludox/iGEM_LUDOX_OD_calibration_2018/artifacts
+2026-11-12 13:08:17,683 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document
+
+********************************************************************************
+
+    LabOP Protocol Harness
+
+    Configuration:
+    --------------
+    Artifacts:
+    - ProtocolNTuples
+    - ProtocolDiagram
+    - ProtocolExecutionNTuples
+    - ProtocolExecutionDiagram
+    - ProtocolSampleTrace
+    - ProtocolSpecialization
+
+********************************************************************************
+        
+Validating and writing protocol
+Saving protocol [/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/results/upstream-examples/ludox/iGEM_LUDOX_OD_calibration_2018/artifacts/iGEM_LUDOX_OD_calibration_2018.nt].
+2026-11-12 13:08:20,891 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://labop.io/examples/protocols/ludox/iGEM_LUDOX_OD_calibration_2018
+2026-11-12 13:08:20,893 INFO labop.execution.behavior_dynamics - Behavior iGEM 2018 LUDOX OD calibration protocol is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-12 13:08:20,933 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Could not import container_api, is it installed?
+2026-11-12 13:08:20,933 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Cannot resolve container specification using remote ontology server. Defaulting to static ontology copy
+2026-11-12 13:08:21,669 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://bioprotocols.org/labop/primitives/sample_arrays/PlateCoordinates
+    '''
+    Select only the samples with specified row/column combination from a sample collection
+    '''
+    Input Parameters:
+	coordinates: http://bioprotocols.org/uml#ValueSpecification 
+	source: http://bioprotocols.org/labop#SampleCollection 
+    Output Parameters:
+	samples: http://bioprotocols.org/labop#SampleCollection 
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-12 13:08:22,718 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://bioprotocols.org/labop/primitives/sample_arrays/PlateCoordinates
+    '''
+    Select only the samples with specified row/column combination from a sample collection
+    '''
+    Input Parameters:
+	coordinates: http://bioprotocols.org/uml#ValueSpecification 
+	source: http://bioprotocols.org/labop#SampleCollection 
+    Output Parameters:
+	samples: http://bioprotocols.org/labop#SampleCollection 
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-12 13:08:23,715 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://bioprotocols.org/labop/primitives/sample_arrays/PlateCoordinates
+    '''
+    Select only the samples with specified row/column combination from a sample collection
+    '''
+    Input Parameters:
+	coordinates: http://bioprotocols.org/uml#ValueSpecification 
+	source: http://bioprotocols.org/labop#SampleCollection 
+    Output Parameters:
+	samples: http://bioprotocols.org/labop#SampleCollection 
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+
+********************************************************************************
+
+    Harness Results Summary
+
+    Artifacts:
+    ----------------------------------------------------------------------------
+    - ProtocolNTuples (pass): 
+    ----------------------------------------------------------------------------
+    - ProtocolDiagram (pass): 
+    ----------------------------------------------------------------------------
+    - ProtocolExecutionNTuples (pass): 
+    ----------------------------------------------------------------------------
+    - ProtocolExecutionDiagram (pass): 
+    ----------------------------------------------------------------------------
+    - ProtocolSampleTrace (pass): 
+    ----------------------------------------------------------------------------
+    - ProtocolSpecialization (pass): 
+
+********************************************************************************
+        

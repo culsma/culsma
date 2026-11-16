@@ -1,0 +1,1136 @@
+[
+  {
+    "stage": "initial",
+    "contents": {
+      "sources:A1": {
+        "volume_ul": 160.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "GFP lysate liquid",
+            "concentration": null,
+            "volume_ul": 160,
+            "properties": {}
+          },
+          {
+            "name": "GFP cellular material",
+            "concentration": null,
+            "volume_ul": 0,
+            "properties": {
+              "declared_cells": 100000
+            }
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.971592"
+      },
+      "sources:A2": {
+        "volume_ul": 100.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "assay buffer",
+            "concentration": null,
+            "volume_ul": 100,
+            "properties": {}
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.971734"
+      },
+      "sources:A3": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.944010"
+      },
+      "assay:A1": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957292"
+      },
+      "assay:A2": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957430"
+      },
+      "assay:A3": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957560"
+      }
+    }
+  },
+  {
+    "stage": "step_0001",
+    "contents": {
+      "sources:A1": {
+        "volume_ul": 160.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "GFP lysate liquid",
+            "concentration": null,
+            "volume_ul": 160,
+            "properties": {}
+          },
+          {
+            "name": "GFP cellular material",
+            "concentration": null,
+            "volume_ul": 0,
+            "properties": {
+              "declared_cells": 100000
+            }
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.971592"
+      },
+      "sources:A2": {
+        "volume_ul": 100.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "assay buffer",
+            "concentration": null,
+            "volume_ul": 100,
+            "properties": {}
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.971734"
+      },
+      "sources:A3": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.944010"
+      },
+      "assay:A1": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957292"
+      },
+      "assay:A2": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957430"
+      },
+      "assay:A3": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957560"
+      }
+    }
+  },
+  {
+    "stage": "step_0002",
+    "contents": {
+      "sources:A1": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "GFP lysate liquid",
+            "concentration": null,
+            "volume_ul": 160,
+            "properties": {}
+          },
+          {
+            "name": "GFP cellular material",
+            "concentration": null,
+            "volume_ul": 0,
+            "properties": {
+              "declared_cells": 100000
+            }
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.974811"
+      },
+      "sources:A2": {
+        "volume_ul": 100.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "assay buffer",
+            "concentration": null,
+            "volume_ul": 100,
+            "properties": {}
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.971734"
+      },
+      "sources:A3": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.944010"
+      },
+      "assay:A1": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957292"
+      },
+      "assay:A2": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957430"
+      },
+      "assay:A3": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957560"
+      }
+    }
+  },
+  {
+    "stage": "step_0003",
+    "contents": {
+      "sources:A1": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "GFP lysate liquid",
+            "concentration": null,
+            "volume_ul": 160,
+            "properties": {}
+          },
+          {
+            "name": "GFP cellular material",
+            "concentration": null,
+            "volume_ul": 0,
+            "properties": {
+              "declared_cells": 100000
+            }
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.974811"
+      },
+      "sources:A2": {
+        "volume_ul": 100.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "assay buffer",
+            "concentration": null,
+            "volume_ul": 100,
+            "properties": {}
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.971734"
+      },
+      "sources:A3": {
+        "volume_ul": 160.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.976320"
+      },
+      "assay:A1": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957292"
+      },
+      "assay:A2": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957430"
+      },
+      "assay:A3": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957560"
+      }
+    }
+  },
+  {
+    "stage": "step_0004",
+    "contents": {
+      "sources:A1": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "GFP lysate liquid",
+            "concentration": null,
+            "volume_ul": 160,
+            "properties": {}
+          },
+          {
+            "name": "GFP cellular material",
+            "concentration": null,
+            "volume_ul": 0,
+            "properties": {
+              "declared_cells": 100000
+            }
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.974811"
+      },
+      "sources:A2": {
+        "volume_ul": 100.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "assay buffer",
+            "concentration": null,
+            "volume_ul": 100,
+            "properties": {}
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.971734"
+      },
+      "sources:A3": {
+        "volume_ul": 140.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.978395"
+      },
+      "assay:A1": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957292"
+      },
+      "assay:A2": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957430"
+      },
+      "assay:A3": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957560"
+      }
+    }
+  },
+  {
+    "stage": "step_0005",
+    "contents": {
+      "sources:A1": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "GFP lysate liquid",
+            "concentration": null,
+            "volume_ul": 160,
+            "properties": {}
+          },
+          {
+            "name": "GFP cellular material",
+            "concentration": null,
+            "volume_ul": 0,
+            "properties": {
+              "declared_cells": 100000
+            }
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.974811"
+      },
+      "sources:A2": {
+        "volume_ul": 100.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "assay buffer",
+            "concentration": null,
+            "volume_ul": 100,
+            "properties": {}
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.971734"
+      },
+      "sources:A3": {
+        "volume_ul": 140.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.978395"
+      },
+      "assay:A1": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.979822"
+      },
+      "assay:A2": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957430"
+      },
+      "assay:A3": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957560"
+      }
+    }
+  },
+  {
+    "stage": "step_0006",
+    "contents": {
+      "sources:A1": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "GFP lysate liquid",
+            "concentration": null,
+            "volume_ul": 160,
+            "properties": {}
+          },
+          {
+            "name": "GFP cellular material",
+            "concentration": null,
+            "volume_ul": 0,
+            "properties": {
+              "declared_cells": 100000
+            }
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.974811"
+      },
+      "sources:A2": {
+        "volume_ul": 60.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "assay buffer",
+            "concentration": null,
+            "volume_ul": 60.0,
+            "properties": {}
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.981341"
+      },
+      "sources:A3": {
+        "volume_ul": 140.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.978395"
+      },
+      "assay:A1": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.979822"
+      },
+      "assay:A2": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957430"
+      },
+      "assay:A3": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957560"
+      }
+    }
+  },
+  {
+    "stage": "step_0007",
+    "contents": {
+      "sources:A1": {
+        "volume_ul": 40.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "GFP lysate liquid",
+            "concentration": null,
+            "volume_ul": 160,
+            "properties": {}
+          },
+          {
+            "name": "GFP cellular material",
+            "concentration": null,
+            "volume_ul": 0,
+            "properties": {
+              "declared_cells": 100000
+            }
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.982838"
+      },
+      "sources:A2": {
+        "volume_ul": 60.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "assay buffer",
+            "concentration": null,
+            "volume_ul": 60.0,
+            "properties": {}
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.981341"
+      },
+      "sources:A3": {
+        "volume_ul": 140.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.978395"
+      },
+      "assay:A1": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.979822"
+      },
+      "assay:A2": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957430"
+      },
+      "assay:A3": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957560"
+      }
+    }
+  },
+  {
+    "stage": "step_0008",
+    "contents": {
+      "sources:A1": {
+        "volume_ul": 40.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "GFP lysate liquid",
+            "concentration": null,
+            "volume_ul": 160,
+            "properties": {}
+          },
+          {
+            "name": "GFP cellular material",
+            "concentration": null,
+            "volume_ul": 0,
+            "properties": {
+              "declared_cells": 100000
+            }
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.982838"
+      },
+      "sources:A2": {
+        "volume_ul": 60.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "assay buffer",
+            "concentration": null,
+            "volume_ul": 60.0,
+            "properties": {}
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.981341"
+      },
+      "sources:A3": {
+        "volume_ul": 140.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.978395"
+      },
+      "assay:A1": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.979822"
+      },
+      "assay:A2": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957430"
+      },
+      "assay:A3": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957560"
+      }
+    }
+  },
+  {
+    "stage": "step_0009",
+    "contents": {
+      "sources:A1": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "GFP lysate liquid",
+            "concentration": null,
+            "volume_ul": 80.0,
+            "properties": {}
+          },
+          {
+            "name": "GFP cellular material",
+            "concentration": null,
+            "volume_ul": 0.0,
+            "properties": {
+              "declared_cells": 100000
+            }
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.985955"
+      },
+      "sources:A2": {
+        "volume_ul": 60.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "assay buffer",
+            "concentration": null,
+            "volume_ul": 60.0,
+            "properties": {}
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.981341"
+      },
+      "sources:A3": {
+        "volume_ul": 140.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.978395"
+      },
+      "assay:A1": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.979822"
+      },
+      "assay:A2": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957430"
+      },
+      "assay:A3": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957560"
+      }
+    }
+  },
+  {
+    "stage": "step_0010",
+    "contents": {
+      "sources:A1": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "GFP lysate liquid",
+            "concentration": null,
+            "volume_ul": 80.0,
+            "properties": {}
+          },
+          {
+            "name": "GFP cellular material",
+            "concentration": null,
+            "volume_ul": 0.0,
+            "properties": {
+              "declared_cells": 100000
+            }
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.985955"
+      },
+      "sources:A2": {
+        "volume_ul": 60.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "assay buffer",
+            "concentration": null,
+            "volume_ul": 60.0,
+            "properties": {}
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.981341"
+      },
+      "sources:A3": {
+        "volume_ul": 140.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.978395"
+      },
+      "assay:A1": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.979822"
+      },
+      "assay:A2": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.987408"
+      },
+      "assay:A3": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957560"
+      }
+    }
+  },
+  {
+    "stage": "step_0011",
+    "contents": {
+      "sources:A1": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "GFP lysate liquid",
+            "concentration": null,
+            "volume_ul": 80.0,
+            "properties": {}
+          },
+          {
+            "name": "GFP cellular material",
+            "concentration": null,
+            "volume_ul": 0.0,
+            "properties": {
+              "declared_cells": 100000
+            }
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.985955"
+      },
+      "sources:A2": {
+        "volume_ul": 40.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "assay buffer",
+            "concentration": null,
+            "volume_ul": 40.00000000000001,
+            "properties": {}
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.988887"
+      },
+      "sources:A3": {
+        "volume_ul": 140.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.978395"
+      },
+      "assay:A1": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.979822"
+      },
+      "assay:A2": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.987408"
+      },
+      "assay:A3": {
+        "volume_ul": 0.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": true,
+        "last_modified": "2026-11-14 19:17:25.957560"
+      }
+    }
+  },
+  {
+    "stage": "step_0012",
+    "contents": {
+      "sources:A1": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "GFP lysate liquid",
+            "concentration": null,
+            "volume_ul": 80.0,
+            "properties": {}
+          },
+          {
+            "name": "GFP cellular material",
+            "concentration": null,
+            "volume_ul": 0.0,
+            "properties": {
+              "declared_cells": 100000
+            }
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.985955"
+      },
+      "sources:A2": {
+        "volume_ul": 40.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "assay buffer",
+            "concentration": null,
+            "volume_ul": 40.00000000000001,
+            "properties": {}
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.988887"
+      },
+      "sources:A3": {
+        "volume_ul": 140.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.978395"
+      },
+      "assay:A1": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.979822"
+      },
+      "assay:A2": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.987408"
+      },
+      "assay:A3": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.990427"
+      }
+    }
+  },
+  {
+    "stage": "step_0013",
+    "contents": {
+      "sources:A1": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "GFP lysate liquid",
+            "concentration": null,
+            "volume_ul": 80.0,
+            "properties": {}
+          },
+          {
+            "name": "GFP cellular material",
+            "concentration": null,
+            "volume_ul": 0.0,
+            "properties": {
+              "declared_cells": 100000
+            }
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.985955"
+      },
+      "sources:A2": {
+        "volume_ul": 40.0,
+        "max_volume_ul": 200.0,
+        "components": [
+          {
+            "name": "assay buffer",
+            "concentration": null,
+            "volume_ul": 40.00000000000001,
+            "properties": {}
+          }
+        ],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.988887"
+      },
+      "sources:A3": {
+        "volume_ul": 140.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.978395"
+      },
+      "assay:A1": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.979822"
+      },
+      "assay:A2": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.987408"
+      },
+      "assay:A3": {
+        "volume_ul": 20.0,
+        "max_volume_ul": 200.0,
+        "components": [],
+        "temperature_c": null,
+        "ph": null,
+        "mixed": false,
+        "last_modified": "2026-11-14 19:17:25.990427"
+      }
+    }
+  }
+]

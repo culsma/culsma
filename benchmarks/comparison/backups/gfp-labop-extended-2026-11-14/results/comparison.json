@@ -1,0 +1,166 @@
+{
+  "pass": true,
+  "Culsma": {
+    "wells": {
+      "A1": {
+        "observation": "entry.s14::data::0",
+        "container": "container/entry/entry.s5%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate_assay_A1",
+        "fluorescence": null,
+        "volume_uL": 20.0,
+        "lineage": [
+          {
+            "fraction": "supernatant",
+            "input": "GFP lysate",
+            "input_id": "container/entry/entry.s0%3A%3Aalloc/lysate",
+            "event_sequence": [
+              26,
+              22
+            ]
+          }
+        ]
+      },
+      "A2": {
+        "observation": "entry.s14::data::1",
+        "container": "container/entry/entry.s10%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate_assay_A2",
+        "fluorescence": null,
+        "volume_uL": 20.0,
+        "lineage": [
+          {
+            "fraction": "pellet",
+            "input": "GFP lysate",
+            "input_id": "container/entry/entry.s0%3A%3Aalloc/lysate",
+            "event_sequence": [
+              36,
+              28,
+              22
+            ]
+          },
+          {
+            "fraction": "buffer",
+            "input": "assay buffer",
+            "input_id": "container/entry/entry.s1%3A%3Aalloc/buffer",
+            "event_sequence": [
+              36,
+              30
+            ]
+          }
+        ]
+      },
+      "A3": {
+        "observation": "entry.s14::data::2",
+        "container": "container/entry/entry.s12%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate_assay_A3",
+        "fluorescence": null,
+        "volume_uL": 20.0,
+        "lineage": [
+          {
+            "fraction": "buffer",
+            "input": "assay buffer",
+            "input_id": "container/entry/entry.s1%3A%3Aalloc/buffer",
+            "event_sequence": [
+              40
+            ]
+          }
+        ]
+      }
+    },
+    "remaining_uL": {
+      "supernatant": 140.0,
+      "resuspended pellet": 20.0,
+      "assay buffer": 40.0
+    }
+  },
+  "LabOP": {
+    "wells": {
+      "A1": {
+        "observation": "https://example.org/gfp-comparison/gfp_execution/ActivityEdgeFlow76/LiteralIdentified1/Dataset1/SampleData1",
+        "container": "https://example.org/gfp-comparison/assay_plate",
+        "sample_id": "sample_Assay plate_96",
+        "fluorescence": null,
+        "volume_uL": 20.0,
+        "lineage": [
+          {
+            "fraction": "supernatant",
+            "input": "GFP lysate",
+            "input_id": "sample_GFP lysate_1",
+            "sample_path": [
+              "sample_Assay plate_96",
+              "sample_GFP lysate_2",
+              "sample_GFP lysate_1"
+            ],
+            "edge_labels": [
+              "Transfer(20.0, microliter)@7",
+              "ClarifyLysate:supernatant@6"
+            ]
+          }
+        ]
+      },
+      "A2": {
+        "observation": "https://example.org/gfp-comparison/gfp_execution/ActivityEdgeFlow76/LiteralIdentified1/Dataset1/SampleData1",
+        "container": "https://example.org/gfp-comparison/assay_plate",
+        "sample_id": "sample_Assay plate_97",
+        "fluorescence": null,
+        "volume_uL": 20.0,
+        "lineage": [
+          {
+            "fraction": "pellet",
+            "input": "GFP lysate",
+            "input_id": "sample_GFP lysate_1",
+            "sample_path": [
+              "sample_Assay plate_97",
+              "sample_Pellet collection tube_2",
+              "sample_Pellet collection tube_1",
+              "sample_GFP lysate_1"
+            ],
+            "edge_labels": [
+              "Transfer(20.0, microliter)@9",
+              "Transfer(40.0, microliter)@8",
+              "ClarifyLysate:pellet@6"
+            ]
+          },
+          {
+            "fraction": "buffer",
+            "input": "assay buffer",
+            "input_id": "sample_Assay buffer_1",
+            "sample_path": [
+              "sample_Assay plate_97",
+              "sample_Pellet collection tube_2",
+              "sample_Assay buffer_1"
+            ],
+            "edge_labels": [
+              "Transfer(20.0, microliter)@9",
+              "Transfer(40.0, microliter)@8"
+            ]
+          }
+        ]
+      },
+      "A3": {
+        "observation": "https://example.org/gfp-comparison/gfp_execution/ActivityEdgeFlow76/LiteralIdentified1/Dataset1/SampleData1",
+        "container": "https://example.org/gfp-comparison/assay_plate",
+        "sample_id": "sample_Assay plate_98",
+        "fluorescence": null,
+        "volume_uL": 20.0,
+        "lineage": [
+          {
+            "fraction": "buffer",
+            "input": "assay buffer",
+            "input_id": "sample_Assay buffer_1",
+            "sample_path": [
+              "sample_Assay plate_98",
+              "sample_Assay buffer_2",
+              "sample_Assay buffer_1"
+            ],
+            "edge_labels": [
+              "Transfer(20.0, microliter)@10",
+              "Transfer(40.0, microliter)@8"
+            ]
+          }
+        ]
+      }
+    },
+    "remaining_uL": {
+      "supernatant": 140.0,
+      "resuspended pellet": 20.0,
+      "assay buffer": 40.0
+    }
+  }
+}

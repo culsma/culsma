@@ -1,0 +1,53 @@
+{
+  "note": "Diagnostic setup run with use_defined_primitives=False. Standard EmptyContainer handlers were disabled. These errors are excluded from L3 conclusions.",
+  "cases": [
+    {
+      "kind": "material_branch",
+      "runtime_values": [
+        true
+      ],
+      "model_sha256": "3853cade3039ba0bfa1a822260507de01a49c629eae167d7a45b15129e029912",
+      "validation_errors": [],
+      "validation_warnings": [],
+      "execution_error": {
+        "type": "Exception",
+        "message": "Could not determine format of data: Expecting value: line 1 column 1 (char 0)",
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/data.py\", line 35, in deserialize_sample_format\n    json_data = json.loads(unquote(data))\n                ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/.pyenv/versions/3.11.11/lib/python3.11/json/__init__.py\", line 346, in loads\n    return _default_decoder.decode(s)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/.pyenv/versions/3.11.11/lib/python3.11/json/decoder.py\", line 337, in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/.pyenv/versions/3.11.11/lib/python3.11/json/decoder.py\", line 355, in raw_decode\n    raise JSONDecodeError(\"Expecting value\", s, err.value) from None\njson.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/check_labop_l3.py\", line 93, in run_case\n    ex = engine.execute(protocol,sbol3.Agent(\"software_runner\"),id=\"execution\",parameter_values=[])\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 299, in execute\n    self.run(execution_context, start_time=start_time)\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 352, in run\n    execution_contexts = self.step(execution_contexts)\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 397, in step\n    raise (e)\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 378, in step\n    ) = self.execute_node(ec, node, node_outputs)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 448, in execute_node\n    self.post_process(execution_context, record, tokens_created[execution_context])\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 944, in post_process\n    self.prov_observer.update(record)\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/behavior_dynamics.py\", line 74, in update\n    new_nodes = updater.update(record)\n                ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/behavior_dynamics.py\", line 770, in update\n    graph_addition = self.observer.time_stamp(samples.to_data_array())\n                                              ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/sample_array.py\", line 89, in to_data_array\n    sample_array = deserialize_sample_format(self.initial_contents, parent=self)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/data.py\", line 52, in deserialize_sample_format\n    raise Exception(f\"Could not determine format of data: {e}\")\nException: Could not determine format of data: Expecting value: line 1 column 1 (char 0)\n"
+      },
+      "consumed_values": [],
+      "calls": [
+        "main",
+        "EmptyContainer"
+      ],
+      "issues": {
+        "execution": [
+          "Could not determine format of data: Expecting value: line 1 column 1 (char 0)"
+        ]
+      }
+    },
+    {
+      "kind": "material_branch",
+      "runtime_values": [
+        false
+      ],
+      "model_sha256": "3853cade3039ba0bfa1a822260507de01a49c629eae167d7a45b15129e029912",
+      "validation_errors": [],
+      "validation_warnings": [],
+      "execution_error": {
+        "type": "Exception",
+        "message": "Could not determine format of data: Expecting value: line 1 column 1 (char 0)",
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/data.py\", line 35, in deserialize_sample_format\n    json_data = json.loads(unquote(data))\n                ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/.pyenv/versions/3.11.11/lib/python3.11/json/__init__.py\", line 346, in loads\n    return _default_decoder.decode(s)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/.pyenv/versions/3.11.11/lib/python3.11/json/decoder.py\", line 337, in decode\n    obj, end = self.raw_decode(s, idx=_w(s, 0).end())\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/.pyenv/versions/3.11.11/lib/python3.11/json/decoder.py\", line 355, in raw_decode\n    raise JSONDecodeError(\"Expecting value\", s, err.value) from None\njson.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/check_labop_l3.py\", line 93, in run_case\n    ex = engine.execute(protocol,sbol3.Agent(\"software_runner\"),id=\"execution\",parameter_values=[])\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 299, in execute\n    self.run(execution_context, start_time=start_time)\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 352, in run\n    execution_contexts = self.step(execution_contexts)\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 397, in step\n    raise (e)\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 378, in step\n    ) = self.execute_node(ec, node, node_outputs)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 448, in execute_node\n    self.post_process(execution_context, record, tokens_created[execution_context])\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 944, in post_process\n    self.prov_observer.update(record)\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/behavior_dynamics.py\", line 74, in update\n    new_nodes = updater.update(record)\n                ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/behavior_dynamics.py\", line 770, in update\n    graph_addition = self.observer.time_stamp(samples.to_data_array())\n                                              ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/sample_array.py\", line 89, in to_data_array\n    sample_array = deserialize_sample_format(self.initial_contents, parent=self)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/data.py\", line 52, in deserialize_sample_format\n    raise Exception(f\"Could not determine format of data: {e}\")\nException: Could not determine format of data: Expecting value: line 1 column 1 (char 0)\n"
+      },
+      "consumed_values": [],
+      "calls": [
+        "main",
+        "EmptyContainer"
+      ],
+      "issues": {
+        "execution": [
+          "Could not determine format of data: Expecting value: line 1 column 1 (char 0)"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "mode": "direct",
+  "validation_errors": [],
+  "validation_warnings": [],
+  "completed_normally": true,
+  "call_records": [
+    {
+      "behavior": "https://example.org/l2/direct/main",
+      "node": "https://example.org/l2/direct/execution/CallBehaviorAction1",
+      "parameters": {}
+    },
+    {
+      "behavior": "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+      "node": "https://example.org/l2/direct/main/CallBehaviorAction1",
+      "parameters": {
+        "specification": "https://example.org/l2/direct/target_spec",
+        "sample_array": "https://example.org/l2/direct/main/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1",
+        "samples": "https://example.org/l2/direct/main/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1"
+      }
+    },
+    {
+      "behavior": "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+      "node": "https://example.org/l2/direct/main/CallBehaviorAction2",
+      "parameters": {
+        "specification": "https://example.org/l2/direct/prepared_spec",
+        "sample_array": "https://example.org/l2/direct/main/CallBehaviorAction2/ValuePin2/LiteralIdentified1/SampleArray1",
+        "samples": "https://example.org/l2/direct/main/CallBehaviorAction2/ValuePin2/LiteralIdentified1/SampleArray1"
+      }
+    },
+    {
+      "behavior": "https://bioprotocols.org/labop/primitives/liquid_handling/Provision",
+      "node": "https://example.org/l2/direct/main/CallBehaviorAction3",
+      "parameters": {
+        "resource": "https://example.org/l2/direct/buffer",
+        "destination": "https://example.org/l2/direct/main/CallBehaviorAction2/ValuePin2/LiteralIdentified1/SampleArray1",
+        "amount": {
+          "value": 100.0,
+          "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre"
+        }
+      }
+    },
+    {
+      "behavior": "https://bioprotocols.org/labop/primitives/liquid_handling/Transfer",
+      "node": "https://example.org/l2/direct/main/CallBehaviorAction4",
+      "parameters": {
+        "source": "https://example.org/l2/direct/main/CallBehaviorAction2/ValuePin2/LiteralIdentified1/SampleArray1",
+        "destination": "https://example.org/l2/direct/main/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1",
+        "amount": {
+          "value": 10.0,
+          "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre"
+        }
+      }
+    }
+  ],
+  "latest_recorded_buffer_ul": {
+    "target": 10.0,
+    "prepared": 90.0
+  },
+  "issues": {
+    "execution": []
+  }
+}

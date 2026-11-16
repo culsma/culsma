@@ -1,0 +1,26 @@
+usage: bplc [-h]
+            {check,parse,lower,validate,simulate,export,compose,capabilities,graph,sop-generate} ...
+
+Biology Programming Language CLI
+
+positional arguments:
+  {check,parse,lower,validate,simulate,export,compose,capabilities,graph,sop-generate}
+    check               Run syntax and baseline semantic checks for a BPL
+                        file.
+    parse               Parse BPL source and emit deterministic AST artifact.
+    lower               Lower BPL source into plan JSON with staged validation
+                        gates.
+    validate            Run staged validation gates and emit deterministic
+                        diagnostics artifact.
+    simulate            Simulate execution from BPL source or plan JSON input.
+    export              Export plan-derived worklist artifacts as CSV/XLSX.
+    compose             Compose human-readable markdown from compiled BPL plan
+                        artifacts.
+    capabilities        Report backend primitive support from shared
+                        capability registry.
+    graph               Render workflow graph artifacts.
+    sop-generate        Generate validated BPL from SOP markdown using bounded
+                        agentic workflow.
+
+options:
+  -h, --help            show this help message and exit

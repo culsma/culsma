@@ -1,0 +1,178 @@
+@prefix ns1: <http://bioprotocols.org/uml#> .
+@prefix sbol: <http://sbols.org/v3#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://example.org/l3/branch/main> a <http://bioprotocols.org/labop#Protocol>,
+        sbol:TopLevel ;
+    ns1:edge <https://example.org/l3/branch/main/ControlFlow1>,
+        <https://example.org/l3/branch/main/ControlFlow2>,
+        <https://example.org/l3/branch/main/ControlFlow3>,
+        <https://example.org/l3/branch/main/ControlFlow4>,
+        <https://example.org/l3/branch/main/ControlFlow5>,
+        <https://example.org/l3/branch/main/ControlFlow6>,
+        <https://example.org/l3/branch/main/ControlFlow7>,
+        <https://example.org/l3/branch/main/ControlFlow8>,
+        <https://example.org/l3/branch/main/ObjectFlow1>,
+        <https://example.org/l3/branch/main/ObjectFlow2> ;
+    ns1:node <https://example.org/l3/branch/main/CallBehaviorAction1>,
+        <https://example.org/l3/branch/main/CallBehaviorAction2>,
+        <https://example.org/l3/branch/main/CallBehaviorAction3>,
+        <https://example.org/l3/branch/main/DecisionNode1>,
+        <https://example.org/l3/branch/main/FinalNode1>,
+        <https://example.org/l3/branch/main/InitialNode1> ;
+    sbol:description "L3 control" ;
+    sbol:displayId "main" ;
+    sbol:hasNamespace <https://example.org/l3/branch/> ;
+    sbol:name "L3 control" .
+
+<https://example.org/l3/branch/FalseBranch> a <http://bioprotocols.org/labop#Primitive>,
+        sbol:TopLevel ;
+    sbol:displayId "FalseBranch" ;
+    sbol:hasNamespace <https://example.org/l3/branch/> .
+
+<https://example.org/l3/branch/TestPredicate/OrderedPropertyValue1> a ns1:OrderedPropertyValue,
+        sbol:Identified ;
+    ns1:indexValue 0 ;
+    ns1:propertyValue <https://example.org/l3/branch/TestPredicate/OrderedPropertyValue1/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue1" .
+
+<https://example.org/l3/branch/TestPredicate/OrderedPropertyValue1/Parameter1> a ns1:Parameter,
+        sbol:Identified ;
+    ns1:direction ns1:out ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:lowerValue <https://example.org/l3/branch/TestPredicate/OrderedPropertyValue1/Parameter1/LiteralInteger2> ;
+    ns1:type xsd:boolean ;
+    ns1:upperValue <https://example.org/l3/branch/TestPredicate/OrderedPropertyValue1/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "return" .
+
+<https://example.org/l3/branch/TestPredicate/OrderedPropertyValue1/Parameter1/LiteralInteger1> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://example.org/l3/branch/TestPredicate/OrderedPropertyValue1/Parameter1/LiteralInteger2> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://example.org/l3/branch/TrueBranch> a <http://bioprotocols.org/labop#Primitive>,
+        sbol:TopLevel ;
+    sbol:displayId "TrueBranch" ;
+    sbol:hasNamespace <https://example.org/l3/branch/> .
+
+<https://example.org/l3/branch/main/ControlFlow1> a ns1:ControlFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/l3/branch/main/InitialNode1> ;
+    ns1:target <https://example.org/l3/branch/main/FinalNode1> ;
+    sbol:displayId "ControlFlow1" .
+
+<https://example.org/l3/branch/main/ControlFlow2> a ns1:ControlFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/l3/branch/main/InitialNode1> ;
+    ns1:target <https://example.org/l3/branch/main/FinalNode1> ;
+    sbol:displayId "ControlFlow2" .
+
+<https://example.org/l3/branch/main/ControlFlow3> a ns1:ControlFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/l3/branch/main/InitialNode1> ;
+    ns1:target <https://example.org/l3/branch/main/CallBehaviorAction3> ;
+    sbol:displayId "ControlFlow3" .
+
+<https://example.org/l3/branch/main/ControlFlow4> a ns1:ControlFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/l3/branch/main/InitialNode1> ;
+    ns1:target <https://example.org/l3/branch/main/DecisionNode1> ;
+    sbol:displayId "ControlFlow4" .
+
+<https://example.org/l3/branch/main/ControlFlow5> a ns1:ControlFlow,
+        sbol:Identified ;
+    ns1:guard <https://example.org/l3/branch/main/ControlFlow5/LiteralBoolean1> ;
+    ns1:source <https://example.org/l3/branch/main/DecisionNode1> ;
+    ns1:target <https://example.org/l3/branch/main/CallBehaviorAction1> ;
+    sbol:displayId "ControlFlow5" .
+
+<https://example.org/l3/branch/main/ControlFlow5/LiteralBoolean1> a ns1:LiteralBoolean,
+        sbol:Identified ;
+    ns1:booleanValue true ;
+    sbol:displayId "LiteralBoolean1" .
+
+<https://example.org/l3/branch/main/ControlFlow6> a ns1:ControlFlow,
+        sbol:Identified ;
+    ns1:guard <https://example.org/l3/branch/main/ControlFlow6/LiteralBoolean1> ;
+    ns1:source <https://example.org/l3/branch/main/DecisionNode1> ;
+    ns1:target <https://example.org/l3/branch/main/CallBehaviorAction2> ;
+    sbol:displayId "ControlFlow6" .
+
+<https://example.org/l3/branch/main/ControlFlow6/LiteralBoolean1> a ns1:LiteralBoolean,
+        sbol:Identified ;
+    ns1:booleanValue false ;
+    sbol:displayId "LiteralBoolean1" .
+
+<https://example.org/l3/branch/main/ControlFlow7> a ns1:ControlFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/l3/branch/main/CallBehaviorAction1> ;
+    ns1:target <https://example.org/l3/branch/main/FinalNode1> ;
+    sbol:displayId "ControlFlow7" .
+
+<https://example.org/l3/branch/main/ControlFlow8> a ns1:ControlFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/l3/branch/main/CallBehaviorAction2> ;
+    ns1:target <https://example.org/l3/branch/main/FinalNode1> ;
+    sbol:displayId "ControlFlow8" .
+
+<https://example.org/l3/branch/main/ObjectFlow1> a ns1:ObjectFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/l3/branch/main/CallBehaviorAction3> ;
+    ns1:target <https://example.org/l3/branch/main/CallBehaviorAction3/OutputPin1> ;
+    sbol:displayId "ObjectFlow1" .
+
+<https://example.org/l3/branch/main/ObjectFlow2> a ns1:ObjectFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/l3/branch/main/CallBehaviorAction3/OutputPin1> ;
+    ns1:target <https://example.org/l3/branch/main/DecisionNode1> ;
+    sbol:displayId "ObjectFlow2" .
+
+<https://example.org/l3/branch/TestPredicate> a <http://bioprotocols.org/labop#Primitive>,
+        sbol:TopLevel ;
+    ns1:ownedParameter <https://example.org/l3/branch/TestPredicate/OrderedPropertyValue1> ;
+    sbol:displayId "TestPredicate" ;
+    sbol:hasNamespace <https://example.org/l3/branch/> .
+
+<https://example.org/l3/branch/main/CallBehaviorAction1> a ns1:CallBehaviorAction,
+        sbol:Identified ;
+    ns1:behavior <https://example.org/l3/branch/TrueBranch> ;
+    sbol:displayId "CallBehaviorAction1" .
+
+<https://example.org/l3/branch/main/CallBehaviorAction2> a ns1:CallBehaviorAction,
+        sbol:Identified ;
+    ns1:behavior <https://example.org/l3/branch/FalseBranch> ;
+    sbol:displayId "CallBehaviorAction2" .
+
+<https://example.org/l3/branch/main/CallBehaviorAction3> a ns1:CallBehaviorAction,
+        sbol:Identified ;
+    ns1:behavior <https://example.org/l3/branch/TestPredicate> ;
+    ns1:output <https://example.org/l3/branch/main/CallBehaviorAction3/OutputPin1> ;
+    sbol:displayId "CallBehaviorAction3" .
+
+<https://example.org/l3/branch/main/CallBehaviorAction3/OutputPin1> a ns1:OutputPin,
+        sbol:Identified ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    sbol:displayId "OutputPin1" ;
+    sbol:name "return" .
+
+<https://example.org/l3/branch/main/DecisionNode1> a ns1:DecisionNode,
+        sbol:Identified ;
+    ns1:decisionInput <https://example.org/l3/branch/TestPredicate> ;
+    sbol:displayId "DecisionNode1" .
+
+<https://example.org/l3/branch/main/FinalNode1> a ns1:FinalNode,
+        sbol:Identified ;
+    sbol:displayId "FinalNode1" .
+
+<https://example.org/l3/branch/main/InitialNode1> a ns1:InitialNode,
+        sbol:Identified ;
+    sbol:displayId "InitialNode1" .
+

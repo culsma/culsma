@@ -1,0 +1,202 @@
+{
+  "source_commit": "2e2bd88150c71a440771fd369f40295dfd622324",
+  "extension_used": false,
+  "script_sha256": "f4ca86097b37182c453467a1bdec81c8901daad2e23cbb5b422804f3439a14a6",
+  "cases": {
+    "spin_prefix": {
+      "mode": "spin_prefix",
+      "fraction_output_names": [],
+      "fraction_output_lookup": {
+        "supernatant": {
+          "found": false,
+          "stage": "authoring/output lookup",
+          "type": "ValueError",
+          "message": "Could not find output pin named supernatant"
+        },
+        "pellet": {
+          "found": false,
+          "stage": "authoring/output lookup",
+          "type": "ValueError",
+          "message": "Could not find output pin named pellet"
+        }
+      },
+      "spin_behavior": "https://bioprotocols.org/labop/primitives/plate_handling/Spin",
+      "spin_has_default_material_handler": false,
+      "validation_errors": [],
+      "validation_warnings": [],
+      "completed_normally": true,
+      "execution_exception": null,
+      "issues": [],
+      "executed_behaviors": [
+        "https://example.org/gfp-native/spin_prefix/gfp_spin_prefix",
+        "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+        "https://bioprotocols.org/labop/primitives/liquid_handling/Provision",
+        "https://bioprotocols.org/labop/primitives/plate_handling/Hold",
+        "https://bioprotocols.org/labop/primitives/plate_handling/Spin"
+      ],
+      "provenance_edges": [
+        [
+          "sample_GFP lysate_0",
+          "sample_GFP lysate_1",
+          "Provision(160.0, microliter, GFP lysate with 100000 suspended cellular units)@1"
+        ]
+      ]
+    },
+    "location_continuation": {
+      "mode": "location_continuation",
+      "fraction_output_names": [],
+      "fraction_output_lookup": {
+        "supernatant": {
+          "found": false,
+          "stage": "authoring/output lookup",
+          "type": "ValueError",
+          "message": "Could not find output pin named supernatant"
+        },
+        "pellet": {
+          "found": false,
+          "stage": "authoring/output lookup",
+          "type": "ValueError",
+          "message": "Could not find output pin named pellet"
+        }
+      },
+      "spin_behavior": "https://bioprotocols.org/labop/primitives/plate_handling/Spin",
+      "spin_has_default_material_handler": false,
+      "validation_errors": [],
+      "validation_warnings": [],
+      "completed_normally": true,
+      "execution_exception": null,
+      "issues": [],
+      "executed_behaviors": [
+        "https://example.org/gfp-native/location_continuation/gfp_location_continuation",
+        "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+        "https://bioprotocols.org/labop/primitives/liquid_handling/Provision",
+        "https://bioprotocols.org/labop/primitives/plate_handling/Hold",
+        "https://bioprotocols.org/labop/primitives/plate_handling/Spin",
+        "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+        "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+        "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+        "https://bioprotocols.org/labop/primitives/liquid_handling/Provision",
+        "https://bioprotocols.org/labop/primitives/liquid_handling/Transfer",
+        "https://bioprotocols.org/labop/primitives/sample_arrays/PlateCoordinates",
+        "https://bioprotocols.org/labop/primitives/liquid_handling/Transfer",
+        "https://bioprotocols.org/labop/primitives/liquid_handling/Transfer",
+        "https://bioprotocols.org/labop/primitives/liquid_handling/PipetteMix",
+        "https://bioprotocols.org/labop/primitives/sample_arrays/PlateCoordinates",
+        "https://bioprotocols.org/labop/primitives/liquid_handling/Transfer",
+        "https://bioprotocols.org/labop/primitives/sample_arrays/PlateCoordinates",
+        "https://bioprotocols.org/labop/primitives/liquid_handling/Transfer",
+        "https://bioprotocols.org/labop/primitives/sample_arrays/PlateCoordinates",
+        "https://bioprotocols.org/labop/primitives/spectrophotometry/MeasureFluorescence"
+      ],
+      "provenance_edges": [
+        [
+          "sample_Assay buffer_2",
+          "sample_Assay buffer_3",
+          "Transfer(20.0, microliter)@10"
+        ],
+        [
+          "sample_Assay plate_16",
+          "sample_Assay plate_98",
+          "Transfer(20.0, microliter)@10"
+        ],
+        [
+          "sample_Assay buffer_2",
+          "sample_Assay plate_98",
+          "Transfer(20.0, microliter)@10"
+        ],
+        [
+          "sample_GFP lysate_3",
+          "sample_GFP lysate_4",
+          "Transfer(20.0, microliter)@9"
+        ],
+        [
+          "sample_Assay plate_8",
+          "sample_Assay plate_97",
+          "Transfer(20.0, microliter)@9"
+        ],
+        [
+          "sample_GFP lysate_3",
+          "sample_Assay plate_97",
+          "Transfer(20.0, microliter)@9"
+        ],
+        [
+          "sample_Assay buffer_1",
+          "sample_Assay buffer_2",
+          "Transfer(40.0, microliter)@8"
+        ],
+        [
+          "sample_GFP lysate_2",
+          "sample_GFP lysate_3",
+          "Transfer(40.0, microliter)@8"
+        ],
+        [
+          "sample_Assay buffer_1",
+          "sample_GFP lysate_3",
+          "Transfer(40.0, microliter)@8"
+        ],
+        [
+          "sample_Collected liquid_1",
+          "sample_Collected liquid_2",
+          "Transfer(20.0, microliter)@7"
+        ],
+        [
+          "sample_Assay plate_0",
+          "sample_Assay plate_96",
+          "Transfer(20.0, microliter)@7"
+        ],
+        [
+          "sample_Collected liquid_1",
+          "sample_Assay plate_96",
+          "Transfer(20.0, microliter)@7"
+        ],
+        [
+          "sample_GFP lysate_1",
+          "sample_GFP lysate_2",
+          "Transfer(160.0, microliter)@6"
+        ],
+        [
+          "sample_Collected liquid_0",
+          "sample_Collected liquid_1",
+          "Transfer(160.0, microliter)@6"
+        ],
+        [
+          "sample_GFP lysate_1",
+          "sample_Collected liquid_1",
+          "Transfer(160.0, microliter)@6"
+        ],
+        [
+          "sample_Assay buffer_0",
+          "sample_Assay buffer_1",
+          "Provision(100.0, microliter, Assay buffer)@5"
+        ],
+        [
+          "sample_GFP lysate_0",
+          "sample_GFP lysate_1",
+          "Provision(160.0, microliter, GFP lysate with 100000 suspended cellular units)@1"
+        ]
+      ],
+      "fluorescence_data": "https://example.org/gfp-native/location_continuation/gfp_native_execution/ActivityEdgeFlow80/LiteralIdentified1/Dataset1/SampleData1",
+      "observation_coordinates": [
+        "A1",
+        "A2",
+        "A3"
+      ],
+      "well_volumes_uL": {
+        "A1": 20.0,
+        "A2": 20.0,
+        "A3": 20.0
+      },
+      "well_reagents": {
+        "A1": {
+          "https://example.org/gfp-native/location_continuation/lysate_liquid": 20.0
+        },
+        "A2": {
+          "https://example.org/gfp-native/location_continuation/assay_buffer": 20.0
+        },
+        "A3": {
+          "https://example.org/gfp-native/location_continuation/assay_buffer": 20.0
+        }
+      }
+    }
+  }
+}

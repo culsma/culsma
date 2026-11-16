@@ -1,0 +1,1707 @@
+{
+  "comparison_kind": "Culsma execution and LabOP library/source audit",
+  "culsma": {
+    "typed_quantities_and_association_passed": true,
+    "separation_event": 16,
+    "source": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+    "fractions": {
+      "bound": {
+        "container_id": "entry.s1::0",
+        "component_entries": {
+          "MAGNETIC_BEADS": {
+            "amount": 10.0,
+            "associated_with": "entry.s1::0",
+            "association_target_kind": "container",
+            "content_ref": "MAGNETIC_BEADS",
+            "entry_id": "MAGNETIC_BEADS",
+            "label": "bound_output",
+            "material_state_source": "scientific_model_provider",
+            "preservation": "derived",
+            "provenance": {
+              "configuration": {},
+              "model_id": null,
+              "model_version": null,
+              "provider_id": "culsma.builtin.material_rulebook",
+              "provider_version": "1.0"
+            },
+            "quantity": {
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 10.0
+            },
+            "relation": "field_retained",
+            "relationship_source": "scientific_model"
+          },
+          "TARGET_PROTEIN": {
+            "amount": 0.001,
+            "associated_with": "MAGNETIC_BEADS",
+            "association_target_kind": "component_entry",
+            "content_ref": "TARGET_PROTEIN",
+            "entry_id": "TARGET_PROTEIN",
+            "label": null,
+            "material_state_source": "author_transition",
+            "preservation": null,
+            "quantity": {
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 0.001
+            },
+            "relation": "bead_bound",
+            "relationship_source": "author_transition"
+          },
+          "BUFFER": {
+            "amount": 0.0,
+            "associated_with": null,
+            "association_target_kind": null,
+            "content_ref": "BUFFER",
+            "entry_id": "BUFFER",
+            "label": null,
+            "material_state_source": "scientific_model_provider",
+            "preservation": "derived",
+            "quantity": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 0.0
+            },
+            "relation": "free",
+            "relationship_source": "scientific_model"
+          }
+        },
+        "aggregate_volume_uL": 10.001,
+        "aggregate_mass_mg": 10.001
+      },
+      "flowthrough": {
+        "container_id": "entry.s1::1",
+        "component_entries": {
+          "MAGNETIC_BEADS": {
+            "amount": 0.0,
+            "associated_with": null,
+            "association_target_kind": null,
+            "content_ref": "MAGNETIC_BEADS",
+            "entry_id": "MAGNETIC_BEADS",
+            "label": null,
+            "material_state_source": "scientific_model_provider",
+            "preservation": "derived",
+            "quantity": {
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 0.0
+            },
+            "relation": "free",
+            "relationship_source": "scientific_model"
+          },
+          "TARGET_PROTEIN": {
+            "amount": 0.0,
+            "associated_with": null,
+            "association_target_kind": null,
+            "content_ref": "TARGET_PROTEIN",
+            "entry_id": "TARGET_PROTEIN",
+            "label": null,
+            "material_state_source": "scientific_model_provider",
+            "preservation": "derived",
+            "quantity": {
+              "dimension": "mass",
+              "unit": "mg",
+              "value": 0.0
+            },
+            "relation": "free",
+            "relationship_source": "scientific_model"
+          },
+          "BUFFER": {
+            "amount": 100.0,
+            "associated_with": null,
+            "association_target_kind": null,
+            "content_ref": "BUFFER",
+            "entry_id": "BUFFER",
+            "label": "flowthrough_output",
+            "material_state_source": "scientific_model_provider",
+            "preservation": "derived",
+            "provenance": {
+              "configuration": {},
+              "model_id": null,
+              "model_version": null,
+              "provider_id": "culsma.builtin.material_rulebook",
+              "provider_version": "1.0"
+            },
+            "quantity": {
+              "dimension": "volume",
+              "unit": "uL",
+              "value": 100.0
+            },
+            "relation": "free",
+            "relationship_source": "scientific_model"
+          }
+        },
+        "aggregate_volume_uL": 100.0,
+        "aggregate_mass_mg": 100.0
+      }
+    },
+    "scope": "Declared allocation and association, without downstream operations or hardware.",
+    "aggregate_limitation": "The pinned runtime also reports 10.001 uL for the bound fraction and 100 mg for flowthrough via cross-dimension aggregate projections. These are not physical volume/density predictions and are excluded from the verified outcomes; this check uses dimensioned component quantities."
+  },
+  "labop": {
+    "primitive_count": 52,
+    "primitives": [
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/culturing/Culture",
+        "library": "culturing",
+        "name": "Culture",
+        "description": "Inoculate and grow cells in a growth medium.",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "inoculum",
+            "direction": "in",
+            "type": "http://sbols.org/v3#Component"
+          },
+          {
+            "index": 1,
+            "name": "replicates",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 2,
+            "name": "growth_medium",
+            "direction": "in",
+            "type": "http://sbols.org/v3#Component"
+          },
+          {
+            "index": 3,
+            "name": "volume",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 4,
+            "name": "duration",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 5,
+            "name": "orbital_shake_speed",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 6,
+            "name": "temperature",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 7,
+            "name": "container",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/culturing/CulturePlates",
+        "library": "culturing",
+        "name": "CulturePlates",
+        "description": "Create a new sample collection of culture plates using a particular media type",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "quantity",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 1,
+            "name": "specification",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#ContainerSpec"
+          },
+          {
+            "index": 2,
+            "name": "replicates",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 3,
+            "name": "growth_medium",
+            "direction": "in",
+            "type": "http://sbols.org/v3#Component"
+          },
+          {
+            "index": 4,
+            "name": "samples",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/culturing/PickColonies",
+        "library": "culturing",
+        "name": "PickColonies",
+        "description": "Create a new sample collection of culture plates using a particular media type",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "colonies",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          },
+          {
+            "index": 1,
+            "name": "quantity",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 2,
+            "name": "replicates",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 3,
+            "name": "samples",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/culturing/Transform",
+        "library": "culturing",
+        "name": "Transform",
+        "description": "Transform competent cells.",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "host",
+            "direction": "in",
+            "type": "http://sbols.org/v3#Component"
+          },
+          {
+            "index": 1,
+            "name": "dna",
+            "direction": "in",
+            "type": "http://sbols.org/v3#Component"
+          },
+          {
+            "index": 2,
+            "name": "amount",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 3,
+            "name": "selection_medium",
+            "direction": "in",
+            "type": "http://sbols.org/v3#Component"
+          },
+          {
+            "index": 4,
+            "name": "destination",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          },
+          {
+            "index": 5,
+            "name": "transformants",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/liquid_handling/Dilute",
+        "library": "liquid_handling",
+        "name": "Dilute",
+        "description": "Dilute",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "source",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "destination",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 2,
+            "name": "amount",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 3,
+            "name": "diluent",
+            "direction": "in",
+            "type": "http://sbols.org/v3#Component"
+          },
+          {
+            "index": 4,
+            "name": "replicates",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 5,
+            "name": "dilution_factor",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 6,
+            "name": "temperature",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/liquid_handling/DiluteToTargetOD",
+        "library": "liquid_handling",
+        "name": "DiluteToTargetOD",
+        "description": "Dilute",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "source",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "destination",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 2,
+            "name": "amount",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 3,
+            "name": "diluent",
+            "direction": "in",
+            "type": "http://sbols.org/v3#Component"
+          },
+          {
+            "index": 4,
+            "name": "target_od",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 5,
+            "name": "temperature",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/liquid_handling/Discard",
+        "library": "liquid_handling",
+        "name": "Discard",
+        "description": "Discard part or all of a sample",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "samples",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "amount",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/liquid_handling/Dispense",
+        "library": "liquid_handling",
+        "name": "Dispense",
+        "description": "Move a measured volume of liquid from one source sample to create samples at multiple destination locations",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "source",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "destination",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 2,
+            "name": "amount",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 3,
+            "name": "dispenseVelocity",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/liquid_handling/PipetteMix",
+        "library": "liquid_handling",
+        "name": "PipetteMix",
+        "description": "Mix by cycling a measured volume of liquid in and out at an array of samples a fixed number of times",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "samples",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "amount",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 2,
+            "name": "dispenseVelocity",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 3,
+            "name": "cycleCount",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/liquid_handling/Provision",
+        "library": "liquid_handling",
+        "name": "Provision",
+        "description": "Place a measured amount (mass or volume) of a specified component into a location, where it may then be used in executing the protocol.",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "resource",
+            "direction": "in",
+            "type": "http://sbols.org/v3#Component"
+          },
+          {
+            "index": 1,
+            "name": "destination",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 2,
+            "name": "amount",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 3,
+            "name": "dispenseVelocity",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/liquid_handling/SerialDilution",
+        "library": "liquid_handling",
+        "name": "SerialDilution",
+        "description": "Serial Dilution",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "samples",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "direction",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 2,
+            "name": "diluent",
+            "direction": "in",
+            "type": "http://sbols.org/v3#Component"
+          },
+          {
+            "index": 3,
+            "name": "amount",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 4,
+            "name": "dilution_factor",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/liquid_handling/Transfer",
+        "library": "liquid_handling",
+        "name": "Transfer",
+        "description": "Move a measured volume taken from a collection of source samples to a location whose shape can contain them in a destination locations",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "source",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "destination",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 2,
+            "name": "coordinates",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 3,
+            "name": "replicates",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 4,
+            "name": "temperature",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 5,
+            "name": "amount",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 6,
+            "name": "dispenseVelocity",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/liquid_handling/TransferByMap",
+        "library": "liquid_handling",
+        "name": "TransferByMap",
+        "description": "Move volumes from a collection of source samples to a collection of destination samples following a plan of value given for each location",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "source",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "destination",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 2,
+            "name": "plan",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleData"
+          },
+          {
+            "index": 3,
+            "name": "amount",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 4,
+            "name": "temperature",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 5,
+            "name": "dispenseVelocity",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/liquid_handling/TransferInto",
+        "library": "liquid_handling",
+        "name": "TransferInto",
+        "description": "Mix a measured volume taken from an collection of source samples into a collection of destination samples whose shape can contain them",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "source",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "destination",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 2,
+            "name": "amount",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 3,
+            "name": "mixCycles",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 4,
+            "name": "dispenseVelocity",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/liquid_handling/Vortex",
+        "library": "liquid_handling",
+        "name": "Vortex",
+        "description": "Vortex a sample in order to homogeneously mix or suspend its contents",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "samples",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "duration",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/pcr/PCR",
+        "library": "pcr",
+        "name": "PCR",
+        "description": "Specify PCR cycling parameters",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "cycles",
+            "direction": "in",
+            "type": "http://www.w3.org/2001/XMLSchema#integer"
+          },
+          {
+            "index": 1,
+            "name": "denaturation_temp",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 2,
+            "name": "denaturation_time",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 3,
+            "name": "annealing_temp",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 4,
+            "name": "annealing_time",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 5,
+            "name": "extension_temp",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 6,
+            "name": "extension_time",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/plate_handling/AdhesiveSeal",
+        "library": "plate_handling",
+        "name": "AdhesiveSeal",
+        "description": "Seal a collection of samples using adhesive to fix the seal, in order to guarantee isolation from the external environment",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "location",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          },
+          {
+            "index": 1,
+            "name": "type",
+            "direction": "in",
+            "type": "http://www.w3.org/2001/XMLSchema#anyURI"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/plate_handling/Cover",
+        "library": "plate_handling",
+        "name": "Cover",
+        "description": "Cover a set of samples to keep materials from entering or exiting",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "location",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          },
+          {
+            "index": 1,
+            "name": "type",
+            "direction": "in",
+            "type": "http://www.w3.org/2001/XMLSchema#anyURI"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/plate_handling/EvaporativeSeal",
+        "library": "plate_handling",
+        "name": "EvaporativeSeal",
+        "description": "Seal a collection of samples using a user-selected method in order to prevent evaporation",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "location",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          },
+          {
+            "index": 1,
+            "name": "specification",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#ContainerSpec"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/plate_handling/Filter",
+        "library": "plate_handling",
+        "name": "Filter",
+        "description": "Activate vacuum pump to perform filtering in a plate",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "location",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/plate_handling/Hold",
+        "library": "plate_handling",
+        "name": "Hold",
+        "description": "Incubate, store, or hold a set of samples indefinitely at the specified temperature",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "location",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          },
+          {
+            "index": 1,
+            "name": "temperature",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/plate_handling/HoldOnIce",
+        "library": "plate_handling",
+        "name": "HoldOnIce",
+        "description": "Incubate, store, or hold a set of samples indefinitely on ice",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "location",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/plate_handling/Incubate",
+        "library": "plate_handling",
+        "name": "Incubate",
+        "description": "Incubate a set of samples under specified conditions for a fixed period of time",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "location",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          },
+          {
+            "index": 1,
+            "name": "duration",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 2,
+            "name": "temperature",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 3,
+            "name": "shakingFrequency",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/plate_handling/QuickSpin",
+        "library": "plate_handling",
+        "name": "QuickSpin",
+        "description": "Perform a brief centrifugation on a set of samples to pull down stray droplets or condensate into the bottom of the container",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "location",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/plate_handling/Seal",
+        "library": "plate_handling",
+        "name": "Seal",
+        "description": "Seal a collection of samples fixing the seal using a user-selected method, in order to guarantee isolation from the external environment",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "location",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          },
+          {
+            "index": 1,
+            "name": "specification",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#ContainerSpec"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/plate_handling/Spin",
+        "library": "plate_handling",
+        "name": "Spin",
+        "description": "Centrifuge a set of samples at a given acceleration for a given period of time",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "location",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          },
+          {
+            "index": 1,
+            "name": "duration",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 2,
+            "name": "acceleration",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/plate_handling/ThermalSeal",
+        "library": "plate_handling",
+        "name": "ThermalSeal",
+        "description": "Seal a collection of samples using heat to fix the seal, in order to guarantee isolation from the external environment",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "location",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          },
+          {
+            "index": 1,
+            "name": "type",
+            "direction": "in",
+            "type": "http://www.w3.org/2001/XMLSchema#anyURI"
+          },
+          {
+            "index": 2,
+            "name": "temperature",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 3,
+            "name": "duration",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/plate_handling/Uncover",
+        "library": "plate_handling",
+        "name": "Uncover",
+        "description": "Uncover a collection of samples to allow materials to enter or exit",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "location",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/plate_handling/Unseal",
+        "library": "plate_handling",
+        "name": "Unseal",
+        "description": "Unseal a sealed collection of samples to break their isolation from the external environment",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "location",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/Columns",
+        "library": "sample_arrays",
+        "name": "Columns",
+        "description": "Select only the samples with specified columns from a sample collection",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "source",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "col",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 2,
+            "name": "samples",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/ComputeMetadata",
+        "library": "sample_arrays",
+        "name": "ComputeMetadata",
+        "description": "Compute Metadata describing samples at the time that this primitive executes.",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "for_samples",
+            "direction": "in",
+            "type": "https://bioprotocols.org/labop#SampleArray"
+          },
+          {
+            "index": 1,
+            "name": "metadata",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#SampleMetadata"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/ConfigureRobot",
+        "library": "sample_arrays",
+        "name": "ConfigureRobot",
+        "description": "Specify an instrument configuration consisting of optional instrument modules, such as pipettes, heat blocks, thermocyclers, etc, which are represented by Agents",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "instrument",
+            "direction": "in",
+            "type": "http://www.w3.org/ns/prov#Agent"
+          },
+          {
+            "index": 1,
+            "name": "mount",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/ContainerSet",
+        "library": "sample_arrays",
+        "name": "ContainerSet",
+        "description": "Create a new sample collection containing a set of replicate slots for every sample in the input",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "quantity",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 1,
+            "name": "specification",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#ContainerSpec"
+          },
+          {
+            "index": 2,
+            "name": "replicates",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 3,
+            "name": "samples",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/DuplicateCollection",
+        "library": "sample_arrays",
+        "name": "DuplicateCollection",
+        "description": "Create a new sample collection with identical parameters to the input collection",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "source",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "samples",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/EmbeddedImage",
+        "library": "sample_arrays",
+        "name": "EmbeddedImage",
+        "description": "None",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "image",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 1,
+            "name": "caption",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+        "library": "sample_arrays",
+        "name": "EmptyContainer",
+        "description": "Allocate a sample array with size and type based on an empty container",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "specification",
+            "direction": "in",
+            "type": "http://sbols.org/v3#Identified"
+          },
+          {
+            "index": 1,
+            "name": "sample_array",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          },
+          {
+            "index": 2,
+            "name": "samples",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyInstrument",
+        "library": "sample_arrays",
+        "name": "EmptyInstrument",
+        "description": "Allocate a sample array with size and type based on the instrument configuration",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "instrument",
+            "direction": "in",
+            "type": "http://www.w3.org/ns/prov#Agent"
+          },
+          {
+            "index": 1,
+            "name": "sample_array",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          },
+          {
+            "index": 2,
+            "name": "slots",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyRack",
+        "library": "sample_arrays",
+        "name": "EmptyRack",
+        "description": "Allocate a sample array with dimensions based on a rack as specified by an instance of cont:Rack",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "specification",
+            "direction": "in",
+            "type": "http://sbols.org/v3#Identified"
+          },
+          {
+            "index": 1,
+            "name": "sample_array",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          },
+          {
+            "index": 2,
+            "name": "slots",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/ExcelMetadata",
+        "library": "sample_arrays",
+        "name": "ExcelMetadata",
+        "description": "Parse sample descriptions and metadata from an Excel file",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "filename",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 1,
+            "name": "for_samples",
+            "direction": "in",
+            "type": "https://bioprotocols.org/labop#SampleArray"
+          },
+          {
+            "index": 2,
+            "name": "metadata",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#SampleMetadata"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/JoinDatasets",
+        "library": "sample_arrays",
+        "name": "JoinDatasets",
+        "description": "Group several labop.Dataset to create a labop.Dataset",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "metadata",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleMetadata"
+          },
+          {
+            "index": 1,
+            "name": "dataset",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#Dataset"
+          },
+          {
+            "index": 2,
+            "name": "joint_dataset",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#Dataset"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/JoinMetadata",
+        "library": "sample_arrays",
+        "name": "JoinMetadata",
+        "description": "Associate a labop:SampleMetadata with a labop.Dataset to create a labop.Dataset that also includes the new metadata",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "metadata",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleMetadata"
+          },
+          {
+            "index": 1,
+            "name": "dataset",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#Dataset"
+          },
+          {
+            "index": 2,
+            "name": "enhanced_dataset",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#Dataset"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/LoadContainerInRack",
+        "library": "sample_arrays",
+        "name": "LoadContainerInRack",
+        "description": "Insert cont:Containers into a rack at the indicated rack coordinates. A call to this Primitive should be preceded by EmptyRack",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "slots",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "container",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#ContainerSpec"
+          },
+          {
+            "index": 2,
+            "name": "coordinates",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 3,
+            "name": "samples",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/LoadContainerOnInstrument",
+        "library": "sample_arrays",
+        "name": "LoadContainerOnInstrument",
+        "description": "Insert cont:Containers directly into an instrument, such as a PCR machine, heat block, etc. at the specified slot cooordinates. A call to this Primitive should be preceded by EmptyInstrument",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "specification",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#ContainerSpec"
+          },
+          {
+            "index": 1,
+            "name": "slots",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 2,
+            "name": "instrument",
+            "direction": "in",
+            "type": "http://www.w3.org/ns/prov#Agent"
+          },
+          {
+            "index": 3,
+            "name": "samples",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/LoadRackOnInstrument",
+        "library": "sample_arrays",
+        "name": "LoadRackOnInstrument",
+        "description": "Insert a tube rack, pipette tip rack, or microwell plate into an addressed location on a robotic platform",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "rack",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 1,
+            "name": "coordinates",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/PlateCoordinates",
+        "library": "sample_arrays",
+        "name": "PlateCoordinates",
+        "description": "Select only the samples with specified row/column combination from a sample collection",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "source",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "coordinates",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 2,
+            "name": "samples",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/PoolSamples",
+        "library": "sample_arrays",
+        "name": "PoolSamples",
+        "description": "Create a new sample collection containing a set of replicate slots for every sample in the input",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "source",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "destination",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          },
+          {
+            "index": 2,
+            "name": "volume",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 3,
+            "name": "samples",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/ReplicateCollection",
+        "library": "sample_arrays",
+        "name": "ReplicateCollection",
+        "description": "Create a new sample collection containing a set of replicate slots for every sample in the input",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "source",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "replicates",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 2,
+            "name": "samples",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/Rows",
+        "library": "sample_arrays",
+        "name": "Rows",
+        "description": "Select only the samples with specified rows from a sample collection",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "source",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "row",
+            "direction": "in",
+            "type": "http://bioprotocols.org/uml#ValueSpecification"
+          },
+          {
+            "index": 2,
+            "name": "samples",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/sample_arrays/StockReagent",
+        "library": "sample_arrays",
+        "name": "StockReagent",
+        "description": "Allocate a SampleArray object representing a stock reagent",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "initial_contents",
+            "direction": "in",
+            "type": "http://sbols.org/v3#Identified"
+          },
+          {
+            "index": 1,
+            "name": "reagent",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#SampleArray"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/spectrophotometry/MeasureAbsorbance",
+        "library": "spectrophotometry",
+        "name": "MeasureAbsorbance",
+        "description": "Measure absorbance at a given wavelength from a set of samples",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "samples",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "wavelength",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 2,
+            "name": "numFlashes",
+            "direction": "in",
+            "type": "http://www.w3.org/2001/XMLSchema#integer"
+          },
+          {
+            "index": 3,
+            "name": "timepoints",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 4,
+            "name": "measurements",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#Dataset"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/spectrophotometry/MeasureFluorescence",
+        "library": "spectrophotometry",
+        "name": "MeasureFluorescence",
+        "description": "Measure fluorescence intensity from a set of samples stimulated by a given wavelength, with an optional bandpass or lowpass filter",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "samples",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "excitationWavelength",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 2,
+            "name": "emissionWavelength",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 3,
+            "name": "emissionBandpassWidth",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 4,
+            "name": "emissionLowpassCutoff",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 5,
+            "name": "numFlashes",
+            "direction": "in",
+            "type": "http://www.w3.org/2001/XMLSchema#integer"
+          },
+          {
+            "index": 6,
+            "name": "gain",
+            "direction": "in",
+            "type": "http://www.w3.org/2001/XMLSchema#double"
+          },
+          {
+            "index": 7,
+            "name": "timepoints",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 8,
+            "name": "measurements",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#Dataset"
+          }
+        ]
+      },
+      {
+        "identity": "https://bioprotocols.org/labop/primitives/spectrophotometry/MeasureFluorescenceSpectrum",
+        "library": "spectrophotometry",
+        "name": "MeasureFluorescenceSpectrum",
+        "description": "Measure fluorescence spectrum from a set of samples stimulated by a given wavelength",
+        "parameters": [
+          {
+            "index": 0,
+            "name": "samples",
+            "direction": "in",
+            "type": "http://bioprotocols.org/labop#SampleCollection"
+          },
+          {
+            "index": 1,
+            "name": "excitationWavelength",
+            "direction": "in",
+            "type": "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"
+          },
+          {
+            "index": 2,
+            "name": "numFlashes",
+            "direction": "in",
+            "type": "http://www.w3.org/2001/XMLSchema#integer"
+          },
+          {
+            "index": 3,
+            "name": "gain",
+            "direction": "in",
+            "type": "http://www.w3.org/2001/XMLSchema#double"
+          },
+          {
+            "index": 4,
+            "name": "measurements",
+            "direction": "out",
+            "type": "http://bioprotocols.org/labop#Dataset"
+          }
+        ]
+      }
+    ],
+    "default_handlers": {
+      "handlers": {
+        "https://bioprotocols.org/labop/primitives/liquid_handling/TransferByMap": "TransferByMapUpdater",
+        "https://bioprotocols.org/labop/primitives/liquid_handling/Transfer": "TransferUpdater",
+        "https://bioprotocols.org/labop/primitives/liquid_handling/Vortex": "VortexUpdater",
+        "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer": "EmptyContainerUpdater",
+        "https://bioprotocols.org/labop/primitives/liquid_handling/Provision": "ProvisionUpdater",
+        "https://bioprotocols.org/labop/primitives/liquid_handling/SerialDilution": "SerialDilutionUpdater"
+      },
+      "primitive_to_output_function": {
+        "EmptyContainer": "empty_container_compute_output",
+        "PlateCoordinates": "plate_coordinates_compute_output",
+        "MeasureAbsorbance": "measure_absorbance_compute_output",
+        "MeasureFluorescence": "measure_fluorescence_compute_output",
+        "EmptyInstrument": "empty_rack_compute_output",
+        "EmptyRack": "empty_rack_compute_output",
+        "LoadContainerOnInstrument": "load_container_on_instrument_compute_output",
+        "JoinMetadata": "join_metadata_compute_output",
+        "JoinDatasets": "join_datasets_compute_output",
+        "ExcelMetadata": "excel_metadata_compute_output",
+        "ComputeMetadata": "compute_metadata_compute_output"
+      }
+    },
+    "source_sha256": {
+      "labop/lib/culturing.ttl": "43ec49a0ed45a56cce07877fdb61d540e16bee63416645b6903a3a7a435d40c9",
+      "labop/lib/liquid_handling.ttl": "f848017ab3366f6e453caa48b8325b77ffcdc0bdb729f30a476ade52864a3355",
+      "labop/lib/pcr.ttl": "c739161ff6aaa126ca441eb8d5d544d1cc77f36d1e6fcc5560be8683269d6142",
+      "labop/lib/plate_handling.ttl": "0666b1cd0406c9b050e2951a091a5f402b8593679512aab7a5b4255865c83de6",
+      "labop/lib/sample_arrays.ttl": "826ceac438e9d54f16040ee1802db8a6f3b2a975674fc8ce3b9cfd26daaaf97e",
+      "labop/lib/spectrophotometry.ttl": "8a07dee0b096870204ba2a3fe228ee2466dcac4488e4ede5af421af6013ba6e1",
+      "labop/execution/behavior_dynamics.py": "8cdad33723345fedb7369708c49eb059f4e19193e5e0620dacb9fa983814c922",
+      "labop/execution/primitive_execution.py": "021180824bc57cd90d432948d5505fe55e273500a7a81824bc35373d7bb60327"
+    }
+  },
+  "limitation": "No extended LabOP magnetic implementation was executed. Library inventory does not establish a limit on LabOP expressiveness."
+}

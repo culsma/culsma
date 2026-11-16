@@ -1,0 +1,1 @@
+{"artifacts": {"diagnostics": "artifacts/check/gfp_transfers_only.diagnostics.json"}, "command": "check", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/gfp/gfp_transfers_only.bpl", "ok": true}

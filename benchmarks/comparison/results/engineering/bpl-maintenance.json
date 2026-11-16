@@ -1,0 +1,85 @@
+{
+  "project": {
+    "url": "https://gitlab.com/api/v4/projects/bota-biosciences-public%2Fbpl-code",
+    "data": {
+      "id": 81705723,
+      "web_url": "https://gitlab.com/bota-biosciences-public/bpl-code",
+      "default_branch": "main",
+      "created_at": "2026-04-28T05:50:50.127Z",
+      "last_activity_at": "2026-06-26T07:36:16.617Z",
+      "archived": null,
+      "issues_enabled": null
+    },
+    "next_page": null
+  },
+  "commits": {
+    "url": "https://gitlab.com/api/v4/projects/bota-biosciences-public%2Fbpl-code/repository/commits?per_page=10&until=2026-11-12T00:00:00Z",
+    "data": [
+      {
+        "id": "4e505740f5025d59ba655c6c955f83876f753007",
+        "title": "Merge branch 'docs/bpl-eval-dataset-usage' into 'main'",
+        "committed_date": "2026-06-26T01:14:42.000-07:00",
+        "web_url": "https://gitlab.com/bota-biosciences-public/bpl-code/-/commit/4e505740f5025d59ba655c6c955f83876f753007"
+      },
+      {
+        "id": "549135eb8bc7ec73071e0894b693390ae891987e",
+        "title": "Document Nature code checklist details",
+        "committed_date": "2026-06-26T15:36:07.000+08:00",
+        "web_url": "https://gitlab.com/bota-biosciences-public/bpl-code/-/commit/549135eb8bc7ec73071e0894b693390ae891987e"
+      },
+      {
+        "id": "e4f90b721e7256d9bad691a68c0b227aa95bd0de",
+        "title": "Merge remote-tracking branch 'origin/main'",
+        "committed_date": "2026-06-26T09:57:26.000+08:00",
+        "web_url": "https://gitlab.com/bota-biosciences-public/bpl-code/-/commit/e4f90b721e7256d9bad691a68c0b227aa95bd0de"
+      },
+      {
+        "id": "cb62b1d909743c3e67d5ecb00870253836bc8a60",
+        "title": "fix(eval): omit OpenRouter attribution headers",
+        "committed_date": "2026-06-26T09:57:19.000+08:00",
+        "web_url": "https://gitlab.com/bota-biosciences-public/bpl-code/-/commit/cb62b1d909743c3e67d5ecb00870253836bc8a60"
+      },
+      {
+        "id": "13141b74acad3ede171ab9887781cb61b02fc73b",
+        "title": "Merge branch 'docs/bpl-eval-dataset-usage' into 'main'",
+        "committed_date": "2026-04-30T04:44:43.000+00:00",
+        "web_url": "https://gitlab.com/bota-biosciences-public/bpl-code/-/commit/13141b74acad3ede171ab9887781cb61b02fc73b"
+      },
+      {
+        "id": "ba60dd835ba7430b70fe9db9d6b68e8d2bff4bb9",
+        "title": "Fix determinism and audit safety findings",
+        "committed_date": "2026-04-30T10:50:48.000+08:00",
+        "web_url": "https://gitlab.com/bota-biosciences-public/bpl-code/-/commit/ba60dd835ba7430b70fe9db9d6b68e8d2bff4bb9"
+      },
+      {
+        "id": "59c9f7c3eb29b7707bcfbcaa99ebdcbffe85f76d",
+        "title": "Document BPL-EVAL dataset usage",
+        "committed_date": "2026-04-30T10:37:17.000+08:00",
+        "web_url": "https://gitlab.com/bota-biosciences-public/bpl-code/-/commit/59c9f7c3eb29b7707bcfbcaa99ebdcbffe85f76d"
+      },
+      {
+        "id": "91bd1425d5282a6d7549f74b502b7f6c364864d0",
+        "title": "Normalize tracked file permissions",
+        "committed_date": "2026-04-29T23:09:44.000+08:00",
+        "web_url": "https://gitlab.com/bota-biosciences-public/bpl-code/-/commit/91bd1425d5282a6d7549f74b502b7f6c364864d0"
+      },
+      {
+        "id": "344c23ea591c46fa3ac6273275156d0ce60eba77",
+        "title": "Initial release: BPL \u2014 Biology Programming Language",
+        "committed_date": "2026-04-28T15:57:44.000+08:00",
+        "web_url": "https://gitlab.com/bota-biosciences-public/bpl-code/-/commit/344c23ea591c46fa3ac6273275156d0ce60eba77"
+      }
+    ],
+    "next_page": ""
+  },
+  "releases": {
+    "url": "https://gitlab.com/api/v4/projects/bota-biosciences-public%2Fbpl-code/releases?per_page=10",
+    "data": [],
+    "next_page": ""
+  },
+  "issues": {
+    "url": "https://gitlab.com/api/v4/projects/bota-biosciences-public%2Fbpl-code/issues?per_page=10&updated_after=2025-11-12T00:00:00Z",
+    "data": [],
+    "next_page": ""
+  }
+}

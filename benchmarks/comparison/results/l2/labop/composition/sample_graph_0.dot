@@ -1,0 +1,12 @@
+strict digraph sample_graph {
+	graph [label=SampleGraph rankdir=TB]
+	node [ordering=out]
+	subgraph cluster_target_spec {
+		graph [label=target_spec]
+		subgraph cluster_target_spec_A1 {
+			graph [label=target_spec_A1]
+			sample_target_0 [label="sample_target_0 @0
+empty contents"]
+		}
+	}
+}

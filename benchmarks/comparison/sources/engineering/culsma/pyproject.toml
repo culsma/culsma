@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=77.0.3", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "culsma"
+version = "1.0.7"
+description = "Public execution-kernel release boundary for the current Culsma reference implementation"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+license-files = [
+  "LICENSE",
+  "THIRD_PARTY_NOTICES.md",
+  "third_party/licenses/*.txt",
+]
+dependencies = [
+  "lark>=1.1.0",
+]
+
+[project.urls]
+Homepage = "https://culsma.dev/"
+Documentation = "https://culsma.dev/"
+Paper = "https://doi.org/10.64898/2026.05.07.723509"
+Source = "https://github.com/culsma/culsma"
+Issues = "https://github.com/culsma/culsma/issues"
+Changelog = "https://github.com/culsma/culsma/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=7.0.0",
+]
+
+[project.scripts]
+culsma = "culsma.cli:main"
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["culsma", "culsma.*"]
+
+[tool.setuptools.package-data]
+"culsma" = ["stdlib/*.culs"]
+"culsma.parser" = ["culsma.lark"]

@@ -1,0 +1,12 @@
+strict digraph sample_graph {
+	graph [label=SampleGraph rankdir=TB]
+	node [ordering=out]
+	subgraph cluster_lysate_tube {
+		graph [label=lysate_tube]
+		subgraph cluster_lysate_tube_A1 {
+			graph [label=lysate_tube_A1]
+			"sample_GFP lysate_0" [label="sample_GFP lysate_0 @0
+empty contents"]
+		}
+	}
+}

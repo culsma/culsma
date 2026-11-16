@@ -1,0 +1,10 @@
+protocol Aliquot(source, destination, amount) {
+ destination << [source:amount];
+}
+let stock = tube(label = "stock", capacity = 1.5mL, load = [
+ content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER, code = "BUFFER"):100uL]);
+let first = tube(label = "first", capacity = 1.5mL);
+let second = tube(label = "second", capacity = 1.5mL);
+Aliquot(source = stock, destination = first, amount = 10uL);
+Aliquot(source = stock, destination = second, amount = 20uL);
+return second;

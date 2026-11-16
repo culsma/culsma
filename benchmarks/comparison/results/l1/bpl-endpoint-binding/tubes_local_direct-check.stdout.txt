@@ -1,0 +1,1 @@
+{"artifacts": {"diagnostics": "artifacts/check/tubes_local_direct.diagnostics.json"}, "command": "check", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l1/bpl_endpoint_binding/tubes_local_direct.bpl", "ok": true}

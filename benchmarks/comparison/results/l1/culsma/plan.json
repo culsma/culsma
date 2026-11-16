@@ -1,0 +1,401 @@
+{
+  "diagnostics": [],
+  "kind": "PlanProgram",
+  "plans": [
+    {
+      "entry_kind": "script",
+      "output_name": "entry",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "return_bindings": {},
+      "return_value": {
+        "kind": "IRIdentifier",
+        "name": "second",
+        "span": {
+          "col": 8,
+          "end": 482,
+          "line": 10,
+          "start": 476
+        }
+      },
+      "returns": [],
+      "span": {
+        "col": 1,
+        "end": 236,
+        "line": 4,
+        "start": 83
+      },
+      "steps": [
+        {
+          "args": {
+            "bind": "stock",
+            "capacity": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 46,
+                "end": 133,
+                "line": 4,
+                "start": 128
+              },
+              "unit": "mL",
+              "value": 1.5
+            },
+            "container_name": "stock",
+            "container_namespace": "entry",
+            "kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 13,
+                "end": 236,
+                "line": 4,
+                "start": 95
+              },
+              "value": "tube"
+            },
+            "label": {
+              "kind": "IRString",
+              "span": {
+                "col": 26,
+                "end": 115,
+                "line": 4,
+                "start": 108
+              },
+              "value": "stock"
+            }
+          },
+          "deps": [],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "AllocContainer",
+          "span": {
+            "col": 1,
+            "end": 236,
+            "line": 4,
+            "start": 83
+          },
+          "step_id": "entry.s0::alloc"
+        },
+        {
+          "args": {
+            "code": {
+              "kind": "IRString",
+              "span": {
+                "col": 76,
+                "end": 227,
+                "line": 5,
+                "start": 219
+              },
+              "value": "BUFFER"
+            },
+            "kind": {
+              "enum": "ContentKind",
+              "kind": "ContentEnum",
+              "member": "FORMULATION"
+            },
+            "type": {
+              "enum": "ContentType",
+              "kind": "ContentEnum",
+              "member": "BUFFER"
+            }
+          },
+          "deps": [
+            "entry.s0::alloc"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "DefineContent",
+          "span": {
+            "col": 2,
+            "end": 228,
+            "line": 5,
+            "start": 145
+          },
+          "step_id": "entry.s0::load0::define"
+        },
+        {
+          "args": {
+            "amount": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 86,
+                "end": 234,
+                "line": 5,
+                "start": 229
+              },
+              "unit": "uL",
+              "value": 100.0
+            },
+            "container": {
+              "kind": "IRIdentifier",
+              "name": "stock",
+              "span": {
+                "col": 1,
+                "end": 236,
+                "line": 4,
+                "start": 83
+              }
+            },
+            "content": {
+              "kind": "IRString",
+              "span": {
+                "col": 76,
+                "end": 227,
+                "line": 5,
+                "start": 219
+              },
+              "value": "BUFFER"
+            }
+          },
+          "deps": [
+            "entry.s0::load0::define"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "LoadContent",
+          "span": {
+            "col": 2,
+            "end": 234,
+            "line": 5,
+            "start": 145
+          },
+          "step_id": "entry.s0::load0::load"
+        },
+        {
+          "args": {
+            "bind": "first",
+            "capacity": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 46,
+                "end": 288,
+                "line": 6,
+                "start": 283
+              },
+              "unit": "mL",
+              "value": 1.5
+            },
+            "container_name": "first",
+            "container_namespace": "entry",
+            "kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 13,
+                "end": 289,
+                "line": 6,
+                "start": 250
+              },
+              "value": "tube"
+            },
+            "label": {
+              "kind": "IRString",
+              "span": {
+                "col": 26,
+                "end": 270,
+                "line": 6,
+                "start": 263
+              },
+              "value": "first"
+            }
+          },
+          "deps": [
+            "entry.s0::load0::load"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "AllocContainer",
+          "span": {
+            "col": 1,
+            "end": 289,
+            "line": 6,
+            "start": 238
+          },
+          "step_id": "entry.s1::alloc"
+        },
+        {
+          "args": {
+            "bind": "second",
+            "capacity": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 48,
+                "end": 343,
+                "line": 7,
+                "start": 338
+              },
+              "unit": "mL",
+              "value": 1.5
+            },
+            "container_name": "second",
+            "container_namespace": "entry",
+            "kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 14,
+                "end": 344,
+                "line": 7,
+                "start": 304
+              },
+              "value": "tube"
+            },
+            "label": {
+              "kind": "IRString",
+              "span": {
+                "col": 27,
+                "end": 325,
+                "line": 7,
+                "start": 317
+              },
+              "value": "second"
+            }
+          },
+          "deps": [
+            "entry.s1::alloc"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "AllocContainer",
+          "span": {
+            "col": 1,
+            "end": 344,
+            "line": 7,
+            "start": 291
+          },
+          "step_id": "entry.s2::alloc"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "stock",
+                  "span": {
+                    "col": 18,
+                    "end": 368,
+                    "line": 8,
+                    "start": 363
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 55,
+                    "end": 404,
+                    "line": 8,
+                    "start": 400
+                  },
+                  "unit": "uL",
+                  "value": 10.0
+                },
+                "span": {
+                  "col": 18,
+                  "end": 78,
+                  "line": 2,
+                  "start": 65
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "first",
+              "span": {
+                "col": 39,
+                "end": 389,
+                "line": 8,
+                "start": 384
+              }
+            }
+          },
+          "deps": [
+            "entry.s2::alloc"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 2,
+            "end": 79,
+            "line": 2,
+            "start": 49
+          },
+          "step_id": "entry.s6"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "stock",
+                  "span": {
+                    "col": 18,
+                    "end": 429,
+                    "line": 9,
+                    "start": 424
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 56,
+                    "end": 466,
+                    "line": 9,
+                    "start": 462
+                  },
+                  "unit": "uL",
+                  "value": 20.0
+                },
+                "span": {
+                  "col": 18,
+                  "end": 78,
+                  "line": 2,
+                  "start": 65
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "second",
+              "span": {
+                "col": 39,
+                "end": 451,
+                "line": 9,
+                "start": 445
+              }
+            }
+          },
+          "deps": [
+            "entry.s6"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 2,
+            "end": 79,
+            "line": 2,
+            "start": 49
+          },
+          "step_id": "entry.s10"
+        }
+      ]
+    }
+  ],
+  "span": null
+}

@@ -1,0 +1,899 @@
+{
+  "system": "labop",
+  "pin": "2e2bd88150c71a440771fd369f40295dfd622324",
+  "archive_sha256": "996e222782d9a662707715334fc8b8e90d9430390a6cfaaa7f8f3f9984acfd6b",
+  "python": "3.11.11 (main, Jun  6 2025, 11:38:50) [Clang 17.0.0 (clang-1700.0.13.5)]",
+  "files": {
+    "labop/__init__.py": {
+      "sha256": "8ffdd337510d3953d9dca049142d5d424432b90b920c18cd0a0c0a2cf1b4437a",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/__init__.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/activity_edge_flow.py": {
+      "sha256": "f84fa7bd32e88d59b8f082a715815e2ab384319d181f9ad1e8518619bb417e6f",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/activity_edge_flow.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/activity_node_execution.py": {
+      "sha256": "89b3145215643d44f1f7bc7fba1af8afb949cbc4bfd56d9992b5df706b9d8c39",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/activity_node_execution.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/behavior_execution.py": {
+      "sha256": "66ed3087ceba039b642f2e344869f2b735995233c51283b6e0bab701bf221c4e",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/behavior_execution.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/call_behavior_execution.py": {
+      "sha256": "fbaf11d7293b8eab05fdfef647cf9aba28434c504ac9e100c3ca281b9ca05621",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/call_behavior_execution.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/constants.py": {
+      "sha256": "e96d2c5d9a4f5dfae3c328c570726200289b18de94d23b724294aa01ec105e6f",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/constants.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/container-ontology.ttl": {
+      "sha256": "a3b095a6b26d50ee7f39ff41e6598c4557e441038a09daa9ec7ea27bbf64b204",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/container-ontology.ttl",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/container_spec.py": {
+      "sha256": "52e01ba493053e188fa1cfddbc80cf5de465b5190dba68490150dd85f57b9980",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/container_spec.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/data.py": {
+      "sha256": "32ab6ef43177af07b8e8051c15a0ea6e12f9e496cee627665171666887d70185",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/data.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/dataset.py": {
+      "sha256": "70a11299a86f3e3ca9dd2fe0aee5ae3977982c59321fed31ab89c7ff9d6d19bf",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/dataset.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/execution/__init__.py": {
+      "sha256": "8ad33627d57e028f9971fdf2dcb8e592d25d089a215cc1d6518afc2f136749c0",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/__init__.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/execution/behavior_dynamics.py": {
+      "sha256": "8cdad33723345fedb7369708c49eb059f4e19193e5e0620dacb9fa983814c922",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/behavior_dynamics.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/execution/execution_context.py": {
+      "sha256": "4c2677665ded90e922821fc44e42b5068559154e61a471b3688e4a2d3ce0bdee",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_context.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/execution/execution_engine.py": {
+      "sha256": "9d258ace720850146de0d0ab7391c3ef258b9ca6b147495cfd0644f79fde6580",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/execution/execution_engine_utils.py": {
+      "sha256": "2c1eb5c4c5ab9600cba708c6a9ef5bb0dc11a59e71f05f2f5844f0d43b5eaf3e",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine_utils.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/execution/harness.py": {
+      "sha256": "2187d749e4dcd8a6baec30f877f55de91c8a71063c55c14e0c6417d730fd6371",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/harness.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/execution/lab_interface.py": {
+      "sha256": "744dee3fc326cda999f4a7037922c0b23a1c5dca053bdd52deeb6b74646fbf67",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/lab_interface.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/execution/primitive_execution.py": {
+      "sha256": "021180824bc57cd90d432948d5505fe55e273500a7a81824bc35373d7bb60327",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/primitive_execution.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/inner/__init__.py": {
+      "sha256": "c3b578622796fff697cfe62a28a5694c74074a7b9ab5dec48bd4a3e60e68fd58",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/inner/__init__.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/inner/labop.ttl": {
+      "sha256": "914ee4cce8abe1982aaa9cac2197f853a878bb3972c97a3528f850dbd32efb3a",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/inner/labop.ttl",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/lib/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/lib/__init__.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/lib/culturing.py": {
+      "sha256": "bf27783796182cae25de04ec64eaaff85789c05463ff8a16c07c18f670d81bda",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/lib/culturing.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/lib/culturing.ttl": {
+      "sha256": "43ec49a0ed45a56cce07877fdb61d540e16bee63416645b6903a3a7a435d40c9",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/lib/culturing.ttl",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/lib/liquid_handling.py": {
+      "sha256": "3bfe3dec1aa331000c11024696d9362307d03f348a11d515b6f5c3e73ac87aa9",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/lib/liquid_handling.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/lib/liquid_handling.ttl": {
+      "sha256": "f848017ab3366f6e453caa48b8325b77ffcdc0bdb729f30a476ade52864a3355",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/lib/liquid_handling.ttl",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/lib/pcr.py": {
+      "sha256": "08a3207ef724c15eb65214978ec4d9c3737a7d4a230b3dddcc6aa76654e88f35",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/lib/pcr.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/lib/pcr.ttl": {
+      "sha256": "c739161ff6aaa126ca441eb8d5d544d1cc77f36d1e6fcc5560be8683269d6142",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/lib/pcr.ttl",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/lib/plate_handling.py": {
+      "sha256": "9c2d4920e687232125d350c6d180912e5abb783955f11a1e7be8d0a0e9894968",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/lib/plate_handling.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/lib/plate_handling.ttl": {
+      "sha256": "0666b1cd0406c9b050e2951a091a5f402b8593679512aab7a5b4255865c83de6",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/lib/plate_handling.ttl",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/lib/rebuild_library.py": {
+      "sha256": "84a02f0fc19b0a54dbf0d0a1ef0d218a450df2292fd1f052b94b651f0645d1c7",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/lib/rebuild_library.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/lib/sample_arrays.py": {
+      "sha256": "707999b4fff04d243557a2e58b715ad8f167b0ab05b33452bff396ea665188d1",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/lib/sample_arrays.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/lib/sample_arrays.ttl": {
+      "sha256": "826ceac438e9d54f16040ee1802db8a6f3b2a975674fc8ce3b9cfd26daaaf97e",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/lib/sample_arrays.ttl",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/lib/spectrophotometry.py": {
+      "sha256": "5f9d919791df551bbd855afcb2b2300a9c2969a9deed2990826d6744f5ab2712",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/lib/spectrophotometry.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/lib/spectrophotometry.ttl": {
+      "sha256": "8a07dee0b096870204ba2a3fe228ee2466dcac4488e4ede5af421af6013ba6e1",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/lib/spectrophotometry.ttl",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/library.py": {
+      "sha256": "7c651fa489500d947cca698555169e515f178f621177be1b6f2eb834a4312398",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/library.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/material.py": {
+      "sha256": "d7b858b0f3086c28d02142a4e41765150931d0011711f7810fc08f64971a2f5b",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/material.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/parameter_value.py": {
+      "sha256": "ab46d64d30c2d1ba90a1c7cb2fd36f329b93c2876797e03e679aa99b0893ea09",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/parameter_value.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/primitive.py": {
+      "sha256": "beaa837828d1aec353a286921fe393b761e52fa433cc0336ba6b791be241be2e",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/primitive.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/primitive_array.py": {
+      "sha256": "169ee2c93f1edea05e17a197b8b092b086bcd142c1f0f88a1500c220a75578ab",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/primitive_array.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/protocol.py": {
+      "sha256": "bb31f8dc26d5a4c3d9ef199e1b0be504a3168f7a7c72a0204f1f66e6f4c8037b",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/protocol_execution.py": {
+      "sha256": "ad8845916eea4f8b8b74d50ac98d3a6275f81c5dbd23df03cd9e3048ede9c399",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol_execution.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/sample_array.py": {
+      "sha256": "2d1907e088a88fc44a95d1294c369316056d6c3deff42c9e6a3ef0c184f6d94f",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/sample_array.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/sample_collection.py": {
+      "sha256": "f5531ebeafe25e5d47c3e7977988a8236b9a60831a53bdb0853075f63b5a897b",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/sample_collection.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/sample_data.py": {
+      "sha256": "c543236cf5f31c30fbefb7553477accea999c6b9a2a73b160a7dfccb53872665",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/sample_data.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/sample_map.py": {
+      "sha256": "d8d0d8bc34e7b246f42495c16cf487f580a59a6ec6dc2786ffa93fa65ded3c9e",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/sample_map.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/sample_mask.py": {
+      "sha256": "0250f91d59faf8ac42835ff21e7d7f00a295e5c2208c06cff40febae069fbbd1",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/sample_mask.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/sample_metadata.py": {
+      "sha256": "50de2468b9c4a6ff7b41f8bde058a2b4ca7eaf78a1dd6e0f54544bc407d98db9",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/sample_metadata.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/sbol_factory.py": {
+      "sha256": "1a0a987afbd65f39a5d980f9d7ed15b37bf805f2fca7d960d7e891ab6d7851fa",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/sbol_factory.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/strings.py": {
+      "sha256": "29cf44747a11b339f59456685375ca8db0cea3804bb5b03282365a8bec263c84",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/strings.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/utils/__init__.py": {
+      "sha256": "9a5426f55df7b8a41b2bf680f3509cf03b8e1a55f7670f3d13c76274118123dd",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/__init__.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/utils/helpers.py": {
+      "sha256": "0239be060d6c6d13b864152850600fc0fb9e68884c563dacff9640928741f693",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/utils/opentrons.py": {
+      "sha256": "c71be9dd970f77ff04110fcfa7b26d8cb8f439d553b6df398e004750cbbbaf9c",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/opentrons.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop/utils/plate_coordinates.py": {
+      "sha256": "893f09e39f5557251c6cbd8a8d30bd5045c4691ff18868ec6b620fcdf611daf8",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/plate_coordinates.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop_convert/__init__.py": {
+      "sha256": "657277ba4e9c684a0e8b0b906c32d480ef0022bdc45fc72a7c81b3c4b14a7c2b",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/__init__.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop_convert/autoprotocol/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/autoprotocol/__init__.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop_convert/autoprotocol/autoprotocol_specialization.py": {
+      "sha256": "16cf3ac0f91b03e6f83c8427e0097dec9085843f6c86afd6a7a5152a5a9eb74d",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/autoprotocol/autoprotocol_specialization.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop_convert/autoprotocol/strateos_api.py": {
+      "sha256": "9e3ed30daea79f1596f51242608973bc01d70fd49a5f29b90e4ba4ccd586864b",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/autoprotocol/strateos_api.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop_convert/behavior_specialization.py": {
+      "sha256": "07fb16eedfd7b0b45d74d4893ea93fc004ff9e715dc6e2738bab95d3432a1836",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop_convert/emeraldcloud/__init__.py": {
+      "sha256": "ce09026f6b7c2f3e29eb697a413c3ca4a9ca975c9557235cabbd9b4f779503c6",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/emeraldcloud/__init__.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop_convert/emeraldcloud/ecl_specialization.py": {
+      "sha256": "93f0bc71b2ad55964e78c88f55d62da2ee48fed2a8c9baa18ac98254fa17f920",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/emeraldcloud/ecl_specialization.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop_convert/markdown/__init__.py": {
+      "sha256": "45052de1bf70b699a994db7b789f5bbf83ce5318f6cfd7174964be8758c8cdce",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/markdown/__init__.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop_convert/markdown/attic/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/markdown/attic/__init__.py",
+      "excluded_by_upstream_packaging": true,
+      "installed_matches": false,
+      "source_matches": true
+    },
+    "labop_convert/markdown/attic/excel_to_experimentdata.py": {
+      "sha256": "c2e8b4b99a1900346964154fa57a0b82b2882aaf64a6547ef8785011fb21ef0c",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/markdown/attic/excel_to_experimentdata.py",
+      "excluded_by_upstream_packaging": true,
+      "installed_matches": false,
+      "source_matches": true
+    },
+    "labop_convert/markdown/markdown_primitives.py": {
+      "sha256": "cc6dbbe66fc3db1b8331240c2c283c86d2e2d02f9c64d4af1ed4c1dcbc82c979",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/markdown/markdown_primitives.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop_convert/markdown/markdown_specialization.py": {
+      "sha256": "f0cf19a9718d9b1028485524006d78bbb1cbba0d0655b76eb5e7424518cf89b1",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/markdown/markdown_specialization.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop_convert/markdown/protocol_to_markdown.py": {
+      "sha256": "669f538fd5d2eb092fbef8733e099a5069f1789adf8d80f2145227ffb3b66a51",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/markdown/protocol_to_markdown.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop_convert/opentrons/__init__.py": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/opentrons/__init__.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop_convert/opentrons/opentrons_specialization.py": {
+      "sha256": "63d051b4c32a5653a2fd7e83434c84ce678f22ceff005e2776b4c31c41c936c7",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/opentrons/opentrons_specialization.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop_convert/pylabrobot/__init__.py": {
+      "sha256": "730fd216b326cc7fee5e6f65421ce2eb0e1972cf33819f0bd45e85fc035781e7",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/pylabrobot/__init__.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop_convert/pylabrobot/pylabrobot_specialization.py": {
+      "sha256": "a2395a5c02a09af79efebe5da88bf16829ebf416f4e082c0d8459e44022b655d",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/pylabrobot/pylabrobot_specialization.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop_time/__init__.py": {
+      "sha256": "0a0dab0cc4ddd3783c847fbfa1ebdbfccdddcbfa7a5cd9a0aad5c29995939fc8",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_time/__init__.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "labop_time/labop_time.ttl": {
+      "sha256": "0799567997a605835fe67f0035298a5ebd0d3c7a52513eabde799859cc033ccf",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_time/labop_time.ttl",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/__init__.py": {
+      "sha256": "4fd6a5e959ca1d491b3af20debc29f8b3410223b65394ff7f743506286af86dd",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/__init__.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/action.py": {
+      "sha256": "25a587ece4f15bf1d996d81a848c6d59a4fa9f12917d7c20f379a67b4fbde4a5",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/action.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/activity.py": {
+      "sha256": "24c5db8b4e6e40b7b8d75bed372394a5c3ffd5d346c2734ea1efa6dfddc6e43f",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/activity.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/activity_edge.py": {
+      "sha256": "6d438619501f29577640d46085498f77d4df6e1551713b89172eea0f2446ab95",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/activity_edge.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/activity_node.py": {
+      "sha256": "5def89c760cf0e40ccf9aba74dd72147bef3756abe6974af8edbd626581ff442",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/activity_node.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/activity_parameter_node.py": {
+      "sha256": "6c52b87eaff0e3954c597cac5465af8957e7160b5e6a1b940901cd742196b53d",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/activity_parameter_node.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/behavior.py": {
+      "sha256": "fcb553a034ccfc06ef42501799278f22b627fe28952d076d3533e11def736566",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/behavior.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/call_action.py": {
+      "sha256": "5262ffcf9a3d8aa0caa9fd437ddddf17ffeab129fc47834520640bcc5519e60f",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/call_action.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/call_behavior_action.py": {
+      "sha256": "bbe1ad69d8ba39916eff88fbb02cb56856d2d729ea1710b4a9b70263627475cc",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/call_behavior_action.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/constraint.py": {
+      "sha256": "015a9611e3e83340462a71e8e5d5e18ddb843886df36c30a66572e6a1f753883",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/constraint.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/control_flow.py": {
+      "sha256": "7d86b3bc253242840881d848c8b4bcd705ed694146ef30ea36d3c92a8ea0754c",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/control_flow.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/control_node.py": {
+      "sha256": "ea9a1fd5a2214ce8a83b0198a86b1f67a2ddc417d7751b2c9bcae4bf4c393562",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/control_node.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/decision_node.py": {
+      "sha256": "38c3568140e05a58784d344e855a32f1b4268367eb94d30ec386cf11425a5dc3",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/decision_node.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/duration.py": {
+      "sha256": "1da92cea33eebb233df553dd715db313849fe1b119303f98dc8359dd61becd7d",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/duration.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/duration_constraint.py": {
+      "sha256": "8c2635b5fdd9db996cca37be18e590333aaa1e43f37d6811ad3607eed338517b",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/duration_constraint.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/duration_interval.py": {
+      "sha256": "654e82ab3a00019a7575a991ac7c62ec9133ee8d53d6d011f18f9b6c8b78f05b",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/duration_interval.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/duration_observation.py": {
+      "sha256": "22e31f3990a4f76418163b946be3af18c9055a35db5229a4703fe38290ea52c5",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/duration_observation.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/executable_node.py": {
+      "sha256": "2b5b262843995e309d32f2167fde272d1f492ae8cfad14b8b1d10fe57fa5a5f3",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/executable_node.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/expression.py": {
+      "sha256": "7f76615cc35dfb952c283c64b94a496e8f54744b1121f6f7206c4a7af0b120e2",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/expression.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/final_node.py": {
+      "sha256": "3cec0beed6c562502bcf234e7011f60911cc2dc033f968d8e4c39e4fbfb7fa00",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/final_node.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/flow_final_node.py": {
+      "sha256": "f17eaed7403720ae5256cf3d5e0e4c81a3852d3adfa3ef361da1a1f54ce7c45b",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/flow_final_node.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/fork_node.py": {
+      "sha256": "ad74b805d2f1e0fee75762f4ea29b7f394affe3bd94aa741d2e4ad8bd6680c44",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/fork_node.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/initial_node.py": {
+      "sha256": "ad66ce34eda0174a3094aa15a65175f654b8b9eefcc05820f64ffb977a1aa641",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/initial_node.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/inner/__init__.py": {
+      "sha256": "5fa8145a036252d3641c3b79202ec5706402421f9f186300156d6d80dd560b03",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/inner/__init__.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/inner/uml.ttl": {
+      "sha256": "698921e4482a4f43348f62e8e51e7c4bdc079010d910e9bc2f10e8a5c4586a2a",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/inner/uml.ttl",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/input_pin.py": {
+      "sha256": "a1d9553611fd415af6df987a07beee86589839894d9d830957fd87684015ab7f",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/input_pin.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/interval.py": {
+      "sha256": "2ee98f3a867d8d680dad32fb1f86c282e158ada6f9b5f4ae2592cee3a7807756",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/interval.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/interval_constraint.py": {
+      "sha256": "fd939b24f0ee748f201fcca6d2d428fe694e71671ea3e1490c7a6d912d1d9bce",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/interval_constraint.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/invocation_action.py": {
+      "sha256": "6f01abcec974ccaa8a828fe04b698173572f445d247c725a4b57f447bf59256c",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/invocation_action.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/join_node.py": {
+      "sha256": "4c285ef9567489cdf4c00227582a9c0187fb9577b4108eb47bdf7d98a43c9581",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/join_node.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/literal_boolean.py": {
+      "sha256": "27c64a9c6aca27cbe20e2a0a224436b2bc016b85424ae60c762f035cf9b09659",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/literal_boolean.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/literal_identified.py": {
+      "sha256": "437def9785a20552063ef2040548671e72a275700fedb2c2d2e1cc0aaf7def7a",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/literal_identified.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/literal_integer.py": {
+      "sha256": "fc2c162d31388f66d3e4b882fcceb236a5635e4d758ebc8175a2bd8e2540498c",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/literal_integer.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/literal_null.py": {
+      "sha256": "d07fbdfc64365e380f67e9cb1950d0b2a9f76155583920a56a254e191ac8718e",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/literal_null.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/literal_real.py": {
+      "sha256": "19c51555f809cf8038fb7893e0efcb6964270419418dd9f3a66c90e5e62200c4",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/literal_real.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/literal_reference.py": {
+      "sha256": "b76f61bc2c04ebfa370fc2bc50fe693788375e360a89f3823a891b62b4a6d1bf",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/literal_reference.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/literal_specification.py": {
+      "sha256": "7adf50bb7dedde95aa5f642f397b85527dcb2f4d9f6e28d82d5caeff822960b7",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/literal_specification.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/literal_string.py": {
+      "sha256": "37b5cdea848402721a3e22fca76211e22963dd177a1c75f7bd7eec6b43e854e2",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/literal_string.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/merge_node.py": {
+      "sha256": "958944c665b8624f269abb81ff0ce63c75b63287c2b3b87d8581f798d5459be1",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/merge_node.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/object_flow.py": {
+      "sha256": "51001833bf2366638e081df303093b8749ea03497ff33d28d77e9d964cd108d6",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/object_flow.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/object_node.py": {
+      "sha256": "ba386d01a354d2483077bc9557e3a99b80923fe8df4e0cb3e3adfdaf0dcf3eed",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/object_node.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/observation.py": {
+      "sha256": "82a6ad62fa37bcc4d8a543ed5136e0d8aa20714163f84517dd0057b73f69e856",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/observation.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/ordered_property_value.py": {
+      "sha256": "42d34f0cc8ce73da6427633eb082aeddf2496b559b9572c6d58bf92729251084",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/ordered_property_value.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/output_pin.py": {
+      "sha256": "8b10300b1fb66ff41c055837e80db4f7a4e6db1379567df45dc0026d9c75c3cf",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/output_pin.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/parameter.py": {
+      "sha256": "2b7537993ddb2408848d47f9d66021b1d050686d9a3a44b9ae5eae62ca9d2aa1",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/parameter.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/pin.py": {
+      "sha256": "276ddeeb18a3a4311222d2a90503ed5065d6127a8be8636541bc935ee5edacf5",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/pin.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/strings.py": {
+      "sha256": "a1a0b2cc251f2e63d13f2906fd78eb2a7ab295cb5c49699d1715dcd8c6dbf8f5",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/strings.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/time_constraint.py": {
+      "sha256": "0101cbbae57ec53025adb6e7a40f03c660001791be0005e6e1eddfeed59aecfe",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/time_constraint.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/time_expression.py": {
+      "sha256": "86f80c24d3c7eab5af4c89de46f0c2a4d3220e1bf2abcc73c3f560de9172da9e",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/time_expression.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/time_interval.py": {
+      "sha256": "6b95d56b8f4a6d97baaacafd39ee67e3d73532199c8a5463bdb485845383429a",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/time_interval.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/time_observation.py": {
+      "sha256": "c98249bff80042c47b62121b7b4a14f19c87a405af129238e3f50ff5b51f59fa",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/time_observation.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/uml_graphviz.py": {
+      "sha256": "e33a975e2977822ecb799ad8df9de7eccc5578ab400d6b1c999d6dc71e85a8e5",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/uml_graphviz.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/utils.py": {
+      "sha256": "5d514539f92bffaa84d1fb16d95a47792a955ed91a02bd79fea65273de8c88dd",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/utils.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/value_pin.py": {
+      "sha256": "4da3d65c1bdf32f7590a36a62491fb1d4e9662be0a7020d284d060055221c148",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/value_pin.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    },
+    "uml/value_specification.py": {
+      "sha256": "7550ffc8c35354ce26c326f31f8a29cd035a7028618f5ec6812f1eed2eda921e",
+      "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/value_specification.py",
+      "excluded_by_upstream_packaging": false,
+      "installed_matches": true,
+      "source_matches": true
+    }
+  },
+  "mismatches": [],
+  "verified": true
+}

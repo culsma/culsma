@@ -1,0 +1,255 @@
+{
+  "culsma": {
+    "commit": "5364676bc2437b4981a00ce0133c730af243e469",
+    "test_file_count": 57,
+    "test_files": [
+      "tests/test_author_transition.py",
+      "tests/test_case09_surface_release.py",
+      "tests/test_case10_brief_centrifugation.py",
+      "tests/test_case11_review.py",
+      "tests/test_cli.py",
+      "tests/test_cli_results.py",
+      "tests/test_compile_statement_lifecycle.py",
+      "tests/test_compile_static_control.py",
+      "tests/test_content_classification.py",
+      "tests/test_content_compat.py",
+      "tests/test_content_contract_checker.py",
+      "tests/test_content_enum_execution.py",
+      "tests/test_content_enum_resolution.py",
+      "tests/test_content_frontend_diagnostics.py",
+      "tests/test_content_inputs.py",
+      "tests/test_content_reference_conformance.py",
+      "tests/test_driver_framework.py",
+      "tests/test_dropwise_constraint.py",
+      "tests/test_formal_parameter_conformance.py",
+      "tests/test_frontend_conformance.py",
+      "tests/test_frontend_resolver.py",
+      "tests/test_human_driver.py",
+      "tests/test_inventory_reconciliation.py",
+      "tests/test_ir_compiler.py",
+      "tests/test_ir_compiler_container_content.py",
+      "tests/test_kernel_plan.py",
+      "tests/test_kernel_runtime.py",
+      "tests/test_kernel_typecheck.py",
+      "tests/test_kernel_typecheck_container_content.py",
+      "tests/test_kernel_validate.py",
+      "tests/test_kernel_validate_container_content.py",
+      "tests/test_material_accounting.py",
+      "tests/test_material_architecture.py",
+      "tests/test_material_compute.py",
+      "tests/test_material_container_content.py",
+      "tests/test_material_precision.py",
+      "tests/test_material_replace_integration.py",
+      "tests/test_material_transition_integration.py",
+      "tests/test_paper_appendix_a.py",
+      "tests/test_parser.py",
+      "tests/test_parser_rule_conversion.py",
+      "tests/test_pipeline_scope.py",
+      "tests/test_plan_statement_lifecycle.py",
+      "tests/test_plan_static_eval.py",
+      "tests/test_quantity_arithmetic.py",
+      "tests/test_quantity_arithmetic_integration.py",
+      "tests/test_robot_driver.py",
+      "tests/test_runtime_report.py",
+      "tests/test_scientific_model_classification.py",
+      "tests/test_scientific_model_framework.py",
+      "tests/test_scientific_model_rulebook.py",
+      "tests/test_scientific_model_runtime_integration.py",
+      "tests/test_sealed_constraint.py",
+      "tests/test_spread_constraint.py",
+      "tests/test_typecheck_statement_lifecycle.py",
+      "tests/test_validate_param_literals.py",
+      "tests/test_validate_statement_lifecycle.py"
+    ],
+    "inspected": {
+      "tests/test_pipeline_scope.py": {
+        "bytes": 3195,
+        "sha256": "e05da56226b2d356acf8ee12158d57a1d66182e2dee2d30678e3dd1cb9f14dd2"
+      },
+      "README.md": {
+        "bytes": 7296,
+        "sha256": "901098ae36c2fc9714cbc5301338caed731db1ba0c589c8b1a0e3bd8e0532af2"
+      },
+      "pyproject.toml": {
+        "bytes": 1080,
+        "sha256": "efe1aa8096caa25f73ae050251abd040af6c9fd803fcacda387e9b7ec6ac19a1"
+      },
+      "src/culsma/pipeline/scope/__init__.py": {
+        "bytes": 398,
+        "sha256": "31b9531b8e954202cf400bb9edf1bb02bcc05d8651fe7edea83c828e7b18cdc2"
+      },
+      "docs/README.md": {
+        "bytes": 2577,
+        "sha256": "457d873b9e2c45e3d13840a6a6f09bcac0e5873a0c6f4a790f3aaeeaf27f9710"
+      },
+      "docs/architecture/pipeline/scope_module_diagrams.md": {
+        "bytes": 5675,
+        "sha256": "86dc647a1d60a249de5aa8a9cd4b5968843ecab420666e581aac64b6ce697383"
+      }
+    },
+    "reference_snapshot": {
+      "commit": "856d7fb7ca4e9b300f5af8e1a2ad3fb2cc10b838",
+      "date": "2026-09-21",
+      "subject": "docs(reference): align accepted 1.0.7 language contracts",
+      "files": {
+        "README.md": {
+          "sha256": "d1696f60f4a271488bf6996a2a0dbebffc60bffe70e80fe7aa96508d6b6d13fe",
+          "bytes": 4133
+        },
+        "09_type_and_units.md": {
+          "sha256": "8e053087c5694030699d175e9978363584e4bb4570250a970f2d45eb02f188b1",
+          "bytes": 12733
+        },
+        "05_operation_vocabulary_and_call_contracts.md": {
+          "sha256": "39be36572a79351c0ed9bb9ed379059626c2649edfc92feb7bce444d054ef9d5",
+          "bytes": 66397
+        },
+        "index.md": {
+          "sha256": "a968be2f39e70cc0817182378eadbeb57167e0064ea9e3bcc5ccd6f45f6e6ac1",
+          "bytes": 6001
+        }
+      },
+      "note": "Locally inspected companion source, retained for review. Public access was not confirmed. README retains older 1.0.6 snapshot metadata; chapter changes and index supply the 1.0.7 alignment evidence."
+    }
+  },
+  "labop": {
+    "commit": "2e2bd88150c71a440771fd369f40295dfd622324",
+    "test_file_count": 18,
+    "test_files": [
+      "test/test_LUDOX_protocol.py",
+      "test/test_bottom_up_protocol_build.py",
+      "test/test_decision_nodes.py",
+      "test/test_examples.py",
+      "test/test_igem_examples.py",
+      "test/test_inputs.py",
+      "test/test_labop_utils.py",
+      "test/test_library_build.py",
+      "test/test_opentrons.py",
+      "test/test_outputs.py",
+      "test/test_protocol_outputs.py",
+      "test/test_restrictions.py",
+      "test/test_sampledata.py",
+      "test/test_samplemap.py",
+      "test/test_subprotocols.py",
+      "test/test_time.py",
+      "test/test_uml.py",
+      "test/test_validation.py"
+    ],
+    "inspected": {
+      "test/test_validation.py": {
+        "bytes": 3384,
+        "sha256": "0b06e2b37d52052a8cc4751cbe95d29eacb9321f50931916cf52cc036ba27213"
+      },
+      "README.md": {
+        "bytes": 7782,
+        "sha256": "5e3ced7bf3d974919a51483ad870905e7fefed24e723c552d1992bbeeaae4165"
+      },
+      "setup.py": {
+        "bytes": 1254,
+        "sha256": "5ed11a14c6754d33b11d4f2fa56cb23cb464bcceb5ad3474c1a838374a170725"
+      },
+      "mkdocs.yml": {
+        "bytes": 944,
+        "sha256": "20375c88753f1a2dfafb6301cf976efd3c38ad7065612def3d30e45479274cff"
+      },
+      "docs/reference/labop/execution.md": {
+        "bytes": 156,
+        "sha256": "e10e6381101357e913ca0b714f54e9526ca3c410fe927ada6a20ff28e10be7ed"
+      },
+      "labop/execution/execution_engine.py": {
+        "bytes": 39825,
+        "sha256": "9d258ace720850146de0d0ab7391c3ef258b9ca6b147495cfd0644f79fde6580"
+      },
+      "labop_convert/behavior_specialization.py": {
+        "bytes": 9459,
+        "sha256": "07fb16eedfd7b0b45d74d4893ea93fc004ff9e715dc6e2738bab95d3432a1836"
+      },
+      "docs/reference/labop/top.md": {
+        "bytes": 136,
+        "sha256": "10c8c40e584be430ab15024c944e8a50870e3a38069d6d3a2206f21dbe835e71"
+      },
+      "docs/reference/library.md": {
+        "bytes": 265,
+        "sha256": "7dd27a420172969563c57f45537698c98e67c4b06381ac5a1c59063a494f6bdf"
+      }
+    }
+  },
+  "bpl": {
+    "commit": "4e505740f5025d59ba655c6c955f83876f753007",
+    "test_file_count": 46,
+    "test_files": [
+      "tests/conformance/test_96well_hts.py",
+      "tests/conformance/test_heat_shock.py",
+      "tests/conformance/test_lb_media_prep.py",
+      "tests/conformance/test_multi_resource.py",
+      "tests/conformance/test_streak_plate.py",
+      "tests/eval/test_eval_pipeline.py",
+      "tests/export/test_formats.py",
+      "tests/export/test_markdown_composer.py",
+      "tests/export/test_volume_constraints.py",
+      "tests/export/test_worklist_exporter.py",
+      "tests/phase0_cli/test_capabilities_command.py",
+      "tests/phase0_cli/test_cli_contracts.py",
+      "tests/phase0_cli/test_compose_command.py",
+      "tests/phase0_cli/test_contract_fixtures.py",
+      "tests/phase0_cli/test_graph_command.py",
+      "tests/phase0_cli/test_setup_validation.py",
+      "tests/phase0_cli/test_sop_generate.py",
+      "tests/phase0_cli/test_vertical_slices.py",
+      "tests/phase0_cli/test_worklist_lowering.py",
+      "tests/phase1_parser/test_annotations.py",
+      "tests/phase1_parser/test_declarations.py",
+      "tests/phase1_parser/test_expressions.py",
+      "tests/phase1_parser/test_lexer.py",
+      "tests/phase1_parser/test_span_coverage.py",
+      "tests/phase1_parser/test_statements.py",
+      "tests/phase1_parser/test_type_system.py",
+      "tests/phase1_parser/test_types.py",
+      "tests/phase1_parser/test_worklist_intents.py",
+      "tests/phase2_state/test_state_model.py",
+      "tests/phase2_state/test_trust.py",
+      "tests/phase3_lowering/test_collection_semantics.py",
+      "tests/phase3_lowering/test_intent_lowering.py",
+      "tests/phase3_lowering/test_location_addressing.py",
+      "tests/phase3_lowering/test_plan_ir.py",
+      "tests/phase3_lowering/test_well_sets_addressing.py",
+      "tests/phase3_lowering/test_workflow_graph_builder.py",
+      "tests/phase4_scheduler/test_scheduler.py",
+      "tests/phase5_errors/test_batch_errors.py",
+      "tests/phase5_errors/test_error_policy.py",
+      "tests/phase5_errors/test_recovery.py",
+      "tests/phase6_simulation/test_simulation.py",
+      "tests/phase7_human/test_human_runtime.py",
+      "tests/phase8_robot/test_robot_runtime.py",
+      "tests/phase9_audit/test_audit.py",
+      "tests/test_column_catalog.py",
+      "tests/test_well_sets.py"
+    ],
+    "inspected": {
+      "tests/phase2_state/test_state_model.py": {
+        "bytes": 36118,
+        "sha256": "68704801178b8ed53e24e0716ac780ff8e00c5191920e3622f7a8c47d2240cc0"
+      },
+      "README.md": {
+        "bytes": 15632,
+        "sha256": "f126c10151c678ea73b87b9cd621d5f7a9aa58190e45a6dd056d88aad118cdf4"
+      },
+      "pyproject.toml": {
+        "bytes": 2342,
+        "sha256": "65971c2410ddc7f11da2266d8dde669be0dd70a50d616c357a5cf0ea7ad5459a"
+      },
+      "docs/BPL_STRUCTURE.md": {
+        "bytes": 22267,
+        "sha256": "64fcef0df0fe3349e07ab82827fb486d2b01c66c80452d69d1ecff8508fb781c"
+      },
+      "docs/BPL_Syntax_Reference.md": {
+        "bytes": 38098,
+        "sha256": "eb5ced1db0ab223d4f097184aa508ed129316b6d1d5d29ad8509c0e34cda23fb"
+      },
+      "bpl/orchestrator.py": {
+        "bytes": 46069,
+        "sha256": "73ec40a828a1d6ec0fbb5a07dc72a346ac77ac2c1b0652bb5281cc172fe8a7d1"
+      }
+    }
+  }
+}

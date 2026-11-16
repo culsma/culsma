@@ -1,0 +1,108 @@
+{
+  "labop_commit": "2e2bd88150c71a440771fd369f40295dfd622324",
+  "bpl_commit": "4e505740f5025d59ba655c6c955f83876f753007",
+  "runs": {
+    "bpl-lower": {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-env/bin/bplc",
+        "lower",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/examples/minimal_protocol.bpl",
+        "--target",
+        "simulation",
+        "--out",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/results/upstream-examples/bpl-plan.json",
+        "--json-errors"
+      ],
+      "returncode": 0
+    },
+    "bpl-simulate": {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-env/bin/bplc",
+        "simulate",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/examples/minimal_protocol.bpl",
+        "--trace",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/results/upstream-examples/bpl-trace.json",
+        "--json-errors"
+      ],
+      "returncode": 0
+    },
+    "protocol_outputs_test": {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/bin/python",
+        "-c",
+        "\nimport importlib.util, io, json, runpy, sys, unittest\nfrom pathlib import Path\nfrom unittest.mock import patch\nfrom collections import Counter\nimport labop\nfrom labop.execution.harness import ProtocolHarness, ProtocolExecutionNTuples\nfrom gfp_labop import save_dot\n\nsource, out, mode = Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3]\nout.mkdir(parents=True,exist_ok=True)\nharnesses=[]\ndef relocated_harness(*args, **kwargs):\n    kwargs['base_dir']=str(out)\n    h=ProtocolHarness(*args, **kwargs)\n    harnesses.append(h)\n    return h\nreport={'mode':mode}\nwith patch('labop.execution.harness.ProtocolHarness', relocated_harness), patch('graphviz.Digraph.render',save_dot):\n    if mode=='protocol_outputs_test':\n        spec=importlib.util.spec_from_file_location('upstream_protocol_outputs',source/'test/test_protocol_outputs.py')\n        module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)\n        stream=io.StringIO()\n        result=unittest.TextTestRunner(stream=stream,verbosity=2).run(unittest.TestSuite([\n            module.TestProtocolOutputs('test_protocol_outputs')]))\n        (out/'unittest.txt').write_text(stream.getvalue())\n        report['test']={'success':result.wasSuccessful(),'tests_run':result.testsRun,\n                       'failures':len(result.failures),'errors':len(result.errors)}\n    else:\n        runpy.run_path(str(source/'examples/protocols/ludox/LUDOX_protocol.py'),run_name='__main__')\nreport['executions']=[]\nfor h in harnesses:\n    for artifact in h.artifacts_of_type(ProtocolExecutionNTuples):\n        ex=artifact.execution\n        calls=[r for r in ex.executions if isinstance(r,labop.CallBehaviorExecution)]\n        report['executions'].append({\n            'completed_normally':ex.completed_normally,\n            'calls_by_behavior':dict(Counter(str(r.get_behavior().identity) for r in calls)),\n            'protocol_calls':[str(r.get_behavior().identity) for r in calls if isinstance(r.get_behavior(),labop.Protocol)],\n            'outputs':[{'name':p.get_name(),'value_type':type(p.value.get_value()).__name__}\n                       for p in ex.parameter_values if p.get_parameter().is_output()],\n            'issues':{str(k):list(map(str,v)) for k,v in artifact.execution_engine.issues.items()}})\n(out/'summary.json').write_text(json.dumps(report,indent=2)+'\\n')\nprint('RESULT_JSON='+json.dumps(report))\n",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-source",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/results/upstream-examples/protocol_outputs_test",
+        "protocol_outputs_test"
+      ],
+      "returncode": 0,
+      "summary": {
+        "mode": "protocol_outputs_test",
+        "test": {
+          "success": true,
+          "tests_run": 1,
+          "failures": 0,
+          "errors": 0
+        },
+        "executions": [
+          {
+            "completed_normally": true,
+            "calls_by_behavior": {
+              "https://labop.io/default_name": 1,
+              "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer": 1,
+              "https://bioprotocols.org/labop/primitives/sample_arrays/PlateCoordinates": 1,
+              "https://bioprotocols.org/labop/primitives/spectrophotometry/MeasureAbsorbance": 1
+            },
+            "protocol_calls": [
+              "https://labop.io/default_name"
+            ],
+            "outputs": [
+              {
+                "name": "measurements",
+                "value_type": "Dataset"
+              }
+            ],
+            "issues": {
+              "harness_execution_default_name_2026_11_12_13_07_57_135234": []
+            }
+          }
+        ]
+      }
+    },
+    "ludox": {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/bin/python",
+        "-c",
+        "\nimport importlib.util, io, json, runpy, sys, unittest\nfrom pathlib import Path\nfrom unittest.mock import patch\nfrom collections import Counter\nimport labop\nfrom labop.execution.harness import ProtocolHarness, ProtocolExecutionNTuples\nfrom gfp_labop import save_dot\n\nsource, out, mode = Path(sys.argv[1]), Path(sys.argv[2]), sys.argv[3]\nout.mkdir(parents=True,exist_ok=True)\nharnesses=[]\ndef relocated_harness(*args, **kwargs):\n    kwargs['base_dir']=str(out)\n    h=ProtocolHarness(*args, **kwargs)\n    harnesses.append(h)\n    return h\nreport={'mode':mode}\nwith patch('labop.execution.harness.ProtocolHarness', relocated_harness), patch('graphviz.Digraph.render',save_dot):\n    if mode=='protocol_outputs_test':\n        spec=importlib.util.spec_from_file_location('upstream_protocol_outputs',source/'test/test_protocol_outputs.py')\n        module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)\n        stream=io.StringIO()\n        result=unittest.TextTestRunner(stream=stream,verbosity=2).run(unittest.TestSuite([\n            module.TestProtocolOutputs('test_protocol_outputs')]))\n        (out/'unittest.txt').write_text(stream.getvalue())\n        report['test']={'success':result.wasSuccessful(),'tests_run':result.testsRun,\n                       'failures':len(result.failures),'errors':len(result.errors)}\n    else:\n        runpy.run_path(str(source/'examples/protocols/ludox/LUDOX_protocol.py'),run_name='__main__')\nreport['executions']=[]\nfor h in harnesses:\n    for artifact in h.artifacts_of_type(ProtocolExecutionNTuples):\n        ex=artifact.execution\n        calls=[r for r in ex.executions if isinstance(r,labop.CallBehaviorExecution)]\n        report['executions'].append({\n            'completed_normally':ex.completed_normally,\n            'calls_by_behavior':dict(Counter(str(r.get_behavior().identity) for r in calls)),\n            'protocol_calls':[str(r.get_behavior().identity) for r in calls if isinstance(r.get_behavior(),labop.Protocol)],\n            'outputs':[{'name':p.get_name(),'value_type':type(p.value.get_value()).__name__}\n                       for p in ex.parameter_values if p.get_parameter().is_output()],\n            'issues':{str(k):list(map(str,v)) for k,v in artifact.execution_engine.issues.items()}})\n(out/'summary.json').write_text(json.dumps(report,indent=2)+'\\n')\nprint('RESULT_JSON='+json.dumps(report))\n",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-source",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/results/upstream-examples/ludox",
+        "ludox"
+      ],
+      "returncode": 0,
+      "summary": {
+        "mode": "ludox",
+        "executions": [
+          {
+            "completed_normally": true,
+            "calls_by_behavior": {
+              "https://labop.io/examples/protocols/ludox/iGEM_LUDOX_OD_calibration_2018": 1,
+              "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer": 1,
+              "https://bioprotocols.org/labop/primitives/sample_arrays/PlateCoordinates": 3,
+              "https://bioprotocols.org/labop/primitives/liquid_handling/Provision": 2
+            },
+            "protocol_calls": [
+              "https://labop.io/examples/protocols/ludox/iGEM_LUDOX_OD_calibration_2018"
+            ],
+            "outputs": [],
+            "issues": {
+              "harness_execution_iGEM_LUDOX_OD_calibration_2018_2026_11_12_13_08_20_664805": []
+            }
+          }
+        ]
+      }
+    }
+  },
+  "bpl_input_sha256": "d89bde811020f063def76156f7af931d2cbcd9a002787689f1fb000b9e36049f",
+  "protocol_outputs_test_source_sha256": "e2836dac670377f504db1f5e6bcd982be51f3973da453e791e3d47532949260e",
+  "ludox_source_sha256": "045e1a64a7da74b161e45d970c5c1d6691bf897f5f28075c05284a59a0716533"
+}

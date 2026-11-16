@@ -1,0 +1,172 @@
+[
+ {
+  "case": "l3_direct3",
+  "check": 0,
+  "check_msg": "{\"artifacts\": {\"diagnostics\": \"artifacts/check/l3_direct3.diagnostics.json\"}, \"command\": \"check\", \"input\": \"l3_direct3.bpl\", \"ok\": true}",
+  "validate": 0,
+  "validate_msg": "{\"artifacts\": {\"diagnostics\": \"artifacts/validate/l3_direct3.diagnostics.json\"}, \"command\": \"validate\", \"input\": \"l3_direct3.bpl\", \"ok\": true, \"target\": \"human\"}",
+  "lower": 0,
+  "steps": [
+   [
+    "ASPIRATE",
+    10.0,
+    null,
+    null
+   ],
+   [
+    "DISPENSE",
+    10.0,
+    null,
+    "A2"
+   ],
+   [
+    "ASPIRATE",
+    10.0,
+    null,
+    null
+   ],
+   [
+    "DISPENSE",
+    10.0,
+    null,
+    "A2"
+   ],
+   [
+    "ASPIRATE",
+    10.0,
+    null,
+    null
+   ],
+   [
+    "DISPENSE",
+    10.0,
+    null,
+    "A2"
+   ]
+  ]
+ },
+ {
+  "case": "l3_for_range2",
+  "check": 0,
+  "check_msg": "{\"artifacts\": {\"diagnostics\": \"artifacts/check/l3_for_range2.diagnostics.json\"}, \"command\": \"check\", \"input\": \"l3_for_range2.bpl\", \"ok\": true}",
+  "validate": 20,
+  "validate_msg": "{\"diagnostics\": [{\"code\": \"PLAN_EMPTY\", \"hint\": \"Ensure protocol body has at least one executable statement.\", \"location\": null, \"message\": \"Lowered plan contains no executable steps.\", \"severity\": \"error\"}]}",
+  "lower": 20,
+  "lower_msg": "{\"diagnostics\": [{\"code\": \"PLAN_EMPTY\", \"hint\": \"Ensure protocol body has at least one executable statement.\", \"location\": null, \"message\": \"Lowered plan contains no executable steps.\", \"severity\": \"error\"}]}"
+ },
+ {
+  "case": "l3_for_range3",
+  "check": 0,
+  "check_msg": "{\"artifacts\": {\"diagnostics\": \"artifacts/check/l3_for_range3.diagnostics.json\"}, \"command\": \"check\", \"input\": \"l3_for_range3.bpl\", \"ok\": true}",
+  "validate": 20,
+  "validate_msg": "{\"diagnostics\": [{\"code\": \"PLAN_EMPTY\", \"hint\": \"Ensure protocol body has at least one executable statement.\", \"location\": null, \"message\": \"Lowered plan contains no executable steps.\", \"severity\": \"error\"}]}",
+  "lower": 20,
+  "lower_msg": "{\"diagnostics\": [{\"code\": \"PLAN_EMPTY\", \"hint\": \"Ensure protocol body has at least one executable statement.\", \"location\": null, \"message\": \"Lowered plan contains no executable steps.\", \"severity\": \"error\"}]}"
+ },
+ {
+  "case": "l3_if_false",
+  "check": 0,
+  "check_msg": "{\"artifacts\": {\"diagnostics\": \"artifacts/check/l3_if_false.diagnostics.json\"}, \"command\": \"check\", \"input\": \"l3_if_false.bpl\", \"ok\": true}",
+  "validate": 20,
+  "validate_msg": "{\"diagnostics\": [{\"code\": \"PLAN_EMPTY\", \"hint\": \"Ensure protocol body has at least one executable statement.\", \"location\": null, \"message\": \"Lowered plan contains no executable steps.\", \"severity\": \"error\"}]}",
+  "lower": 20,
+  "lower_msg": "{\"diagnostics\": [{\"code\": \"PLAN_EMPTY\", \"hint\": \"Ensure protocol body has at least one executable statement.\", \"location\": null, \"message\": \"Lowered plan contains no executable steps.\", \"severity\": \"error\"}]}"
+ },
+ {
+  "case": "l3_if_true",
+  "check": 0,
+  "check_msg": "{\"artifacts\": {\"diagnostics\": \"artifacts/check/l3_if_true.diagnostics.json\"}, \"command\": \"check\", \"input\": \"l3_if_true.bpl\", \"ok\": true}",
+  "validate": 20,
+  "validate_msg": "{\"diagnostics\": [{\"code\": \"PLAN_EMPTY\", \"hint\": \"Ensure protocol body has at least one executable statement.\", \"location\": null, \"message\": \"Lowered plan contains no executable steps.\", \"severity\": \"error\"}]}",
+  "lower": 20,
+  "lower_msg": "{\"diagnostics\": [{\"code\": \"PLAN_EMPTY\", \"hint\": \"Ensure protocol body has at least one executable statement.\", \"location\": null, \"message\": \"Lowered plan contains no executable steps.\", \"severity\": \"error\"}]}"
+ },
+ {
+  "case": "m2_incubate_bad",
+  "check": 0,
+  "check_msg": "{\"artifacts\": {\"diagnostics\": \"artifacts/check/m2_incubate_bad.diagnostics.json\"}, \"command\": \"check\", \"input\": \"m2_incubate_bad.bpl\", \"ok\": true}",
+  "validate": 0,
+  "validate_msg": "{\"artifacts\": {\"diagnostics\": \"artifacts/validate/m2_incubate_bad.diagnostics.json\"}, \"command\": \"validate\", \"input\": \"m2_incubate_bad.bpl\", \"ok\": true, \"target\": \"human\"}",
+  "lower": 0,
+  "steps": [
+   [
+    "HUMAN_STEP",
+    null,
+    null,
+    null
+   ]
+  ]
+ },
+ {
+  "case": "m2_incubate_ok",
+  "check": 0,
+  "check_msg": "{\"artifacts\": {\"diagnostics\": \"artifacts/check/m2_incubate_ok.diagnostics.json\"}, \"command\": \"check\", \"input\": \"m2_incubate_ok.bpl\", \"ok\": true}",
+  "validate": 0,
+  "validate_msg": "{\"artifacts\": {\"diagnostics\": \"artifacts/validate/m2_incubate_ok.diagnostics.json\"}, \"command\": \"validate\", \"input\": \"m2_incubate_ok.bpl\", \"ok\": true, \"target\": \"human\"}",
+  "lower": 0,
+  "steps": [
+   [
+    "HUMAN_STEP",
+    null,
+    null,
+    null
+   ]
+  ]
+ },
+ {
+  "case": "m2_transfer_bad",
+  "check": 0,
+  "check_msg": "{\"artifacts\": {\"diagnostics\": \"artifacts/check/m2_transfer_bad.diagnostics.json\"}, \"command\": \"check\", \"input\": \"m2_transfer_bad.bpl\", \"ok\": true}",
+  "validate": 0,
+  "validate_msg": "{\"artifacts\": {\"diagnostics\": \"artifacts/validate/m2_transfer_bad.diagnostics.json\"}, \"command\": \"validate\", \"input\": \"m2_transfer_bad.bpl\", \"ok\": true, \"target\": \"human\"}",
+  "lower": 0,
+  "steps": [
+   [
+    "ASPIRATE",
+    10.0,
+    null,
+    null
+   ],
+   [
+    "DISPENSE",
+    10.0,
+    null,
+    "A2"
+   ]
+  ]
+ },
+ {
+  "case": "m4_let_10",
+  "check": 11,
+  "check_msg": "{\"diagnostics\": [{\"code\": \"SEMANTIC_MISSING_VOLUME\", \"hint\": \"Example: volume: 10 uL\", \"location\": {\"end\": {\"col\": 62, \"line\": 3, \"offset\": 97}, \"file\": \"m4_let_10.bpl\", \"start\": {\"col\": 5, \"line\": 3, \"offset\": 40}}, \"me",
+  "validate": 11,
+  "validate_msg": "{\"diagnostics\": [{\"code\": \"SEMANTIC_MISSING_VOLUME\", \"hint\": \"Example: volume: 10 uL\", \"location\": {\"end\": {\"col\": 62, \"line\": 3, \"offset\": 97}, \"file\": \"m4_let_10.bpl\", \"start\": {\"col\": 5, \"line\": 3, \"offset\": 40}}, \"me",
+  "lower": 11,
+  "lower_msg": "{\"diagnostics\": [{\"code\": \"SEMANTIC_MISSING_VOLUME\", \"hint\": \"Example: volume: 10 uL\", \"location\": {\"end\": {\"col\": 62, \"line\": 3, \"offset\": 97}, \"file\": \"m4_let_10.bpl\", \"start\": {\"col\": 5, \"line\": 3, \"offset\": 40}}, \"message\": \"`transfer` requires numeric `volume` argument.\", \"severity\": \"error\"}]}"
+ },
+ {
+  "case": "m4_let_20",
+  "check": 11,
+  "check_msg": "{\"diagnostics\": [{\"code\": \"SEMANTIC_MISSING_VOLUME\", \"hint\": \"Example: volume: 10 uL\", \"location\": {\"end\": {\"col\": 62, \"line\": 3, \"offset\": 97}, \"file\": \"m4_let_20.bpl\", \"start\": {\"col\": 5, \"line\": 3, \"offset\": 40}}, \"me",
+  "validate": 11,
+  "validate_msg": "{\"diagnostics\": [{\"code\": \"SEMANTIC_MISSING_VOLUME\", \"hint\": \"Example: volume: 10 uL\", \"location\": {\"end\": {\"col\": 62, \"line\": 3, \"offset\": 97}, \"file\": \"m4_let_20.bpl\", \"start\": {\"col\": 5, \"line\": 3, \"offset\": 40}}, \"me",
+  "lower": 11,
+  "lower_msg": "{\"diagnostics\": [{\"code\": \"SEMANTIC_MISSING_VOLUME\", \"hint\": \"Example: volume: 10 uL\", \"location\": {\"end\": {\"col\": 62, \"line\": 3, \"offset\": 97}, \"file\": \"m4_let_20.bpl\", \"start\": {\"col\": 5, \"line\": 3, \"offset\": 40}}, \"message\": \"`transfer` requires numeric `volume` argument.\", \"severity\": \"error\"}]}"
+ },
+ {
+  "case": "m4_let_incubate",
+  "check": 0,
+  "check_msg": "{\"artifacts\": {\"diagnostics\": \"artifacts/check/m4_let_incubate.diagnostics.json\"}, \"command\": \"check\", \"input\": \"m4_let_incubate.bpl\", \"ok\": true}",
+  "validate": 0,
+  "validate_msg": "{\"artifacts\": {\"diagnostics\": \"artifacts/validate/m4_let_incubate.diagnostics.json\"}, \"command\": \"validate\", \"input\": \"m4_let_incubate.bpl\", \"ok\": true, \"target\": \"human\"}",
+  "lower": 0,
+  "steps": [
+   [
+    "HUMAN_STEP",
+    null,
+    null,
+    null
+   ]
+  ]
+ }
+]

@@ -1,0 +1,1 @@
+{"artifacts": {"diagnostics": "artifacts/check/gfp.diagnostics.json"}, "command": "check", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/gfp/gfp.bpl", "ok": true}

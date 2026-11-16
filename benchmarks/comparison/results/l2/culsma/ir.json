@@ -1,0 +1,706 @@
+{
+  "kind": "IRProgram",
+  "protocols": [
+    {
+      "id": "p0",
+      "module": "composition",
+      "name": "PrepareSample",
+      "params": [],
+      "return_bindings": [],
+      "return_value": {
+        "name": "sample",
+        "span": {
+          "col": 12,
+          "end": 212,
+          "line": 4,
+          "start": 206
+        }
+      },
+      "returns": [],
+      "source_path": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l2/composition.culs",
+      "source_role": "entry",
+      "span": {
+        "col": 1,
+        "end": 215,
+        "line": 1,
+        "start": 0
+      },
+      "statements": [
+        {
+          "id": "p0.s0",
+          "name": "sample",
+          "span": {
+            "col": 5,
+            "end": 193,
+            "line": 2,
+            "start": 29
+          },
+          "value": {
+            "args": [
+              {
+                "name": "kind",
+                "span": {
+                  "col": 18,
+                  "end": 193,
+                  "line": 2,
+                  "start": 42
+                },
+                "value": {
+                  "span": {
+                    "col": 18,
+                    "end": 193,
+                    "line": 2,
+                    "start": 42
+                  },
+                  "value": "tube"
+                }
+              },
+              {
+                "name": "label",
+                "span": {
+                  "col": 23,
+                  "end": 65,
+                  "line": 2,
+                  "start": 47
+                },
+                "value": {
+                  "span": {
+                    "col": 31,
+                    "end": 65,
+                    "line": 2,
+                    "start": 55
+                  },
+                  "value": "prepared"
+                }
+              },
+              {
+                "name": "capacity",
+                "span": {
+                  "col": 43,
+                  "end": 83,
+                  "line": 2,
+                  "start": 67
+                },
+                "value": {
+                  "span": {
+                    "col": 54,
+                    "end": 83,
+                    "line": 2,
+                    "start": 78
+                  },
+                  "unit": "mL",
+                  "value": 1.5
+                }
+              },
+              {
+                "name": "load",
+                "span": {
+                  "col": 61,
+                  "end": 192,
+                  "line": 2,
+                  "start": 85
+                },
+                "value": {
+                  "elements": [
+                    {
+                      "left": {
+                        "args": [
+                          {
+                            "name": "kind",
+                            "span": {
+                              "col": 17,
+                              "end": 140,
+                              "line": 3,
+                              "start": 110
+                            },
+                            "value": {
+                              "base": {
+                                "name": "ContentKind",
+                                "span": {
+                                  "col": 24,
+                                  "end": 128,
+                                  "line": 3,
+                                  "start": 117
+                                }
+                              },
+                              "member": "FORMULATION",
+                              "span": {
+                                "col": 24,
+                                "end": 140,
+                                "line": 3,
+                                "start": 117
+                              }
+                            }
+                          },
+                          {
+                            "name": "type",
+                            "span": {
+                              "col": 49,
+                              "end": 167,
+                              "line": 3,
+                              "start": 142
+                            },
+                            "value": {
+                              "base": {
+                                "name": "ContentType",
+                                "span": {
+                                  "col": 56,
+                                  "end": 160,
+                                  "line": 3,
+                                  "start": 149
+                                }
+                              },
+                              "member": "BUFFER",
+                              "span": {
+                                "col": 56,
+                                "end": 167,
+                                "line": 3,
+                                "start": 149
+                              }
+                            }
+                          },
+                          {
+                            "name": "code",
+                            "span": {
+                              "col": 76,
+                              "end": 184,
+                              "line": 3,
+                              "start": 169
+                            },
+                            "value": {
+                              "span": {
+                                "col": 83,
+                                "end": 184,
+                                "line": 3,
+                                "start": 176
+                              },
+                              "value": "BUFFER"
+                            }
+                          }
+                        ],
+                        "name": "DefineContent",
+                        "span": {
+                          "col": 9,
+                          "end": 185,
+                          "line": 3,
+                          "start": 102
+                        }
+                      },
+                      "right": {
+                        "span": {
+                          "col": 93,
+                          "end": 191,
+                          "line": 3,
+                          "start": 186
+                        },
+                        "unit": "uL",
+                        "value": 100.0
+                      },
+                      "span": {
+                        "col": 9,
+                        "end": 191,
+                        "line": 3,
+                        "start": 102
+                      }
+                    }
+                  ],
+                  "span": {
+                    "col": 68,
+                    "end": 192,
+                    "line": 2,
+                    "start": 92
+                  }
+                }
+              }
+            ],
+            "name": "AllocContainer",
+            "span": {
+              "col": 18,
+              "end": 193,
+              "line": 2,
+              "start": 42
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "p1",
+      "module": "composition",
+      "name": "TakeAliquot",
+      "params": [
+        {
+          "default": null,
+          "name": "sample",
+          "span": {
+            "col": 22,
+            "end": 243,
+            "line": 6,
+            "start": 237
+          }
+        },
+        {
+          "default": null,
+          "name": "destination",
+          "span": {
+            "col": 30,
+            "end": 256,
+            "line": 6,
+            "start": 245
+          }
+        }
+      ],
+      "return_bindings": [],
+      "return_value": {
+        "name": "destination",
+        "span": {
+          "col": 12,
+          "end": 316,
+          "line": 8,
+          "start": 305
+        }
+      },
+      "returns": [],
+      "source_path": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l2/composition.culs",
+      "source_role": "entry",
+      "span": {
+        "col": 1,
+        "end": 319,
+        "line": 6,
+        "start": 216
+      },
+      "statements": [
+        {
+          "id": "p1.s0",
+          "sources": [
+            {
+              "left": {
+                "name": "sample",
+                "span": {
+                  "col": 21,
+                  "end": 286,
+                  "line": 7,
+                  "start": 280
+                }
+              },
+              "right": {
+                "span": {
+                  "col": 28,
+                  "end": 291,
+                  "line": 7,
+                  "start": 287
+                },
+                "unit": "uL",
+                "value": 10.0
+              },
+              "span": {
+                "col": 21,
+                "end": 291,
+                "line": 7,
+                "start": 280
+              }
+            }
+          ],
+          "span": {
+            "col": 5,
+            "end": 292,
+            "line": 7,
+            "start": 264
+          },
+          "target": {
+            "name": "destination",
+            "span": {
+              "col": 5,
+              "end": 275,
+              "line": 7,
+              "start": 264
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "script_entry": {
+    "id": "entry",
+    "return_bindings": [],
+    "return_value": {
+      "name": "result",
+      "span": {
+        "col": 8,
+        "end": 487,
+        "line": 13,
+        "start": 481
+      }
+    },
+    "returns": [],
+    "source_paths": [
+      "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l2/composition.culs"
+    ],
+    "span": {
+      "col": 5,
+      "end": 193,
+      "line": 2,
+      "start": 29
+    },
+    "statements": [
+      {
+        "id": "entry.s0",
+        "name": "prepared",
+        "span": {
+          "col": 5,
+          "end": 193,
+          "line": 2,
+          "start": 29
+        },
+        "value": {
+          "args": [
+            {
+              "name": "kind",
+              "span": {
+                "col": 18,
+                "end": 193,
+                "line": 2,
+                "start": 42
+              },
+              "value": {
+                "span": {
+                  "col": 18,
+                  "end": 193,
+                  "line": 2,
+                  "start": 42
+                },
+                "value": "tube"
+              }
+            },
+            {
+              "name": "label",
+              "span": {
+                "col": 23,
+                "end": 65,
+                "line": 2,
+                "start": 47
+              },
+              "value": {
+                "span": {
+                  "col": 31,
+                  "end": 65,
+                  "line": 2,
+                  "start": 55
+                },
+                "value": "prepared"
+              }
+            },
+            {
+              "name": "capacity",
+              "span": {
+                "col": 43,
+                "end": 83,
+                "line": 2,
+                "start": 67
+              },
+              "value": {
+                "span": {
+                  "col": 54,
+                  "end": 83,
+                  "line": 2,
+                  "start": 78
+                },
+                "unit": "mL",
+                "value": 1.5
+              }
+            },
+            {
+              "name": "load",
+              "span": {
+                "col": 61,
+                "end": 192,
+                "line": 2,
+                "start": 85
+              },
+              "value": {
+                "elements": [
+                  {
+                    "left": {
+                      "args": [
+                        {
+                          "name": "kind",
+                          "span": {
+                            "col": 17,
+                            "end": 140,
+                            "line": 3,
+                            "start": 110
+                          },
+                          "value": {
+                            "base": {
+                              "name": "ContentKind",
+                              "span": {
+                                "col": 24,
+                                "end": 128,
+                                "line": 3,
+                                "start": 117
+                              }
+                            },
+                            "member": "FORMULATION",
+                            "span": {
+                              "col": 24,
+                              "end": 140,
+                              "line": 3,
+                              "start": 117
+                            }
+                          }
+                        },
+                        {
+                          "name": "type",
+                          "span": {
+                            "col": 49,
+                            "end": 167,
+                            "line": 3,
+                            "start": 142
+                          },
+                          "value": {
+                            "base": {
+                              "name": "ContentType",
+                              "span": {
+                                "col": 56,
+                                "end": 160,
+                                "line": 3,
+                                "start": 149
+                              }
+                            },
+                            "member": "BUFFER",
+                            "span": {
+                              "col": 56,
+                              "end": 167,
+                              "line": 3,
+                              "start": 149
+                            }
+                          }
+                        },
+                        {
+                          "name": "code",
+                          "span": {
+                            "col": 76,
+                            "end": 184,
+                            "line": 3,
+                            "start": 169
+                          },
+                          "value": {
+                            "span": {
+                              "col": 83,
+                              "end": 184,
+                              "line": 3,
+                              "start": 176
+                            },
+                            "value": "BUFFER"
+                          }
+                        }
+                      ],
+                      "name": "DefineContent",
+                      "span": {
+                        "col": 9,
+                        "end": 185,
+                        "line": 3,
+                        "start": 102
+                      }
+                    },
+                    "right": {
+                      "span": {
+                        "col": 93,
+                        "end": 191,
+                        "line": 3,
+                        "start": 186
+                      },
+                      "unit": "uL",
+                      "value": 100.0
+                    },
+                    "span": {
+                      "col": 9,
+                      "end": 191,
+                      "line": 3,
+                      "start": 102
+                    }
+                  }
+                ],
+                "span": {
+                  "col": 68,
+                  "end": 192,
+                  "line": 2,
+                  "start": 92
+                }
+              }
+            }
+          ],
+          "name": "AllocContainer",
+          "span": {
+            "col": 18,
+            "end": 193,
+            "line": 2,
+            "start": 42
+          }
+        }
+      },
+      {
+        "id": "entry.s1",
+        "name": "target",
+        "span": {
+          "col": 1,
+          "end": 405,
+          "line": 11,
+          "start": 352
+        },
+        "value": {
+          "args": [
+            {
+              "name": "kind",
+              "span": {
+                "col": 14,
+                "end": 405,
+                "line": 11,
+                "start": 365
+              },
+              "value": {
+                "span": {
+                  "col": 14,
+                  "end": 405,
+                  "line": 11,
+                  "start": 365
+                },
+                "value": "tube"
+              }
+            },
+            {
+              "name": "label",
+              "span": {
+                "col": 19,
+                "end": 386,
+                "line": 11,
+                "start": 370
+              },
+              "value": {
+                "span": {
+                  "col": 27,
+                  "end": 386,
+                  "line": 11,
+                  "start": 378
+                },
+                "value": "target"
+              }
+            },
+            {
+              "name": "capacity",
+              "span": {
+                "col": 37,
+                "end": 404,
+                "line": 11,
+                "start": 388
+              },
+              "value": {
+                "span": {
+                  "col": 48,
+                  "end": 404,
+                  "line": 11,
+                  "start": 399
+                },
+                "unit": "mL",
+                "value": 1.5
+              }
+            }
+          ],
+          "name": "AllocContainer",
+          "span": {
+            "col": 14,
+            "end": 405,
+            "line": 11,
+            "start": 365
+          }
+        }
+      },
+      {
+        "id": "entry.s2",
+        "name": "__cmp_entry_s2_sample",
+        "span": {
+          "col": 1,
+          "end": 472,
+          "line": 12,
+          "start": 407
+        },
+        "value": {
+          "name": "prepared",
+          "span": {
+            "col": 35,
+            "end": 449,
+            "line": 12,
+            "start": 441
+          }
+        }
+      },
+      {
+        "id": "entry.s3",
+        "name": "result",
+        "span": {
+          "col": 1,
+          "end": 472,
+          "line": 12,
+          "start": 407
+        },
+        "value": {
+          "name": "target",
+          "span": {
+            "col": 59,
+            "end": 471,
+            "line": 12,
+            "start": 465
+          }
+        }
+      },
+      {
+        "id": "entry.s4",
+        "sources": [
+          {
+            "left": {
+              "name": "__cmp_entry_s2_sample",
+              "span": {
+                "col": 21,
+                "end": 286,
+                "line": 7,
+                "start": 280
+              }
+            },
+            "right": {
+              "span": {
+                "col": 28,
+                "end": 291,
+                "line": 7,
+                "start": 287
+              },
+              "unit": "uL",
+              "value": 10.0
+            },
+            "span": {
+              "col": 21,
+              "end": 291,
+              "line": 7,
+              "start": 280
+            }
+          }
+        ],
+        "span": {
+          "col": 5,
+          "end": 292,
+          "line": 7,
+          "start": 264
+        },
+        "target": {
+          "name": "result",
+          "span": {
+            "col": 5,
+            "end": 275,
+            "line": 7,
+            "start": 264
+          }
+        }
+      }
+    ]
+  },
+  "span": null
+}

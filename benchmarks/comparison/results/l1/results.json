@@ -1,0 +1,117 @@
+{
+  "culsma": {
+    "returncode": 0,
+    "log": "",
+    "summary": {
+      "completed_steps": 7,
+      "failed_steps": 0,
+      "inputs": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/labop_comparison/results/l1/reuse.culs"
+      ],
+      "plan_diagnostic_count": 0,
+      "runtime_diagnostic_count": 0,
+      "runtime_ok": true,
+      "semantic_error_count": 0,
+      "skipped_steps": 0,
+      "total_steps": 7,
+      "type_error_count": 0,
+      "user_result_available": true
+    },
+    "destination_volumes_ul": {
+      "second": 20.0,
+      "first": 10.0
+    },
+    "meets_reuse_witness": true
+  },
+  "bpl": {
+    "protocols": [
+      {
+        "name": "Main",
+        "parameters": []
+      },
+      {
+        "name": "aliquot",
+        "parameters": [
+          "source",
+          "destination",
+          "amount"
+        ]
+      }
+    ],
+    "diagnostics": [],
+    "primitives": [
+      {
+        "class": "HumanStep",
+        "fields": {
+          "instruction": "aliquot(source: \"plate_1:A1\", destination: \"plate_1:A2\", amount: 10 uL)",
+          "expected_time_s": null,
+          "checklist": [],
+          "data_fields": {},
+          "safety_tags": [],
+          "requires_confirmation": true,
+          "primitive_type": "PrimitiveType.HUMAN_STEP"
+        }
+      },
+      {
+        "class": "HumanStep",
+        "fields": {
+          "instruction": "aliquot(source: \"plate_1:A1\", destination: \"plate_1:A3\", amount: 20 uL)",
+          "expected_time_s": null,
+          "checklist": [],
+          "data_fields": {},
+          "safety_tags": [],
+          "requires_confirmation": true,
+          "primitive_type": "PrimitiveType.HUMAN_STEP"
+        }
+      }
+    ],
+    "stdout": [],
+    "stderr": "",
+    "meets_reuse_witness": false,
+    "reason": "Both user-procedure calls remain HumanStep text; the declared body is not instantiated."
+  },
+  "labop_literal": {
+    "mode": "literal",
+    "validation_errors": [],
+    "calls": [
+      {
+        "id": "https://example.org/l1/main/CallBehaviorAction5",
+        "behavior": "https://example.org/l1/Aliquot"
+      },
+      {
+        "id": "https://example.org/l1/main/CallBehaviorAction6",
+        "behavior": "https://example.org/l1/Aliquot"
+      }
+    ],
+    "completed_normally": true,
+    "executed_transfers": [],
+    "issues": {
+      "l1_execution": []
+    },
+    "stdout": [],
+    "stderr": "2026-11-12 11:22:55,480 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document\n2026-11-12 11:22:55,740 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol\n2026-11-12 11:22:55,742 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol\n2026-11-12 11:22:56,215 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l1/main\n2026-11-12 11:22:56,217 INFO labop.execution.behavior_dynamics - Behavior L1 reuse is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...\n2026-11-12 11:22:57,213 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l1/Aliquot\n2026-11-12 11:22:57,217 INFO labop.execution.behavior_dynamics - Behavior Aliquot is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...\n",
+    "meets_reuse_witness": false
+  },
+  "labop_input_flow": {
+    "mode": "input_flow",
+    "validation_errors": [],
+    "calls": [
+      {
+        "id": "https://example.org/l1/main/CallBehaviorAction5",
+        "behavior": "https://example.org/l1/Aliquot"
+      },
+      {
+        "id": "https://example.org/l1/main/CallBehaviorAction6",
+        "behavior": "https://example.org/l1/Aliquot"
+      }
+    ],
+    "completed_normally": true,
+    "executed_transfers": [],
+    "issues": {
+      "l1_execution": []
+    },
+    "stdout": [],
+    "stderr": "2026-11-12 11:24:13,416 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document\n2026-11-12 11:24:13,677 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol\n2026-11-12 11:24:13,678 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol\n2026-11-12 11:24:14,219 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l1/main\n2026-11-12 11:24:14,940 INFO labop.execution.behavior_dynamics - Behavior L1 reuse is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...\n",
+    "meets_reuse_witness": false
+  }
+}

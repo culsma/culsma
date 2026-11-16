@@ -1,0 +1,101 @@
+{
+  "ok": true,
+  "report": {
+    "alerts": [],
+    "execution": {
+      "completed_steps": 8,
+      "diagnostic_count": 0,
+      "failed_steps": 0,
+      "ok": true,
+      "skipped_steps": 0,
+      "total_steps": 8
+    },
+    "external_inventory": {
+      "checked": false,
+      "items": [],
+      "reason": "inventory_not_supplied",
+      "schema": "culsma_inventory_reconciliation_v1",
+      "shortages": [],
+      "sufficient": null
+    },
+    "headline": "Experiment completed successfully with no runtime errors.",
+    "materials": {
+      "final_products": [],
+      "has_material_state": true,
+      "input_inventory": [
+        {
+          "initial_mL": 0.1,
+          "initial_mg": 10.001,
+          "initial_uL": 100.0,
+          "name": "Magnetic input"
+        }
+      ],
+      "intermediate_materials": [],
+      "reagent_consumption": [
+        {
+          "consumed_mL": 0.1,
+          "consumed_mg": 10.001,
+          "consumed_uL": 100.0,
+          "name": "Magnetic input",
+          "roles": [
+            "sample"
+          ]
+        }
+      ]
+    },
+    "process_summary": {
+      "environment_steps": 0,
+      "mutation_steps": 0,
+      "readout_steps": 0,
+      "separation_steps": 1
+    },
+    "qc_results": [],
+    "resource_summary": {
+      "containers": {
+        "allocated_count": 1,
+        "container_kinds": [
+          {
+            "count": 1,
+            "kind": "tube"
+          }
+        ],
+        "touched_count": 1,
+        "touched_names": [
+          "Magnetic input"
+        ]
+      },
+      "instruments": {
+        "devices": [],
+        "tools": []
+      }
+    },
+    "schema": "lab_report_v1"
+  },
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": [],
+      "value": {
+        "kind": "container_group_ref",
+        "member_count": 2,
+        "members": [
+          {
+            "id": "entry.s1::0",
+            "kind": "container_ref",
+            "mass_mg": 10.001,
+            "volume_uL": 10.001
+          },
+          {
+            "id": "entry.s1::1",
+            "kind": "container_ref",
+            "mass_mg": 100,
+            "volume_uL": 100
+          }
+        ]
+      }
+    }
+  },
+  "schema": "culsma_run_output_v1"
+}

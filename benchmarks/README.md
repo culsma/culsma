@@ -30,6 +30,13 @@ The original seven modules and two composites cover **172/173** steps in 1.0.7
 and **173/173** in 1.0.9. The three added entries cover **37/37** in 1.0.9 and
 are recorded separately.
 
+## Cross-system comparison
+
+The [Culsma, LabOP and BPL comparison](comparison/README.md) contains the
+manuscript's mechanism audits, input programs, pinned source archives and retained
+results. Its separate replay command checks the published comparison witnesses;
+these results do not contribute to workflow source-step coverage totals.
+
 ## Run
 
 Requires Git and Python 3.12 (recorded runs used 3.12.8). From a fresh directory:

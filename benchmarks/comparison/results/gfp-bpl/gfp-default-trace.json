@@ -1,0 +1,208 @@
+{
+  "plan_id": "GFPClarification_plan",
+  "status": "SimulationStatus.COMPLETED",
+  "started_at": "2026-11-14 19:17:25.971929",
+  "completed_at": "2026-11-14 19:17:25.992490",
+  "initial_state_hash": "52cb79c78e69a20bce1ce26942e01aff",
+  "final_state_hash": "7b0589f3f4ae4ace7b9bd9fbcb2c6f45",
+  "steps_executed": 13,
+  "steps_failed": 0,
+  "step_traces": [
+    {
+      "step_id": "step_0001",
+      "primitive_type": "PrimitiveType.HUMAN_STEP",
+      "state_before_hash": "52cb79c78e69a20bce1ce26942e01aff",
+      "state_after_hash": "52cb79c78e69a20bce1ce26942e01aff",
+      "timestamp": "2026-11-14 19:17:25.973257",
+      "duration_ms": 1.2630000000000001,
+      "success": true,
+      "error_message": null,
+      "details": {
+        "action": "unsupported_no_op",
+        "unsupported": true,
+        "primitive_id": "human_step"
+      }
+    },
+    {
+      "step_id": "step_0002",
+      "primitive_type": "PrimitiveType.ASPIRATE",
+      "state_before_hash": "52cb79c78e69a20bce1ce26942e01aff",
+      "state_after_hash": "5810596c82c28a725f72f0199b1fd6e4",
+      "timestamp": "2026-11-14 19:17:25.974668",
+      "duration_ms": 1.3179999999999998,
+      "success": true,
+      "error_message": null,
+      "details": {
+        "volume_aspirated": 160.0,
+        "source": "sources/A1"
+      }
+    },
+    {
+      "step_id": "step_0003",
+      "primitive_type": "PrimitiveType.DISPENSE",
+      "state_before_hash": "5810596c82c28a725f72f0199b1fd6e4",
+      "state_after_hash": "71fe3f7778c3480a43a05caf21133437",
+      "timestamp": "2026-11-14 19:17:25.976164",
+      "duration_ms": 1.8719999999999999,
+      "success": true,
+      "error_message": null,
+      "details": {
+        "volume_dispensed": 160.0,
+        "destination": "sources/A3"
+      }
+    },
+    {
+      "step_id": "step_0004",
+      "primitive_type": "PrimitiveType.ASPIRATE",
+      "state_before_hash": "71fe3f7778c3480a43a05caf21133437",
+      "state_after_hash": "843745d8a14b209859d29c8a626fbd1a",
+      "timestamp": "2026-11-14 19:17:25.978248",
+      "duration_ms": 1.2930000000000001,
+      "success": true,
+      "error_message": null,
+      "details": {
+        "volume_aspirated": 20.0,
+        "source": "sources/A3"
+      }
+    },
+    {
+      "step_id": "step_0005",
+      "primitive_type": "PrimitiveType.DISPENSE",
+      "state_before_hash": "843745d8a14b209859d29c8a626fbd1a",
+      "state_after_hash": "f1822279344ee60074a37f80232e8ed2",
+      "timestamp": "2026-11-14 19:17:25.979672",
+      "duration_ms": 1.345,
+      "success": true,
+      "error_message": null,
+      "details": {
+        "volume_dispensed": 20.0,
+        "destination": "assay/A1"
+      }
+    },
+    {
+      "step_id": "step_0006",
+      "primitive_type": "PrimitiveType.ASPIRATE",
+      "state_before_hash": "f1822279344ee60074a37f80232e8ed2",
+      "state_after_hash": "47dc6d441c8393ad00300e365f24368f",
+      "timestamp": "2026-11-14 19:17:25.981202",
+      "duration_ms": 1.335,
+      "success": true,
+      "error_message": null,
+      "details": {
+        "volume_aspirated": 40.0,
+        "source": "sources/A2"
+      }
+    },
+    {
+      "step_id": "step_0007",
+      "primitive_type": "PrimitiveType.DISPENSE",
+      "state_before_hash": "47dc6d441c8393ad00300e365f24368f",
+      "state_after_hash": "22468d5009e714508f2e6b79b82adcb7",
+      "timestamp": "2026-11-14 19:17:25.982705",
+      "duration_ms": 1.296,
+      "success": true,
+      "error_message": null,
+      "details": {
+        "volume_dispensed": 40.0,
+        "destination": "sources/A1"
+      }
+    },
+    {
+      "step_id": "step_0008",
+      "primitive_type": "PrimitiveType.HUMAN_STEP",
+      "state_before_hash": "22468d5009e714508f2e6b79b82adcb7",
+      "state_after_hash": "22468d5009e714508f2e6b79b82adcb7",
+      "timestamp": "2026-11-14 19:17:25.984150",
+      "duration_ms": 1.186,
+      "success": true,
+      "error_message": null,
+      "details": {
+        "action": "unsupported_no_op",
+        "unsupported": true,
+        "primitive_id": "human_step"
+      }
+    },
+    {
+      "step_id": "step_0009",
+      "primitive_type": "PrimitiveType.ASPIRATE",
+      "state_before_hash": "22468d5009e714508f2e6b79b82adcb7",
+      "state_after_hash": "887748365497985ffa1501c4bca28c53",
+      "timestamp": "2026-11-14 19:17:25.985807",
+      "duration_ms": 1.519,
+      "success": true,
+      "error_message": null,
+      "details": {
+        "volume_aspirated": 20.0,
+        "source": "sources/A1"
+      }
+    },
+    {
+      "step_id": "step_0010",
+      "primitive_type": "PrimitiveType.DISPENSE",
+      "state_before_hash": "887748365497985ffa1501c4bca28c53",
+      "state_after_hash": "e8e0ca8e3fb59815325f20c24b965022",
+      "timestamp": "2026-11-14 19:17:25.987276",
+      "duration_ms": 1.285,
+      "success": true,
+      "error_message": null,
+      "details": {
+        "volume_dispensed": 20.0,
+        "destination": "assay/A2"
+      }
+    },
+    {
+      "step_id": "step_0011",
+      "primitive_type": "PrimitiveType.ASPIRATE",
+      "state_before_hash": "e8e0ca8e3fb59815325f20c24b965022",
+      "state_after_hash": "d00675d6a7c81dd097b250ca307734ca",
+      "timestamp": "2026-11-14 19:17:25.988752",
+      "duration_ms": 1.3290000000000002,
+      "success": true,
+      "error_message": null,
+      "details": {
+        "volume_aspirated": 20.0,
+        "source": "sources/A2"
+      }
+    },
+    {
+      "step_id": "step_0012",
+      "primitive_type": "PrimitiveType.DISPENSE",
+      "state_before_hash": "d00675d6a7c81dd097b250ca307734ca",
+      "state_after_hash": "7b0589f3f4ae4ace7b9bd9fbcb2c6f45",
+      "timestamp": "2026-11-14 19:17:25.990281",
+      "duration_ms": 1.3699999999999999,
+      "success": true,
+      "error_message": null,
+      "details": {
+        "volume_dispensed": 20.0,
+        "destination": "assay/A3"
+      }
+    },
+    {
+      "step_id": "step_0013",
+      "primitive_type": "PrimitiveType.HUMAN_STEP",
+      "state_before_hash": "7b0589f3f4ae4ace7b9bd9fbcb2c6f45",
+      "state_after_hash": "7b0589f3f4ae4ace7b9bd9fbcb2c6f45",
+      "timestamp": "2026-11-14 19:17:25.991744",
+      "duration_ms": 1.165,
+      "success": true,
+      "error_message": null,
+      "details": {
+        "action": "unsupported_no_op",
+        "unsupported": true,
+        "primitive_id": "human_step"
+      }
+    }
+  ],
+  "validation_errors": [],
+  "warnings": [
+    "Unsupported primitives will run as no-op in non-strict mode: human_step",
+    "Unsupported primitive executed as no-op: HUMAN_STEP [step: step_0001]",
+    "Unsupported primitive executed as no-op: HUMAN_STEP [step: step_0008]",
+    "Unsupported primitive executed as no-op: HUMAN_STEP [step: step_0013]"
+  ],
+  "unsupported_step_count": 3,
+  "unsupported_primitives": [
+    "human_step"
+  ]
+}

@@ -1,0 +1,1 @@
+{"diagnostics": [{"code": "CAPABILITY_UNSUPPORTED_SET", "hint": "Use --strict to fail instead of degrade.", "location": null, "message": "Unsupported primitives (non-strict): human_step", "severity": "warning"}]}
