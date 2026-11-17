@@ -1,0 +1,170 @@
+// Automation simulation: all three centrifugations use 4 C; original source uses 20 C.
+// Source step S1: Start with 100 uL whole blood in one well of a 2 mL deep-well plate.
+let processing_well = well(
+  label = "WB001ProcessingWell",
+  capacity = 2mL,
+  load = [
+    content(
+      kind = bio_fluid,
+      type = whole_blood,
+      code = "WHOLE_BLOOD_SAMPLE",
+      attrs = { sample_code: "WB-001" }
+    ):100uL
+  ]
+);
+
+let lps_medium_input = well(
+  label = "LPSStimulationMedium",
+  capacity = 2mL,
+  load = [
+    content(
+      kind = formulation,
+      type = medium,
+      code = "LPS_2X_IN_HPLM_10PCT_FBS",
+      attrs = {
+        base_medium: "HPLM",
+        fbs: "10_percent_in_supplied_medium",
+        prepared_concentration: "2_ng_per_mL"
+      }
+    ):100uL
+  ]
+);
+
+let lysis_buffer_input = well(
+  label = "EBioscienceRBCBuffer",
+  capacity = 2mL,
+  load = [
+    content(
+      kind = formulation,
+      type = buffer,
+      code = "EBIOSCIENCE_RBC_LYSIS_BUFFER_1X",
+      attrs = { product_code: "00-4333-57" }
+    ):1mL
+  ]
+);
+let wash_buffer_input = well(
+  label = "FACSBuffer",
+  capacity = 2mL,
+  load = [
+    content(
+      kind = formulation,
+      type = buffer,
+      code = "FACS_BUFFER"
+    ):1mL
+  ]
+);
+
+let collected_supernatant = well(label = "WB001StimulationSupernatant", capacity = 2mL);
+let lysis_waste = well(label = "WB001LysisWaste", capacity = 2mL);
+let wash_waste = well(label = "WB001WashWaste", capacity = 2mL);
+
+processing_well.materials.replace({
+  processing_well.materials.get("WHOLE_BLOOD_SAMPLE"): [
+    content(
+      kind = bio_fluid,
+      type = plasma,
+      code = "PLASMA"
+    ):55uL,
+    content(
+      kind = bio_cellular,
+      type = cell_population,
+      code = "ERYTHROCYTES"
+    ):43.75uL,
+    content(
+      kind = bio_cellular,
+      type = cell_population,
+      code = "LEUKOCYTES"
+    ):1uL,
+    content(
+      kind = bio_cellular,
+      type = other_cellular_material,
+      code = "PLATELETS"
+    ):0.25uL
+  ]
+});
+
+// Source step S2: Add 100 uL LPS stimulation medium containing 2 ng/mL LPS in HPLM with 10% FBS, giving a total volume of 200 uL and a final LPS concentration of 1 ng/mL.
+processing_well << [lps_medium_input:100uL];
+// Source step S3: Mix by pipetting 5 times with the pipette set to 160 uL.
+repeat stimulation_mix in schedule(start = 1, end = 5, step = 1) {
+  processing_well << [processing_well:160uL];
+}
+
+// Source step S4: Incubate at 37 C with 5% CO2 for 6 h.
+with env(thermal = 37C, co2 = 5%, duration = 6h) {
+  hold(sample = processing_well);
+}
+
+// Simulation adaptation of source step S5: Centrifuge at 2,000 x g for 10 min at 4 C (source: 20 C).
+with env(thermal = 4C, duration = 10min) {
+  sep(
+    sample = processing_well,
+    program = centrifuge_program(drive = 2000g),
+    component_fates = {
+      PLASMA: { supernatant: 100%, pellet: 0% },
+      ERYTHROCYTES: { supernatant: 0%, pellet: 100% },
+      LEUKOCYTES: { supernatant: 0%, pellet: 100% },
+      PLATELETS: { supernatant: 0%, pellet: 100% },
+      LPS_2X_IN_HPLM_10PCT_FBS: { supernatant: 100%, pellet: 0% }
+    }
+  );
+}
+
+// Source step S6: Transfer the supernatant to a separate collection well.
+collected_supernatant << [processing_well.contents[0]];
+
+// Source step S7: Retain the cell pellet in the original well.
+
+// Source step S8: Add 1 mL eBioscience 1X RBC Lysis Buffer (00-4333-57) and pipette 5 times with the pipette set to 800 uL at 20 C.
+with env(thermal = 20C) {
+  processing_well << [lysis_buffer_input:1mL];
+  repeat lysis_resuspend in schedule(start = 1, end = 5, step = 1) {
+    processing_well << [processing_well:800uL];
+  }
+}
+
+// Source step S9: Incubate at 20 C for 15 min.
+with env(thermal = 20C, duration = 15min) {
+  hold(sample = processing_well);
+}
+
+// Simulation adaptation of source step S10: Centrifuge at 500 x g for 5 min at 4 C (source: 20 C).
+with env(thermal = 4C, duration = 5min) {
+  sep(
+    sample = processing_well,
+    program = centrifuge_program(drive = 500g),
+    component_fates = {
+      ERYTHROCYTES: { supernatant: 100%, pellet: 0% },
+      LEUKOCYTES: { supernatant: 0%, pellet: 100% },
+      PLATELETS: { supernatant: 100%, pellet: 0% },
+      EBIOSCIENCE_RBC_LYSIS_BUFFER_1X: { supernatant: 100%, pellet: 0% }
+    }
+  );
+}
+// Source step S11: Remove and discard the supernatant, retaining the cell pellet in the original well.
+lysis_waste << [processing_well.contents[0]];
+
+// Source step S12: Add 1 mL FACS buffer and pipette 5 times with the pipette set to 800 uL at 20 C.
+with env(thermal = 20C) {
+  processing_well << [wash_buffer_input:1mL];
+  repeat wash_resuspend in schedule(start = 1, end = 5, step = 1) {
+    processing_well << [processing_well:800uL];
+  }
+}
+
+// Simulation adaptation of source step S13: Centrifuge at 500 x g for 5 min at 4 C (source: 20 C).
+with env(thermal = 4C, duration = 5min) {
+  sep(
+    sample = processing_well,
+    program = centrifuge_program(drive = 500g),
+    component_fates = {
+      LEUKOCYTES: { supernatant: 0%, pellet: 100% },
+      FACS_BUFFER: { supernatant: 100%, pellet: 0% }
+    }
+  );
+}
+// Source step S14: Remove and discard the supernatant, retaining the cell pellet in the original well.
+wash_waste << [processing_well.contents[0]];
+
+// Source step S15: Retain the stimulation supernatant and the washed cell pellet separately for downstream assays.
+return sample_handles = group([collected_supernatant, processing_well]);

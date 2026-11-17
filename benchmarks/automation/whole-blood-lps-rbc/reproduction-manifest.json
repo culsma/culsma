@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "mode": "software_simulation",
+  "verified_on": "2026-11-17",
+  "implementations": {
+    "culsma": {
+      "version": "0.1.0",
+      "commit": "2d1fe05e4306947ac6b61ca961bf1bbb3190a5aa"
+    },
+    "culsma-opentrons-simulator": {
+      "version": "0.1.0",
+      "commit": "90ad174576eeb5798f9b80602bfefb14a0fe12b1"
+    }
+  },
+  "python": "3.11.11",
+  "packages": {
+    "opentrons": "8.8.2",
+    "pydantic": "2.11.7",
+    "pydantic-settings": "2.10.1",
+    "lark": "1.3.1"
+  },
+  "culsma_os_installed": false,
+  "files_sha256": {
+    "automation.culs": "b7be680ffb8e00a5317471e9642bb1050f3014022614f2d887cfd3140ef3376e",
+    "deck.json": "7035f548c182c8c11ab8720240ecf7ef504ce7e564916b641ef9cc70db690183",
+    "deck-no-cooling.json": "01c107c3940aa07562f7f2bca59492f62a074ed4da0201f9c0bb3d87c5648f06",
+    "check_interfaces.py": "533b75905dcf708d4ed80de482b988824f70ae7894a5ec0e53234b8881323a28",
+    "verify.py": "d986bddf00926c2592b1163e8fce5b53e2ebdf6275d79e671a6c4d742a5448e0",
+    "source.md": "e49abf6c96f0592b99528aed4bdbb9579cc270747ea2554bf186bb107437c5ce",
+    "whole_blood_lps_stimulation_rbc_lysis_sequential.culs": "73e33ccc3ee43143e9bf57678c2ce72ba20c1e5ee6989f7a46ccf682dcde7d30",
+    "source-manifest.json": "7fa6a2484aafc3ffccb9c2f8c75769bce97767f0418dd4af36edfef65213fd89",
+    "evidence/4c-interface-check.json": "43d241685d781e1f82684d0301c3a6bfe98a290904d80f1ad31322a1516ab6fa",
+    "evidence/constraint-and-failure-checks.json": "fff3ab030e8fad8c797a14777878daa4c4dce3d9576a35ab5e83b5e0055bbb90"
+  },
+  "scope": "Reference temperature and centrifuge behavior; official Opentrons pipetting and gripper simulation. Failure injected only in validation harness.",
+  "reproduction": "README.md commands; fresh artifact directories for each run."
+}
