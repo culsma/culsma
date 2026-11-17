@@ -3,17 +3,20 @@
 from __future__ import annotations
 
 import argparse
-from contextlib import redirect_stdout
+from contextlib import redirect_stdout, nullcontext
 import json
 import sys
 from copy import deepcopy
 from dataclasses import asdict, is_dataclass
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any
+from typing import Any, Callable, ContextManager
 
 from culsma.frontend.resolver import resolve_files
 from culsma.pipeline.compile import compile_ast
+from culsma.driver.base import Driver
+from culsma.pipeline.plan_nodes import PlanProgram
+from culsma.runtime.state import RuntimeState
 from culsma.driver.stub import StubDriver
 from culsma.driver.models import ProgramExecutionRequest, ProgramExecutionError
 from culsma.driver.interactors import ProgramExecutionInteractor
@@ -240,6 +243,47 @@ class TerminalResultFormatter:
                 lines.append(f"{indent}  {key}: {item}")
         return lines
 
+    def format_diagnostic(self, diagnostic: dict[str, Any]) -> str:
+        """Render a standard diagnostic without inferring missing source identity."""
+        location = []
+        span = diagnostic.get("span")
+        if isinstance(span, dict) and span.get("line") is not None:
+            position = f"line {span['line']}"
+            if span.get("col") is not None:
+                position += f", column {span['col']}"
+            location.append(position)
+        if diagnostic.get("node_id"):
+            location.append(f"step {diagnostic['node_id']}")
+        suffix = f" ({'; '.join(location)})" if location else ""
+        return (
+            f"  {diagnostic.get('severity', 'error')} {diagnostic['code']}{suffix}: "
+            f"{diagnostic['message']}"
+        )
+
+    def failure_details(self) -> list[str]:
+        """Show errors first, retaining alerts from providers without diagnostics."""
+        diagnostics = self._bundle.get("run", {}).get("diagnostics", [])
+        diagnostics = [
+            item for item in diagnostics
+            if isinstance(item, dict) and "code" in item and "message" in item
+        ]
+        diagnostics.sort(key=lambda item: item.get("severity", "error") != "error")
+        lines, seen, represented_alerts = [], set(), set()
+        for diagnostic in diagnostics:
+            line = self.format_diagnostic(diagnostic)
+            if line not in seen:
+                lines.append(line)
+                seen.add(line)
+            represented_alerts.update((
+                diagnostic["message"], f"{diagnostic['code']}: {diagnostic['message']}"
+            ))
+        alerts = self._bundle["output"]["report"].get("alerts", [])
+        for alert in alerts:
+            if alert not in represented_alerts:
+                lines.append(f"  {alert}")
+                represented_alerts.add(alert)
+        return lines
+
     def render(self) -> str:
         """Render a compact, human-readable result for the default CLI path."""
         bundle = self._bundle
@@ -254,6 +298,11 @@ class TerminalResultFormatter:
         names = list(outputs.keys())
         title = names[0] if len(names) == 1 else "Culsma run"
         lines = [] if ok else [f"{title} failed", ""]
+        if not ok:
+            details = self.failure_details()
+            if details:
+                lines.extend(["diagnostics:", *details, ""])
+            lines.append("partial results:")
 
         lines.append("materials:")
         for row in results["materials"]:
@@ -304,7 +353,7 @@ class TerminalResultFormatter:
             else:
                 lines.append(f"inventory: insufficient ({shortage_count} shortages)")
         alerts = result.get("alerts", []) if isinstance(result, dict) else []
-        if isinstance(alerts, list) and alerts:
+        if ok and isinstance(alerts, list) and alerts:
             lines.append("alerts:")
             for alert in alerts[:5]:
                 lines.append(f"  {alert}")
@@ -354,7 +403,14 @@ def execute_pipeline(
     material_state_path: Path | None = None,
     inventory_check: bool | dict[str, Any] | None = None,
     library_roots: list[Path] | None = None,
+    *,
+    driver_factory: Callable[[PlanProgram, RuntimeState], ContextManager[Driver]] | None = None,
 ) -> dict[str, Any]:
+    """Run the language pipeline with an optional context-managed Driver factory.
+
+    The factory receives the compiled plan and authoritative runtime state. It
+    owns device lifecycle only; material semantics and reports remain here.
+    """
     if len(input_paths) != 1:
         raise ValueError("RUN_SINGLE_ENTRY_SOURCE_REQUIRED: execute_pipeline requires exactly one entry source")
 
@@ -385,7 +441,12 @@ def execute_pipeline(
         diagnostic.severity == "error" for diagnostic in plan.diagnostics
     )
     if can_run:
-        run_result = run(plan=plan, driver=StubDriver(fail_ops=fail_ops or set()), state=state)
+        if driver_factory is not None and fail_ops:
+            raise ValueError("RUN_DRIVER_FAIL_OPS_UNSUPPORTED")
+        driver_context = (driver_factory(plan, state) if driver_factory is not None
+                          else nullcontext(StubDriver(fail_ops=fail_ops or set())))
+        with driver_context as driver:
+            run_result = run(plan=plan, driver=driver, state=state)
         if run_result.user_result is None:
             raise RuntimeError("RUN_REPORT_MISSING: Runtime execution completed without a report")
         user_result = run_result.user_result
@@ -655,8 +716,10 @@ def main() -> None:
                 print("Run failed; the results file contains partial results.", file=sys.stderr)
                 runs = bundle["runs"] if bundle.get("batch") else [{"bundle": bundle}]
                 for item in runs:
-                    for alert in item["bundle"]["output"]["report"]["alerts"]:
-                        print(alert, file=sys.stderr)
+                    if bundle.get("batch"):
+                        print(f"{item['input']}:", file=sys.stderr)
+                    for detail in TerminalResultFormatter(item["bundle"]).failure_details():
+                        print(detail, file=sys.stderr)
         elif args.output:
             _write_json(Path(args.output), bundle["output"])
         else:

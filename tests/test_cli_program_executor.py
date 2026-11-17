@@ -1,4 +1,6 @@
 import ast
+from copy import deepcopy
+import json
 from pathlib import Path
 from types import SimpleNamespace
 import sys
@@ -6,6 +8,69 @@ import pytest
 from culsma import cli
 from culsma.driver.models import ProgramExecutionRequest, ProgramExecutionError
 from culsma.driver import interactors
+
+
+@pytest.mark.parametrize("output_mode", ["terminal", "--json", "--output", "--results"])
+def test_driver_failure_reaches_cli_without_losing_report(monkeypatch, capsys, tmp_path, output_mode):
+    diagnostic = {
+        "code": "RT_DRIVER_ERROR", "message": "rotor: operation completion unconfirmed",
+        "severity": "error", "node_id": "entry.s6.b.s0", "span": {"line": 13, "col": 3},
+    }
+    report = {
+        "alerts": [f"{diagnostic['code']}: {diagnostic['message']}"],
+        "device_details": {
+            "code": "DEVICE_ERROR", "reason": "culsma.operation.completion_unconfirmed",
+            "source": "simulation", "operation_id": "entry.s6.b.s0",
+            "context": {"module": "rotor"},
+            "native_details": {"exception_type": "RuntimeError", "message": "confirmation lost"},
+        },
+    }
+    bundle = {
+        "output": cli.build_run_output(ok=False, returns={}, report=report),
+        "run": {"diagnostics": [diagnostic]}, "validate": [],
+        "results": {"materials": [], "resources": [], "returns": {}},
+    }
+    original = deepcopy(bundle)
+    requests = []
+
+    class Executor:
+        def execute(self, request):
+            requests.append(request)
+            return bundle
+
+    class Factory:
+        def build(self):
+            return Executor()
+
+    monkeypatch.setattr(interactors, "entry_points", lambda **kwargs: [SimpleNamespace(load=lambda: Factory)])
+    target = tmp_path / "result.json"
+    args = ["culsma", "run", "experiment.culs", "--driver", "device", "--driver-config", "deck.json"]
+    if output_mode != "terminal":
+        args.append(output_mode)
+    if output_mode in ("--output", "--results"):
+        args.append(str(target))
+    monkeypatch.setattr(sys, "argv", args)
+    with pytest.raises(SystemExit) as error:
+        cli.main()
+    assert error.value.code == 1
+    captured = capsys.readouterr()
+    assert requests[0].driver_name == "device"
+    assert requests[0].config_path == Path("deck.json")
+    if output_mode in ("--json", "--output"):
+        actual = json.loads(captured.out if output_mode == "--json" else target.read_text())
+        assert actual == original["output"]
+        assert captured.err == ""
+    else:
+        text = captured.out if output_mode == "terminal" else captured.err
+        assert "failed" in text
+        assert "line 13, column 3; step entry.s6.b.s0" in text
+        assert text.count(diagnostic["message"]) == 1
+        if output_mode == "--results":
+            assert json.loads(target.read_text()) == original["results"]
+            assert captured.out == ""
+        else:
+            assert text.index(diagnostic["message"]) < text.index("partial results:")
+    assert bundle == original
 
 
 class TestProgramExecutor:

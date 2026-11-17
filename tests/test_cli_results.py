@@ -5,7 +5,7 @@ import sys
 
 import pytest
 
-from culsma.cli import execute_pipeline, format_terminal_result, main
+from culsma.cli import TerminalResultFormatter, execute_pipeline, format_terminal_result, main
 
 
 MATERIAL_SOURCE = """
@@ -324,6 +324,58 @@ def test_failed_results_file_is_partial_and_failure_is_visible(tmp_path, monkeyp
     results = json.loads(target.read_text())
     assert results["resources"] == []
     assert results["materials"] == []
+
+
+@pytest.mark.parametrize("span,node_id,location", [
+    ({"line": 13, "col": 3}, "entry.s6.b.s0", " (line 13, column 3; step entry.s6.b.s0)"),
+    ({"line": 13}, None, " (line 13)"),
+    (None, "entry.s6.b.s0", " (step entry.s6.b.s0)"),
+    (None, None, ""),
+])
+def test_format_diagnostic_preserves_known_location_only(span, node_id, location):
+    formatter = TerminalResultFormatter({})
+    diagnostic = {"code": "RT_DRIVER_ERROR", "message": "Completion unconfirmed",
+                  "severity": "error", "span": span, "node_id": node_id}
+    assert formatter.format_diagnostic(diagnostic) == (
+        f"  error RT_DRIVER_ERROR{location}: Completion unconfirmed"
+    )
+
+
+def test_failure_details_prioritize_errors_and_remove_duplicate_alerts():
+    error = {"code": "RT_DRIVER_ERROR", "message": "Completion unconfirmed",
+             "severity": "error", "node_id": "entry.s6.b.s0", "span": None}
+    warning = {"code": "NOTICE", "message": "Check configuration", "severity": "warning"}
+    diagnostics = [warning, error, dict(error), {**error, "node_id": "entry.s7"}]
+    bundle = {"run": {"diagnostics": diagnostics}, "output": {"report": {"alerts": [
+        "RT_DRIVER_ERROR: Completion unconfirmed", "Completion unconfirmed",
+        "NOTICE: Check configuration", "Manual check required", "Manual check required",
+    ]}}}
+    assert TerminalResultFormatter(bundle).failure_details() == [
+        "  error RT_DRIVER_ERROR (step entry.s6.b.s0): Completion unconfirmed",
+        "  error RT_DRIVER_ERROR (step entry.s7): Completion unconfirmed",
+        "  warning NOTICE: Check configuration",
+        "  Manual check required",
+    ]
+    assert diagnostics[0] is warning  # Rendering must not reorder the stored evidence.
+
+
+@pytest.mark.parametrize("alerts", [[], ["Device operation failed"]])
+def test_failure_details_support_legacy_alert_only_report(alerts):
+    bundle = {"output": {"report": {"alerts": alerts}}}
+    assert TerminalResultFormatter(bundle).failure_details() == [f"  {item}" for item in alerts]
+
+
+def test_failed_terminal_places_diagnostics_before_partial_results(tmp_path):
+    source = tmp_path / "failed.culs"
+    source.write_text(MATERIAL_SOURCE)
+    bundle = execute_pipeline([source], fail_ops={"AllocContainer"})
+    text = format_terminal_result(bundle)
+    assert "failed\n\ndiagnostics:\n" in text
+    assert text.index("diagnostics:") < text.index("partial results:") < text.index("materials:")
+    error = next(item for item in bundle["run"]["diagnostics"] if item["severity"] == "error")
+    assert error["message"] in text
+    assert text.count(error["message"]) == 1
+    assert "completed_steps" not in text
 
 
 @pytest.mark.parametrize("extra", [["--json"], ["--output", "legacy.json"]])
