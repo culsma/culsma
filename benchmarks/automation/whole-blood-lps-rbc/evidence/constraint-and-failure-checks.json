@@ -67,9 +67,9 @@
         "seq": 34,
         "span": {
           "col": 1,
-          "end": 2201,
+          "end": 2173,
           "line": 87,
-          "start": 2158
+          "start": 2130
         },
         "step_id": "entry.s8.b.s0"
       },
@@ -123,9 +123,9 @@
         "seq": 50,
         "span": {
           "col": 1,
-          "end": 3213,
+          "end": 3145,
           "line": 114,
-          "start": 3159
+          "start": 3091
         },
         "step_id": "entry.s16"
       },

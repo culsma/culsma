@@ -1,14 +1,10 @@
 # Whole-blood LPS stimulation and RBC lysis: independent driver simulation
 
-The original `source.md` and `whole_blood_lps_stimulation_rbc_lysis_sequential.culs`
-are copied unchanged from `culsma/paper-patterns`, commit
-`1b0dd6d8ed1f588f1c7891f7525f5b30304bcebe`, directory
-`benchmark_cases/new_experiment_2026-11-14_nondepleted_lps_rbc`.
-`source-manifest.json` records this revision and the exact file checksums.
-`automation.culs` is the executable simulation derived from that source: the
-three centrifugations (S5, S10, S13) use 4°C instead of 20°C. All other
-executable statements are unchanged. The manifest separately records its hash.
-This is a simulation condition adjustment, not a revised experimental protocol.
+`source.md` describes the current whole-blood procedure. Its three
+centrifugation steps (S5, S10 and S13) specify 4°C.
+`whole_blood_lps_stimulation_rbc_lysis_sequential.culs` and `automation.culs`
+contain the same executable program. `source-manifest.json` records the
+upstream provenance and current file checksums.
 This is the selected continuous automation example.
 
 The verified implementation uses Culsma 1.0.11rc1 at source commit

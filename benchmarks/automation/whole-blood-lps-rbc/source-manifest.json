@@ -1,21 +1,22 @@
 {
-  "repository": "culsma/paper-patterns",
-  "commit": "1b0dd6d8ed1f588f1c7891f7525f5b30304bcebe",
-  "path": "benchmark_cases/new_experiment_2026-11-14_nondepleted_lps_rbc",
+  "schema_version": 2,
+  "upstream": {
+    "repository": "culsma/paper-patterns",
+    "commit": "1b0dd6d8ed1f588f1c7891f7525f5b30304bcebe",
+    "path": "benchmark_cases/new_experiment_2026-11-14_nondepleted_lps_rbc"
+  },
+  "revision": "Current benchmark procedure: centrifugation steps S5, S10 and S13 specify 4 C, as agreed on 2026-11-17.",
   "files": {
     "source.md": {
-      "sha256": "e49abf6c96f0592b99528aed4bdbb9579cc270747ea2554bf186bb107437c5ce"
+      "sha256": "16d324fb93e2fa6e31a533e8ccff17accbc8d7aec88cf46bd1cc8c9b7e73f08a"
     },
     "whole_blood_lps_stimulation_rbc_lysis_sequential.culs": {
-      "sha256": "73e33ccc3ee43143e9bf57678c2ce72ba20c1e5ee6989f7a46ccf682dcde7d30"
+      "sha256": "bdb2d865b805f5d77fee1873fcedb652328e131328466527c339427a1828e496"
     }
   },
   "simulation": {
     "file": "automation.culs",
-    "sha256": "b7be680ffb8e00a5317471e9642bb1050f3014022614f2d887cfd3140ef3376e",
-    "derived_from": "whole_blood_lps_stimulation_rbc_lysis_sequential.culs",
-    "changes": [
-      "Centrifugation temperature at S5, S10 and S13: 20 C to 4 C; all other executable statements unchanged."
-    ]
+    "sha256": "bdb2d865b805f5d77fee1873fcedb652328e131328466527c339427a1828e496",
+    "same_as": "whole_blood_lps_stimulation_rbc_lysis_sequential.culs"
   }
 }

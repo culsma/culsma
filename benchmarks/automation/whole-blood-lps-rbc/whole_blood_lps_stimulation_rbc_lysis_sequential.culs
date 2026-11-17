@@ -1,3 +1,4 @@
+// Whole-blood workflow: all three centrifugations use 4 C.
 // Source step S1: Start with 100 uL whole blood in one well of a 2 mL deep-well plate.
 let processing_well = well(
   label = "WB001ProcessingWell",
@@ -94,8 +95,8 @@ with env(thermal = 37C, co2 = 5%, duration = 6h) {
   hold(sample = processing_well);
 }
 
-// Source step S5: Centrifuge at 2,000 x g for 10 min at 20 C.
-with env(thermal = 20C, duration = 10min) {
+// Source step S5: Centrifuge at 2,000 x g for 10 min at 4 C.
+with env(thermal = 4C, duration = 10min) {
   sep(
     sample = processing_well,
     program = centrifuge_program(drive = 2000g),
@@ -127,8 +128,8 @@ with env(thermal = 20C, duration = 15min) {
   hold(sample = processing_well);
 }
 
-// Source step S10: Centrifuge at 500 x g for 5 min at 20 C.
-with env(thermal = 20C, duration = 5min) {
+// Source step S10: Centrifuge at 500 x g for 5 min at 4 C.
+with env(thermal = 4C, duration = 5min) {
   sep(
     sample = processing_well,
     program = centrifuge_program(drive = 500g),
@@ -151,8 +152,8 @@ with env(thermal = 20C) {
   }
 }
 
-// Source step S13: Centrifuge at 500 x g for 5 min at 20 C.
-with env(thermal = 20C, duration = 5min) {
+// Source step S13: Centrifuge at 500 x g for 5 min at 4 C.
+with env(thermal = 4C, duration = 5min) {
   sep(
     sample = processing_well,
     program = centrifuge_program(drive = 500g),

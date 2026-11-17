@@ -11,9 +11,9 @@ ROOT = Path(__file__).resolve().parents[1]
 CASE = ROOT / 'benchmarks/automation/whole-blood-lps-rbc'
 
 
-def test_source_and_protocol_match_pinned_author_revision():
+def test_current_source_and_protocol_match_manifest():
     manifest = json.loads((CASE / 'source-manifest.json').read_text())
-    assert manifest['commit'] == '1b0dd6d8ed1f588f1c7891f7525f5b30304bcebe'
+    assert manifest['upstream']['commit'] == '1b0dd6d8ed1f588f1c7891f7525f5b30304bcebe'
     assert set(manifest['files']) == {
         'source.md', 'whole_blood_lps_stimulation_rbc_lysis_sequential.culs',
     }
@@ -28,13 +28,13 @@ def load_verifier():
     return module
 
 
-def test_simulation_changes_only_three_centrifugation_temperatures():
-    original = (CASE / 'whole_blood_lps_stimulation_rbc_lysis_sequential.culs').read_text()
-    adapted = (CASE / 'automation.culs').read_text()
-    original_code = '\n'.join(line for line in original.splitlines() if not line.startswith('//'))
-    adapted_code = '\n'.join(line for line in adapted.splitlines() if not line.startswith('//'))
-    assert adapted_code.count('with env(thermal = 4C, duration = ') == 3
-    assert adapted_code.replace('with env(thermal = 4C, duration = ', 'with env(thermal = 20C, duration = ') == original_code
+def test_source_and_executable_program_agree_on_three_centrifugations():
+    protocol = (CASE / 'whole_blood_lps_stimulation_rbc_lysis_sequential.culs').read_text()
+    executable = (CASE / 'automation.culs').read_text()
+    assert protocol == executable
+    assert executable.count('with env(thermal = 4C, duration = ') == 3
+    steps = [line for line in (CASE / 'source.md').read_text().splitlines() if '. Centrifuge ' in line]
+    assert len(steps) == 3 and all(line.endswith('at 4 C.') for line in steps)
     manifest = json.loads((CASE / 'source-manifest.json').read_text())
     assert sha256((CASE / manifest['simulation']['file']).read_bytes()).hexdigest() == manifest['simulation']['sha256']
 

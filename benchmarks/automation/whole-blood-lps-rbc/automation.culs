@@ -1,4 +1,4 @@
-// Automation simulation: all three centrifugations use 4 C; original source uses 20 C.
+// Whole-blood workflow: all three centrifugations use 4 C.
 // Source step S1: Start with 100 uL whole blood in one well of a 2 mL deep-well plate.
 let processing_well = well(
   label = "WB001ProcessingWell",
@@ -95,7 +95,7 @@ with env(thermal = 37C, co2 = 5%, duration = 6h) {
   hold(sample = processing_well);
 }
 
-// Simulation adaptation of source step S5: Centrifuge at 2,000 x g for 10 min at 4 C (source: 20 C).
+// Source step S5: Centrifuge at 2,000 x g for 10 min at 4 C.
 with env(thermal = 4C, duration = 10min) {
   sep(
     sample = processing_well,
@@ -128,7 +128,7 @@ with env(thermal = 20C, duration = 15min) {
   hold(sample = processing_well);
 }
 
-// Simulation adaptation of source step S10: Centrifuge at 500 x g for 5 min at 4 C (source: 20 C).
+// Source step S10: Centrifuge at 500 x g for 5 min at 4 C.
 with env(thermal = 4C, duration = 5min) {
   sep(
     sample = processing_well,
@@ -152,7 +152,7 @@ with env(thermal = 20C) {
   }
 }
 
-// Simulation adaptation of source step S13: Centrifuge at 500 x g for 5 min at 4 C (source: 20 C).
+// Source step S13: Centrifuge at 500 x g for 5 min at 4 C.
 with env(thermal = 4C, duration = 5min) {
   sep(
     sample = processing_well,

@@ -2,7 +2,7 @@
   "description": "Extracted from standalone CLI simulation and preflight rejection; no physical temperature measurement.",
   "program": {
     "file": "automation.culs",
-    "sha256": "b7be680ffb8e00a5317471e9642bb1050f3014022614f2d887cfd3140ef3376e"
+    "sha256": "bdb2d865b805f5d77fee1873fcedb652328e131328466527c339427a1828e496"
   },
   "configurations": {
     "deck.json": "7035f548c182c8c11ab8720240ecf7ef504ce7e564916b641ef9cc70db690183",
@@ -117,7 +117,7 @@
       "sample": "processing_well",
       "source_line": 100,
       "code": "DRV_OT_CENTRIFUGE_TEMPERATURE_RANGE",
-      "message": "Requested 4 °C is outside 20–40 °C",
+      "message": "Requested 4 \u00b0C is outside 20\u201340 \u00b0C",
       "device_execution_started": false
     },
     "failed_event": {
@@ -125,7 +125,7 @@
       "payload": {
         "driver_code": "DRV_OT_CENTRIFUGE_TEMPERATURE_RANGE",
         "driver_payload": {
-          "message": "Requested 4 °C is outside 20–40 °C",
+          "message": "Requested 4 \u00b0C is outside 20\u201340 \u00b0C",
           "phase": "preflight",
           "retry_safe": true,
           "step_id": "entry.s15.b.s0"
@@ -138,9 +138,9 @@
               "kind": "IRQuantity",
               "span": {
                 "col": 35,
-                "end": 2681,
+                "end": 2613,
                 "line": 99,
-                "start": 2676
+                "start": 2608
               },
               "unit": "min",
               "value": 10.0
@@ -149,9 +149,9 @@
               "kind": "IRQuantity",
               "span": {
                 "col": 20,
-                "end": 2663,
+                "end": 2595,
                 "line": 99,
-                "start": 2661
+                "start": 2593
               },
               "unit": "C",
               "value": 4.0
@@ -164,9 +164,9 @@
                   "kind": "IRQuantity",
                   "span": {
                     "col": 35,
-                    "end": 2681,
+                    "end": 2613,
                     "line": 99,
-                    "start": 2676
+                    "start": 2608
                   },
                   "unit": "min",
                   "value": 10.0
@@ -175,9 +175,9 @@
                   "kind": "IRQuantity",
                   "span": {
                     "col": 20,
-                    "end": 2663,
+                    "end": 2595,
                     "line": 99,
-                    "start": 2661
+                    "start": 2593
                   },
                   "unit": "C",
                   "value": 4.0
@@ -189,9 +189,9 @@
                   "name": "processing_well",
                   "span": {
                     "col": 14,
-                    "end": 2720,
+                    "end": 2652,
                     "line": 101,
-                    "start": 2705
+                    "start": 2637
                   }
                 }
               ]
@@ -203,9 +203,9 @@
               "name": "processing_well",
               "span": {
                 "col": 14,
-                "end": 2720,
+                "end": 2652,
                 "line": 101,
-                "start": 2705
+                "start": 2637
               }
             }
           ]
@@ -217,9 +217,9 @@
       "seq": 48,
       "span": {
         "col": 3,
-        "end": 3079,
+        "end": 3011,
         "line": 100,
-        "start": 2687
+        "start": 2619
       },
       "step_id": "entry.s15.b.s0"
     },
@@ -231,9 +231,9 @@
         "severity": "error",
         "span": {
           "col": 3,
-          "end": 3079,
+          "end": 3011,
           "line": 100,
-          "start": 2687
+          "start": 2619
         }
       },
       {
