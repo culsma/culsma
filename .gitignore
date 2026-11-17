@@ -18,3 +18,7 @@ AGENTS.md
 
 tmp/
 run-artifacts/
+
+# Local chat attachments and generated benchmark/runtime output.
+/.codex-attachments/
+/output/
