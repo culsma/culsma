@@ -16,6 +16,7 @@ Source procedures, Culsma programs and recorded source-step coverage across vers
 | [Composite 01: Flow-cytometry immunophenotyping](composites/01-flow-cytometry-immunophenotyping/source.md) | 5/5 (100%) | 5/5 (100%) |
 | [Composite 02: Magnetic-bead IP with Western blot](composites/02-magnetic-bead-ip-western-blot/source.md) | 7/7 (100%) | 7/7 (100%) |
 | [Composite 03: Qubit quantification and double-sided SPRI selection](composites/03-qubit-double-sided-spri/source.md) | — | 3/3 (100%) |
+| [Module 11: PBMC stimulation, staining and flow acquisition](modules/11-pbmc-hia-staining-flow/source.md) | 21/21 (100%) | — |
 
 Coverage is matched / total numbered source steps. **—** means not evaluated in that
 version. Composite rows count their own steps, not the steps of reused modules.
@@ -29,6 +30,11 @@ historical workflow coverage totals.
 The original seven modules and two composites cover **172/173** steps in 1.0.7
 and **173/173** in 1.0.9. The three added entries cover **37/37** in 1.0.9 and
 are recorded separately.
+
+Module 11 reports the procedure supplied by a neighboring laboratory during
+revision. Its [1.0.7 coverage](modules/11-pbmc-hia-staining-flow/results/coverage.json)
+is reported separately from the original 172/173. The [original submission](https://github.com/culsma/paper-patterns/tree/16a1a2aafbdd5bc521725919b4445a2bf39544e2/benchmark_cases/PBMC_HIA_stimulation_staining)
+and the [evaluated program](modules/11-pbmc-hia-staining-flow/protocol.culs) are available for comparison.
 
 ## Cross-system comparison
 
@@ -72,6 +78,14 @@ git -C culsma-runtime checkout v1.0.7
 .venv/bin/python culsma-benchmark/benchmarks/reproduce.py \
   --manifest culsma-benchmark/benchmarks/manifest.json \
   --runtime-repo culsma-runtime --output results/benchmark-1.0.7
+```
+
+With the same 1.0.7 runtime, reproduce Module 11 separately:
+
+```sh
+.venv/bin/python culsma-benchmark/benchmarks/reproduce.py \
+  --manifest culsma-benchmark/benchmarks/pbmc-hia-staining-manifest.json \
+  --runtime-repo culsma-runtime --output results/pbmc-hia-staining-1.0.7
 ```
 
 The worked examples have separate material-state checks and do not enter the

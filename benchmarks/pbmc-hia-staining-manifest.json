@@ -1,0 +1,25 @@
+{
+  "schema": "patterns-modular-reproduction-v1",
+  "evaluation_role": "additional-workflow",
+  "source_repository": "culsma/paper-patterns",
+  "source_commit": "16a1a2aafbdd5bc521725919b4445a2bf39544e2",
+  "baseline_version": "1.0.7",
+  "runtime_commit": "5364676bc2437b4981a00ce0133c730af243e469",
+  "table_version": "1.0.7",
+  "runtime_package_version": "1.0.7",
+  "lark_version": "1.3.1",
+  "artifacts": [
+    {
+      "path": "modules/11-pbmc-hia-staining-flow",
+      "name": "Module 11: PBMC stimulation, staining and flow acquisition",
+      "matched_steps": 21,
+      "total_steps": 21,
+      "issues": [],
+      "completed_steps": 142
+    }
+  ],
+  "input_sha256": {
+    "modules/11-pbmc-hia-staining-flow/protocol.culs": "d4947bcab4cdbc5e7a14a0f65939723919b94fb25187afd83ebb25ec7c186066",
+    "modules/11-pbmc-hia-staining-flow/source.md": "85c84de1fcb5a097a4a3ba66ba97dc80b1662e74dba3ca384e7e2a98f8c7c660"
+  }
+}

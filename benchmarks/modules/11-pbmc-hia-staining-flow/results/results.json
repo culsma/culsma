@@ -1,0 +1,198 @@
+{
+  "materials": [
+    {
+      "amount": 1000000.0,
+      "name": "PBMC culture",
+      "unit": "cells"
+    },
+    {
+      "amount": 10070.0,
+      "name": "PBS stock",
+      "unit": "uL"
+    },
+    {
+      "amount": 1000.0,
+      "name": "PBMC culture",
+      "unit": "uL"
+    },
+    {
+      "amount": 200.0,
+      "name": "FBS stock",
+      "unit": "uL"
+    },
+    {
+      "amount": 30.0,
+      "name": "10x fixation buffer",
+      "unit": "uL"
+    },
+    {
+      "amount": 5.0,
+      "name": "Anti-HIA",
+      "unit": "uL"
+    },
+    {
+      "amount": 5.0,
+      "name": "Human BD Fc Block",
+      "unit": "uL"
+    },
+    {
+      "amount": 2.0,
+      "name": "Anti-CD19 APC",
+      "unit": "uL"
+    },
+    {
+      "amount": 2.0,
+      "name": "Anti-CD4 PE",
+      "unit": "uL"
+    },
+    {
+      "amount": 2.0,
+      "name": "Anti-CD45 FITC",
+      "unit": "uL"
+    },
+    {
+      "amount": 2.0,
+      "name": "Anti-CD8 PerCP/Cyanine5.5",
+      "unit": "uL"
+    }
+  ],
+  "resources": [
+    {
+      "capacity_uL": 100.0,
+      "count": 8,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 1000.0,
+      "count": 2,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 15000.0,
+      "count": 2,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 15000.0,
+      "count": 2,
+      "kind": "unknown"
+    }
+  ],
+  "returns": {
+    "entry": {
+      "bindings": {
+        "acquisition_readout": {
+          "binding": "__cmp_entry_s12_readout",
+          "contract_kind": "customized",
+          "data_id": "entry.s131::data",
+          "data_kind": "observation",
+          "driver_payload": {
+            "op": "img",
+            "step_id": "entry.s131"
+          },
+          "export_refs": {
+            "driver_profile": {
+              "artifact_id": "entry.s131::data::raw",
+              "export_id": "entry.s131::data::driver_profile",
+              "format": "json",
+              "kind": "img",
+              "profile": "driver:DRV_OK"
+            }
+          },
+          "family": "img",
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "kind": "data_ref",
+          "observation_id": "entry.s131::data",
+          "op": "img",
+          "program": null,
+          "program_kind": null,
+          "raw_artifact": {
+            "artifact_id": "entry.s131::data::raw",
+            "driver_code": "DRV_OK",
+            "op": "img",
+            "step_id": "entry.s131"
+          },
+          "resolved_sample": null,
+          "result": {
+            "acquisition_config_id": "PBMC_HIA_four_marker_panel",
+            "acquisition_qc_pass": null,
+            "cd19_apc_raw_signal": null,
+            "cd45_fitc_raw_signal": null,
+            "cd4_pe_raw_signal": null,
+            "cd8_percp_cy5_5_raw_signal": null,
+            "channel": null,
+            "event_id": null,
+            "fsc_a": null,
+            "fsc_h": null,
+            "sample_id": "PBMC_HIA_sample_1",
+            "signal": null,
+            "ssc_a": null
+          },
+          "sample": {
+            "id": "__cmp_entry_s12_event_stream",
+            "items": [],
+            "kind": "unit_stream_ref",
+            "panel_ref": {
+              "items": [
+                "CD45",
+                "CD4",
+                "CD8",
+                "CD19"
+              ],
+              "kind": "marker_panel_ref",
+              "label": "__cmp_entry_s12_acquisition_panel"
+            },
+            "source_ref": "container/entry/entry.s0%3A%3Aalloc/culture_input",
+            "unit_kind": "single_cell"
+          },
+          "sample_ref": {
+            "id": "__cmp_entry_s12_event_stream",
+            "items": [],
+            "kind": "unit_stream_ref",
+            "panel_ref": {
+              "items": [
+                "CD45",
+                "CD4",
+                "CD8",
+                "CD19"
+              ],
+              "kind": "marker_panel_ref",
+              "label": "__cmp_entry_s12_acquisition_panel"
+            },
+            "source_ref": "container/entry/entry.s0%3A%3Aalloc/culture_input",
+            "unit_kind": "single_cell"
+          },
+          "save_raw": true,
+          "status": "ok",
+          "step_id": "entry.s131",
+          "subject_ref": {
+            "id": "__cmp_entry_s12_event_stream",
+            "items": [],
+            "kind": "unit_stream_ref",
+            "panel_ref": {
+              "items": [
+                "CD45",
+                "CD4",
+                "CD8",
+                "CD19"
+              ],
+              "kind": "marker_panel_ref",
+              "label": "__cmp_entry_s12_acquisition_panel"
+            },
+            "source_ref": "container/entry/entry.s0%3A%3Aalloc/culture_input",
+            "unit_kind": "single_cell"
+          }
+        }
+      },
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": [
+        "acquisition_readout"
+      ]
+    }
+  }
+}

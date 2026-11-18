@@ -1,0 +1,297 @@
+// Source step S2: Start with 1 million PBMCs in 1 mL of DMEM culture medium in a 15 mL culture vessel.
+let culture_input = tube(label = "PBMC culture", capacity = 15mL, load = [
+  content(kind = bio_cellular, type = cell_population, code = "PBMC", attrs = { state: suspension }):1000000cells,
+  content(kind = formulation, type = ContentType.BUFFER, code = "DMEM"):1mL
+]);
+let hia_input = tube(label = "Anti-HIA", capacity = 100uL, load = [
+  content(kind = bio_molecule_or_virus, type = protein, code = "ANTI_HIA"):5uL
+]);
+let fbs_input = tube(label = "FBS stock", capacity = 1mL, load = [
+  content(kind = formulation, type = ContentType.BUFFER, code = "FBS"):200uL
+]);
+let pbs_input = tube(label = "PBS stock", capacity = 15mL, load = [
+  content(kind = formulation, type = ContentType.BUFFER, code = "PBS", attrs = { stock_concentration_x: 1 }):10.070mL
+]);
+let buffer_input = container(label = "Staining buffer bottle", capacity = 15mL);
+let fc_input = tube(label = "Human BD Fc Block", capacity = 100uL, load = [
+  content(kind = bio_molecule_or_virus, type = protein, code = "FC_BLOCK",
+    attrs = { manufacturer: "BD Biosciences", catalog_number: "564220", stock_concentration_mg_per_mL: 0.5 }):5uL
+]);
+let cd45_input = tube(label = "Anti-CD45 FITC", capacity = 100uL, load = [
+  content(kind = bio_molecule_or_virus, type = protein, code = "ANTI_CD45",
+    attrs = { manufacturer: "BioLegend", catalog_number: "304054", marker: "CD45", clone: "HI30", fluorophore: "FITC", stock_concentration_mg_per_mL: 0.5 }):2uL
+]);
+let cd4_input = tube(label = "Anti-CD4 PE", capacity = 100uL, load = [
+  content(kind = bio_molecule_or_virus, type = protein, code = "ANTI_CD4",
+    attrs = { manufacturer: "BioLegend", catalog_number: "300550", marker: "CD4", clone: "RPA-T4", fluorophore: "PE", stock_concentration_mg_per_mL: 0.2 }):2uL
+]);
+let cd8_input = tube(label = "Anti-CD8 PerCP/Cyanine5.5", capacity = 100uL, load = [
+  content(kind = bio_molecule_or_virus, type = protein, code = "ANTI_CD8",
+    attrs = { manufacturer: "BioLegend", catalog_number: "344710", marker: "CD8", clone: "SK1", fluorophore: "PerCP/Cyanine5.5", stock_concentration_mg_per_mL: 0.5 }):2uL
+]);
+let cd19_input = tube(label = "Anti-CD19 APC", capacity = 100uL, load = [
+  content(kind = bio_molecule_or_virus, type = protein, code = "ANTI_CD19",
+    attrs = { manufacturer: "BioLegend", catalog_number: "302212", marker: "CD19", clone: "HIB19", fluorophore: "APC", stock_concentration_mg_per_mL: 0.5 }):2uL
+]);
+let fix_input = tube(label = "10x fixation buffer", capacity = 100uL, load = [
+  content(kind = formulation, type = ContentType.BUFFER, code = "FIX_10X", attrs = { stock_concentration_x: 10 }):30uL
+]);
+let waste_input = container(label = "Waste", capacity = 15mL);
+
+protocol PBMCHIAStimulationStainingFixation(
+  pbmc_culture,
+  anti_hia,
+  fbs,
+  buffer_bottle,
+  fc_block,
+  anti_cd45,
+  anti_cd4,
+  anti_cd8,
+  anti_cd19,
+  fixation_buffer_10x,
+  pbs,
+  waste,
+  acquisition_sample_id,
+  acquisition_configuration_id
+) returns (acquisition_readout) {
+  // Source step S1: Prepare 10 mL staining buffer by combining 200 uL FBS with 9.8 mL 1x PBS and inverting 5 times.
+  let staining_buffer = PrepareStainingBuffer(pbs = pbs, fbs = fbs, buffer_bottle = buffer_bottle);
+
+  let culture = pbmc_culture;
+
+  // Source step S3: Add 5 uL anti-HIA antibody.
+  culture << [anti_hia:5uL];
+
+  // Source step S4: Incubate for 24 h at 37 C and 5% CO2.
+  with env(thermal = 37C, co2 = 5%, duration = 24h) {
+    hold(sample = culture);
+  }
+
+  let cells = culture;
+  // Source step S5: Centrifuge at 500 x g for 10 min at 20 C, then remove and discard the culture supernatant without disturbing the cell pellet.
+  with env(thermal = 20C, duration = 10min) {
+    let culture_split = sep(
+      sample = cells,
+      program = centrifuge_program(drive = 500g, keep_source = "pellet"),
+      component_fates = {
+        PBMC: { supernatant: 0%, pellet: 100% },
+        DMEM: { supernatant: 100%, pellet: 0% },
+        ANTI_HIA: { supernatant: 100%, pellet: 0% }
+      }
+    );
+    waste << [culture_split[0]] with constraint(gentle);
+  }
+
+  // Source step S6: Add 2 mL staining buffer (2% FBS in 1x PBS) and pipette 10 times using 1 mL per stroke to resuspend the cells.
+  cells << [staining_buffer:2mL];
+  repeat pre_stain_resuspension in schedule(start = 1, end = 10, step = 1) {
+    cells << [cells:1mL];
+  }
+
+  // Source step S7: Centrifuge at 300 x g for 5 min at 4 C, then remove and discard the supernatant without disturbing the cell pellet.
+  with env(thermal = 4C, duration = 5min) {
+    let pre_stain_split = sep(
+      sample = cells,
+      program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+      component_fates = {
+        PBMC: { supernatant: 0%, pellet: 100% },
+        FBS: { supernatant: 100%, pellet: 0% },
+        PBS: { supernatant: 100%, pellet: 0% }
+      }
+    );
+    waste << [pre_stain_split[0]] with constraint(gentle);
+  }
+
+  // Source step S8: Add 65 uL staining buffer to the cell pellet and pipette 10 times using 50 uL per stroke to resuspend the cells into a single-cell suspension.
+  cells << [staining_buffer:65uL];
+  repeat initial_resuspension in schedule(start = 1, end = 10, step = 1) {
+    cells << [cells:50uL];
+  }
+
+  // Source step S9: Add 5 uL BD Pharmingen Human BD Fc Block (BD Biosciences, catalog number 564220; stock concentration 0.5 mg/mL), corresponding to 2.5 ug per sample.
+  cells << [fc_block:5uL];
+
+  // Source step S10: Pipette the 70 uL suspension 10 times using 50 uL per stroke, then incubate for 10 min at 20 C.
+  repeat fc_block_mix in schedule(start = 1, end = 10, step = 1) {
+    cells << [cells:50uL];
+  }
+  with env(thermal = 20C, duration = 10min) {
+    hold(sample = cells);
+  }
+
+  // Source step S11: Prepare 20 uL antibody staining mix by combining 2 uL FITC anti-human CD45 (BioLegend 304054; clone HI30; stock concentration 0.5 mg/mL), 2 uL PE anti-human CD4 (BioLegend 300550; clone RPA-T4; stock concentration 0.2 mg/mL), 2 uL PerCP/Cyanine5.5 anti-human CD8 (BioLegend 344710; clone SK1; stock concentration 0.5 mg/mL), and 2 uL APC anti-human CD19 (BioLegend 302212; clone HIB19; stock concentration 0.5 mg/mL) with 12 uL staining buffer. Vortex for 5 s.
+  let staining_mix = tube(label = "Four-antibody staining mix", capacity = 100uL);
+  staining_mix << [
+    anti_cd45:2uL,
+    anti_cd4:2uL,
+    anti_cd8:2uL,
+    anti_cd19:2uL,
+    staining_buffer:12uL
+  ];
+  agit(sample = staining_mix, mode = "vortex", duration = 5s);
+
+  // Source step S12: Add the complete 20 uL staining mix to the 70 uL cell suspension, giving a total volume of 90 uL.
+  cells << [staining_mix:20uL];
+
+  // Source step S13: Pipette the 90 uL staining suspension 10 times using 80 uL per stroke, then incubate for 30 min on ice protected from light.
+  repeat staining_resuspension in schedule(start = 1, end = 10, step = 1) {
+    cells << [cells:80uL];
+  }
+  with constraint(dark_protected) {
+    with env(thermal = 0C, duration = 30min) {
+      hold(sample = cells);
+    }
+  }
+
+  // Source step S14: Add 2 mL staining buffer. Centrifuge at 300 x g for 5 min at 4 C, then remove and discard the supernatant without disturbing the cell pellet.
+  cells << [staining_buffer:2mL];
+  with env(thermal = 4C, duration = 5min) {
+    let first_stain_wash_split = sep(
+      sample = cells,
+      program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+      component_fates = {
+        PBMC: { supernatant: 0%, pellet: 100% },
+        FBS: { supernatant: 100%, pellet: 0% },
+        PBS: { supernatant: 100%, pellet: 0% },
+        FC_BLOCK: { supernatant: 99%, pellet: 1% },
+        ANTI_CD45: { supernatant: 99%, pellet: 1% },
+        ANTI_CD4: { supernatant: 99%, pellet: 1% },
+        ANTI_CD8: { supernatant: 99%, pellet: 1% },
+        ANTI_CD19: { supernatant: 99%, pellet: 1% }
+      },
+      // Module 04 accounting assumption: associate the retained shares with PBMC material.
+      transitions = [
+        transition(subject = cells.materials.get("FC_BLOCK"), output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = cells.materials.get("PBMC")),
+        transition(subject = cells.materials.get("ANTI_CD45"), output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = cells.materials.get("PBMC")),
+        transition(subject = cells.materials.get("ANTI_CD4"), output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = cells.materials.get("PBMC")),
+        transition(subject = cells.materials.get("ANTI_CD8"), output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = cells.materials.get("PBMC")),
+        transition(subject = cells.materials.get("ANTI_CD19"), output = CentrifugeProgramOutput.PELLET, to = MaterialRelation.CELL_BOUND, associated_with = cells.materials.get("PBMC"))
+      ]
+    );
+    waste << [first_stain_wash_split[0]] with constraint(gentle);
+  }
+
+  // Source step S15: Add 2 mL fresh staining buffer and pipette 10 times using 1 mL per stroke to fully resuspend the cells.
+  cells << [staining_buffer:2mL];
+  repeat second_wash_resuspension in schedule(start = 1, end = 10, step = 1) {
+    cells << [cells:1mL];
+  }
+
+  // Source step S16: Centrifuge at 300 x g for 5 min at 4 C, then remove and discard the supernatant without disturbing the cell pellet.
+  with env(thermal = 4C, duration = 5min) {
+    let second_stain_wash_split = sep(
+      sample = cells,
+      program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+      component_fates = {
+        PBMC: { supernatant: 0%, pellet: 100% },
+        FBS: { supernatant: 100%, pellet: 0% },
+        PBS: { supernatant: 100%, pellet: 0% },
+        FC_BLOCK: { supernatant: 0%, pellet: 100% },
+        ANTI_CD45: { supernatant: 0%, pellet: 100% },
+        ANTI_CD4: { supernatant: 0%, pellet: 100% },
+        ANTI_CD8: { supernatant: 0%, pellet: 100% },
+        ANTI_CD19: { supernatant: 0%, pellet: 100% }
+      }
+    );
+    waste << [second_stain_wash_split[0]] with constraint(gentle);
+  }
+
+  // Source step S17: Prepare 300 uL 1x fixation buffer by combining 30 uL 10x fixation-buffer stock with 270 uL PBS. Add the complete 300 uL to the cell pellet.
+  let fixation_buffer = tube(label = "1x fixation buffer", capacity = 1mL);
+  fixation_buffer << [fixation_buffer_10x:30uL, pbs:270uL];
+  cells << [fixation_buffer:300uL];
+
+  // Source step S18: Pipette the 300 uL suspension 10 times using 240 uL per stroke, then incubate for 10 min at 22 C protected from light.
+  repeat fixation_resuspension in schedule(start = 1, end = 10, step = 1) {
+    cells << [cells:240uL];
+  }
+  with constraint(dark_protected) {
+    with env(thermal = 22C, duration = 10min) {
+      hold(sample = cells);
+    }
+  }
+
+  // Source step S19: Add 2 mL staining buffer. Centrifuge at 300 x g for 5 min at 4 C, then remove and discard the supernatant without disturbing the cell pellet.
+  cells << [staining_buffer:2mL];
+  with env(thermal = 4C, duration = 5min) {
+    let post_fixation_split = sep(
+      sample = cells,
+      program = centrifuge_program(drive = 300g, keep_source = "pellet"),
+      component_fates = {
+        PBMC: { supernatant: 0%, pellet: 100% },
+        FBS: { supernatant: 100%, pellet: 0% },
+        FC_BLOCK: { supernatant: 0%, pellet: 100% },
+        ANTI_CD45: { supernatant: 0%, pellet: 100% },
+        ANTI_CD4: { supernatant: 0%, pellet: 100% },
+        ANTI_CD8: { supernatant: 0%, pellet: 100% },
+        ANTI_CD19: { supernatant: 0%, pellet: 100% },
+        FIX_10X: { supernatant: 100%, pellet: 0% },
+        PBS: { supernatant: 100%, pellet: 0% }
+      }
+    );
+    waste << [post_fixation_split[0]] with constraint(gentle);
+  }
+
+  // Source step S20: Add 500 uL staining buffer and pipette 10 times using 400 uL per stroke to fully resuspend the fixed cells.
+  cells << [staining_buffer:500uL];
+  repeat final_resuspension in schedule(start = 1, end = 10, step = 1) {
+    cells << [cells:400uL];
+  }
+
+  // Source step S21: Acquire the sample by flow cytometry and record FSC-A, FSC-H, SSC-A, and the fluorescence signals for CD45-FITC, CD4-PE, CD8-PerCP/Cyanine5.5, and CD19-APC. Save the raw event data with the sample identifier, event identifiers, acquisition configuration identifier, and acquisition quality status as the final readout.
+  let acquisition_panel = markers([CD45, CD4, CD8, CD19]);
+  let acquisition_schema = data_schema(
+    label = "PBMC HIA flow-cytometry acquisition",
+    fields = [
+      "event_id",
+      "sample_id",
+      "fsc_a",
+      "fsc_h",
+      "ssc_a",
+      "cd45_fitc_raw_signal",
+      "cd4_pe_raw_signal",
+      "cd8_percp_cy5_5_raw_signal",
+      "cd19_apc_raw_signal",
+      "acquisition_config_id",
+      "acquisition_qc_pass"
+    ]
+  );
+  let event_stream = stream(
+    sample = cells,
+    unit = single_cell,
+    panel = acquisition_panel
+  );
+  let readout = img(
+    sample = event_stream,
+    quantity = customized,
+    schema_ref = acquisition_schema,
+    save_raw = true
+  );
+  readout.result.sample_id = acquisition_sample_id;
+  readout.result.acquisition_config_id = acquisition_configuration_id;
+  return acquisition_readout = readout;
+}
+
+protocol PrepareStainingBuffer(pbs, fbs, buffer_bottle) returns (staining_buffer) {
+  buffer_bottle << [fbs:200uL, pbs:9.8mL];
+  agit(sample = buffer_bottle, mode = "invert", cycles = 5);
+  return staining_buffer = buffer_bottle;
+}
+
+let final_readout = PBMCHIAStimulationStainingFixation(
+  pbmc_culture = culture_input,
+  anti_hia = hia_input,
+  fbs = fbs_input,
+  buffer_bottle = buffer_input,
+  fc_block = fc_input,
+  anti_cd45 = cd45_input,
+  anti_cd4 = cd4_input,
+  anti_cd8 = cd8_input,
+  anti_cd19 = cd19_input,
+  fixation_buffer_10x = fix_input,
+  pbs = pbs_input,
+  waste = waste_input,
+  acquisition_sample_id = "PBMC_HIA_sample_1",
+  acquisition_configuration_id = "PBMC_HIA_four_marker_panel"
+);
+return acquisition_readout = final_readout;
