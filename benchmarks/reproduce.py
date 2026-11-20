@@ -12,7 +12,7 @@ import re
 
 ROOT = Path(__file__).resolve().parent
 
-RULES = "modular-source-step-correspondence-v1"
+RULES = "modular-source-step-correspondence-v2"
 SOURCE_MARKER = re.compile(r"^\s*//\s+Source step S([1-9]\d*):\s+(.+)$")
 DIRECT_ALIAS = re.compile(r"^let\s+[A-Za-z_]\w*\s*=\s*[A-Za-z_]\w*(?:\.[A-Za-z_]\w*)*\s*;$")
 WRAPPER = re.compile(r"^(?:with\b|repeat\b|if\b|else\b)")
@@ -77,6 +77,14 @@ def assess(
     occurrences: dict[int, list[dict[str, object]]] = {}
     for program_path in program_paths:
         lines = program_path.read_text(encoding="utf-8").splitlines()
+        # A gap belongs to the numbered instruction that precedes it.
+        gaps = set()
+        current = None
+        for index, line in enumerate(lines):
+            if SOURCE_MARKER.match(line):
+                current = index
+            elif line.lstrip().startswith("// COVERAGE GAP:"):
+                gaps.add(current)
         for index, line in enumerate(lines):
             match = SOURCE_MARKER.match(line)
             if not match:
@@ -88,6 +96,7 @@ def assess(
                     "line": index + 1,
                     "text": normalize(match.group(2)),
                     "has_code_region": meaningful_region(lines, index),
+                    "coverage_gap": index in gaps,
                 }
             )
 
@@ -100,6 +109,8 @@ def assess(
             status = "duplicate_comment"
         elif found[0]["text"] != source_text:
             status = "text_mismatch"
+        elif found[0]["coverage_gap"]:
+            status = "coverage_gap"
         elif not found[0]["has_code_region"]:
             status = "no_code_region"
         else:

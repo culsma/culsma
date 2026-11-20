@@ -105,7 +105,8 @@ def test_changed_runtime_rejects_before_writing_results(tmp_path, runtime_checko
 
 def test_development_snapshot_changes_only_elisa_program_and_preserves_source_inventory():
     benchmark = ROOT / 'benchmarks'
-    old = json.loads((benchmark / 'manifest.json').read_text())
+    old = json.loads(subprocess.check_output(
+        ['git', 'show', '687364f:benchmarks/manifest.json'], cwd=ROOT, text=True))
     folder = benchmark / 'versions/1.0.9-dev-ca7a098'
     new = json.loads((folder / 'manifest.json').read_text())
     assert new['input_sha256'].keys() == old['input_sha256'].keys()

@@ -2,16 +2,17 @@
   "schema": "patterns-modular-run-v1",
   "source_commit": "f7b744e8efbafd9176a5b4fa07761358a4aee214",
   "runtime_commit": "5364676bc2437b4981a00ce0133c730af243e469",
+  "pinned_runtime_commit": "5364676bc2437b4981a00ce0133c730af243e469",
   "python": "3.12.8",
   "versions": {
     "culsma": "1.0.7",
     "lark": "1.3.1"
   },
   "table_version": "1.0.7",
-  "manifest_sha256": "56b0a2dadfcb784e14e0791c0edc0572f55c320f6592eaede24f3104b5455d4a",
-  "runner_sha256": "9cc56d7f553ad841c7e157cf14d683698ccc256e71f2a25c50eba0fe6ba52d86",
+  "manifest_sha256": "e3c948d887b7921c87772721da639a7425c37194999af3882a2497eb0604139e",
+  "runner_sha256": "ca80a7d751d2858bc616197458edc9a351ef5be16137c6dfa8ca145f8309e50d",
   "input_sha256": {
-    "modules/01-cell-transfection/protocol.culs": "8d41432d25b48fb0243da6894c4a94cea9c2823ab5da62f3e8211ffa5df7fd19",
+    "modules/01-cell-transfection/protocol.culs": "55c92f25daec466e25b72ed9820905a25ba2b2afb3bb99b7e0141dfd227171a8",
     "modules/01-cell-transfection/source.md": "f6469969054b859cc804859008213dbde21ddb00d7dba4cc04c0502ec4f73ec0",
     "modules/02-selective-plating-candidate-colony-isolation/protocol.culs": "50b2540012ff59f5a4741a4b71fc25e46e4e0bcbeb2d8ca309244729d99ba066",
     "modules/02-selective-plating-candidate-colony-isolation/source.md": "e5435bd242807c625302bf0680c4c6b12904ae22b075675cedad2ce35eb63dfb",
@@ -36,7 +37,6 @@
   },
   "matched_steps": 172,
   "total_steps": 173,
-  "coverage_percent": 99.42196531791907,
   "matches_paper": true,
   "artifacts": [
     {
@@ -44,14 +44,14 @@
       "name": "Module 01: Cell transfection",
       "coverage": {
         "schema": "modular-source-coverage-v1",
-        "rules": "modular-source-step-correspondence-v1",
+        "rules": "modular-source-step-correspondence-v2",
         "metric": "source_step_correspondence",
         "artifact": "01-cell-transfection",
         "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
         "language_version": "1.0.7",
         "source_sha256": "f6469969054b859cc804859008213dbde21ddb00d7dba4cc04c0502ec4f73ec0",
         "program_sha256": {
-          "protocol.culs": "8d41432d25b48fb0243da6894c4a94cea9c2823ab5da62f3e8211ffa5df7fd19"
+          "protocol.culs": "55c92f25daec466e25b72ed9820905a25ba2b2afb3bb99b7e0141dfd227171a8"
         },
         "total_steps": 13,
         "matched_steps": 13,
@@ -70,7 +70,7 @@
       "matches_paper": true,
       "output_sha256": {
         "results.json": "358ffb24dad611e7e3f0af82e167adf24c2fe0db567ec9b98d4ed0fbe4899cfb",
-        "coverage.json": "136f8f163788ff383199a7f39f66456ee706e510d9d8f2521fd6e56931edc23a",
+        "coverage.json": "d3f3edfeb144f3b413a5cdde6282d71ee81cbe119318a81b1060f6511b20f0b0",
         "run.json": "a4ffa3b717d93c6511ace912def998c7050d00422d9950422ade52d90f8e3910"
       }
     },
@@ -79,7 +79,7 @@
       "name": "Module 02: Selective plating and colony isolation",
       "coverage": {
         "schema": "modular-source-coverage-v1",
-        "rules": "modular-source-step-correspondence-v1",
+        "rules": "modular-source-step-correspondence-v2",
         "metric": "source_step_correspondence",
         "artifact": "02-selective-plating-candidate-colony-isolation",
         "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
@@ -105,7 +105,7 @@
       "matches_paper": true,
       "output_sha256": {
         "results.json": "2f8c431dbaa5ba8eeea0d7e275c58f41c3184b1d92e2ff3a9b8ef20911353555",
-        "coverage.json": "62e16694c1d0e64db12e4d8723758c2c4b2b76b93f81724d85be86b6482b2897",
+        "coverage.json": "41f26c6e8809d3139fa906e6995053fb44279ee6f9cad4d58a936e20ca587104",
         "run.json": "b70758f90defe6417776c0d56f7eff02a9801e4b076f8ddf0bc2da2abefa3f77"
       }
     },
@@ -114,7 +114,7 @@
       "name": "Module 03: Cell lysate preparation",
       "coverage": {
         "schema": "modular-source-coverage-v1",
-        "rules": "modular-source-step-correspondence-v1",
+        "rules": "modular-source-step-correspondence-v2",
         "metric": "source_step_correspondence",
         "artifact": "03-cell-lysate-preparation",
         "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
@@ -140,7 +140,7 @@
       "matches_paper": true,
       "output_sha256": {
         "results.json": "175800a772ac30c1f7e2a48ed599f598dc41ed985267075701bbf6172d9cee26",
-        "coverage.json": "a9c384dfc6d193007dd2acc513341b2452f1545eb9376dc58930bbe2e550dba9",
+        "coverage.json": "ff06b9ddcd420c1cb74cf01573d49087a7361a59b6352ffcdf8a2d9fa9aaf5c8",
         "run.json": "e215b09d9553bb71417b2f98036618d1545ef308aae39155234353c45ff4acfd"
       }
     },
@@ -149,7 +149,7 @@
       "name": "Module 04: Suspension-cell staining",
       "coverage": {
         "schema": "modular-source-coverage-v1",
-        "rules": "modular-source-step-correspondence-v1",
+        "rules": "modular-source-step-correspondence-v2",
         "metric": "source_step_correspondence",
         "artifact": "04-suspension-cell-staining",
         "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
@@ -176,7 +176,7 @@
       "matches_paper": true,
       "output_sha256": {
         "results.json": "5079fd65cb0328153628526ef22f5894e94bce4aac1d80f39ee39cff9fa15abe",
-        "coverage.json": "a64c1549204ff2beb12e886c68f8e4525c758d99b9d2a28f927b469ae17b9a1b",
+        "coverage.json": "c6eef0e26ab47489a23e06910231fce3e240fbd07bab86d81deda2ab3715161a",
         "run.json": "2378bac6f916879329472ec17ef3c91fb1fccc369f0f1df3428f8ae5f6bd78bd"
       }
     },
@@ -185,7 +185,7 @@
       "name": "Module 05: Magnetic-bead immunoprecipitation",
       "coverage": {
         "schema": "modular-source-coverage-v1",
-        "rules": "modular-source-step-correspondence-v1",
+        "rules": "modular-source-step-correspondence-v2",
         "metric": "source_step_correspondence",
         "artifact": "05-magnetic-bead-immunoprecipitation",
         "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
@@ -212,7 +212,7 @@
       "matches_paper": true,
       "output_sha256": {
         "results.json": "fe39c31babb94c1a2e2afa00c52d15faf9f1c2e2bc9c387c97a68649ca8a875a",
-        "coverage.json": "d9af71344897f62282ae6cf8ddcd49b69e26d982416c2e42ae4a7e362194ba94",
+        "coverage.json": "20abf8fb05c373562b9162ce96eaa9f73f8d49f431be0eec9a038c98005f6f6e",
         "run.json": "35b15e347c283d5fca7b4afe0a87cb56be05b232ed63993748cfe56c88071dbd"
       }
     },
@@ -221,7 +221,7 @@
       "name": "Module 06: Western blot",
       "coverage": {
         "schema": "modular-source-coverage-v1",
-        "rules": "modular-source-step-correspondence-v1",
+        "rules": "modular-source-step-correspondence-v2",
         "metric": "source_step_correspondence",
         "artifact": "06-western-blot",
         "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
@@ -249,7 +249,7 @@
       "matches_paper": true,
       "output_sha256": {
         "results.json": "6f10615bc9fd147b5f6cd8566a01622bdd300e918f16dfaf4efef7845e4931e8",
-        "coverage.json": "f07392b5821f9a264b36afba8b6523f011c5ddc36adae8daa21b4f07fd5df21b",
+        "coverage.json": "5001b11f10ddc42f89b2a3e756e16f5726c26d076a7d4034cc74c46e37d5fe14",
         "run.json": "86d205c2a966f44405a8ca01b14ab8c1e74949e167b32b02b3a5d61cc92f9c77"
       }
     },
@@ -258,7 +258,7 @@
       "name": "Module 07: Sandwich ELISA",
       "coverage": {
         "schema": "modular-source-coverage-v1",
-        "rules": "modular-source-step-correspondence-v1",
+        "rules": "modular-source-step-correspondence-v2",
         "metric": "source_step_correspondence",
         "artifact": "07-sandwich-elisa",
         "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
@@ -274,7 +274,7 @@
         "issues": [
           {
             "step": 37,
-            "reason": "no_code_region"
+            "reason": "coverage_gap"
           }
         ]
       },
@@ -289,7 +289,7 @@
       "matches_paper": true,
       "output_sha256": {
         "results.json": "2075a3d27ad8aec9a3c0fe632bb72e0eafcdd6498e9d27e270cebd6922c50a4c",
-        "coverage.json": "23d75cd09e989f1b8b4c646e25414975ff2fcc619795d8ba5a86dd875c74796e",
+        "coverage.json": "e6c66eb9cf5c004dbcf24af5290c0f274693e2588f980a6e7a8d86d445fe938b",
         "run.json": "346581883349c5e25c931597543ffc6ca87a8ae8a26527463400a156d3d805f7"
       }
     },
@@ -298,7 +298,7 @@
       "name": "Composite 01: Flow-cytometry immunophenotyping",
       "coverage": {
         "schema": "modular-source-coverage-v1",
-        "rules": "modular-source-step-correspondence-v1",
+        "rules": "modular-source-step-correspondence-v2",
         "metric": "source_step_correspondence",
         "artifact": "01-flow-cytometry-immunophenotyping",
         "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
@@ -324,7 +324,7 @@
       "matches_paper": true,
       "output_sha256": {
         "results.json": "9967f5ce4b7d40fa12433869f19c43ddfd7518007b653fdcf53bbd894a32a08c",
-        "coverage.json": "e1c2084ca43ad46532fc2595aff919c399c70f0647799a2c4a5b9be8c94e8bd6",
+        "coverage.json": "de23304e05f0c33f9731603602871a7ada0534e9fcf8c5fa7edf030056de913a",
         "run.json": "a917bf426016c4fac5a6da760af5f15e0e8984a77c1ea63b9bca4d35e9d50d77"
       }
     },
@@ -333,7 +333,7 @@
       "name": "Composite 02: Magnetic-bead IP with Western blot",
       "coverage": {
         "schema": "modular-source-coverage-v1",
-        "rules": "modular-source-step-correspondence-v1",
+        "rules": "modular-source-step-correspondence-v2",
         "metric": "source_step_correspondence",
         "artifact": "02-magnetic-bead-ip-western-blot",
         "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
@@ -359,9 +359,10 @@
       "matches_paper": true,
       "output_sha256": {
         "results.json": "c7d5c0168c43359d29ff0be538b20420184415eb7a87d5395ec09e28c45d908b",
-        "coverage.json": "089cad020291453899e107ecbb9d510a25ac330a0aa335fc3128adeb5af8bae0",
+        "coverage.json": "39b3b3d7fe77990912beaea4f503a2c1a0976abb08b05df0870c65ecf95d09c6",
         "run.json": "24e391b047223a95e6fa0c010672085df318dd6142f6ec242cc5ec5471a73b79"
       }
     }
-  ]
+  ],
+  "coverage_percent": 99.42196531791907
 }

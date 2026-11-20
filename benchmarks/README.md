@@ -21,6 +21,12 @@ Source procedures, Culsma programs and recorded source-step coverage across vers
 Coverage is matched / total numbered source steps. **—** means not evaluated in that
 version. Composite rows count their own steps, not the steps of reused modules.
 Coverage measures source–program correspondence, not experimental success.
+The corrected counting script excludes every step explicitly marked
+`COVERAGE GAP`. Module 01 now declares `with constraint(dropwise)` on S10
+and S11, using support already present in Culsma 1.0.7. The corrected 1.0.7
+benchmark remains 172/173, with plate tapping in Module 07 as its only gap.
+The [revision snapshot](versions/1.0.7-revision/manifest.json) retains the
+other submitted inputs and records the corrected program and counting rule.
 
 The [concentration accounting case](concentration/README.md) separately checks
 optional concentration initialization, mixing, splitting, dilution and exact
@@ -76,7 +82,7 @@ To reproduce 1.0.7, switch the runtime and select its manifest:
 ```sh
 git -C culsma-runtime checkout v1.0.7
 .venv/bin/python culsma-benchmark/benchmarks/reproduce.py \
-  --manifest culsma-benchmark/benchmarks/manifest.json \
+  --manifest culsma-benchmark/benchmarks/versions/1.0.7-revision/manifest.json \
   --runtime-repo culsma-runtime --output results/benchmark-1.0.7
 ```
 
@@ -104,7 +110,7 @@ coverage totals. With the 1.0.7 runtime selected above:
 
 ## Records
 
-- **1.0.7:** [manifest](manifest.json), [results](summary.json).
+- **1.0.7 (corrected during revision):** [manifest](versions/1.0.7-revision/manifest.json), [results](versions/1.0.7-revision/summary.json).
 - **1.0.9:** [manifest](versions/1.0.9-d1216a1/manifest.json), [results](versions/1.0.9-d1216a1/summary.json).
 - **Added workflows (1.0.9):** [manifest](qubit-spri-manifest.json), [results](qubit-spri-summary.json).
 

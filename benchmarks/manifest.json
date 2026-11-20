@@ -61,7 +61,7 @@
       "issues": [
         {
           "step": 37,
-          "reason": "no_code_region"
+          "reason": "coverage_gap"
         }
       ],
       "completed_steps": 810,
@@ -85,7 +85,7 @@
     }
   ],
   "input_sha256": {
-    "modules/01-cell-transfection/protocol.culs": "8d41432d25b48fb0243da6894c4a94cea9c2823ab5da62f3e8211ffa5df7fd19",
+    "modules/01-cell-transfection/protocol.culs": "55c92f25daec466e25b72ed9820905a25ba2b2afb3bb99b7e0141dfd227171a8",
     "modules/01-cell-transfection/source.md": "f6469969054b859cc804859008213dbde21ddb00d7dba4cc04c0502ec4f73ec0",
     "modules/02-selective-plating-candidate-colony-isolation/protocol.culs": "50b2540012ff59f5a4741a4b71fc25e46e4e0bcbeb2d8ca309244729d99ba066",
     "modules/02-selective-plating-candidate-colony-isolation/source.md": "e5435bd242807c625302bf0680c4c6b12904ae22b075675cedad2ce35eb63dfb",
@@ -107,5 +107,6 @@
     "composites/01-flow-cytometry-immunophenotyping/source.md": "b4df60eece954847ea3a727564d273bfa2ca6f91ffeab016ff58e67de21508a1",
     "composites/02-magnetic-bead-ip-western-blot/protocol.culs": "1563a21f7239d5231cc416ca35124b24f9b550eb46ca5c5eaba9ed9a2693d8b2",
     "composites/02-magnetic-bead-ip-western-blot/source.md": "2d0e46ea6972dbdebab8131353df38a087791b958910ce18591abd96483910f9"
-  }
+  },
+  "coverage_rules": "modular-source-step-correspondence-v2"
 }

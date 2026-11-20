@@ -1,0 +1,124 @@
+{
+  "materials": [
+    {
+      "amount": 800000.0,
+      "name": "SDSPageRunningBufferBottle",
+      "unit": "uL"
+    },
+    {
+      "amount": 185000.0,
+      "name": "TBSTWashBufferBottle",
+      "unit": "uL"
+    },
+    {
+      "amount": 60000.0,
+      "name": "TransferBufferTwentyPercentMethanol",
+      "unit": "uL"
+    },
+    {
+      "amount": 15000.0,
+      "name": "DeionizedWaterBottle",
+      "unit": "uL"
+    },
+    {
+      "amount": 1250.0,
+      "name": "NonfatMilkPowder",
+      "unit": "mg"
+    },
+    {
+      "amount": 500.0,
+      "name": "BovineSerumAlbuminPowder",
+      "unit": "mg"
+    },
+    {
+      "amount": 25.0,
+      "name": "PreparedReducingProteinSample",
+      "unit": "uL"
+    },
+    {
+      "amount": 10.0,
+      "name": "MouseAntiAlphaTubulinDM1AStock",
+      "unit": "uL"
+    },
+    {
+      "amount": 10.0,
+      "name": "PrestainedProteinLadder",
+      "unit": "uL"
+    },
+    {
+      "amount": 1.0,
+      "name": "GoatAntiMouseIgGAlexaFluor680Stock",
+      "unit": "uL"
+    },
+    {
+      "amount": 0.03,
+      "name": "PreparedReducingProteinSample",
+      "unit": "mg"
+    }
+  ],
+  "resources": [
+    {
+      "capacity_uL": null,
+      "count": 1,
+      "kind": "bis_tris_sds_page_gel"
+    },
+    {
+      "capacity_uL": 1000.0,
+      "count": 1,
+      "kind": "chamber"
+    },
+    {
+      "capacity_uL": 15000.0,
+      "count": 4,
+      "kind": "chamber"
+    },
+    {
+      "capacity_uL": 20000.0,
+      "count": 1,
+      "kind": "chamber"
+    },
+    {
+      "capacity_uL": 50000.0,
+      "count": 4,
+      "kind": "chamber"
+    },
+    {
+      "capacity_uL": 800000.0,
+      "count": 1,
+      "kind": "chamber"
+    },
+    {
+      "capacity_uL": 1000000.0,
+      "count": 1,
+      "kind": "chamber"
+    },
+    {
+      "capacity_uL": 100.0,
+      "count": 4,
+      "kind": "tube"
+    },
+    {
+      "capacity_uL": 50000.0,
+      "count": 2,
+      "kind": "unknown"
+    },
+    {
+      "capacity_uL": 500000.0,
+      "count": 1,
+      "kind": "unknown"
+    },
+    {
+      "capacity_uL": 1000000.0,
+      "count": 3,
+      "kind": "unknown"
+    }
+  ],
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": []
+    }
+  }
+}

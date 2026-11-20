@@ -1,0 +1,532 @@
+{
+  "ok": true,
+  "report": {
+    "alerts": [],
+    "execution": {
+      "completed_steps": 810,
+      "diagnostic_count": 0,
+      "failed_steps": 0,
+      "ok": true,
+      "skipped_steps": 0,
+      "total_steps": 810
+    },
+    "external_inventory": {
+      "checked": false,
+      "items": [],
+      "reason": "inventory_not_supplied",
+      "schema": "culsma_inventory_reconciliation_v1",
+      "shortages": [],
+      "sufficient": null
+    },
+    "headline": "Experiment completed successfully with no runtime errors.",
+    "materials": {
+      "final_products": [
+        {
+          "mass_mg": 105600.0,
+          "name": "ELISALiquidWaste",
+          "primary_component": "DETECTION_ANTIBODY_WORKING_SOLUTION",
+          "volume_mL": 105.6,
+          "volume_uL": 105600.0
+        },
+        {
+          "mass_mg": 150.0,
+          "name": "Module07ELISA96_A1",
+          "primary_component": "TMB",
+          "volume_mL": 0.15,
+          "volume_uL": 150.0
+        },
+        {
+          "mass_mg": 150.0,
+          "name": "Module07ELISA96_A2",
+          "primary_component": "TMB",
+          "volume_mL": 0.15,
+          "volume_uL": 150.0
+        },
+        {
+          "mass_mg": 150.0,
+          "name": "Module07ELISA96_B1",
+          "primary_component": "TMB",
+          "volume_mL": 0.15,
+          "volume_uL": 150.0
+        },
+        {
+          "mass_mg": 150.0,
+          "name": "Module07ELISA96_B2",
+          "primary_component": "TMB",
+          "volume_mL": 0.15,
+          "volume_uL": 150.0
+        },
+        {
+          "mass_mg": 150.0,
+          "name": "Module07ELISA96_C1",
+          "primary_component": "TMB",
+          "volume_mL": 0.15,
+          "volume_uL": 150.0
+        },
+        {
+          "mass_mg": 150.0,
+          "name": "Module07ELISA96_C2",
+          "primary_component": "TMB",
+          "volume_mL": 0.15,
+          "volume_uL": 150.0
+        },
+        {
+          "mass_mg": 150.0,
+          "name": "Module07ELISA96_D1",
+          "primary_component": "TMB",
+          "volume_mL": 0.15,
+          "volume_uL": 150.0
+        },
+        {
+          "mass_mg": 150.0,
+          "name": "Module07ELISA96_D2",
+          "primary_component": "TMB",
+          "volume_mL": 0.15,
+          "volume_uL": 150.0
+        },
+        {
+          "mass_mg": 150.0,
+          "name": "Module07ELISA96_E1",
+          "primary_component": "TMB",
+          "volume_mL": 0.15,
+          "volume_uL": 150.0
+        },
+        {
+          "mass_mg": 150.0,
+          "name": "Module07ELISA96_E2",
+          "primary_component": "TMB",
+          "volume_mL": 0.15,
+          "volume_uL": 150.0
+        },
+        {
+          "mass_mg": 150.0,
+          "name": "Module07ELISA96_F1",
+          "primary_component": "TMB",
+          "volume_mL": 0.15,
+          "volume_uL": 150.0
+        },
+        {
+          "mass_mg": 150.0,
+          "name": "Module07ELISA96_F2",
+          "primary_component": "TMB",
+          "volume_mL": 0.15,
+          "volume_uL": 150.0
+        },
+        {
+          "mass_mg": 150.0,
+          "name": "Module07ELISA96_G1",
+          "primary_component": "TMB",
+          "volume_mL": 0.15,
+          "volume_uL": 150.0
+        },
+        {
+          "mass_mg": 150.0,
+          "name": "Module07ELISA96_G2",
+          "primary_component": "TMB",
+          "volume_mL": 0.15,
+          "volume_uL": 150.0
+        },
+        {
+          "mass_mg": 150.0,
+          "name": "Module07ELISA96_H1",
+          "primary_component": "TMB",
+          "volume_mL": 0.15,
+          "volume_uL": 150.0
+        },
+        {
+          "mass_mg": 150.0,
+          "name": "Module07ELISA96_H2",
+          "primary_component": "TMB",
+          "volume_mL": 0.15,
+          "volume_uL": 150.0
+        }
+      ],
+      "has_material_state": true,
+      "input_inventory": [
+        {
+          "initial_mL": 120.0,
+          "initial_mg": 0.0,
+          "initial_uL": 120000.0,
+          "name": "WashBuffer"
+        },
+        {
+          "initial_mL": 5.0,
+          "initial_mg": 0.0,
+          "initial_uL": 5000.0,
+          "name": "BlockingBuffer"
+        },
+        {
+          "initial_mL": 4.0,
+          "initial_mg": 0.0,
+          "initial_uL": 4000.0,
+          "name": "ReagentDiluent"
+        },
+        {
+          "initial_mL": 2.0,
+          "initial_mg": 0.0,
+          "initial_uL": 2000.0,
+          "name": "CaptureAntibodyWorkingSolution"
+        },
+        {
+          "initial_mL": 2.0,
+          "initial_mg": 0.0,
+          "initial_uL": 2000.0,
+          "name": "DetectionAntibodyWorkingSolution"
+        },
+        {
+          "initial_mL": 2.0,
+          "initial_mg": 0.0,
+          "initial_uL": 2000.0,
+          "name": "StreptavidinHRPWorkingSolution"
+        },
+        {
+          "initial_mL": 2.0,
+          "initial_mg": 0.0,
+          "initial_uL": 2000.0,
+          "name": "TMBSubstrate"
+        },
+        {
+          "initial_mL": 1.0,
+          "initial_mg": 0.0,
+          "initial_uL": 1000.0,
+          "name": "StopSolution"
+        },
+        {
+          "initial_mL": 0.8,
+          "initial_mg": 0.0,
+          "initial_uL": 800.0,
+          "name": "ZeroStandard"
+        },
+        {
+          "initial_mL": 0.4,
+          "initial_mg": 0.0,
+          "initial_uL": 400.0,
+          "name": "NegativeControl"
+        },
+        {
+          "initial_mL": 0.4,
+          "initial_mg": 0.0,
+          "initial_uL": 400.0,
+          "name": "PositiveControl"
+        },
+        {
+          "initial_mL": 0.4,
+          "initial_mg": 0.0,
+          "initial_uL": 400.0,
+          "name": "Standard1000pgmL"
+        },
+        {
+          "initial_mL": 0.4,
+          "initial_mg": 0.0,
+          "initial_uL": 400.0,
+          "name": "Standard125pgmL"
+        },
+        {
+          "initial_mL": 0.4,
+          "initial_mg": 0.0,
+          "initial_uL": 400.0,
+          "name": "Standard2000pgmL"
+        },
+        {
+          "initial_mL": 0.4,
+          "initial_mg": 0.0,
+          "initial_uL": 400.0,
+          "name": "Standard250pgmL"
+        },
+        {
+          "initial_mL": 0.4,
+          "initial_mg": 0.0,
+          "initial_uL": 400.0,
+          "name": "Standard31p25pgmL"
+        },
+        {
+          "initial_mL": 0.4,
+          "initial_mg": 0.0,
+          "initial_uL": 400.0,
+          "name": "Standard500pgmL"
+        },
+        {
+          "initial_mL": 0.4,
+          "initial_mg": 0.0,
+          "initial_uL": 400.0,
+          "name": "Standard62p5pgmL"
+        },
+        {
+          "initial_mL": 0.4,
+          "initial_mg": 0.0,
+          "initial_uL": 400.0,
+          "name": "UnknownSample1"
+        },
+        {
+          "initial_mL": 0.4,
+          "initial_mg": 0.0,
+          "initial_uL": 400.0,
+          "name": "UnknownSample2"
+        }
+      ],
+      "intermediate_materials": [],
+      "reagent_consumption": [
+        {
+          "consumed_mL": 96.0,
+          "consumed_mg": null,
+          "consumed_uL": 96000.0,
+          "name": "WashBuffer",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 4.8,
+          "consumed_mg": null,
+          "consumed_uL": 4800.0,
+          "name": "BlockingBuffer",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 1.6,
+          "consumed_mg": null,
+          "consumed_uL": 1600.0,
+          "name": "CaptureAntibodyWorkingSolution",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 1.6,
+          "consumed_mg": null,
+          "consumed_uL": 1600.0,
+          "name": "DetectionAntibodyWorkingSolution",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 1.6,
+          "consumed_mg": null,
+          "consumed_uL": 1600.0,
+          "name": "StreptavidinHRPWorkingSolution",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 1.6,
+          "consumed_mg": null,
+          "consumed_uL": 1600.0,
+          "name": "TMBSubstrate",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.8,
+          "consumed_mg": null,
+          "consumed_uL": 800.0,
+          "name": "StopSolution",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.4,
+          "consumed_mg": null,
+          "consumed_uL": 400.0,
+          "name": "ReagentDiluent",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.1,
+          "consumed_mg": null,
+          "consumed_uL": 100.0,
+          "name": "NegativeControl",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.1,
+          "consumed_mg": null,
+          "consumed_uL": 100.0,
+          "name": "PositiveControl",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.1,
+          "consumed_mg": null,
+          "consumed_uL": 100.0,
+          "name": "Standard1000pgmL",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.1,
+          "consumed_mg": null,
+          "consumed_uL": 100.0,
+          "name": "Standard125pgmL",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.1,
+          "consumed_mg": null,
+          "consumed_uL": 100.0,
+          "name": "Standard2000pgmL",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.1,
+          "consumed_mg": null,
+          "consumed_uL": 100.0,
+          "name": "Standard250pgmL",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.1,
+          "consumed_mg": null,
+          "consumed_uL": 100.0,
+          "name": "Standard31p25pgmL",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.1,
+          "consumed_mg": null,
+          "consumed_uL": 100.0,
+          "name": "Standard500pgmL",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.1,
+          "consumed_mg": null,
+          "consumed_uL": 100.0,
+          "name": "Standard62p5pgmL",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.1,
+          "consumed_mg": null,
+          "consumed_uL": 100.0,
+          "name": "UnknownSample1",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.1,
+          "consumed_mg": null,
+          "consumed_uL": 100.0,
+          "name": "UnknownSample2",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.1,
+          "consumed_mg": null,
+          "consumed_uL": 100.0,
+          "name": "ZeroStandard",
+          "roles": [
+            "source"
+          ]
+        }
+      ]
+    },
+    "process_summary": {
+      "environment_steps": 6,
+      "mutation_steps": 665,
+      "readout_steps": 16,
+      "separation_steps": 56
+    },
+    "qc_results": [],
+    "resource_summary": {
+      "containers": {
+        "allocated_count": 37,
+        "container_kinds": [
+          {
+            "count": 19,
+            "kind": "tube"
+          },
+          {
+            "count": 2,
+            "kind": "unknown"
+          },
+          {
+            "count": 16,
+            "kind": "well"
+          }
+        ],
+        "touched_count": 37,
+        "touched_names": [
+          "BlockingBuffer",
+          "CaptureAntibodyWorkingSolution",
+          "DetectionAntibodyWorkingSolution",
+          "ELISALiquidWaste",
+          "Module07ELISA96_A1",
+          "Module07ELISA96_A2",
+          "Module07ELISA96_B1",
+          "Module07ELISA96_B2",
+          "Module07ELISA96_C1",
+          "Module07ELISA96_C2",
+          "Module07ELISA96_D1",
+          "Module07ELISA96_D2",
+          "Module07ELISA96_E1",
+          "Module07ELISA96_E2",
+          "Module07ELISA96_F1",
+          "Module07ELISA96_F2",
+          "Module07ELISA96_G1",
+          "Module07ELISA96_G2",
+          "Module07ELISA96_H1",
+          "Module07ELISA96_H2",
+          "NegativeControl",
+          "PositiveControl",
+          "ReagentDiluent",
+          "Standard1000pgmL",
+          "Standard125pgmL",
+          "Standard2000pgmL",
+          "Standard250pgmL",
+          "Standard31p25pgmL",
+          "Standard500pgmL",
+          "Standard62p5pgmL",
+          "StopSolution",
+          "StreptavidinHRPWorkingSolution",
+          "TMBSubstrate",
+          "UnknownSample1",
+          "UnknownSample2",
+          "WashBuffer",
+          "ZeroStandard"
+        ]
+      },
+      "instruments": {
+        "devices": [],
+        "tools": []
+      }
+    },
+    "schema": "lab_report_v1"
+  },
+  "returns": {
+    "entry": {
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": []
+    }
+  },
+  "schema": "culsma_run_output_v1"
+}

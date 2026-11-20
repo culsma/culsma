@@ -39,14 +39,21 @@ def main():
     frozen = json.loads((BENCHMARKS / "manifest.json").read_text())["input_sha256"]
     report = {"runtime_commit": RUNTIME, "culsma": culsma.__version__, "lark": lark.__version__,
               "driver": "StubDriver", "cases": {}}
-    for name, folder, supported in [("submitted", HERE.parent, set()), ("revised", HERE, {"dropwise"}),
+    for name, folder, supported in [("submitted", HERE / "submitted", set()), ("revised", HERE, {"dropwise"}),
                                     ("revised_unsupported", HERE, set())]:
         coverage = assess(folder, RUNTIME, culsma.__version__)
         original = HERE.parent.relative_to(BENCHMARKS)
         assert coverage["source_sha256"] == frozen[str(original / "source.md")]
         if name == "submitted":
-            assert coverage["program_sha256"]["protocol.culs"] == frozen[str(original / "protocol.culs")]
-        assert coverage["total_steps"] == coverage["matched_steps"] == 13 and not coverage["issues"]
+            submitted = subprocess.check_output(["git", "-C", str(BENCHMARKS.parent),
+                "show", "687364f:benchmarks/modules/01-cell-transfection/protocol.culs"])
+            assert (folder / "protocol.culs").read_bytes() == submitted
+        else:
+            assert (folder / "protocol.culs").read_bytes() == (HERE.parent / "protocol.culs").read_bytes()
+        expected_gaps = [10, 11] if name == "submitted" else []
+        assert coverage["total_steps"] == 13
+        assert coverage["matched_steps"] == 13 - len(expected_gaps)
+        assert coverage["issues"] == [{"step": n, "reason": "coverage_gap"} for n in expected_gaps]
         program = (folder / "protocol.culs").read_text()
         compiled = compile_ast(resolve_program(parse(program)).prepared_program)
         valid = validate(compiled.ir, analysis=compiled.analysis)

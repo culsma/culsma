@@ -7,9 +7,9 @@
     "submitted": {
       "coverage": {
         "schema": "modular-source-coverage-v1",
-        "rules": "modular-source-step-correspondence-v1",
+        "rules": "modular-source-step-correspondence-v2",
         "metric": "source_step_correspondence",
-        "artifact": "01-cell-transfection",
+        "artifact": "submitted",
         "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
         "language_version": "1.0.7",
         "source_sha256": "f6469969054b859cc804859008213dbde21ddb00d7dba4cc04c0502ec4f73ec0",
@@ -17,10 +17,19 @@
           "protocol.culs": "8d41432d25b48fb0243da6894c4a94cea9c2823ab5da62f3e8211ffa5df7fd19"
         },
         "total_steps": 13,
-        "matched_steps": 13,
-        "coverage_percent": 100.0,
-        "status": "pass",
-        "issues": []
+        "matched_steps": 11,
+        "coverage_percent": 84.615385,
+        "status": "incomplete",
+        "issues": [
+          {
+            "step": 10,
+            "reason": "coverage_gap"
+          },
+          {
+            "step": 11,
+            "reason": "coverage_gap"
+          }
+        ]
       },
       "supported": [],
       "execution": {
@@ -58,7 +67,7 @@
     "revised": {
       "coverage": {
         "schema": "modular-source-coverage-v1",
-        "rules": "modular-source-step-correspondence-v1",
+        "rules": "modular-source-step-correspondence-v2",
         "metric": "source_step_correspondence",
         "artifact": "requirement-review",
         "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
@@ -115,7 +124,7 @@
     "revised_unsupported": {
       "coverage": {
         "schema": "modular-source-coverage-v1",
-        "rules": "modular-source-step-correspondence-v1",
+        "rules": "modular-source-step-correspondence-v2",
         "metric": "source_step_correspondence",
         "artifact": "requirement-review",
         "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
