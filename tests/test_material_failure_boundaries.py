@@ -253,3 +253,45 @@ def test_group_failure_retains_successful_members_without_leaking_failed_preview
     replayed = replay_events(json.loads(json.dumps([e.to_dict() for e in result.events])))
     assert replayed.step_status == result.state.step_status
     assert replayed.artifacts['material_state'] == result.state.artifacts['material_state']
+
+
+@pytest.mark.parametrize('members,success', [(['a', 'b'], True), (['a', 'a'], False), (['a', 'missing'], False), ([], False)])
+def test_magnetic_group_applies_once_to_each_distinct_source(material_state, members, success):
+    from culsma.runtime.material.contents_state import MaterialIndexedPartsStateManager
+
+    before = deepcopy(material_state)
+    step = PlanStep('retain', 'sep', {
+        'sample': {'kind': 'IRGroup', 'elements': [ident(name) for name in members]},
+        'program': {'kind': 'IRCall', 'name': 'magnetic_program', 'args': []},
+    })
+    result = MaterialIndexedPartsStateManager(MaterialCompute().material_effect_adapter).apply_magnetic_group(step, material_state)
+    assert result.ok is success
+    assert material_state == before
+    if success:
+        assert len(result.delta['sources']) == len(result.delta['members']) == 2
+        assert [m['source'] for m in result.delta['members']] == result.delta['sources']
+    else:
+        assert result.material_state == before
+        assert result.delta == {}
+
+
+def test_group_magnetic_failure_rolls_back_an_already_partitioned_member(material_state, monkeypatch):
+    from culsma.runtime.material.contents_state import MaterialIndexedPartsStateManager
+    from culsma.runtime.material.diagnostics import diagnostic_result
+
+    manager = MaterialIndexedPartsStateManager(MaterialCompute().material_effect_adapter)
+    apply = manager.apply_sep
+    before = deepcopy(material_state)
+    def fail_second(step, working):
+        if step.args['sample'] == ident('b'):
+            assert working != before
+            return diagnostic_result(step, working, 'MAT_BINDING_NOT_FOUND', 'unavailable second member')
+        return apply(step, working)
+    monkeypatch.setattr(manager, 'apply_sep', fail_second)
+    step = PlanStep('retain', 'sep', {
+        'sample': {'kind': 'IRGroup', 'elements': [ident('a'), ident('b')]},
+        'program': {'kind': 'IRCall', 'name': 'magnetic_program', 'args': []},
+    })
+    result = manager.apply_magnetic_group(step, material_state)
+    assert not result.ok and result.delta == {}
+    assert result.material_state == material_state == before

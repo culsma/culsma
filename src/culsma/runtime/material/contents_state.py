@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any
 
 from .unknown_quantity import container_has_unknown
@@ -267,12 +267,39 @@ class MaterialIndexedPartsStateManager:
             f"Unsupported contents-state transition '{transition_plan.transition}'",
         )
 
+    def apply_magnetic_group(self, step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
+        """Apply one in-place magnetic step atomically to distinct selected members."""
+        group = step.args["sample"]
+        sources = self._resolve_structured_ref_group_ids(state, group)
+        if not sources or len(set(sources)) != len(sources):
+            return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "Expected distinct resolved magnetic samples")
+        working = state
+        members = []
+        diagnostics = []
+        for element in group["elements"]:
+            member = replace(step, args={**step.args, "sample": element})
+            result = self.apply_sep(member, working)
+            diagnostics.extend(result.diagnostics)
+            if not result.ok:
+                return MaterialUpdateResult(state, diagnostics)
+            working = result.material_state
+            members.append(result.delta)
+        return MaterialUpdateResult(working, diagnostics, {
+            "op": "sep", "mode": "contents_state", "program_kind": "magnetic_program",
+            "sources": sources, "members": members,
+        })
+
     def apply_sep(self, step: PlanStep, state: dict[str, Any]) -> MaterialUpdateResult:
         sample_arg = step.args.get("sample")
         bind_name = arg_string(step.args.get("bind"))
         program = arg_call(step.args.get("program"))
         if program is None:
             return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "sep requires sample/program")
+
+        if isinstance(sample_arg, dict) and sample_arg.get("kind") == "IRGroup":
+            if program.get("name") != "magnetic_program" or bind_name is not None:
+                return diagnostic_result(step, state, "MAT_BINDING_NOT_FOUND", "Group separation requires an in-place magnetic program")
+            return self.apply_magnetic_group(step, state)
 
         source_id = resolve_structured_ref(state, sample_arg, create_if_identifier=False)
         if source_id is None:

@@ -1,0 +1,7 @@
+{
+  "status": "implemented_local",
+  "reference": "05_operation_vocabulary_and_call_contracts.md",
+  "requirements": {
+    "magnetic_group_contents": "tests/test_material_failure_boundaries.py::test_magnetic_group_applies_once_to_each_distinct_source"
+  }
+}
