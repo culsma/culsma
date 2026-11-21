@@ -1,0 +1,19 @@
+{
+  "plan": [],
+  "runtime": [],
+  "semantic": [
+    {
+      "code": "SEM_RETURNS_HEADER_DEPRECATED",
+      "message": "Protocol 'Module06_WesternBlot' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)",
+      "node_id": "p1",
+      "severity": "warning",
+      "span": {
+        "col": 1,
+        "end": 19627,
+        "line": 8,
+        "start": 223
+      }
+    }
+  ],
+  "typecheck": []
+}
