@@ -1,0 +1,366 @@
+{
+  "declarations": [
+    {
+      "annotations": [],
+      "barcode": null,
+      "category": "TUBE",
+      "fields": [],
+      "footprint": "CUSTOM",
+      "name": "StockTube",
+      "node_type": "LabwareDecl",
+      "set_identifier": null,
+      "span": {
+        "end_col": 2,
+        "end_line": 6,
+        "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+        "node_type": "SourceSpan",
+        "start_col": 1,
+        "start_line": 1
+      },
+      "well_count": 1,
+      "well_volume": {
+        "node_type": "QuantityExpr",
+        "span": {
+          "end_col": 24,
+          "end_line": 4,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+          "node_type": "SourceSpan",
+          "start_col": 18,
+          "start_line": 4
+        },
+        "unit": {
+          "kind": "SIMPLE",
+          "node_type": "UnitExpr",
+          "span": null,
+          "text": "mL"
+        },
+        "value": {
+          "node_type": "NumberLit",
+          "span": null,
+          "value": 1.5
+        }
+      }
+    },
+    {
+      "annotations": [],
+      "barcode": null,
+      "category": "TUBE",
+      "fields": [],
+      "footprint": "CUSTOM",
+      "name": "TargetTube",
+      "node_type": "LabwareDecl",
+      "set_identifier": null,
+      "span": {
+        "end_col": 2,
+        "end_line": 12,
+        "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+        "node_type": "SourceSpan",
+        "start_col": 1,
+        "start_line": 7
+      },
+      "well_count": 1,
+      "well_volume": {
+        "node_type": "QuantityExpr",
+        "span": {
+          "end_col": 24,
+          "end_line": 10,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+          "node_type": "SourceSpan",
+          "start_col": 18,
+          "start_line": 10
+        },
+        "unit": {
+          "kind": "SIMPLE",
+          "node_type": "UnitExpr",
+          "span": null,
+          "text": "mL"
+        },
+        "value": {
+          "node_type": "NumberLit",
+          "span": null,
+          "value": 1.5
+        }
+      }
+    },
+    {
+      "annotations": [],
+      "body": [
+        {
+          "annotations": [],
+          "name": "source",
+          "node_type": "LetStmt",
+          "span": {
+            "end_col": 36,
+            "end_line": 14,
+            "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+            "node_type": "SourceSpan",
+            "start_col": 5,
+            "start_line": 14
+          },
+          "type_annotation": {
+            "name": "Labware",
+            "node_type": "SimpleTypeExpr",
+            "span": null
+          },
+          "value": {
+            "name": "StockTube",
+            "node_type": "IdentifierExpr",
+            "span": {
+              "end_col": 36,
+              "end_line": 14,
+              "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+              "node_type": "SourceSpan",
+              "start_col": 27,
+              "start_line": 14
+            }
+          }
+        },
+        {
+          "annotations": [],
+          "name": "destination",
+          "node_type": "LetStmt",
+          "span": {
+            "end_col": 41,
+            "end_line": 15,
+            "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+            "node_type": "SourceSpan",
+            "start_col": 5,
+            "start_line": 15
+          },
+          "type_annotation": {
+            "name": "Labware",
+            "node_type": "SimpleTypeExpr",
+            "span": null
+          },
+          "value": {
+            "name": "StockTube",
+            "node_type": "IdentifierExpr",
+            "span": {
+              "end_col": 41,
+              "end_line": 15,
+              "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+              "node_type": "SourceSpan",
+              "start_col": 32,
+              "start_line": 15
+            }
+          }
+        },
+        {
+          "annotations": [],
+          "arguments": [
+            {
+              "name": "from",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 26,
+                "end_line": 16,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 14,
+                "start_line": 16
+              },
+              "value": {
+                "name": "source",
+                "node_type": "IdentifierExpr",
+                "span": {
+                  "end_col": 26,
+                  "end_line": 16,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 20,
+                  "start_line": 16
+                }
+              }
+            },
+            {
+              "name": "to",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 43,
+                "end_line": 16,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 28,
+                "start_line": 16
+              },
+              "value": {
+                "name": "destination",
+                "node_type": "IdentifierExpr",
+                "span": {
+                  "end_col": 43,
+                  "end_line": 16,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 32,
+                  "start_line": 16
+                }
+              }
+            },
+            {
+              "name": "volume",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 58,
+                "end_line": 16,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 45,
+                "start_line": 16
+              },
+              "value": {
+                "node_type": "QuantityExpr",
+                "span": {
+                  "end_col": 58,
+                  "end_line": 16,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 53,
+                  "start_line": 16
+                },
+                "unit": {
+                  "kind": "SIMPLE",
+                  "node_type": "UnitExpr",
+                  "span": null,
+                  "text": "uL"
+                },
+                "value": {
+                  "node_type": "NumberLit",
+                  "span": null,
+                  "value": 10.0
+                }
+              }
+            }
+          ],
+          "name": "transfer",
+          "node_type": "CallStmt",
+          "span": {
+            "end_col": 59,
+            "end_line": 16,
+            "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+            "node_type": "SourceSpan",
+            "start_col": 5,
+            "start_line": 16
+          }
+        },
+        {
+          "annotations": [],
+          "arguments": [
+            {
+              "name": "from",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 26,
+                "end_line": 17,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 14,
+                "start_line": 17
+              },
+              "value": {
+                "name": "source",
+                "node_type": "IdentifierExpr",
+                "span": {
+                  "end_col": 26,
+                  "end_line": 17,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 20,
+                  "start_line": 17
+                }
+              }
+            },
+            {
+              "name": "to",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 43,
+                "end_line": 17,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 28,
+                "start_line": 17
+              },
+              "value": {
+                "name": "destination",
+                "node_type": "IdentifierExpr",
+                "span": {
+                  "end_col": 43,
+                  "end_line": 17,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 32,
+                  "start_line": 17
+                }
+              }
+            },
+            {
+              "name": "volume",
+              "node_type": "Argument",
+              "span": {
+                "end_col": 58,
+                "end_line": 17,
+                "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+                "node_type": "SourceSpan",
+                "start_col": 45,
+                "start_line": 17
+              },
+              "value": {
+                "node_type": "QuantityExpr",
+                "span": {
+                  "end_col": 58,
+                  "end_line": 17,
+                  "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+                  "node_type": "SourceSpan",
+                  "start_col": 53,
+                  "start_line": 17
+                },
+                "unit": {
+                  "kind": "SIMPLE",
+                  "node_type": "UnitExpr",
+                  "span": null,
+                  "text": "uL"
+                },
+                "value": {
+                  "node_type": "NumberLit",
+                  "span": null,
+                  "value": 20.0
+                }
+              }
+            }
+          ],
+          "name": "transfer",
+          "node_type": "CallStmt",
+          "span": {
+            "end_col": 59,
+            "end_line": 17,
+            "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+            "node_type": "SourceSpan",
+            "start_col": 5,
+            "start_line": 17
+          }
+        }
+      ],
+      "name": "Main",
+      "node_type": "ProtocolDecl",
+      "parameters": [],
+      "settings": [],
+      "span": {
+        "end_col": 2,
+        "end_line": 18,
+        "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+        "node_type": "SourceSpan",
+        "start_col": 1,
+        "start_line": 13
+      }
+    }
+  ],
+  "node_type": "Program",
+  "span": {
+    "end_col": 2,
+    "end_line": 18,
+    "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_alias_same_tube.bpl",
+    "node_type": "SourceSpan",
+    "start_col": 1,
+    "start_line": 1
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "method": "source_inspection",
+  "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/simulation/simulator.py",
+  "sha256": "bae9d9a1cec26ecc9529da278e05969d5b1157ec084bf9bddce5ef07ebe71094",
+  "interfaces": {
+    "def add_step_callback": true,
+    "_step_callbacks": true
+  },
+  "interface_found": true
+}

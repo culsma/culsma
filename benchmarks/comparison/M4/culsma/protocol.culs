@@ -1,0 +1,6 @@
+protocol Prepare {
+ let local = tube(label = "local", capacity = 1.5mL);
+ return local;
+}
+let first = Prepare();
+let second = Prepare();

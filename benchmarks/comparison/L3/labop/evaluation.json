@@ -1,0 +1,163 @@
+{
+  "method": "execution",
+  "expected_result": "No",
+  "result": "No",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        4,
+        "runtime_values"
+      ],
+      "equals": [
+        true
+      ],
+      "observed": [
+        true
+      ],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        4,
+        "consumed_values"
+      ],
+      "equals": [
+        true
+      ],
+      "observed": [
+        true
+      ],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        4,
+        "volumes_ul"
+      ],
+      "equals": {
+        "stock": 70.0,
+        "target": 10.0,
+        "alternative": 20.0
+      },
+      "observed": {
+        "stock": 70.0,
+        "target": 10.0,
+        "alternative": 20.0
+      },
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        4,
+        "completed_normally"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        5,
+        "runtime_values"
+      ],
+      "equals": [
+        false
+      ],
+      "observed": [
+        false
+      ],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        5,
+        "consumed_values"
+      ],
+      "equals": [
+        false
+      ],
+      "observed": [
+        false
+      ],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        5,
+        "volumes_ul"
+      ],
+      "equals": {
+        "stock": 70.0,
+        "target": 10.0,
+        "alternative": 20.0
+      },
+      "observed": {
+        "stock": 70.0,
+        "target": 10.0,
+        "alternative": 20.0
+      },
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        5,
+        "completed_normally"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        2,
+        "execution_error",
+        "message"
+      ],
+      "equals": "'MergeNode' object has no attribute 'protocol'",
+      "observed": "'MergeNode' object has no attribute 'protocol'",
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        3,
+        "execution_error",
+        "message"
+      ],
+      "equals": "'MergeNode' object has no attribute 'protocol'",
+      "observed": "'MergeNode' object has no attribute 'protocol'",
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

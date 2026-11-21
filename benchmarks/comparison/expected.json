@@ -1,8 +1,0 @@
-{
-  "wells": {
-    "A1": {"volume_uL": 20, "lineage": [["supernatant", "GFP lysate"]]},
-    "A2": {"volume_uL": 20, "lineage": [["pellet", "GFP lysate"], ["buffer", "assay buffer"]]},
-    "A3": {"volume_uL": 20, "lineage": [["buffer", "assay buffer"]]}
-  },
-  "remaining_uL": {"supernatant": 140, "resuspended pellet": 20, "assay buffer": 40}
-}

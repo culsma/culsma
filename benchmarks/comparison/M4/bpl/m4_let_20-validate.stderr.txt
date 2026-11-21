@@ -1,0 +1,1 @@
+{"diagnostics": [{"code": "SEMANTIC_MISSING_VOLUME", "hint": "Example: volume: 10 uL", "location": {"end": {"col": 62, "line": 3, "offset": 97}, "file": "m4_let_20.bpl", "start": {"col": 5, "line": 3, "offset": 40}}, "message": "`transfer` requires numeric `volume` argument.", "severity": "error"}]}

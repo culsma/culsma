@@ -1,0 +1,53 @@
+
+********************************************************************************
+
+    Harness Results Summary
+
+    Artifacts:
+    ----------------------------------------------------------------------------
+    - ProtocolNTuples (pass): 
+    ----------------------------------------------------------------------------
+{
+    "document": {
+        "namespace": "https://example.org/l1-api-audit/"
+    },
+    "libraries": [
+        "liquid_handling",
+        "plate_handling",
+        "spectrophotometry",
+        "sample_arrays"
+    ],
+    "protocol": {
+        "name": "parameter_reuse",
+        "version": "1.0",
+        "validation": "pass"
+    },
+    "nt_filename": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/api/harness/parameter_reuse/artifacts/parameter_reuse.nt"
+}
+    ----------------------------------------------------------------------------
+    - ProtocolDiagram (pass): 
+    ----------------------------------------------------------------------------
+{
+    "filename": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/api/harness/parameter_reuse/artifacts/parameter_reuse.diagram"
+}
+    ----------------------------------------------------------------------------
+    - ProtocolExecutionNTuples (pass): 
+    ----------------------------------------------------------------------------
+{
+    "filename": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/api/harness/parameter_reuse/artifacts/parameter_reuse.nt"
+}
+    ----------------------------------------------------------------------------
+    - ProtocolExecutionDiagram (pass): 
+    ----------------------------------------------------------------------------
+{
+    "filename": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/api/harness/parameter_reuse/artifacts/parameter_reuse.execution.diagram"
+}
+    ----------------------------------------------------------------------------
+    - ProtocolSampleTrace (pass): 
+    ----------------------------------------------------------------------------
+{
+    "filename": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/api/harness/parameter_reuse/artifacts/sample_traces"
+}
+
+********************************************************************************
+        

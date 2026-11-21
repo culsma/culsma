@@ -1,0 +1,155 @@
+{
+  "method": "execution",
+  "expected_result": "No",
+  "result": "No",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "comparison.json",
+      "path": [
+        "results",
+        "direct",
+        "validation_errors"
+      ],
+      "equals": [],
+      "observed": [],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "comparison.json",
+      "path": [
+        "results",
+        "direct",
+        "executed_transfers"
+      ],
+      "equals": [
+        {
+          "amount_ul": 10.0,
+          "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre",
+          "destination": "https://example.org/l1-reproduction/direct/main/CallBehaviorAction2/ValuePin2/LiteralIdentified1/SampleArray1"
+        },
+        {
+          "amount_ul": 20.0,
+          "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre",
+          "destination": "https://example.org/l1-reproduction/direct/main/CallBehaviorAction3/ValuePin2/LiteralIdentified1/SampleArray1"
+        }
+      ],
+      "observed": [
+        {
+          "amount_ul": 10.0,
+          "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre",
+          "destination": "https://example.org/l1-reproduction/direct/main/CallBehaviorAction2/ValuePin2/LiteralIdentified1/SampleArray1"
+        },
+        {
+          "amount_ul": 20.0,
+          "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre",
+          "destination": "https://example.org/l1-reproduction/direct/main/CallBehaviorAction3/ValuePin2/LiteralIdentified1/SampleArray1"
+        }
+      ],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "comparison.json",
+      "path": [
+        "results",
+        "direct",
+        "latest_recorded_buffer_ul"
+      ],
+      "equals": {
+        "stock": 70.0,
+        "first": 10.0,
+        "second": 20.0
+      },
+      "observed": {
+        "stock": 70.0,
+        "first": 10.0,
+        "second": 20.0
+      },
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "comparison.json",
+      "path": [
+        "results",
+        "subprotocol",
+        "validation_errors"
+      ],
+      "equals": [],
+      "observed": [],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "comparison.json",
+      "path": [
+        "results",
+        "subprotocol",
+        "executed_transfers"
+      ],
+      "equals": [],
+      "observed": [],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "comparison.json",
+      "path": [
+        "results",
+        "subprotocol",
+        "latest_recorded_buffer_ul"
+      ],
+      "equals": {
+        "stock": 100.0,
+        "first": null,
+        "second": null
+      },
+      "observed": {
+        "stock": 100.0,
+        "first": null,
+        "second": null
+      },
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "api/results.json",
+      "path": [
+        "upstream_subprotocol_test",
+        "success"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "api/results.json",
+      "path": [
+        "counterexample_official_harness",
+        "executed_transfer_amounts_ul"
+      ],
+      "equals": [],
+      "observed": [],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "controls/results.json",
+      "path": [
+        "runs",
+        "protocol_outputs_test",
+        "summary",
+        "test",
+        "success"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,15 @@
+{
+  "completed_steps": 8,
+  "failed_steps": 0,
+  "inputs": [
+    "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/culsma/magnetic.culs"
+  ],
+  "plan_diagnostic_count": 0,
+  "runtime_diagnostic_count": 0,
+  "runtime_ok": true,
+  "semantic_error_count": 0,
+  "skipped_steps": 0,
+  "total_steps": 8,
+  "type_error_count": 0,
+  "user_result_available": true
+}

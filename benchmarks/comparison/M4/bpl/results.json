@@ -1,0 +1,92 @@
+{
+  "m4_let_10": {
+    "source_sha256": "b611eda5d021a872f97932f355851b2b6d6c43897917dfde417cc78444e05417",
+    "check": {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-env/bin/bplc",
+        "check",
+        "m4_let_10.bpl",
+        "--json-errors"
+      ],
+      "returncode": 11,
+      "diagnostic_codes": [
+        "SEMANTIC_MISSING_VOLUME"
+      ]
+    },
+    "validate": {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-env/bin/bplc",
+        "validate",
+        "m4_let_10.bpl",
+        "--json-errors",
+        "--target",
+        "human"
+      ],
+      "returncode": 11,
+      "diagnostic_codes": [
+        "SEMANTIC_MISSING_VOLUME"
+      ]
+    },
+    "lower": {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-env/bin/bplc",
+        "lower",
+        "m4_let_10.bpl",
+        "--json-errors",
+        "--target",
+        "human",
+        "--out",
+        "m4_let_10-plan.json"
+      ],
+      "returncode": 11,
+      "diagnostic_codes": [
+        "SEMANTIC_MISSING_VOLUME"
+      ]
+    }
+  },
+  "m4_let_20": {
+    "source_sha256": "c1dc0d5c2b1d18e1c9a2a5c661d2d01ffe79d7041b5c98f8c7d77ce6bed671e8",
+    "check": {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-env/bin/bplc",
+        "check",
+        "m4_let_20.bpl",
+        "--json-errors"
+      ],
+      "returncode": 11,
+      "diagnostic_codes": [
+        "SEMANTIC_MISSING_VOLUME"
+      ]
+    },
+    "validate": {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-env/bin/bplc",
+        "validate",
+        "m4_let_20.bpl",
+        "--json-errors",
+        "--target",
+        "human"
+      ],
+      "returncode": 11,
+      "diagnostic_codes": [
+        "SEMANTIC_MISSING_VOLUME"
+      ]
+    },
+    "lower": {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-env/bin/bplc",
+        "lower",
+        "m4_let_20.bpl",
+        "--json-errors",
+        "--target",
+        "human",
+        "--out",
+        "m4_let_20-plan.json"
+      ],
+      "returncode": 11,
+      "diagnostic_codes": [
+        "SEMANTIC_MISSING_VOLUME"
+      ]
+    }
+  }
+}

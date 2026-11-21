@@ -1,0 +1,64 @@
+{
+  "commands": [
+    {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/bin/python",
+        "run.py"
+      ],
+      "cwd": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M4/labop",
+      "returncode": 0,
+      "stdout": "command-01.stdout.txt",
+      "stderr": "command-01.stderr.txt"
+    }
+  ],
+  "errors": [],
+  "runtime": {
+    "python": "3.11.11",
+    "commit": "2e2bd88150c71a440771fd369f40295dfd622324",
+    "files": {
+      "labop/execution/behavior_dynamics.py": {
+        "matches": true,
+        "expected_sha256": "8cdad33723345fedb7369708c49eb059f4e19193e5e0620dacb9fa983814c922",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-source/labop/execution/behavior_dynamics.py",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/behavior_dynamics.py"
+      },
+      "labop/execution/execution_engine.py": {
+        "matches": true,
+        "expected_sha256": "9d258ace720850146de0d0ab7391c3ef258b9ca6b147495cfd0644f79fde6580",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-source/labop/execution/execution_engine.py",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py"
+      },
+      "labop/lib/plate_handling.ttl": {
+        "matches": true,
+        "expected_sha256": "0666b1cd0406c9b050e2951a091a5f402b8593679512aab7a5b4255865c83de6",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-source/labop/lib/plate_handling.ttl",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/lib/plate_handling.ttl"
+      },
+      "test/test_protocol_outputs.py": {
+        "matches": true,
+        "expected_sha256": "e2836dac670377f504db1f5e6bcd982be51f3973da453e791e3d47532949260e",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-source/test/test_protocol_outputs.py",
+        "installed": null
+      },
+      "test/test_subprotocols.py": {
+        "matches": true,
+        "expected_sha256": "736d966389fb2fe637405ce8751efd865b893caab98eae0d911ee6a40628e52b",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-source/test/test_subprotocols.py",
+        "installed": null
+      },
+      "uml/behavior.py": {
+        "matches": true,
+        "expected_sha256": "fcb553a034ccfc06ef42501799278f22b627fe28952d076d3533e11def736566",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-source/uml/behavior.py",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/behavior.py"
+      }
+    },
+    "verified": true
+  },
+  "input_sha256": {
+    "../case.json": "7b6f168c03dcd5aa98819e5d25eef45850ce66aa29bef9825479717f19129887",
+    "requirements.txt": "afa93bd23047237ffee1f192afab33e5c499650a20da67fd428f332f070a413c",
+    "run.py": "ebfd17e5951d17df6aa5676954a18de8db582eae335e7f9e94b37b9da772f0fd",
+    "../../evaluate.py": "b6a200cc7a9e30cfd89cc1dca9ca541f6c287eca752ba0095574b8adc6ab40db"
+  }
+}

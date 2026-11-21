@@ -1,0 +1,35 @@
+{
+  "completed_at": "2026-11-21T21:13:59.596466",
+  "final_state_hash": "5f455a75611ee461d4e5b4f031bbce0f",
+  "plan_id": "Main_plan",
+  "started_at": "2026-11-21T21:13:59.595836",
+  "status": "COMPLETED",
+  "step_traces": [
+    {
+      "details": {
+        "action": "unsupported_no_op",
+        "primitive_id": "human_step",
+        "unsupported": true
+      },
+      "duration_ms": 0.3,
+      "error_message": null,
+      "primitive_type": "HUMAN_STEP",
+      "state_after_hash": "5f455a75611ee461d4e5b4f031bbce0f",
+      "state_before_hash": "5f455a75611ee461d4e5b4f031bbce0f",
+      "step_id": "step_0001",
+      "success": true,
+      "timestamp": "2026-11-21T21:13:59.596169"
+    }
+  ],
+  "steps_executed": 1,
+  "steps_failed": 0,
+  "unsupported_primitives": [
+    "human_step"
+  ],
+  "unsupported_step_count": 1,
+  "validation_errors": [],
+  "warnings": [
+    "Unsupported primitives will run as no-op in non-strict mode: human_step",
+    "Unsupported primitive executed as no-op: HUMAN_STEP [step: step_0001]"
+  ]
+}

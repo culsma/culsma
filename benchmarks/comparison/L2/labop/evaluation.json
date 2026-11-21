@@ -1,0 +1,103 @@
+{
+  "method": "execution",
+  "expected_result": "No",
+  "result": "No",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "results.json",
+      "path": [
+        "results",
+        "direct",
+        "latest_recorded_buffer_ul"
+      ],
+      "equals": {
+        "target": 10.0,
+        "prepared": 90.0
+      },
+      "observed": {
+        "target": 10.0,
+        "prepared": 90.0
+      },
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "results",
+        "composition",
+        "validation_errors"
+      ],
+      "equals": [],
+      "observed": [],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "results",
+        "composition",
+        "execution_error",
+        "type"
+      ],
+      "equals": "ValueError",
+      "observed": "ValueError",
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "results",
+        "composition",
+        "execution_error",
+        "message"
+      ],
+      "equals": "sample has 2 values, but expecting [1, 1] values",
+      "observed": "sample has 2 values, but expecting [1, 1] values",
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "results",
+        "composition_explicit_final",
+        "validation_errors"
+      ],
+      "equals": [],
+      "observed": [],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "results",
+        "composition_explicit_final",
+        "execution_error",
+        "type"
+      ],
+      "equals": "ValueError",
+      "observed": "ValueError",
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "results",
+        "composition_explicit_final",
+        "execution_error",
+        "message"
+      ],
+      "equals": "sample has 2 values, but expecting [1, 1] values",
+      "observed": "sample has 2 values, but expecting [1, 1] values",
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

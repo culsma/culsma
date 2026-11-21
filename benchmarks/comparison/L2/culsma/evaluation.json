@@ -1,0 +1,77 @@
+{
+  "method": "execution",
+  "expected_result": "Yes",
+  "result": "Yes",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "output.json",
+      "path": [
+        "report",
+        "materials",
+        "final_products",
+        0,
+        "name"
+      ],
+      "equals": "target",
+      "observed": "target",
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "output.json",
+      "path": [
+        "report",
+        "materials",
+        "final_products",
+        0,
+        "volume_uL"
+      ],
+      "equals": 10.0,
+      "observed": 10.0,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "summary.json",
+      "path": [
+        "runtime_ok"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "run.json",
+      "path": [
+        "state",
+        "artifacts",
+        "material_state",
+        "containers",
+        "container/entry/entry.s0%3A%3Aalloc/prepared",
+        "volume_uL"
+      ],
+      "equals": 90.0,
+      "observed": 90.0,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "run.json",
+      "path": [
+        "state",
+        "artifacts",
+        "material_state",
+        "containers",
+        "container/entry/entry.s1%3A%3Aalloc/target",
+        "volume_uL"
+      ],
+      "equals": 10.0,
+      "observed": 10.0,
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

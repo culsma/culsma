@@ -1,0 +1,65 @@
+{
+  "commands": [
+    {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-env/bin/python",
+        "run.py"
+      ],
+      "cwd": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/bpl",
+      "returncode": 0,
+      "stdout": "command-01.stdout.txt",
+      "stderr": "command-01.stderr.txt"
+    }
+  ],
+  "errors": [],
+  "runtime": {
+    "python": "3.13.1",
+    "commit": "4e505740f5025d59ba655c6c955f83876f753007",
+    "files": {
+      "bpl/grammar/bpl.lark": {
+        "matches": true,
+        "expected_sha256": "cf4ff616f0787193a689c8a349656b962796f588c0ee216963b28d31f9c24cea",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/grammar/bpl.lark",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/grammar/bpl.lark"
+      },
+      "bpl/lowering/plan_ir.py": {
+        "matches": true,
+        "expected_sha256": "e1ccc06f54fe53ec2219cb732a218a52e9064cbd48be616477cf67e008f010eb",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/lowering/plan_ir.py",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/lowering/plan_ir.py"
+      },
+      "bpl/orchestrator.py": {
+        "matches": true,
+        "expected_sha256": "73ec40a828a1d6ec0fbb5a07dc72a346ac77ac2c1b0652bb5281cc172fe8a7d1",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/orchestrator.py",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/orchestrator.py"
+      },
+      "bpl/simulation/simulator.py": {
+        "matches": true,
+        "expected_sha256": "bae9d9a1cec26ecc9529da278e05969d5b1157ec084bf9bddce5ef07ebe71094",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/simulation/simulator.py",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/simulation/simulator.py"
+      },
+      "bpl/simulation/virtual_deck.py": {
+        "matches": true,
+        "expected_sha256": "f2deda48a3973f8f571fd92273c2d1d595a3b28c39fa5a894bb4247b6ef13b54",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/simulation/virtual_deck.py",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/simulation/virtual_deck.py"
+      },
+      "bpl/types/unit_engine.py": {
+        "matches": true,
+        "expected_sha256": "b3e49dc5e48337b54a5c047ac5fe185d5543ddf2df76da6821d428fcc754ca80",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/types/unit_engine.py",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/types/unit_engine.py"
+      }
+    },
+    "verified": true
+  },
+  "input_sha256": {
+    "protocol.bpl": "cf1369f38ccc37ae669413ad31b3c54f23e580afaa0ebef3aeae26dc14a2e684",
+    "requirements.txt": "0c6a377f1fd4995e27165c0748f82c9123cfb464ab1007c8cd475c2c2b049d15",
+    "run.py": "467861fe0a4c80345bdc2d7c11ea2e35c02808c717188416d30e9cbbdfae045f",
+    "../case.json": "09dbff3298f6e036ca612cca5d872eb2f150518c053dd79d983d2b5ac89f5bf3",
+    "../../evaluate.py": "b6a200cc7a9e30cfd89cc1dca9ca541f6c287eca752ba0095574b8adc6ab40db"
+  }
+}

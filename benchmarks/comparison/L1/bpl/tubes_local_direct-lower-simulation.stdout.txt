@@ -1,0 +1,1 @@
+{"artifacts": {"plan": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/tubes_local_direct-simulation-plan.json"}, "command": "lower", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_tubes_local_direct.bpl", "ok": true, "target": "simulation"}

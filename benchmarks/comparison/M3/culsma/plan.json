@@ -1,0 +1,1329 @@
+{
+  "diagnostics": [],
+  "kind": "PlanProgram",
+  "plans": [
+    {
+      "entry_kind": "script",
+      "output_name": "entry",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "return_bindings": {},
+      "return_value": {
+        "kind": "IRIdentifier",
+        "name": "readings",
+        "span": {
+          "col": 8,
+          "end": 1114,
+          "line": 22,
+          "start": 1106
+        }
+      },
+      "returns": [],
+      "span": {
+        "col": 1,
+        "end": 403,
+        "line": 2,
+        "start": 79
+      },
+      "steps": [
+        {
+          "args": {
+            "bind": "lysate",
+            "capacity": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 52,
+                "end": 135,
+                "line": 2,
+                "start": 130
+              },
+              "unit": "mL",
+              "value": 1.5
+            },
+            "container_name": "lysate",
+            "container_namespace": "entry",
+            "kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 14,
+                "end": 403,
+                "line": 2,
+                "start": 92
+              },
+              "value": "tube"
+            },
+            "label": {
+              "kind": "IRString",
+              "span": {
+                "col": 27,
+                "end": 117,
+                "line": 2,
+                "start": 105
+              },
+              "value": "GFP lysate"
+            }
+          },
+          "deps": [],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "AllocContainer",
+          "span": {
+            "col": 1,
+            "end": 403,
+            "line": 2,
+            "start": 79
+          },
+          "step_id": "entry.s0::alloc"
+        },
+        {
+          "args": {
+            "attrs": {
+              "state": {
+                "kind": "IRIdentifier",
+                "name": "suspension",
+                "span": {
+                  "col": 48,
+                  "end": 282,
+                  "line": 4,
+                  "start": 272
+                }
+              }
+            },
+            "code": {
+              "kind": "IRString",
+              "span": {
+                "col": 12,
+                "end": 253,
+                "line": 4,
+                "start": 236
+              },
+              "value": "GFP_CELL_DEBRIS"
+            },
+            "kind": {
+              "enum": "ContentKind",
+              "kind": "ContentEnum",
+              "member": "BIO_CELLULAR"
+            },
+            "type": {
+              "enum": "ContentType",
+              "kind": "ContentEnum",
+              "member": "MICROBIAL_CELLS"
+            }
+          },
+          "deps": [
+            "entry.s0::alloc"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "DefineContent",
+          "span": {
+            "col": 3,
+            "end": 285,
+            "line": 3,
+            "start": 148
+          },
+          "step_id": "entry.s0::load0::define"
+        },
+        {
+          "args": {
+            "amount": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 62,
+                "end": 297,
+                "line": 4,
+                "start": 286
+              },
+              "unit": "cells",
+              "value": 100000.0
+            },
+            "container": {
+              "kind": "IRIdentifier",
+              "name": "lysate",
+              "span": {
+                "col": 1,
+                "end": 403,
+                "line": 2,
+                "start": 79
+              }
+            },
+            "content": {
+              "kind": "IRString",
+              "span": {
+                "col": 12,
+                "end": 253,
+                "line": 4,
+                "start": 236
+              },
+              "value": "GFP_CELL_DEBRIS"
+            }
+          },
+          "deps": [
+            "entry.s0::load0::define"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "LoadContent",
+          "span": {
+            "col": 3,
+            "end": 297,
+            "line": 3,
+            "start": 148
+          },
+          "step_id": "entry.s0::load0::load"
+        },
+        {
+          "args": {
+            "code": {
+              "kind": "IRString",
+              "span": {
+                "col": 12,
+                "end": 394,
+                "line": 6,
+                "start": 379
+              },
+              "value": "LYSATE_LIQUID"
+            },
+            "kind": {
+              "enum": "ContentKind",
+              "kind": "ContentEnum",
+              "member": "FORMULATION"
+            },
+            "type": {
+              "enum": "ContentType",
+              "kind": "ContentEnum",
+              "member": "BUFFER"
+            }
+          },
+          "deps": [
+            "entry.s0::load0::load"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "DefineContent",
+          "span": {
+            "col": 3,
+            "end": 395,
+            "line": 5,
+            "start": 301
+          },
+          "step_id": "entry.s0::load1::define"
+        },
+        {
+          "args": {
+            "amount": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 29,
+                "end": 401,
+                "line": 6,
+                "start": 396
+              },
+              "unit": "uL",
+              "value": 160.0
+            },
+            "container": {
+              "kind": "IRIdentifier",
+              "name": "lysate",
+              "span": {
+                "col": 1,
+                "end": 403,
+                "line": 2,
+                "start": 79
+              }
+            },
+            "content": {
+              "kind": "IRString",
+              "span": {
+                "col": 12,
+                "end": 394,
+                "line": 6,
+                "start": 379
+              },
+              "value": "LYSATE_LIQUID"
+            }
+          },
+          "deps": [
+            "entry.s0::load1::define"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "LoadContent",
+          "span": {
+            "col": 3,
+            "end": 401,
+            "line": 5,
+            "start": 301
+          },
+          "step_id": "entry.s0::load1::load"
+        },
+        {
+          "args": {
+            "container": {
+              "kind": "IRIdentifier",
+              "name": "lysate",
+              "span": {
+                "col": 1,
+                "end": 403,
+                "line": 2,
+                "start": 79
+              }
+            }
+          },
+          "deps": [
+            "entry.s0::load1::load"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "FinalizeContainerContents",
+          "span": {
+            "col": 1,
+            "end": 403,
+            "line": 2,
+            "start": 79
+          },
+          "step_id": "entry.s0::finalize"
+        },
+        {
+          "args": {
+            "bind": "buffer",
+            "capacity": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 54,
+                "end": 463,
+                "line": 7,
+                "start": 458
+              },
+              "unit": "mL",
+              "value": 1.5
+            },
+            "container_name": "buffer",
+            "container_namespace": "entry",
+            "kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 14,
+                "end": 577,
+                "line": 7,
+                "start": 418
+              },
+              "value": "tube"
+            },
+            "label": {
+              "kind": "IRString",
+              "span": {
+                "col": 27,
+                "end": 445,
+                "line": 7,
+                "start": 431
+              },
+              "value": "Assay buffer"
+            }
+          },
+          "deps": [
+            "entry.s0::finalize"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "AllocContainer",
+          "span": {
+            "col": 1,
+            "end": 577,
+            "line": 7,
+            "start": 405
+          },
+          "step_id": "entry.s1::alloc"
+        },
+        {
+          "args": {
+            "code": {
+              "kind": "IRString",
+              "span": {
+                "col": 12,
+                "end": 568,
+                "line": 9,
+                "start": 554
+              },
+              "value": "ASSAY_BUFFER"
+            },
+            "kind": {
+              "enum": "ContentKind",
+              "kind": "ContentEnum",
+              "member": "FORMULATION"
+            },
+            "type": {
+              "enum": "ContentType",
+              "kind": "ContentEnum",
+              "member": "BUFFER"
+            }
+          },
+          "deps": [
+            "entry.s1::alloc"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "DefineContent",
+          "span": {
+            "col": 3,
+            "end": 569,
+            "line": 8,
+            "start": 476
+          },
+          "step_id": "entry.s1::load0::define"
+        },
+        {
+          "args": {
+            "amount": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 28,
+                "end": 575,
+                "line": 9,
+                "start": 570
+              },
+              "unit": "uL",
+              "value": 100.0
+            },
+            "container": {
+              "kind": "IRIdentifier",
+              "name": "buffer",
+              "span": {
+                "col": 1,
+                "end": 577,
+                "line": 7,
+                "start": 405
+              }
+            },
+            "content": {
+              "kind": "IRString",
+              "span": {
+                "col": 12,
+                "end": 568,
+                "line": 9,
+                "start": 554
+              },
+              "value": "ASSAY_BUFFER"
+            }
+          },
+          "deps": [
+            "entry.s1::load0::define"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "LoadContent",
+          "span": {
+            "col": 3,
+            "end": 575,
+            "line": 8,
+            "start": 476
+          },
+          "step_id": "entry.s1::load0::load"
+        },
+        {
+          "args": {
+            "bind": "resuspended",
+            "capacity": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 65,
+                "end": 648,
+                "line": 10,
+                "start": 643
+              },
+              "unit": "mL",
+              "value": 1.5
+            },
+            "container_name": "resuspended",
+            "container_namespace": "entry",
+            "kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 19,
+                "end": 649,
+                "line": 10,
+                "start": 597
+              },
+              "value": "tube"
+            },
+            "label": {
+              "kind": "IRString",
+              "span": {
+                "col": 32,
+                "end": 630,
+                "line": 10,
+                "start": 610
+              },
+              "value": "Resuspended pellet"
+            }
+          },
+          "deps": [
+            "entry.s1::load0::load"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "AllocContainer",
+          "span": {
+            "col": 1,
+            "end": 649,
+            "line": 10,
+            "start": 579
+          },
+          "step_id": "entry.s2::alloc"
+        },
+        {
+          "args": {
+            "program": {
+              "args": [
+                {
+                  "kind": "IRArg",
+                  "name": "drive",
+                  "span": {
+                    "col": 53,
+                    "end": 822,
+                    "line": 13,
+                    "start": 808
+                  },
+                  "value": {
+                    "kind": "IRQuantity",
+                    "span": {
+                      "col": 61,
+                      "end": 822,
+                      "line": 13,
+                      "start": 816
+                    },
+                    "unit": "g",
+                    "value": 12000.0
+                  }
+                }
+              ],
+              "kind": "IRCall",
+              "name": "centrifuge_program",
+              "span": {
+                "col": 34,
+                "end": 823,
+                "line": 13,
+                "start": 789
+              }
+            },
+            "sample": {
+              "kind": "IRIdentifier",
+              "name": "lysate",
+              "span": {
+                "col": 16,
+                "end": 777,
+                "line": 13,
+                "start": 771
+              }
+            }
+          },
+          "deps": [
+            "entry.s2::alloc"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry",
+            "env": {
+              "duration": {
+                "kind": "IRQuantity",
+                "span": {
+                  "col": 36,
+                  "end": 752,
+                  "line": 12,
+                  "start": 747
+                },
+                "unit": "min",
+                "value": 10.0
+              },
+              "thermal": {
+                "kind": "IRQuantity",
+                "span": {
+                  "col": 20,
+                  "end": 734,
+                  "line": 12,
+                  "start": 731
+                },
+                "unit": "C",
+                "value": 22.0
+              }
+            },
+            "env_layers": [
+              {
+                "env": {
+                  "duration": {
+                    "kind": "IRQuantity",
+                    "span": {
+                      "col": 36,
+                      "end": 752,
+                      "line": 12,
+                      "start": 747
+                    },
+                    "unit": "min",
+                    "value": 10.0
+                  },
+                  "thermal": {
+                    "kind": "IRQuantity",
+                    "span": {
+                      "col": 20,
+                      "end": 734,
+                      "line": 12,
+                      "start": 731
+                    },
+                    "unit": "C",
+                    "value": 22.0
+                  }
+                },
+                "env_targets": [
+                  {
+                    "kind": "IRIdentifier",
+                    "name": "lysate",
+                    "span": {
+                      "col": 16,
+                      "end": 777,
+                      "line": 13,
+                      "start": 771
+                    }
+                  }
+                ]
+              }
+            ],
+            "env_targets": [
+              {
+                "kind": "IRIdentifier",
+                "name": "lysate",
+                "span": {
+                  "col": 16,
+                  "end": 777,
+                  "line": 13,
+                  "start": 771
+                }
+              }
+            ]
+          },
+          "op": "sep",
+          "span": {
+            "col": 3,
+            "end": 824,
+            "line": 13,
+            "start": 758
+          },
+          "step_id": "entry.s4.b.s0"
+        },
+        {
+          "args": {
+            "bind": "__lw_plate_assay_A1",
+            "carrier_id": {
+              "kind": "IRString",
+              "span": {
+                "col": 1,
+                "end": 837,
+                "line": 15,
+                "start": 828
+              },
+              "value": "assay"
+            },
+            "carrier_kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 1,
+                "end": 837,
+                "line": 15,
+                "start": 828
+              },
+              "value": "plate"
+            },
+            "carrier_position": {
+              "kind": "IRString",
+              "span": {
+                "col": 1,
+                "end": 837,
+                "line": 15,
+                "start": 828
+              },
+              "value": "A1"
+            },
+            "container_name": "__lw_plate_assay_A1",
+            "container_namespace": "entry",
+            "kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 1,
+                "end": 837,
+                "line": 15,
+                "start": 828
+              },
+              "value": "well"
+            },
+            "label": {
+              "kind": "IRString",
+              "span": {
+                "col": 1,
+                "end": 837,
+                "line": 15,
+                "start": 828
+              },
+              "value": "Assay plate_A1"
+            }
+          },
+          "deps": [
+            "entry.s4.b.s0"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "AllocContainer",
+          "span": {
+            "col": 1,
+            "end": 837,
+            "line": 15,
+            "start": 828
+          },
+          "step_id": "entry.s5::well::A1::alloc"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "base": {
+                    "base": {
+                      "kind": "IRIdentifier",
+                      "name": "lysate",
+                      "span": {
+                        "col": 15,
+                        "end": 848,
+                        "line": 15,
+                        "start": 842
+                      }
+                    },
+                    "kind": "IRMember",
+                    "member": "contents",
+                    "span": {
+                      "col": 15,
+                      "end": 857,
+                      "line": 15,
+                      "start": 842
+                    }
+                  },
+                  "index": {
+                    "kind": "IRQuantity",
+                    "span": {
+                      "col": 31,
+                      "end": 859,
+                      "line": 15,
+                      "start": 858
+                    },
+                    "unit": null,
+                    "value": 0.0
+                  },
+                  "kind": "IRIndex",
+                  "span": {
+                    "col": 15,
+                    "end": 860,
+                    "line": 15,
+                    "start": 842
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 34,
+                    "end": 865,
+                    "line": 15,
+                    "start": 861
+                  },
+                  "unit": "uL",
+                  "value": 20.0
+                },
+                "span": {
+                  "col": 15,
+                  "end": 865,
+                  "line": 15,
+                  "start": 842
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "__lw_plate_assay_A1",
+              "span": {
+                "col": 1,
+                "end": 837,
+                "line": 15,
+                "start": 828
+              }
+            }
+          },
+          "deps": [
+            "entry.s5::well::A1::alloc"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 1,
+            "end": 866,
+            "line": 15,
+            "start": 828
+          },
+          "step_id": "entry.s5"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "base": {
+                  "base": {
+                    "kind": "IRIdentifier",
+                    "name": "lysate",
+                    "span": {
+                      "col": 17,
+                      "end": 890,
+                      "line": 16,
+                      "start": 884
+                    }
+                  },
+                  "kind": "IRMember",
+                  "member": "contents",
+                  "span": {
+                    "col": 17,
+                    "end": 899,
+                    "line": 16,
+                    "start": 884
+                  }
+                },
+                "index": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 33,
+                    "end": 901,
+                    "line": 16,
+                    "start": 900
+                  },
+                  "unit": null,
+                  "value": 1.0
+                },
+                "kind": "IRIndex",
+                "span": {
+                  "col": 17,
+                  "end": 902,
+                  "line": 16,
+                  "start": 884
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "resuspended",
+              "span": {
+                "col": 1,
+                "end": 879,
+                "line": 16,
+                "start": 868
+              }
+            }
+          },
+          "deps": [
+            "entry.s5"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 1,
+            "end": 903,
+            "line": 16,
+            "start": 868
+          },
+          "step_id": "entry.s7"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "buffer",
+                  "span": {
+                    "col": 17,
+                    "end": 927,
+                    "line": 17,
+                    "start": 921
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 24,
+                    "end": 932,
+                    "line": 17,
+                    "start": 928
+                  },
+                  "unit": "uL",
+                  "value": 40.0
+                },
+                "span": {
+                  "col": 17,
+                  "end": 932,
+                  "line": 17,
+                  "start": 921
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "resuspended",
+              "span": {
+                "col": 1,
+                "end": 916,
+                "line": 17,
+                "start": 905
+              }
+            }
+          },
+          "deps": [
+            "entry.s7"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 1,
+            "end": 933,
+            "line": 17,
+            "start": 905
+          },
+          "step_id": "entry.s8"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "resuspended",
+                  "span": {
+                    "col": 17,
+                    "end": 962,
+                    "line": 18,
+                    "start": 951
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 29,
+                    "end": 967,
+                    "line": 18,
+                    "start": 963
+                  },
+                  "unit": "uL",
+                  "value": 32.0
+                },
+                "span": {
+                  "col": 17,
+                  "end": 967,
+                  "line": 18,
+                  "start": 951
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "resuspended",
+              "span": {
+                "col": 1,
+                "end": 946,
+                "line": 18,
+                "start": 935
+              }
+            }
+          },
+          "deps": [
+            "entry.s8"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 1,
+            "end": 968,
+            "line": 18,
+            "start": 935
+          },
+          "step_id": "entry.s9"
+        },
+        {
+          "args": {
+            "bind": "__lw_plate_assay_A2",
+            "carrier_id": {
+              "kind": "IRString",
+              "span": {
+                "col": 1,
+                "end": 979,
+                "line": 19,
+                "start": 970
+              },
+              "value": "assay"
+            },
+            "carrier_kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 1,
+                "end": 979,
+                "line": 19,
+                "start": 970
+              },
+              "value": "plate"
+            },
+            "carrier_position": {
+              "kind": "IRString",
+              "span": {
+                "col": 1,
+                "end": 979,
+                "line": 19,
+                "start": 970
+              },
+              "value": "A2"
+            },
+            "container_name": "__lw_plate_assay_A2",
+            "container_namespace": "entry",
+            "kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 1,
+                "end": 979,
+                "line": 19,
+                "start": 970
+              },
+              "value": "well"
+            },
+            "label": {
+              "kind": "IRString",
+              "span": {
+                "col": 1,
+                "end": 979,
+                "line": 19,
+                "start": 970
+              },
+              "value": "Assay plate_A2"
+            }
+          },
+          "deps": [
+            "entry.s9"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "AllocContainer",
+          "span": {
+            "col": 1,
+            "end": 979,
+            "line": 19,
+            "start": 970
+          },
+          "step_id": "entry.s10::well::A2::alloc"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "resuspended",
+                  "span": {
+                    "col": 15,
+                    "end": 995,
+                    "line": 19,
+                    "start": 984
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 27,
+                    "end": 1000,
+                    "line": 19,
+                    "start": 996
+                  },
+                  "unit": "uL",
+                  "value": 20.0
+                },
+                "span": {
+                  "col": 15,
+                  "end": 1000,
+                  "line": 19,
+                  "start": 984
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "__lw_plate_assay_A2",
+              "span": {
+                "col": 1,
+                "end": 979,
+                "line": 19,
+                "start": 970
+              }
+            }
+          },
+          "deps": [
+            "entry.s10::well::A2::alloc"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 1,
+            "end": 1001,
+            "line": 19,
+            "start": 970
+          },
+          "step_id": "entry.s10"
+        },
+        {
+          "args": {
+            "bind": "__lw_plate_assay_A3",
+            "carrier_id": {
+              "kind": "IRString",
+              "span": {
+                "col": 1,
+                "end": 1012,
+                "line": 20,
+                "start": 1003
+              },
+              "value": "assay"
+            },
+            "carrier_kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 1,
+                "end": 1012,
+                "line": 20,
+                "start": 1003
+              },
+              "value": "plate"
+            },
+            "carrier_position": {
+              "kind": "IRString",
+              "span": {
+                "col": 1,
+                "end": 1012,
+                "line": 20,
+                "start": 1003
+              },
+              "value": "A3"
+            },
+            "container_name": "__lw_plate_assay_A3",
+            "container_namespace": "entry",
+            "kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 1,
+                "end": 1012,
+                "line": 20,
+                "start": 1003
+              },
+              "value": "well"
+            },
+            "label": {
+              "kind": "IRString",
+              "span": {
+                "col": 1,
+                "end": 1012,
+                "line": 20,
+                "start": 1003
+              },
+              "value": "Assay plate_A3"
+            }
+          },
+          "deps": [
+            "entry.s10"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "AllocContainer",
+          "span": {
+            "col": 1,
+            "end": 1012,
+            "line": 20,
+            "start": 1003
+          },
+          "step_id": "entry.s12::well::A3::alloc"
+        },
+        {
+          "args": {
+            "sources": [
+              {
+                "kind": "IRPair",
+                "left": {
+                  "kind": "IRIdentifier",
+                  "name": "buffer",
+                  "span": {
+                    "col": 15,
+                    "end": 1023,
+                    "line": 20,
+                    "start": 1017
+                  }
+                },
+                "right": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 22,
+                    "end": 1028,
+                    "line": 20,
+                    "start": 1024
+                  },
+                  "unit": "uL",
+                  "value": 20.0
+                },
+                "span": {
+                  "col": 15,
+                  "end": 1028,
+                  "line": 20,
+                  "start": 1017
+                }
+              }
+            ],
+            "target": {
+              "kind": "IRIdentifier",
+              "name": "__lw_plate_assay_A3",
+              "span": {
+                "col": 1,
+                "end": 1012,
+                "line": 20,
+                "start": 1003
+              }
+            }
+          },
+          "deps": [
+            "entry.s12::well::A3::alloc"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "Mutation",
+          "span": {
+            "col": 1,
+            "end": 1029,
+            "line": 20,
+            "start": 1003
+          },
+          "step_id": "entry.s12"
+        },
+        {
+          "args": {
+            "bind": "readings",
+            "quantity": {
+              "kind": "IRIdentifier",
+              "name": "fluorescence",
+              "span": {
+                "col": 54,
+                "end": 1096,
+                "line": 21,
+                "start": 1084
+              }
+            },
+            "sample": {
+              "elements": [
+                {
+                  "kind": "IRIdentifier",
+                  "name": "__lw_plate_assay_A1",
+                  "span": {
+                    "col": 29,
+                    "end": 1071,
+                    "line": 21,
+                    "start": 1059
+                  }
+                },
+                {
+                  "kind": "IRIdentifier",
+                  "name": "__lw_plate_assay_A2",
+                  "span": {
+                    "col": 29,
+                    "end": 1071,
+                    "line": 21,
+                    "start": 1059
+                  }
+                },
+                {
+                  "kind": "IRIdentifier",
+                  "name": "__lw_plate_assay_A3",
+                  "span": {
+                    "col": 29,
+                    "end": 1071,
+                    "line": 21,
+                    "start": 1059
+                  }
+                }
+              ],
+              "kind": "IRGroup",
+              "span": {
+                "col": 29,
+                "end": 1071,
+                "line": 21,
+                "start": 1059
+              }
+            }
+          },
+          "deps": [
+            "entry.s12"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "img",
+          "span": {
+            "col": 1,
+            "end": 1097,
+            "line": 21,
+            "start": 1031
+          },
+          "step_id": "entry.s14"
+        }
+      ]
+    }
+  ],
+  "span": null
+}

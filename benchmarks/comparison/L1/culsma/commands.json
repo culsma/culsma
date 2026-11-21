@@ -1,0 +1,65 @@
+{
+  "commands": [
+    {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/culsma-env/bin/python",
+        "-m",
+        "culsma.cli",
+        "run",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/culsma/protocol.culs",
+        "--output",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/local-results/comparison-execution/20261121T201158565518Z/L1/culsma/command-1/output.json",
+        "--artifacts-dir",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/local-results/comparison-execution/20261121T201158565518Z/L1/culsma/command-1"
+      ],
+      "cwd": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/culsma",
+      "returncode": 0,
+      "stdout": "command-01.stdout.txt",
+      "stderr": "command-01.stderr.txt"
+    }
+  ],
+  "errors": [],
+  "runtime": {
+    "python": "3.12.8",
+    "commit": "5364676bc2437b4981a00ce0133c730af243e469",
+    "files": {
+      "src/culsma/frontend/resolver.py": {
+        "matches": true,
+        "expected_sha256": "1cf6253117149884ac26c13930e7b63a8f8b053dbe2a1629666047857b1b807a",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/culsma-source/src/culsma/frontend/resolver.py",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/culsma-source/src/culsma/frontend/resolver.py"
+      },
+      "src/culsma/parser/parser.py": {
+        "matches": true,
+        "expected_sha256": "9e52b36bb2fcca92bf0de2669ed7b4b0a5c0041d65ecf0475df4a4a7685073d1",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/culsma-source/src/culsma/parser/parser.py",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/culsma-source/src/culsma/parser/parser.py"
+      },
+      "src/culsma/pipeline/typecheck/__init__.py": {
+        "matches": true,
+        "expected_sha256": "3e3d8efafc183f0405140681351b7f7e970786ef619fb9d59d67c489e5daf5c1",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/culsma-source/src/culsma/pipeline/typecheck/__init__.py",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/culsma-source/src/culsma/pipeline/typecheck/__init__.py"
+      },
+      "src/culsma/runtime/material/ledger.py": {
+        "matches": true,
+        "expected_sha256": "f46dc0e3ca95f6603448e3c7256c58147a97fc900a4d0319a83ca3ee726bdde7",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/culsma-source/src/culsma/runtime/material/ledger.py",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/culsma-source/src/culsma/runtime/material/ledger.py"
+      },
+      "src/culsma/scientific_model/registry.py": {
+        "matches": true,
+        "expected_sha256": "87b08c8c7665ca411ca311a57c701a3a1a63ac8476f1c81690aa301072a02d75",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/culsma-source/src/culsma/scientific_model/registry.py",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/culsma-source/src/culsma/scientific_model/registry.py"
+      }
+    },
+    "verified": true
+  },
+  "input_sha256": {
+    "../case.json": "4dc8bf2f9647b47d451e429277e5df3030f15aa3ba535abb76e4e137f82a2de9",
+    "protocol.culs": "7fb8df9c6526a682e338ca6e2d07df955a9bd3e8044aa233037c92647ecbf67a",
+    "requirements.txt": "8162cf7b7a84a30ea753dccb0ae4016af1f51d6e5eee738acaa1240dbafea0d3",
+    "../../evaluate.py": "b6a200cc7a9e30cfd89cc1dca9ca541f6c287eca752ba0095574b8adc6ab40db"
+  }
+}

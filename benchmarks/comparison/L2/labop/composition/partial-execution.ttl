@@ -1,0 +1,2050 @@
+@prefix ns1: <http://bioprotocols.org/labop#> .
+@prefix ns2: <http://bioprotocols.org/uml#> .
+@prefix om: <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix sbol: <http://sbols.org/v3#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://example.org/l2/composition/execution> a ns1:ProtocolExecution,
+        sbol:TopLevel ;
+    ns1:activityCallEdge <https://example.org/l2/composition/execution/ControlFlow1>,
+        <https://example.org/l2/composition/execution/ControlFlow2>,
+        <https://example.org/l2/composition/execution/ControlFlow3>,
+        <https://example.org/l2/composition/execution/ControlFlow4>,
+        <https://example.org/l2/composition/execution/ControlFlow5>,
+        <https://example.org/l2/composition/execution/ControlFlow6>,
+        <https://example.org/l2/composition/execution/ControlFlow7>,
+        <https://example.org/l2/composition/execution/ControlFlow8>,
+        <https://example.org/l2/composition/execution/ControlFlow9>,
+        <https://example.org/l2/composition/execution/ObjectFlow1>,
+        <https://example.org/l2/composition/execution/ObjectFlow2>,
+        <https://example.org/l2/composition/execution/ObjectFlow3> ;
+    ns1:activityCallNode <https://example.org/l2/composition/execution/CallBehaviorAction1>,
+        <https://example.org/l2/composition/execution/FinalNode1>,
+        <https://example.org/l2/composition/execution/InitialNode1> ;
+    ns1:execution <https://example.org/l2/composition/execution/ActivityNodeExecution1>,
+        <https://example.org/l2/composition/execution/ActivityNodeExecution10>,
+        <https://example.org/l2/composition/execution/ActivityNodeExecution11>,
+        <https://example.org/l2/composition/execution/ActivityNodeExecution12>,
+        <https://example.org/l2/composition/execution/ActivityNodeExecution2>,
+        <https://example.org/l2/composition/execution/ActivityNodeExecution3>,
+        <https://example.org/l2/composition/execution/ActivityNodeExecution4>,
+        <https://example.org/l2/composition/execution/ActivityNodeExecution5>,
+        <https://example.org/l2/composition/execution/ActivityNodeExecution6>,
+        <https://example.org/l2/composition/execution/ActivityNodeExecution7>,
+        <https://example.org/l2/composition/execution/ActivityNodeExecution8>,
+        <https://example.org/l2/composition/execution/ActivityNodeExecution9>,
+        <https://example.org/l2/composition/execution/CallBehaviorExecution1>,
+        <https://example.org/l2/composition/execution/CallBehaviorExecution2>,
+        <https://example.org/l2/composition/execution/CallBehaviorExecution3>,
+        <https://example.org/l2/composition/execution/CallBehaviorExecution4>,
+        <https://example.org/l2/composition/execution/CallBehaviorExecution5>,
+        <https://example.org/l2/composition/execution/CallBehaviorExecution6> ;
+    ns1:flow <https://example.org/l2/composition/execution/ActivityEdgeFlow1>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow10>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow11>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow12>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow13>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow14>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow15>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow16>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow17>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow18>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow19>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow2>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow20>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow21>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow22>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow23>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow24>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow25>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow26>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow27>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow28>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow29>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow3>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow30>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow31>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow32>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow4>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow5>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow6>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow7>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow8>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow9> ;
+    ns1:protocol <https://example.org/l2/composition/main> ;
+    sbol:displayId "execution" ;
+    sbol:hasNamespace <https://example.org/l2/composition/> ;
+    prov:qualifiedAssociation <https://example.org/l2/composition/execution/Association1> ;
+    prov:startedAtTime "2000-01-01T00:00:00"^^xsd:dateTime .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision> a ns1:Primitive,
+        sbol:TopLevel ;
+    ns2:ownedParameter <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue1>,
+        <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue2>,
+        <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue3>,
+        <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue4> ;
+    sbol:description "Place a measured amount (mass or volume) of a specified component into a location, where it may then be used in executing the protocol." ;
+    sbol:displayId "Provision" ;
+    sbol:hasNamespace <https://bioprotocols.org/labop/primitives/liquid_handling> .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue1/Parameter1> a ns2:Parameter,
+        sbol:Identified ;
+    ns2:direction ns2:in ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:lowerValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue1/Parameter1/LiteralInteger2> ;
+    ns2:type sbol:Component ;
+    ns2:upperValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue1/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "resource" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue1/Parameter1/LiteralInteger1> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue1/Parameter1/LiteralInteger2> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue2/Parameter1> a ns2:Parameter,
+        sbol:Identified ;
+    ns2:direction ns2:in ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:lowerValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue2/Parameter1/LiteralInteger2> ;
+    ns2:type ns1:SampleCollection ;
+    ns2:upperValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue2/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "destination" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue2/Parameter1/LiteralInteger1> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue2/Parameter1/LiteralInteger2> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue3/Parameter1> a ns2:Parameter,
+        sbol:Identified ;
+    ns2:direction ns2:in ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:lowerValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue3/Parameter1/LiteralInteger2> ;
+    ns2:type om:Measure ;
+    ns2:upperValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue3/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "amount" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue3/Parameter1/LiteralInteger1> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue3/Parameter1/LiteralInteger2> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue4> a ns2:OrderedPropertyValue,
+        sbol:Identified ;
+    ns2:indexValue 3 ;
+    ns2:propertyValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue4/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue4" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue4/Parameter1> a ns2:Parameter,
+        sbol:Identified ;
+    ns2:direction ns2:in ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:lowerValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue4/Parameter1/LiteralInteger2> ;
+    ns2:type om:Measure ;
+    ns2:upperValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue4/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "dispenseVelocity" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue4/Parameter1/LiteralInteger1> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue4/Parameter1/LiteralInteger2> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 0 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer> a ns1:Primitive,
+        sbol:TopLevel ;
+    ns2:ownedParameter <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue1>,
+        <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue2>,
+        <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue3>,
+        <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue4>,
+        <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue5>,
+        <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue6>,
+        <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue7> ;
+    sbol:description "Move a measured volume taken from a collection of source samples to a location whose shape can contain them in a destination locations" ;
+    sbol:displayId "Transfer" ;
+    sbol:hasNamespace <https://bioprotocols.org/labop/primitives/liquid_handling> .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue1> a ns2:OrderedPropertyValue,
+        sbol:Identified ;
+    ns2:indexValue 0 ;
+    ns2:propertyValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue1/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue1" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue1/Parameter1> a ns2:Parameter,
+        sbol:Identified ;
+    ns2:direction ns2:in ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:lowerValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue1/Parameter1/LiteralInteger2> ;
+    ns2:type ns1:SampleCollection ;
+    ns2:upperValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue1/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "source" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue1/Parameter1/LiteralInteger1> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue1/Parameter1/LiteralInteger2> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue2> a ns2:OrderedPropertyValue,
+        sbol:Identified ;
+    ns2:indexValue 1 ;
+    ns2:propertyValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue2/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue2" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue2/Parameter1> a ns2:Parameter,
+        sbol:Identified ;
+    ns2:direction ns2:in ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:lowerValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue2/Parameter1/LiteralInteger2> ;
+    ns2:type ns1:SampleCollection ;
+    ns2:upperValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue2/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "destination" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue2/Parameter1/LiteralInteger1> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue2/Parameter1/LiteralInteger2> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue3> a ns2:OrderedPropertyValue,
+        sbol:Identified ;
+    ns2:indexValue 2 ;
+    ns2:propertyValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue3/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue3" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue3/Parameter1> a ns2:Parameter,
+        sbol:Identified ;
+    ns2:direction ns2:in ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:lowerValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue3/Parameter1/LiteralInteger2> ;
+    ns2:type ns2:ValueSpecification ;
+    ns2:upperValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue3/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "coordinates" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue3/Parameter1/LiteralInteger1> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue3/Parameter1/LiteralInteger2> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 0 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue4> a ns2:OrderedPropertyValue,
+        sbol:Identified ;
+    ns2:indexValue 3 ;
+    ns2:propertyValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue4/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue4" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue4/Parameter1> a ns2:Parameter,
+        sbol:Identified ;
+    ns2:direction ns2:in ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:lowerValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue4/Parameter1/LiteralInteger2> ;
+    ns2:type ns2:ValueSpecification ;
+    ns2:upperValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue4/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "replicates" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue4/Parameter1/LiteralInteger1> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue4/Parameter1/LiteralInteger2> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 0 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue5> a ns2:OrderedPropertyValue,
+        sbol:Identified ;
+    ns2:indexValue 4 ;
+    ns2:propertyValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue5/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue5" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue5/Parameter1> a ns2:Parameter,
+        sbol:Identified ;
+    ns2:direction ns2:in ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:lowerValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue5/Parameter1/LiteralInteger2> ;
+    ns2:type om:Measure ;
+    ns2:upperValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue5/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "temperature" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue5/Parameter1/LiteralInteger1> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue5/Parameter1/LiteralInteger2> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 0 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue6> a ns2:OrderedPropertyValue,
+        sbol:Identified ;
+    ns2:indexValue 5 ;
+    ns2:propertyValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue6/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue6" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue6/Parameter1> a ns2:Parameter,
+        sbol:Identified ;
+    ns2:direction ns2:in ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:lowerValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue6/Parameter1/LiteralInteger2> ;
+    ns2:type om:Measure ;
+    ns2:upperValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue6/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "amount" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue6/Parameter1/LiteralInteger1> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue6/Parameter1/LiteralInteger2> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue7> a ns2:OrderedPropertyValue,
+        sbol:Identified ;
+    ns2:indexValue 6 ;
+    ns2:propertyValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue7/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue7" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue7/Parameter1> a ns2:Parameter,
+        sbol:Identified ;
+    ns2:direction ns2:in ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:lowerValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue7/Parameter1/LiteralInteger2> ;
+    ns2:type om:Measure ;
+    ns2:upperValue <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue7/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "dispenseVelocity" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue7/Parameter1/LiteralInteger1> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Transfer/OrderedPropertyValue7/Parameter1/LiteralInteger2> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 0 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue1/Parameter1> a ns2:Parameter,
+        sbol:Identified ;
+    ns2:direction ns2:in ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:lowerValue <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue1/Parameter1/LiteralInteger2> ;
+    ns2:type sbol:Identified ;
+    ns2:upperValue <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue1/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "specification" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue1/Parameter1/LiteralInteger1> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue1/Parameter1/LiteralInteger2> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue2/Parameter1> a ns2:Parameter,
+        sbol:Identified ;
+    ns2:direction ns2:in ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:lowerValue <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue2/Parameter1/LiteralInteger2> ;
+    ns2:type ns1:SampleArray ;
+    ns2:upperValue <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue2/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "sample_array" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue2/Parameter1/LiteralInteger1> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue2/Parameter1/LiteralInteger2> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 0 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue3/Parameter1> a ns2:Parameter,
+        sbol:Identified ;
+    ns2:direction ns2:out ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:lowerValue <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue3/Parameter1/LiteralInteger2> ;
+    ns2:type ns1:SampleArray ;
+    ns2:upperValue <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue3/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "samples" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue3/Parameter1/LiteralInteger1> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue3/Parameter1/LiteralInteger2> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://example.org/l2/composition/PrepareSample> a ns1:Protocol,
+        sbol:TopLevel ;
+    ns2:edge <https://example.org/l2/composition/PrepareSample/ControlFlow1>,
+        <https://example.org/l2/composition/PrepareSample/ControlFlow2>,
+        <https://example.org/l2/composition/PrepareSample/ControlFlow3>,
+        <https://example.org/l2/composition/PrepareSample/ControlFlow4>,
+        <https://example.org/l2/composition/PrepareSample/ControlFlow5>,
+        <https://example.org/l2/composition/PrepareSample/ObjectFlow1>,
+        <https://example.org/l2/composition/PrepareSample/ObjectFlow10>,
+        <https://example.org/l2/composition/PrepareSample/ObjectFlow2>,
+        <https://example.org/l2/composition/PrepareSample/ObjectFlow3>,
+        <https://example.org/l2/composition/PrepareSample/ObjectFlow4>,
+        <https://example.org/l2/composition/PrepareSample/ObjectFlow5>,
+        <https://example.org/l2/composition/PrepareSample/ObjectFlow6>,
+        <https://example.org/l2/composition/PrepareSample/ObjectFlow7>,
+        <https://example.org/l2/composition/PrepareSample/ObjectFlow8>,
+        <https://example.org/l2/composition/PrepareSample/ObjectFlow9> ;
+    ns2:node <https://example.org/l2/composition/PrepareSample/ActivityParameterNode1>,
+        <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1>,
+        <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2>,
+        <https://example.org/l2/composition/PrepareSample/FinalNode1>,
+        <https://example.org/l2/composition/PrepareSample/ForkNode1>,
+        <https://example.org/l2/composition/PrepareSample/InitialNode1> ;
+    ns2:ownedParameter <https://example.org/l2/composition/PrepareSample/OrderedPropertyValue1> ;
+    sbol:description "PrepareSample" ;
+    sbol:displayId "PrepareSample" ;
+    sbol:hasNamespace <https://example.org/l2/composition/> ;
+    sbol:name "PrepareSample" .
+
+<https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin1/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/prepared_spec> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2/LiteralIdentified1> a ns2:LiteralIdentified,
+        sbol:Identified ;
+    ns2:identifiedValue <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralIdentified1" .
+
+<https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/ValuePin1/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/buffer> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/ValuePin2/LiteralIdentified1> a ns2:LiteralIdentified,
+        sbol:Identified ;
+    ns2:identifiedValue <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/ValuePin2/LiteralIdentified1/Measure1> ;
+    sbol:displayId "LiteralIdentified1" .
+
+<https://example.org/l2/composition/PrepareSample/ObjectFlow1> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin1> ;
+    ns2:target <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1> ;
+    sbol:displayId "ObjectFlow1" .
+
+<https://example.org/l2/composition/PrepareSample/ObjectFlow2> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2> ;
+    ns2:target <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1> ;
+    sbol:displayId "ObjectFlow2" .
+
+<https://example.org/l2/composition/PrepareSample/ObjectFlow4> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/ValuePin1> ;
+    ns2:target <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2> ;
+    sbol:displayId "ObjectFlow4" .
+
+<https://example.org/l2/composition/PrepareSample/ObjectFlow6> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/ValuePin2> ;
+    ns2:target <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2> ;
+    sbol:displayId "ObjectFlow6" .
+
+<https://example.org/l2/composition/PrepareSample/ObjectFlow7> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/InputPin2> ;
+    ns2:target <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2> ;
+    sbol:displayId "ObjectFlow7" .
+
+<https://example.org/l2/composition/PrepareSample/OrderedPropertyValue1/Parameter1> a ns2:Parameter,
+        sbol:Identified ;
+    ns2:direction ns2:out ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:lowerValue <https://example.org/l2/composition/PrepareSample/OrderedPropertyValue1/Parameter1/LiteralInteger2> ;
+    ns2:type ns1:SampleArray ;
+    ns2:upperValue <https://example.org/l2/composition/PrepareSample/OrderedPropertyValue1/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "sample" .
+
+<https://example.org/l2/composition/PrepareSample/OrderedPropertyValue1/Parameter1/LiteralInteger1> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://example.org/l2/composition/PrepareSample/OrderedPropertyValue1/Parameter1/LiteralInteger2> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://example.org/l2/composition/TakeAliquot> a ns1:Protocol,
+        sbol:TopLevel ;
+    ns2:edge <https://example.org/l2/composition/TakeAliquot/ControlFlow1>,
+        <https://example.org/l2/composition/TakeAliquot/ControlFlow2>,
+        <https://example.org/l2/composition/TakeAliquot/ControlFlow3>,
+        <https://example.org/l2/composition/TakeAliquot/ControlFlow4>,
+        <https://example.org/l2/composition/TakeAliquot/ObjectFlow1>,
+        <https://example.org/l2/composition/TakeAliquot/ObjectFlow2>,
+        <https://example.org/l2/composition/TakeAliquot/ObjectFlow3>,
+        <https://example.org/l2/composition/TakeAliquot/ObjectFlow4>,
+        <https://example.org/l2/composition/TakeAliquot/ObjectFlow5>,
+        <https://example.org/l2/composition/TakeAliquot/ObjectFlow6>,
+        <https://example.org/l2/composition/TakeAliquot/ObjectFlow7>,
+        <https://example.org/l2/composition/TakeAliquot/ObjectFlow8>,
+        <https://example.org/l2/composition/TakeAliquot/ObjectFlow9> ;
+    ns2:node <https://example.org/l2/composition/TakeAliquot/ActivityParameterNode1>,
+        <https://example.org/l2/composition/TakeAliquot/ActivityParameterNode2>,
+        <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1>,
+        <https://example.org/l2/composition/TakeAliquot/FinalNode1>,
+        <https://example.org/l2/composition/TakeAliquot/InitialNode1> ;
+    ns2:ownedParameter <https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue1>,
+        <https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue2> ;
+    sbol:description "TakeAliquot" ;
+    sbol:displayId "TakeAliquot" ;
+    sbol:hasNamespace <https://example.org/l2/composition/> ;
+    sbol:name "TakeAliquot" .
+
+<https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/ValuePin1/LiteralIdentified1> a ns2:LiteralIdentified,
+        sbol:Identified ;
+    ns2:identifiedValue <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/ValuePin1/LiteralIdentified1/Measure1> ;
+    sbol:displayId "LiteralIdentified1" .
+
+<https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/ValuePin1/LiteralIdentified1/Measure1> a sbol:Identified,
+        om:Measure ;
+    sbol:displayId "Measure1" ;
+    om:hasNumericalValue 1e+01 ;
+    om:hasUnit om:microlitre .
+
+<https://example.org/l2/composition/TakeAliquot/ControlFlow1> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/TakeAliquot/InitialNode1> ;
+    ns2:target <https://example.org/l2/composition/TakeAliquot/FinalNode1> ;
+    sbol:displayId "ControlFlow1" .
+
+<https://example.org/l2/composition/TakeAliquot/ControlFlow2> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/TakeAliquot/InitialNode1> ;
+    ns2:target <https://example.org/l2/composition/TakeAliquot/FinalNode1> ;
+    sbol:displayId "ControlFlow2" .
+
+<https://example.org/l2/composition/TakeAliquot/ControlFlow3> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/TakeAliquot/InitialNode1> ;
+    ns2:target <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1> ;
+    sbol:displayId "ControlFlow3" .
+
+<https://example.org/l2/composition/TakeAliquot/ControlFlow4> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1> ;
+    ns2:target <https://example.org/l2/composition/TakeAliquot/FinalNode1> ;
+    sbol:displayId "ControlFlow4" .
+
+<https://example.org/l2/composition/TakeAliquot/ObjectFlow1> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin1> ;
+    ns2:target <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1> ;
+    sbol:displayId "ObjectFlow1" .
+
+<https://example.org/l2/composition/TakeAliquot/ObjectFlow2> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin2> ;
+    ns2:target <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1> ;
+    sbol:displayId "ObjectFlow2" .
+
+<https://example.org/l2/composition/TakeAliquot/ObjectFlow3> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin3> ;
+    ns2:target <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1> ;
+    sbol:displayId "ObjectFlow3" .
+
+<https://example.org/l2/composition/TakeAliquot/ObjectFlow4> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin4> ;
+    ns2:target <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1> ;
+    sbol:displayId "ObjectFlow4" .
+
+<https://example.org/l2/composition/TakeAliquot/ObjectFlow5> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin5> ;
+    ns2:target <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1> ;
+    sbol:displayId "ObjectFlow5" .
+
+<https://example.org/l2/composition/TakeAliquot/ObjectFlow6> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/ValuePin1> ;
+    ns2:target <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1> ;
+    sbol:displayId "ObjectFlow6" .
+
+<https://example.org/l2/composition/TakeAliquot/ObjectFlow7> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin6> ;
+    ns2:target <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1> ;
+    sbol:displayId "ObjectFlow7" .
+
+<https://example.org/l2/composition/TakeAliquot/ObjectFlow8> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/TakeAliquot/ActivityParameterNode2> ;
+    ns2:target <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin2> ;
+    sbol:displayId "ObjectFlow8" .
+
+<https://example.org/l2/composition/TakeAliquot/ObjectFlow9> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/TakeAliquot/ActivityParameterNode1> ;
+    ns2:target <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin1> ;
+    sbol:displayId "ObjectFlow9" .
+
+<https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue1/Parameter1> a ns2:Parameter,
+        sbol:Identified ;
+    ns2:direction ns2:in ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:lowerValue <https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue1/Parameter1/LiteralInteger2> ;
+    ns2:type ns1:SampleArray ;
+    ns2:upperValue <https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue1/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "sample" .
+
+<https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue1/Parameter1/LiteralInteger1> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue1/Parameter1/LiteralInteger2> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue2/Parameter1> a ns2:Parameter,
+        sbol:Identified ;
+    ns2:direction ns2:in ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:lowerValue <https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue2/Parameter1/LiteralInteger2> ;
+    ns2:type ns1:SampleArray ;
+    ns2:upperValue <https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue2/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "destination" .
+
+<https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue2/Parameter1/LiteralInteger1> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue2/Parameter1/LiteralInteger2> a ns2:LiteralInteger,
+        sbol:Identified ;
+    ns2:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://example.org/l2/composition/execute_0> a ns1:BehaviorExecution,
+        sbol:TopLevel ;
+    ns1:completedNormally true ;
+    sbol:displayId "execute_0" ;
+    sbol:hasNamespace <https://example.org/l2/composition/> ;
+    prov:endedAtTime "2000-01-01T00:00:01"^^xsd:dateTime ;
+    prov:startedAtTime "2000-01-01T00:00:00"^^xsd:dateTime .
+
+<https://example.org/l2/composition/execute_1> a ns1:BehaviorExecution,
+        sbol:TopLevel ;
+    ns1:completedNormally true ;
+    ns1:parameterValuePair <https://example.org/l2/composition/execute_1/ParameterValue1>,
+        <https://example.org/l2/composition/execute_1/ParameterValue2>,
+        <https://example.org/l2/composition/execute_1/ParameterValue3> ;
+    sbol:displayId "execute_1" ;
+    sbol:hasNamespace <https://example.org/l2/composition/> ;
+    prov:endedAtTime "2000-01-01T00:00:03"^^xsd:dateTime ;
+    prov:startedAtTime "2000-01-01T00:00:02"^^xsd:dateTime .
+
+<https://example.org/l2/composition/execute_1/ParameterValue1> a ns1:ParameterValue,
+        sbol:Identified ;
+    ns1:parameter <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue1> ;
+    ns1:parameterValue <https://example.org/l2/composition/execute_1/ParameterValue1/LiteralReference1> ;
+    sbol:displayId "ParameterValue1" .
+
+<https://example.org/l2/composition/execute_1/ParameterValue1/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/target_spec> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execute_1/ParameterValue2> a ns1:ParameterValue,
+        sbol:Identified ;
+    ns1:parameter <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue2> ;
+    ns1:parameterValue <https://example.org/l2/composition/execute_1/ParameterValue2/LiteralReference1> ;
+    sbol:displayId "ParameterValue2" .
+
+<https://example.org/l2/composition/execute_1/ParameterValue2/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execute_1/ParameterValue3> a ns1:ParameterValue,
+        sbol:Identified ;
+    ns1:parameter <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue3> ;
+    ns1:parameterValue <https://example.org/l2/composition/execute_1/ParameterValue3/LiteralReference1> ;
+    sbol:displayId "ParameterValue3" .
+
+<https://example.org/l2/composition/execute_1/ParameterValue3/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execute_2> a ns1:BehaviorExecution,
+        sbol:TopLevel ;
+    ns1:completedNormally true ;
+    ns1:parameterValuePair <https://example.org/l2/composition/execute_2/ParameterValue1>,
+        <https://example.org/l2/composition/execute_2/ParameterValue2> ;
+    sbol:displayId "execute_2" ;
+    sbol:hasNamespace <https://example.org/l2/composition/> ;
+    prov:endedAtTime "2000-01-01T00:00:05"^^xsd:dateTime ;
+    prov:startedAtTime "2000-01-01T00:00:04"^^xsd:dateTime .
+
+<https://example.org/l2/composition/execute_2/ParameterValue1> a ns1:ParameterValue,
+        sbol:Identified ;
+    ns1:parameter <https://example.org/l2/composition/PrepareSample/OrderedPropertyValue1> ;
+    ns1:parameterValue <https://example.org/l2/composition/execute_2/ParameterValue1/LiteralString1> ;
+    sbol:displayId "ParameterValue1" .
+
+<https://example.org/l2/composition/execute_2/ParameterValue1/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execute_2/ParameterValue2> a ns1:ParameterValue,
+        sbol:Identified ;
+    ns1:parameter <https://example.org/l2/composition/PrepareSample/OrderedPropertyValue1> ;
+    ns1:parameterValue <https://example.org/l2/composition/execute_2/ParameterValue2/LiteralReference1> ;
+    sbol:displayId "ParameterValue2" .
+
+<https://example.org/l2/composition/execute_2/ParameterValue2/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execute_3> a ns1:BehaviorExecution,
+        sbol:TopLevel ;
+    ns1:completedNormally true ;
+    ns1:parameterValuePair <https://example.org/l2/composition/execute_3/ParameterValue1>,
+        <https://example.org/l2/composition/execute_3/ParameterValue2>,
+        <https://example.org/l2/composition/execute_3/ParameterValue3> ;
+    sbol:displayId "execute_3" ;
+    sbol:hasNamespace <https://example.org/l2/composition/> ;
+    prov:endedAtTime "2000-01-01T00:00:07"^^xsd:dateTime ;
+    prov:startedAtTime "2000-01-01T00:00:06"^^xsd:dateTime .
+
+<https://example.org/l2/composition/execute_3/ParameterValue1> a ns1:ParameterValue,
+        sbol:Identified ;
+    ns1:parameter <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue1> ;
+    ns1:parameterValue <https://example.org/l2/composition/execute_3/ParameterValue1/LiteralReference1> ;
+    sbol:displayId "ParameterValue1" .
+
+<https://example.org/l2/composition/execute_3/ParameterValue1/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/prepared_spec> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execute_3/ParameterValue2> a ns1:ParameterValue,
+        sbol:Identified ;
+    ns1:parameter <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue2> ;
+    ns1:parameterValue <https://example.org/l2/composition/execute_3/ParameterValue2/LiteralReference1> ;
+    sbol:displayId "ParameterValue2" .
+
+<https://example.org/l2/composition/execute_3/ParameterValue2/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execute_3/ParameterValue3> a ns1:ParameterValue,
+        sbol:Identified ;
+    ns1:parameter <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue3> ;
+    ns1:parameterValue <https://example.org/l2/composition/execute_3/ParameterValue3/LiteralReference1> ;
+    sbol:displayId "ParameterValue3" .
+
+<https://example.org/l2/composition/execute_3/ParameterValue3/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execute_4> a ns1:BehaviorExecution,
+        sbol:TopLevel ;
+    ns1:completedNormally true ;
+    ns1:parameterValuePair <https://example.org/l2/composition/execute_4/ParameterValue1>,
+        <https://example.org/l2/composition/execute_4/ParameterValue2>,
+        <https://example.org/l2/composition/execute_4/ParameterValue3> ;
+    sbol:displayId "execute_4" ;
+    sbol:hasNamespace <https://example.org/l2/composition/> ;
+    prov:endedAtTime "2000-01-01T00:00:09"^^xsd:dateTime ;
+    prov:startedAtTime "2000-01-01T00:00:08"^^xsd:dateTime .
+
+<https://example.org/l2/composition/execute_4/ParameterValue1> a ns1:ParameterValue,
+        sbol:Identified ;
+    ns1:parameter <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue1> ;
+    ns1:parameterValue <https://example.org/l2/composition/execute_4/ParameterValue1/LiteralReference1> ;
+    sbol:displayId "ParameterValue1" .
+
+<https://example.org/l2/composition/execute_4/ParameterValue1/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/buffer> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execute_4/ParameterValue2> a ns1:ParameterValue,
+        sbol:Identified ;
+    ns1:parameter <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue2> ;
+    ns1:parameterValue <https://example.org/l2/composition/execute_4/ParameterValue2/LiteralReference1> ;
+    sbol:displayId "ParameterValue2" .
+
+<https://example.org/l2/composition/execute_4/ParameterValue2/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execute_4/ParameterValue3> a ns1:ParameterValue,
+        sbol:Identified ;
+    ns1:parameter <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue3> ;
+    ns1:parameterValue <https://example.org/l2/composition/execute_4/ParameterValue3/LiteralReference1> ;
+    sbol:displayId "ParameterValue3" .
+
+<https://example.org/l2/composition/execute_4/ParameterValue3/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/ValuePin2/LiteralIdentified1/Measure1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execute_5> a ns1:BehaviorExecution,
+        sbol:TopLevel ;
+    ns1:completedNormally true ;
+    ns1:parameterValuePair <https://example.org/l2/composition/execute_5/ParameterValue1>,
+        <https://example.org/l2/composition/execute_5/ParameterValue2>,
+        <https://example.org/l2/composition/execute_5/ParameterValue3> ;
+    sbol:displayId "execute_5" ;
+    sbol:hasNamespace <https://example.org/l2/composition/> ;
+    prov:endedAtTime "2000-01-01T00:00:11"^^xsd:dateTime ;
+    prov:startedAtTime "2000-01-01T00:00:10"^^xsd:dateTime .
+
+<https://example.org/l2/composition/execute_5/ParameterValue1> a ns1:ParameterValue,
+        sbol:Identified ;
+    ns1:parameter <https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue1> ;
+    ns1:parameterValue <https://example.org/l2/composition/execute_5/ParameterValue1/LiteralString1> ;
+    sbol:displayId "ParameterValue1" .
+
+<https://example.org/l2/composition/execute_5/ParameterValue1/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execute_5/ParameterValue2> a ns1:ParameterValue,
+        sbol:Identified ;
+    ns1:parameter <https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue1> ;
+    ns1:parameterValue <https://example.org/l2/composition/execute_5/ParameterValue2/LiteralReference1> ;
+    sbol:displayId "ParameterValue2" .
+
+<https://example.org/l2/composition/execute_5/ParameterValue2/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execute_5/ParameterValue3> a ns1:ParameterValue,
+        sbol:Identified ;
+    ns1:parameter <https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue2> ;
+    ns1:parameterValue <https://example.org/l2/composition/execute_5/ParameterValue3/LiteralReference1> ;
+    sbol:displayId "ParameterValue3" .
+
+<https://example.org/l2/composition/execute_5/ParameterValue3/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow1/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow10/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow11/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow12/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow13/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow14/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow15/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow16/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow17/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow18/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow19/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow2> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/execution/ControlFlow3> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow2/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution1> ;
+    sbol:displayId "ActivityEdgeFlow2" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow2/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow20/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow21/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow22/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow23/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow24/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow25/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow25/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow26/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow27/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow27/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow28/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow29> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/main/ControlFlow6> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow29/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/CallBehaviorExecution6> ;
+    sbol:displayId "ActivityEdgeFlow29" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow29/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow3> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/execution/ControlFlow2> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow3/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/CallBehaviorExecution1> ;
+    sbol:displayId "ActivityEdgeFlow3" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow3/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow30> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/execution/ObjectFlow2> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow30/LiteralReference1>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow30/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution11> ;
+    sbol:displayId "ActivityEdgeFlow30" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow30/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow30/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow31> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/execution/ObjectFlow3> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow31/LiteralReference1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution4> ;
+    sbol:displayId "ActivityEdgeFlow31" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow31/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow32> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/execution/ControlFlow8> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow32/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/CallBehaviorExecution6> ;
+    sbol:displayId "ActivityEdgeFlow32" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow32/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow4/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow5> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/main/ControlFlow1> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow5/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution2> ;
+    sbol:displayId "ActivityEdgeFlow5" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow5/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow6> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/main/ControlFlow2> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow6/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution2> ;
+    sbol:displayId "ActivityEdgeFlow6" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow6/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow7/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow8/LiteralString1> a ns2:LiteralString,
+        sbol:Identified ;
+    ns2:stringValue "uml.ControlFlow" ;
+    sbol:displayId "LiteralString1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow9/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/execution/Association1> a sbol:Identified,
+        prov:Association ;
+    sbol:displayId "Association1" ;
+    prov:agent <https://example.org/l2/composition/software_runner> ;
+    prov:hadPlan <https://example.org/l2/composition/main> .
+
+<https://example.org/l2/composition/execution/ControlFlow5> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/FinalNode1> ;
+    ns2:target <https://example.org/l2/composition/execution/FinalNode1> ;
+    sbol:displayId "ControlFlow5" .
+
+<https://example.org/l2/composition/execution/ControlFlow9> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/TakeAliquot/FinalNode1> ;
+    ns2:target <https://example.org/l2/composition/main/FinalNode1> ;
+    sbol:displayId "ControlFlow9" .
+
+<https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin1/LiteralReference1> a ns2:LiteralReference,
+        sbol:Identified ;
+    ns2:referenceValue <https://example.org/l2/composition/target_spec> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin2/LiteralIdentified1> a ns2:LiteralIdentified,
+        sbol:Identified ;
+    ns2:identifiedValue <https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralIdentified1" .
+
+<https://example.org/l2/composition/main/ObjectFlow1> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin1> ;
+    ns2:target <https://example.org/l2/composition/main/CallBehaviorAction1> ;
+    sbol:displayId "ObjectFlow1" .
+
+<https://example.org/l2/composition/main/ObjectFlow2> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin2> ;
+    ns2:target <https://example.org/l2/composition/main/CallBehaviorAction1> ;
+    sbol:displayId "ObjectFlow2" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue1> a ns2:OrderedPropertyValue,
+        sbol:Identified ;
+    ns2:indexValue 0 ;
+    ns2:propertyValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue1/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue1" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue2> a ns2:OrderedPropertyValue,
+        sbol:Identified ;
+    ns2:indexValue 1 ;
+    ns2:propertyValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue2/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue2" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue3> a ns2:OrderedPropertyValue,
+        sbol:Identified ;
+    ns2:indexValue 2 ;
+    ns2:propertyValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue3/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue3" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer> a ns1:Primitive,
+        sbol:TopLevel ;
+    ns2:ownedParameter <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue1>,
+        <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue2>,
+        <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue3> ;
+    sbol:description "Allocate a sample array with size and type based on an empty container" ;
+    sbol:displayId "EmptyContainer" ;
+    sbol:hasNamespace <https://bioprotocols.org/labop/primitives/sample_arrays> .
+
+<https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin1> a ns2:ValuePin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:value <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin1/LiteralReference1> ;
+    sbol:displayId "ValuePin1" ;
+    sbol:name "specification" .
+
+<https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2> a ns2:ValuePin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:value <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2/LiteralIdentified1> ;
+    sbol:displayId "ValuePin2" ;
+    sbol:name "sample_array" .
+
+<https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/InputPin2> a ns2:InputPin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    sbol:displayId "InputPin2" ;
+    sbol:name "dispenseVelocity" .
+
+<https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/ValuePin1> a ns2:ValuePin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:value <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/ValuePin1/LiteralReference1> ;
+    sbol:displayId "ValuePin1" ;
+    sbol:name "resource" .
+
+<https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/ValuePin2> a ns2:ValuePin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:value <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/ValuePin2/LiteralIdentified1> ;
+    sbol:displayId "ValuePin2" ;
+    sbol:name "amount" .
+
+<https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/ValuePin2/LiteralIdentified1/Measure1> a sbol:Identified,
+        om:Measure ;
+    sbol:displayId "Measure1" ;
+    om:hasNumericalValue 1e+02 ;
+    om:hasUnit om:microlitre .
+
+<https://example.org/l2/composition/PrepareSample/ControlFlow1> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/PrepareSample/InitialNode1> ;
+    ns2:target <https://example.org/l2/composition/PrepareSample/FinalNode1> ;
+    sbol:displayId "ControlFlow1" .
+
+<https://example.org/l2/composition/PrepareSample/ControlFlow2> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/PrepareSample/InitialNode1> ;
+    ns2:target <https://example.org/l2/composition/PrepareSample/FinalNode1> ;
+    sbol:displayId "ControlFlow2" .
+
+<https://example.org/l2/composition/PrepareSample/ControlFlow3> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/PrepareSample/InitialNode1> ;
+    ns2:target <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1> ;
+    sbol:displayId "ControlFlow3" .
+
+<https://example.org/l2/composition/PrepareSample/ControlFlow4> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1> ;
+    ns2:target <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2> ;
+    sbol:displayId "ControlFlow4" .
+
+<https://example.org/l2/composition/PrepareSample/ControlFlow5> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2> ;
+    ns2:target <https://example.org/l2/composition/PrepareSample/FinalNode1> ;
+    sbol:displayId "ControlFlow5" .
+
+<https://example.org/l2/composition/PrepareSample/ObjectFlow10> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/PrepareSample/ForkNode1> ;
+    ns2:target <https://example.org/l2/composition/PrepareSample/ActivityParameterNode1> ;
+    sbol:displayId "ObjectFlow10" .
+
+<https://example.org/l2/composition/PrepareSample/ObjectFlow3> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1> ;
+    ns2:target <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/OutputPin1> ;
+    sbol:displayId "ObjectFlow3" .
+
+<https://example.org/l2/composition/PrepareSample/ObjectFlow5> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/InputPin1> ;
+    ns2:target <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2> ;
+    sbol:displayId "ObjectFlow5" .
+
+<https://example.org/l2/composition/PrepareSample/ObjectFlow8> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/PrepareSample/ForkNode1> ;
+    ns2:target <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/InputPin1> ;
+    sbol:displayId "ObjectFlow8" .
+
+<https://example.org/l2/composition/PrepareSample/ObjectFlow9> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/OutputPin1> ;
+    ns2:target <https://example.org/l2/composition/PrepareSample/ForkNode1> ;
+    sbol:displayId "ObjectFlow9" .
+
+<https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin3> a ns2:InputPin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    sbol:displayId "InputPin3" ;
+    sbol:name "coordinates" .
+
+<https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin4> a ns2:InputPin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    sbol:displayId "InputPin4" ;
+    sbol:name "replicates" .
+
+<https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin5> a ns2:InputPin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    sbol:displayId "InputPin5" ;
+    sbol:name "temperature" .
+
+<https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin6> a ns2:InputPin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    sbol:displayId "InputPin6" ;
+    sbol:name "dispenseVelocity" .
+
+<https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/ValuePin1> a ns2:ValuePin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:value <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/ValuePin1/LiteralIdentified1> ;
+    sbol:displayId "ValuePin1" ;
+    sbol:name "amount" .
+
+<https://example.org/l2/composition/buffer> a sbol:Component ;
+    sbol:displayId "buffer" ;
+    sbol:hasNamespace <https://example.org/l2/composition/> ;
+    sbol:type <https://identifiers.org/SBO:0000241> .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow1> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/execution/ControlFlow1> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow1/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution1> ;
+    sbol:displayId "ActivityEdgeFlow1" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow10> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/main/ObjectFlow7> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow10/LiteralReference1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution3> ;
+    sbol:displayId "ActivityEdgeFlow10" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow11> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/main/ControlFlow5> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow11/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/CallBehaviorExecution3> ;
+    sbol:displayId "ActivityEdgeFlow11" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow12> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/main/ObjectFlow4> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow12/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/CallBehaviorExecution3> ;
+    sbol:displayId "ActivityEdgeFlow12" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow13> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/execution/ControlFlow6> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow13/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/CallBehaviorExecution3> ;
+    sbol:displayId "ActivityEdgeFlow13" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow14> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/main/ObjectFlow6> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow14/LiteralReference1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution4> ;
+    sbol:displayId "ActivityEdgeFlow14" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow15> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/PrepareSample/ControlFlow1> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow15/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution5> ;
+    sbol:displayId "ActivityEdgeFlow15" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow16> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/PrepareSample/ControlFlow2> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow16/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution5> ;
+    sbol:displayId "ActivityEdgeFlow16" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow17> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/PrepareSample/ControlFlow3> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow17/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution5> ;
+    sbol:displayId "ActivityEdgeFlow17" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow18> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/PrepareSample/ControlFlow4> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow18/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/CallBehaviorExecution4> ;
+    sbol:displayId "ActivityEdgeFlow18" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow19> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/PrepareSample/ObjectFlow3> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow19/LiteralReference1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/CallBehaviorExecution4> ;
+    sbol:displayId "ActivityEdgeFlow19" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow20> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/PrepareSample/ObjectFlow9> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow20/LiteralReference1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution6> ;
+    sbol:displayId "ActivityEdgeFlow20" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow21> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/PrepareSample/ObjectFlow10> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow21/LiteralReference1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution7> ;
+    sbol:displayId "ActivityEdgeFlow21" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow22> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/PrepareSample/ObjectFlow8> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow22/LiteralReference1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution7> ;
+    sbol:displayId "ActivityEdgeFlow22" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow23> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/execution/ObjectFlow1> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow23/LiteralReference1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution8> ;
+    sbol:displayId "ActivityEdgeFlow23" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow24> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/PrepareSample/ObjectFlow5> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow24/LiteralReference1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution9> ;
+    sbol:displayId "ActivityEdgeFlow24" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow25> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/main/ObjectFlow8> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow25/LiteralReference1>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow25/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution10> ;
+    sbol:displayId "ActivityEdgeFlow25" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow26> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/PrepareSample/ControlFlow5> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow26/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/CallBehaviorExecution5> ;
+    sbol:displayId "ActivityEdgeFlow26" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow27> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/main/ObjectFlow5> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow27/LiteralReference1>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow27/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution11> ;
+    sbol:displayId "ActivityEdgeFlow27" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow28> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/execution/ControlFlow7> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow28/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution12> ;
+    sbol:displayId "ActivityEdgeFlow28" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow4> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/execution/ControlFlow4> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow4/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/CallBehaviorExecution1> ;
+    sbol:displayId "ActivityEdgeFlow4" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow7> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/main/ControlFlow3> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow7/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/ActivityNodeExecution2> ;
+    sbol:displayId "ActivityEdgeFlow7" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow8> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/main/ControlFlow4> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow8/LiteralString1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/CallBehaviorExecution2> ;
+    sbol:displayId "ActivityEdgeFlow8" .
+
+<https://example.org/l2/composition/execution/ActivityEdgeFlow9> a ns1:ActivityEdgeFlow,
+        sbol:Identified ;
+    ns1:edge <https://example.org/l2/composition/main/ObjectFlow3> ;
+    ns1:edgeValue <https://example.org/l2/composition/execution/ActivityEdgeFlow9/LiteralReference1> ;
+    ns1:tokenSource <https://example.org/l2/composition/execution/CallBehaviorExecution2> ;
+    sbol:displayId "ActivityEdgeFlow9" .
+
+<https://example.org/l2/composition/execution/ActivityNodeExecution10> a ns1:ActivityNodeExecution,
+        sbol:Identified ;
+    ns1:incomingFlow <https://example.org/l2/composition/execution/ActivityEdgeFlow12>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow23> ;
+    ns1:node <https://example.org/l2/composition/main/CallBehaviorAction2/OutputPin1> ;
+    sbol:displayId "ActivityNodeExecution10" .
+
+<https://example.org/l2/composition/execution/ActivityNodeExecution12> a ns1:ActivityNodeExecution,
+        sbol:Identified ;
+    ns1:incomingFlow <https://example.org/l2/composition/execution/ActivityEdgeFlow15>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow16>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow26> ;
+    ns1:node <https://example.org/l2/composition/PrepareSample/FinalNode1> ;
+    sbol:displayId "ActivityNodeExecution12" .
+
+<https://example.org/l2/composition/execution/ActivityNodeExecution3> a ns1:ActivityNodeExecution,
+        sbol:Identified ;
+    ns1:incomingFlow <https://example.org/l2/composition/execution/ActivityEdgeFlow9> ;
+    ns1:node <https://example.org/l2/composition/main/CallBehaviorAction1/OutputPin1> ;
+    sbol:displayId "ActivityNodeExecution3" .
+
+<https://example.org/l2/composition/execution/ActivityNodeExecution6> a ns1:ActivityNodeExecution,
+        sbol:Identified ;
+    ns1:incomingFlow <https://example.org/l2/composition/execution/ActivityEdgeFlow19> ;
+    ns1:node <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/OutputPin1> ;
+    sbol:displayId "ActivityNodeExecution6" .
+
+<https://example.org/l2/composition/execution/ActivityNodeExecution8> a ns1:ActivityNodeExecution,
+        sbol:Identified ;
+    ns1:incomingFlow <https://example.org/l2/composition/execution/ActivityEdgeFlow21> ;
+    ns1:node <https://example.org/l2/composition/PrepareSample/ActivityParameterNode1> ;
+    sbol:displayId "ActivityNodeExecution8" .
+
+<https://example.org/l2/composition/execution/ActivityNodeExecution9> a ns1:ActivityNodeExecution,
+        sbol:Identified ;
+    ns1:incomingFlow <https://example.org/l2/composition/execution/ActivityEdgeFlow22> ;
+    ns1:node <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/InputPin1> ;
+    sbol:displayId "ActivityNodeExecution9" .
+
+<https://example.org/l2/composition/execution/CallBehaviorExecution5> a ns1:CallBehaviorExecution,
+        sbol:Identified ;
+    ns1:call <https://example.org/l2/composition/execute_4> ;
+    ns1:incomingFlow <https://example.org/l2/composition/execution/ActivityEdgeFlow18>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow24> ;
+    ns1:node <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2> ;
+    sbol:displayId "CallBehaviorExecution5" .
+
+<https://example.org/l2/composition/execution/ControlFlow1> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/execution/InitialNode1> ;
+    ns2:target <https://example.org/l2/composition/execution/CallBehaviorAction1> ;
+    sbol:displayId "ControlFlow1" .
+
+<https://example.org/l2/composition/execution/ControlFlow2> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/execution/CallBehaviorAction1> ;
+    ns2:target <https://example.org/l2/composition/execution/FinalNode1> ;
+    sbol:displayId "ControlFlow2" .
+
+<https://example.org/l2/composition/execution/ControlFlow3> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/execution/InitialNode1> ;
+    ns2:target <https://example.org/l2/composition/execution/FinalNode1> ;
+    sbol:displayId "ControlFlow3" .
+
+<https://example.org/l2/composition/execution/ControlFlow4> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/execution/CallBehaviorAction1> ;
+    ns2:target <https://example.org/l2/composition/main/InitialNode1> ;
+    sbol:displayId "ControlFlow4" .
+
+<https://example.org/l2/composition/execution/ControlFlow6> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/CallBehaviorAction2> ;
+    ns2:target <https://example.org/l2/composition/PrepareSample/InitialNode1> ;
+    sbol:displayId "ControlFlow6" .
+
+<https://example.org/l2/composition/execution/ControlFlow7> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/PrepareSample/FinalNode1> ;
+    ns2:target <https://example.org/l2/composition/main/CallBehaviorAction3> ;
+    sbol:displayId "ControlFlow7" .
+
+<https://example.org/l2/composition/execution/ControlFlow8> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/CallBehaviorAction3> ;
+    ns2:target <https://example.org/l2/composition/TakeAliquot/InitialNode1> ;
+    sbol:displayId "ControlFlow8" .
+
+<https://example.org/l2/composition/execution/ObjectFlow1> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/PrepareSample/ActivityParameterNode1> ;
+    ns2:target <https://example.org/l2/composition/main/CallBehaviorAction2/OutputPin1> ;
+    sbol:displayId "ObjectFlow1" .
+
+<https://example.org/l2/composition/execution/ObjectFlow2> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/CallBehaviorAction3/InputPin1> ;
+    ns2:target <https://example.org/l2/composition/TakeAliquot/ActivityParameterNode1> ;
+    sbol:displayId "ObjectFlow2" .
+
+<https://example.org/l2/composition/execution/ObjectFlow3> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/CallBehaviorAction3/InputPin2> ;
+    ns2:target <https://example.org/l2/composition/TakeAliquot/ActivityParameterNode2> ;
+    sbol:displayId "ObjectFlow3" .
+
+<https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin1> a ns2:ValuePin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:value <https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin1/LiteralReference1> ;
+    sbol:displayId "ValuePin1" ;
+    sbol:name "specification" .
+
+<https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin2> a ns2:ValuePin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    ns2:value <https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin2/LiteralIdentified1> ;
+    sbol:displayId "ValuePin2" ;
+    sbol:name "sample_array" .
+
+<https://example.org/l2/composition/main/ControlFlow1> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/InitialNode1> ;
+    ns2:target <https://example.org/l2/composition/main/FinalNode1> ;
+    sbol:displayId "ControlFlow1" .
+
+<https://example.org/l2/composition/main/ControlFlow2> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/InitialNode1> ;
+    ns2:target <https://example.org/l2/composition/main/FinalNode1> ;
+    sbol:displayId "ControlFlow2" .
+
+<https://example.org/l2/composition/main/ControlFlow3> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/InitialNode1> ;
+    ns2:target <https://example.org/l2/composition/main/CallBehaviorAction1> ;
+    sbol:displayId "ControlFlow3" .
+
+<https://example.org/l2/composition/main/ControlFlow4> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/CallBehaviorAction1> ;
+    ns2:target <https://example.org/l2/composition/main/CallBehaviorAction2> ;
+    sbol:displayId "ControlFlow4" .
+
+<https://example.org/l2/composition/main/ControlFlow5> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/CallBehaviorAction2> ;
+    ns2:target <https://example.org/l2/composition/main/CallBehaviorAction3> ;
+    sbol:displayId "ControlFlow5" .
+
+<https://example.org/l2/composition/main/ControlFlow6> a ns2:ControlFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/CallBehaviorAction3> ;
+    ns2:target <https://example.org/l2/composition/main/FinalNode1> ;
+    sbol:displayId "ControlFlow6" .
+
+<https://example.org/l2/composition/main/ObjectFlow3> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/CallBehaviorAction1> ;
+    ns2:target <https://example.org/l2/composition/main/CallBehaviorAction1/OutputPin1> ;
+    sbol:displayId "ObjectFlow3" .
+
+<https://example.org/l2/composition/main/ObjectFlow4> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/CallBehaviorAction2> ;
+    ns2:target <https://example.org/l2/composition/main/CallBehaviorAction2/OutputPin1> ;
+    sbol:displayId "ObjectFlow4" .
+
+<https://example.org/l2/composition/main/ObjectFlow5> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/CallBehaviorAction3/InputPin1> ;
+    ns2:target <https://example.org/l2/composition/main/CallBehaviorAction3> ;
+    sbol:displayId "ObjectFlow5" .
+
+<https://example.org/l2/composition/main/ObjectFlow6> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/CallBehaviorAction3/InputPin2> ;
+    ns2:target <https://example.org/l2/composition/main/CallBehaviorAction3> ;
+    sbol:displayId "ObjectFlow6" .
+
+<https://example.org/l2/composition/main/ObjectFlow7> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/CallBehaviorAction1/OutputPin1> ;
+    ns2:target <https://example.org/l2/composition/main/CallBehaviorAction3/InputPin2> ;
+    sbol:displayId "ObjectFlow7" .
+
+<https://example.org/l2/composition/main/ObjectFlow8> a ns2:ObjectFlow,
+        sbol:Identified ;
+    ns2:source <https://example.org/l2/composition/main/CallBehaviorAction2/OutputPin1> ;
+    ns2:target <https://example.org/l2/composition/main/CallBehaviorAction3/InputPin1> ;
+    sbol:displayId "ObjectFlow8" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue1> a ns2:OrderedPropertyValue,
+        sbol:Identified ;
+    ns2:indexValue 0 ;
+    ns2:propertyValue <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue1/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue1" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue2> a ns2:OrderedPropertyValue,
+        sbol:Identified ;
+    ns2:indexValue 1 ;
+    ns2:propertyValue <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue2/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue2" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue3> a ns2:OrderedPropertyValue,
+        sbol:Identified ;
+    ns2:indexValue 2 ;
+    ns2:propertyValue <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue3/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue3" .
+
+<https://example.org/l2/composition/TakeAliquot/ActivityParameterNode1> a ns2:ActivityParameterNode,
+        sbol:Identified ;
+    ns2:parameter <https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue1> ;
+    sbol:displayId "ActivityParameterNode1" .
+
+<https://example.org/l2/composition/TakeAliquot/ActivityParameterNode2> a ns2:ActivityParameterNode,
+        sbol:Identified ;
+    ns2:parameter <https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue2> ;
+    sbol:displayId "ActivityParameterNode2" .
+
+<https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin1> a ns2:InputPin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    sbol:displayId "InputPin1" ;
+    sbol:name "source" .
+
+<https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin2> a ns2:InputPin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    sbol:displayId "InputPin2" ;
+    sbol:name "destination" .
+
+<https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue2> a ns2:OrderedPropertyValue,
+        sbol:Identified ;
+    ns2:indexValue 1 ;
+    ns2:propertyValue <https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue2/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue2" .
+
+<https://example.org/l2/composition/execution/ActivityNodeExecution1> a ns1:ActivityNodeExecution,
+        sbol:Identified ;
+    ns1:node <https://example.org/l2/composition/execution/InitialNode1> ;
+    sbol:displayId "ActivityNodeExecution1" .
+
+<https://example.org/l2/composition/execution/ActivityNodeExecution11> a ns1:ActivityNodeExecution,
+        sbol:Identified ;
+    ns1:incomingFlow <https://example.org/l2/composition/execution/ActivityEdgeFlow25> ;
+    ns1:node <https://example.org/l2/composition/main/CallBehaviorAction3/InputPin1> ;
+    sbol:displayId "ActivityNodeExecution11" .
+
+<https://example.org/l2/composition/execution/ActivityNodeExecution4> a ns1:ActivityNodeExecution,
+        sbol:Identified ;
+    ns1:incomingFlow <https://example.org/l2/composition/execution/ActivityEdgeFlow10> ;
+    ns1:node <https://example.org/l2/composition/main/CallBehaviorAction3/InputPin2> ;
+    sbol:displayId "ActivityNodeExecution4" .
+
+<https://example.org/l2/composition/execution/ActivityNodeExecution7> a ns1:ActivityNodeExecution,
+        sbol:Identified ;
+    ns1:incomingFlow <https://example.org/l2/composition/execution/ActivityEdgeFlow20> ;
+    ns1:node <https://example.org/l2/composition/PrepareSample/ForkNode1> ;
+    sbol:displayId "ActivityNodeExecution7" .
+
+<https://example.org/l2/composition/execution/CallBehaviorExecution1> a ns1:CallBehaviorExecution,
+        sbol:Identified ;
+    ns1:call <https://example.org/l2/composition/execute_0> ;
+    ns1:incomingFlow <https://example.org/l2/composition/execution/ActivityEdgeFlow1> ;
+    ns1:node <https://example.org/l2/composition/execution/CallBehaviorAction1> ;
+    sbol:displayId "CallBehaviorExecution1" .
+
+<https://example.org/l2/composition/execution/CallBehaviorExecution2> a ns1:CallBehaviorExecution,
+        sbol:Identified ;
+    ns1:call <https://example.org/l2/composition/execute_1> ;
+    ns1:incomingFlow <https://example.org/l2/composition/execution/ActivityEdgeFlow7> ;
+    ns1:node <https://example.org/l2/composition/main/CallBehaviorAction1> ;
+    sbol:displayId "CallBehaviorExecution2" .
+
+<https://example.org/l2/composition/execution/CallBehaviorExecution4> a ns1:CallBehaviorExecution,
+        sbol:Identified ;
+    ns1:call <https://example.org/l2/composition/execute_3> ;
+    ns1:incomingFlow <https://example.org/l2/composition/execution/ActivityEdgeFlow17> ;
+    ns1:node <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1> ;
+    sbol:displayId "CallBehaviorExecution4" .
+
+<https://example.org/l2/composition/execution/CallBehaviorExecution6> a ns1:CallBehaviorExecution,
+        sbol:Identified ;
+    ns1:call <https://example.org/l2/composition/execute_5> ;
+    ns1:incomingFlow <https://example.org/l2/composition/execution/ActivityEdgeFlow11>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow14>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow27>,
+        <https://example.org/l2/composition/execution/ActivityEdgeFlow28> ;
+    ns1:node <https://example.org/l2/composition/main/CallBehaviorAction3> ;
+    sbol:displayId "CallBehaviorExecution6" .
+
+<https://example.org/l2/composition/main> a ns1:Protocol,
+        sbol:TopLevel ;
+    ns2:edge <https://example.org/l2/composition/main/ControlFlow1>,
+        <https://example.org/l2/composition/main/ControlFlow2>,
+        <https://example.org/l2/composition/main/ControlFlow3>,
+        <https://example.org/l2/composition/main/ControlFlow4>,
+        <https://example.org/l2/composition/main/ControlFlow5>,
+        <https://example.org/l2/composition/main/ControlFlow6>,
+        <https://example.org/l2/composition/main/ObjectFlow1>,
+        <https://example.org/l2/composition/main/ObjectFlow2>,
+        <https://example.org/l2/composition/main/ObjectFlow3>,
+        <https://example.org/l2/composition/main/ObjectFlow4>,
+        <https://example.org/l2/composition/main/ObjectFlow5>,
+        <https://example.org/l2/composition/main/ObjectFlow6>,
+        <https://example.org/l2/composition/main/ObjectFlow7>,
+        <https://example.org/l2/composition/main/ObjectFlow8> ;
+    ns2:node <https://example.org/l2/composition/main/CallBehaviorAction1>,
+        <https://example.org/l2/composition/main/CallBehaviorAction2>,
+        <https://example.org/l2/composition/main/CallBehaviorAction3>,
+        <https://example.org/l2/composition/main/FinalNode1>,
+        <https://example.org/l2/composition/main/InitialNode1> ;
+    sbol:description "L2 output to input" ;
+    sbol:displayId "main" ;
+    sbol:hasNamespace <https://example.org/l2/composition/> ;
+    sbol:name "L2 output to input" .
+
+<https://example.org/l2/composition/prepared_spec> a ns1:ContainerSpec,
+        sbol:TopLevel ;
+    ns1:queryString "cont:MicrofugeTube1.5mL" ;
+    sbol:displayId "prepared_spec" ;
+    sbol:hasNamespace <https://example.org/l2/composition/> .
+
+<https://example.org/l2/composition/target_spec> a ns1:ContainerSpec,
+        sbol:TopLevel ;
+    ns1:queryString "cont:MicrofugeTube1.5mL" ;
+    sbol:displayId "target_spec" ;
+    sbol:hasNamespace <https://example.org/l2/composition/> .
+
+<https://example.org/l2/composition/PrepareSample/ActivityParameterNode1> a ns2:ActivityParameterNode,
+        sbol:Identified ;
+    ns2:parameter <https://example.org/l2/composition/PrepareSample/OrderedPropertyValue1> ;
+    sbol:displayId "ActivityParameterNode1" .
+
+<https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/OutputPin1> a ns2:OutputPin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    sbol:displayId "OutputPin1" ;
+    sbol:name "samples" .
+
+<https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/InputPin1> a ns2:InputPin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    sbol:displayId "InputPin1" ;
+    sbol:name "destination" .
+
+<https://example.org/l2/composition/PrepareSample/OrderedPropertyValue1> a ns2:OrderedPropertyValue,
+        sbol:Identified ;
+    ns2:indexValue 0 ;
+    ns2:propertyValue <https://example.org/l2/composition/PrepareSample/OrderedPropertyValue1/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue1" .
+
+<https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue1> a ns2:OrderedPropertyValue,
+        sbol:Identified ;
+    ns2:indexValue 0 ;
+    ns2:propertyValue <https://example.org/l2/composition/TakeAliquot/OrderedPropertyValue1/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue1" .
+
+<https://example.org/l2/composition/execution/ActivityNodeExecution2> a ns1:ActivityNodeExecution,
+        sbol:Identified ;
+    ns1:incomingFlow <https://example.org/l2/composition/execution/ActivityEdgeFlow4> ;
+    ns1:node <https://example.org/l2/composition/main/InitialNode1> ;
+    sbol:displayId "ActivityNodeExecution2" .
+
+<https://example.org/l2/composition/execution/ActivityNodeExecution5> a ns1:ActivityNodeExecution,
+        sbol:Identified ;
+    ns1:incomingFlow <https://example.org/l2/composition/execution/ActivityEdgeFlow13> ;
+    ns1:node <https://example.org/l2/composition/PrepareSample/InitialNode1> ;
+    sbol:displayId "ActivityNodeExecution5" .
+
+<https://example.org/l2/composition/execution/CallBehaviorExecution3> a ns1:CallBehaviorExecution,
+        sbol:Identified ;
+    ns1:call <https://example.org/l2/composition/execute_2> ;
+    ns1:incomingFlow <https://example.org/l2/composition/execution/ActivityEdgeFlow8> ;
+    ns1:node <https://example.org/l2/composition/main/CallBehaviorAction2> ;
+    sbol:displayId "CallBehaviorExecution3" .
+
+<https://example.org/l2/composition/execution/FinalNode1> a ns2:FinalNode,
+        sbol:Identified ;
+    sbol:displayId "FinalNode1" .
+
+<https://example.org/l2/composition/execution/InitialNode1> a ns2:InitialNode,
+        sbol:Identified ;
+    sbol:displayId "InitialNode1" .
+
+<https://example.org/l2/composition/main/CallBehaviorAction1/OutputPin1> a ns2:OutputPin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    sbol:displayId "OutputPin1" ;
+    sbol:name "samples" .
+
+<https://example.org/l2/composition/PrepareSample/ForkNode1> a ns2:ForkNode,
+        sbol:Identified ;
+    sbol:displayId "ForkNode1" .
+
+<https://example.org/l2/composition/TakeAliquot/FinalNode1> a ns2:FinalNode,
+        sbol:Identified ;
+    sbol:displayId "FinalNode1" .
+
+<https://example.org/l2/composition/TakeAliquot/InitialNode1> a ns2:InitialNode,
+        sbol:Identified ;
+    sbol:displayId "InitialNode1" .
+
+<https://example.org/l2/composition/execution/CallBehaviorAction1> a ns2:CallBehaviorAction,
+        sbol:Identified ;
+    ns2:behavior <https://example.org/l2/composition/main> ;
+    sbol:displayId "CallBehaviorAction1" .
+
+<https://example.org/l2/composition/main/CallBehaviorAction2/OutputPin1> a ns2:OutputPin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    sbol:displayId "OutputPin1" ;
+    sbol:name "sample" .
+
+<https://example.org/l2/composition/main/CallBehaviorAction3/InputPin1> a ns2:InputPin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    sbol:displayId "InputPin1" ;
+    sbol:name "sample" .
+
+<https://example.org/l2/composition/main/CallBehaviorAction3/InputPin2> a ns2:InputPin,
+        sbol:Identified ;
+    ns2:isOrdered true ;
+    ns2:isUnique true ;
+    sbol:displayId "InputPin2" ;
+    sbol:name "destination" .
+
+<https://example.org/l2/composition/PrepareSample/FinalNode1> a ns2:FinalNode,
+        sbol:Identified ;
+    sbol:displayId "FinalNode1" .
+
+<https://example.org/l2/composition/PrepareSample/InitialNode1> a ns2:InitialNode,
+        sbol:Identified ;
+    sbol:displayId "InitialNode1" .
+
+<https://example.org/l2/composition/main/CallBehaviorAction2> a ns2:CallBehaviorAction,
+        sbol:Identified ;
+    ns2:behavior <https://example.org/l2/composition/PrepareSample> ;
+    ns2:output <https://example.org/l2/composition/main/CallBehaviorAction2/OutputPin1> ;
+    sbol:displayId "CallBehaviorAction2" .
+
+<https://example.org/l2/composition/main/FinalNode1> a ns2:FinalNode,
+        sbol:Identified ;
+    sbol:displayId "FinalNode1" .
+
+<https://example.org/l2/composition/main/InitialNode1> a ns2:InitialNode,
+        sbol:Identified ;
+    sbol:displayId "InitialNode1" .
+
+<https://example.org/l2/composition/PrepareSample/CallBehaviorAction1> a ns2:CallBehaviorAction,
+        sbol:Identified ;
+    ns2:behavior <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer> ;
+    ns2:input <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin1>,
+        <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2> ;
+    ns2:output <https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/OutputPin1> ;
+    sbol:displayId "CallBehaviorAction1" .
+
+<https://example.org/l2/composition/main/CallBehaviorAction1> a ns2:CallBehaviorAction,
+        sbol:Identified ;
+    ns2:behavior <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer> ;
+    ns2:input <https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin1>,
+        <https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin2> ;
+    ns2:output <https://example.org/l2/composition/main/CallBehaviorAction1/OutputPin1> ;
+    sbol:displayId "CallBehaviorAction1" .
+
+<https://example.org/l2/composition/PrepareSample/CallBehaviorAction2> a ns2:CallBehaviorAction,
+        sbol:Identified ;
+    ns2:behavior <https://bioprotocols.org/labop/primitives/liquid_handling/Provision> ;
+    ns2:input <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/InputPin1>,
+        <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/InputPin2>,
+        <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/ValuePin1>,
+        <https://example.org/l2/composition/PrepareSample/CallBehaviorAction2/ValuePin2> ;
+    sbol:displayId "CallBehaviorAction2" .
+
+<https://example.org/l2/composition/main/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> a ns1:SampleArray,
+        sbol:Identified ;
+    ns1:containerType <https://example.org/l2/composition/target_spec> ;
+    ns1:initial_contents "%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/l2/composition/target_spec%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_target_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_target_0%22%5D%5D%7D%7D%7D" ;
+    sbol:displayId "SampleArray1" .
+
+<https://example.org/l2/composition/main/CallBehaviorAction3> a ns2:CallBehaviorAction,
+        sbol:Identified ;
+    ns2:behavior <https://example.org/l2/composition/TakeAliquot> ;
+    ns2:input <https://example.org/l2/composition/main/CallBehaviorAction3/InputPin1>,
+        <https://example.org/l2/composition/main/CallBehaviorAction3/InputPin2> ;
+    sbol:displayId "CallBehaviorAction3" .
+
+<https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1> a ns2:CallBehaviorAction,
+        sbol:Identified ;
+    ns2:behavior <https://bioprotocols.org/labop/primitives/liquid_handling/Transfer> ;
+    ns2:input <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin1>,
+        <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin2>,
+        <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin3>,
+        <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin4>,
+        <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin5>,
+        <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/InputPin6>,
+        <https://example.org/l2/composition/TakeAliquot/CallBehaviorAction1/ValuePin1> ;
+    sbol:displayId "CallBehaviorAction1" .
+
+<https://example.org/l2/composition/PrepareSample/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> a ns1:SampleArray,
+        sbol:Identified ;
+    ns1:containerType <https://example.org/l2/composition/prepared_spec> ;
+    ns1:initial_contents "%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/l2/composition/prepared_spec%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_prepared_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_prepared_0%22%5D%5D%7D%7D%7D" ;
+    sbol:displayId "SampleArray1" .
+

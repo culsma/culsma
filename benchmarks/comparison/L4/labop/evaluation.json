@@ -1,0 +1,45 @@
+{
+  "method": "extension_execution",
+  "expected_result": "Yes",
+  "result": "Yes",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "run-status.json",
+      "path": [
+        "completed_normally"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "run-status.json",
+      "path": [
+        "validation_errors"
+      ],
+      "equals": [],
+      "observed": [],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "run-status.json",
+      "path": [
+        "fraction_outputs"
+      ],
+      "equals": [
+        "supernatant",
+        "pellet"
+      ],
+      "observed": [
+        "supernatant",
+        "pellet"
+      ],
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

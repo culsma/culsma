@@ -1,0 +1,134 @@
+2026-11-21 21:12:32,930 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document
+2026-11-21 21:12:33,226 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol
+2026-11-21 21:12:33,539 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/gfp-native/spin_prefix/gfp_spin_prefix
+2026-11-21 21:12:33,540 INFO labop.execution.behavior_dynamics - Behavior GFP released-mechanism check is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:12:34,363 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://bioprotocols.org/labop/primitives/plate_handling/Hold
+2026-11-21 21:12:34,369 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://bioprotocols.org/labop/primitives/plate_handling/Hold
+    '''
+    Incubate, store, or hold a set of samples indefinitely at the specified temperature
+    '''
+    Input Parameters:
+	location: http://bioprotocols.org/labop#SampleArray 
+	temperature: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
+    
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:12:34,381 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://bioprotocols.org/labop/primitives/plate_handling/Spin
+2026-11-21 21:12:34,392 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://bioprotocols.org/labop/primitives/plate_handling/Spin
+    '''
+    Centrifuge a set of samples at a given acceleration for a given period of time
+    '''
+    Input Parameters:
+	location: http://bioprotocols.org/labop#SampleArray 
+	acceleration: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
+	duration: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
+    
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:12:34,503 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document
+2026-11-21 21:12:34,716 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol
+2026-11-21 21:12:36,378 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/gfp-native/location_continuation/gfp_location_continuation
+2026-11-21 21:12:36,382 INFO labop.execution.behavior_dynamics - Behavior GFP released-mechanism check is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:12:36,768 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://bioprotocols.org/labop/primitives/plate_handling/Hold
+2026-11-21 21:12:36,774 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://bioprotocols.org/labop/primitives/plate_handling/Hold
+    '''
+    Incubate, store, or hold a set of samples indefinitely at the specified temperature
+    '''
+    Input Parameters:
+	location: http://bioprotocols.org/labop#SampleArray 
+	temperature: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
+    
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:12:36,802 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://bioprotocols.org/labop/primitives/plate_handling/Spin
+2026-11-21 21:12:36,811 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://bioprotocols.org/labop/primitives/plate_handling/Spin
+    '''
+    Centrifuge a set of samples at a given acceleration for a given period of time
+    '''
+    Input Parameters:
+	location: http://bioprotocols.org/labop#SampleArray 
+	acceleration: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
+	duration: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
+    
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:12:38,893 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://bioprotocols.org/labop/primitives/liquid_handling/Transfer
+2026-11-21 21:12:39,784 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://bioprotocols.org/labop/primitives/sample_arrays/PlateCoordinates
+    '''
+    Select only the samples with specified row/column combination from a sample collection
+    '''
+    Input Parameters:
+	source: http://bioprotocols.org/labop#SampleCollection 
+	coordinates: http://bioprotocols.org/uml#ValueSpecification 
+    Output Parameters:
+	samples: http://bioprotocols.org/labop#SampleCollection 
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:12:39,882 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://bioprotocols.org/labop/primitives/liquid_handling/Transfer
+2026-11-21 21:12:40,814 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://bioprotocols.org/labop/primitives/liquid_handling/Transfer
+2026-11-21 21:12:41,737 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://bioprotocols.org/labop/primitives/liquid_handling/PipetteMix
+2026-11-21 21:12:41,752 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://bioprotocols.org/labop/primitives/liquid_handling/PipetteMix
+    '''
+    Mix by cycling a measured volume of liquid in and out at an array of samples a fixed number of times
+    '''
+    Input Parameters:
+	samples: http://bioprotocols.org/labop#SampleCollection 
+	dispenseVelocity: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure (Optional) 
+	amount: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
+	cycleCount: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure (Optional) 
+    
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:12:41,809 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://bioprotocols.org/labop/primitives/sample_arrays/PlateCoordinates
+    '''
+    Select only the samples with specified row/column combination from a sample collection
+    '''
+    Input Parameters:
+	source: http://bioprotocols.org/labop#SampleCollection 
+	coordinates: http://bioprotocols.org/uml#ValueSpecification 
+    Output Parameters:
+	samples: http://bioprotocols.org/labop#SampleCollection 
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:12:41,916 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://bioprotocols.org/labop/primitives/liquid_handling/Transfer
+2026-11-21 21:12:42,902 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://bioprotocols.org/labop/primitives/sample_arrays/PlateCoordinates
+    '''
+    Select only the samples with specified row/column combination from a sample collection
+    '''
+    Input Parameters:
+	source: http://bioprotocols.org/labop#SampleCollection 
+	coordinates: http://bioprotocols.org/uml#ValueSpecification 
+    Output Parameters:
+	samples: http://bioprotocols.org/labop#SampleCollection 
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:12:43,011 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://bioprotocols.org/labop/primitives/liquid_handling/Transfer
+2026-11-21 21:12:44,030 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://bioprotocols.org/labop/primitives/sample_arrays/PlateCoordinates
+    '''
+    Select only the samples with specified row/column combination from a sample collection
+    '''
+    Input Parameters:
+	source: http://bioprotocols.org/labop#SampleCollection 
+	coordinates: http://bioprotocols.org/uml#ValueSpecification 
+    Output Parameters:
+	samples: http://bioprotocols.org/labop#SampleCollection 
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:12:44,163 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://bioprotocols.org/labop/primitives/spectrophotometry/MeasureFluorescence
+2026-11-21 21:12:44,187 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://bioprotocols.org/labop/primitives/spectrophotometry/MeasureFluorescence
+    '''
+    Measure fluorescence intensity from a set of samples stimulated by a given wavelength, with an optional bandpass or lowpass filter
+    '''
+    Input Parameters:
+	samples: http://bioprotocols.org/labop#SampleCollection 
+	gain: http://www.w3.org/2001/XMLSchema#double (Optional) 
+	timepoints: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure (Optional) 
+	excitationWavelength: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
+	emissionBandpassWidth: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure (Optional) 
+	numFlashes: http://www.w3.org/2001/XMLSchema#integer (Optional) 
+	emissionWavelength: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure (Optional) 
+	emissionLowpassCutoff: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure (Optional) 
+    Output Parameters:
+	measurements: http://bioprotocols.org/labop#Dataset 
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...

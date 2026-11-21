@@ -1,0 +1,245 @@
+{
+  "method": "execution",
+  "expected_result": "No",
+  "result": "No",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "material-audit.json",
+      "path": [
+        "default_handlers"
+      ],
+      "equals": {
+        "handlers": {
+          "https://bioprotocols.org/labop/primitives/liquid_handling/TransferByMap": "TransferByMapUpdater",
+          "https://bioprotocols.org/labop/primitives/liquid_handling/Transfer": "TransferUpdater",
+          "https://bioprotocols.org/labop/primitives/liquid_handling/Vortex": "VortexUpdater",
+          "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer": "EmptyContainerUpdater",
+          "https://bioprotocols.org/labop/primitives/liquid_handling/Provision": "ProvisionUpdater",
+          "https://bioprotocols.org/labop/primitives/liquid_handling/SerialDilution": "SerialDilutionUpdater"
+        },
+        "primitive_to_output_function": {
+          "EmptyContainer": "empty_container_compute_output",
+          "PlateCoordinates": "plate_coordinates_compute_output",
+          "MeasureAbsorbance": "measure_absorbance_compute_output",
+          "MeasureFluorescence": "measure_fluorescence_compute_output",
+          "EmptyInstrument": "empty_rack_compute_output",
+          "EmptyRack": "empty_rack_compute_output",
+          "LoadContainerOnInstrument": "load_container_on_instrument_compute_output",
+          "JoinMetadata": "join_metadata_compute_output",
+          "JoinDatasets": "join_datasets_compute_output",
+          "ExcelMetadata": "excel_metadata_compute_output",
+          "ComputeMetadata": "compute_metadata_compute_output"
+        }
+      },
+      "observed": {
+        "handlers": {
+          "https://bioprotocols.org/labop/primitives/liquid_handling/TransferByMap": "TransferByMapUpdater",
+          "https://bioprotocols.org/labop/primitives/liquid_handling/Transfer": "TransferUpdater",
+          "https://bioprotocols.org/labop/primitives/liquid_handling/Vortex": "VortexUpdater",
+          "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer": "EmptyContainerUpdater",
+          "https://bioprotocols.org/labop/primitives/liquid_handling/Provision": "ProvisionUpdater",
+          "https://bioprotocols.org/labop/primitives/liquid_handling/SerialDilution": "SerialDilutionUpdater"
+        },
+        "primitive_to_output_function": {
+          "EmptyContainer": "empty_container_compute_output",
+          "PlateCoordinates": "plate_coordinates_compute_output",
+          "MeasureAbsorbance": "measure_absorbance_compute_output",
+          "MeasureFluorescence": "measure_fluorescence_compute_output",
+          "EmptyInstrument": "empty_rack_compute_output",
+          "EmptyRack": "empty_rack_compute_output",
+          "LoadContainerOnInstrument": "load_container_on_instrument_compute_output",
+          "JoinMetadata": "join_metadata_compute_output",
+          "JoinDatasets": "join_datasets_compute_output",
+          "ExcelMetadata": "excel_metadata_compute_output",
+          "ComputeMetadata": "compute_metadata_compute_output"
+        }
+      },
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "extension_used"
+      ],
+      "equals": false,
+      "observed": false,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "spin_prefix",
+        "fraction_output_names"
+      ],
+      "equals": [],
+      "observed": [],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "spin_prefix",
+        "spin_has_default_material_handler"
+      ],
+      "equals": false,
+      "observed": false,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "spin_prefix",
+        "validation_errors"
+      ],
+      "equals": [],
+      "observed": [],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "spin_prefix",
+        "completed_normally"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "spin_prefix",
+        "execution_exception"
+      ],
+      "equals": null,
+      "observed": null,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "location_continuation",
+        "fraction_output_names"
+      ],
+      "equals": [],
+      "observed": [],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "location_continuation",
+        "spin_has_default_material_handler"
+      ],
+      "equals": false,
+      "observed": false,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "location_continuation",
+        "validation_errors"
+      ],
+      "equals": [],
+      "observed": [],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "location_continuation",
+        "completed_normally"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "location_continuation",
+        "execution_exception"
+      ],
+      "equals": null,
+      "observed": null,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "location_continuation",
+        "well_volumes_uL"
+      ],
+      "equals": {
+        "A1": 20.0,
+        "A2": 20.0,
+        "A3": 20.0
+      },
+      "observed": {
+        "A1": 20.0,
+        "A2": 20.0,
+        "A3": 20.0
+      },
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "location_continuation",
+        "well_reagents"
+      ],
+      "equals": {
+        "A1": {
+          "https://example.org/gfp-native/location_continuation/lysate_liquid": 20.0
+        },
+        "A2": {
+          "https://example.org/gfp-native/location_continuation/assay_buffer": 20.0
+        },
+        "A3": {
+          "https://example.org/gfp-native/location_continuation/assay_buffer": 20.0
+        }
+      },
+      "observed": {
+        "A1": {
+          "https://example.org/gfp-native/location_continuation/lysate_liquid": 20.0
+        },
+        "A2": {
+          "https://example.org/gfp-native/location_continuation/assay_buffer": 20.0
+        },
+        "A3": {
+          "https://example.org/gfp-native/location_continuation/assay_buffer": 20.0
+        }
+      },
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

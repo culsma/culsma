@@ -1,0 +1,43 @@
+{
+  "method": "execution",
+  "expected_result": "Yes",
+  "result": "Yes",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        0,
+        "diagnostics"
+      ],
+      "equals": [],
+      "observed": [],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        1,
+        "diagnostics"
+      ],
+      "equals": [
+        {
+          "code": "SEM_UNBOUND_NAME_REFERENCE",
+          "span": "Span(line=7, col=11, start=147, end=152)"
+        }
+      ],
+      "observed": [
+        {
+          "code": "SEM_UNBOUND_NAME_REFERENCE",
+          "span": "Span(line=7, col=11, start=147, end=152)"
+        }
+      ],
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

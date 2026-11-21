@@ -1,0 +1,43 @@
+{
+  "upstream_subprotocol_test": {
+    "tests_run": 1,
+    "success": true,
+    "failures": 0,
+    "errors": 0
+  },
+  "counterexample_official_harness": {
+    "planned_calls": 2,
+    "completed_normally": true,
+    "executed_transfer_amounts_ul": [],
+    "issues": {
+      "reuse_execution": []
+    }
+  },
+  "counterexample_explicit_order": {
+    "mode": "subprotocol_explicit",
+    "validation_errors": [],
+    "validation_warnings": [],
+    "planned_calls": 2,
+    "entered_calls": [
+      {
+        "call": 1,
+        "amount_ul": 10.0
+      }
+    ],
+    "executed_child_inputs": [
+      "destination",
+      "source"
+    ],
+    "executed_transfers": [],
+    "completed_normally": true,
+    "issues": {
+      "execution": []
+    },
+    "latest_recorded_buffer_ul": {
+      "stock": 100.0,
+      "first": null,
+      "second": null
+    },
+    "null_means": "No finite buffer quantity recorded; null is not converted to zero."
+  }
+}

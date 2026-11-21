@@ -1,0 +1,39 @@
+{
+  "method": "execution",
+  "expected_result": "Yes",
+  "result": "Yes",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "results.json",
+      "path": [
+        "owner"
+      ],
+      "equals": "https://example.org/scope/parent",
+      "observed": "https://example.org/scope/parent",
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "python_helper_name_in_rdf"
+      ],
+      "equals": false,
+      "observed": false,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cross_activity_rejection"
+      ],
+      "equals": "Source node https://example.org/scope/parent/ActivityParameterNode1 is not a member of activity https://example.org/scope/other",
+      "observed": "Source node https://example.org/scope/parent/ActivityParameterNode1 is not a member of activity https://example.org/scope/other",
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

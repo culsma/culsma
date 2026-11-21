@@ -1,1 +1,0 @@
-{"artifacts": {"ast": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/results/l3/bpl-cli/loop_2-ast.json"}, "command": "parse", "format": "json", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/l3/bpl/loop_2.bpl", "ok": true}

@@ -1,0 +1,6 @@
+test_subexecutions (pinned_test_subprotocols.TestSubprotocols.test_subexecutions) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.785s
+
+OK

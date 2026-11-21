@@ -1,0 +1,24 @@
+{
+  "kind": "cycle",
+  "runtime_values": [
+    true,
+    true,
+    false
+  ],
+  "model_sha256": "4ec5ab1e1c1cbb376e11c80e248c07b7f0b45c48963f306a25b7e0a346bdcd31",
+  "validation_errors": [],
+  "validation_warnings": [],
+  "use_defined_primitives": false,
+  "execution_error": {
+    "type": "AttributeError",
+    "message": "'MergeNode' object has no attribute 'protocol'",
+    "traceback": "Traceback (most recent call last):\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L3/labop/protocol.py\", line 96, in run_case\n    ex = engine.execute(protocol,sbol3.Agent(\"software_runner\"),id=\"execution\",parameter_values=[])\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 299, in execute\n    self.run(execution_context, start_time=start_time)\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 352, in run\n    execution_contexts = self.step(execution_contexts)\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 401, in step\n    ec.ready = self.executable_activity_nodes(ec, new_tokens[ec])\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 890, in executable_activity_nodes\n    enabled_nodes = [\n                    ^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 893, in <listcomp>\n    if n.enabled(execution_context.incoming_edge_tokens[n], self)\n       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/uml/merge_node.py\", line 28, in enabled\n    protocol = self.protocol()\n               ^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/sbol3/object.py\", line 34, in __getattribute__\n    result = super().__getattribute__(name)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'MergeNode' object has no attribute 'protocol'\n"
+  },
+  "consumed_values": [],
+  "calls": [
+    "main"
+  ],
+  "issues": {
+    "execution": []
+  }
+}

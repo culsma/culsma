@@ -1,0 +1,59 @@
+
+********************************************************************************
+
+    Harness Results Summary
+
+    Artifacts:
+    ----------------------------------------------------------------------------
+    - ProtocolNTuples (pass): 
+    ----------------------------------------------------------------------------
+{
+    "document": {
+        "namespace": "https://labop.io/examples/protocols/ludox/"
+    },
+    "libraries": [
+        "liquid_handling",
+        "plate_handling",
+        "spectrophotometry",
+        "sample_arrays"
+    ],
+    "protocol": {
+        "name": "iGEM_LUDOX_OD_calibration_2018",
+        "version": "1.0",
+        "validation": "pass"
+    },
+    "nt_filename": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/controls/ludox/iGEM_LUDOX_OD_calibration_2018/artifacts/iGEM_LUDOX_OD_calibration_2018.nt"
+}
+    ----------------------------------------------------------------------------
+    - ProtocolDiagram (pass): 
+    ----------------------------------------------------------------------------
+{
+    "filename": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/controls/ludox/iGEM_LUDOX_OD_calibration_2018/artifacts/iGEM_LUDOX_OD_calibration_2018.diagram"
+}
+    ----------------------------------------------------------------------------
+    - ProtocolExecutionNTuples (pass): 
+    ----------------------------------------------------------------------------
+{
+    "filename": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/controls/ludox/iGEM_LUDOX_OD_calibration_2018/artifacts/iGEM_LUDOX_OD_calibration_2018.nt"
+}
+    ----------------------------------------------------------------------------
+    - ProtocolExecutionDiagram (pass): 
+    ----------------------------------------------------------------------------
+{
+    "filename": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/controls/ludox/iGEM_LUDOX_OD_calibration_2018/artifacts/iGEM_LUDOX_OD_calibration_2018.execution.diagram"
+}
+    ----------------------------------------------------------------------------
+    - ProtocolSampleTrace (pass): 
+    ----------------------------------------------------------------------------
+{
+    "filename": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/controls/ludox/iGEM_LUDOX_OD_calibration_2018/artifacts/sample_traces"
+}
+    ----------------------------------------------------------------------------
+    - ProtocolSpecialization (pass): 
+    ----------------------------------------------------------------------------
+{
+    "filename": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/controls/ludox/iGEM_LUDOX_OD_calibration_2018/artifacts/MarkdownSpecialization"
+}
+
+********************************************************************************
+        

@@ -1,0 +1,838 @@
+{
+  "entry_source_paths": [
+    "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/culsma/magnetic.culs"
+  ],
+  "library_imports": [],
+  "module_name": null,
+  "protocols": [
+    {
+      "module": "magnetic",
+      "name": "CaptureOnBeads",
+      "params": [],
+      "returns": [],
+      "source_path": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/culsma/magnetic.culs",
+      "source_role": "entry",
+      "span": {
+        "col": 1,
+        "end": 977,
+        "line": 1,
+        "start": 0
+      },
+      "statements": [
+        {
+          "name": "sample",
+          "span": {
+            "col": 3,
+            "end": 438,
+            "line": 2,
+            "start": 28
+          },
+          "value": {
+            "args": [
+              {
+                "name": "label",
+                "span": {
+                  "col": 21,
+                  "end": 70,
+                  "line": 2,
+                  "start": 46
+                },
+                "value": {
+                  "span": {
+                    "col": 29,
+                    "end": 70,
+                    "line": 2,
+                    "start": 54
+                  },
+                  "value": "Magnetic input"
+                }
+              },
+              {
+                "name": "load",
+                "span": {
+                  "col": 47,
+                  "end": 437,
+                  "line": 2,
+                  "start": 72
+                },
+                "value": {
+                  "elements": [
+                    {
+                      "left": {
+                        "args": [
+                          {
+                            "name": "kind",
+                            "span": {
+                              "col": 13,
+                              "end": 123,
+                              "line": 3,
+                              "start": 93
+                            },
+                            "value": {
+                              "base": {
+                                "name": "ContentKind",
+                                "span": {
+                                  "col": 20,
+                                  "end": 111,
+                                  "line": 3,
+                                  "start": 100
+                                }
+                              },
+                              "member": "PARTICULATE",
+                              "span": {
+                                "col": 20,
+                                "end": 123,
+                                "line": 3,
+                                "start": 100
+                              }
+                            }
+                          },
+                          {
+                            "name": "type",
+                            "span": {
+                              "col": 45,
+                              "end": 149,
+                              "line": 3,
+                              "start": 125
+                            },
+                            "value": {
+                              "base": {
+                                "name": "ContentType",
+                                "span": {
+                                  "col": 52,
+                                  "end": 143,
+                                  "line": 3,
+                                  "start": 132
+                                }
+                              },
+                              "member": "BEADS",
+                              "span": {
+                                "col": 52,
+                                "end": 149,
+                                "line": 3,
+                                "start": 132
+                              }
+                            }
+                          },
+                          {
+                            "name": "code",
+                            "span": {
+                              "col": 71,
+                              "end": 174,
+                              "line": 3,
+                              "start": 151
+                            },
+                            "value": {
+                              "span": {
+                                "col": 78,
+                                "end": 174,
+                                "line": 3,
+                                "start": 158
+                              },
+                              "value": "MAGNETIC_BEADS"
+                            }
+                          },
+                          {
+                            "name": "attrs",
+                            "span": {
+                              "col": 7,
+                              "end": 217,
+                              "line": 4,
+                              "start": 182
+                            },
+                            "value": {
+                              "entries": {
+                                "bead_property": {
+                                  "name": "magnetic",
+                                  "span": {
+                                    "col": 32,
+                                    "end": 215,
+                                    "line": 4,
+                                    "start": 207
+                                  }
+                                }
+                              },
+                              "span": {
+                                "col": 15,
+                                "end": 217,
+                                "line": 4,
+                                "start": 190
+                              }
+                            }
+                          }
+                        ],
+                        "name": "content",
+                        "span": {
+                          "col": 5,
+                          "end": 218,
+                          "line": 3,
+                          "start": 85
+                        }
+                      },
+                      "right": {
+                        "span": {
+                          "col": 44,
+                          "end": 223,
+                          "line": 4,
+                          "start": 219
+                        },
+                        "unit": "mg",
+                        "value": 10.0
+                      },
+                      "span": {
+                        "col": 5,
+                        "end": 223,
+                        "line": 3,
+                        "start": 85
+                      }
+                    },
+                    {
+                      "left": {
+                        "args": [
+                          {
+                            "name": "kind",
+                            "span": {
+                              "col": 13,
+                              "end": 277,
+                              "line": 5,
+                              "start": 237
+                            },
+                            "value": {
+                              "base": {
+                                "name": "ContentKind",
+                                "span": {
+                                  "col": 20,
+                                  "end": 255,
+                                  "line": 5,
+                                  "start": 244
+                                }
+                              },
+                              "member": "BIO_MOLECULE_OR_VIRUS",
+                              "span": {
+                                "col": 20,
+                                "end": 277,
+                                "line": 5,
+                                "start": 244
+                              }
+                            }
+                          },
+                          {
+                            "name": "type",
+                            "span": {
+                              "col": 55,
+                              "end": 305,
+                              "line": 5,
+                              "start": 279
+                            },
+                            "value": {
+                              "base": {
+                                "name": "ContentType",
+                                "span": {
+                                  "col": 62,
+                                  "end": 297,
+                                  "line": 5,
+                                  "start": 286
+                                }
+                              },
+                              "member": "PROTEIN",
+                              "span": {
+                                "col": 62,
+                                "end": 305,
+                                "line": 5,
+                                "start": 286
+                              }
+                            }
+                          },
+                          {
+                            "name": "code",
+                            "span": {
+                              "col": 7,
+                              "end": 336,
+                              "line": 6,
+                              "start": 313
+                            },
+                            "value": {
+                              "span": {
+                                "col": 14,
+                                "end": 336,
+                                "line": 6,
+                                "start": 320
+                              },
+                              "value": "TARGET_PROTEIN"
+                            }
+                          }
+                        ],
+                        "name": "content",
+                        "span": {
+                          "col": 5,
+                          "end": 337,
+                          "line": 5,
+                          "start": 229
+                        }
+                      },
+                      "right": {
+                        "span": {
+                          "col": 32,
+                          "end": 341,
+                          "line": 6,
+                          "start": 338
+                        },
+                        "unit": "ug",
+                        "value": 1.0
+                      },
+                      "span": {
+                        "col": 5,
+                        "end": 341,
+                        "line": 5,
+                        "start": 229
+                      }
+                    },
+                    {
+                      "left": {
+                        "args": [
+                          {
+                            "name": "kind",
+                            "span": {
+                              "col": 13,
+                              "end": 385,
+                              "line": 7,
+                              "start": 355
+                            },
+                            "value": {
+                              "base": {
+                                "name": "ContentKind",
+                                "span": {
+                                  "col": 20,
+                                  "end": 373,
+                                  "line": 7,
+                                  "start": 362
+                                }
+                              },
+                              "member": "FORMULATION",
+                              "span": {
+                                "col": 20,
+                                "end": 385,
+                                "line": 7,
+                                "start": 362
+                              }
+                            }
+                          },
+                          {
+                            "name": "type",
+                            "span": {
+                              "col": 45,
+                              "end": 412,
+                              "line": 7,
+                              "start": 387
+                            },
+                            "value": {
+                              "base": {
+                                "name": "ContentType",
+                                "span": {
+                                  "col": 52,
+                                  "end": 405,
+                                  "line": 7,
+                                  "start": 394
+                                }
+                              },
+                              "member": "BUFFER",
+                              "span": {
+                                "col": 52,
+                                "end": 412,
+                                "line": 7,
+                                "start": 394
+                              }
+                            }
+                          },
+                          {
+                            "name": "code",
+                            "span": {
+                              "col": 72,
+                              "end": 429,
+                              "line": 7,
+                              "start": 414
+                            },
+                            "value": {
+                              "span": {
+                                "col": 79,
+                                "end": 429,
+                                "line": 7,
+                                "start": 421
+                              },
+                              "value": "BUFFER"
+                            }
+                          }
+                        ],
+                        "name": "content",
+                        "span": {
+                          "col": 5,
+                          "end": 430,
+                          "line": 7,
+                          "start": 347
+                        }
+                      },
+                      "right": {
+                        "span": {
+                          "col": 89,
+                          "end": 436,
+                          "line": 7,
+                          "start": 431
+                        },
+                        "unit": "uL",
+                        "value": 100.0
+                      },
+                      "span": {
+                        "col": 5,
+                        "end": 436,
+                        "line": 7,
+                        "start": 347
+                      }
+                    }
+                  ],
+                  "span": {
+                    "col": 54,
+                    "end": 437,
+                    "line": 2,
+                    "start": 79
+                  }
+                }
+              }
+            ],
+            "name": "tube",
+            "span": {
+              "col": 16,
+              "end": 438,
+              "line": 2,
+              "start": 41
+            }
+          }
+        },
+        {
+          "name": "fractions",
+          "span": {
+            "col": 3,
+            "end": 954,
+            "line": 8,
+            "start": 442
+          },
+          "value": {
+            "args": [
+              {
+                "name": "sample",
+                "span": {
+                  "col": 23,
+                  "end": 477,
+                  "line": 8,
+                  "start": 462
+                },
+                "value": {
+                  "name": "sample",
+                  "span": {
+                    "col": 32,
+                    "end": 477,
+                    "line": 8,
+                    "start": 471
+                  }
+                }
+              },
+              {
+                "name": "program",
+                "span": {
+                  "col": 5,
+                  "end": 526,
+                  "line": 9,
+                  "start": 483
+                },
+                "value": {
+                  "args": [
+                    {
+                      "name": "duration",
+                      "span": {
+                        "col": 32,
+                        "end": 525,
+                        "line": 9,
+                        "start": 510
+                      },
+                      "value": {
+                        "span": {
+                          "col": 43,
+                          "end": 525,
+                          "line": 9,
+                          "start": 521
+                        },
+                        "unit": "min",
+                        "value": 2.0
+                      }
+                    }
+                  ],
+                  "name": "magnetic_program",
+                  "span": {
+                    "col": 15,
+                    "end": 526,
+                    "line": 9,
+                    "start": 493
+                  }
+                }
+              },
+              {
+                "name": "component_fates",
+                "span": {
+                  "col": 5,
+                  "end": 716,
+                  "line": 10,
+                  "start": 532
+                },
+                "value": {
+                  "entries": {
+                    "BUFFER": {
+                      "entries": {
+                        "bound": {
+                          "span": {
+                            "col": 24,
+                            "end": 689,
+                            "line": 13,
+                            "start": 687
+                          },
+                          "unit": "%",
+                          "value": 0.0
+                        },
+                        "flowthrough": {
+                          "span": {
+                            "col": 41,
+                            "end": 708,
+                            "line": 13,
+                            "start": 704
+                          },
+                          "unit": "%",
+                          "value": 100.0
+                        }
+                      },
+                      "span": {
+                        "col": 15,
+                        "end": 710,
+                        "line": 13,
+                        "start": 678
+                      }
+                    },
+                    "MAGNETIC_BEADS": {
+                      "entries": {
+                        "bound": {
+                          "span": {
+                            "col": 32,
+                            "end": 587,
+                            "line": 11,
+                            "start": 583
+                          },
+                          "unit": "%",
+                          "value": 100.0
+                        },
+                        "flowthrough": {
+                          "span": {
+                            "col": 51,
+                            "end": 604,
+                            "line": 11,
+                            "start": 602
+                          },
+                          "unit": "%",
+                          "value": 0.0
+                        }
+                      },
+                      "span": {
+                        "col": 23,
+                        "end": 606,
+                        "line": 11,
+                        "start": 574
+                      }
+                    },
+                    "TARGET_PROTEIN": {
+                      "entries": {
+                        "bound": {
+                          "span": {
+                            "col": 32,
+                            "end": 643,
+                            "line": 12,
+                            "start": 639
+                          },
+                          "unit": "%",
+                          "value": 100.0
+                        },
+                        "flowthrough": {
+                          "span": {
+                            "col": 51,
+                            "end": 660,
+                            "line": 12,
+                            "start": 658
+                          },
+                          "unit": "%",
+                          "value": 0.0
+                        }
+                      },
+                      "span": {
+                        "col": 23,
+                        "end": 662,
+                        "line": 12,
+                        "start": 630
+                      }
+                    }
+                  },
+                  "span": {
+                    "col": 23,
+                    "end": 716,
+                    "line": 10,
+                    "start": 550
+                  }
+                }
+              },
+              {
+                "name": "transitions",
+                "span": {
+                  "col": 5,
+                  "end": 953,
+                  "line": 15,
+                  "start": 722
+                },
+                "value": {
+                  "elements": [
+                    {
+                      "args": [
+                        {
+                          "name": "subject",
+                          "span": {
+                            "col": 7,
+                            "end": 803,
+                            "line": 16,
+                            "start": 755
+                          },
+                          "value": {
+                            "args": [
+                              {
+                                "span": {
+                                  "col": 38,
+                                  "end": 802,
+                                  "line": 16,
+                                  "start": 786
+                                },
+                                "value": "TARGET_PROTEIN"
+                              }
+                            ],
+                            "base": {
+                              "base": {
+                                "name": "sample",
+                                "span": {
+                                  "col": 17,
+                                  "end": 771,
+                                  "line": 16,
+                                  "start": 765
+                                }
+                              },
+                              "member": "materials",
+                              "span": {
+                                "col": 17,
+                                "end": 781,
+                                "line": 16,
+                                "start": 765
+                              }
+                            },
+                            "method": "get",
+                            "span": {
+                              "col": 17,
+                              "end": 803,
+                              "line": 16,
+                              "start": 765
+                            }
+                          }
+                        },
+                        {
+                          "name": "output",
+                          "span": {
+                            "col": 7,
+                            "end": 847,
+                            "line": 17,
+                            "start": 811
+                          },
+                          "value": {
+                            "base": {
+                              "name": "MagneticProgramOutput",
+                              "span": {
+                                "col": 16,
+                                "end": 841,
+                                "line": 17,
+                                "start": 820
+                              }
+                            },
+                            "member": "BOUND",
+                            "span": {
+                              "col": 16,
+                              "end": 847,
+                              "line": 17,
+                              "start": 820
+                            }
+                          }
+                        },
+                        {
+                          "name": "to",
+                          "span": {
+                            "col": 7,
+                            "end": 887,
+                            "line": 18,
+                            "start": 855
+                          },
+                          "value": {
+                            "base": {
+                              "name": "MaterialRelation",
+                              "span": {
+                                "col": 12,
+                                "end": 876,
+                                "line": 18,
+                                "start": 860
+                              }
+                            },
+                            "member": "BEAD_BOUND",
+                            "span": {
+                              "col": 12,
+                              "end": 887,
+                              "line": 18,
+                              "start": 860
+                            }
+                          }
+                        },
+                        {
+                          "name": "associated_with",
+                          "span": {
+                            "col": 7,
+                            "end": 951,
+                            "line": 19,
+                            "start": 895
+                          },
+                          "value": {
+                            "args": [
+                              {
+                                "span": {
+                                  "col": 46,
+                                  "end": 950,
+                                  "line": 19,
+                                  "start": 934
+                                },
+                                "value": "MAGNETIC_BEADS"
+                              }
+                            ],
+                            "base": {
+                              "base": {
+                                "name": "sample",
+                                "span": {
+                                  "col": 25,
+                                  "end": 919,
+                                  "line": 19,
+                                  "start": 913
+                                }
+                              },
+                              "member": "materials",
+                              "span": {
+                                "col": 25,
+                                "end": 929,
+                                "line": 19,
+                                "start": 913
+                              }
+                            },
+                            "method": "get",
+                            "span": {
+                              "col": 25,
+                              "end": 951,
+                              "line": 19,
+                              "start": 913
+                            }
+                          }
+                        }
+                      ],
+                      "name": "transition",
+                      "span": {
+                        "col": 20,
+                        "end": 952,
+                        "line": 15,
+                        "start": 737
+                      }
+                    }
+                  ],
+                  "span": {
+                    "col": 19,
+                    "end": 953,
+                    "line": 15,
+                    "start": 736
+                  }
+                }
+              }
+            ],
+            "name": "sep",
+            "span": {
+              "col": 19,
+              "end": 954,
+              "line": 8,
+              "start": 458
+            }
+          }
+        },
+        {
+          "bindings": [],
+          "span": {
+            "col": 3,
+            "end": 974,
+            "line": 20,
+            "start": 958
+          },
+          "value": {
+            "name": "fractions",
+            "span": {
+              "col": 10,
+              "end": 974,
+              "line": 20,
+              "start": 965
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "source_includes": [],
+  "source_path": null,
+  "source_role": "entry",
+  "span": null,
+  "statements": [
+    {
+      "name": "magnetic_result",
+      "span": {
+        "col": 1,
+        "end": 1016,
+        "line": 22,
+        "start": 978
+      },
+      "value": {
+        "args": [],
+        "name": "CaptureOnBeads",
+        "span": {
+          "col": 23,
+          "end": 1016,
+          "line": 22,
+          "start": 1000
+        }
+      }
+    },
+    {
+      "bindings": [],
+      "span": {
+        "col": 1,
+        "end": 1040,
+        "line": 23,
+        "start": 1018
+      },
+      "value": {
+        "name": "magnetic_result",
+        "span": {
+          "col": 8,
+          "end": 1040,
+          "line": 23,
+          "start": 1025
+        }
+      }
+    }
+  ]
+}

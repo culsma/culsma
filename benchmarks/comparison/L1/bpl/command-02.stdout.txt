@@ -1,0 +1,7 @@
+default_10 parse= 0 check= 11 lower= {'human': {'returncode': 11, 'primitives': []}, 'simulation': {'returncode': 11, 'primitives': []}}
+default_20 parse= 0 check= 11 lower= {'human': {'returncode': 11, 'primitives': []}, 'simulation': {'returncode': 11, 'primitives': []}}
+direct parse= 0 check= 0 lower= {'human': {'returncode': 0, 'primitives': ['ASPIRATE', 'DISPENSE', 'ASPIRATE', 'DISPENSE']}, 'simulation': {'returncode': 0, 'primitives': ['ASPIRATE', 'DISPENSE', 'ASPIRATE', 'DISPENSE']}}
+function_calls parse= 0 check= 0 lower= {'human': {'returncode': 0, 'primitives': ['HUMAN_STEP', 'HUMAN_STEP']}, 'simulation': {'returncode': 0, 'primitives': ['HUMAN_STEP', 'HUMAN_STEP']}}
+protocol_calls parse= 0 check= 0 lower= {'human': {'returncode': 0, 'primitives': ['HUMAN_STEP', 'HUMAN_STEP']}, 'simulation': {'returncode': 0, 'primitives': ['HUMAN_STEP', 'HUMAN_STEP']}}
+undefined_calls parse= 0 check= 0 lower= {'human': {'returncode': 0, 'primitives': ['HUMAN_STEP', 'HUMAN_STEP']}, 'simulation': {'returncode': 0, 'primitives': ['HUMAN_STEP', 'HUMAN_STEP']}}
+upstream_readme parse= 10 check= 10 lower= {'human': {'returncode': 10, 'primitives': []}, 'simulation': {'returncode': 10, 'primitives': []}}

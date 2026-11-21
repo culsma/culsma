@@ -1,0 +1,147 @@
+{
+  "method": "execution",
+  "expected_result": "Yes",
+  "result": "Yes",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "results.json",
+      "path": [
+        "loops",
+        "2",
+        "ok"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "loops",
+        "2",
+        "volumes_ul"
+      ],
+      "equals": {
+        "source": 80.0,
+        "target": 20.0,
+        "alternative": 0.0
+      },
+      "observed": {
+        "source": 80.0,
+        "target": 20.0,
+        "alternative": 0.0
+      },
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "loops",
+        "3",
+        "ok"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "loops",
+        "3",
+        "volumes_ul"
+      ],
+      "equals": {
+        "source": 70.0,
+        "target": 30.0,
+        "alternative": 0.0
+      },
+      "observed": {
+        "source": 70.0,
+        "target": 30.0,
+        "alternative": 0.0
+      },
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "branches",
+        "1250",
+        "ok"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "branches",
+        "1250",
+        "volumes_ul"
+      ],
+      "equals": {
+        "source": 90.0,
+        "target": 10.0,
+        "alternative": 0.0
+      },
+      "observed": {
+        "source": 90.0,
+        "target": 10.0,
+        "alternative": 0.0
+      },
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "branches",
+        "800",
+        "ok"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "branches",
+        "800",
+        "volumes_ul"
+      ],
+      "equals": {
+        "source": 80.0,
+        "target": 0.0,
+        "alternative": 20.0
+      },
+      "observed": {
+        "source": 80.0,
+        "target": 0.0,
+        "alternative": 20.0
+      },
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "same_plan_used_for_both_values"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

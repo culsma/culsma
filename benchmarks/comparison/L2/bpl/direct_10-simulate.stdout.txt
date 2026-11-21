@@ -1,0 +1,1 @@
+{"artifacts": {"trace": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L2/bpl/direct_10-simulate-trace.json"}, "command": "simulate", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L2/bpl/direct_10.bpl", "ok": true, "target": "simulation"}

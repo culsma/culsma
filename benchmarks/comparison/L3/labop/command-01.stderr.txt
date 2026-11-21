@@ -1,0 +1,104 @@
+2026-11-21 21:14:30,578 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document
+2026-11-21 21:14:30,847 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol
+2026-11-21 21:14:31,010 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l3/branch/main
+2026-11-21 21:14:31,010 INFO labop.execution.behavior_dynamics - Behavior L3 control is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:14:31,018 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l3/branch/TestPredicate
+2026-11-21 21:14:31,018 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://example.org/l3/branch/TestPredicate
+    '''
+    None
+    '''
+    
+    Output Parameters:
+	return: http://www.w3.org/2001/XMLSchema#boolean 
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:14:31,025 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l3/branch/TrueBranch
+2026-11-21 21:14:31,025 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://example.org/l3/branch/TrueBranch
+    '''
+    None
+    '''
+    
+    
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:14:31,027 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l3/branch/FalseBranch
+2026-11-21 21:14:31,027 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://example.org/l3/branch/FalseBranch
+    '''
+    None
+    '''
+    
+    
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:14:31,068 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document
+2026-11-21 21:14:31,254 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol
+2026-11-21 21:14:31,410 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l3/branch/main
+2026-11-21 21:14:31,411 INFO labop.execution.behavior_dynamics - Behavior L3 control is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:14:31,419 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l3/branch/TestPredicate
+2026-11-21 21:14:31,419 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://example.org/l3/branch/TestPredicate
+    '''
+    None
+    '''
+    
+    Output Parameters:
+	return: http://www.w3.org/2001/XMLSchema#boolean 
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:14:31,426 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l3/branch/TrueBranch
+2026-11-21 21:14:31,426 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://example.org/l3/branch/TrueBranch
+    '''
+    None
+    '''
+    
+    
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:14:31,428 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l3/branch/FalseBranch
+2026-11-21 21:14:31,429 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://example.org/l3/branch/FalseBranch
+    '''
+    None
+    '''
+    
+    
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:14:31,469 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document
+2026-11-21 21:14:31,612 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol
+2026-11-21 21:14:31,818 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l3/cycle/main
+2026-11-21 21:14:31,819 INFO labop.execution.behavior_dynamics - Behavior L3 control is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:14:31,832 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document
+2026-11-21 21:14:31,985 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol
+2026-11-21 21:14:32,201 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l3/cycle/main
+2026-11-21 21:14:32,202 INFO labop.execution.behavior_dynamics - Behavior L3 control is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:14:32,214 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document
+2026-11-21 21:14:32,359 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol
+2026-11-21 21:14:32,807 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l3/material_branch/main
+2026-11-21 21:14:32,809 INFO labop.execution.behavior_dynamics - Behavior L3 control is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:14:33,926 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l3/material_branch/TestPredicate
+2026-11-21 21:14:33,927 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://example.org/l3/material_branch/TestPredicate
+    '''
+    None
+    '''
+    
+    Output Parameters:
+	return: http://www.w3.org/2001/XMLSchema#boolean 
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:14:33,977 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://bioprotocols.org/labop/primitives/liquid_handling/Transfer
+2026-11-21 21:14:34,095 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://bioprotocols.org/labop/primitives/liquid_handling/Transfer
+2026-11-21 21:14:34,440 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document
+2026-11-21 21:14:34,579 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol
+2026-11-21 21:14:35,021 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l3/material_branch/main
+2026-11-21 21:14:35,022 INFO labop.execution.behavior_dynamics - Behavior L3 control is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:14:35,272 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l3/material_branch/TestPredicate
+2026-11-21 21:14:35,273 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://example.org/l3/material_branch/TestPredicate
+    '''
+    None
+    '''
+    
+    Output Parameters:
+	return: http://www.w3.org/2001/XMLSchema#boolean 
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:14:35,311 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://bioprotocols.org/labop/primitives/liquid_handling/Transfer
+2026-11-21 21:14:35,420 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://bioprotocols.org/labop/primitives/liquid_handling/Transfer

@@ -1,0 +1,8 @@
+alias_same_tube parse= 0 check= 0 lower= {'human': {'returncode': 0, 'primitives': ['ASPIRATE', 'DISPENSE', 'ASPIRATE', 'DISPENSE']}, 'simulation': {'returncode': 0, 'primitives': ['ASPIRATE', 'DISPENSE', 'ASPIRATE', 'DISPENSE']}}
+fixed_endpoints_amount parse= 0 check= 0 lower= {'human': {'returncode': 0, 'primitives': ['HUMAN_STEP', 'HUMAN_STEP']}, 'simulation': {'returncode': 0, 'primitives': ['HUMAN_STEP', 'HUMAN_STEP']}}
+no_parameters parse= 0 check= 0 lower= {'human': {'returncode': 0, 'primitives': ['HUMAN_STEP', 'HUMAN_STEP']}, 'simulation': {'returncode': 0, 'primitives': ['HUMAN_STEP', 'HUMAN_STEP']}}
+no_parameters_direct parse= 0 check= 0 lower= {'human': {'returncode': 0, 'primitives': ['ASPIRATE', 'DISPENSE', 'ASPIRATE', 'DISPENSE']}, 'simulation': {'returncode': 0, 'primitives': ['ASPIRATE', 'DISPENSE', 'ASPIRATE', 'DISPENSE']}}
+tubes_direct parse= 0 check= 0 lower= {'human': {'returncode': 0, 'primitives': ['ASPIRATE', 'DISPENSE', 'ASPIRATE', 'DISPENSE']}, 'simulation': {'returncode': 0, 'primitives': ['ASPIRATE', 'DISPENSE', 'ASPIRATE', 'DISPENSE']}}
+tubes_local_calls parse= 0 check= 0 lower= {'human': {'returncode': 0, 'primitives': ['HUMAN_STEP', 'HUMAN_STEP']}, 'simulation': {'returncode': 0, 'primitives': ['HUMAN_STEP', 'HUMAN_STEP']}}
+tubes_local_direct parse= 0 check= 0 lower= {'human': {'returncode': 0, 'primitives': ['ASPIRATE', 'DISPENSE', 'ASPIRATE', 'DISPENSE']}, 'simulation': {'returncode': 0, 'primitives': ['ASPIRATE', 'DISPENSE', 'ASPIRATE', 'DISPENSE']}}
+tubes_named_calls parse= 0 check= 0 lower= {'human': {'returncode': 0, 'primitives': ['HUMAN_STEP', 'HUMAN_STEP']}, 'simulation': {'returncode': 0, 'primitives': ['HUMAN_STEP', 'HUMAN_STEP']}}

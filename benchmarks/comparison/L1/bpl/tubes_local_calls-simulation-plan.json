@@ -1,0 +1,65 @@
+{
+  "plan_id": "Main_plan",
+  "protocol_name": "Main",
+  "steps": [
+    {
+      "annotations": {
+        "source_call": "aliquot(source: source, destination: destination, amount: 10 uL)",
+        "source_line": "aliquot(source: source, destination: destination, amount: 10 uL)",
+        "source_span": {
+          "end_col": 69,
+          "end_line": 16,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_tubes_local_calls.bpl",
+          "start_col": 5,
+          "start_line": 16
+        }
+      },
+      "dependencies": [],
+      "primitive": {
+        "__type__": "HumanStep",
+        "checklist": [],
+        "data_fields": {},
+        "expected_time_s": null,
+        "instruction": "aliquot(source: source, destination: destination, amount: 10 uL)",
+        "primitive_type": "HUMAN_STEP",
+        "requires_confirmation": true,
+        "safety_tags": []
+      },
+      "primitive_type": "HUMAN_STEP",
+      "source_intent": "aliquot",
+      "status": "PENDING",
+      "step_id": "step_0001"
+    },
+    {
+      "annotations": {
+        "source_call": "aliquot(source: source, destination: destination, amount: 20 uL)",
+        "source_line": "aliquot(source: source, destination: destination, amount: 20 uL)",
+        "source_span": {
+          "end_col": 69,
+          "end_line": 17,
+          "file": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_tubes_local_calls.bpl",
+          "start_col": 5,
+          "start_line": 17
+        }
+      },
+      "dependencies": [
+        "step_0001"
+      ],
+      "primitive": {
+        "__type__": "HumanStep",
+        "checklist": [],
+        "data_fields": {},
+        "expected_time_s": null,
+        "instruction": "aliquot(source: source, destination: destination, amount: 20 uL)",
+        "primitive_type": "HUMAN_STEP",
+        "requires_confirmation": true,
+        "safety_tags": []
+      },
+      "primitive_type": "HUMAN_STEP",
+      "source_intent": "aliquot",
+      "status": "PENDING",
+      "step_id": "step_0002"
+    }
+  ],
+  "target": "simulation"
+}

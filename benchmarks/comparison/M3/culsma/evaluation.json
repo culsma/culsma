@@ -1,0 +1,173 @@
+{
+  "method": "execution",
+  "expected_result": "Yes",
+  "result": "Yes",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "run.json",
+      "path": [
+        "events",
+        11,
+        "payload",
+        "material_state_snapshot",
+        "containers",
+        "container/entry/entry.s0%3A%3Aalloc/lysate",
+        "component_quantities",
+        "GFP_CELL_DEBRIS"
+      ],
+      "equals": {
+        "dimension": "count",
+        "unit": "cells",
+        "value": 100000.0
+      },
+      "observed": {
+        "dimension": "count",
+        "unit": "cells",
+        "value": 100000.0
+      },
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "run.json",
+      "path": [
+        "events",
+        11,
+        "payload",
+        "material_state_snapshot",
+        "containers",
+        "container/entry/entry.s0%3A%3Aalloc/lysate",
+        "material_relationships",
+        0,
+        "material_state"
+      ],
+      "equals": "suspension",
+      "observed": "suspension",
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "run.json",
+      "path": [
+        "events",
+        21,
+        "payload",
+        "material_state_snapshot",
+        "contents_states",
+        "container/entry/entry.s0%3A%3Aalloc/lysate",
+        "kind"
+      ],
+      "equals": "partitioned",
+      "observed": "partitioned",
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "run.json",
+      "path": [
+        "events",
+        21,
+        "payload",
+        "material_state_snapshot",
+        "contents_states",
+        "container/entry/entry.s0%3A%3Aalloc/lysate",
+        "parts",
+        "1",
+        "component_quantities",
+        "GFP_CELL_DEBRIS"
+      ],
+      "equals": {
+        "dimension": "count",
+        "unit": "cells",
+        "value": 100000.0
+      },
+      "observed": {
+        "dimension": "count",
+        "unit": "cells",
+        "value": 100000.0
+      },
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "run.json",
+      "path": [
+        "events",
+        21,
+        "payload",
+        "material_state_snapshot",
+        "contents_states",
+        "container/entry/entry.s0%3A%3Aalloc/lysate",
+        "parts",
+        "1",
+        "material_relationships",
+        0,
+        "material_state"
+      ],
+      "equals": "pellet",
+      "observed": "pellet",
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "run.json",
+      "path": [
+        "state",
+        "artifacts",
+        "material_state",
+        "containers",
+        "container/entry/entry.s2%3A%3Aalloc/resuspended",
+        "component_quantities",
+        "GFP_CELL_DEBRIS"
+      ],
+      "equals": {
+        "dimension": "count",
+        "unit": "cells",
+        "value": 50000.0
+      },
+      "observed": {
+        "dimension": "count",
+        "unit": "cells",
+        "value": 50000.0
+      },
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "run.json",
+      "path": [
+        "state",
+        "artifacts",
+        "material_state",
+        "containers",
+        "container/entry/entry.s10%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate_assay_A2",
+        "component_quantities",
+        "GFP_CELL_DEBRIS"
+      ],
+      "equals": {
+        "dimension": "count",
+        "unit": "cells",
+        "value": 50000.0
+      },
+      "observed": {
+        "dimension": "count",
+        "unit": "cells",
+        "value": 50000.0
+      },
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "material-audit.json",
+      "path": [
+        "typed_quantities_and_association_passed"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

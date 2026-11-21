@@ -1,0 +1,69 @@
+{
+  "method": "execution",
+  "expected_result": "Yes",
+  "result": "Yes",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "references.json",
+      "path": [
+        "samples_outputs_used_by_transfer",
+        "EmptyContainer"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "references.json",
+      "path": [
+        "samples_outputs_used_by_transfer",
+        "PlateCoordinates"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "references.json",
+      "path": [
+        "completed_normally"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "references.json",
+      "path": [
+        "validation_errors"
+      ],
+      "equals": [],
+      "observed": [],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "references.json",
+      "path": [
+        "well_volumes_uL"
+      ],
+      "equals": {
+        "A1": 20.0,
+        "A2": 20.0,
+        "A3": 20.0
+      },
+      "observed": {
+        "A1": 20.0,
+        "A2": 20.0,
+        "A3": 20.0
+      },
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

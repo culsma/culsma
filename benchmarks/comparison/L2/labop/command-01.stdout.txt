@@ -1,0 +1,276 @@
+{
+  "labop_commit": "2e2bd88150c71a440771fd369f40295dfd622324",
+  "script_sha256": "e5a21a52a4630178b00b04931942aa765f8e455f2def722fb0090741ac3cc6d3",
+  "expected_buffer_ul": {
+    "prepared": 90,
+    "target": 10
+  },
+  "results": {
+    "direct": {
+      "mode": "direct",
+      "validation_errors": [],
+      "validation_warnings": [],
+      "completed_normally": true,
+      "call_records": [
+        {
+          "behavior": "https://example.org/l2/direct/main",
+          "node": "https://example.org/l2/direct/execution/CallBehaviorAction1",
+          "parameters": {}
+        },
+        {
+          "behavior": "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+          "node": "https://example.org/l2/direct/main/CallBehaviorAction1",
+          "parameters": {
+            "specification": "https://example.org/l2/direct/target_spec",
+            "sample_array": "https://example.org/l2/direct/main/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1",
+            "samples": "https://example.org/l2/direct/main/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1"
+          }
+        },
+        {
+          "behavior": "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+          "node": "https://example.org/l2/direct/main/CallBehaviorAction2",
+          "parameters": {
+            "specification": "https://example.org/l2/direct/prepared_spec",
+            "sample_array": "https://example.org/l2/direct/main/CallBehaviorAction2/ValuePin2/LiteralIdentified1/SampleArray1",
+            "samples": "https://example.org/l2/direct/main/CallBehaviorAction2/ValuePin2/LiteralIdentified1/SampleArray1"
+          }
+        },
+        {
+          "behavior": "https://bioprotocols.org/labop/primitives/liquid_handling/Provision",
+          "node": "https://example.org/l2/direct/main/CallBehaviorAction3",
+          "parameters": {
+            "resource": "https://example.org/l2/direct/buffer",
+            "destination": "https://example.org/l2/direct/main/CallBehaviorAction2/ValuePin2/LiteralIdentified1/SampleArray1",
+            "amount": {
+              "value": 100.0,
+              "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre"
+            }
+          }
+        },
+        {
+          "behavior": "https://bioprotocols.org/labop/primitives/liquid_handling/Transfer",
+          "node": "https://example.org/l2/direct/main/CallBehaviorAction4",
+          "parameters": {
+            "source": "https://example.org/l2/direct/main/CallBehaviorAction2/ValuePin2/LiteralIdentified1/SampleArray1",
+            "destination": "https://example.org/l2/direct/main/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1",
+            "amount": {
+              "value": 10.0,
+              "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre"
+            }
+          }
+        }
+      ],
+      "latest_recorded_buffer_ul": {
+        "target": 10.0,
+        "prepared": 90.0
+      },
+      "issues": {
+        "execution": []
+      }
+    },
+    "composition": {
+      "mode": "composition",
+      "validation_errors": [],
+      "validation_warnings": [],
+      "execution_error": {
+        "type": "ValueError",
+        "message": "sample has 2 values, but expecting [1, 1] values",
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L2/labop/protocol.py\", line 75, in run\n    execution = engine.execute(parent, sbol3.Agent(\"software_runner\"),\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 299, in execute\n    self.run(execution_context, start_time=start_time)\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 352, in run\n    execution_contexts = self.step(execution_contexts)\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 397, in step\n    raise (e)\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 378, in step\n    ) = self.execute_node(ec, node, node_outputs)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 440, in execute_node\n    record.check_next_tokens(\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/call_behavior_execution.py\", line 177, in check_next_tokens\n    raise ValueError(\nValueError: sample has 2 values, but expecting [1, 1] values\n"
+      },
+      "partial_call_parameters": [
+        {
+          "behavior": "https://example.org/l2/composition/main",
+          "parameters": []
+        },
+        {
+          "behavior": "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+          "parameters": [
+            {
+              "name": "specification",
+              "value": "target_spec"
+            },
+            {
+              "name": "sample_array",
+              "value": "SampleArray(name=None, container_type=https://example.org/l2/composition/target_spec, initial_contents=%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/l2/composition/target_spec%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_target_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_target_0%22%5D%5D%7D%7D%7D)"
+            },
+            {
+              "name": "samples",
+              "value": "SampleArray(name=None, container_type=https://example.org/l2/composition/target_spec, initial_contents=%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/l2/composition/target_spec%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_target_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_target_0%22%5D%5D%7D%7D%7D)"
+            }
+          ]
+        },
+        {
+          "behavior": "https://example.org/l2/composition/PrepareSample",
+          "parameters": [
+            {
+              "name": "sample",
+              "value": "uml.ControlFlow"
+            },
+            {
+              "name": "sample",
+              "value": "SampleArray(name=None, container_type=https://example.org/l2/composition/prepared_spec, initial_contents=%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/l2/composition/prepared_spec%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_prepared_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_prepared_0%22%5D%5D%7D%7D%7D)"
+            }
+          ]
+        },
+        {
+          "behavior": "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+          "parameters": [
+            {
+              "name": "specification",
+              "value": "prepared_spec"
+            },
+            {
+              "name": "sample_array",
+              "value": "SampleArray(name=None, container_type=https://example.org/l2/composition/prepared_spec, initial_contents=%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/l2/composition/prepared_spec%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_prepared_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_prepared_0%22%5D%5D%7D%7D%7D)"
+            },
+            {
+              "name": "samples",
+              "value": "SampleArray(name=None, container_type=https://example.org/l2/composition/prepared_spec, initial_contents=%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/l2/composition/prepared_spec%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_prepared_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_prepared_0%22%5D%5D%7D%7D%7D)"
+            }
+          ]
+        },
+        {
+          "behavior": "https://bioprotocols.org/labop/primitives/liquid_handling/Provision",
+          "parameters": [
+            {
+              "name": "resource",
+              "value": "buffer"
+            },
+            {
+              "name": "destination",
+              "value": "SampleArray(name=None, container_type=https://example.org/l2/composition/prepared_spec, initial_contents=%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/l2/composition/prepared_spec%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_prepared_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_prepared_0%22%5D%5D%7D%7D%7D)"
+            },
+            {
+              "name": "amount",
+              "value": "100.0 microliter"
+            }
+          ]
+        },
+        {
+          "behavior": "https://example.org/l2/composition/TakeAliquot",
+          "parameters": [
+            {
+              "name": "sample",
+              "value": "uml.ControlFlow"
+            },
+            {
+              "name": "sample",
+              "value": "SampleArray(name=None, container_type=https://example.org/l2/composition/prepared_spec, initial_contents=%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/l2/composition/prepared_spec%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_prepared_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_prepared_0%22%5D%5D%7D%7D%7D)"
+            },
+            {
+              "name": "destination",
+              "value": "SampleArray(name=None, container_type=https://example.org/l2/composition/target_spec, initial_contents=%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/l2/composition/target_spec%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_target_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_target_0%22%5D%5D%7D%7D%7D)"
+            }
+          ]
+        }
+      ],
+      "issues": {
+        "execution": [
+          "sample has 2 values, but expecting [1, 1] values"
+        ]
+      }
+    },
+    "composition_explicit_final": {
+      "mode": "composition_explicit_final",
+      "validation_errors": [],
+      "validation_warnings": [],
+      "execution_error": {
+        "type": "ValueError",
+        "message": "sample has 2 values, but expecting [1, 1] values",
+        "traceback": "Traceback (most recent call last):\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L2/labop/protocol.py\", line 75, in run\n    execution = engine.execute(parent, sbol3.Agent(\"software_runner\"),\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 299, in execute\n    self.run(execution_context, start_time=start_time)\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 352, in run\n    execution_contexts = self.step(execution_contexts)\n                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 397, in step\n    raise (e)\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 378, in step\n    ) = self.execute_node(ec, node, node_outputs)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/execution/execution_engine.py\", line 440, in execute_node\n    record.check_next_tokens(\n  File \"/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/call_behavior_execution.py\", line 177, in check_next_tokens\n    raise ValueError(\nValueError: sample has 2 values, but expecting [1, 1] values\n"
+      },
+      "partial_call_parameters": [
+        {
+          "behavior": "https://example.org/l2/composition_explicit_final/main",
+          "parameters": []
+        },
+        {
+          "behavior": "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+          "parameters": [
+            {
+              "name": "specification",
+              "value": "target_spec"
+            },
+            {
+              "name": "sample_array",
+              "value": "SampleArray(name=None, container_type=https://example.org/l2/composition_explicit_final/target_spec, initial_contents=%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/l2/composition_explicit_final/target_spec%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_target_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_target_0%22%5D%5D%7D%7D%7D)"
+            },
+            {
+              "name": "samples",
+              "value": "SampleArray(name=None, container_type=https://example.org/l2/composition_explicit_final/target_spec, initial_contents=%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/l2/composition_explicit_final/target_spec%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_target_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_target_0%22%5D%5D%7D%7D%7D)"
+            }
+          ]
+        },
+        {
+          "behavior": "https://example.org/l2/composition_explicit_final/PrepareSample",
+          "parameters": [
+            {
+              "name": "sample",
+              "value": "uml.ControlFlow"
+            },
+            {
+              "name": "sample",
+              "value": "SampleArray(name=None, container_type=https://example.org/l2/composition_explicit_final/prepared_spec, initial_contents=%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/l2/composition_explicit_final/prepared_spec%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_prepared_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_prepared_0%22%5D%5D%7D%7D%7D)"
+            }
+          ]
+        },
+        {
+          "behavior": "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+          "parameters": [
+            {
+              "name": "specification",
+              "value": "prepared_spec"
+            },
+            {
+              "name": "sample_array",
+              "value": "SampleArray(name=None, container_type=https://example.org/l2/composition_explicit_final/prepared_spec, initial_contents=%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/l2/composition_explicit_final/prepared_spec%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_prepared_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_prepared_0%22%5D%5D%7D%7D%7D)"
+            },
+            {
+              "name": "samples",
+              "value": "SampleArray(name=None, container_type=https://example.org/l2/composition_explicit_final/prepared_spec, initial_contents=%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/l2/composition_explicit_final/prepared_spec%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_prepared_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_prepared_0%22%5D%5D%7D%7D%7D)"
+            }
+          ]
+        },
+        {
+          "behavior": "https://bioprotocols.org/labop/primitives/liquid_handling/Provision",
+          "parameters": [
+            {
+              "name": "resource",
+              "value": "buffer"
+            },
+            {
+              "name": "destination",
+              "value": "SampleArray(name=None, container_type=https://example.org/l2/composition_explicit_final/prepared_spec, initial_contents=%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/l2/composition_explicit_final/prepared_spec%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_prepared_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_prepared_0%22%5D%5D%7D%7D%7D)"
+            },
+            {
+              "name": "amount",
+              "value": "100.0 microliter"
+            }
+          ]
+        },
+        {
+          "behavior": "https://example.org/l2/composition_explicit_final/TakeAliquot",
+          "parameters": [
+            {
+              "name": "sample",
+              "value": "uml.ControlFlow"
+            },
+            {
+              "name": "sample",
+              "value": "SampleArray(name=None, container_type=https://example.org/l2/composition_explicit_final/prepared_spec, initial_contents=%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/l2/composition_explicit_final/prepared_spec%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_prepared_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_prepared_0%22%5D%5D%7D%7D%7D)"
+            },
+            {
+              "name": "destination",
+              "value": "SampleArray(name=None, container_type=https://example.org/l2/composition_explicit_final/target_spec, initial_contents=%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/l2/composition_explicit_final/target_spec%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_target_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_target_0%22%5D%5D%7D%7D%7D)"
+            }
+          ]
+        }
+      ],
+      "issues": {
+        "execution": [
+          "sample has 2 values, but expecting [1, 1] values"
+        ]
+      }
+    }
+  }
+}

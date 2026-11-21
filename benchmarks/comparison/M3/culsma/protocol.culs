@@ -1,0 +1,22 @@
+// Software-only adaptation of the paper's introductory clarification example.
+let lysate = tube(label = "GFP lysate", capacity = 1.5mL, load = [
+  content(kind = ContentKind.BIO_CELLULAR, type = ContentType.MICROBIAL_CELLS,
+    code = "GFP_CELL_DEBRIS", attrs = { state: suspension }):100000cells,
+  content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER,
+    code = "LYSATE_LIQUID"):160uL]);
+let buffer = tube(label = "Assay buffer", capacity = 1.5mL, load = [
+  content(kind = ContentKind.FORMULATION, type = ContentType.BUFFER,
+    code = "ASSAY_BUFFER"):100uL]);
+let resuspended = tube(label = "Resuspended pellet", capacity = 1.5mL);
+let assay = plate(label = "Assay plate", format = "96well");
+with env(thermal = 22C, duration = 10min) {
+  sep(sample = lysate, program = centrifuge_program(drive = 12000g));
+}
+assay[A1] << [lysate.contents[0]:20uL];
+resuspended << [lysate.contents[1]];
+resuspended << [buffer:40uL];
+resuspended << [resuspended:32uL];
+assay[A2] << [resuspended:20uL];
+assay[A3] << [buffer:20uL];
+let readings = img(sample = assay[A1:A3], quantity = fluorescence);
+return readings;

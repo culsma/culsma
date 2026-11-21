@@ -1,0 +1,1 @@
+{"artifacts": {"diagnostics": "artifacts/check/direct_3.diagnostics.json"}, "command": "check", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L3/bpl/direct_3.bpl", "ok": true}

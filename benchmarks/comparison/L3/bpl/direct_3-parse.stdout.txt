@@ -1,0 +1,1 @@
+{"artifacts": {"ast": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L3/bpl/direct_3-ast.json"}, "command": "parse", "format": "json", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L3/bpl/direct_3.bpl", "ok": true}

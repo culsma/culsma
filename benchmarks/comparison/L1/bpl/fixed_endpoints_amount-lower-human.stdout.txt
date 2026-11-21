@@ -1,0 +1,1 @@
+{"artifacts": {"plan": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/fixed_endpoints_amount-human-plan.json"}, "command": "lower", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_fixed_endpoints_amount.bpl", "ok": true, "target": "human"}

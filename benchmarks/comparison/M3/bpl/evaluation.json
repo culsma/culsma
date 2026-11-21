@@ -1,0 +1,47 @@
+{
+  "method": "execution",
+  "expected_result": "No",
+  "result": "No",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "results.json",
+      "path": [
+        "transfer_simulation"
+      ],
+      "equals": {
+        "success": true,
+        "errors": [],
+        "source_volume_ul": 80.0,
+        "destination_volume_ul": 20.0,
+        "source_components": [
+          {
+            "name": "buffer",
+            "concentration": null,
+            "volume_ul": 80.0,
+            "properties": {}
+          }
+        ],
+        "destination_components": []
+      },
+      "observed": {
+        "success": true,
+        "errors": [],
+        "source_volume_ul": 80.0,
+        "destination_volume_ul": 20.0,
+        "source_components": [
+          {
+            "name": "buffer",
+            "concentration": null,
+            "volume_ul": 80.0,
+            "properties": {}
+          }
+        ],
+        "destination_components": []
+      },
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

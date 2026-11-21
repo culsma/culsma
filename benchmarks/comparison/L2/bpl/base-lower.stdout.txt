@@ -1,0 +1,1 @@
+{"artifacts": {"plan": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L2/bpl/base-plan.json"}, "command": "lower", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L2/bpl/base.bpl", "ok": true, "target": "human"}

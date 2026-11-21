@@ -1,0 +1,716 @@
+{
+  "diagnostics": [],
+  "kind": "PlanProgram",
+  "plans": [
+    {
+      "entry_kind": "script",
+      "output_name": "entry",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "return_bindings": {},
+      "return_value": {
+        "kind": "IRIdentifier",
+        "name": "magnetic_result",
+        "span": {
+          "col": 8,
+          "end": 1040,
+          "line": 23,
+          "start": 1025
+        }
+      },
+      "returns": [],
+      "span": {
+        "col": 3,
+        "end": 438,
+        "line": 2,
+        "start": 28
+      },
+      "steps": [
+        {
+          "args": {
+            "bind": "__cmp_entry_s0_sample",
+            "container_name": "__cmp_entry_s0_sample",
+            "container_namespace": "entry",
+            "kind": {
+              "kind": "IRString",
+              "span": {
+                "col": 16,
+                "end": 438,
+                "line": 2,
+                "start": 41
+              },
+              "value": "tube"
+            },
+            "label": {
+              "kind": "IRString",
+              "span": {
+                "col": 29,
+                "end": 70,
+                "line": 2,
+                "start": 54
+              },
+              "value": "Magnetic input"
+            }
+          },
+          "deps": [],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "AllocContainer",
+          "span": {
+            "col": 3,
+            "end": 438,
+            "line": 2,
+            "start": 28
+          },
+          "step_id": "entry.s0::alloc"
+        },
+        {
+          "args": {
+            "attrs": {
+              "bead_property": {
+                "kind": "IRIdentifier",
+                "name": "magnetic",
+                "span": {
+                  "col": 32,
+                  "end": 215,
+                  "line": 4,
+                  "start": 207
+                }
+              }
+            },
+            "code": {
+              "kind": "IRString",
+              "span": {
+                "col": 78,
+                "end": 174,
+                "line": 3,
+                "start": 158
+              },
+              "value": "MAGNETIC_BEADS"
+            },
+            "kind": {
+              "enum": "ContentKind",
+              "kind": "ContentEnum",
+              "member": "PARTICULATE"
+            },
+            "type": {
+              "enum": "ContentType",
+              "kind": "ContentEnum",
+              "member": "BEADS"
+            }
+          },
+          "deps": [
+            "entry.s0::alloc"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "DefineContent",
+          "span": {
+            "col": 5,
+            "end": 218,
+            "line": 3,
+            "start": 85
+          },
+          "step_id": "entry.s0::load0::define"
+        },
+        {
+          "args": {
+            "amount": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 44,
+                "end": 223,
+                "line": 4,
+                "start": 219
+              },
+              "unit": "mg",
+              "value": 10.0
+            },
+            "container": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_sample",
+              "span": {
+                "col": 3,
+                "end": 438,
+                "line": 2,
+                "start": 28
+              }
+            },
+            "content": {
+              "kind": "IRString",
+              "span": {
+                "col": 78,
+                "end": 174,
+                "line": 3,
+                "start": 158
+              },
+              "value": "MAGNETIC_BEADS"
+            }
+          },
+          "deps": [
+            "entry.s0::load0::define"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "LoadContent",
+          "span": {
+            "col": 5,
+            "end": 223,
+            "line": 3,
+            "start": 85
+          },
+          "step_id": "entry.s0::load0::load"
+        },
+        {
+          "args": {
+            "code": {
+              "kind": "IRString",
+              "span": {
+                "col": 14,
+                "end": 336,
+                "line": 6,
+                "start": 320
+              },
+              "value": "TARGET_PROTEIN"
+            },
+            "kind": {
+              "enum": "ContentKind",
+              "kind": "ContentEnum",
+              "member": "BIO_MOLECULE_OR_VIRUS"
+            },
+            "type": {
+              "enum": "ContentType",
+              "kind": "ContentEnum",
+              "member": "PROTEIN"
+            }
+          },
+          "deps": [
+            "entry.s0::load0::load"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "DefineContent",
+          "span": {
+            "col": 5,
+            "end": 337,
+            "line": 5,
+            "start": 229
+          },
+          "step_id": "entry.s0::load1::define"
+        },
+        {
+          "args": {
+            "amount": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 32,
+                "end": 341,
+                "line": 6,
+                "start": 338
+              },
+              "unit": "ug",
+              "value": 1.0
+            },
+            "container": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_sample",
+              "span": {
+                "col": 3,
+                "end": 438,
+                "line": 2,
+                "start": 28
+              }
+            },
+            "content": {
+              "kind": "IRString",
+              "span": {
+                "col": 14,
+                "end": 336,
+                "line": 6,
+                "start": 320
+              },
+              "value": "TARGET_PROTEIN"
+            }
+          },
+          "deps": [
+            "entry.s0::load1::define"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "LoadContent",
+          "span": {
+            "col": 5,
+            "end": 341,
+            "line": 5,
+            "start": 229
+          },
+          "step_id": "entry.s0::load1::load"
+        },
+        {
+          "args": {
+            "code": {
+              "kind": "IRString",
+              "span": {
+                "col": 79,
+                "end": 429,
+                "line": 7,
+                "start": 421
+              },
+              "value": "BUFFER"
+            },
+            "kind": {
+              "enum": "ContentKind",
+              "kind": "ContentEnum",
+              "member": "FORMULATION"
+            },
+            "type": {
+              "enum": "ContentType",
+              "kind": "ContentEnum",
+              "member": "BUFFER"
+            }
+          },
+          "deps": [
+            "entry.s0::load1::load"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "DefineContent",
+          "span": {
+            "col": 5,
+            "end": 430,
+            "line": 7,
+            "start": 347
+          },
+          "step_id": "entry.s0::load2::define"
+        },
+        {
+          "args": {
+            "amount": {
+              "kind": "IRQuantity",
+              "span": {
+                "col": 89,
+                "end": 436,
+                "line": 7,
+                "start": 431
+              },
+              "unit": "uL",
+              "value": 100.0
+            },
+            "container": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_sample",
+              "span": {
+                "col": 3,
+                "end": 438,
+                "line": 2,
+                "start": 28
+              }
+            },
+            "content": {
+              "kind": "IRString",
+              "span": {
+                "col": 79,
+                "end": 429,
+                "line": 7,
+                "start": 421
+              },
+              "value": "BUFFER"
+            }
+          },
+          "deps": [
+            "entry.s0::load2::define"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "LoadContent",
+          "span": {
+            "col": 5,
+            "end": 436,
+            "line": 7,
+            "start": 347
+          },
+          "step_id": "entry.s0::load2::load"
+        },
+        {
+          "args": {
+            "bind": "magnetic_result",
+            "component_fates": {
+              "BUFFER": {
+                "bound": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 24,
+                    "end": 689,
+                    "line": 13,
+                    "start": 687
+                  },
+                  "unit": "%",
+                  "value": 0.0
+                },
+                "flowthrough": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 41,
+                    "end": 708,
+                    "line": 13,
+                    "start": 704
+                  },
+                  "unit": "%",
+                  "value": 100.0
+                }
+              },
+              "MAGNETIC_BEADS": {
+                "bound": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 32,
+                    "end": 587,
+                    "line": 11,
+                    "start": 583
+                  },
+                  "unit": "%",
+                  "value": 100.0
+                },
+                "flowthrough": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 51,
+                    "end": 604,
+                    "line": 11,
+                    "start": 602
+                  },
+                  "unit": "%",
+                  "value": 0.0
+                }
+              },
+              "TARGET_PROTEIN": {
+                "bound": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 32,
+                    "end": 643,
+                    "line": 12,
+                    "start": 639
+                  },
+                  "unit": "%",
+                  "value": 100.0
+                },
+                "flowthrough": {
+                  "kind": "IRQuantity",
+                  "span": {
+                    "col": 51,
+                    "end": 660,
+                    "line": 12,
+                    "start": 658
+                  },
+                  "unit": "%",
+                  "value": 0.0
+                }
+              }
+            },
+            "program": {
+              "args": [
+                {
+                  "kind": "IRArg",
+                  "name": "duration",
+                  "span": {
+                    "col": 32,
+                    "end": 525,
+                    "line": 9,
+                    "start": 510
+                  },
+                  "value": {
+                    "kind": "IRQuantity",
+                    "span": {
+                      "col": 43,
+                      "end": 525,
+                      "line": 9,
+                      "start": 521
+                    },
+                    "unit": "min",
+                    "value": 2.0
+                  }
+                }
+              ],
+              "kind": "IRCall",
+              "name": "magnetic_program",
+              "span": {
+                "col": 15,
+                "end": 526,
+                "line": 9,
+                "start": 493
+              }
+            },
+            "sample": {
+              "kind": "IRIdentifier",
+              "name": "__cmp_entry_s0_sample",
+              "span": {
+                "col": 32,
+                "end": 477,
+                "line": 8,
+                "start": 471
+              }
+            },
+            "transitions": {
+              "elements": [
+                {
+                  "args": [
+                    {
+                      "kind": "IRArg",
+                      "name": "subject",
+                      "span": {
+                        "col": 7,
+                        "end": 803,
+                        "line": 16,
+                        "start": 755
+                      },
+                      "value": {
+                        "args": [
+                          {
+                            "kind": "IRArg",
+                            "name": "self",
+                            "span": {
+                              "col": 17,
+                              "end": 781,
+                              "line": 16,
+                              "start": 765
+                            },
+                            "value": {
+                              "base": {
+                                "kind": "IRIdentifier",
+                                "name": "__cmp_entry_s0_sample",
+                                "span": {
+                                  "col": 17,
+                                  "end": 771,
+                                  "line": 16,
+                                  "start": 765
+                                }
+                              },
+                              "kind": "IRMember",
+                              "member": "materials",
+                              "span": {
+                                "col": 17,
+                                "end": 781,
+                                "line": 16,
+                                "start": 765
+                              }
+                            }
+                          },
+                          {
+                            "kind": "IRArg",
+                            "name": "arg0",
+                            "span": {
+                              "col": 38,
+                              "end": 802,
+                              "line": 16,
+                              "start": 786
+                            },
+                            "value": {
+                              "kind": "IRString",
+                              "span": {
+                                "col": 38,
+                                "end": 802,
+                                "line": 16,
+                                "start": 786
+                              },
+                              "value": "TARGET_PROTEIN"
+                            }
+                          }
+                        ],
+                        "kind": "IRCall",
+                        "name": "get",
+                        "span": {
+                          "col": 17,
+                          "end": 803,
+                          "line": 16,
+                          "start": 765
+                        }
+                      }
+                    },
+                    {
+                      "kind": "IRArg",
+                      "name": "output",
+                      "span": {
+                        "col": 7,
+                        "end": 847,
+                        "line": 17,
+                        "start": 811
+                      },
+                      "value": {
+                        "base": {
+                          "kind": "IRIdentifier",
+                          "name": "MagneticProgramOutput",
+                          "span": {
+                            "col": 16,
+                            "end": 841,
+                            "line": 17,
+                            "start": 820
+                          }
+                        },
+                        "kind": "IRMember",
+                        "member": "BOUND",
+                        "span": {
+                          "col": 16,
+                          "end": 847,
+                          "line": 17,
+                          "start": 820
+                        }
+                      }
+                    },
+                    {
+                      "kind": "IRArg",
+                      "name": "to",
+                      "span": {
+                        "col": 7,
+                        "end": 887,
+                        "line": 18,
+                        "start": 855
+                      },
+                      "value": {
+                        "base": {
+                          "kind": "IRIdentifier",
+                          "name": "MaterialRelation",
+                          "span": {
+                            "col": 12,
+                            "end": 876,
+                            "line": 18,
+                            "start": 860
+                          }
+                        },
+                        "kind": "IRMember",
+                        "member": "BEAD_BOUND",
+                        "span": {
+                          "col": 12,
+                          "end": 887,
+                          "line": 18,
+                          "start": 860
+                        }
+                      }
+                    },
+                    {
+                      "kind": "IRArg",
+                      "name": "associated_with",
+                      "span": {
+                        "col": 7,
+                        "end": 951,
+                        "line": 19,
+                        "start": 895
+                      },
+                      "value": {
+                        "args": [
+                          {
+                            "kind": "IRArg",
+                            "name": "self",
+                            "span": {
+                              "col": 25,
+                              "end": 929,
+                              "line": 19,
+                              "start": 913
+                            },
+                            "value": {
+                              "base": {
+                                "kind": "IRIdentifier",
+                                "name": "__cmp_entry_s0_sample",
+                                "span": {
+                                  "col": 25,
+                                  "end": 919,
+                                  "line": 19,
+                                  "start": 913
+                                }
+                              },
+                              "kind": "IRMember",
+                              "member": "materials",
+                              "span": {
+                                "col": 25,
+                                "end": 929,
+                                "line": 19,
+                                "start": 913
+                              }
+                            }
+                          },
+                          {
+                            "kind": "IRArg",
+                            "name": "arg0",
+                            "span": {
+                              "col": 46,
+                              "end": 950,
+                              "line": 19,
+                              "start": 934
+                            },
+                            "value": {
+                              "kind": "IRString",
+                              "span": {
+                                "col": 46,
+                                "end": 950,
+                                "line": 19,
+                                "start": 934
+                              },
+                              "value": "MAGNETIC_BEADS"
+                            }
+                          }
+                        ],
+                        "kind": "IRCall",
+                        "name": "get",
+                        "span": {
+                          "col": 25,
+                          "end": 951,
+                          "line": 19,
+                          "start": 913
+                        }
+                      }
+                    }
+                  ],
+                  "kind": "IRCall",
+                  "name": "transition",
+                  "span": {
+                    "col": 20,
+                    "end": 952,
+                    "line": 15,
+                    "start": 737
+                  }
+                }
+              ],
+              "kind": "IRList",
+              "span": {
+                "col": 19,
+                "end": 953,
+                "line": 15,
+                "start": 736
+              }
+            }
+          },
+          "deps": [
+            "entry.s0::load2::load"
+          ],
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "op": "sep",
+          "span": {
+            "col": 3,
+            "end": 954,
+            "line": 8,
+            "start": 442
+          },
+          "step_id": "entry.s1"
+        }
+      ]
+    }
+  ],
+  "span": null
+}

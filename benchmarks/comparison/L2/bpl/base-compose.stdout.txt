@@ -1,0 +1,1 @@
+{"artifacts": {"markdown": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L2/bpl/base.md"}, "command": "compose", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L2/bpl/base.bpl", "ok": true, "step_count": 1, "target": "human"}

@@ -1,0 +1,1 @@
+{"artifacts": {"ast": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L3/bpl/branch_true-ast.json"}, "command": "parse", "format": "json", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L3/bpl/branch_true.bpl", "ok": true}

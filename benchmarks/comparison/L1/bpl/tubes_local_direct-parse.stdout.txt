@@ -1,0 +1,1 @@
+{"artifacts": {"ast": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/tubes_local_direct-ast.json"}, "command": "parse", "format": "json", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_tubes_local_direct.bpl", "ok": true}

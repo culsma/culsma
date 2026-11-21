@@ -1,0 +1,5 @@
+branch_false parse= 0 check= 0 lower= {'human': {'returncode': 0, 'primitives': ['WAIT']}, 'simulation': {'returncode': 0, 'primitives': ['WAIT']}}
+branch_true parse= 0 check= 0 lower= {'human': {'returncode': 0, 'primitives': ['WAIT']}, 'simulation': {'returncode': 0, 'primitives': ['WAIT']}}
+direct_3 parse= 0 check= 0 lower= {'human': {'returncode': 0, 'primitives': ['WAIT', 'ASPIRATE', 'DISPENSE', 'ASPIRATE', 'DISPENSE', 'ASPIRATE', 'DISPENSE']}, 'simulation': {'returncode': 0, 'primitives': ['WAIT', 'ASPIRATE', 'DISPENSE', 'ASPIRATE', 'DISPENSE', 'ASPIRATE', 'DISPENSE']}}
+loop_2 parse= 0 check= 0 lower= {'human': {'returncode': 0, 'primitives': ['WAIT']}, 'simulation': {'returncode': 0, 'primitives': ['WAIT']}}
+loop_3 parse= 0 check= 0 lower= {'human': {'returncode': 0, 'primitives': ['WAIT']}, 'simulation': {'returncode': 0, 'primitives': ['WAIT']}}

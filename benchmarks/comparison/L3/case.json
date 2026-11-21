@@ -1,0 +1,589 @@
+{
+  "criterion": "L3",
+  "systems": {
+    "culsma": {
+      "runtime": {
+        "commit": "5364676bc2437b4981a00ce0133c730af243e469",
+        "packages": [
+          "culsma"
+        ],
+        "python": "3.12.8",
+        "source_hashes": {
+          "src/culsma/frontend/resolver.py": "1cf6253117149884ac26c13930e7b63a8f8b053dbe2a1629666047857b1b807a",
+          "src/culsma/parser/parser.py": "9e52b36bb2fcca92bf0de2669ed7b4b0a5c0041d65ecf0475df4a4a7685073d1",
+          "src/culsma/pipeline/typecheck/__init__.py": "3e3d8efafc183f0405140681351b7f7e970786ef619fb9d59d67c489e5daf5c1",
+          "src/culsma/runtime/material/ledger.py": "f46dc0e3ca95f6603448e3c7256c58147a97fc900a4d0319a83ca3ee726bdde7",
+          "src/culsma/scientific_model/registry.py": "87b08c8c7665ca411ca311a57c701a3a1a63ac8476f1c81690aa301072a02d75"
+        },
+        "url": "https://codeload.github.com/culsma/culsma/tar.gz/5364676bc2437b4981a00ce0133c730af243e469"
+      },
+      "method": "execution",
+      "commands": [
+        {
+          "kind": "python",
+          "args": [
+            "run.py"
+          ]
+        }
+      ],
+      "expectations": [
+        {
+          "criterion": "L3",
+          "expected_result": "Yes",
+          "scope": "Counted repetition and exclusive branching on injected runtime observations; no physical measurement.",
+          "checks": [
+            {
+              "file": "results.json",
+              "path": [
+                "loops",
+                "2",
+                "ok"
+              ],
+              "equals": true
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "loops",
+                "2",
+                "volumes_ul"
+              ],
+              "equals": {
+                "source": 80.0,
+                "target": 20.0,
+                "alternative": 0.0
+              }
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "loops",
+                "3",
+                "ok"
+              ],
+              "equals": true
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "loops",
+                "3",
+                "volumes_ul"
+              ],
+              "equals": {
+                "source": 70.0,
+                "target": 30.0,
+                "alternative": 0.0
+              }
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "branches",
+                "1250",
+                "ok"
+              ],
+              "equals": true
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "branches",
+                "1250",
+                "volumes_ul"
+              ],
+              "equals": {
+                "source": 90.0,
+                "target": 10.0,
+                "alternative": 0.0
+              }
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "branches",
+                "800",
+                "ok"
+              ],
+              "equals": true
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "branches",
+                "800",
+                "volumes_ul"
+              ],
+              "equals": {
+                "source": 80.0,
+                "target": 0.0,
+                "alternative": 20.0
+              }
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "same_plan_used_for_both_values"
+              ],
+              "equals": true
+            }
+          ]
+        }
+      ]
+    },
+    "labop": {
+      "runtime": {
+        "commit": "2e2bd88150c71a440771fd369f40295dfd622324",
+        "packages": [
+          "labop",
+          "uml",
+          "labop_time",
+          "labop_convert"
+        ],
+        "python": "3.11.11",
+        "sha256": "996e222782d9a662707715334fc8b8e90d9430390a6cfaaa7f8f3f9984acfd6b",
+        "source_hashes": {
+          "labop/execution/behavior_dynamics.py": "8cdad33723345fedb7369708c49eb059f4e19193e5e0620dacb9fa983814c922",
+          "labop/execution/execution_engine.py": "9d258ace720850146de0d0ab7391c3ef258b9ca6b147495cfd0644f79fde6580",
+          "labop/lib/plate_handling.ttl": "0666b1cd0406c9b050e2951a091a5f402b8593679512aab7a5b4255865c83de6",
+          "test/test_protocol_outputs.py": "e2836dac670377f504db1f5e6bcd982be51f3973da453e791e3d47532949260e",
+          "test/test_subprotocols.py": "736d966389fb2fe637405ce8751efd865b893caab98eae0d911ee6a40628e52b",
+          "uml/behavior.py": "fcb553a034ccfc06ef42501799278f22b627fe28952d076d3533e11def736566"
+        },
+        "url": "https://codeload.github.com/Bioprotocols/labop/tar.gz/2e2bd88150c71a440771fd369f40295dfd622324"
+      },
+      "method": "execution",
+      "commands": [
+        {
+          "kind": "python",
+          "args": [
+            "protocol.py"
+          ]
+        }
+      ],
+      "expectations": [
+        {
+          "criterion": "L3",
+          "expected_result": "No",
+          "scope": "Both guarded Transfer branches execute for either Boolean input; native cycle raises the retained MergeNode error.",
+          "checks": [
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                4,
+                "runtime_values"
+              ],
+              "equals": [
+                true
+              ]
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                4,
+                "consumed_values"
+              ],
+              "equals": [
+                true
+              ]
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                4,
+                "volumes_ul"
+              ],
+              "equals": {
+                "stock": 70.0,
+                "target": 10.0,
+                "alternative": 20.0
+              }
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                4,
+                "completed_normally"
+              ],
+              "equals": true
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                5,
+                "runtime_values"
+              ],
+              "equals": [
+                false
+              ]
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                5,
+                "consumed_values"
+              ],
+              "equals": [
+                false
+              ]
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                5,
+                "volumes_ul"
+              ],
+              "equals": {
+                "stock": 70.0,
+                "target": 10.0,
+                "alternative": 20.0
+              }
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                5,
+                "completed_normally"
+              ],
+              "equals": true
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                2,
+                "execution_error",
+                "message"
+              ],
+              "equals": "'MergeNode' object has no attribute 'protocol'"
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                3,
+                "execution_error",
+                "message"
+              ],
+              "equals": "'MergeNode' object has no attribute 'protocol'"
+            }
+          ]
+        }
+      ]
+    },
+    "bpl": {
+      "runtime": {
+        "commit": "4e505740f5025d59ba655c6c955f83876f753007",
+        "packages": [
+          "bpl"
+        ],
+        "python": "3.13.1",
+        "sha256": "7d8d229525f151e95a4d8a59db44129511b18c9025714b4034859b8b5c3da804",
+        "source_hashes": {
+          "bpl/grammar/bpl.lark": "cf4ff616f0787193a689c8a349656b962796f588c0ee216963b28d31f9c24cea",
+          "bpl/lowering/plan_ir.py": "e1ccc06f54fe53ec2219cb732a218a52e9064cbd48be616477cf67e008f010eb",
+          "bpl/orchestrator.py": "73ec40a828a1d6ec0fbb5a07dc72a346ac77ac2c1b0652bb5281cc172fe8a7d1",
+          "bpl/simulation/simulator.py": "bae9d9a1cec26ecc9529da278e05969d5b1157ec084bf9bddce5ef07ebe71094",
+          "bpl/simulation/virtual_deck.py": "f2deda48a3973f8f571fd92273c2d1d595a3b28c39fa5a894bb4247b6ef13b54",
+          "bpl/types/unit_engine.py": "b3e49dc5e48337b54a5c047ac5fe185d5543ddf2df76da6821d428fcc754ca80"
+        },
+        "url": "https://gitlab.com/bota-biosciences-public/bpl-code/-/archive/4e505740f5025d59ba655c6c955f83876f753007/bpl-code-4e505740f5025d59ba655c6c955f83876f753007.tar.gz"
+      },
+      "method": "execution",
+      "commands": [
+        {
+          "kind": "python",
+          "args": [
+            "run.py",
+            "--case-files",
+            "branch_false.bpl",
+            "branch_true.bpl",
+            "direct_3.bpl",
+            "loop_2.bpl",
+            "loop_3.bpl",
+            "--skip-upstream-readme"
+          ]
+        }
+      ],
+      "expectations": [
+        {
+          "criterion": "L3",
+          "expected_result": "No",
+          "scope": "Loop/conditional blocks are omitted from executable plans; direct three-transfer control remains.",
+          "checks": [
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "loop_2",
+                "lower",
+                "simulation",
+                "returncode"
+              ],
+              "equals": 0
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "loop_2",
+                "lower",
+                "simulation",
+                "steps"
+              ],
+              "equals": [
+                {
+                  "primitive_type": "WAIT",
+                  "primitive": {
+                    "__type__": "Wait",
+                    "duration_s": 1.0,
+                    "primitive_type": "WAIT"
+                  },
+                  "source_intent": "wait"
+                }
+              ]
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "loop_3",
+                "lower",
+                "simulation",
+                "returncode"
+              ],
+              "equals": 0
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "loop_3",
+                "lower",
+                "simulation",
+                "steps"
+              ],
+              "equals": [
+                {
+                  "primitive_type": "WAIT",
+                  "primitive": {
+                    "__type__": "Wait",
+                    "duration_s": 1.0,
+                    "primitive_type": "WAIT"
+                  },
+                  "source_intent": "wait"
+                }
+              ]
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "branch_true",
+                "lower",
+                "simulation",
+                "returncode"
+              ],
+              "equals": 0
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "branch_true",
+                "lower",
+                "simulation",
+                "steps"
+              ],
+              "equals": [
+                {
+                  "primitive_type": "WAIT",
+                  "primitive": {
+                    "__type__": "Wait",
+                    "duration_s": 1.0,
+                    "primitive_type": "WAIT"
+                  },
+                  "source_intent": "wait"
+                }
+              ]
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "branch_false",
+                "lower",
+                "simulation",
+                "returncode"
+              ],
+              "equals": 0
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "branch_false",
+                "lower",
+                "simulation",
+                "steps"
+              ],
+              "equals": [
+                {
+                  "primitive_type": "WAIT",
+                  "primitive": {
+                    "__type__": "Wait",
+                    "duration_s": 1.0,
+                    "primitive_type": "WAIT"
+                  },
+                  "source_intent": "wait"
+                }
+              ]
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "direct_3",
+                "lower",
+                "simulation",
+                "returncode"
+              ],
+              "equals": 0
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "direct_3",
+                "lower",
+                "simulation",
+                "steps"
+              ],
+              "equals": [
+                {
+                  "primitive_type": "WAIT",
+                  "primitive": {
+                    "__type__": "Wait",
+                    "duration_s": 1.0,
+                    "primitive_type": "WAIT"
+                  },
+                  "source_intent": "wait"
+                },
+                {
+                  "primitive_type": "ASPIRATE",
+                  "primitive": {
+                    "__type__": "Aspirate",
+                    "air_gap_ul": null,
+                    "flow_rate_ul_s": null,
+                    "primitive_type": "ASPIRATE",
+                    "source": {
+                      "__type__": "WellRef",
+                      "plate_id": "plate_1",
+                      "well_id": "A1"
+                    },
+                    "touch_tip": false,
+                    "volume_ul": 10.0
+                  },
+                  "source_intent": "transfer"
+                },
+                {
+                  "primitive_type": "DISPENSE",
+                  "primitive": {
+                    "__type__": "Dispense",
+                    "blow_out": false,
+                    "destination": {
+                      "__type__": "WellRef",
+                      "plate_id": "plate_1",
+                      "well_id": "A2"
+                    },
+                    "flow_rate_ul_s": null,
+                    "primitive_type": "DISPENSE",
+                    "touch_tip": false,
+                    "volume_ul": 10.0
+                  },
+                  "source_intent": "transfer"
+                },
+                {
+                  "primitive_type": "ASPIRATE",
+                  "primitive": {
+                    "__type__": "Aspirate",
+                    "air_gap_ul": null,
+                    "flow_rate_ul_s": null,
+                    "primitive_type": "ASPIRATE",
+                    "source": {
+                      "__type__": "WellRef",
+                      "plate_id": "plate_1",
+                      "well_id": "A1"
+                    },
+                    "touch_tip": false,
+                    "volume_ul": 10.0
+                  },
+                  "source_intent": "transfer"
+                },
+                {
+                  "primitive_type": "DISPENSE",
+                  "primitive": {
+                    "__type__": "Dispense",
+                    "blow_out": false,
+                    "destination": {
+                      "__type__": "WellRef",
+                      "plate_id": "plate_1",
+                      "well_id": "A2"
+                    },
+                    "flow_rate_ul_s": null,
+                    "primitive_type": "DISPENSE",
+                    "touch_tip": false,
+                    "volume_ul": 10.0
+                  },
+                  "source_intent": "transfer"
+                },
+                {
+                  "primitive_type": "ASPIRATE",
+                  "primitive": {
+                    "__type__": "Aspirate",
+                    "air_gap_ul": null,
+                    "flow_rate_ul_s": null,
+                    "primitive_type": "ASPIRATE",
+                    "source": {
+                      "__type__": "WellRef",
+                      "plate_id": "plate_1",
+                      "well_id": "A1"
+                    },
+                    "touch_tip": false,
+                    "volume_ul": 10.0
+                  },
+                  "source_intent": "transfer"
+                },
+                {
+                  "primitive_type": "DISPENSE",
+                  "primitive": {
+                    "__type__": "Dispense",
+                    "blow_out": false,
+                    "destination": {
+                      "__type__": "WellRef",
+                      "plate_id": "plate_1",
+                      "well_id": "A2"
+                    },
+                    "flow_rate_ul_s": null,
+                    "primitive_type": "DISPENSE",
+                    "touch_tip": false,
+                    "volume_ul": 10.0
+                  },
+                  "source_intent": "transfer"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

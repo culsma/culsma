@@ -1,0 +1,749 @@
+@prefix ns1: <http://bioprotocols.org/uml#> .
+@prefix ns2: <http://bioprotocols.org/labop#> .
+@prefix om: <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix sbol: <http://sbols.org/v3#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix> a ns2:Protocol,
+        sbol:TopLevel ;
+    ns1:edge <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ControlFlow1>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ControlFlow2>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ControlFlow3>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ControlFlow4>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ControlFlow5>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ControlFlow6>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ControlFlow7>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow1>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow10>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow11>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow12>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow13>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow14>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow15>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow16>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow2>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow3>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow4>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow5>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow6>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow7>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow8>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow9> ;
+    ns1:node <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction3>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/FinalNode1>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ForkNode1>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/InitialNode1> ;
+    sbol:description "GFP released-mechanism check" ;
+    sbol:displayId "gfp_spin_prefix" ;
+    sbol:hasNamespace <https://example.org/gfp-native/spin_prefix/> ;
+    sbol:name "GFP released-mechanism check" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision> a ns2:Primitive,
+        sbol:TopLevel ;
+    ns1:ownedParameter <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue1>,
+        <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue2>,
+        <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue3>,
+        <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue4> ;
+    sbol:description "Place a measured amount (mass or volume) of a specified component into a location, where it may then be used in executing the protocol." ;
+    sbol:displayId "Provision" ;
+    sbol:hasNamespace <https://bioprotocols.org/labop/primitives/liquid_handling> .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue1> a ns1:OrderedPropertyValue,
+        sbol:Identified ;
+    ns1:indexValue 0 ;
+    ns1:propertyValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue1/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue1" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue1/Parameter1> a ns1:Parameter,
+        sbol:Identified ;
+    ns1:direction ns1:in ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:lowerValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue1/Parameter1/LiteralInteger2> ;
+    ns1:type sbol:Component ;
+    ns1:upperValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue1/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "resource" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue1/Parameter1/LiteralInteger1> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue1/Parameter1/LiteralInteger2> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue2> a ns1:OrderedPropertyValue,
+        sbol:Identified ;
+    ns1:indexValue 1 ;
+    ns1:propertyValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue2/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue2" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue2/Parameter1> a ns1:Parameter,
+        sbol:Identified ;
+    ns1:direction ns1:in ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:lowerValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue2/Parameter1/LiteralInteger2> ;
+    ns1:type ns2:SampleCollection ;
+    ns1:upperValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue2/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "destination" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue2/Parameter1/LiteralInteger1> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue2/Parameter1/LiteralInteger2> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue3> a ns1:OrderedPropertyValue,
+        sbol:Identified ;
+    ns1:indexValue 2 ;
+    ns1:propertyValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue3/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue3" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue3/Parameter1> a ns1:Parameter,
+        sbol:Identified ;
+    ns1:direction ns1:in ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:lowerValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue3/Parameter1/LiteralInteger2> ;
+    ns1:type om:Measure ;
+    ns1:upperValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue3/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "amount" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue3/Parameter1/LiteralInteger1> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue3/Parameter1/LiteralInteger2> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue4> a ns1:OrderedPropertyValue,
+        sbol:Identified ;
+    ns1:indexValue 3 ;
+    ns1:propertyValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue4/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue4" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue4/Parameter1> a ns1:Parameter,
+        sbol:Identified ;
+    ns1:direction ns1:in ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:lowerValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue4/Parameter1/LiteralInteger2> ;
+    ns1:type om:Measure ;
+    ns1:upperValue <https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue4/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "dispenseVelocity" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue4/Parameter1/LiteralInteger1> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/liquid_handling/Provision/OrderedPropertyValue4/Parameter1/LiteralInteger2> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 0 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Hold> a ns2:Primitive,
+        sbol:TopLevel ;
+    ns1:ownedParameter <https://bioprotocols.org/labop/primitives/plate_handling/Hold/OrderedPropertyValue1>,
+        <https://bioprotocols.org/labop/primitives/plate_handling/Hold/OrderedPropertyValue2> ;
+    sbol:description "Incubate, store, or hold a set of samples indefinitely at the specified temperature" ;
+    sbol:displayId "Hold" ;
+    sbol:hasNamespace <https://bioprotocols.org/labop/primitives/plate_handling> .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Hold/OrderedPropertyValue1> a ns1:OrderedPropertyValue,
+        sbol:Identified ;
+    ns1:indexValue 0 ;
+    ns1:propertyValue <https://bioprotocols.org/labop/primitives/plate_handling/Hold/OrderedPropertyValue1/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue1" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Hold/OrderedPropertyValue1/Parameter1> a ns1:Parameter,
+        sbol:Identified ;
+    ns1:direction ns1:in ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:lowerValue <https://bioprotocols.org/labop/primitives/plate_handling/Hold/OrderedPropertyValue1/Parameter1/LiteralInteger1> ;
+    ns1:type ns2:SampleArray ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "location" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Hold/OrderedPropertyValue1/Parameter1/LiteralInteger1> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Hold/OrderedPropertyValue2> a ns1:OrderedPropertyValue,
+        sbol:Identified ;
+    ns1:indexValue 1 ;
+    ns1:propertyValue <https://bioprotocols.org/labop/primitives/plate_handling/Hold/OrderedPropertyValue2/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue2" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Hold/OrderedPropertyValue2/Parameter1> a ns1:Parameter,
+        sbol:Identified ;
+    ns1:direction ns1:in ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:lowerValue <https://bioprotocols.org/labop/primitives/plate_handling/Hold/OrderedPropertyValue2/Parameter1/LiteralInteger2> ;
+    ns1:type om:Measure ;
+    ns1:upperValue <https://bioprotocols.org/labop/primitives/plate_handling/Hold/OrderedPropertyValue2/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "temperature" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Hold/OrderedPropertyValue2/Parameter1/LiteralInteger1> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Hold/OrderedPropertyValue2/Parameter1/LiteralInteger2> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Spin> a ns2:Primitive,
+        sbol:TopLevel ;
+    ns1:ownedParameter <https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue1>,
+        <https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue2>,
+        <https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue3> ;
+    sbol:description "Centrifuge a set of samples at a given acceleration for a given period of time" ;
+    sbol:displayId "Spin" ;
+    sbol:hasNamespace <https://bioprotocols.org/labop/primitives/plate_handling> .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue1> a ns1:OrderedPropertyValue,
+        sbol:Identified ;
+    ns1:indexValue 0 ;
+    ns1:propertyValue <https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue1/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue1" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue1/Parameter1> a ns1:Parameter,
+        sbol:Identified ;
+    ns1:direction ns1:in ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:lowerValue <https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue1/Parameter1/LiteralInteger2> ;
+    ns1:type ns2:SampleArray ;
+    ns1:upperValue <https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue1/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "location" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue1/Parameter1/LiteralInteger1> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue1/Parameter1/LiteralInteger2> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue2> a ns1:OrderedPropertyValue,
+        sbol:Identified ;
+    ns1:indexValue 1 ;
+    ns1:propertyValue <https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue2/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue2" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue2/Parameter1> a ns1:Parameter,
+        sbol:Identified ;
+    ns1:direction ns1:in ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:lowerValue <https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue2/Parameter1/LiteralInteger2> ;
+    ns1:type om:Measure ;
+    ns1:upperValue <https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue2/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "duration" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue2/Parameter1/LiteralInteger1> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue2/Parameter1/LiteralInteger2> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue3> a ns1:OrderedPropertyValue,
+        sbol:Identified ;
+    ns1:indexValue 2 ;
+    ns1:propertyValue <https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue3/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue3" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue3/Parameter1> a ns1:Parameter,
+        sbol:Identified ;
+    ns1:direction ns1:in ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:lowerValue <https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue3/Parameter1/LiteralInteger2> ;
+    ns1:type om:Measure ;
+    ns1:upperValue <https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue3/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "acceleration" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue3/Parameter1/LiteralInteger1> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/plate_handling/Spin/OrderedPropertyValue3/Parameter1/LiteralInteger2> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer> a ns2:Primitive,
+        sbol:TopLevel ;
+    ns1:ownedParameter <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue1>,
+        <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue2>,
+        <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue3> ;
+    sbol:description "Allocate a sample array with size and type based on an empty container" ;
+    sbol:displayId "EmptyContainer" ;
+    sbol:hasNamespace <https://bioprotocols.org/labop/primitives/sample_arrays> .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue1> a ns1:OrderedPropertyValue,
+        sbol:Identified ;
+    ns1:indexValue 0 ;
+    ns1:propertyValue <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue1/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue1" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue1/Parameter1> a ns1:Parameter,
+        sbol:Identified ;
+    ns1:direction ns1:in ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:lowerValue <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue1/Parameter1/LiteralInteger2> ;
+    ns1:type sbol:Identified ;
+    ns1:upperValue <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue1/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "specification" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue1/Parameter1/LiteralInteger1> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue1/Parameter1/LiteralInteger2> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue2> a ns1:OrderedPropertyValue,
+        sbol:Identified ;
+    ns1:indexValue 1 ;
+    ns1:propertyValue <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue2/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue2" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue2/Parameter1> a ns1:Parameter,
+        sbol:Identified ;
+    ns1:direction ns1:in ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:lowerValue <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue2/Parameter1/LiteralInteger2> ;
+    ns1:type ns2:SampleArray ;
+    ns1:upperValue <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue2/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "sample_array" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue2/Parameter1/LiteralInteger1> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue2/Parameter1/LiteralInteger2> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 0 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue3> a ns1:OrderedPropertyValue,
+        sbol:Identified ;
+    ns1:indexValue 2 ;
+    ns1:propertyValue <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue3/Parameter1> ;
+    sbol:displayId "OrderedPropertyValue3" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue3/Parameter1> a ns1:Parameter,
+        sbol:Identified ;
+    ns1:direction ns1:out ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:lowerValue <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue3/Parameter1/LiteralInteger2> ;
+    ns1:type ns2:SampleArray ;
+    ns1:upperValue <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue3/Parameter1/LiteralInteger1> ;
+    sbol:displayId "Parameter1" ;
+    sbol:name "samples" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue3/Parameter1/LiteralInteger1> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger1" .
+
+<https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer/OrderedPropertyValue3/Parameter1/LiteralInteger2> a ns1:LiteralInteger,
+        sbol:Identified ;
+    ns1:integerValue 1 ;
+    sbol:displayId "LiteralInteger2" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1/ValuePin1/LiteralReference1> a ns1:LiteralReference,
+        sbol:Identified ;
+    ns1:referenceValue <https://example.org/gfp-native/spin_prefix/lysate_tube> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1/ValuePin2/LiteralIdentified1> a ns1:LiteralIdentified,
+        sbol:Identified ;
+    ns1:identifiedValue <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> ;
+    sbol:displayId "LiteralIdentified1" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1/ValuePin2/LiteralIdentified1/SampleArray1> a ns2:SampleArray,
+        sbol:Identified ;
+    ns2:containerType <https://example.org/gfp-native/spin_prefix/lysate_tube> ;
+    ns2:initial_contents "%7B%22coords%22%3A%20%7B%22reagent%22%3A%20%7B%22dims%22%3A%20%5B%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5D%7D%2C%20%22container%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22https%3A//example.org/gfp-native/spin_prefix/lysate_tube%22%5D%7D%2C%20%22location%22%3A%20%7B%22dims%22%3A%20%5B%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22A1%22%5D%7D%2C%20%22sample%22%3A%20%7B%22dims%22%3A%20%5B%22sample%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%22sample_GFP%20lysate_0%22%5D%7D%7D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22dims%22%3A%20%7B%22reagent%22%3A%200%2C%20%22container%22%3A%201%2C%20%22location%22%3A%201%2C%20%22sample%22%3A%201%7D%2C%20%22data_vars%22%3A%20%7B%22contents%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%2C%20%22reagent%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%5B%5D%5D%5D%7D%2C%20%22sample_location%22%3A%20%7B%22dims%22%3A%20%5B%22container%22%2C%20%22location%22%5D%2C%20%22attrs%22%3A%20%7B%7D%2C%20%22data%22%3A%20%5B%5B%22sample_GFP%20lysate_0%22%5D%5D%7D%7D%7D" ;
+    sbol:displayId "SampleArray1" ;
+    sbol:name "GFP lysate" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/ValuePin1/LiteralReference1> a ns1:LiteralReference,
+        sbol:Identified ;
+    ns1:referenceValue <https://example.org/gfp-native/spin_prefix/lysate_liquid> ;
+    sbol:displayId "LiteralReference1" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/ValuePin2/LiteralIdentified1> a ns1:LiteralIdentified,
+        sbol:Identified ;
+    ns1:identifiedValue <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/ValuePin2/LiteralIdentified1/Measure1> ;
+    sbol:displayId "LiteralIdentified1" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/ValuePin2/LiteralIdentified1/Measure1> a sbol:Identified,
+        om:Measure ;
+    sbol:displayId "Measure1" ;
+    om:hasNumericalValue 1.6e+02 ;
+    om:hasUnit om:microlitre .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction3/ValuePin1/LiteralIdentified1> a ns1:LiteralIdentified,
+        sbol:Identified ;
+    ns1:identifiedValue <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction3/ValuePin1/LiteralIdentified1/Measure1> ;
+    sbol:displayId "LiteralIdentified1" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction3/ValuePin1/LiteralIdentified1/Measure1> a sbol:Identified,
+        om:Measure ;
+    sbol:displayId "Measure1" ;
+    om:hasNumericalValue 2.2e+01 ;
+    om:hasUnit om:degreeCelsius .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4/ValuePin1/LiteralIdentified1> a ns1:LiteralIdentified,
+        sbol:Identified ;
+    ns1:identifiedValue <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4/ValuePin1/LiteralIdentified1/Measure1> ;
+    sbol:displayId "LiteralIdentified1" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4/ValuePin1/LiteralIdentified1/Measure1> a sbol:Identified,
+        om:Measure ;
+    sbol:displayId "Measure1" ;
+    om:hasNumericalValue 1e+01 ;
+    om:hasUnit om:minute-Time .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4/ValuePin2/LiteralIdentified1> a ns1:LiteralIdentified,
+        sbol:Identified ;
+    ns1:identifiedValue <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4/ValuePin2/LiteralIdentified1/Measure1> ;
+    sbol:displayId "LiteralIdentified1" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4/ValuePin2/LiteralIdentified1/Measure1> a sbol:Identified,
+        om:Measure ;
+    sbol:displayId "Measure1" ;
+    om:hasNumericalValue 1.176798e+05 ;
+    om:hasUnit om:metrePerSecond-TimeSquared .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ControlFlow1> a ns1:ControlFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/InitialNode1> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/FinalNode1> ;
+    sbol:displayId "ControlFlow1" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ControlFlow2> a ns1:ControlFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/InitialNode1> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/FinalNode1> ;
+    sbol:displayId "ControlFlow2" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ControlFlow3> a ns1:ControlFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/InitialNode1> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1> ;
+    sbol:displayId "ControlFlow3" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ControlFlow4> a ns1:ControlFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2> ;
+    sbol:displayId "ControlFlow4" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ControlFlow5> a ns1:ControlFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction3> ;
+    sbol:displayId "ControlFlow5" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ControlFlow6> a ns1:ControlFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction3> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4> ;
+    sbol:displayId "ControlFlow6" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ControlFlow7> a ns1:ControlFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/FinalNode1> ;
+    sbol:displayId "ControlFlow7" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow1> a ns1:ObjectFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1/ValuePin1> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1> ;
+    sbol:displayId "ObjectFlow1" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow10> a ns1:ObjectFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction3/ValuePin1> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction3> ;
+    sbol:displayId "ObjectFlow10" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow11> a ns1:ObjectFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1/OutputPin1> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ForkNode1> ;
+    sbol:displayId "ObjectFlow11" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow12> a ns1:ObjectFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ForkNode1> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction3/InputPin1> ;
+    sbol:displayId "ObjectFlow12" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow13> a ns1:ObjectFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4/InputPin1> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4> ;
+    sbol:displayId "ObjectFlow13" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow14> a ns1:ObjectFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4/ValuePin1> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4> ;
+    sbol:displayId "ObjectFlow14" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow15> a ns1:ObjectFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4/ValuePin2> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4> ;
+    sbol:displayId "ObjectFlow15" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow16> a ns1:ObjectFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ForkNode1> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4/InputPin1> ;
+    sbol:displayId "ObjectFlow16" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow2> a ns1:ObjectFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1/ValuePin2> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1> ;
+    sbol:displayId "ObjectFlow2" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow3> a ns1:ObjectFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1/OutputPin1> ;
+    sbol:displayId "ObjectFlow3" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow4> a ns1:ObjectFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/ValuePin1> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2> ;
+    sbol:displayId "ObjectFlow4" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow5> a ns1:ObjectFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/InputPin1> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2> ;
+    sbol:displayId "ObjectFlow5" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow6> a ns1:ObjectFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/ValuePin2> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2> ;
+    sbol:displayId "ObjectFlow6" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow7> a ns1:ObjectFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/InputPin2> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2> ;
+    sbol:displayId "ObjectFlow7" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow8> a ns1:ObjectFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ForkNode1> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/InputPin1> ;
+    sbol:displayId "ObjectFlow8" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ObjectFlow9> a ns1:ObjectFlow,
+        sbol:Identified ;
+    ns1:source <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction3/InputPin1> ;
+    ns1:target <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction3> ;
+    sbol:displayId "ObjectFlow9" .
+
+<https://example.org/gfp-native/spin_prefix/lysate_liquid> a sbol:Component ;
+    sbol:displayId "lysate_liquid" ;
+    sbol:hasNamespace <https://example.org/gfp-native/spin_prefix/> ;
+    sbol:name "GFP lysate with 100000 suspended cellular units" ;
+    sbol:type <https://identifiers.org/SBO:0000241> .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1/ValuePin1> a ns1:ValuePin,
+        sbol:Identified ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:value <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1/ValuePin1/LiteralReference1> ;
+    sbol:displayId "ValuePin1" ;
+    sbol:name "specification" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1/ValuePin2> a ns1:ValuePin,
+        sbol:Identified ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:value <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1/ValuePin2/LiteralIdentified1> ;
+    sbol:displayId "ValuePin2" ;
+    sbol:name "sample_array" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/InputPin2> a ns1:InputPin,
+        sbol:Identified ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    sbol:displayId "InputPin2" ;
+    sbol:name "dispenseVelocity" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/ValuePin1> a ns1:ValuePin,
+        sbol:Identified ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:value <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/ValuePin1/LiteralReference1> ;
+    sbol:displayId "ValuePin1" ;
+    sbol:name "resource" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/ValuePin2> a ns1:ValuePin,
+        sbol:Identified ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:value <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/ValuePin2/LiteralIdentified1> ;
+    sbol:displayId "ValuePin2" ;
+    sbol:name "amount" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction3/ValuePin1> a ns1:ValuePin,
+        sbol:Identified ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:value <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction3/ValuePin1/LiteralIdentified1> ;
+    sbol:displayId "ValuePin1" ;
+    sbol:name "temperature" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4/ValuePin1> a ns1:ValuePin,
+        sbol:Identified ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:value <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4/ValuePin1/LiteralIdentified1> ;
+    sbol:displayId "ValuePin1" ;
+    sbol:name "duration" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4/ValuePin2> a ns1:ValuePin,
+        sbol:Identified ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    ns1:value <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4/ValuePin2/LiteralIdentified1> ;
+    sbol:displayId "ValuePin2" ;
+    sbol:name "acceleration" .
+
+<https://example.org/gfp-native/spin_prefix/lysate_tube> a ns2:ContainerSpec,
+        sbol:TopLevel ;
+    ns2:queryString "cont:MicrofugeTube1.5mL" ;
+    sbol:displayId "lysate_tube" ;
+    sbol:hasNamespace <https://example.org/gfp-native/spin_prefix/> ;
+    sbol:name "GFP lysate" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1/OutputPin1> a ns1:OutputPin,
+        sbol:Identified ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    sbol:displayId "OutputPin1" ;
+    sbol:name "samples" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/InputPin1> a ns1:InputPin,
+        sbol:Identified ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    sbol:displayId "InputPin1" ;
+    sbol:name "destination" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction3/InputPin1> a ns1:InputPin,
+        sbol:Identified ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    sbol:displayId "InputPin1" ;
+    sbol:name "location" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4/InputPin1> a ns1:InputPin,
+        sbol:Identified ;
+    ns1:isOrdered true ;
+    ns1:isUnique true ;
+    sbol:displayId "InputPin1" ;
+    sbol:name "location" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/FinalNode1> a ns1:FinalNode,
+        sbol:Identified ;
+    sbol:displayId "FinalNode1" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/InitialNode1> a ns1:InitialNode,
+        sbol:Identified ;
+    sbol:displayId "InitialNode1" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction3> a ns1:CallBehaviorAction,
+        sbol:Identified ;
+    ns1:behavior <https://bioprotocols.org/labop/primitives/plate_handling/Hold> ;
+    ns1:input <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction3/InputPin1>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction3/ValuePin1> ;
+    sbol:displayId "CallBehaviorAction3" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/ForkNode1> a ns1:ForkNode,
+        sbol:Identified ;
+    sbol:displayId "ForkNode1" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1> a ns1:CallBehaviorAction,
+        sbol:Identified ;
+    ns1:behavior <https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer> ;
+    ns1:input <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1/ValuePin1>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1/ValuePin2> ;
+    ns1:output <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction1/OutputPin1> ;
+    sbol:displayId "CallBehaviorAction1" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4> a ns1:CallBehaviorAction,
+        sbol:Identified ;
+    ns1:behavior <https://bioprotocols.org/labop/primitives/plate_handling/Spin> ;
+    ns1:input <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4/InputPin1>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4/ValuePin1>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction4/ValuePin2> ;
+    sbol:displayId "CallBehaviorAction4" .
+
+<https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2> a ns1:CallBehaviorAction,
+        sbol:Identified ;
+    ns1:behavior <https://bioprotocols.org/labop/primitives/liquid_handling/Provision> ;
+    ns1:input <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/InputPin1>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/InputPin2>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/ValuePin1>,
+        <https://example.org/gfp-native/spin_prefix/gfp_spin_prefix/CallBehaviorAction2/ValuePin2> ;
+    sbol:displayId "CallBehaviorAction2" .
+

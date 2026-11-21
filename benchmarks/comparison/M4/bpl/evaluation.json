@@ -1,0 +1,177 @@
+{
+  "method": "execution",
+  "expected_result": "No",
+  "result": "No",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "results.json",
+      "path": [
+        "m4_let_10",
+        "check",
+        "returncode"
+      ],
+      "equals": 11,
+      "observed": 11,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "m4_let_10",
+        "check",
+        "diagnostic_codes"
+      ],
+      "equals": [
+        "SEMANTIC_MISSING_VOLUME"
+      ],
+      "observed": [
+        "SEMANTIC_MISSING_VOLUME"
+      ],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "m4_let_10",
+        "validate",
+        "returncode"
+      ],
+      "equals": 11,
+      "observed": 11,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "m4_let_10",
+        "validate",
+        "diagnostic_codes"
+      ],
+      "equals": [
+        "SEMANTIC_MISSING_VOLUME"
+      ],
+      "observed": [
+        "SEMANTIC_MISSING_VOLUME"
+      ],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "m4_let_10",
+        "lower",
+        "returncode"
+      ],
+      "equals": 11,
+      "observed": 11,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "m4_let_10",
+        "lower",
+        "diagnostic_codes"
+      ],
+      "equals": [
+        "SEMANTIC_MISSING_VOLUME"
+      ],
+      "observed": [
+        "SEMANTIC_MISSING_VOLUME"
+      ],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "m4_let_20",
+        "check",
+        "returncode"
+      ],
+      "equals": 11,
+      "observed": 11,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "m4_let_20",
+        "check",
+        "diagnostic_codes"
+      ],
+      "equals": [
+        "SEMANTIC_MISSING_VOLUME"
+      ],
+      "observed": [
+        "SEMANTIC_MISSING_VOLUME"
+      ],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "m4_let_20",
+        "validate",
+        "returncode"
+      ],
+      "equals": 11,
+      "observed": 11,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "m4_let_20",
+        "validate",
+        "diagnostic_codes"
+      ],
+      "equals": [
+        "SEMANTIC_MISSING_VOLUME"
+      ],
+      "observed": [
+        "SEMANTIC_MISSING_VOLUME"
+      ],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "m4_let_20",
+        "lower",
+        "returncode"
+      ],
+      "equals": 11,
+      "observed": 11,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "m4_let_20",
+        "lower",
+        "diagnostic_codes"
+      ],
+      "equals": [
+        "SEMANTIC_MISSING_VOLUME"
+      ],
+      "observed": [
+        "SEMANTIC_MISSING_VOLUME"
+      ],
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

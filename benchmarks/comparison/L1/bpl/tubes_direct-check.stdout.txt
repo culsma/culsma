@@ -1,0 +1,1 @@
+{"artifacts": {"diagnostics": "artifacts/check/endpoint_tubes_direct.diagnostics.json"}, "command": "check", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_tubes_direct.bpl", "ok": true}

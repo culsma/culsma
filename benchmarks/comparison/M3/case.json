@@ -1,0 +1,447 @@
+{
+  "criterion": "M3",
+  "systems": {
+    "culsma": {
+      "runtime": {
+        "commit": "5364676bc2437b4981a00ce0133c730af243e469",
+        "packages": [
+          "culsma"
+        ],
+        "python": "3.12.8",
+        "source_hashes": {
+          "src/culsma/frontend/resolver.py": "1cf6253117149884ac26c13930e7b63a8f8b053dbe2a1629666047857b1b807a",
+          "src/culsma/parser/parser.py": "9e52b36bb2fcca92bf0de2669ed7b4b0a5c0041d65ecf0475df4a4a7685073d1",
+          "src/culsma/pipeline/typecheck/__init__.py": "3e3d8efafc183f0405140681351b7f7e970786ef619fb9d59d67c489e5daf5c1",
+          "src/culsma/runtime/material/ledger.py": "f46dc0e3ca95f6603448e3c7256c58147a97fc900a4d0319a83ca3ee726bdde7",
+          "src/culsma/scientific_model/registry.py": "87b08c8c7665ca411ca311a57c701a3a1a63ac8476f1c81690aa301072a02d75"
+        },
+        "url": "https://codeload.github.com/culsma/culsma/tar.gz/5364676bc2437b4981a00ce0133c730af243e469"
+      },
+      "method": "execution",
+      "commands": [
+        {
+          "kind": "culsma",
+          "args": [
+            "protocol.culs"
+          ]
+        },
+        {
+          "kind": "culsma",
+          "args": [
+            "magnetic.culs"
+          ],
+          "prefix": "magnetic_"
+        },
+        {
+          "kind": "python",
+          "args": [
+            "material_check.py"
+          ]
+        }
+      ],
+      "expectations": [
+        {
+          "criterion": "M3",
+          "expected_result": "Yes",
+          "scope": "GFP cellular quantity is retained (100000 to two portions of 50000); suspension changes to pellet at separation, under stipulated partition rules.",
+          "checks": [
+            {
+              "file": "run.json",
+              "path": [
+                "events",
+                11,
+                "payload",
+                "material_state_snapshot",
+                "containers",
+                "container/entry/entry.s0%3A%3Aalloc/lysate",
+                "component_quantities",
+                "GFP_CELL_DEBRIS"
+              ],
+              "equals": {
+                "dimension": "count",
+                "unit": "cells",
+                "value": 100000.0
+              }
+            },
+            {
+              "file": "run.json",
+              "path": [
+                "events",
+                11,
+                "payload",
+                "material_state_snapshot",
+                "containers",
+                "container/entry/entry.s0%3A%3Aalloc/lysate",
+                "material_relationships",
+                0,
+                "material_state"
+              ],
+              "equals": "suspension"
+            },
+            {
+              "file": "run.json",
+              "path": [
+                "events",
+                21,
+                "payload",
+                "material_state_snapshot",
+                "contents_states",
+                "container/entry/entry.s0%3A%3Aalloc/lysate",
+                "kind"
+              ],
+              "equals": "partitioned"
+            },
+            {
+              "file": "run.json",
+              "path": [
+                "events",
+                21,
+                "payload",
+                "material_state_snapshot",
+                "contents_states",
+                "container/entry/entry.s0%3A%3Aalloc/lysate",
+                "parts",
+                "1",
+                "component_quantities",
+                "GFP_CELL_DEBRIS"
+              ],
+              "equals": {
+                "dimension": "count",
+                "unit": "cells",
+                "value": 100000.0
+              }
+            },
+            {
+              "file": "run.json",
+              "path": [
+                "events",
+                21,
+                "payload",
+                "material_state_snapshot",
+                "contents_states",
+                "container/entry/entry.s0%3A%3Aalloc/lysate",
+                "parts",
+                "1",
+                "material_relationships",
+                0,
+                "material_state"
+              ],
+              "equals": "pellet"
+            },
+            {
+              "file": "run.json",
+              "path": [
+                "state",
+                "artifacts",
+                "material_state",
+                "containers",
+                "container/entry/entry.s2%3A%3Aalloc/resuspended",
+                "component_quantities",
+                "GFP_CELL_DEBRIS"
+              ],
+              "equals": {
+                "dimension": "count",
+                "unit": "cells",
+                "value": 50000.0
+              }
+            },
+            {
+              "file": "run.json",
+              "path": [
+                "state",
+                "artifacts",
+                "material_state",
+                "containers",
+                "container/entry/entry.s10%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate_assay_A2",
+                "component_quantities",
+                "GFP_CELL_DEBRIS"
+              ],
+              "equals": {
+                "dimension": "count",
+                "unit": "cells",
+                "value": 50000.0
+              }
+            },
+            {
+              "file": "material-audit.json",
+              "path": [
+                "typed_quantities_and_association_passed"
+              ],
+              "equals": true
+            }
+          ]
+        }
+      ]
+    },
+    "labop": {
+      "runtime": {
+        "commit": "2e2bd88150c71a440771fd369f40295dfd622324",
+        "packages": [
+          "labop",
+          "uml",
+          "labop_time",
+          "labop_convert"
+        ],
+        "python": "3.11.11",
+        "sha256": "996e222782d9a662707715334fc8b8e90d9430390a6cfaaa7f8f3f9984acfd6b",
+        "source_hashes": {
+          "labop/execution/behavior_dynamics.py": "8cdad33723345fedb7369708c49eb059f4e19193e5e0620dacb9fa983814c922",
+          "labop/execution/execution_engine.py": "9d258ace720850146de0d0ab7391c3ef258b9ca6b147495cfd0644f79fde6580",
+          "labop/lib/plate_handling.ttl": "0666b1cd0406c9b050e2951a091a5f402b8593679512aab7a5b4255865c83de6",
+          "test/test_protocol_outputs.py": "e2836dac670377f504db1f5e6bcd982be51f3973da453e791e3d47532949260e",
+          "test/test_subprotocols.py": "736d966389fb2fe637405ce8751efd865b893caab98eae0d911ee6a40628e52b",
+          "uml/behavior.py": "fcb553a034ccfc06ef42501799278f22b627fe28952d076d3533e11def736566"
+        },
+        "url": "https://codeload.github.com/Bioprotocols/labop/tar.gz/2e2bd88150c71a440771fd369f40295dfd622324"
+      },
+      "method": "execution",
+      "commands": [
+        {
+          "kind": "python",
+          "args": [
+            "protocol.py",
+            "."
+          ]
+        },
+        {
+          "kind": "python",
+          "args": [
+            "material_check.py"
+          ]
+        }
+      ],
+      "expectations": [
+        {
+          "criterion": "M3",
+          "expected_result": "No",
+          "scope": "Published handler inventory lacks the tested material-separation propagation; GFP extension assessed separately.",
+          "checks": [
+            {
+              "file": "material-audit.json",
+              "path": [
+                "default_handlers"
+              ],
+              "equals": {
+                "handlers": {
+                  "https://bioprotocols.org/labop/primitives/liquid_handling/TransferByMap": "TransferByMapUpdater",
+                  "https://bioprotocols.org/labop/primitives/liquid_handling/Transfer": "TransferUpdater",
+                  "https://bioprotocols.org/labop/primitives/liquid_handling/Vortex": "VortexUpdater",
+                  "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer": "EmptyContainerUpdater",
+                  "https://bioprotocols.org/labop/primitives/liquid_handling/Provision": "ProvisionUpdater",
+                  "https://bioprotocols.org/labop/primitives/liquid_handling/SerialDilution": "SerialDilutionUpdater"
+                },
+                "primitive_to_output_function": {
+                  "EmptyContainer": "empty_container_compute_output",
+                  "PlateCoordinates": "plate_coordinates_compute_output",
+                  "MeasureAbsorbance": "measure_absorbance_compute_output",
+                  "MeasureFluorescence": "measure_fluorescence_compute_output",
+                  "EmptyInstrument": "empty_rack_compute_output",
+                  "EmptyRack": "empty_rack_compute_output",
+                  "LoadContainerOnInstrument": "load_container_on_instrument_compute_output",
+                  "JoinMetadata": "join_metadata_compute_output",
+                  "JoinDatasets": "join_datasets_compute_output",
+                  "ExcelMetadata": "excel_metadata_compute_output",
+                  "ComputeMetadata": "compute_metadata_compute_output"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "criterion": "M3 / GFP released route",
+          "expected_result": "No",
+          "scope": "Released material semantics: execution completes, but no Spin fraction outputs or material updater; this is not an execution-failure verdict.",
+          "checks": [
+            {
+              "file": "results.json",
+              "path": [
+                "extension_used"
+              ],
+              "equals": false
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "spin_prefix",
+                "fraction_output_names"
+              ],
+              "equals": []
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "spin_prefix",
+                "spin_has_default_material_handler"
+              ],
+              "equals": false
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "spin_prefix",
+                "validation_errors"
+              ],
+              "equals": []
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "spin_prefix",
+                "completed_normally"
+              ],
+              "equals": true
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "spin_prefix",
+                "execution_exception"
+              ],
+              "equals": null
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "location_continuation",
+                "fraction_output_names"
+              ],
+              "equals": []
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "location_continuation",
+                "spin_has_default_material_handler"
+              ],
+              "equals": false
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "location_continuation",
+                "validation_errors"
+              ],
+              "equals": []
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "location_continuation",
+                "completed_normally"
+              ],
+              "equals": true
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "location_continuation",
+                "execution_exception"
+              ],
+              "equals": null
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "location_continuation",
+                "well_volumes_uL"
+              ],
+              "equals": {
+                "A1": 20.0,
+                "A2": 20.0,
+                "A3": 20.0
+              }
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "cases",
+                "location_continuation",
+                "well_reagents"
+              ],
+              "equals": {
+                "A1": {
+                  "https://example.org/gfp-native/location_continuation/lysate_liquid": 20.0
+                },
+                "A2": {
+                  "https://example.org/gfp-native/location_continuation/assay_buffer": 20.0
+                },
+                "A3": {
+                  "https://example.org/gfp-native/location_continuation/assay_buffer": 20.0
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "bpl": {
+      "runtime": {
+        "commit": "4e505740f5025d59ba655c6c955f83876f753007",
+        "packages": [
+          "bpl"
+        ],
+        "python": "3.13.1",
+        "sha256": "7d8d229525f151e95a4d8a59db44129511b18c9025714b4034859b8b5c3da804",
+        "source_hashes": {
+          "bpl/grammar/bpl.lark": "cf4ff616f0787193a689c8a349656b962796f588c0ee216963b28d31f9c24cea",
+          "bpl/lowering/plan_ir.py": "e1ccc06f54fe53ec2219cb732a218a52e9064cbd48be616477cf67e008f010eb",
+          "bpl/orchestrator.py": "73ec40a828a1d6ec0fbb5a07dc72a346ac77ac2c1b0652bb5281cc172fe8a7d1",
+          "bpl/simulation/simulator.py": "bae9d9a1cec26ecc9529da278e05969d5b1157ec084bf9bddce5ef07ebe71094",
+          "bpl/simulation/virtual_deck.py": "f2deda48a3973f8f571fd92273c2d1d595a3b28c39fa5a894bb4247b6ef13b54",
+          "bpl/types/unit_engine.py": "b3e49dc5e48337b54a5c047ac5fe185d5543ddf2df76da6821d428fcc754ca80"
+        },
+        "url": "https://gitlab.com/bota-biosciences-public/bpl-code/-/archive/4e505740f5025d59ba655c6c955f83876f753007/bpl-code-4e505740f5025d59ba655c6c955f83876f753007.tar.gz"
+      },
+      "method": "execution",
+      "commands": [
+        {
+          "kind": "python",
+          "args": [
+            "run.py"
+          ]
+        }
+      ],
+      "expectations": [
+        {
+          "criterion": "M3",
+          "expected_result": "No",
+          "scope": "Transfer moves liquid volume but does not propagate the seeded component into the destination.",
+          "checks": [
+            {
+              "file": "results.json",
+              "path": [
+                "transfer_simulation"
+              ],
+              "equals": {
+                "success": true,
+                "errors": [],
+                "source_volume_ul": 80.0,
+                "destination_volume_ul": 20.0,
+                "source_components": [
+                  {
+                    "name": "buffer",
+                    "concentration": null,
+                    "volume_ul": 80.0,
+                    "properties": {}
+                  }
+                ],
+                "destination_components": []
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

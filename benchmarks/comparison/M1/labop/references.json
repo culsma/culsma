@@ -1,0 +1,112 @@
+{
+  "references": [
+    {
+      "producer_behavior": "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+      "output_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction1/OutputPin1",
+      "input_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction9/InputPin1",
+      "consumer": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction9",
+      "edges": [
+        "https://example.org/gfp-native/location_continuation/gfp_location_continuation/ObjectFlow11",
+        "https://example.org/gfp-native/location_continuation/gfp_location_continuation/ObjectFlow39"
+      ]
+    },
+    {
+      "producer_behavior": "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+      "output_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction1/OutputPin1",
+      "input_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction12/InputPin2",
+      "consumer": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction12",
+      "edges": [
+        "https://example.org/gfp-native/location_continuation/gfp_location_continuation/ObjectFlow11",
+        "https://example.org/gfp-native/location_continuation/gfp_location_continuation/ObjectFlow61"
+      ]
+    },
+    {
+      "producer_behavior": "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+      "output_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction1/OutputPin1",
+      "input_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction15/InputPin1",
+      "consumer": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction15",
+      "edges": [
+        "https://example.org/gfp-native/location_continuation/gfp_location_continuation/ObjectFlow11",
+        "https://example.org/gfp-native/location_continuation/gfp_location_continuation/ObjectFlow82"
+      ]
+    },
+    {
+      "producer_behavior": "https://bioprotocols.org/labop/primitives/sample_arrays/PlateCoordinates",
+      "output_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction10/OutputPin1",
+      "input_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction11/InputPin2",
+      "consumer": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction11",
+      "edges": [
+        "https://example.org/gfp-native/location_continuation/gfp_location_continuation/ObjectFlow51"
+      ]
+    },
+    {
+      "producer_behavior": "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+      "output_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction5/OutputPin1",
+      "input_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction9/InputPin2",
+      "consumer": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction9",
+      "edges": [
+        "https://example.org/gfp-native/location_continuation/gfp_location_continuation/ObjectFlow52",
+        "https://example.org/gfp-native/location_continuation/gfp_location_continuation/ObjectFlow38"
+      ]
+    },
+    {
+      "producer_behavior": "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+      "output_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction5/OutputPin1",
+      "input_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction11/InputPin1",
+      "consumer": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction11",
+      "edges": [
+        "https://example.org/gfp-native/location_continuation/gfp_location_continuation/ObjectFlow52",
+        "https://example.org/gfp-native/location_continuation/gfp_location_continuation/ObjectFlow53"
+      ]
+    },
+    {
+      "producer_behavior": "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+      "output_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction6/OutputPin1",
+      "input_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction12/InputPin1",
+      "consumer": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction12",
+      "edges": [
+        "https://example.org/gfp-native/location_continuation/gfp_location_continuation/ObjectFlow62",
+        "https://example.org/gfp-native/location_continuation/gfp_location_continuation/ObjectFlow63"
+      ]
+    },
+    {
+      "producer_behavior": "https://bioprotocols.org/labop/primitives/sample_arrays/EmptyContainer",
+      "output_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction6/OutputPin1",
+      "input_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction17/InputPin1",
+      "consumer": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction17",
+      "edges": [
+        "https://example.org/gfp-native/location_continuation/gfp_location_continuation/ObjectFlow62",
+        "https://example.org/gfp-native/location_continuation/gfp_location_continuation/ObjectFlow95"
+      ]
+    },
+    {
+      "producer_behavior": "https://bioprotocols.org/labop/primitives/sample_arrays/PlateCoordinates",
+      "output_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction14/OutputPin1",
+      "input_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction15/InputPin2",
+      "consumer": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction15",
+      "edges": [
+        "https://example.org/gfp-native/location_continuation/gfp_location_continuation/ObjectFlow81"
+      ]
+    },
+    {
+      "producer_behavior": "https://bioprotocols.org/labop/primitives/sample_arrays/PlateCoordinates",
+      "output_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction16/OutputPin1",
+      "input_pin": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction17/InputPin2",
+      "consumer": "https://example.org/gfp-native/location_continuation/gfp_location_continuation/CallBehaviorAction17",
+      "edges": [
+        "https://example.org/gfp-native/location_continuation/gfp_location_continuation/ObjectFlow94"
+      ]
+    }
+  ],
+  "samples_outputs_used_by_transfer": {
+    "EmptyContainer": true,
+    "PlateCoordinates": true
+  },
+  "completed_normally": true,
+  "validation_errors": [],
+  "well_volumes_uL": {
+    "A1": 20.0,
+    "A2": 20.0,
+    "A3": 20.0
+  }
+}

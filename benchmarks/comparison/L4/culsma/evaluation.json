@@ -1,0 +1,19 @@
+{
+  "method": "source_inspection",
+  "expected_result": "Yes",
+  "result": "Yes",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "results.json",
+      "path": [
+        "interface_found"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

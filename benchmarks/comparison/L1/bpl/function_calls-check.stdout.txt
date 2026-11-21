@@ -1,0 +1,1 @@
+{"artifacts": {"diagnostics": "artifacts/check/function_calls.diagnostics.json"}, "command": "check", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/function_calls.bpl", "ok": true}

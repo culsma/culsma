@@ -1,0 +1,17 @@
+{
+  "python": "3.11.11 (main, Jun  6 2025, 11:38:50) [Clang 17.0.0 (clang-1700.0.13.5)]",
+  "cases": [
+    {
+      "case": "valid",
+      "accepted": true,
+      "errors": [],
+      "warnings": []
+    },
+    {
+      "case": "wrong_duration_unit",
+      "accepted": true,
+      "errors": [],
+      "warnings": []
+    }
+  ]
+}

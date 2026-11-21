@@ -1,0 +1,9 @@
+{
+  "method": "source_inspection",
+  "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/culsma-source/src/culsma/scientific_model/registry.py",
+  "sha256": "87b08c8c7665ca411ca311a57c701a3a1a63ac8476f1c81690aa301072a02d75",
+  "interfaces": {
+    "register_and_bind": true
+  },
+  "interface_found": true
+}

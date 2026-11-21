@@ -1,0 +1,1 @@
+{"artifacts": {"trace": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/controls/bpl-trace.json"}, "command": "simulate", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/examples/minimal_protocol.bpl", "ok": true, "target": "simulation"}

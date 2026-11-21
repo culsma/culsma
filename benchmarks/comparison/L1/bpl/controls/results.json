@@ -1,0 +1,31 @@
+{
+  "labop_commit": "2e2bd88150c71a440771fd369f40295dfd622324",
+  "bpl_commit": "4e505740f5025d59ba655c6c955f83876f753007",
+  "runs": {
+    "bpl-lower": {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-env/bin/bplc",
+        "lower",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/examples/minimal_protocol.bpl",
+        "--target",
+        "simulation",
+        "--out",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/controls/bpl-plan.json",
+        "--json-errors"
+      ],
+      "returncode": 0
+    },
+    "bpl-simulate": {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-env/bin/bplc",
+        "simulate",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/examples/minimal_protocol.bpl",
+        "--trace",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/controls/bpl-trace.json",
+        "--json-errors"
+      ],
+      "returncode": 0
+    }
+  },
+  "bpl_input_sha256": "d89bde811020f063def76156f7af931d2cbcd9a002787689f1fb000b9e36049f"
+}

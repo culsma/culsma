@@ -1,0 +1,139 @@
+{
+  "typed_quantities_and_association_passed": true,
+  "separation_event": 16,
+  "source": "container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_sample",
+  "fractions": {
+    "bound": {
+      "container_id": "entry.s1::0",
+      "component_entries": {
+        "MAGNETIC_BEADS": {
+          "amount": 10.0,
+          "associated_with": "entry.s1::0",
+          "association_target_kind": "container",
+          "content_ref": "MAGNETIC_BEADS",
+          "entry_id": "MAGNETIC_BEADS",
+          "label": "bound_output",
+          "material_state_source": "scientific_model_provider",
+          "preservation": "derived",
+          "provenance": {
+            "configuration": {},
+            "model_id": null,
+            "model_version": null,
+            "provider_id": "culsma.builtin.material_rulebook",
+            "provider_version": "1.0"
+          },
+          "quantity": {
+            "dimension": "mass",
+            "unit": "mg",
+            "value": 10.0
+          },
+          "relation": "field_retained",
+          "relationship_source": "scientific_model"
+        },
+        "TARGET_PROTEIN": {
+          "amount": 0.001,
+          "associated_with": "MAGNETIC_BEADS",
+          "association_target_kind": "component_entry",
+          "content_ref": "TARGET_PROTEIN",
+          "entry_id": "TARGET_PROTEIN",
+          "label": null,
+          "material_state_source": "author_transition",
+          "preservation": null,
+          "quantity": {
+            "dimension": "mass",
+            "unit": "mg",
+            "value": 0.001
+          },
+          "relation": "bead_bound",
+          "relationship_source": "author_transition"
+        },
+        "BUFFER": {
+          "amount": 0.0,
+          "associated_with": null,
+          "association_target_kind": null,
+          "content_ref": "BUFFER",
+          "entry_id": "BUFFER",
+          "label": null,
+          "material_state_source": "scientific_model_provider",
+          "preservation": "derived",
+          "quantity": {
+            "dimension": "volume",
+            "unit": "uL",
+            "value": 0.0
+          },
+          "relation": "free",
+          "relationship_source": "scientific_model"
+        }
+      },
+      "aggregate_volume_uL": 10.001,
+      "aggregate_mass_mg": 10.001
+    },
+    "flowthrough": {
+      "container_id": "entry.s1::1",
+      "component_entries": {
+        "MAGNETIC_BEADS": {
+          "amount": 0.0,
+          "associated_with": null,
+          "association_target_kind": null,
+          "content_ref": "MAGNETIC_BEADS",
+          "entry_id": "MAGNETIC_BEADS",
+          "label": null,
+          "material_state_source": "scientific_model_provider",
+          "preservation": "derived",
+          "quantity": {
+            "dimension": "mass",
+            "unit": "mg",
+            "value": 0.0
+          },
+          "relation": "free",
+          "relationship_source": "scientific_model"
+        },
+        "TARGET_PROTEIN": {
+          "amount": 0.0,
+          "associated_with": null,
+          "association_target_kind": null,
+          "content_ref": "TARGET_PROTEIN",
+          "entry_id": "TARGET_PROTEIN",
+          "label": null,
+          "material_state_source": "scientific_model_provider",
+          "preservation": "derived",
+          "quantity": {
+            "dimension": "mass",
+            "unit": "mg",
+            "value": 0.0
+          },
+          "relation": "free",
+          "relationship_source": "scientific_model"
+        },
+        "BUFFER": {
+          "amount": 100.0,
+          "associated_with": null,
+          "association_target_kind": null,
+          "content_ref": "BUFFER",
+          "entry_id": "BUFFER",
+          "label": "flowthrough_output",
+          "material_state_source": "scientific_model_provider",
+          "preservation": "derived",
+          "provenance": {
+            "configuration": {},
+            "model_id": null,
+            "model_version": null,
+            "provider_id": "culsma.builtin.material_rulebook",
+            "provider_version": "1.0"
+          },
+          "quantity": {
+            "dimension": "volume",
+            "unit": "uL",
+            "value": 100.0
+          },
+          "relation": "free",
+          "relationship_source": "scientific_model"
+        }
+      },
+      "aggregate_volume_uL": 100.0,
+      "aggregate_mass_mg": 100.0
+    }
+  },
+  "scope": "Declared allocation and association, without downstream operations or hardware.",
+  "aggregate_limitation": "The pinned runtime also reports 10.001 uL for the bound fraction and 100 mg for flowthrough via cross-dimension aggregate projections. These are not physical volume/density predictions and are excluded from the verified outcomes; this check uses dimensioned component quantities."
+}

@@ -1,0 +1,6 @@
+test_protocol_outputs (upstream_protocol_outputs.TestProtocolOutputs.test_protocol_outputs) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 2.383s
+
+OK

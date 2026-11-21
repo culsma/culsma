@@ -1,0 +1,33 @@
+{
+  "method": "execution",
+  "expected_result": "Yes",
+  "result": "Yes",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        0,
+        "accepted"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        1,
+        "accepted"
+      ],
+      "equals": false,
+      "observed": false,
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

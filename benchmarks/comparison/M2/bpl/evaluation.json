@@ -1,0 +1,171 @@
+{
+  "method": "execution",
+  "expected_result": "No",
+  "result": "No",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "duration_valid",
+        "diagnostics"
+      ],
+      "equals": [],
+      "observed": [],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "duration_valid",
+        "primitives"
+      ],
+      "equals": [
+        {
+          "class": "Wait",
+          "fields": {
+            "duration_s": 600.0,
+            "primitive_type": "PrimitiveType.WAIT"
+          }
+        }
+      ],
+      "observed": [
+        {
+          "class": "Wait",
+          "fields": {
+            "duration_s": 600.0,
+            "primitive_type": "PrimitiveType.WAIT"
+          }
+        }
+      ],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "duration_wrong_dimension",
+        "diagnostics"
+      ],
+      "equals": [],
+      "observed": [],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "duration_wrong_dimension",
+        "primitives"
+      ],
+      "equals": [
+        {
+          "class": "Wait",
+          "fields": {
+            "duration_s": 10.0,
+            "primitive_type": "PrimitiveType.WAIT"
+          }
+        }
+      ],
+      "observed": [
+        {
+          "class": "Wait",
+          "fields": {
+            "duration_s": 10.0,
+            "primitive_type": "PrimitiveType.WAIT"
+          }
+        }
+      ],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "volume_wrong_dimension",
+        "diagnostics"
+      ],
+      "equals": [],
+      "observed": [],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "volume_wrong_dimension",
+        "primitives"
+      ],
+      "equals": [
+        {
+          "class": "Aspirate",
+          "fields": {
+            "source": {
+              "plate_id": "plate_1",
+              "well_id": "A1"
+            },
+            "volume_ul": 10.0,
+            "flow_rate_ul_s": null,
+            "air_gap_ul": null,
+            "touch_tip": false,
+            "primitive_type": "PrimitiveType.ASPIRATE"
+          }
+        },
+        {
+          "class": "Dispense",
+          "fields": {
+            "destination": {
+              "plate_id": "plate_1",
+              "well_id": "A2"
+            },
+            "volume_ul": 10.0,
+            "flow_rate_ul_s": null,
+            "touch_tip": false,
+            "blow_out": false,
+            "primitive_type": "PrimitiveType.DISPENSE"
+          }
+        }
+      ],
+      "observed": [
+        {
+          "class": "Aspirate",
+          "fields": {
+            "source": {
+              "plate_id": "plate_1",
+              "well_id": "A1"
+            },
+            "volume_ul": 10.0,
+            "flow_rate_ul_s": null,
+            "air_gap_ul": null,
+            "touch_tip": false,
+            "primitive_type": "PrimitiveType.ASPIRATE"
+          }
+        },
+        {
+          "class": "Dispense",
+          "fields": {
+            "destination": {
+              "plate_id": "plate_1",
+              "well_id": "A2"
+            },
+            "volume_ul": 10.0,
+            "flow_rate_ul_s": null,
+            "touch_tip": false,
+            "blow_out": false,
+            "primitive_type": "PrimitiveType.DISPENSE"
+          }
+        }
+      ],
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

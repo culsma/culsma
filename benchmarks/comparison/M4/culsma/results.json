@@ -1,0 +1,19 @@
+{
+  "cases": [
+    {
+      "case": "returned_local",
+      "source": "protocol Prepare {\n let local = tube(label = \"local\", capacity = 1.5mL);\n return local;\n}\nlet first = Prepare();\nlet second = Prepare();\n",
+      "diagnostics": []
+    },
+    {
+      "case": "local_outside_protocol",
+      "source": "protocol Prepare {\n let local = tube(label = \"local\", capacity = 1.5mL);\n return local;\n}\nlet first = Prepare();\nlet second = Prepare();\nfirst << [local:20uL];\n",
+      "diagnostics": [
+        {
+          "code": "SEM_UNBOUND_NAME_REFERENCE",
+          "span": "Span(line=7, col=11, start=147, end=152)"
+        }
+      ]
+    }
+  ]
+}

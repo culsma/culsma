@@ -1,0 +1,453 @@
+{
+  "method": "execution",
+  "expected_result": "No",
+  "result": "No",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "loop_2",
+        "lower",
+        "simulation",
+        "returncode"
+      ],
+      "equals": 0,
+      "observed": 0,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "loop_2",
+        "lower",
+        "simulation",
+        "steps"
+      ],
+      "equals": [
+        {
+          "primitive_type": "WAIT",
+          "primitive": {
+            "__type__": "Wait",
+            "duration_s": 1.0,
+            "primitive_type": "WAIT"
+          },
+          "source_intent": "wait"
+        }
+      ],
+      "observed": [
+        {
+          "primitive_type": "WAIT",
+          "primitive": {
+            "__type__": "Wait",
+            "duration_s": 1.0,
+            "primitive_type": "WAIT"
+          },
+          "source_intent": "wait"
+        }
+      ],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "loop_3",
+        "lower",
+        "simulation",
+        "returncode"
+      ],
+      "equals": 0,
+      "observed": 0,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "loop_3",
+        "lower",
+        "simulation",
+        "steps"
+      ],
+      "equals": [
+        {
+          "primitive_type": "WAIT",
+          "primitive": {
+            "__type__": "Wait",
+            "duration_s": 1.0,
+            "primitive_type": "WAIT"
+          },
+          "source_intent": "wait"
+        }
+      ],
+      "observed": [
+        {
+          "primitive_type": "WAIT",
+          "primitive": {
+            "__type__": "Wait",
+            "duration_s": 1.0,
+            "primitive_type": "WAIT"
+          },
+          "source_intent": "wait"
+        }
+      ],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "branch_true",
+        "lower",
+        "simulation",
+        "returncode"
+      ],
+      "equals": 0,
+      "observed": 0,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "branch_true",
+        "lower",
+        "simulation",
+        "steps"
+      ],
+      "equals": [
+        {
+          "primitive_type": "WAIT",
+          "primitive": {
+            "__type__": "Wait",
+            "duration_s": 1.0,
+            "primitive_type": "WAIT"
+          },
+          "source_intent": "wait"
+        }
+      ],
+      "observed": [
+        {
+          "primitive_type": "WAIT",
+          "primitive": {
+            "__type__": "Wait",
+            "duration_s": 1.0,
+            "primitive_type": "WAIT"
+          },
+          "source_intent": "wait"
+        }
+      ],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "branch_false",
+        "lower",
+        "simulation",
+        "returncode"
+      ],
+      "equals": 0,
+      "observed": 0,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "branch_false",
+        "lower",
+        "simulation",
+        "steps"
+      ],
+      "equals": [
+        {
+          "primitive_type": "WAIT",
+          "primitive": {
+            "__type__": "Wait",
+            "duration_s": 1.0,
+            "primitive_type": "WAIT"
+          },
+          "source_intent": "wait"
+        }
+      ],
+      "observed": [
+        {
+          "primitive_type": "WAIT",
+          "primitive": {
+            "__type__": "Wait",
+            "duration_s": 1.0,
+            "primitive_type": "WAIT"
+          },
+          "source_intent": "wait"
+        }
+      ],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "direct_3",
+        "lower",
+        "simulation",
+        "returncode"
+      ],
+      "equals": 0,
+      "observed": 0,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cases",
+        "direct_3",
+        "lower",
+        "simulation",
+        "steps"
+      ],
+      "equals": [
+        {
+          "primitive_type": "WAIT",
+          "primitive": {
+            "__type__": "Wait",
+            "duration_s": 1.0,
+            "primitive_type": "WAIT"
+          },
+          "source_intent": "wait"
+        },
+        {
+          "primitive_type": "ASPIRATE",
+          "primitive": {
+            "__type__": "Aspirate",
+            "air_gap_ul": null,
+            "flow_rate_ul_s": null,
+            "primitive_type": "ASPIRATE",
+            "source": {
+              "__type__": "WellRef",
+              "plate_id": "plate_1",
+              "well_id": "A1"
+            },
+            "touch_tip": false,
+            "volume_ul": 10.0
+          },
+          "source_intent": "transfer"
+        },
+        {
+          "primitive_type": "DISPENSE",
+          "primitive": {
+            "__type__": "Dispense",
+            "blow_out": false,
+            "destination": {
+              "__type__": "WellRef",
+              "plate_id": "plate_1",
+              "well_id": "A2"
+            },
+            "flow_rate_ul_s": null,
+            "primitive_type": "DISPENSE",
+            "touch_tip": false,
+            "volume_ul": 10.0
+          },
+          "source_intent": "transfer"
+        },
+        {
+          "primitive_type": "ASPIRATE",
+          "primitive": {
+            "__type__": "Aspirate",
+            "air_gap_ul": null,
+            "flow_rate_ul_s": null,
+            "primitive_type": "ASPIRATE",
+            "source": {
+              "__type__": "WellRef",
+              "plate_id": "plate_1",
+              "well_id": "A1"
+            },
+            "touch_tip": false,
+            "volume_ul": 10.0
+          },
+          "source_intent": "transfer"
+        },
+        {
+          "primitive_type": "DISPENSE",
+          "primitive": {
+            "__type__": "Dispense",
+            "blow_out": false,
+            "destination": {
+              "__type__": "WellRef",
+              "plate_id": "plate_1",
+              "well_id": "A2"
+            },
+            "flow_rate_ul_s": null,
+            "primitive_type": "DISPENSE",
+            "touch_tip": false,
+            "volume_ul": 10.0
+          },
+          "source_intent": "transfer"
+        },
+        {
+          "primitive_type": "ASPIRATE",
+          "primitive": {
+            "__type__": "Aspirate",
+            "air_gap_ul": null,
+            "flow_rate_ul_s": null,
+            "primitive_type": "ASPIRATE",
+            "source": {
+              "__type__": "WellRef",
+              "plate_id": "plate_1",
+              "well_id": "A1"
+            },
+            "touch_tip": false,
+            "volume_ul": 10.0
+          },
+          "source_intent": "transfer"
+        },
+        {
+          "primitive_type": "DISPENSE",
+          "primitive": {
+            "__type__": "Dispense",
+            "blow_out": false,
+            "destination": {
+              "__type__": "WellRef",
+              "plate_id": "plate_1",
+              "well_id": "A2"
+            },
+            "flow_rate_ul_s": null,
+            "primitive_type": "DISPENSE",
+            "touch_tip": false,
+            "volume_ul": 10.0
+          },
+          "source_intent": "transfer"
+        }
+      ],
+      "observed": [
+        {
+          "primitive_type": "WAIT",
+          "primitive": {
+            "__type__": "Wait",
+            "duration_s": 1.0,
+            "primitive_type": "WAIT"
+          },
+          "source_intent": "wait"
+        },
+        {
+          "primitive_type": "ASPIRATE",
+          "primitive": {
+            "__type__": "Aspirate",
+            "air_gap_ul": null,
+            "flow_rate_ul_s": null,
+            "primitive_type": "ASPIRATE",
+            "source": {
+              "__type__": "WellRef",
+              "plate_id": "plate_1",
+              "well_id": "A1"
+            },
+            "touch_tip": false,
+            "volume_ul": 10.0
+          },
+          "source_intent": "transfer"
+        },
+        {
+          "primitive_type": "DISPENSE",
+          "primitive": {
+            "__type__": "Dispense",
+            "blow_out": false,
+            "destination": {
+              "__type__": "WellRef",
+              "plate_id": "plate_1",
+              "well_id": "A2"
+            },
+            "flow_rate_ul_s": null,
+            "primitive_type": "DISPENSE",
+            "touch_tip": false,
+            "volume_ul": 10.0
+          },
+          "source_intent": "transfer"
+        },
+        {
+          "primitive_type": "ASPIRATE",
+          "primitive": {
+            "__type__": "Aspirate",
+            "air_gap_ul": null,
+            "flow_rate_ul_s": null,
+            "primitive_type": "ASPIRATE",
+            "source": {
+              "__type__": "WellRef",
+              "plate_id": "plate_1",
+              "well_id": "A1"
+            },
+            "touch_tip": false,
+            "volume_ul": 10.0
+          },
+          "source_intent": "transfer"
+        },
+        {
+          "primitive_type": "DISPENSE",
+          "primitive": {
+            "__type__": "Dispense",
+            "blow_out": false,
+            "destination": {
+              "__type__": "WellRef",
+              "plate_id": "plate_1",
+              "well_id": "A2"
+            },
+            "flow_rate_ul_s": null,
+            "primitive_type": "DISPENSE",
+            "touch_tip": false,
+            "volume_ul": 10.0
+          },
+          "source_intent": "transfer"
+        },
+        {
+          "primitive_type": "ASPIRATE",
+          "primitive": {
+            "__type__": "Aspirate",
+            "air_gap_ul": null,
+            "flow_rate_ul_s": null,
+            "primitive_type": "ASPIRATE",
+            "source": {
+              "__type__": "WellRef",
+              "plate_id": "plate_1",
+              "well_id": "A1"
+            },
+            "touch_tip": false,
+            "volume_ul": 10.0
+          },
+          "source_intent": "transfer"
+        },
+        {
+          "primitive_type": "DISPENSE",
+          "primitive": {
+            "__type__": "Dispense",
+            "blow_out": false,
+            "destination": {
+              "__type__": "WellRef",
+              "plate_id": "plate_1",
+              "well_id": "A2"
+            },
+            "flow_rate_ul_s": null,
+            "primitive_type": "DISPENSE",
+            "touch_tip": false,
+            "volume_ul": 10.0
+          },
+          "source_intent": "transfer"
+        }
+      ],
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

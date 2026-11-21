@@ -1,0 +1,59 @@
+
+********************************************************************************
+
+    Harness Results Summary
+
+    Artifacts:
+    ----------------------------------------------------------------------------
+    - ProtocolNTuples (pass): 
+    ----------------------------------------------------------------------------
+{
+    "document": {
+        "namespace": "https://labop.io/"
+    },
+    "libraries": [
+        "liquid_handling",
+        "plate_handling",
+        "spectrophotometry",
+        "sample_arrays"
+    ],
+    "protocol": {
+        "name": "default_name",
+        "version": "1.0",
+        "validation": "pass"
+    },
+    "nt_filename": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/controls/protocol_outputs_test/default_name/artifacts/default_name.nt"
+}
+    ----------------------------------------------------------------------------
+    - ProtocolDiagram (pass): 
+    ----------------------------------------------------------------------------
+{
+    "filename": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/controls/protocol_outputs_test/default_name/artifacts/default_name.diagram"
+}
+    ----------------------------------------------------------------------------
+    - ProtocolExecutionNTuples (pass): 
+    ----------------------------------------------------------------------------
+{
+    "filename": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/controls/protocol_outputs_test/default_name/artifacts/default_name.nt"
+}
+    ----------------------------------------------------------------------------
+    - ProtocolExecutionDiagram (pass): 
+    ----------------------------------------------------------------------------
+{
+    "filename": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/controls/protocol_outputs_test/default_name/artifacts/default_name.execution.diagram"
+}
+    ----------------------------------------------------------------------------
+    - ProtocolSampleTrace (pass): 
+    ----------------------------------------------------------------------------
+{
+    "filename": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/controls/protocol_outputs_test/default_name/artifacts/sample_traces"
+}
+    ----------------------------------------------------------------------------
+    - ProtocolSpecialization (pass): 
+    ----------------------------------------------------------------------------
+{
+    "filename": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/controls/protocol_outputs_test/default_name/artifacts/MarkdownSpecialization"
+}
+
+********************************************************************************
+        

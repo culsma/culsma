@@ -1,0 +1,107 @@
+Writing protocol artifacts to: /Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/api/upstream-test/default_name/artifacts
+2026-11-21 21:13:44,296 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document
+
+********************************************************************************
+
+    LabOP Protocol Harness
+
+    Configuration:
+    --------------
+    Artifacts:
+    - ProtocolNTuples
+    - ProtocolDiagram
+    - ProtocolExecutionNTuples
+    - ProtocolExecutionDiagram
+    - ProtocolSampleTrace
+
+********************************************************************************
+        
+2026-11-21 21:13:44,741 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol
+2026-11-21 21:13:44,746 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol
+Validating and writing protocol
+Saving protocol [/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/api/upstream-test/default_name/artifacts/default_name.nt].
+2026-11-21 21:13:44,935 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: http://bbn.com/scratch/default_name
+2026-11-21 21:13:44,935 INFO labop.execution.behavior_dynamics - Behavior default name is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:13:44,950 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: http://bbn.com/scratch/sub1
+2026-11-21 21:13:44,951 INFO labop.execution.behavior_dynamics - Behavior sub1 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:13:44,961 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: http://bbn.com/scratch/primitive1
+2026-11-21 21:13:44,962 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: http://bbn.com/scratch/primitive1
+    '''
+    None
+    '''
+    
+    
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:13:44,975 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: http://bbn.com/scratch/sub2
+2026-11-21 21:13:44,975 INFO labop.execution.behavior_dynamics - Behavior sub2 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+
+********************************************************************************
+
+    Harness Results Summary
+
+    Artifacts:
+    ----------------------------------------------------------------------------
+    - ProtocolNTuples (pass): 
+    ----------------------------------------------------------------------------
+    - ProtocolDiagram (pass): 
+    ----------------------------------------------------------------------------
+    - ProtocolExecutionNTuples (pass): 
+    ----------------------------------------------------------------------------
+    - ProtocolExecutionDiagram (pass): 
+    ----------------------------------------------------------------------------
+    - ProtocolSampleTrace (pass): 
+
+********************************************************************************
+        
+Writing protocol artifacts to: /Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/api/harness/parameter_reuse/artifacts
+2026-11-21 21:13:45,081 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document
+
+********************************************************************************
+
+    LabOP Protocol Harness
+
+    Configuration:
+    --------------
+    Artifacts:
+    - ProtocolNTuples
+    - ProtocolDiagram
+    - ProtocolExecutionNTuples
+    - ProtocolExecutionDiagram
+    - ProtocolSampleTrace
+
+********************************************************************************
+        
+2026-11-21 21:13:45,323 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol
+Validating and writing protocol
+Saving protocol [/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/api/harness/parameter_reuse/artifacts/parameter_reuse.nt].
+2026-11-21 21:13:46,546 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l1-api-audit/parameter_reuse
+2026-11-21 21:13:46,548 INFO labop.execution.behavior_dynamics - Behavior default name is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:13:46,925 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l1-api-audit/Aliquot
+2026-11-21 21:13:46,929 INFO labop.execution.behavior_dynamics - Behavior Aliquot is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+
+********************************************************************************
+
+    Harness Results Summary
+
+    Artifacts:
+    ----------------------------------------------------------------------------
+    - ProtocolNTuples (pass): 
+    ----------------------------------------------------------------------------
+    - ProtocolDiagram (pass): 
+    ----------------------------------------------------------------------------
+    - ProtocolExecutionNTuples (pass): 
+    ----------------------------------------------------------------------------
+    - ProtocolExecutionDiagram (pass): 
+    ----------------------------------------------------------------------------
+    - ProtocolSampleTrace (pass): 
+
+********************************************************************************
+        
+2026-11-21 21:13:47,591 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document
+2026-11-21 21:13:47,736 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol
+2026-11-21 21:13:47,737 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol
+2026-11-21 21:13:48,246 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l1-reproduction/subprotocol_explicit/main
+2026-11-21 21:13:48,248 INFO labop.execution.behavior_dynamics - Behavior L1 reproduction is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:13:48,630 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://example.org/l1-reproduction/subprotocol_explicit/Aliquot
+2026-11-21 21:13:48,634 INFO labop.execution.behavior_dynamics - Behavior Aliquot is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...

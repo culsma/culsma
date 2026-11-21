@@ -1,0 +1,1552 @@
+{
+  "kind": "IRProgram",
+  "protocols": [],
+  "script_entry": {
+    "id": "entry",
+    "return_bindings": [],
+    "return_value": {
+      "name": "readings",
+      "span": {
+        "col": 8,
+        "end": 1114,
+        "line": 22,
+        "start": 1106
+      }
+    },
+    "returns": [],
+    "source_paths": [
+      "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/culsma/protocol.culs"
+    ],
+    "span": {
+      "col": 1,
+      "end": 403,
+      "line": 2,
+      "start": 79
+    },
+    "statements": [
+      {
+        "id": "entry.s0",
+        "name": "lysate",
+        "span": {
+          "col": 1,
+          "end": 403,
+          "line": 2,
+          "start": 79
+        },
+        "value": {
+          "args": [
+            {
+              "name": "kind",
+              "span": {
+                "col": 14,
+                "end": 403,
+                "line": 2,
+                "start": 92
+              },
+              "value": {
+                "span": {
+                  "col": 14,
+                  "end": 403,
+                  "line": 2,
+                  "start": 92
+                },
+                "value": "tube"
+              }
+            },
+            {
+              "name": "label",
+              "span": {
+                "col": 19,
+                "end": 117,
+                "line": 2,
+                "start": 97
+              },
+              "value": {
+                "span": {
+                  "col": 27,
+                  "end": 117,
+                  "line": 2,
+                  "start": 105
+                },
+                "value": "GFP lysate"
+              }
+            },
+            {
+              "name": "capacity",
+              "span": {
+                "col": 41,
+                "end": 135,
+                "line": 2,
+                "start": 119
+              },
+              "value": {
+                "span": {
+                  "col": 52,
+                  "end": 135,
+                  "line": 2,
+                  "start": 130
+                },
+                "unit": "mL",
+                "value": 1.5
+              }
+            },
+            {
+              "name": "load",
+              "span": {
+                "col": 59,
+                "end": 402,
+                "line": 2,
+                "start": 137
+              },
+              "value": {
+                "elements": [
+                  {
+                    "left": {
+                      "args": [
+                        {
+                          "name": "kind",
+                          "span": {
+                            "col": 11,
+                            "end": 187,
+                            "line": 3,
+                            "start": 156
+                          },
+                          "value": {
+                            "base": {
+                              "name": "ContentKind",
+                              "span": {
+                                "col": 18,
+                                "end": 174,
+                                "line": 3,
+                                "start": 163
+                              }
+                            },
+                            "member": "BIO_CELLULAR",
+                            "span": {
+                              "col": 18,
+                              "end": 187,
+                              "line": 3,
+                              "start": 163
+                            }
+                          }
+                        },
+                        {
+                          "name": "type",
+                          "span": {
+                            "col": 44,
+                            "end": 223,
+                            "line": 3,
+                            "start": 189
+                          },
+                          "value": {
+                            "base": {
+                              "name": "ContentType",
+                              "span": {
+                                "col": 51,
+                                "end": 207,
+                                "line": 3,
+                                "start": 196
+                              }
+                            },
+                            "member": "MICROBIAL_CELLS",
+                            "span": {
+                              "col": 51,
+                              "end": 223,
+                              "line": 3,
+                              "start": 196
+                            }
+                          }
+                        },
+                        {
+                          "name": "code",
+                          "span": {
+                            "col": 5,
+                            "end": 253,
+                            "line": 4,
+                            "start": 229
+                          },
+                          "value": {
+                            "span": {
+                              "col": 12,
+                              "end": 253,
+                              "line": 4,
+                              "start": 236
+                            },
+                            "value": "GFP_CELL_DEBRIS"
+                          }
+                        },
+                        {
+                          "name": "attrs",
+                          "span": {
+                            "col": 31,
+                            "end": 284,
+                            "line": 4,
+                            "start": 255
+                          },
+                          "value": {
+                            "entries": {
+                              "state": {
+                                "name": "suspension",
+                                "span": {
+                                  "col": 48,
+                                  "end": 282,
+                                  "line": 4,
+                                  "start": 272
+                                }
+                              }
+                            },
+                            "span": {
+                              "col": 39,
+                              "end": 284,
+                              "line": 4,
+                              "start": 263
+                            }
+                          }
+                        }
+                      ],
+                      "name": "DefineContent",
+                      "span": {
+                        "col": 3,
+                        "end": 285,
+                        "line": 3,
+                        "start": 148
+                      }
+                    },
+                    "right": {
+                      "span": {
+                        "col": 62,
+                        "end": 297,
+                        "line": 4,
+                        "start": 286
+                      },
+                      "unit": "cells",
+                      "value": 100000.0
+                    },
+                    "span": {
+                      "col": 3,
+                      "end": 297,
+                      "line": 3,
+                      "start": 148
+                    }
+                  },
+                  {
+                    "left": {
+                      "args": [
+                        {
+                          "name": "kind",
+                          "span": {
+                            "col": 11,
+                            "end": 339,
+                            "line": 5,
+                            "start": 309
+                          },
+                          "value": {
+                            "base": {
+                              "name": "ContentKind",
+                              "span": {
+                                "col": 18,
+                                "end": 327,
+                                "line": 5,
+                                "start": 316
+                              }
+                            },
+                            "member": "FORMULATION",
+                            "span": {
+                              "col": 18,
+                              "end": 339,
+                              "line": 5,
+                              "start": 316
+                            }
+                          }
+                        },
+                        {
+                          "name": "type",
+                          "span": {
+                            "col": 43,
+                            "end": 366,
+                            "line": 5,
+                            "start": 341
+                          },
+                          "value": {
+                            "base": {
+                              "name": "ContentType",
+                              "span": {
+                                "col": 50,
+                                "end": 359,
+                                "line": 5,
+                                "start": 348
+                              }
+                            },
+                            "member": "BUFFER",
+                            "span": {
+                              "col": 50,
+                              "end": 366,
+                              "line": 5,
+                              "start": 348
+                            }
+                          }
+                        },
+                        {
+                          "name": "code",
+                          "span": {
+                            "col": 5,
+                            "end": 394,
+                            "line": 6,
+                            "start": 372
+                          },
+                          "value": {
+                            "span": {
+                              "col": 12,
+                              "end": 394,
+                              "line": 6,
+                              "start": 379
+                            },
+                            "value": "LYSATE_LIQUID"
+                          }
+                        }
+                      ],
+                      "name": "DefineContent",
+                      "span": {
+                        "col": 3,
+                        "end": 395,
+                        "line": 5,
+                        "start": 301
+                      }
+                    },
+                    "right": {
+                      "span": {
+                        "col": 29,
+                        "end": 401,
+                        "line": 6,
+                        "start": 396
+                      },
+                      "unit": "uL",
+                      "value": 160.0
+                    },
+                    "span": {
+                      "col": 3,
+                      "end": 401,
+                      "line": 5,
+                      "start": 301
+                    }
+                  }
+                ],
+                "span": {
+                  "col": 66,
+                  "end": 402,
+                  "line": 2,
+                  "start": 144
+                }
+              }
+            }
+          ],
+          "name": "AllocContainer",
+          "span": {
+            "col": 14,
+            "end": 403,
+            "line": 2,
+            "start": 92
+          }
+        }
+      },
+      {
+        "id": "entry.s1",
+        "name": "buffer",
+        "span": {
+          "col": 1,
+          "end": 577,
+          "line": 7,
+          "start": 405
+        },
+        "value": {
+          "args": [
+            {
+              "name": "kind",
+              "span": {
+                "col": 14,
+                "end": 577,
+                "line": 7,
+                "start": 418
+              },
+              "value": {
+                "span": {
+                  "col": 14,
+                  "end": 577,
+                  "line": 7,
+                  "start": 418
+                },
+                "value": "tube"
+              }
+            },
+            {
+              "name": "label",
+              "span": {
+                "col": 19,
+                "end": 445,
+                "line": 7,
+                "start": 423
+              },
+              "value": {
+                "span": {
+                  "col": 27,
+                  "end": 445,
+                  "line": 7,
+                  "start": 431
+                },
+                "value": "Assay buffer"
+              }
+            },
+            {
+              "name": "capacity",
+              "span": {
+                "col": 43,
+                "end": 463,
+                "line": 7,
+                "start": 447
+              },
+              "value": {
+                "span": {
+                  "col": 54,
+                  "end": 463,
+                  "line": 7,
+                  "start": 458
+                },
+                "unit": "mL",
+                "value": 1.5
+              }
+            },
+            {
+              "name": "load",
+              "span": {
+                "col": 61,
+                "end": 576,
+                "line": 7,
+                "start": 465
+              },
+              "value": {
+                "elements": [
+                  {
+                    "left": {
+                      "args": [
+                        {
+                          "name": "kind",
+                          "span": {
+                            "col": 11,
+                            "end": 514,
+                            "line": 8,
+                            "start": 484
+                          },
+                          "value": {
+                            "base": {
+                              "name": "ContentKind",
+                              "span": {
+                                "col": 18,
+                                "end": 502,
+                                "line": 8,
+                                "start": 491
+                              }
+                            },
+                            "member": "FORMULATION",
+                            "span": {
+                              "col": 18,
+                              "end": 514,
+                              "line": 8,
+                              "start": 491
+                            }
+                          }
+                        },
+                        {
+                          "name": "type",
+                          "span": {
+                            "col": 43,
+                            "end": 541,
+                            "line": 8,
+                            "start": 516
+                          },
+                          "value": {
+                            "base": {
+                              "name": "ContentType",
+                              "span": {
+                                "col": 50,
+                                "end": 534,
+                                "line": 8,
+                                "start": 523
+                              }
+                            },
+                            "member": "BUFFER",
+                            "span": {
+                              "col": 50,
+                              "end": 541,
+                              "line": 8,
+                              "start": 523
+                            }
+                          }
+                        },
+                        {
+                          "name": "code",
+                          "span": {
+                            "col": 5,
+                            "end": 568,
+                            "line": 9,
+                            "start": 547
+                          },
+                          "value": {
+                            "span": {
+                              "col": 12,
+                              "end": 568,
+                              "line": 9,
+                              "start": 554
+                            },
+                            "value": "ASSAY_BUFFER"
+                          }
+                        }
+                      ],
+                      "name": "DefineContent",
+                      "span": {
+                        "col": 3,
+                        "end": 569,
+                        "line": 8,
+                        "start": 476
+                      }
+                    },
+                    "right": {
+                      "span": {
+                        "col": 28,
+                        "end": 575,
+                        "line": 9,
+                        "start": 570
+                      },
+                      "unit": "uL",
+                      "value": 100.0
+                    },
+                    "span": {
+                      "col": 3,
+                      "end": 575,
+                      "line": 8,
+                      "start": 476
+                    }
+                  }
+                ],
+                "span": {
+                  "col": 68,
+                  "end": 576,
+                  "line": 7,
+                  "start": 472
+                }
+              }
+            }
+          ],
+          "name": "AllocContainer",
+          "span": {
+            "col": 14,
+            "end": 577,
+            "line": 7,
+            "start": 418
+          }
+        }
+      },
+      {
+        "id": "entry.s2",
+        "name": "resuspended",
+        "span": {
+          "col": 1,
+          "end": 649,
+          "line": 10,
+          "start": 579
+        },
+        "value": {
+          "args": [
+            {
+              "name": "kind",
+              "span": {
+                "col": 19,
+                "end": 649,
+                "line": 10,
+                "start": 597
+              },
+              "value": {
+                "span": {
+                  "col": 19,
+                  "end": 649,
+                  "line": 10,
+                  "start": 597
+                },
+                "value": "tube"
+              }
+            },
+            {
+              "name": "label",
+              "span": {
+                "col": 24,
+                "end": 630,
+                "line": 10,
+                "start": 602
+              },
+              "value": {
+                "span": {
+                  "col": 32,
+                  "end": 630,
+                  "line": 10,
+                  "start": 610
+                },
+                "value": "Resuspended pellet"
+              }
+            },
+            {
+              "name": "capacity",
+              "span": {
+                "col": 54,
+                "end": 648,
+                "line": 10,
+                "start": 632
+              },
+              "value": {
+                "span": {
+                  "col": 65,
+                  "end": 648,
+                  "line": 10,
+                  "start": 643
+                },
+                "unit": "mL",
+                "value": 1.5
+              }
+            }
+          ],
+          "name": "AllocContainer",
+          "span": {
+            "col": 19,
+            "end": 649,
+            "line": 10,
+            "start": 597
+          }
+        }
+      },
+      {
+        "id": "entry.s3",
+        "name": "assay",
+        "span": {
+          "col": 1,
+          "end": 710,
+          "line": 11,
+          "start": 651
+        },
+        "value": {
+          "args": [
+            {
+              "name": "label",
+              "span": {
+                "col": 19,
+                "end": 690,
+                "line": 11,
+                "start": 669
+              },
+              "value": {
+                "span": {
+                  "col": 27,
+                  "end": 690,
+                  "line": 11,
+                  "start": 677
+                },
+                "value": "Assay plate"
+              }
+            },
+            {
+              "name": "format",
+              "span": {
+                "col": 42,
+                "end": 709,
+                "line": 11,
+                "start": 692
+              },
+              "value": {
+                "span": {
+                  "col": 51,
+                  "end": 709,
+                  "line": 11,
+                  "start": 701
+                },
+                "value": "96well"
+              }
+            }
+          ],
+          "name": "plate",
+          "span": {
+            "col": 13,
+            "end": 710,
+            "line": 11,
+            "start": 663
+          }
+        }
+      },
+      {
+        "env_args": [
+          {
+            "name": "thermal",
+            "span": {
+              "col": 10,
+              "end": 734,
+              "line": 12,
+              "start": 721
+            },
+            "value": {
+              "span": {
+                "col": 20,
+                "end": 734,
+                "line": 12,
+                "start": 731
+              },
+              "unit": "C",
+              "value": 22.0
+            }
+          },
+          {
+            "name": "duration",
+            "span": {
+              "col": 25,
+              "end": 752,
+              "line": 12,
+              "start": 736
+            },
+            "value": {
+              "span": {
+                "col": 36,
+                "end": 752,
+                "line": 12,
+                "start": 747
+              },
+              "unit": "min",
+              "value": 10.0
+            }
+          }
+        ],
+        "explicit_hold": false,
+        "id": "entry.s4",
+        "span": {
+          "col": 1,
+          "end": 827,
+          "line": 12,
+          "start": 712
+        },
+        "statements": [
+          {
+            "args": [
+              {
+                "name": "sample",
+                "span": {
+                  "col": 7,
+                  "end": 777,
+                  "line": 13,
+                  "start": 762
+                },
+                "value": {
+                  "name": "lysate",
+                  "span": {
+                    "col": 16,
+                    "end": 777,
+                    "line": 13,
+                    "start": 771
+                  }
+                }
+              },
+              {
+                "name": "program",
+                "span": {
+                  "col": 24,
+                  "end": 823,
+                  "line": 13,
+                  "start": 779
+                },
+                "value": {
+                  "args": [
+                    {
+                      "name": "drive",
+                      "span": {
+                        "col": 53,
+                        "end": 822,
+                        "line": 13,
+                        "start": 808
+                      },
+                      "value": {
+                        "span": {
+                          "col": 61,
+                          "end": 822,
+                          "line": 13,
+                          "start": 816
+                        },
+                        "unit": "g",
+                        "value": 12000.0
+                      }
+                    }
+                  ],
+                  "name": "centrifuge_program",
+                  "span": {
+                    "col": 34,
+                    "end": 823,
+                    "line": 13,
+                    "start": 789
+                  }
+                }
+              }
+            ],
+            "id": "entry.s4.b.s0",
+            "name": "sep",
+            "span": {
+              "col": 3,
+              "end": 824,
+              "line": 13,
+              "start": 758
+            }
+          }
+        ],
+        "targets": [
+          {
+            "name": "lysate",
+            "span": {
+              "col": 16,
+              "end": 777,
+              "line": 13,
+              "start": 771
+            }
+          }
+        ]
+      },
+      {
+        "id": "entry.s5::well::A1",
+        "name": "__lw_plate_assay_A1",
+        "span": {
+          "col": 1,
+          "end": 837,
+          "line": 15,
+          "start": 828
+        },
+        "value": {
+          "args": [
+            {
+              "name": "kind",
+              "span": {
+                "col": 1,
+                "end": 837,
+                "line": 15,
+                "start": 828
+              },
+              "value": {
+                "span": {
+                  "col": 1,
+                  "end": 837,
+                  "line": 15,
+                  "start": 828
+                },
+                "value": "well"
+              }
+            },
+            {
+              "name": "carrier_kind",
+              "span": {
+                "col": 1,
+                "end": 837,
+                "line": 15,
+                "start": 828
+              },
+              "value": {
+                "span": {
+                  "col": 1,
+                  "end": 837,
+                  "line": 15,
+                  "start": 828
+                },
+                "value": "plate"
+              }
+            },
+            {
+              "name": "carrier_id",
+              "span": {
+                "col": 1,
+                "end": 837,
+                "line": 15,
+                "start": 828
+              },
+              "value": {
+                "span": {
+                  "col": 1,
+                  "end": 837,
+                  "line": 15,
+                  "start": 828
+                },
+                "value": "assay"
+              }
+            },
+            {
+              "name": "carrier_position",
+              "span": {
+                "col": 1,
+                "end": 837,
+                "line": 15,
+                "start": 828
+              },
+              "value": {
+                "span": {
+                  "col": 1,
+                  "end": 837,
+                  "line": 15,
+                  "start": 828
+                },
+                "value": "A1"
+              }
+            },
+            {
+              "name": "label",
+              "span": {
+                "col": 1,
+                "end": 837,
+                "line": 15,
+                "start": 828
+              },
+              "value": {
+                "span": {
+                  "col": 1,
+                  "end": 837,
+                  "line": 15,
+                  "start": 828
+                },
+                "value": "Assay plate_A1"
+              }
+            }
+          ],
+          "name": "AllocContainer",
+          "span": {
+            "col": 1,
+            "end": 837,
+            "line": 15,
+            "start": 828
+          }
+        }
+      },
+      {
+        "id": "entry.s5",
+        "sources": [
+          {
+            "left": {
+              "base": {
+                "base": {
+                  "name": "lysate",
+                  "span": {
+                    "col": 15,
+                    "end": 848,
+                    "line": 15,
+                    "start": 842
+                  }
+                },
+                "member": "contents",
+                "span": {
+                  "col": 15,
+                  "end": 857,
+                  "line": 15,
+                  "start": 842
+                }
+              },
+              "index": {
+                "span": {
+                  "col": 31,
+                  "end": 859,
+                  "line": 15,
+                  "start": 858
+                },
+                "unit": null,
+                "value": 0.0
+              },
+              "span": {
+                "col": 15,
+                "end": 860,
+                "line": 15,
+                "start": 842
+              }
+            },
+            "right": {
+              "span": {
+                "col": 34,
+                "end": 865,
+                "line": 15,
+                "start": 861
+              },
+              "unit": "uL",
+              "value": 20.0
+            },
+            "span": {
+              "col": 15,
+              "end": 865,
+              "line": 15,
+              "start": 842
+            }
+          }
+        ],
+        "span": {
+          "col": 1,
+          "end": 866,
+          "line": 15,
+          "start": 828
+        },
+        "target": {
+          "name": "__lw_plate_assay_A1",
+          "span": {
+            "col": 1,
+            "end": 837,
+            "line": 15,
+            "start": 828
+          }
+        }
+      },
+      {
+        "id": "entry.s7",
+        "sources": [
+          {
+            "base": {
+              "base": {
+                "name": "lysate",
+                "span": {
+                  "col": 17,
+                  "end": 890,
+                  "line": 16,
+                  "start": 884
+                }
+              },
+              "member": "contents",
+              "span": {
+                "col": 17,
+                "end": 899,
+                "line": 16,
+                "start": 884
+              }
+            },
+            "index": {
+              "span": {
+                "col": 33,
+                "end": 901,
+                "line": 16,
+                "start": 900
+              },
+              "unit": null,
+              "value": 1.0
+            },
+            "span": {
+              "col": 17,
+              "end": 902,
+              "line": 16,
+              "start": 884
+            }
+          }
+        ],
+        "span": {
+          "col": 1,
+          "end": 903,
+          "line": 16,
+          "start": 868
+        },
+        "target": {
+          "name": "resuspended",
+          "span": {
+            "col": 1,
+            "end": 879,
+            "line": 16,
+            "start": 868
+          }
+        }
+      },
+      {
+        "id": "entry.s8",
+        "sources": [
+          {
+            "left": {
+              "name": "buffer",
+              "span": {
+                "col": 17,
+                "end": 927,
+                "line": 17,
+                "start": 921
+              }
+            },
+            "right": {
+              "span": {
+                "col": 24,
+                "end": 932,
+                "line": 17,
+                "start": 928
+              },
+              "unit": "uL",
+              "value": 40.0
+            },
+            "span": {
+              "col": 17,
+              "end": 932,
+              "line": 17,
+              "start": 921
+            }
+          }
+        ],
+        "span": {
+          "col": 1,
+          "end": 933,
+          "line": 17,
+          "start": 905
+        },
+        "target": {
+          "name": "resuspended",
+          "span": {
+            "col": 1,
+            "end": 916,
+            "line": 17,
+            "start": 905
+          }
+        }
+      },
+      {
+        "id": "entry.s9",
+        "sources": [
+          {
+            "left": {
+              "name": "resuspended",
+              "span": {
+                "col": 17,
+                "end": 962,
+                "line": 18,
+                "start": 951
+              }
+            },
+            "right": {
+              "span": {
+                "col": 29,
+                "end": 967,
+                "line": 18,
+                "start": 963
+              },
+              "unit": "uL",
+              "value": 32.0
+            },
+            "span": {
+              "col": 17,
+              "end": 967,
+              "line": 18,
+              "start": 951
+            }
+          }
+        ],
+        "span": {
+          "col": 1,
+          "end": 968,
+          "line": 18,
+          "start": 935
+        },
+        "target": {
+          "name": "resuspended",
+          "span": {
+            "col": 1,
+            "end": 946,
+            "line": 18,
+            "start": 935
+          }
+        }
+      },
+      {
+        "id": "entry.s10::well::A2",
+        "name": "__lw_plate_assay_A2",
+        "span": {
+          "col": 1,
+          "end": 979,
+          "line": 19,
+          "start": 970
+        },
+        "value": {
+          "args": [
+            {
+              "name": "kind",
+              "span": {
+                "col": 1,
+                "end": 979,
+                "line": 19,
+                "start": 970
+              },
+              "value": {
+                "span": {
+                  "col": 1,
+                  "end": 979,
+                  "line": 19,
+                  "start": 970
+                },
+                "value": "well"
+              }
+            },
+            {
+              "name": "carrier_kind",
+              "span": {
+                "col": 1,
+                "end": 979,
+                "line": 19,
+                "start": 970
+              },
+              "value": {
+                "span": {
+                  "col": 1,
+                  "end": 979,
+                  "line": 19,
+                  "start": 970
+                },
+                "value": "plate"
+              }
+            },
+            {
+              "name": "carrier_id",
+              "span": {
+                "col": 1,
+                "end": 979,
+                "line": 19,
+                "start": 970
+              },
+              "value": {
+                "span": {
+                  "col": 1,
+                  "end": 979,
+                  "line": 19,
+                  "start": 970
+                },
+                "value": "assay"
+              }
+            },
+            {
+              "name": "carrier_position",
+              "span": {
+                "col": 1,
+                "end": 979,
+                "line": 19,
+                "start": 970
+              },
+              "value": {
+                "span": {
+                  "col": 1,
+                  "end": 979,
+                  "line": 19,
+                  "start": 970
+                },
+                "value": "A2"
+              }
+            },
+            {
+              "name": "label",
+              "span": {
+                "col": 1,
+                "end": 979,
+                "line": 19,
+                "start": 970
+              },
+              "value": {
+                "span": {
+                  "col": 1,
+                  "end": 979,
+                  "line": 19,
+                  "start": 970
+                },
+                "value": "Assay plate_A2"
+              }
+            }
+          ],
+          "name": "AllocContainer",
+          "span": {
+            "col": 1,
+            "end": 979,
+            "line": 19,
+            "start": 970
+          }
+        }
+      },
+      {
+        "id": "entry.s10",
+        "sources": [
+          {
+            "left": {
+              "name": "resuspended",
+              "span": {
+                "col": 15,
+                "end": 995,
+                "line": 19,
+                "start": 984
+              }
+            },
+            "right": {
+              "span": {
+                "col": 27,
+                "end": 1000,
+                "line": 19,
+                "start": 996
+              },
+              "unit": "uL",
+              "value": 20.0
+            },
+            "span": {
+              "col": 15,
+              "end": 1000,
+              "line": 19,
+              "start": 984
+            }
+          }
+        ],
+        "span": {
+          "col": 1,
+          "end": 1001,
+          "line": 19,
+          "start": 970
+        },
+        "target": {
+          "name": "__lw_plate_assay_A2",
+          "span": {
+            "col": 1,
+            "end": 979,
+            "line": 19,
+            "start": 970
+          }
+        }
+      },
+      {
+        "id": "entry.s12::well::A3",
+        "name": "__lw_plate_assay_A3",
+        "span": {
+          "col": 1,
+          "end": 1012,
+          "line": 20,
+          "start": 1003
+        },
+        "value": {
+          "args": [
+            {
+              "name": "kind",
+              "span": {
+                "col": 1,
+                "end": 1012,
+                "line": 20,
+                "start": 1003
+              },
+              "value": {
+                "span": {
+                  "col": 1,
+                  "end": 1012,
+                  "line": 20,
+                  "start": 1003
+                },
+                "value": "well"
+              }
+            },
+            {
+              "name": "carrier_kind",
+              "span": {
+                "col": 1,
+                "end": 1012,
+                "line": 20,
+                "start": 1003
+              },
+              "value": {
+                "span": {
+                  "col": 1,
+                  "end": 1012,
+                  "line": 20,
+                  "start": 1003
+                },
+                "value": "plate"
+              }
+            },
+            {
+              "name": "carrier_id",
+              "span": {
+                "col": 1,
+                "end": 1012,
+                "line": 20,
+                "start": 1003
+              },
+              "value": {
+                "span": {
+                  "col": 1,
+                  "end": 1012,
+                  "line": 20,
+                  "start": 1003
+                },
+                "value": "assay"
+              }
+            },
+            {
+              "name": "carrier_position",
+              "span": {
+                "col": 1,
+                "end": 1012,
+                "line": 20,
+                "start": 1003
+              },
+              "value": {
+                "span": {
+                  "col": 1,
+                  "end": 1012,
+                  "line": 20,
+                  "start": 1003
+                },
+                "value": "A3"
+              }
+            },
+            {
+              "name": "label",
+              "span": {
+                "col": 1,
+                "end": 1012,
+                "line": 20,
+                "start": 1003
+              },
+              "value": {
+                "span": {
+                  "col": 1,
+                  "end": 1012,
+                  "line": 20,
+                  "start": 1003
+                },
+                "value": "Assay plate_A3"
+              }
+            }
+          ],
+          "name": "AllocContainer",
+          "span": {
+            "col": 1,
+            "end": 1012,
+            "line": 20,
+            "start": 1003
+          }
+        }
+      },
+      {
+        "id": "entry.s12",
+        "sources": [
+          {
+            "left": {
+              "name": "buffer",
+              "span": {
+                "col": 15,
+                "end": 1023,
+                "line": 20,
+                "start": 1017
+              }
+            },
+            "right": {
+              "span": {
+                "col": 22,
+                "end": 1028,
+                "line": 20,
+                "start": 1024
+              },
+              "unit": "uL",
+              "value": 20.0
+            },
+            "span": {
+              "col": 15,
+              "end": 1028,
+              "line": 20,
+              "start": 1017
+            }
+          }
+        ],
+        "span": {
+          "col": 1,
+          "end": 1029,
+          "line": 20,
+          "start": 1003
+        },
+        "target": {
+          "name": "__lw_plate_assay_A3",
+          "span": {
+            "col": 1,
+            "end": 1012,
+            "line": 20,
+            "start": 1003
+          }
+        }
+      },
+      {
+        "id": "entry.s14",
+        "name": "readings",
+        "span": {
+          "col": 1,
+          "end": 1097,
+          "line": 21,
+          "start": 1031
+        },
+        "value": {
+          "args": [
+            {
+              "name": "sample",
+              "span": {
+                "col": 20,
+                "end": 1071,
+                "line": 21,
+                "start": 1050
+              },
+              "value": {
+                "elements": [
+                  {
+                    "name": "__lw_plate_assay_A1",
+                    "span": {
+                      "col": 29,
+                      "end": 1071,
+                      "line": 21,
+                      "start": 1059
+                    }
+                  },
+                  {
+                    "name": "__lw_plate_assay_A2",
+                    "span": {
+                      "col": 29,
+                      "end": 1071,
+                      "line": 21,
+                      "start": 1059
+                    }
+                  },
+                  {
+                    "name": "__lw_plate_assay_A3",
+                    "span": {
+                      "col": 29,
+                      "end": 1071,
+                      "line": 21,
+                      "start": 1059
+                    }
+                  }
+                ],
+                "span": {
+                  "col": 29,
+                  "end": 1071,
+                  "line": 21,
+                  "start": 1059
+                }
+              }
+            },
+            {
+              "name": "quantity",
+              "span": {
+                "col": 43,
+                "end": 1096,
+                "line": 21,
+                "start": 1073
+              },
+              "value": {
+                "name": "fluorescence",
+                "span": {
+                  "col": 54,
+                  "end": 1096,
+                  "line": 21,
+                  "start": 1084
+                }
+              }
+            }
+          ],
+          "name": "img",
+          "span": {
+            "col": 16,
+            "end": 1097,
+            "line": 21,
+            "start": 1046
+          }
+        }
+      }
+    ]
+  },
+  "span": null
+}

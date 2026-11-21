@@ -1,0 +1,75 @@
+{
+  "method": "execution",
+  "expected_result": "No",
+  "result": "No",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "results.json",
+      "path": [
+        "body_change_leaves_operations_identical"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "return_change_leaves_operations_identical"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "direct_volume_change_changes_operations"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "simulations",
+        "base-simulate",
+        "returncode"
+      ],
+      "equals": 0,
+      "observed": 0,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "simulations",
+        "base-strict",
+        "returncode"
+      ],
+      "equals": 40,
+      "observed": 40,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "simulations",
+        "direct_10-simulate",
+        "returncode"
+      ],
+      "equals": 0,
+      "observed": 0,
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

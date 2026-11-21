@@ -1,0 +1,1 @@
+RESULT_JSON={"owner": "https://example.org/scope/parent", "python_helper_name_in_rdf": false, "cross_activity_rejection": "Source node https://example.org/scope/parent/ActivityParameterNode1 is not a member of activity https://example.org/scope/other"}

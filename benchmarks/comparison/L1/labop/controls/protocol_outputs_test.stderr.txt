@@ -1,0 +1,70 @@
+Writing protocol artifacts to: /Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/controls/protocol_outputs_test/default_name/artifacts
+2026-11-21 21:14:07,014 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document
+
+********************************************************************************
+
+    LabOP Protocol Harness
+
+    Configuration:
+    --------------
+    Artifacts:
+    - ProtocolNTuples
+    - ProtocolDiagram
+    - ProtocolExecutionNTuples
+    - ProtocolExecutionDiagram
+    - ProtocolSampleTrace
+    - ProtocolSpecialization
+
+********************************************************************************
+        
+Validating and writing protocol
+Saving protocol [/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/labop/controls/protocol_outputs_test/default_name/artifacts/default_name.nt].
+2026-11-21 21:14:08,469 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Failed to find handler for behavior: https://labop.io/default_name
+2026-11-21 21:14:08,470 INFO labop.execution.behavior_dynamics - Behavior default name is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:14:08,498 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Could not import container_api, is it installed?
+2026-11-21 21:14:08,498 WARNING /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop_convert/behavior_specialization.py - Cannot resolve container specification using remote ontology server. Defaulting to static ontology copy
+2026-11-21 21:14:09,100 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://bioprotocols.org/labop/primitives/sample_arrays/PlateCoordinates
+    '''
+    Select only the samples with specified row/column combination from a sample collection
+    '''
+    Input Parameters:
+	coordinates: http://bioprotocols.org/uml#ValueSpecification 
+	source: http://bioprotocols.org/labop#SampleCollection 
+    Output Parameters:
+	samples: http://bioprotocols.org/labop#SampleCollection 
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+2026-11-21 21:14:09,162 INFO labop.execution.behavior_dynamics - Behavior 
+    Primitive: https://bioprotocols.org/labop/primitives/spectrophotometry/MeasureAbsorbance
+    '''
+    Measure absorbance at a given wavelength from a set of samples
+    '''
+    Input Parameters:
+	wavelength: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
+	timepoints: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure (Optional) 
+	numFlashes: http://www.w3.org/2001/XMLSchema#integer (Optional) 
+	samples: http://bioprotocols.org/labop#SampleCollection 
+    Output Parameters:
+	measurements: http://bioprotocols.org/labop#Dataset 
+                 is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
+
+********************************************************************************
+
+    Harness Results Summary
+
+    Artifacts:
+    ----------------------------------------------------------------------------
+    - ProtocolNTuples (pass): 
+    ----------------------------------------------------------------------------
+    - ProtocolDiagram (pass): 
+    ----------------------------------------------------------------------------
+    - ProtocolExecutionNTuples (pass): 
+    ----------------------------------------------------------------------------
+    - ProtocolExecutionDiagram (pass): 
+    ----------------------------------------------------------------------------
+    - ProtocolSampleTrace (pass): 
+    ----------------------------------------------------------------------------
+    - ProtocolSpecialization (pass): 
+
+********************************************************************************
+        

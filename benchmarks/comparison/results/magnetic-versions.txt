@@ -1,4 +1,0 @@
-Uses the same pinned runtimes recorded in versions.txt.
-Input SHA-256
-d08029be6fd66f40ab61b3fee7298ad54d2d3ee655a65f57e0a2c1c63ec53a15  magnetic.culs
-e6e7a8398473f7086821850a214263746e3c57746891667f6dde34fbae972133  check_magnetic.py

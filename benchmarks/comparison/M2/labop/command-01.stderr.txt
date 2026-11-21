@@ -1,0 +1,4 @@
+2026-11-21 21:12:33,340 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document
+2026-11-21 21:12:33,518 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol
+2026-11-21 21:12:33,576 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/utils/helpers.py - Setting up document
+2026-11-21 21:12:33,717 INFO /Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/lib/python3.11/site-packages/labop/protocol.py - Creating protocol

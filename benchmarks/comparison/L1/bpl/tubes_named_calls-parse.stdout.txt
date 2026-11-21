@@ -1,0 +1,1 @@
+{"artifacts": {"ast": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/tubes_named_calls-ast.json"}, "command": "parse", "format": "json", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_tubes_named_calls.bpl", "ok": true}

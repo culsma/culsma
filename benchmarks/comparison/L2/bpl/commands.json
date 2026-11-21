@@ -1,0 +1,71 @@
+{
+  "commands": [
+    {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-env/bin/python",
+        "run.py"
+      ],
+      "cwd": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L2/bpl",
+      "returncode": 0,
+      "stdout": "command-01.stdout.txt",
+      "stderr": "command-01.stderr.txt"
+    }
+  ],
+  "errors": [],
+  "runtime": {
+    "python": "3.13.1",
+    "commit": "4e505740f5025d59ba655c6c955f83876f753007",
+    "files": {
+      "bpl/grammar/bpl.lark": {
+        "matches": true,
+        "expected_sha256": "cf4ff616f0787193a689c8a349656b962796f588c0ee216963b28d31f9c24cea",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/grammar/bpl.lark",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/grammar/bpl.lark"
+      },
+      "bpl/lowering/plan_ir.py": {
+        "matches": true,
+        "expected_sha256": "e1ccc06f54fe53ec2219cb732a218a52e9064cbd48be616477cf67e008f010eb",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/lowering/plan_ir.py",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/lowering/plan_ir.py"
+      },
+      "bpl/orchestrator.py": {
+        "matches": true,
+        "expected_sha256": "73ec40a828a1d6ec0fbb5a07dc72a346ac77ac2c1b0652bb5281cc172fe8a7d1",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/orchestrator.py",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/orchestrator.py"
+      },
+      "bpl/simulation/simulator.py": {
+        "matches": true,
+        "expected_sha256": "bae9d9a1cec26ecc9529da278e05969d5b1157ec084bf9bddce5ef07ebe71094",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/simulation/simulator.py",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/simulation/simulator.py"
+      },
+      "bpl/simulation/virtual_deck.py": {
+        "matches": true,
+        "expected_sha256": "f2deda48a3973f8f571fd92273c2d1d595a3b28c39fa5a894bb4247b6ef13b54",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/simulation/virtual_deck.py",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/simulation/virtual_deck.py"
+      },
+      "bpl/types/unit_engine.py": {
+        "matches": true,
+        "expected_sha256": "b3e49dc5e48337b54a5c047ac5fe185d5543ddf2df76da6821d428fcc754ca80",
+        "source": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/types/unit_engine.py",
+        "installed": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-source/bpl/types/unit_engine.py"
+      }
+    },
+    "verified": true
+  },
+  "input_sha256": {
+    "base.bpl": "4426fb93cd464182f48306ae92292f59a35f210c14c0eeddf18e7024cef87d2e",
+    "body_20.bpl": "e6e5aab11be8d4fe9a484967c213b8a4a4792cca59a2fabb1b0f749aaab85610",
+    "composition.bpl": "4426fb93cd464182f48306ae92292f59a35f210c14c0eeddf18e7024cef87d2e",
+    "direct.bpl": "37e10f789102862b285031f408888d3d12921148ab5338ec415f7d0ec065fbb4",
+    "direct_10.bpl": "37e10f789102862b285031f408888d3d12921148ab5338ec415f7d0ec065fbb4",
+    "direct_20.bpl": "d81f72e5e50d6b19d13eec1b212d7402b79faa8be61e3322fb2b9b385ffee42b",
+    "requirements.txt": "0c6a377f1fd4995e27165c0748f82c9123cfb464ab1007c8cd475c2c2b049d15",
+    "return_target.bpl": "db12392079c0d0803d5c58d387f1a5eb5075f6236ef6692201c390106ffe0049",
+    "run.py": "fafd2559b63c4c1f939a7d84d3a22caed7d64be10e880722d03a021c2f3b1556",
+    "../case.json": "6eef06b55444c8f6a8d7008644c9e7090040a005ce982c69966ec72f6772a0d6",
+    "../../evaluate.py": "b6a200cc7a9e30cfd89cc1dca9ca541f6c287eca752ba0095574b8adc6ab40db"
+  }
+}

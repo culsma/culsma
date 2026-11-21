@@ -1,0 +1,1 @@
+RESULT_JSON={"python": "3.12.8 (main, Jan  2 2025, 22:12:15) [Clang 16.0.0 (clang-1600.0.26.6)]", "cases": [{"case": "valid", "accepted": true, "diagnostics": []}, {"case": "wrong_duration_unit", "accepted": false, "diagnostics": [{"code": "TYPE_ENV_DURATION_DIMENSION_MISMATCH", "span": "Span(line=12, col=36, start=747, end=751)"}]}]}

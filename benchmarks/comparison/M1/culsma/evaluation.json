@@ -1,0 +1,105 @@
+{
+  "method": "execution",
+  "expected_result": "Yes",
+  "result": "Yes",
+  "reproduced": true,
+  "checks": [
+    {
+      "file": "run.json",
+      "path": [
+        "events",
+        25,
+        "payload",
+        "material_delta",
+        "sources",
+        0,
+        "source"
+      ],
+      "equals": "container/entry/entry.s0%3A%3Aalloc/lysate",
+      "observed": "container/entry/entry.s0%3A%3Aalloc/lysate",
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "run.json",
+      "path": [
+        "events",
+        25,
+        "payload",
+        "material_delta",
+        "sources",
+        0,
+        "selected_slot"
+      ],
+      "equals": "0",
+      "observed": "0",
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "run.json",
+      "path": [
+        "events",
+        25,
+        "payload",
+        "material_delta",
+        "sources",
+        0,
+        "dest"
+      ],
+      "equals": "container/entry/entry.s5%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate_assay_A1",
+      "observed": "container/entry/entry.s5%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate_assay_A1",
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "run.json",
+      "path": [
+        "events",
+        27,
+        "payload",
+        "material_delta",
+        "sources",
+        0,
+        "source"
+      ],
+      "equals": "container/entry/entry.s0%3A%3Aalloc/lysate",
+      "observed": "container/entry/entry.s0%3A%3Aalloc/lysate",
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "run.json",
+      "path": [
+        "events",
+        27,
+        "payload",
+        "material_delta",
+        "sources",
+        0,
+        "selected_slot"
+      ],
+      "equals": "1",
+      "observed": "1",
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "run.json",
+      "path": [
+        "events",
+        27,
+        "payload",
+        "material_delta",
+        "sources",
+        0,
+        "dest"
+      ],
+      "equals": "container/entry/entry.s2%3A%3Aalloc/resuspended",
+      "observed": "container/entry/entry.s2%3A%3Aalloc/resuspended",
+      "matched": true,
+      "error": null
+    }
+  ],
+  "errors": []
+}

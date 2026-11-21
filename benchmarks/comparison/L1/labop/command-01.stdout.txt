@@ -1,0 +1,77 @@
+{
+  "labop_commit": "2e2bd88150c71a440771fd369f40295dfd622324",
+  "script_sha256": "9d84812878433ea749a66987a5e262136b6370f4b29688a88271460bf2611420",
+  "expected_buffer_ul": {
+    "stock": 70,
+    "first": 10,
+    "second": 20
+  },
+  "results": {
+    "subprotocol": {
+      "mode": "subprotocol",
+      "validation_errors": [],
+      "validation_warnings": [],
+      "planned_calls": 2,
+      "entered_calls": [
+        {
+          "call": 1,
+          "amount_ul": 10.0
+        }
+      ],
+      "executed_child_inputs": [
+        "destination",
+        "source"
+      ],
+      "executed_transfers": [],
+      "completed_normally": true,
+      "issues": {
+        "execution": []
+      },
+      "latest_recorded_buffer_ul": {
+        "stock": 100.0,
+        "first": null,
+        "second": null
+      },
+      "null_means": "No finite buffer quantity recorded; null is not converted to zero."
+    },
+    "direct": {
+      "mode": "direct",
+      "validation_errors": [],
+      "validation_warnings": [],
+      "planned_calls": 2,
+      "entered_calls": [
+        {
+          "call": 1,
+          "amount_ul": 10.0
+        },
+        {
+          "call": 2,
+          "amount_ul": 20.0
+        }
+      ],
+      "executed_child_inputs": [],
+      "executed_transfers": [
+        {
+          "amount_ul": 10.0,
+          "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre",
+          "destination": "https://example.org/l1-reproduction/direct/main/CallBehaviorAction2/ValuePin2/LiteralIdentified1/SampleArray1"
+        },
+        {
+          "amount_ul": 20.0,
+          "unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/microlitre",
+          "destination": "https://example.org/l1-reproduction/direct/main/CallBehaviorAction3/ValuePin2/LiteralIdentified1/SampleArray1"
+        }
+      ],
+      "completed_normally": true,
+      "issues": {
+        "execution": []
+      },
+      "latest_recorded_buffer_ul": {
+        "stock": 70.0,
+        "first": 10.0,
+        "second": 20.0
+      },
+      "null_means": "No finite buffer quantity recorded; null is not converted to zero."
+    }
+  }
+}

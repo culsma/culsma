@@ -1,0 +1,1 @@
+{"artifacts": {"diagnostics": "artifacts/check/endpoint_no_parameters.diagnostics.json"}, "command": "check", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/L1/bpl/endpoint_no_parameters.bpl", "ok": true}

@@ -50,8 +50,9 @@ and the [evaluated program](modules/11-pbmc-hia-staining-flow/protocol.culs) are
 ## Cross-system comparison
 
 The [Culsma, LabOP and BPL comparison](comparison/README.md) contains the
-manuscript's mechanism audits, input programs, pinned source archives and retained
-results. Its separate replay command checks the published comparison witnesses;
+input programs and results organized by M1–M4 and L1–L4, with one folder per
+language inside each case. Run `python3 benchmarks/comparison/evaluate.py` to
+reproduce the comparison. Criterion explanations are in the manuscript supplement;
 these results do not contribute to workflow source-step coverage totals.
 
 ## Evaluate

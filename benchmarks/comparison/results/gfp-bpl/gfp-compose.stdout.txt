@@ -1,1 +1,0 @@
-{"artifacts": {"markdown": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/results/gfp-bpl/gfp-human.md"}, "command": "compose", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/supplementary/comparison_examples/cases/gfp/gfp.bpl", "ok": true, "step_count": 13, "target": "human"}
