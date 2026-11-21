@@ -1,0 +1,2 @@
+/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/bpl/transfer_results.json
+transfer diagnostics= 0 primitives= [{'class': 'Aspirate', 'fields': {'source': {'plate_id': 'plate_1', 'well_id': 'A1'}, 'volume_ul': 20.0, 'flow_rate_ul_s': None, 'air_gap_ul': None, 'touch_tip': False, 'primitive_type': <PrimitiveType.ASPIRATE: 1>}}, {'class': 'Dispense', 'fields': {'destination': {'plate_id': 'plate_1', 'well_id': 'A2'}, 'volume_ul': 20.0, 'flow_rate_ul_s': None, 'touch_tip': False, 'blow_out': False, 'primitive_type': <PrimitiveType.DISPENSE: 2>}}]

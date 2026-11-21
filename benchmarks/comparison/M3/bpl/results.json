@@ -1,67 +1,292 @@
 {
   "source_commit": "4e505740f5025d59ba655c6c955f83876f753007",
-  "python": "3.13.1",
-  "lark": "1.3.1",
-  "cases": {
-    "transfer": {
-      "source": "protocol Test {\n transfer(from: \"plate_1:A1\", to: \"plate_1:A2\", volume: 20 uL)\n}\n",
-      "declaration_types": [
-        "ProtocolDecl"
+  "input_sha256": "1356f6cffffe5075f438a91db943cc9ce514fd308666702949fe2ab3f9724b32",
+  "initialization": "Public simulator API; cellular content is opaque metadata.",
+  "commands": [
+    {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-env/bin/bplc",
+        "check",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/bpl/protocol.bpl",
+        "--json-errors"
       ],
-      "diagnostics": [],
-      "primitives": [
-        {
-          "class": "Aspirate",
-          "fields": {
-            "source": {
-              "plate_id": "plate_1",
-              "well_id": "A1"
-            },
-            "volume_ul": 20.0,
-            "flow_rate_ul_s": null,
-            "air_gap_ul": null,
-            "touch_tip": false,
-            "primitive_type": "PrimitiveType.ASPIRATE"
-          }
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-env/bin/bplc",
+        "lower",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/bpl/protocol.bpl",
+        "--target",
+        "simulation",
+        "--out",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/bpl/plan.json",
+        "--json-errors"
+      ],
+      "returncode": 0
+    }
+  ],
+  "diagnostics": [],
+  "operations": [
+    {
+      "step_id": "step_0001",
+      "primitive_type": "HumanStep",
+      "primitive": {
+        "instruction": "centrifuge(container: \"sources:A1\", speed: 12000 rcf, duration: 10 min, temperature: 22 degC)",
+        "expected_time_s": null,
+        "checklist": [],
+        "data_fields": {},
+        "safety_tags": [],
+        "requires_confirmation": true,
+        "primitive_type": "PrimitiveType.HUMAN_STEP"
+      },
+      "source_intent": "centrifuge"
+    },
+    {
+      "step_id": "step_0002",
+      "primitive_type": "Aspirate",
+      "primitive": {
+        "source": {
+          "plate_id": "sources",
+          "well_id": "A1"
         },
-        {
-          "class": "Dispense",
-          "fields": {
-            "destination": {
-              "plate_id": "plate_1",
-              "well_id": "A2"
-            },
-            "volume_ul": 20.0,
-            "flow_rate_ul_s": null,
-            "touch_tip": false,
-            "blow_out": false,
-            "primitive_type": "PrimitiveType.DISPENSE"
-          }
-        }
-      ]
+        "volume_ul": 160.0,
+        "flow_rate_ul_s": null,
+        "air_gap_ul": null,
+        "touch_tip": false,
+        "primitive_type": "PrimitiveType.ASPIRATE"
+      },
+      "source_intent": "transfer"
+    },
+    {
+      "step_id": "step_0003",
+      "primitive_type": "Dispense",
+      "primitive": {
+        "destination": {
+          "plate_id": "sources",
+          "well_id": "A3"
+        },
+        "volume_ul": 160.0,
+        "flow_rate_ul_s": null,
+        "touch_tip": false,
+        "blow_out": false,
+        "primitive_type": "PrimitiveType.DISPENSE"
+      },
+      "source_intent": "transfer"
+    },
+    {
+      "step_id": "step_0004",
+      "primitive_type": "Aspirate",
+      "primitive": {
+        "source": {
+          "plate_id": "sources",
+          "well_id": "A3"
+        },
+        "volume_ul": 20.0,
+        "flow_rate_ul_s": null,
+        "air_gap_ul": null,
+        "touch_tip": false,
+        "primitive_type": "PrimitiveType.ASPIRATE"
+      },
+      "source_intent": "transfer"
+    },
+    {
+      "step_id": "step_0005",
+      "primitive_type": "Dispense",
+      "primitive": {
+        "destination": {
+          "plate_id": "assay",
+          "well_id": "A1"
+        },
+        "volume_ul": 20.0,
+        "flow_rate_ul_s": null,
+        "touch_tip": false,
+        "blow_out": false,
+        "primitive_type": "PrimitiveType.DISPENSE"
+      },
+      "source_intent": "transfer"
+    },
+    {
+      "step_id": "step_0006",
+      "primitive_type": "Aspirate",
+      "primitive": {
+        "source": {
+          "plate_id": "sources",
+          "well_id": "A2"
+        },
+        "volume_ul": 40.0,
+        "flow_rate_ul_s": null,
+        "air_gap_ul": null,
+        "touch_tip": false,
+        "primitive_type": "PrimitiveType.ASPIRATE"
+      },
+      "source_intent": "transfer"
+    },
+    {
+      "step_id": "step_0007",
+      "primitive_type": "Dispense",
+      "primitive": {
+        "destination": {
+          "plate_id": "sources",
+          "well_id": "A1"
+        },
+        "volume_ul": 40.0,
+        "flow_rate_ul_s": null,
+        "touch_tip": false,
+        "blow_out": false,
+        "primitive_type": "PrimitiveType.DISPENSE"
+      },
+      "source_intent": "transfer"
+    },
+    {
+      "step_id": "step_0008",
+      "primitive_type": "HumanStep",
+      "primitive": {
+        "instruction": "mix(container: \"sources:A1\", volume: 32 uL, repetitions: 1)",
+        "expected_time_s": null,
+        "checklist": [],
+        "data_fields": {},
+        "safety_tags": [],
+        "requires_confirmation": true,
+        "primitive_type": "PrimitiveType.HUMAN_STEP"
+      },
+      "source_intent": "mix"
+    },
+    {
+      "step_id": "step_0009",
+      "primitive_type": "Aspirate",
+      "primitive": {
+        "source": {
+          "plate_id": "sources",
+          "well_id": "A1"
+        },
+        "volume_ul": 20.0,
+        "flow_rate_ul_s": null,
+        "air_gap_ul": null,
+        "touch_tip": false,
+        "primitive_type": "PrimitiveType.ASPIRATE"
+      },
+      "source_intent": "transfer"
+    },
+    {
+      "step_id": "step_0010",
+      "primitive_type": "Dispense",
+      "primitive": {
+        "destination": {
+          "plate_id": "assay",
+          "well_id": "A2"
+        },
+        "volume_ul": 20.0,
+        "flow_rate_ul_s": null,
+        "touch_tip": false,
+        "blow_out": false,
+        "primitive_type": "PrimitiveType.DISPENSE"
+      },
+      "source_intent": "transfer"
+    },
+    {
+      "step_id": "step_0011",
+      "primitive_type": "Aspirate",
+      "primitive": {
+        "source": {
+          "plate_id": "sources",
+          "well_id": "A2"
+        },
+        "volume_ul": 20.0,
+        "flow_rate_ul_s": null,
+        "air_gap_ul": null,
+        "touch_tip": false,
+        "primitive_type": "PrimitiveType.ASPIRATE"
+      },
+      "source_intent": "transfer"
+    },
+    {
+      "step_id": "step_0012",
+      "primitive_type": "Dispense",
+      "primitive": {
+        "destination": {
+          "plate_id": "assay",
+          "well_id": "A3"
+        },
+        "volume_ul": 20.0,
+        "flow_rate_ul_s": null,
+        "touch_tip": false,
+        "blow_out": false,
+        "primitive_type": "PrimitiveType.DISPENSE"
+      },
+      "source_intent": "transfer"
+    },
+    {
+      "step_id": "step_0013",
+      "primitive_type": "HumanStep",
+      "primitive": {
+        "instruction": "measure(\"assay\", property: Fluorescence)",
+        "expected_time_s": null,
+        "checklist": [],
+        "data_fields": {},
+        "safety_tags": [],
+        "requires_confirmation": true,
+        "primitive_type": "PrimitiveType.HUMAN_STEP"
+      },
+      "source_intent": "measure"
+    }
+  ],
+  "cli_api_operations_match": true,
+  "default": {
+    "success": true,
+    "status": "COMPLETED",
+    "errors": [],
+    "warnings": [
+      "Unsupported primitives will run as no-op in non-strict mode: human_step",
+      "Unsupported primitive executed as no-op: HUMAN_STEP [step: step_0001]",
+      "Unsupported primitive executed as no-op: HUMAN_STEP [step: step_0008]",
+      "Unsupported primitive executed as no-op: HUMAN_STEP [step: step_0013]"
+    ],
+    "unsupported_step_count": 3,
+    "unsupported_primitives": [
+      "human_step"
+    ],
+    "well_volumes_uL": {
+      "A1": 20.0,
+      "A2": 20.0,
+      "A3": 20.0
+    },
+    "well_components": {
+      "A1": [],
+      "A2": [],
+      "A3": []
+    },
+    "remaining_uL": {
+      "A1": 20.0,
+      "A2": 40.0,
+      "A3": 140.0
     }
   },
-  "source_sha256": {
-    "orchestrator.py": "73ec40a828a1d6ec0fbb5a07dc72a346ac77ac2c1b0652bb5281cc172fe8a7d1",
-    "grammar/bpl.lark": "cf4ff616f0787193a689c8a349656b962796f588c0ee216963b28d31f9c24cea",
-    "types/unit_engine.py": "b3e49dc5e48337b54a5c047ac5fe185d5543ddf2df76da6821d428fcc754ca80",
-    "lowering/plan_ir.py": "e1ccc06f54fe53ec2219cb732a218a52e9064cbd48be616477cf67e008f010eb",
-    "simulation/simulator.py": "bae9d9a1cec26ecc9529da278e05969d5b1157ec084bf9bddce5ef07ebe71094",
-    "simulation/virtual_deck.py": "f2deda48a3973f8f571fd92273c2d1d595a3b28c39fa5a894bb4247b6ef13b54"
-  },
-  "transfer_simulation": {
-    "success": true,
-    "errors": [],
-    "source_volume_ul": 80.0,
-    "destination_volume_ul": 20.0,
-    "source_components": [
-      {
-        "name": "buffer",
-        "concentration": null,
-        "volume_ul": 80.0,
-        "properties": {}
-      }
+  "strict": {
+    "success": false,
+    "status": "FAILED",
+    "errors": [
+      "Strict capability failure (simulation): human_step"
     ],
-    "destination_components": []
+    "warnings": [],
+    "unsupported_step_count": 0,
+    "unsupported_primitives": [
+      "human_step"
+    ],
+    "well_volumes_uL": {
+      "A1": 0.0,
+      "A2": 0.0,
+      "A3": 0.0
+    },
+    "well_components": {
+      "A1": [],
+      "A2": [],
+      "A3": []
+    },
+    "remaining_uL": {
+      "A1": 160.0,
+      "A2": 100.0,
+      "A3": 0.0
+    }
   }
 }

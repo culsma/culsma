@@ -8,9 +8,9 @@
         "run",
         "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/culsma/protocol.culs",
         "--output",
-        "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/local-results/comparison-execution/20261121T201158565518Z/M3/culsma/command-1/output.json",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/local-results/comparison-execution/20261121T204649007560Z/M3/culsma/command-1/output.json",
         "--artifacts-dir",
-        "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/local-results/comparison-execution/20261121T201158565518Z/M3/culsma/command-1"
+        "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/local-results/comparison-execution/20261121T204649007560Z/M3/culsma/command-1"
       ],
       "cwd": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/culsma",
       "returncode": 0,
@@ -25,9 +25,9 @@
         "run",
         "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/culsma/magnetic.culs",
         "--output",
-        "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/local-results/comparison-execution/20261121T201158565518Z/M3/culsma/command-2/output.json",
+        "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/local-results/comparison-execution/20261121T204649007560Z/M3/culsma/command-2/output.json",
         "--artifacts-dir",
-        "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/local-results/comparison-execution/20261121T201158565518Z/M3/culsma/command-2"
+        "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/local-results/comparison-execution/20261121T204649007560Z/M3/culsma/command-2"
       ],
       "cwd": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/culsma",
       "returncode": 0,
@@ -43,6 +43,16 @@
       "returncode": 0,
       "stdout": "command-03.stdout.txt",
       "stderr": "command-03.stderr.txt"
+    },
+    {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/culsma-env/bin/python",
+        "readout_check.py"
+      ],
+      "cwd": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/culsma",
+      "returncode": 0,
+      "stdout": "command-04.stdout.txt",
+      "stderr": "command-04.stderr.txt"
     }
   ],
   "errors": [],
@@ -84,10 +94,11 @@
     "verified": true
   },
   "input_sha256": {
-    "../case.json": "09dbff3298f6e036ca612cca5d872eb2f150518c053dd79d983d2b5ac89f5bf3",
+    "../case.json": "e72ca1003cb9ad30d219dbb6e87dbadef402bce5d2a2b19eba26ec904dc9604f",
     "magnetic.culs": "d08029be6fd66f40ab61b3fee7298ad54d2d3ee655a65f57e0a2c1c63ec53a15",
     "material_check.py": "de946e850eee7c95bfb699724cae15ef7d959c5998433c7833ab50b50f7d622a",
     "protocol.culs": "8d267f38d4f017ddad7aa4f53692356f48896a38591843699605d9dcb51d0375",
+    "readout_check.py": "cbe75f5fe22bf31742602a8b643aa3dd85d47157afca598dc6c58b230c71e7b7",
     "requirements.txt": "8162cf7b7a84a30ea753dccb0ae4016af1f51d6e5eee738acaa1240dbafea0d3",
     "../../evaluate.py": "b6a200cc7a9e30cfd89cc1dca9ca541f6c287eca752ba0095574b8adc6ab40db"
   }

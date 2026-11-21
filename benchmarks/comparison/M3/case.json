@@ -37,6 +37,12 @@
           "args": [
             "material_check.py"
           ]
+        },
+        {
+          "kind": "python",
+          "args": [
+            "readout_check.py"
+          ]
         }
       ],
       "expectations": [
@@ -170,6 +176,64 @@
               "equals": true
             }
           ]
+        },
+        {
+          "criterion": "M3 / observation-to-fraction continuity",
+          "expected_result": "Yes",
+          "checks": [
+            {
+              "file": "readout_lineage.json",
+              "path": [
+                "observation_count"
+              ],
+              "equals": 3
+            },
+            {
+              "file": "readout_lineage.json",
+              "path": [
+                "two_fraction_readout_link_complete"
+              ],
+              "equals": true
+            },
+            {
+              "file": "readout_lineage.json",
+              "path": [
+                "runtime_extension_used"
+              ],
+              "equals": false
+            },
+            {
+              "file": "readout_lineage.json",
+              "path": [
+                "wells",
+                "A1",
+                "fractions"
+              ],
+              "equals": [
+                "supernatant"
+              ]
+            },
+            {
+              "file": "readout_lineage.json",
+              "path": [
+                "wells",
+                "A2",
+                "fractions"
+              ],
+              "equals": [
+                "pellet"
+              ]
+            },
+            {
+              "file": "readout_lineage.json",
+              "path": [
+                "wells",
+                "A3",
+                "fractions"
+              ],
+              "equals": []
+            }
+          ]
         }
       ]
     },
@@ -208,13 +272,37 @@
           "args": [
             "material_check.py"
           ]
+        },
+        {
+          "kind": "python",
+          "args": [
+            "readout_check.py",
+            "location_continuation",
+            "readout_lineage.json"
+          ]
+        },
+        {
+          "kind": "python",
+          "args": [
+            "extended_protocol.py",
+            "extended"
+          ]
+        },
+        {
+          "kind": "python",
+          "args": [
+            "readout_check.py",
+            "extended",
+            "extended_readout_lineage.json",
+            "--extended"
+          ]
         }
       ],
       "expectations": [
         {
           "criterion": "M3",
           "expected_result": "No",
-          "scope": "Published handler inventory lacks the tested material-separation propagation; GFP extension assessed separately.",
+          "scope": "Released material-separation propagation is assessed here; the added primitive/updater is also executed as an extension control.",
           "checks": [
             {
               "file": "material-audit.json",
@@ -382,6 +470,104 @@
               }
             }
           ]
+        },
+        {
+          "criterion": "M3 / observation-to-fraction continuity",
+          "expected_result": "No",
+          "scope": "The native route retains well/sample history without two fraction identities. The extension control demonstrates the additional implementation needed for that identity link. The M3 verdict remains scoped to the released route.",
+          "checks": [
+            {
+              "file": "readout_lineage.json",
+              "path": [
+                "observation_count"
+              ],
+              "equals": 3
+            },
+            {
+              "file": "readout_lineage.json",
+              "path": [
+                "two_fraction_readout_link_complete"
+              ],
+              "equals": false
+            },
+            {
+              "file": "readout_lineage.json",
+              "path": [
+                "wells",
+                "A1",
+                "has_provision_ancestry"
+              ],
+              "equals": true
+            },
+            {
+              "file": "readout_lineage.json",
+              "path": [
+                "wells",
+                "A2",
+                "has_provision_ancestry"
+              ],
+              "equals": true
+            },
+            {
+              "file": "readout_lineage.json",
+              "path": [
+                "runtime_extension_used"
+              ],
+              "equals": false
+            },
+            {
+              "file": "extended_readout_lineage.json",
+              "path": [
+                "runtime_extension_used"
+              ],
+              "equals": true
+            },
+            {
+              "file": "extended_readout_lineage.json",
+              "path": [
+                "two_fraction_readout_link_complete"
+              ],
+              "equals": true
+            },
+            {
+              "file": "extended_readout_lineage.json",
+              "path": [
+                "observation_count"
+              ],
+              "equals": 3
+            },
+            {
+              "file": "extended_readout_lineage.json",
+              "path": [
+                "wells",
+                "A1",
+                "fractions"
+              ],
+              "equals": [
+                "supernatant"
+              ]
+            },
+            {
+              "file": "extended_readout_lineage.json",
+              "path": [
+                "wells",
+                "A2",
+                "fractions"
+              ],
+              "equals": [
+                "pellet"
+              ]
+            },
+            {
+              "file": "extended_readout_lineage.json",
+              "path": [
+                "wells",
+                "A3",
+                "fractions"
+              ],
+              "equals": []
+            }
+          ]
         }
       ]
     },
@@ -410,6 +596,18 @@
           "args": [
             "run.py"
           ]
+        },
+        {
+          "kind": "python",
+          "args": [
+            "transfer_check.py"
+          ]
+        },
+        {
+          "kind": "python",
+          "args": [
+            "readout_check.py"
+          ]
         }
       ],
       "expectations": [
@@ -419,7 +617,7 @@
           "scope": "Transfer moves liquid volume but does not propagate the seeded component into the destination.",
           "checks": [
             {
-              "file": "results.json",
+              "file": "transfer_results.json",
               "path": [
                 "transfer_simulation"
               ],
@@ -438,6 +636,125 @@
                 ],
                 "destination_components": []
               }
+            }
+          ]
+        },
+        {
+          "criterion": "M3 / observation-to-fraction continuity",
+          "expected_result": "No",
+          "scope": "The common separation, transfer and fluorescence task is checked and lowered through the public CLI. In the default simulator, centrifuge/mix/measure are unsupported HumanSteps; the strict simulator rejects them. The plain transfer control is retained separately.",
+          "checks": [
+            {
+              "file": "results.json",
+              "path": [
+                "cli_api_operations_match"
+              ],
+              "equals": true
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "diagnostics"
+              ],
+              "equals": []
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "default",
+                "success"
+              ],
+              "equals": true
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "default",
+                "unsupported_step_count"
+              ],
+              "equals": 3
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "default",
+                "well_volumes_uL"
+              ],
+              "equals": {
+                "A1": 20.0,
+                "A2": 20.0,
+                "A3": 20.0
+              }
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "default",
+                "well_components"
+              ],
+              "equals": {
+                "A1": [],
+                "A2": [],
+                "A3": []
+              }
+            },
+            {
+              "file": "results.json",
+              "path": [
+                "strict",
+                "success"
+              ],
+              "equals": false
+            },
+            {
+              "file": "readout_lineage.json",
+              "path": [
+                "observation_count"
+              ],
+              "equals": 0
+            },
+            {
+              "file": "readout_lineage.json",
+              "path": [
+                "two_fraction_readout_link_complete"
+              ],
+              "equals": false
+            },
+            {
+              "file": "readout_lineage.json",
+              "path": [
+                "skipped_operations",
+                0,
+                "operation"
+              ],
+              "equals": "centrifuge"
+            },
+            {
+              "file": "readout_lineage.json",
+              "path": [
+                "skipped_operations",
+                1,
+                "operation"
+              ],
+              "equals": "mix"
+            },
+            {
+              "file": "readout_lineage.json",
+              "path": [
+                "skipped_operations",
+                2,
+                "operation"
+              ],
+              "equals": "measure"
+            },
+            {
+              "file": "readout_lineage.json",
+              "path": [
+                "skipped_operations",
+                2,
+                "primitive"
+              ],
+              "equals": "HumanStep"
             }
           ]
         }

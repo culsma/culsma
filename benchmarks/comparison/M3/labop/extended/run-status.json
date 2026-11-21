@@ -1,0 +1,11 @@
+{
+  "validation_errors": [],
+  "validation_warnings": [],
+  "completed_normally": true,
+  "issues": [],
+  "fraction_outputs": [
+    "supernatant",
+    "pellet"
+  ],
+  "fluorescence_data": "https://example.org/gfp-comparison/gfp_execution/ActivityEdgeFlow76/LiteralIdentified1/Dataset1/SampleData1"
+}

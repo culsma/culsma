@@ -9,6 +9,26 @@
       "returncode": 0,
       "stdout": "command-01.stdout.txt",
       "stderr": "command-01.stderr.txt"
+    },
+    {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-env/bin/python",
+        "transfer_check.py"
+      ],
+      "cwd": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/bpl",
+      "returncode": 0,
+      "stdout": "command-02.stdout.txt",
+      "stderr": "command-02.stderr.txt"
+    },
+    {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/bpl-env/bin/python",
+        "readout_check.py"
+      ],
+      "cwd": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/bpl",
+      "returncode": 0,
+      "stdout": "command-03.stdout.txt",
+      "stderr": "command-03.stderr.txt"
     }
   ],
   "errors": [],
@@ -56,10 +76,13 @@
     "verified": true
   },
   "input_sha256": {
-    "protocol.bpl": "cf1369f38ccc37ae669413ad31b3c54f23e580afaa0ebef3aeae26dc14a2e684",
+    "protocol.bpl": "1356f6cffffe5075f438a91db943cc9ce514fd308666702949fe2ab3f9724b32",
+    "readout_check.py": "f5c726ff558f5fd46868adbb05b268797b8d9c20b700415c211b7efac27bcd62",
     "requirements.txt": "0c6a377f1fd4995e27165c0748f82c9123cfb464ab1007c8cd475c2c2b049d15",
-    "run.py": "467861fe0a4c80345bdc2d7c11ea2e35c02808c717188416d30e9cbbdfae045f",
-    "../case.json": "09dbff3298f6e036ca612cca5d872eb2f150518c053dd79d983d2b5ac89f5bf3",
+    "run.py": "d145a8524373cee2325b045978b70af98d073fee026aa4c506d14a929b400517",
+    "transfer_check.py": "d239d6ff0a0520fc5e36671b124daeae81c90065fe269abdab0017a1c89bcff9",
+    "transfer_control.bpl": "cf1369f38ccc37ae669413ad31b3c54f23e580afaa0ebef3aeae26dc14a2e684",
+    "../case.json": "e72ca1003cb9ad30d219dbb6e87dbadef402bce5d2a2b19eba26ec904dc9604f",
     "../../evaluate.py": "b6a200cc7a9e30cfd89cc1dca9ca541f6c287eca752ba0095574b8adc6ab40db"
   }
 }

@@ -1,0 +1,55 @@
+{
+  "method": "Query recorded observation references and earlier transfer/separation events.",
+  "runtime_extension_used": false,
+  "observation_count": 3,
+  "wells": {
+    "A1": {
+      "observation": "entry.s14::data::0",
+      "sample": "container/entry/entry.s5%3A%3Awell%3A%3AA1%3A%3Aalloc/__lw_plate_assay_A1",
+      "signal": null,
+      "volume_uL": 20.0,
+      "fractions": [
+        "supernatant"
+      ],
+      "paths": [
+        {
+          "fraction": "supernatant",
+          "source": "container/entry/entry.s0%3A%3Aalloc/lysate",
+          "events": [
+            26,
+            22
+          ]
+        }
+      ]
+    },
+    "A2": {
+      "observation": "entry.s14::data::1",
+      "sample": "container/entry/entry.s10%3A%3Awell%3A%3AA2%3A%3Aalloc/__lw_plate_assay_A2",
+      "signal": null,
+      "volume_uL": 20.0,
+      "fractions": [
+        "pellet"
+      ],
+      "paths": [
+        {
+          "fraction": "pellet",
+          "source": "container/entry/entry.s0%3A%3Aalloc/lysate",
+          "events": [
+            36,
+            28,
+            22
+          ]
+        }
+      ]
+    },
+    "A3": {
+      "observation": "entry.s14::data::2",
+      "sample": "container/entry/entry.s12%3A%3Awell%3A%3AA3%3A%3Aalloc/__lw_plate_assay_A3",
+      "signal": null,
+      "volume_uL": 20.0,
+      "fractions": [],
+      "paths": []
+    }
+  },
+  "two_fraction_readout_link_complete": true
+}

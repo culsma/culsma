@@ -1,0 +1,28 @@
+strict digraph sample_graph {
+	graph [label=SampleGraph rankdir=TB]
+	node [ordering=out]
+	subgraph cluster_buffer_tube {
+		graph [label=buffer_tube]
+		subgraph cluster_buffer_tube_A1 {
+			graph [label=buffer_tube_A1]
+			"sample_Assay buffer_0" [label="sample_Assay buffer_0 @2
+empty contents"]
+		}
+	}
+	subgraph cluster_lysate_tube {
+		graph [label=lysate_tube]
+		subgraph cluster_lysate_tube_A1 {
+			graph [label=lysate_tube_A1]
+			"sample_GFP lysate_0" [label="sample_GFP lysate_0 @0
+empty contents"]
+		}
+	}
+	subgraph cluster_pellet_tube {
+		graph [label=pellet_tube]
+		subgraph cluster_pellet_tube_A1 {
+			graph [label=pellet_tube_A1]
+			"sample_Pellet collection tube_0" [label="sample_Pellet collection tube_0 @1
+empty contents"]
+		}
+	}
+}

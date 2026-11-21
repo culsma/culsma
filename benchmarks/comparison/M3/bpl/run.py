@@ -1,70 +1,119 @@
-"""Small mechanism witnesses for the pinned BPL snapshot; no BPL code patches.
+"""Run the fraction-to-well fluorescence task through the pinned BPL implementation.
 
-Requires Python >=3.13, lark==1.3.1, and the BPL source on PYTHONPATH.
-Results describe the inspected source-to-plan and simulation routes only.
+Stock contents are initialized through the public simulator API. No operation
+handlers are added. HumanStep operations and unsupported simulation steps remain
+visible in the plan and trace.
 """
 from dataclasses import asdict
+from enum import Enum
 import hashlib
 import json
+import os
 from pathlib import Path
-import platform
+import subprocess
+import sys
 
-import lark
 import bpl
 from bpl.parser import BPLParser
-from bpl.orchestrator import run_semantic_gate, lower_program_to_plan
+from bpl.orchestrator import lower_program_to_plan, run_semantic_gate
 from bpl.simulation.simulator import Simulator
-from bpl.simulation.virtual_deck import (
-    Component, LabwareType, create_deck_with_labware,
-)
+from bpl.simulation.virtual_deck import Component, LabwareType, create_deck_with_labware
 
-OUT = Path(__file__).resolve().parent
-OUT.mkdir(parents=True, exist_ok=True)
-parser = BPLParser()
-cases = {name: (OUT / filename).read_text() for name, filename in {'transfer': 'protocol.bpl'}.items()}
-report = {
-    "source_commit": "4e505740f5025d59ba655c6c955f83876f753007",
-    "python": platform.python_version(), "lark": lark.__version__, "cases": {},
-}
-source_root = Path(bpl.__file__).resolve().parent
-report["source_sha256"] = {
-    name: hashlib.sha256((source_root / name).read_bytes()).hexdigest()
-    for name in ("orchestrator.py", "grammar/bpl.lark", "types/unit_engine.py",
-                 "lowering/plan_ir.py", "simulation/simulator.py",
-                 "simulation/virtual_deck.py")
-}
-plans = {}
-for name, source in cases.items():
-    path = OUT / {'transfer': 'protocol.bpl'}[name]
-    program = parser.parse(source, filename=str(path))
-    diagnostics = run_semantic_gate(program, path)
-    plan = lower_program_to_plan(program, path, "simulation")
-    plans[name] = plan
-    report["cases"][name] = {
-        "source": source,
-        "declaration_types": [type(d).__name__ for d in program.declarations],
-        "diagnostics": [d.to_dict() for d in diagnostics],
-        "primitives": [{"class": type(s.primitive).__name__,
-                        "fields": asdict(s.primitive)} for s in plan.steps.values()],
-    }
+ROOT = Path(__file__).resolve().parent
 
-# Seed the simulator through its public state API: this is a runtime-component
-# witness, not a claim that reagent declarations initialize this state in the CLI.
-deck = create_deck_with_labware([("plate_1", LabwareType.PLATE_96, "1")])
-src = deck.get_well_contents("plate_1", "A1")
-dst = deck.get_well_contents("plate_1", "A2")
-src.add_volume(100, Component(name="buffer", volume_ul=100))
-result = Simulator(deck_state=deck).simulate(plans["transfer"])
-report["transfer_simulation"] = {
-    "success": result.success, "errors": result.validation_errors,
-    "source_volume_ul": src.volume_ul, "destination_volume_ul": dst.volume_ul,
-    "source_components": [asdict(c) for c in src.components],
-    "destination_components": [asdict(c) for c in dst.components],
-}
 
-destination = OUT / "results.json"
-destination.write_text(json.dumps(report, indent=2, default=str) + "\n")
-print(destination)
-for name, item in report["cases"].items():
-    print(name, "diagnostics=", len(item["diagnostics"]), "primitives=", item["primitives"])
+def write(path, value):
+    path.write_text(json.dumps(value, indent=2, default=str) + '\n')
 
+
+def canonical(value):
+    if isinstance(value, Enum):
+        return value.name
+    if isinstance(value, dict):
+        return {k: canonical(v) for k, v in value.items() if k != '__type__'}
+    if isinstance(value, (tuple, list)):
+        return [canonical(v) for v in value]
+    return value
+
+
+def contents(deck):
+    return {f'{plate}:{well}': asdict(deck.get_well_contents(plate, well))
+            for plate in ('sources', 'assay') for well in ('A1', 'A2', 'A3')}
+
+
+def seeded_deck():
+    deck = create_deck_with_labware([('sources', LabwareType.TUBE_RACK, '1'),
+                                    ('assay', LabwareType.PLATE_96, '2')])
+    lysate = deck.get_well_contents('sources', 'A1')
+    lysate.add_volume(160, Component(name='GFP lysate liquid', volume_ul=160))
+    # This is opaque initial metadata, not a BPL cell-count or partition calculation.
+    lysate.components.append(Component(name='GFP cellular material', volume_ul=0,
+                                      properties={'declared_cells': 100000}))
+    deck.get_well_contents('sources', 'A2').add_volume(
+        100, Component(name='assay buffer', volume_ul=100))
+    return deck
+
+
+def run_cli(label, arguments):
+    command = [str(Path(sys.executable).with_name('bplc')), *map(str, arguments)]
+    env = dict(os.environ)
+    env.pop('PYTHONPATH', None)
+    env.pop('PYTHONHOME', None)
+    result = subprocess.run(command, cwd=ROOT, env=env, capture_output=True, text=True, timeout=90)
+    (ROOT / (label + '.stdout.txt')).write_text(result.stdout)
+    (ROOT / (label + '.stderr.txt')).write_text(result.stderr)
+    if result.returncode:
+        raise RuntimeError(label + ' failed; inspect its stderr record')
+    return {'command': command, 'returncode': result.returncode}
+
+
+def simulate(plan, strict):
+    mode = 'strict' if strict else 'default'
+    deck = seeded_deck()
+    before = contents(deck)
+    result = Simulator(deck_state=deck, strict_capabilities=strict).simulate(plan)
+    trace = asdict(result)
+    trace.pop('final_deck_state', None)
+    write(ROOT / (mode + '_trace.json'), trace)
+    final = contents(deck)
+    write(ROOT / (mode + '_materials.json'), {'initial': before, 'final': final})
+    wells = {well: final['assay:' + well] for well in ('A1', 'A2', 'A3')}
+    return {'success': result.success, 'status': result.status.name,
+            'errors': result.validation_errors, 'warnings': result.warnings,
+            'unsupported_step_count': result.unsupported_step_count,
+            'unsupported_primitives': result.unsupported_primitives,
+            'well_volumes_uL': {well: row['volume_ul'] for well, row in wells.items()},
+            'well_components': {well: row['components'] for well, row in wells.items()},
+            'remaining_uL': {location: final['sources:' + location]['volume_ul']
+                             for location in ('A1', 'A2', 'A3')}}
+
+
+def main():
+    source = ROOT / 'protocol.bpl'
+    plan_file = ROOT / 'plan.json'
+    report = {'source_commit': '4e505740f5025d59ba655c6c955f83876f753007',
+              'input_sha256': hashlib.sha256(source.read_bytes()).hexdigest(),
+              'initialization': 'Public simulator API; cellular content is opaque metadata.',
+              'commands': []}
+    report['commands'].append(run_cli('protocol-check', ['check', source, '--json-errors']))
+    report['commands'].append(run_cli('protocol-lower', ['lower', source, '--target', 'simulation',
+                                                       '--out', plan_file, '--json-errors']))
+    program = BPLParser().parse(source.read_text(), filename=str(source))
+    report['diagnostics'] = [d.to_dict() for d in run_semantic_gate(program, source)]
+    plan = lower_program_to_plan(program, source, 'simulation')
+    report['operations'] = [{'step_id': step.step_id, 'primitive_type': type(step.primitive).__name__,
+                             'primitive': asdict(step.primitive), 'source_intent': step.source_intent}
+                            for step in plan.steps.values()]
+    cli_steps = json.loads(plan_file.read_text())['steps']
+    report['cli_api_operations_match'] = (
+        [canonical(row['primitive']) for row in cli_steps] ==
+        [canonical(asdict(plan.steps[key].primitive)) for key in plan.topological_order()])
+    if not report['cli_api_operations_match']:
+        raise RuntimeError('CLI/API operation mismatch')
+    report['default'] = simulate(plan, False)
+    report['strict'] = simulate(plan, True)
+    write(ROOT / 'results.json', report)
+
+
+if __name__ == '__main__':
+    main()

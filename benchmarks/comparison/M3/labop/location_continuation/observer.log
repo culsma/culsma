@@ -5,8 +5,8 @@ Behavior
     Incubate, store, or hold a set of samples indefinitely at the specified temperature
     '''
     Input Parameters:
-	location: http://bioprotocols.org/labop#SampleArray 
 	temperature: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
+	location: http://bioprotocols.org/labop#SampleArray 
     
                  is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
 Behavior 
@@ -16,8 +16,8 @@ Behavior
     '''
     Input Parameters:
 	location: http://bioprotocols.org/labop#SampleArray 
-	acceleration: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
 	duration: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
+	acceleration: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
     
                  is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
 Behavior 
@@ -37,10 +37,10 @@ Behavior
     Mix by cycling a measured volume of liquid in and out at an array of samples a fixed number of times
     '''
     Input Parameters:
-	amount: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
 	cycleCount: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure (Optional) 
-	dispenseVelocity: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure (Optional) 
 	samples: http://bioprotocols.org/labop#SampleCollection 
+	dispenseVelocity: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure (Optional) 
+	amount: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
     
                  is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
 Behavior 
@@ -83,13 +83,13 @@ Behavior
     '''
     Input Parameters:
 	excitationWavelength: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
-	samples: http://bioprotocols.org/labop#SampleCollection 
-	numFlashes: http://www.w3.org/2001/XMLSchema#integer (Optional) 
 	emissionWavelength: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure (Optional) 
+	samples: http://bioprotocols.org/labop#SampleCollection 
 	emissionLowpassCutoff: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure (Optional) 
 	timepoints: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure (Optional) 
-	gain: http://www.w3.org/2001/XMLSchema#double (Optional) 
 	emissionBandpassWidth: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure (Optional) 
+	gain: http://www.w3.org/2001/XMLSchema#double (Optional) 
+	numFlashes: http://www.w3.org/2001/XMLSchema#integer (Optional) 
     Output Parameters:
 	measurements: http://bioprotocols.org/labop#Dataset 
                  is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...

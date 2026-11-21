@@ -239,6 +239,134 @@
       },
       "matched": true,
       "error": null
+    },
+    {
+      "file": "readout_lineage.json",
+      "path": [
+        "observation_count"
+      ],
+      "equals": 3,
+      "observed": 3,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "readout_lineage.json",
+      "path": [
+        "two_fraction_readout_link_complete"
+      ],
+      "equals": false,
+      "observed": false,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "readout_lineage.json",
+      "path": [
+        "wells",
+        "A1",
+        "has_provision_ancestry"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "readout_lineage.json",
+      "path": [
+        "wells",
+        "A2",
+        "has_provision_ancestry"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "readout_lineage.json",
+      "path": [
+        "runtime_extension_used"
+      ],
+      "equals": false,
+      "observed": false,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "extended_readout_lineage.json",
+      "path": [
+        "runtime_extension_used"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "extended_readout_lineage.json",
+      "path": [
+        "two_fraction_readout_link_complete"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "extended_readout_lineage.json",
+      "path": [
+        "observation_count"
+      ],
+      "equals": 3,
+      "observed": 3,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "extended_readout_lineage.json",
+      "path": [
+        "wells",
+        "A1",
+        "fractions"
+      ],
+      "equals": [
+        "supernatant"
+      ],
+      "observed": [
+        "supernatant"
+      ],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "extended_readout_lineage.json",
+      "path": [
+        "wells",
+        "A2",
+        "fractions"
+      ],
+      "equals": [
+        "pellet"
+      ],
+      "observed": [
+        "pellet"
+      ],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "extended_readout_lineage.json",
+      "path": [
+        "wells",
+        "A3",
+        "fractions"
+      ],
+      "equals": [],
+      "observed": [],
+      "matched": true,
+      "error": null
     }
   ],
   "errors": []

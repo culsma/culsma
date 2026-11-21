@@ -5,7 +5,7 @@
   "reproduced": true,
   "checks": [
     {
-      "file": "results.json",
+      "file": "transfer_results.json",
       "path": [
         "transfer_simulation"
       ],
@@ -39,6 +39,165 @@
         ],
         "destination_components": []
       },
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "cli_api_operations_match"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "diagnostics"
+      ],
+      "equals": [],
+      "observed": [],
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "default",
+        "success"
+      ],
+      "equals": true,
+      "observed": true,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "default",
+        "unsupported_step_count"
+      ],
+      "equals": 3,
+      "observed": 3,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "default",
+        "well_volumes_uL"
+      ],
+      "equals": {
+        "A1": 20.0,
+        "A2": 20.0,
+        "A3": 20.0
+      },
+      "observed": {
+        "A1": 20.0,
+        "A2": 20.0,
+        "A3": 20.0
+      },
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "default",
+        "well_components"
+      ],
+      "equals": {
+        "A1": [],
+        "A2": [],
+        "A3": []
+      },
+      "observed": {
+        "A1": [],
+        "A2": [],
+        "A3": []
+      },
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "results.json",
+      "path": [
+        "strict",
+        "success"
+      ],
+      "equals": false,
+      "observed": false,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "readout_lineage.json",
+      "path": [
+        "observation_count"
+      ],
+      "equals": 0,
+      "observed": 0,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "readout_lineage.json",
+      "path": [
+        "two_fraction_readout_link_complete"
+      ],
+      "equals": false,
+      "observed": false,
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "readout_lineage.json",
+      "path": [
+        "skipped_operations",
+        0,
+        "operation"
+      ],
+      "equals": "centrifuge",
+      "observed": "centrifuge",
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "readout_lineage.json",
+      "path": [
+        "skipped_operations",
+        1,
+        "operation"
+      ],
+      "equals": "mix",
+      "observed": "mix",
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "readout_lineage.json",
+      "path": [
+        "skipped_operations",
+        2,
+        "operation"
+      ],
+      "equals": "measure",
+      "observed": "measure",
+      "matched": true,
+      "error": null
+    },
+    {
+      "file": "readout_lineage.json",
+      "path": [
+        "skipped_operations",
+        2,
+        "primitive"
+      ],
+      "equals": "HumanStep",
+      "observed": "HumanStep",
       "matched": true,
       "error": null
     }

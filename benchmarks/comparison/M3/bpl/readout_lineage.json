@@ -1,0 +1,47 @@
+{
+  "method": "Inspect CLI-lowered operations and their simulator step traces.",
+  "runtime_extension_used": false,
+  "observation_count": 0,
+  "two_fraction_readout_link_complete": false,
+  "skipped_operations": [
+    {
+      "step": "step_0001",
+      "operation": "centrifuge",
+      "primitive": "HumanStep",
+      "state_unchanged": true
+    },
+    {
+      "step": "step_0008",
+      "operation": "mix",
+      "primitive": "HumanStep",
+      "state_unchanged": true
+    },
+    {
+      "step": "step_0013",
+      "operation": "measure",
+      "primitive": "HumanStep",
+      "state_unchanged": true
+    }
+  ],
+  "wells": {
+    "A1": {
+      "volume_uL": 20.0,
+      "components": [],
+      "observation": null,
+      "fractions": []
+    },
+    "A2": {
+      "volume_uL": 20.0,
+      "components": [],
+      "observation": null,
+      "fractions": []
+    },
+    "A3": {
+      "volume_uL": 20.0,
+      "components": [],
+      "observation": null,
+      "fractions": []
+    }
+  },
+  "strict_execution_succeeded": false
+}

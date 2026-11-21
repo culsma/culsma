@@ -5,8 +5,8 @@ Behavior
     Incubate, store, or hold a set of samples indefinitely at the specified temperature
     '''
     Input Parameters:
-	location: http://bioprotocols.org/labop#SampleArray 
 	temperature: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
+	location: http://bioprotocols.org/labop#SampleArray 
     
                  is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...
 Behavior 
@@ -16,7 +16,7 @@ Behavior
     '''
     Input Parameters:
 	location: http://bioprotocols.org/labop#SampleArray 
-	acceleration: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
 	duration: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
+	acceleration: http://www.ontology-of-units-of-measure.org/resource/om-2/Measure 
     
                  is not handled by <class 'labop.execution.behavior_dynamics.SampleProvenanceObserver'>, skipping ...

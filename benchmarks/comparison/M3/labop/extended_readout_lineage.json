@@ -1,0 +1,140 @@
+{
+  "method": "Join readout coordinates to the terminal well state and query sample-graph edges.",
+  "runtime_extension_used": true,
+  "observation_count": 3,
+  "fraction_outputs": [
+    "supernatant",
+    "pellet"
+  ],
+  "wells": {
+    "A1": {
+      "observation_dataset": "https://example.org/gfp-comparison/gfp_execution/ActivityEdgeFlow76/LiteralIdentified1/Dataset1/SampleData1",
+      "coordinate": "A1",
+      "container": "https://example.org/gfp-comparison/assay_plate",
+      "sample": "sample_Assay plate_96",
+      "signal": null,
+      "volume_uL": 20.0,
+      "fractions": [
+        "supernatant"
+      ],
+      "fraction_parents": [
+        "sample_GFP lysate_1"
+      ],
+      "paths": [
+        {
+          "samples": [
+            "sample_Assay plate_96",
+            "sample_Assay plate_0"
+          ],
+          "edges": [
+            "Transfer(20.0, microliter)@7"
+          ]
+        },
+        {
+          "samples": [
+            "sample_Assay plate_96",
+            "sample_GFP lysate_2",
+            "sample_GFP lysate_1",
+            "sample_GFP lysate_0"
+          ],
+          "edges": [
+            "Transfer(20.0, microliter)@7",
+            "ClarifyLysate:supernatant@6",
+            "Provision(160.0, microliter, GFP lysate with 100000 suspended cellular units)@4"
+          ]
+        }
+      ],
+      "has_provision_ancestry": true
+    },
+    "A2": {
+      "observation_dataset": "https://example.org/gfp-comparison/gfp_execution/ActivityEdgeFlow76/LiteralIdentified1/Dataset1/SampleData1",
+      "coordinate": "A2",
+      "container": "https://example.org/gfp-comparison/assay_plate",
+      "sample": "sample_Assay plate_97",
+      "signal": null,
+      "volume_uL": 20.0,
+      "fractions": [
+        "pellet"
+      ],
+      "fraction_parents": [
+        "sample_GFP lysate_1"
+      ],
+      "paths": [
+        {
+          "samples": [
+            "sample_Assay plate_97",
+            "sample_Assay plate_8"
+          ],
+          "edges": [
+            "Transfer(20.0, microliter)@9"
+          ]
+        },
+        {
+          "samples": [
+            "sample_Assay plate_97",
+            "sample_Pellet collection tube_2",
+            "sample_Pellet collection tube_1",
+            "sample_GFP lysate_1",
+            "sample_GFP lysate_0"
+          ],
+          "edges": [
+            "Transfer(20.0, microliter)@9",
+            "Transfer(40.0, microliter)@8",
+            "ClarifyLysate:pellet@6",
+            "Provision(160.0, microliter, GFP lysate with 100000 suspended cellular units)@4"
+          ]
+        },
+        {
+          "samples": [
+            "sample_Assay plate_97",
+            "sample_Pellet collection tube_2",
+            "sample_Assay buffer_1",
+            "sample_Assay buffer_0"
+          ],
+          "edges": [
+            "Transfer(20.0, microliter)@9",
+            "Transfer(40.0, microliter)@8",
+            "Provision(100.0, microliter, Assay buffer)@5"
+          ]
+        }
+      ],
+      "has_provision_ancestry": true
+    },
+    "A3": {
+      "observation_dataset": "https://example.org/gfp-comparison/gfp_execution/ActivityEdgeFlow76/LiteralIdentified1/Dataset1/SampleData1",
+      "coordinate": "A3",
+      "container": "https://example.org/gfp-comparison/assay_plate",
+      "sample": "sample_Assay plate_98",
+      "signal": null,
+      "volume_uL": 20.0,
+      "fractions": [],
+      "fraction_parents": [],
+      "paths": [
+        {
+          "samples": [
+            "sample_Assay plate_98",
+            "sample_Assay plate_16"
+          ],
+          "edges": [
+            "Transfer(20.0, microliter)@10"
+          ]
+        },
+        {
+          "samples": [
+            "sample_Assay plate_98",
+            "sample_Assay buffer_2",
+            "sample_Assay buffer_1",
+            "sample_Assay buffer_0"
+          ],
+          "edges": [
+            "Transfer(20.0, microliter)@10",
+            "Transfer(40.0, microliter)@8",
+            "Provision(100.0, microliter, Assay buffer)@5"
+          ]
+        }
+      ],
+      "has_provision_ancestry": true
+    }
+  },
+  "two_fraction_readout_link_complete": true
+}

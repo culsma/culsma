@@ -20,6 +20,42 @@
       "returncode": 0,
       "stdout": "command-02.stdout.txt",
       "stderr": "command-02.stderr.txt"
+    },
+    {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/bin/python",
+        "readout_check.py",
+        "location_continuation",
+        "readout_lineage.json"
+      ],
+      "cwd": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/labop",
+      "returncode": 0,
+      "stdout": "command-03.stdout.txt",
+      "stderr": "command-03.stderr.txt"
+    },
+    {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/bin/python",
+        "extended_protocol.py",
+        "extended"
+      ],
+      "cwd": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/labop",
+      "returncode": 0,
+      "stdout": "command-04.stdout.txt",
+      "stderr": "command-04.stderr.txt"
+    },
+    {
+      "command": [
+        "/Users/yangchen/VsCodeProjects/labword-theroy/papers/patterns_v1/output/labop-comparison/labop-env/bin/python",
+        "readout_check.py",
+        "extended",
+        "extended_readout_lineage.json",
+        "--extended"
+      ],
+      "cwd": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/labop",
+      "returncode": 0,
+      "stdout": "command-05.stdout.txt",
+      "stderr": "command-05.stderr.txt"
     }
   ],
   "errors": [],
@@ -67,9 +103,12 @@
     "verified": true
   },
   "input_sha256": {
-    "../case.json": "09dbff3298f6e036ca612cca5d872eb2f150518c053dd79d983d2b5ac89f5bf3",
+    "../case.json": "e72ca1003cb9ad30d219dbb6e87dbadef402bce5d2a2b19eba26ec904dc9604f",
+    "extended_protocol.py": "e3e21c9514407a5b87852d30cdf681864567b4f6d20ac575d4f3a5548e811266",
+    "fractionation.py": "5dd0a3a0c35a8b019a2eba80b79ec87e8fe7ccab8b3a16aacb924e9796f619e8",
     "material_check.py": "2bc037d61a08941e39e6ea439ff279b70e4aa1df6343c5b99c20bb942296f8f2",
     "protocol.py": "5738d07b6b98fd38639cd898500fdd9a89fb68e84cc49b561c62ff37fe13a184",
+    "readout_check.py": "0870c94e2e6715f2a7da70bfdd962895ddfa806b20f3c70ab69ad4ec047fb1e5",
     "requirements.txt": "afa93bd23047237ffee1f192afab33e5c499650a20da67fd428f332f070a413c",
     "../../evaluate.py": "b6a200cc7a9e30cfd89cc1dca9ca541f6c287eca752ba0095574b8adc6ab40db"
   }

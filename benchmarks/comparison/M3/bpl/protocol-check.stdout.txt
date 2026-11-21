@@ -1,0 +1,1 @@
+{"artifacts": {"diagnostics": "artifacts/check/protocol.diagnostics.json"}, "command": "check", "input": "/Users/yangchen/VsCodeProjects/labword-theroy/Culsma/benchmarks/comparison/M3/bpl/protocol.bpl", "ok": true}
