@@ -249,9 +249,8 @@ protocol Module07_SandwichELISA() returns (elisa_result) {
   assay_wells << [stop_solution:50uL] with constraint(high_precision, low_carryover);
 
   // Source step S37: Gently tap the plate to mix the stopped color reaction.
-  // COVERAGE GAP: current Culsma has no verified plate-tapping action. The
-  // stopped reaction wells remain available without substituting an invented
-  // shake duration or intensity.
+  agit(sample = elisa_plate, mode = AgitationMode.TAP)
+    with constraint(ConstraintRequirement.GENTLE);
   let stopped_reaction_wells = assay_wells;
 
   // Source step S38: Read absorbance immediately at 450 nm.

@@ -1,0 +1,17 @@
+{
+  "artifact": "03-qubit-double-sided-spri",
+  "coverage_percent": 100.0,
+  "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+  "issues": [],
+  "language_version": "1.0.11rc1",
+  "matched_steps": 3,
+  "metric": "source_step_correspondence",
+  "program_sha256": {
+    "protocol.culs": "97975b698f9d65a435b37d4cd9c3ed506f22d0cbacfc9982ba7ded257cb1a2d6"
+  },
+  "rules": "modular-source-step-correspondence-v2",
+  "schema": "modular-source-coverage-v1",
+  "source_sha256": "748e8048d8b0474ca210f134ce0590f30b30ac8023c021e5eb036c2c112c73d9",
+  "status": "pass",
+  "total_steps": 3
+}

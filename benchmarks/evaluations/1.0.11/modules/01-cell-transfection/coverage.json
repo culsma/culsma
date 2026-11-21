@@ -1,0 +1,17 @@
+{
+  "artifact": "01-cell-transfection",
+  "coverage_percent": 100.0,
+  "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+  "issues": [],
+  "language_version": "1.0.11rc1",
+  "matched_steps": 13,
+  "metric": "source_step_correspondence",
+  "program_sha256": {
+    "protocol.culs": "55c92f25daec466e25b72ed9820905a25ba2b2afb3bb99b7e0141dfd227171a8"
+  },
+  "rules": "modular-source-step-correspondence-v2",
+  "schema": "modular-source-coverage-v1",
+  "source_sha256": "f6469969054b859cc804859008213dbde21ddb00d7dba4cc04c0502ec4f73ec0",
+  "status": "pass",
+  "total_steps": 13
+}

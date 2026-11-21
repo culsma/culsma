@@ -1,0 +1,21 @@
+{
+  "accepted": true,
+  "diagnostics": {
+    "plan": [],
+    "runtime": [],
+    "semantic": [],
+    "typecheck": []
+  },
+  "event_replay_equal": true,
+  "execution": {
+    "completed_steps": 142,
+    "diagnostic_count": 0,
+    "failed_steps": 0,
+    "ok": true,
+    "skipped_steps": 0,
+    "total_steps": 142
+  },
+  "lark_version": "1.3.1",
+  "runtime_version": "1.0.7",
+  "software_pass": true
+}

@@ -1,0 +1,79 @@
+{
+  "plan": [],
+  "runtime": [],
+  "semantic": [
+    {
+      "code": "SEM_RETURNS_HEADER_DEPRECATED",
+      "message": "Protocol 'Module03_AdherentCellLysatePreparation' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)",
+      "node_id": "p0",
+      "severity": "warning",
+      "span": {
+        "col": 1,
+        "end": 5469,
+        "line": 1,
+        "start": 0
+      }
+    },
+    {
+      "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+      "message": "Content taxonomy value 'bio_cellular/adherent_mammalian_cells' is deprecated; compatibility mode normalizes it to content(kind=\"bio_cellular\", type=\"other_cellular_material\", attrs={original_type: \"adherent_mammalian_cells\"}). Use that canonical content form to avoid this warning.",
+      "node_id": "entry.s0",
+      "severity": "warning",
+      "span": {
+        "col": 38,
+        "end": 464,
+        "line": 9,
+        "start": 431
+      }
+    },
+    {
+      "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+      "message": "Content taxonomy value 'chemical/culture_medium' is deprecated; compatibility mode normalizes it to content(kind=\"chemical\", type=\"other_chemical\", attrs={original_type: \"culture_medium\"}). Use that canonical content form to avoid this warning.",
+      "node_id": "entry.s0",
+      "severity": "warning",
+      "span": {
+        "col": 34,
+        "end": 609,
+        "line": 10,
+        "start": 586
+      }
+    },
+    {
+      "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+      "message": "Content taxonomy value 'chemical/wash_buffer' is deprecated; compatibility mode normalizes it to content(kind=\"chemical\", type=\"other_chemical\", attrs={original_type: \"wash_buffer\"}). Use that canonical content form to avoid this warning.",
+      "node_id": "entry.s4",
+      "severity": "warning",
+      "span": {
+        "col": 32,
+        "end": 1519,
+        "line": 28,
+        "start": 1499
+      }
+    },
+    {
+      "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+      "message": "Content taxonomy value 'chemical/lysis_buffer' is deprecated; compatibility mode normalizes it to content(kind=\"chemical\", type=\"other_chemical\", attrs={original_type: \"lysis_buffer\"}). Use that canonical content form to avoid this warning.",
+      "node_id": "entry.s11",
+      "severity": "warning",
+      "span": {
+        "col": 32,
+        "end": 2451,
+        "line": 45,
+        "start": 2430
+      }
+    },
+    {
+      "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+      "message": "Content taxonomy value 'chemical/inhibitor_cocktail' is deprecated; compatibility mode normalizes it to content(kind=\"chemical\", type=\"other_chemical\", attrs={original_type: \"inhibitor_cocktail\"}). Use that canonical content form to avoid this warning.",
+      "node_id": "entry.s12",
+      "severity": "warning",
+      "span": {
+        "col": 32,
+        "end": 2688,
+        "line": 48,
+        "start": 2661
+      }
+    }
+  ],
+  "typecheck": []
+}

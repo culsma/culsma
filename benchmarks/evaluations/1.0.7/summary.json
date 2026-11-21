@@ -1,0 +1,660 @@
+{
+  "all_software_pass": true,
+  "artifacts": [
+    {
+      "accepted": true,
+      "artifact": "modules/01-cell-transfection",
+      "coverage": {
+        "artifact": "01-cell-transfection",
+        "coverage_percent": 100.0,
+        "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
+        "issues": [],
+        "language_version": "1.0.7",
+        "matched_steps": 13,
+        "metric": "source_step_correspondence",
+        "program_sha256": {
+          "protocol.culs": "55c92f25daec466e25b72ed9820905a25ba2b2afb3bb99b7e0141dfd227171a8"
+        },
+        "rules": "modular-source-step-correspondence-v2",
+        "schema": "modular-source-coverage-v1",
+        "source_sha256": "f6469969054b859cc804859008213dbde21ddb00d7dba4cc04c0502ec4f73ec0",
+        "status": "pass",
+        "total_steps": 13
+      },
+      "diagnostics": {
+        "plan": [],
+        "runtime": [],
+        "semantic": [],
+        "typecheck": []
+      },
+      "event_replay_equal": true,
+      "execution": {
+        "completed_steps": 63,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 63
+      },
+      "group": "original",
+      "lark_version": "1.3.1",
+      "name": "Module 01: Cell transfection",
+      "runtime_version": "1.0.7",
+      "software_pass": true
+    },
+    {
+      "accepted": true,
+      "artifact": "modules/02-selective-plating-candidate-colony-isolation",
+      "coverage": {
+        "artifact": "02-selective-plating-candidate-colony-isolation",
+        "coverage_percent": 100.0,
+        "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
+        "issues": [],
+        "language_version": "1.0.7",
+        "matched_steps": 12,
+        "metric": "source_step_correspondence",
+        "program_sha256": {
+          "protocol.culs": "50b2540012ff59f5a4741a4b71fc25e46e4e0bcbeb2d8ca309244729d99ba066"
+        },
+        "rules": "modular-source-step-correspondence-v2",
+        "schema": "modular-source-coverage-v1",
+        "source_sha256": "e5435bd242807c625302bf0680c4c6b12904ae22b075675cedad2ce35eb63dfb",
+        "status": "pass",
+        "total_steps": 12
+      },
+      "diagnostics": {
+        "plan": [],
+        "runtime": [],
+        "semantic": [
+          {
+            "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+            "message": "Content taxonomy value 'biosample/microbial_cells' is deprecated; compatibility mode normalizes it to content(kind=\"bio_molecule_or_virus\", type=\"other_biomolecule_or_virus\", attrs={original_type: \"microbial_cells\"}). Use that canonical content form to avoid this warning.",
+            "node_id": "entry.s0",
+            "severity": "warning",
+            "span": {
+              "col": 33,
+              "end": 1034,
+              "line": 15,
+              "start": 1010
+            }
+          },
+          {
+            "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+            "message": "Content taxonomy value 'biosample/microbial_cells' is deprecated; compatibility mode normalizes it to content(kind=\"bio_molecule_or_virus\", type=\"other_biomolecule_or_virus\", attrs={original_type: \"microbial_cells\"}). Use that canonical content form to avoid this warning.",
+            "node_id": "entry.s1",
+            "severity": "warning",
+            "span": {
+              "col": 33,
+              "end": 1288,
+              "line": 18,
+              "start": 1264
+            }
+          },
+          {
+            "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+            "message": "Content taxonomy value 'biosample/microbial_cells' is deprecated; compatibility mode normalizes it to content(kind=\"bio_molecule_or_virus\", type=\"other_biomolecule_or_virus\", attrs={original_type: \"microbial_cells\"}). Use that canonical content form to avoid this warning.",
+            "node_id": "entry.s2",
+            "severity": "warning",
+            "span": {
+              "col": 33,
+              "end": 1544,
+              "line": 21,
+              "start": 1520
+            }
+          },
+          {
+            "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+            "message": "Content taxonomy value 'biosample/microbial_cells' is deprecated; compatibility mode normalizes it to content(kind=\"bio_molecule_or_virus\", type=\"other_biomolecule_or_virus\", attrs={original_type: \"microbial_cells\"}). Use that canonical content form to avoid this warning.",
+            "node_id": "entry.s3",
+            "severity": "warning",
+            "span": {
+              "col": 33,
+              "end": 1807,
+              "line": 24,
+              "start": 1783
+            }
+          },
+          {
+            "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+            "message": "Content taxonomy value 'biosample/microbial_cells' is deprecated; compatibility mode normalizes it to content(kind=\"bio_molecule_or_virus\", type=\"other_biomolecule_or_virus\", attrs={original_type: \"microbial_cells\"}). Use that canonical content form to avoid this warning.",
+            "node_id": "entry.s4",
+            "severity": "warning",
+            "span": {
+              "col": 33,
+              "end": 2051,
+              "line": 27,
+              "start": 2027
+            }
+          },
+          {
+            "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+            "message": "Content taxonomy value 'chemical/culture_medium' is deprecated; compatibility mode normalizes it to content(kind=\"chemical\", type=\"other_chemical\", attrs={original_type: \"culture_medium\"}). Use that canonical content form to avoid this warning.",
+            "node_id": "entry.s30",
+            "severity": "warning",
+            "span": {
+              "col": 32,
+              "end": 313,
+              "line": 4,
+              "start": 290
+            }
+          }
+        ],
+        "typecheck": []
+      },
+      "event_replay_equal": true,
+      "execution": {
+        "completed_steps": 71,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 71
+      },
+      "group": "original",
+      "lark_version": "1.3.1",
+      "name": "Module 02: Selective plating and colony isolation",
+      "runtime_version": "1.0.7",
+      "software_pass": true
+    },
+    {
+      "accepted": true,
+      "artifact": "modules/03-cell-lysate-preparation",
+      "coverage": {
+        "artifact": "03-cell-lysate-preparation",
+        "coverage_percent": 100.0,
+        "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
+        "issues": [],
+        "language_version": "1.0.7",
+        "matched_steps": 10,
+        "metric": "source_step_correspondence",
+        "program_sha256": {
+          "protocol.culs": "13f04c12560f152aeeaf0c19466869b81b22637889e1ea5eaeef6d6f09ab809f"
+        },
+        "rules": "modular-source-step-correspondence-v2",
+        "schema": "modular-source-coverage-v1",
+        "source_sha256": "82b74d75d92bbeaae835c7196c39b7c50dbbe252172591d8c75860e92afc0249",
+        "status": "pass",
+        "total_steps": 10
+      },
+      "diagnostics": {
+        "plan": [],
+        "runtime": [],
+        "semantic": [
+          {
+            "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+            "message": "Content taxonomy value 'bio_cellular/adherent_mammalian_cells' is deprecated; compatibility mode normalizes it to content(kind=\"bio_cellular\", type=\"other_cellular_material\", attrs={original_type: \"adherent_mammalian_cells\"}). Use that canonical content form to avoid this warning.",
+            "node_id": "entry.s0",
+            "severity": "warning",
+            "span": {
+              "col": 38,
+              "end": 464,
+              "line": 9,
+              "start": 431
+            }
+          },
+          {
+            "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+            "message": "Content taxonomy value 'chemical/culture_medium' is deprecated; compatibility mode normalizes it to content(kind=\"chemical\", type=\"other_chemical\", attrs={original_type: \"culture_medium\"}). Use that canonical content form to avoid this warning.",
+            "node_id": "entry.s0",
+            "severity": "warning",
+            "span": {
+              "col": 34,
+              "end": 609,
+              "line": 10,
+              "start": 586
+            }
+          },
+          {
+            "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+            "message": "Content taxonomy value 'chemical/wash_buffer' is deprecated; compatibility mode normalizes it to content(kind=\"chemical\", type=\"other_chemical\", attrs={original_type: \"wash_buffer\"}). Use that canonical content form to avoid this warning.",
+            "node_id": "entry.s4",
+            "severity": "warning",
+            "span": {
+              "col": 32,
+              "end": 1519,
+              "line": 28,
+              "start": 1499
+            }
+          },
+          {
+            "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+            "message": "Content taxonomy value 'chemical/lysis_buffer' is deprecated; compatibility mode normalizes it to content(kind=\"chemical\", type=\"other_chemical\", attrs={original_type: \"lysis_buffer\"}). Use that canonical content form to avoid this warning.",
+            "node_id": "entry.s11",
+            "severity": "warning",
+            "span": {
+              "col": 32,
+              "end": 2451,
+              "line": 45,
+              "start": 2430
+            }
+          },
+          {
+            "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+            "message": "Content taxonomy value 'chemical/inhibitor_cocktail' is deprecated; compatibility mode normalizes it to content(kind=\"chemical\", type=\"other_chemical\", attrs={original_type: \"inhibitor_cocktail\"}). Use that canonical content form to avoid this warning.",
+            "node_id": "entry.s12",
+            "severity": "warning",
+            "span": {
+              "col": 32,
+              "end": 2688,
+              "line": 48,
+              "start": 2661
+            }
+          }
+        ],
+        "typecheck": []
+      },
+      "event_replay_equal": true,
+      "execution": {
+        "completed_steps": 44,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 44
+      },
+      "group": "original",
+      "lark_version": "1.3.1",
+      "name": "Module 03: Cell lysate preparation",
+      "runtime_version": "1.0.7",
+      "software_pass": true
+    },
+    {
+      "accepted": true,
+      "artifact": "modules/04-suspension-cell-staining",
+      "coverage": {
+        "artifact": "04-suspension-cell-staining",
+        "coverage_percent": 100.0,
+        "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
+        "issues": [],
+        "language_version": "1.0.7",
+        "matched_steps": 29,
+        "metric": "source_step_correspondence",
+        "program_sha256": {
+          "Module04.culs": "d313d40ca63ca452cffc7957c608469aa769a3a9c2c6fd668a21842ecda590c0",
+          "protocol.culs": "ea6bb253b5e17ef5573554facce9aaefa112ec0af9468ce297fadbb7da436f60"
+        },
+        "rules": "modular-source-step-correspondence-v2",
+        "schema": "modular-source-coverage-v1",
+        "source_sha256": "af891f53ec8aeb3a4c35ac34d5ade079cde2ed5ed115f1cf6ef23bad50c73444",
+        "status": "pass",
+        "total_steps": 29
+      },
+      "diagnostics": {
+        "plan": [],
+        "runtime": [],
+        "semantic": [],
+        "typecheck": []
+      },
+      "event_replay_equal": true,
+      "execution": {
+        "completed_steps": 552,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 552
+      },
+      "group": "original",
+      "lark_version": "1.3.1",
+      "name": "Module 04: Suspension-cell staining",
+      "runtime_version": "1.0.7",
+      "software_pass": true
+    },
+    {
+      "accepted": true,
+      "artifact": "modules/05-magnetic-bead-immunoprecipitation",
+      "coverage": {
+        "artifact": "05-magnetic-bead-immunoprecipitation",
+        "coverage_percent": 100.0,
+        "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
+        "issues": [],
+        "language_version": "1.0.7",
+        "matched_steps": 23,
+        "metric": "source_step_correspondence",
+        "program_sha256": {
+          "Module05.culs": "5ffc962fa6d234f5270c2fbed28a7733d6aff547ed42549a4f2a5265b552675b",
+          "protocol.culs": "b24661756c02dd86aad9395f4c4e632d7632acaeb94f5c32d38fb3add30b8dbf"
+        },
+        "rules": "modular-source-step-correspondence-v2",
+        "schema": "modular-source-coverage-v1",
+        "source_sha256": "7b327d0e1f56da2c3733b580953b60941828ab3e574f93fad9232de3b71dfd95",
+        "status": "pass",
+        "total_steps": 23
+      },
+      "diagnostics": {
+        "plan": [],
+        "runtime": [],
+        "semantic": [],
+        "typecheck": []
+      },
+      "event_replay_equal": true,
+      "execution": {
+        "completed_steps": 115,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 115
+      },
+      "group": "original",
+      "lark_version": "1.3.1",
+      "name": "Module 05: Magnetic-bead immunoprecipitation",
+      "runtime_version": "1.0.7",
+      "software_pass": true
+    },
+    {
+      "accepted": true,
+      "artifact": "modules/06-western-blot",
+      "coverage": {
+        "artifact": "06-western-blot",
+        "coverage_percent": 100.0,
+        "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
+        "issues": [],
+        "language_version": "1.0.7",
+        "matched_steps": 32,
+        "metric": "source_step_correspondence",
+        "program_sha256": {
+          "Module06.culs": "c9ae2c74a93588dbfcd1ac08b36d139da6d1edb955ad7e9be4df01d8b90c7189",
+          "protocol.culs": "741bb0247c30247bc7e38bc2b6471e8f4031fd8f78ab507eedfea95863290c20",
+          "two-lane-gfp.culs": "679511255d62a23cbf334b2e35a083a48d2b1d2ffde9ecf75802fa7fb59f0bd4"
+        },
+        "rules": "modular-source-step-correspondence-v2",
+        "schema": "modular-source-coverage-v1",
+        "source_sha256": "7d56da32ad704ae13cc62c2e0fc8d152b390ad49212fd5b0ae00c0a6712bf1fb",
+        "status": "pass",
+        "total_steps": 32
+      },
+      "diagnostics": {
+        "plan": [],
+        "runtime": [],
+        "semantic": [],
+        "typecheck": []
+      },
+      "event_replay_equal": true,
+      "execution": {
+        "completed_steps": 144,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 144
+      },
+      "group": "original",
+      "lark_version": "1.3.1",
+      "name": "Module 06: Western blot",
+      "runtime_version": "1.0.7",
+      "software_pass": true
+    },
+    {
+      "accepted": true,
+      "artifact": "modules/07-sandwich-elisa",
+      "coverage": {
+        "artifact": "07-sandwich-elisa",
+        "coverage_percent": 97.619048,
+        "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
+        "issues": [
+          {
+            "reason": "coverage_gap",
+            "step": 37
+          }
+        ],
+        "language_version": "1.0.7",
+        "matched_steps": 41,
+        "metric": "source_step_correspondence",
+        "program_sha256": {
+          "protocol.culs": "834562c60321a00877d428c16243e30beab512cabf4e9f413d2814cef2f6f207"
+        },
+        "rules": "modular-source-step-correspondence-v2",
+        "schema": "modular-source-coverage-v1",
+        "source_sha256": "fbd40a4f9851eff8f3817396f80c77951b10a7ad9ac75d43e21e8e9910482192",
+        "status": "incomplete",
+        "total_steps": 42
+      },
+      "diagnostics": {
+        "plan": [],
+        "runtime": [],
+        "semantic": [],
+        "typecheck": []
+      },
+      "event_replay_equal": true,
+      "execution": {
+        "completed_steps": 810,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 810
+      },
+      "group": "original",
+      "lark_version": "1.3.1",
+      "name": "Module 07: Sandwich ELISA",
+      "runtime_version": "1.0.7",
+      "software_pass": true
+    },
+    {
+      "accepted": true,
+      "artifact": "composites/01-flow-cytometry-immunophenotyping",
+      "coverage": {
+        "artifact": "01-flow-cytometry-immunophenotyping",
+        "coverage_percent": 100.0,
+        "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
+        "issues": [],
+        "language_version": "1.0.7",
+        "matched_steps": 5,
+        "metric": "source_step_correspondence",
+        "program_sha256": {
+          "protocol.culs": "d3d0e26552879e08dec3c52abb493f37af51f390f28ac912d545f0e273925728"
+        },
+        "rules": "modular-source-step-correspondence-v2",
+        "schema": "modular-source-coverage-v1",
+        "source_sha256": "b4df60eece954847ea3a727564d273bfa2ca6f91ffeab016ff58e67de21508a1",
+        "status": "pass",
+        "total_steps": 5
+      },
+      "diagnostics": {
+        "plan": [],
+        "runtime": [],
+        "semantic": [],
+        "typecheck": []
+      },
+      "event_replay_equal": true,
+      "execution": {
+        "completed_steps": 608,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 608
+      },
+      "group": "original",
+      "lark_version": "1.3.1",
+      "name": "Composite 01: Flow-cytometry immunophenotyping",
+      "runtime_version": "1.0.7",
+      "software_pass": true
+    },
+    {
+      "accepted": true,
+      "artifact": "composites/02-magnetic-bead-ip-western-blot",
+      "coverage": {
+        "artifact": "02-magnetic-bead-ip-western-blot",
+        "coverage_percent": 100.0,
+        "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
+        "issues": [],
+        "language_version": "1.0.7",
+        "matched_steps": 7,
+        "metric": "source_step_correspondence",
+        "program_sha256": {
+          "protocol.culs": "1563a21f7239d5231cc416ca35124b24f9b550eb46ca5c5eaba9ed9a2693d8b2"
+        },
+        "rules": "modular-source-step-correspondence-v2",
+        "schema": "modular-source-coverage-v1",
+        "source_sha256": "2d0e46ea6972dbdebab8131353df38a087791b958910ce18591abd96483910f9",
+        "status": "pass",
+        "total_steps": 7
+      },
+      "diagnostics": {
+        "plan": [],
+        "runtime": [],
+        "semantic": [],
+        "typecheck": []
+      },
+      "event_replay_equal": true,
+      "execution": {
+        "completed_steps": 268,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 268
+      },
+      "group": "original",
+      "lark_version": "1.3.1",
+      "name": "Composite 02: Magnetic-bead IP with Western blot",
+      "runtime_version": "1.0.7",
+      "software_pass": true
+    },
+    {
+      "accepted": true,
+      "artifact": "modules/11-pbmc-hia-staining-flow",
+      "coverage": {
+        "artifact": "11-pbmc-hia-staining-flow",
+        "coverage_percent": 100.0,
+        "implementation": "5364676bc2437b4981a00ce0133c730af243e469",
+        "issues": [],
+        "language_version": "1.0.7",
+        "matched_steps": 21,
+        "metric": "source_step_correspondence",
+        "program_sha256": {
+          "protocol.culs": "d4947bcab4cdbc5e7a14a0f65939723919b94fb25187afd83ebb25ec7c186066"
+        },
+        "rules": "modular-source-step-correspondence-v2",
+        "schema": "modular-source-coverage-v1",
+        "source_sha256": "85c84de1fcb5a097a4a3ba66ba97dc80b1662e74dba3ca384e7e2a98f8c7c660",
+        "status": "pass",
+        "total_steps": 21
+      },
+      "diagnostics": {
+        "plan": [],
+        "runtime": [],
+        "semantic": [],
+        "typecheck": []
+      },
+      "event_replay_equal": true,
+      "execution": {
+        "completed_steps": 142,
+        "diagnostic_count": 0,
+        "failed_steps": 0,
+        "ok": true,
+        "skipped_steps": 0,
+        "total_steps": 142
+      },
+      "group": "external",
+      "lark_version": "1.3.1",
+      "name": "Module 11: PBMC stimulation, staining and flow acquisition",
+      "runtime_version": "1.0.7",
+      "software_pass": true
+    }
+  ],
+  "benchmark_commit": "610710284457cf4210f56ef44512e3d0be0e8786",
+  "groups": {
+    "external": {
+      "matched_steps": 21,
+      "total_steps": 21
+    },
+    "original": {
+      "matched_steps": 172,
+      "total_steps": 173
+    }
+  },
+  "input_sha256": {
+    "composites/01-flow-cytometry-immunophenotyping/protocol.culs": "d3d0e26552879e08dec3c52abb493f37af51f390f28ac912d545f0e273925728",
+    "composites/01-flow-cytometry-immunophenotyping/source.md": "b4df60eece954847ea3a727564d273bfa2ca6f91ffeab016ff58e67de21508a1",
+    "composites/02-magnetic-bead-ip-western-blot/protocol.culs": "1563a21f7239d5231cc416ca35124b24f9b550eb46ca5c5eaba9ed9a2693d8b2",
+    "composites/02-magnetic-bead-ip-western-blot/source.md": "2d0e46ea6972dbdebab8131353df38a087791b958910ce18591abd96483910f9",
+    "modules/01-cell-transfection/protocol.culs": "55c92f25daec466e25b72ed9820905a25ba2b2afb3bb99b7e0141dfd227171a8",
+    "modules/01-cell-transfection/source.md": "f6469969054b859cc804859008213dbde21ddb00d7dba4cc04c0502ec4f73ec0",
+    "modules/02-selective-plating-candidate-colony-isolation/protocol.culs": "50b2540012ff59f5a4741a4b71fc25e46e4e0bcbeb2d8ca309244729d99ba066",
+    "modules/02-selective-plating-candidate-colony-isolation/source.md": "e5435bd242807c625302bf0680c4c6b12904ae22b075675cedad2ce35eb63dfb",
+    "modules/03-cell-lysate-preparation/protocol.culs": "13f04c12560f152aeeaf0c19466869b81b22637889e1ea5eaeef6d6f09ab809f",
+    "modules/03-cell-lysate-preparation/source.md": "82b74d75d92bbeaae835c7196c39b7c50dbbe252172591d8c75860e92afc0249",
+    "modules/04-suspension-cell-staining/Module04.culs": "d313d40ca63ca452cffc7957c608469aa769a3a9c2c6fd668a21842ecda590c0",
+    "modules/04-suspension-cell-staining/protocol.culs": "ea6bb253b5e17ef5573554facce9aaefa112ec0af9468ce297fadbb7da436f60",
+    "modules/04-suspension-cell-staining/source.md": "af891f53ec8aeb3a4c35ac34d5ade079cde2ed5ed115f1cf6ef23bad50c73444",
+    "modules/05-magnetic-bead-immunoprecipitation/Module05.culs": "5ffc962fa6d234f5270c2fbed28a7733d6aff547ed42549a4f2a5265b552675b",
+    "modules/05-magnetic-bead-immunoprecipitation/protocol.culs": "b24661756c02dd86aad9395f4c4e632d7632acaeb94f5c32d38fb3add30b8dbf",
+    "modules/05-magnetic-bead-immunoprecipitation/source.md": "7b327d0e1f56da2c3733b580953b60941828ab3e574f93fad9232de3b71dfd95",
+    "modules/06-western-blot/Module06.culs": "c9ae2c74a93588dbfcd1ac08b36d139da6d1edb955ad7e9be4df01d8b90c7189",
+    "modules/06-western-blot/protocol.culs": "741bb0247c30247bc7e38bc2b6471e8f4031fd8f78ab507eedfea95863290c20",
+    "modules/06-western-blot/source.md": "7d56da32ad704ae13cc62c2e0fc8d152b390ad49212fd5b0ae00c0a6712bf1fb",
+    "modules/06-western-blot/two-lane-gfp.culs": "679511255d62a23cbf334b2e35a083a48d2b1d2ffde9ecf75802fa7fb59f0bd4",
+    "modules/07-sandwich-elisa/protocol.culs": "834562c60321a00877d428c16243e30beab512cabf4e9f413d2814cef2f6f207",
+    "modules/07-sandwich-elisa/source.md": "fbd40a4f9851eff8f3817396f80c77951b10a7ad9ac75d43e21e8e9910482192",
+    "modules/11-pbmc-hia-staining-flow/protocol.culs": "d4947bcab4cdbc5e7a14a0f65939723919b94fb25187afd83ebb25ec7c186066",
+    "modules/11-pbmc-hia-staining-flow/source.md": "85c84de1fcb5a097a4a3ba66ba97dc80b1662e74dba3ca384e7e2a98f8c7c660"
+  },
+  "lark_version": "1.3.1",
+  "manifest_sha256": "5d77109fe87449d13df2fbd7437665f0aa3b7487e51738b41bb357811b1dc7b3",
+  "output_sha256": {
+    "composites/01-flow-cytometry-immunophenotyping/coverage.json": "2ba7946a45f8c9941b7ce787a7e0cea2cbc813b39da06af97583945f184008eb",
+    "composites/01-flow-cytometry-immunophenotyping/diagnostics.json": "e2a12f98a4876e7fa7b555f4a8f3e4f2c5b29b31933b4ae77a61b1e103a3445f",
+    "composites/01-flow-cytometry-immunophenotyping/execution.json": "999ac944c28a3922a7fef0bd979f27f4f6fce811f389b55efdf5c9cb86457dfc",
+    "composites/01-flow-cytometry-immunophenotyping/results.json": "9967f5ce4b7d40fa12433869f19c43ddfd7518007b653fdcf53bbd894a32a08c",
+    "composites/01-flow-cytometry-immunophenotyping/run.json": "b09023c0f5e1694d76173c216f93bf7395d6d94a41d904cf9e879b19f4590fb4",
+    "composites/02-magnetic-bead-ip-western-blot/coverage.json": "82acbf71ef594c05f8a458621867787b88d5bb403d7b455d118254b489d58127",
+    "composites/02-magnetic-bead-ip-western-blot/diagnostics.json": "e2a12f98a4876e7fa7b555f4a8f3e4f2c5b29b31933b4ae77a61b1e103a3445f",
+    "composites/02-magnetic-bead-ip-western-blot/execution.json": "2ae806f2eec488bc36ef192359c07ac9b81cdfcc639590c9b14c7b9f8c4f7f38",
+    "composites/02-magnetic-bead-ip-western-blot/results.json": "c7d5c0168c43359d29ff0be538b20420184415eb7a87d5395ec09e28c45d908b",
+    "composites/02-magnetic-bead-ip-western-blot/run.json": "1eadb7577e8b233d844b7b382e0c687754c547f7caa1b9363b9f4f512ef3f493",
+    "modules/01-cell-transfection/coverage.json": "afd1a13abdd2e7d88afb17b92f1ba4b37efeb7c9d39b3965407cdb1a90f6ba51",
+    "modules/01-cell-transfection/diagnostics.json": "e2a12f98a4876e7fa7b555f4a8f3e4f2c5b29b31933b4ae77a61b1e103a3445f",
+    "modules/01-cell-transfection/execution.json": "d2eea59196aade32b62a7c889ace1fbb6b6d681bdfb28863495029947f09f9da",
+    "modules/01-cell-transfection/results.json": "358ffb24dad611e7e3f0af82e167adf24c2fe0db567ec9b98d4ed0fbe4899cfb",
+    "modules/01-cell-transfection/run.json": "3555be5fbfe25db78804a6d2e7912469f970613bcd5f23e5405bf0aa815f5088",
+    "modules/02-selective-plating-candidate-colony-isolation/coverage.json": "6865c80bd628410b33263c13947876b0d0445e50cddc9d0b25ce74cc27182424",
+    "modules/02-selective-plating-candidate-colony-isolation/diagnostics.json": "95dfd2d69eb748767a958fd0472f8e1327e9d4bbda4caef0f39f93ebe0f96294",
+    "modules/02-selective-plating-candidate-colony-isolation/execution.json": "5321157abcadeafbb16e4edd84a8babc49600aaa40f5def0e95bbdc44b2c27ec",
+    "modules/02-selective-plating-candidate-colony-isolation/results.json": "2f8c431dbaa5ba8eeea0d7e275c58f41c3184b1d92e2ff3a9b8ef20911353555",
+    "modules/02-selective-plating-candidate-colony-isolation/run.json": "9ec0ba111fcc580def53d0cc644f2f96fe10b482b59a5970e8ef27a938c1879b",
+    "modules/03-cell-lysate-preparation/coverage.json": "796775ec4c4eb063ae3ce0fbe77b5a99aaec4dfd2e3c90c602fec332091c09ba",
+    "modules/03-cell-lysate-preparation/diagnostics.json": "8b748891c4cb900ff7fd6e00db9d97c6a1176c4c945ebb12f1b6570e3077153f",
+    "modules/03-cell-lysate-preparation/execution.json": "556489b5109e3785a59191087f45836944fab136d2d80bb4e6b693d7e5a24c83",
+    "modules/03-cell-lysate-preparation/results.json": "175800a772ac30c1f7e2a48ed599f598dc41ed985267075701bbf6172d9cee26",
+    "modules/03-cell-lysate-preparation/run.json": "03a1ca3e3a1b8ba301104fd28d41097cc18ec6875f8167470265acbfe268bd80",
+    "modules/04-suspension-cell-staining/coverage.json": "9ff7cf675bbcb816697809b591e252f4c4c5c62366d8456bfd006d8e3f90c30f",
+    "modules/04-suspension-cell-staining/diagnostics.json": "e2a12f98a4876e7fa7b555f4a8f3e4f2c5b29b31933b4ae77a61b1e103a3445f",
+    "modules/04-suspension-cell-staining/execution.json": "22d2e3d8f92be84c23f9b43428726292697f51699b69a25bcc9d3c2bd794c304",
+    "modules/04-suspension-cell-staining/results.json": "5079fd65cb0328153628526ef22f5894e94bce4aac1d80f39ee39cff9fa15abe",
+    "modules/04-suspension-cell-staining/run.json": "d2fa19dacad231fbf37c83576e02cab6a0f84b02ee95e1562a73e82570de11ff",
+    "modules/05-magnetic-bead-immunoprecipitation/coverage.json": "e6357f8b669e266bc4b81b2081978aac198ed99346b4a2040aa25bc5582b0698",
+    "modules/05-magnetic-bead-immunoprecipitation/diagnostics.json": "e2a12f98a4876e7fa7b555f4a8f3e4f2c5b29b31933b4ae77a61b1e103a3445f",
+    "modules/05-magnetic-bead-immunoprecipitation/execution.json": "530df597852ab9c721d4064f55319b9324dcc66703b3dbd7e590373c369bc179",
+    "modules/05-magnetic-bead-immunoprecipitation/results.json": "fe39c31babb94c1a2e2afa00c52d15faf9f1c2e2bc9c387c97a68649ca8a875a",
+    "modules/05-magnetic-bead-immunoprecipitation/run.json": "cdcf255993868234f6db2812a72bbd705ec08ee50a4859bb36f9a1dbf6d70b6f",
+    "modules/06-western-blot/coverage.json": "b7d7de348c1b7b2d7f67631fdf3900bb8480ab552068750d16ea4f7d2c368d0f",
+    "modules/06-western-blot/diagnostics.json": "e2a12f98a4876e7fa7b555f4a8f3e4f2c5b29b31933b4ae77a61b1e103a3445f",
+    "modules/06-western-blot/execution.json": "7e8b58b5ee9c2456a4d8d825c9eab4e07f5d9b943c0d33a2006f2a48437ff175",
+    "modules/06-western-blot/results.json": "6f10615bc9fd147b5f6cd8566a01622bdd300e918f16dfaf4efef7845e4931e8",
+    "modules/06-western-blot/run.json": "d987ad6c9d00b172fa1188b5efb9d6e3cd1567017bf87319b00499d631813df0",
+    "modules/07-sandwich-elisa/coverage.json": "81a873c51c7b2fde2f6f7662ad53e4879fed88a02f15b537bf80c6970d9bf1a9",
+    "modules/07-sandwich-elisa/diagnostics.json": "e2a12f98a4876e7fa7b555f4a8f3e4f2c5b29b31933b4ae77a61b1e103a3445f",
+    "modules/07-sandwich-elisa/execution.json": "4584950e16573be1e2ace3b0b496f9990e3a9a7b49a163f6aabf3a8cf6d81a31",
+    "modules/07-sandwich-elisa/results.json": "2075a3d27ad8aec9a3c0fe632bb72e0eafcdd6498e9d27e270cebd6922c50a4c",
+    "modules/07-sandwich-elisa/run.json": "64a1aa94f280c212126a29a8f38cb7ae2b8794b7e0644b599d1f39ec5d405d55",
+    "modules/11-pbmc-hia-staining-flow/coverage.json": "47da8333916a853102f00e9ab27c0e49a60541d1595685a7a4f1c7e8d3cee33f",
+    "modules/11-pbmc-hia-staining-flow/diagnostics.json": "e2a12f98a4876e7fa7b555f4a8f3e4f2c5b29b31933b4ae77a61b1e103a3445f",
+    "modules/11-pbmc-hia-staining-flow/execution.json": "b28819dbffdc2203856a3a819ca29727776f498d98e2956b45bfa6e1d745c1fd",
+    "modules/11-pbmc-hia-staining-flow/results.json": "0cb63adefa49f329f16102c90e60c86d95aa23c6f140463719d6663d2a3ad0c7",
+    "modules/11-pbmc-hia-staining-flow/run.json": "4f87bff9a0ef4b4ec94384b21740ef81f518b7cf81390e3490f800824f990bf5"
+  },
+  "python": "3.12.8",
+  "rules": "modular-source-step-correspondence-v2",
+  "runner_sha256": {
+    "evaluate.py": "60516b788e7e53e11df2c6e204ae27468cff9015b7d296f5eb52459048abbe0d",
+    "evaluate_case.py": "0f22a7d72baafcc9c89f2f95aa64c3187ec3f4f0af725cc87b195a8662c8aa52",
+    "reproduce.py": "3192b2cbd7e7d9a6a6ebfc8264c1afd53291a4ef9c47395bf362d6cd67c6e993"
+  },
+  "runtime_commit": "5364676bc2437b4981a00ce0133c730af243e469",
+  "runtime_version": "1.0.7",
+  "schema": "benchmark-evaluation-v1",
+  "version": "1.0.7"
+}

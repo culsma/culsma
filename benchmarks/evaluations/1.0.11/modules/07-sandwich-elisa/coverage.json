@@ -1,0 +1,17 @@
+{
+  "artifact": "07-sandwich-elisa",
+  "coverage_percent": 100.0,
+  "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+  "issues": [],
+  "language_version": "1.0.11rc1",
+  "matched_steps": 42,
+  "metric": "source_step_correspondence",
+  "program_sha256": {
+    "protocol.culs": "e9e4e70dc37103d79bd35ca80d256e81df6c616df52d177d0ab1c30a390edf64"
+  },
+  "rules": "modular-source-step-correspondence-v2",
+  "schema": "modular-source-coverage-v1",
+  "source_sha256": "fbd40a4f9851eff8f3817396f80c77951b10a7ad9ac75d43e21e8e9910482192",
+  "status": "pass",
+  "total_steps": 42
+}

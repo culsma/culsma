@@ -1,0 +1,18 @@
+{
+  "artifact": "09-double-sided-spri",
+  "coverage_percent": 100.0,
+  "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+  "issues": [],
+  "language_version": "1.0.11rc1",
+  "matched_steps": 21,
+  "metric": "source_step_correspondence",
+  "program_sha256": {
+    "SPRI.culs": "8233edb67cbc8f714005b96a0492a0b3cb4a2ecd782d149bb84331800bada2cf",
+    "protocol.culs": "7b599b54ba4b2cc1fa2d01920b7ddd61ce038b465b2f0b8888bbf062d49dec9b"
+  },
+  "rules": "modular-source-step-correspondence-v2",
+  "schema": "modular-source-coverage-v1",
+  "source_sha256": "cb4164ac75ab422cad1af52591a6d8394993ea74a21289d97d8f7b3c37061460",
+  "status": "pass",
+  "total_steps": 21
+}

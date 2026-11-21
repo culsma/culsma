@@ -1,0 +1,94 @@
+{
+  "accepted": true,
+  "diagnostics": {
+    "plan": [],
+    "runtime": [],
+    "semantic": [
+      {
+        "code": "SEM_RETURNS_HEADER_DEPRECATED",
+        "message": "Protocol 'QubitDsDnaHsBatch' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)",
+        "node_id": "p0",
+        "severity": "warning",
+        "span": {
+          "col": 1,
+          "end": 454,
+          "line": 1,
+          "start": 0
+        }
+      },
+      {
+        "code": "SEM_RETURNS_HEADER_DEPRECATED",
+        "message": "Protocol 'QubitDsDnaHsCalibration' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)",
+        "node_id": "p1",
+        "severity": "warning",
+        "span": {
+          "col": 1,
+          "end": 3305,
+          "line": 13,
+          "start": 456
+        }
+      },
+      {
+        "code": "SEM_RETURNS_HEADER_DEPRECATED",
+        "message": "Protocol 'QubitDsDnaHsSingleSample' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)",
+        "node_id": "p2",
+        "severity": "warning",
+        "span": {
+          "col": 1,
+          "end": 5135,
+          "line": 74,
+          "start": 3307
+        }
+      },
+      {
+        "code": "SEM_RETURNS_HEADER_DEPRECATED",
+        "message": "Protocol 'RunQubitDsDnaHsQuantification' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)",
+        "node_id": "p3",
+        "severity": "warning",
+        "span": {
+          "col": 1,
+          "end": 6454,
+          "line": 123,
+          "start": 5137
+        }
+      },
+      {
+        "code": "SEM_RETURNS_HEADER_DEPRECATED",
+        "message": "Protocol 'DoubleSidedSpriSelection' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)",
+        "node_id": "p4",
+        "severity": "warning",
+        "span": {
+          "col": 1,
+          "end": 9454,
+          "line": 1,
+          "start": 0
+        }
+      },
+      {
+        "code": "SEM_RETURNS_HEADER_DEPRECATED",
+        "message": "Protocol 'QubitToDoubleSidedSpri' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)",
+        "node_id": "p5",
+        "severity": "warning",
+        "span": {
+          "col": 1,
+          "end": 1129,
+          "line": 4,
+          "start": 111
+        }
+      }
+    ],
+    "typecheck": []
+  },
+  "event_replay_equal": true,
+  "execution": {
+    "completed_steps": 86,
+    "diagnostic_count": 0,
+    "failed_steps": 0,
+    "ok": true,
+    "skipped_steps": 0,
+    "total_steps": 86
+  },
+  "lark_version": "1.3.1",
+  "runtime_version": "1.0.9",
+  "software_pass": true
+}

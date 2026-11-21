@@ -257,12 +257,6 @@ def test_returned_plate_preserves_identity_through_protocol_call():
 def test_elisa_stop_tap_readout_order(tmp_path):
     path = Path(__file__).resolve().parents[3] / 'benchmarks/modules/07-sandwich-elisa/protocol.culs'
     source = path.read_text()
-    start = source.index('  // COVERAGE GAP:')
-    end = source.index('  // Source step S38:', start)
-    source = source[:start] + '''  agit(sample=elisa_plate,mode=AgitationMode.TAP) with constraint(gentle);
-  let stopped_reaction_wells=assay_wells;
-
-''' + source[end:]
     (tmp_path / 'protocol.culs').write_text(source)
     (tmp_path / 'source.md').write_text(path.with_name('source.md').read_text())
     assessor = runpy.run_path(str(path.parents[2] / 'reproduce.py'))['assess']

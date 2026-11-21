@@ -1,0 +1,369 @@
+{
+  "ok": true,
+  "report": {
+    "alerts": [],
+    "execution": {
+      "completed_steps": 142,
+      "diagnostic_count": 0,
+      "failed_steps": 0,
+      "ok": true,
+      "skipped_steps": 0,
+      "total_steps": 142
+    },
+    "external_inventory": {
+      "checked": false,
+      "items": [],
+      "reason": "inventory_not_supplied",
+      "schema": "culsma_inventory_reconciliation_v1",
+      "shortages": [],
+      "sufficient": null
+    },
+    "headline": "Experiment completed successfully with no runtime errors.",
+    "materials": {
+      "final_products": [
+        {
+          "mass_mg": 9394.87,
+          "name": "Waste",
+          "primary_component": "ANTI_HIA",
+          "volume_mL": 9.39487,
+          "volume_uL": 9394.87
+        },
+        {
+          "mass_mg": 1423.0,
+          "name": "Staining buffer bottle",
+          "primary_component": "PBS",
+          "volume_mL": 1.423,
+          "volume_uL": 1423.0
+        },
+        {
+          "count_cells": 1000000.0,
+          "mass_mg": 500.13,
+          "name": "PBMC culture",
+          "primary_component": "PBMC",
+          "volume_mL": 0.50013,
+          "volume_uL": 500.13
+        }
+      ],
+      "has_material_state": true,
+      "input_inventory": [
+        {
+          "initial_mL": 10.07,
+          "initial_mg": 0.0,
+          "initial_uL": 10070.0,
+          "name": "PBS stock"
+        },
+        {
+          "initial_cells": 1000000.0,
+          "initial_mL": 1.0,
+          "initial_mg": 0.0,
+          "initial_uL": 1000.0,
+          "name": "PBMC culture"
+        },
+        {
+          "initial_mL": 0.2,
+          "initial_mg": 0.0,
+          "initial_uL": 200.0,
+          "name": "FBS stock"
+        },
+        {
+          "initial_mL": 0.03,
+          "initial_mg": 0.0,
+          "initial_uL": 30.0,
+          "name": "10x fixation buffer"
+        },
+        {
+          "initial_mL": 0.005,
+          "initial_mg": 0.0,
+          "initial_uL": 5.0,
+          "name": "Anti-HIA"
+        },
+        {
+          "initial_mL": 0.005,
+          "initial_mg": 0.0,
+          "initial_uL": 5.0,
+          "name": "Human BD Fc Block"
+        },
+        {
+          "initial_mL": 0.002,
+          "initial_mg": 0.0,
+          "initial_uL": 2.0,
+          "name": "Anti-CD19 APC"
+        },
+        {
+          "initial_mL": 0.002,
+          "initial_mg": 0.0,
+          "initial_uL": 2.0,
+          "name": "Anti-CD4 PE"
+        },
+        {
+          "initial_mL": 0.002,
+          "initial_mg": 0.0,
+          "initial_uL": 2.0,
+          "name": "Anti-CD45 FITC"
+        },
+        {
+          "initial_mL": 0.002,
+          "initial_mg": 0.0,
+          "initial_uL": 2.0,
+          "name": "Anti-CD8 PerCP/Cyanine5.5"
+        }
+      ],
+      "intermediate_materials": [],
+      "reagent_consumption": [
+        {
+          "consumed_mL": 10.07,
+          "consumed_mg": null,
+          "consumed_uL": 10070.0,
+          "name": "PBS stock",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 1.0,
+          "consumed_mg": null,
+          "consumed_uL": 1000.0,
+          "name": "PBMC culture",
+          "roles": [
+            "dest",
+            "sample",
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.2,
+          "consumed_mg": null,
+          "consumed_uL": 200.0,
+          "name": "FBS stock",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.03,
+          "consumed_mg": null,
+          "consumed_uL": 30.0,
+          "name": "10x fixation buffer",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.005,
+          "consumed_mg": null,
+          "consumed_uL": 5.0,
+          "name": "Anti-HIA",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.005,
+          "consumed_mg": null,
+          "consumed_uL": 5.0,
+          "name": "Human BD Fc Block",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.002,
+          "consumed_mg": null,
+          "consumed_uL": 2.0,
+          "name": "Anti-CD19 APC",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.002,
+          "consumed_mg": null,
+          "consumed_uL": 2.0,
+          "name": "Anti-CD4 PE",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.002,
+          "consumed_mg": null,
+          "consumed_uL": 2.0,
+          "name": "Anti-CD45 FITC",
+          "roles": [
+            "source"
+          ]
+        },
+        {
+          "consumed_mL": 0.002,
+          "consumed_mg": null,
+          "consumed_uL": 2.0,
+          "name": "Anti-CD8 PerCP/Cyanine5.5",
+          "roles": [
+            "source"
+          ]
+        }
+      ]
+    },
+    "process_summary": {
+      "environment_steps": 4,
+      "mutation_steps": 88,
+      "readout_steps": 1,
+      "separation_steps": 5
+    },
+    "qc_results": [],
+    "resource_summary": {
+      "containers": {
+        "allocated_count": 14,
+        "container_kinds": [
+          {
+            "count": 12,
+            "kind": "tube"
+          },
+          {
+            "count": 2,
+            "kind": "unknown"
+          }
+        ],
+        "touched_count": 14,
+        "touched_names": [
+          "10x fixation buffer",
+          "1x fixation buffer",
+          "Anti-CD19 APC",
+          "Anti-CD4 PE",
+          "Anti-CD45 FITC",
+          "Anti-CD8 PerCP/Cyanine5.5",
+          "Anti-HIA",
+          "FBS stock",
+          "Four-antibody staining mix",
+          "Human BD Fc Block",
+          "PBMC culture",
+          "PBS stock",
+          "Staining buffer bottle",
+          "Waste"
+        ]
+      },
+      "instruments": {
+        "devices": [],
+        "tools": []
+      }
+    },
+    "schema": "lab_report_v1"
+  },
+  "returns": {
+    "entry": {
+      "bindings": {
+        "acquisition_readout": {
+          "binding": "__cmp_entry_s12_readout",
+          "contract_kind": "customized",
+          "data_id": "entry.s131::data",
+          "data_kind": "observation",
+          "driver_payload": {
+            "op": "img",
+            "step_id": "entry.s131"
+          },
+          "export_refs": {
+            "driver_profile": {
+              "artifact_id": "entry.s131::data::raw",
+              "export_id": "entry.s131::data::driver_profile",
+              "format": "json",
+              "kind": "img",
+              "profile": "driver:DRV_OK"
+            }
+          },
+          "family": "img",
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry"
+          },
+          "kind": "data_ref",
+          "observation_id": "entry.s131::data",
+          "op": "img",
+          "program": null,
+          "program_kind": null,
+          "raw_artifact": {
+            "artifact_id": "entry.s131::data::raw",
+            "driver_code": "DRV_OK",
+            "op": "img",
+            "step_id": "entry.s131"
+          },
+          "resolved_sample": null,
+          "result": {
+            "acquisition_config_id": "PBMC_HIA_four_marker_panel",
+            "acquisition_qc_pass": null,
+            "cd19_apc_raw_signal": null,
+            "cd45_fitc_raw_signal": null,
+            "cd4_pe_raw_signal": null,
+            "cd8_percp_cy5_5_raw_signal": null,
+            "channel": null,
+            "event_id": null,
+            "fsc_a": null,
+            "fsc_h": null,
+            "sample_id": "PBMC_HIA_sample_1",
+            "signal": null,
+            "ssc_a": null
+          },
+          "sample": {
+            "id": "__cmp_entry_s12_event_stream",
+            "items": [],
+            "kind": "unit_stream_ref",
+            "panel_ref": {
+              "items": [
+                "CD45",
+                "CD4",
+                "CD8",
+                "CD19"
+              ],
+              "kind": "marker_panel_ref",
+              "label": "__cmp_entry_s12_acquisition_panel"
+            },
+            "source_ref": "container/entry/entry.s0%3A%3Aalloc/culture_input",
+            "unit_kind": "single_cell"
+          },
+          "sample_ref": {
+            "id": "__cmp_entry_s12_event_stream",
+            "items": [],
+            "kind": "unit_stream_ref",
+            "panel_ref": {
+              "items": [
+                "CD45",
+                "CD4",
+                "CD8",
+                "CD19"
+              ],
+              "kind": "marker_panel_ref",
+              "label": "__cmp_entry_s12_acquisition_panel"
+            },
+            "source_ref": "container/entry/entry.s0%3A%3Aalloc/culture_input",
+            "unit_kind": "single_cell"
+          },
+          "save_raw": true,
+          "status": "ok",
+          "step_id": "entry.s131",
+          "subject_ref": {
+            "id": "__cmp_entry_s12_event_stream",
+            "items": [],
+            "kind": "unit_stream_ref",
+            "panel_ref": {
+              "items": [
+                "CD45",
+                "CD4",
+                "CD8",
+                "CD19"
+              ],
+              "kind": "marker_panel_ref",
+              "label": "__cmp_entry_s12_acquisition_panel"
+            },
+            "source_ref": "container/entry/entry.s0%3A%3Aalloc/culture_input",
+            "unit_kind": "single_cell"
+          }
+        }
+      },
+      "entry_kind": "script",
+      "protocol_id": "entry",
+      "protocol_name": "entry",
+      "returns": [
+        "acquisition_readout"
+      ]
+    }
+  }
+}

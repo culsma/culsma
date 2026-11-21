@@ -20,11 +20,11 @@ def test_gap_before_or_after_transfer_excludes_only_its_step(tmp_path):
     ]
 
 
-def test_corrected_transfection_and_remaining_plate_tapping_gap():
+def test_current_transfection_and_plate_tapping_are_encoded():
     modules = ROOT / "benchmarks/modules"
     corrected = assess(modules / "01-cell-transfection", None, "1.0.7")
     assert corrected["matched_steps"] == corrected["total_steps"] == 13
     assert corrected["issues"] == []
-    elisa = assess(modules / "07-sandwich-elisa", None, "1.0.7")
-    assert elisa["matched_steps"] == 41
-    assert elisa["issues"] == [{"step": 37, "reason": "coverage_gap"}]
+    elisa = assess(modules / "07-sandwich-elisa", None, "1.0.9")
+    assert elisa["matched_steps"] == 42
+    assert elisa["issues"] == []

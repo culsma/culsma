@@ -1,0 +1,19 @@
+{
+  "plan": [],
+  "runtime": [],
+  "semantic": [
+    {
+      "code": "SEM_RETURNS_HEADER_DEPRECATED",
+      "message": "Protocol 'Module07_SandwichELISA' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)",
+      "node_id": "p0",
+      "severity": "warning",
+      "span": {
+        "col": 1,
+        "end": 18938,
+        "line": 1,
+        "start": 0
+      }
+    }
+  ],
+  "typecheck": []
+}

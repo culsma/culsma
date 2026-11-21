@@ -2,43 +2,48 @@
 
 Source procedures, Culsma programs and recorded source-step coverage across versions.
 
-| Workflow | Source-step coverage (1.0.7) | Source-step coverage (1.0.9) |
-| --- | ---: | ---: |
-| [Module 01: Cell transfection](modules/01-cell-transfection/source.md) | 13/13 (100%) | 13/13 (100%) |
-| [Module 02: Selective plating and colony isolation](modules/02-selective-plating-candidate-colony-isolation/source.md) | 12/12 (100%) | 12/12 (100%) |
-| [Module 03: Cell lysate preparation](modules/03-cell-lysate-preparation/source.md) | 10/10 (100%) | 10/10 (100%) |
-| [Module 04: Suspension-cell staining](modules/04-suspension-cell-staining/source.md) | 29/29 (100%) | 29/29 (100%) |
-| [Module 05: Magnetic-bead immunoprecipitation](modules/05-magnetic-bead-immunoprecipitation/source.md) | 23/23 (100%) | 23/23 (100%) |
-| [Module 06: Western blot](modules/06-western-blot/source.md) | 32/32 (100%) | 32/32 (100%) |
-| [Module 07: Sandwich ELISA](modules/07-sandwich-elisa/source.md) | 41/42 (97.6%) | 42/42 (100%) |
-| [Module 08: Qubit 1X dsDNA HS quantification](modules/08-qubit-dsdna-hs/source.md) | — | 13/13 (100%) |
-| [Module 09: Double-sided SPRI selection](modules/09-double-sided-spri/source.md) | — | 21/21 (100%) |
-| [Composite 01: Flow-cytometry immunophenotyping](composites/01-flow-cytometry-immunophenotyping/source.md) | 5/5 (100%) | 5/5 (100%) |
-| [Composite 02: Magnetic-bead IP with Western blot](composites/02-magnetic-bead-ip-western-blot/source.md) | 7/7 (100%) | 7/7 (100%) |
-| [Composite 03: Qubit quantification and double-sided SPRI selection](composites/03-qubit-double-sided-spri/source.md) | — | 3/3 (100%) |
-| [Module 11: PBMC stimulation, staining and flow acquisition](modules/11-pbmc-hia-staining-flow/source.md) | 21/21 (100%) | — |
+| Workflow | 1.0.7 | 1.0.9 | 1.0.11 |
+| --- | ---: | ---: | ---: |
+| [Module 01: Cell transfection](modules/01-cell-transfection/source.md) | 13/13 | 13/13 | 13/13 |
+| [Module 02: Selective plating and colony isolation](modules/02-selective-plating-candidate-colony-isolation/source.md) | 12/12 | 12/12 | 12/12 |
+| [Module 03: Cell lysate preparation](modules/03-cell-lysate-preparation/source.md) | 10/10 | 10/10 | 10/10 |
+| [Module 04: Suspension-cell staining](modules/04-suspension-cell-staining/source.md) | 29/29 | 29/29 | 29/29 |
+| [Module 05: Magnetic-bead immunoprecipitation](modules/05-magnetic-bead-immunoprecipitation/source.md) | 23/23 | 23/23 | 23/23 |
+| [Module 06: Western blot](modules/06-western-blot/source.md) | 32/32 | 32/32 | 32/32 |
+| [Module 07: Sandwich ELISA](modules/07-sandwich-elisa/source.md) | 41/42 | 42/42 | 42/42 |
+| [Composite 01: Flow-cytometry immunophenotyping](composites/01-flow-cytometry-immunophenotyping/source.md) | 5/5 | 5/5 | 5/5 |
+| [Composite 02: Magnetic-bead IP with Western blot](composites/02-magnetic-bead-ip-western-blot/source.md) | 7/7 | 7/7 | 7/7 |
+| [Module 08: Qubit 1X dsDNA HS quantification](modules/08-qubit-dsdna-hs/source.md) | — | 13/13 | 13/13 |
+| [Module 09: Double-sided SPRI selection](modules/09-double-sided-spri/source.md) | — | 21/21 | 21/21 |
+| [Composite 03: Qubit quantification and double-sided SPRI selection](composites/03-qubit-double-sided-spri/source.md) | — | 3/3 | 3/3 |
+| [Module 11: PBMC stimulation, staining and flow acquisition](modules/11-pbmc-hia-staining-flow/source.md) | 21/21 | 21/21 | 21/21 |
 
 Coverage is matched / total numbered source steps. **—** means not evaluated in that
 version. Composite rows count their own steps, not the steps of reused modules.
 Coverage measures source–program correspondence, not experimental success.
-The corrected counting script excludes every step explicitly marked
-`COVERAGE GAP`. Module 01 now declares `with constraint(dropwise)` on S10
-and S11, using support already present in Culsma 1.0.7. The corrected 1.0.7
-benchmark remains 172/173, with plate tapping in Module 07 as its only gap.
-The [revision snapshot](versions/1.0.7-revision/manifest.json) retains the
-other submitted inputs and records the corrected program and counting rule.
+The shared counting script does not count steps marked `COVERAGE GAP` as
+matched. Module 01 declares `with constraint(dropwise)` on S10 and S11,
+using support already present in Culsma 1.0.7. Programs are maintained only in
+`modules/` and `composites/`; version-specific results live in `evaluations/`.
+The 1.0.7 record uses the program revision identified in its manifest, which
+predates Module 07's plate-tapping implementation. Git retains those inputs;
+there are no maintained version-specific program copies.
 
 The [concentration accounting case](concentration/README.md) separately checks
 optional concentration initialization, mixing, splitting, dilution and exact
 per-solute accounting in the local implementation. It is not included in these
 historical workflow coverage totals.
 
+The [whole-blood LPS stimulation and RBC lysis example](automation/whole-blood-lps-rbc/README.md)
+demonstrates continuous execution with the Opentrons simulator driver and checks
+how the driver handles unmet device requirements.
+
 The original seven modules and two composites cover **172/173** steps in 1.0.7
 and **173/173** in 1.0.9. The three added entries cover **37/37** in 1.0.9 and
 are recorded separately.
 
-Module 11 reports the procedure supplied by a neighboring laboratory during
-revision. Its [1.0.7 coverage](modules/11-pbmc-hia-staining-flow/results/coverage.json)
+Module 11 reports the procedure supplied by a neighboring laboratory.
+Its [1.0.7 coverage](evaluations/1.0.7/modules/11-pbmc-hia-staining-flow/coverage.json)
 is reported separately from the original 172/173. The [original submission](https://github.com/culsma/paper-patterns/tree/16a1a2aafbdd5bc521725919b4445a2bf39544e2/benchmark_cases/PBMC_HIA_stimulation_staining)
 and the [evaluated program](modules/11-pbmc-hia-staining-flow/protocol.culs) are available for comparison.
 
@@ -49,74 +54,48 @@ manuscript's mechanism audits, input programs, pinned source archives and retain
 results. Its separate replay command checks the published comparison witnesses;
 these results do not contribute to workflow source-step coverage totals.
 
-## Run
+## Evaluate
 
-Requires Git and Python 3.12 (recorded runs used 3.12.8). From a fresh directory:
-
-```sh
-git clone https://github.com/culsma/culsma.git culsma-benchmark
-git clone --branch v1.0.9 https://github.com/culsma/culsma.git culsma-runtime
-python3.12 -m venv .venv
-.venv/bin/python -m pip install lark==1.3.1
-.venv/bin/python culsma-benchmark/benchmarks/reproduce.py \
-  --manifest culsma-benchmark/benchmarks/versions/1.0.9-d1216a1/manifest.json \
-  --runtime-repo culsma-runtime --output results/benchmark-1.0.9
-```
-
-For Modules 08–09 and Composite 03, use the same environment:
+Use Python 3.12 with Lark 1.3.1. From the repository root:
 
 ```sh
-.venv/bin/python culsma-benchmark/benchmarks/reproduce.py \
-  --manifest culsma-benchmark/benchmarks/qubit-spri-manifest.json \
-  --runtime-repo culsma-runtime --output results/qubit-spri-1.0.9
+python benchmarks/evaluate.py --version 1.0.7 --replace
+python benchmarks/evaluate.py --version 1.0.9 --replace
+python benchmarks/evaluate.py --version 1.0.11 --replace
 ```
 
-The runner checks runtime code, dependencies, input hashes and expected results.
-Use a fresh output directory each time; results include `summary.json`, `table.md`
-and per-workflow records. On Windows, use `.venv/Scripts/python.exe`.
+Each command replaces that version's results in `evaluations/<version>/`.
+To check without replacing published records, use `--output` with a new
+results directory instead of `--replace`.
 
-## Historical runs and examples
+The runner verifies the manifest's input hashes and reconstructs the pinned
+runtime directly from this repository's Git objects. Its disposable caches
+stay in ignored `local-results/`; they are not maintained program variants.
+For 1.0.7 it also recovers the recorded benchmark input revision from Git.
+The 1.0.9 and 1.0.11 evaluations use the current shared modules and composites,
+including the corrected dropwise transfers and the explicit plate-tapping step.
+The 1.0.11 directory currently records runtime 1.0.11rc1, commit `b27f9f8`;
+it does not imply that the final 1.0.11 release has been published.
 
-To reproduce 1.0.7, switch the runtime and select its manifest:
-
-```sh
-git -C culsma-runtime checkout v1.0.7
-.venv/bin/python culsma-benchmark/benchmarks/reproduce.py \
-  --manifest culsma-benchmark/benchmarks/versions/1.0.7-revision/manifest.json \
-  --runtime-repo culsma-runtime --output results/benchmark-1.0.7
-```
-
-With the same 1.0.7 runtime, reproduce Module 11 separately:
-
-```sh
-.venv/bin/python culsma-benchmark/benchmarks/reproduce.py \
-  --manifest culsma-benchmark/benchmarks/pbmc-hia-staining-manifest.json \
-  --runtime-repo culsma-runtime --output results/pbmc-hia-staining-1.0.7
-```
-
-The worked examples have separate material-state checks and do not enter the
-coverage totals. With the 1.0.7 runtime selected above:
-
-```sh
-.venv/bin/python -m pip install -e culsma-runtime
-.venv/bin/python culsma-benchmark/benchmarks/check_manuscript_examples.py \
-  --culsma-repo culsma-runtime --culsma-cli .venv/bin/culsma \
-  --output results/examples-1.0.7 --tex-output-dir results/examples-1.0.7/listings
-.venv/bin/python culsma-benchmark/benchmarks/check_introduction_example.py \
-  --culsma-cli .venv/bin/culsma \
-  --output results/examples-1.0.7/modules/example-00/results \
-  --tex-output-dir results/examples-1.0.7/listings
-```
+Each evaluation records input hashes, runtime commit, actual package version,
+counting rule, diagnostics, material results, and execution-event replay checks.
+Source-step correspondence and successful software execution are separate
+results. Unsupported programs are recorded as failures, not rewritten for a
+runtime. Original, added, and externally supplied workflows have separate totals.
 
 ## Records
 
-- **1.0.7 (corrected during revision):** [manifest](versions/1.0.7-revision/manifest.json), [results](versions/1.0.7-revision/summary.json).
-- **1.0.9:** [manifest](versions/1.0.9-d1216a1/manifest.json), [results](versions/1.0.9-d1216a1/summary.json).
-- **Added workflows (1.0.9):** [manifest](qubit-spri-manifest.json), [results](qubit-spri-summary.json).
+- **1.0.7:** [manifest](evaluations/1.0.7/manifest.json), [results](evaluations/1.0.7/summary.json).
+- **1.0.9:** [manifest](evaluations/1.0.9/manifest.json), [results](evaluations/1.0.9/summary.json).
+- **1.0.11:** [manifest](evaluations/1.0.11/manifest.json), [results](evaluations/1.0.11/summary.json).
 
-Manifests retain exact runtime commits and input hashes. Release tags are accepted
-only when their runtime source and package metadata match the pinned commit.
-Module 07's missing plate-tapping step in 1.0.7 is covered in 1.0.9. Coverage
-matches numbered source text to annotated statements; it does not verify every
-experimental detail. Colony selection still requires an operator-supplied mapping;
-Qubit/SPRI software runs do not measure DNA concentration or recovery.
+The original collection covers 172/173 steps in the 1.0.7 evaluation and
+173/173 in the 1.0.9 and 1.0.11 evaluations. The Qubit/SPRI additions cover
+37/37 in each later evaluation. Module 11 covers 21/21 separately in all three.
+The same v2 counting rule is used throughout. These records do not establish
+experimental success, numerical fidelity, or equivalence of every computed
+result across versions.
+
+The worked examples in `modules/example-*` have separate material-state checks
+and do not enter the coverage totals. Their checking commands remain
+`check_manuscript_examples.py` and `check_introduction_example.py`.

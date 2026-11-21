@@ -1,0 +1,17 @@
+{
+  "artifact": "11-pbmc-hia-staining-flow",
+  "coverage_percent": 100.0,
+  "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+  "issues": [],
+  "language_version": "1.0.11rc1",
+  "matched_steps": 21,
+  "metric": "source_step_correspondence",
+  "program_sha256": {
+    "protocol.culs": "d4947bcab4cdbc5e7a14a0f65939723919b94fb25187afd83ebb25ec7c186066"
+  },
+  "rules": "modular-source-step-correspondence-v2",
+  "schema": "modular-source-coverage-v1",
+  "source_sha256": "85c84de1fcb5a097a4a3ba66ba97dc80b1662e74dba3ca384e7e2a98f8c7c660",
+  "status": "pass",
+  "total_steps": 21
+}

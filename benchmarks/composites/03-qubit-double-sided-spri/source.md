@@ -42,6 +42,7 @@ fates are retained. The six deprecated header-return warnings remain visible.
 
 `submission/` preserves all 11 original files and their manifest byte for byte,
 including historical discussion and the author's 1.0.9 validation artifacts.
-Current locally reproduced records use the normal `results/run.json`,
-`results/results.json` and `results/coverage.json` layout. Historical source
+Current reproduced records are kept under
+`benchmarks/evaluations/<version>/composites/03-qubit-double-sided-spri/`,
+with `run.json`, `results.json` and `coverage.json`. Historical source
 paths in the submitted records describe the author's machine.

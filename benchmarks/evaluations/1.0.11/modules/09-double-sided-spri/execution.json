@@ -1,0 +1,34 @@
+{
+  "accepted": true,
+  "diagnostics": {
+    "plan": [],
+    "runtime": [],
+    "semantic": [
+      {
+        "code": "SEM_RETURNS_HEADER_DEPRECATED",
+        "message": "Protocol 'DoubleSidedSpriSelection' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)",
+        "node_id": "p0",
+        "severity": "warning",
+        "span": {
+          "col": 1,
+          "end": 9454,
+          "line": 1,
+          "start": 0
+        }
+      }
+    ],
+    "typecheck": []
+  },
+  "event_replay_equal": true,
+  "execution": {
+    "completed_steps": 56,
+    "diagnostic_count": 0,
+    "failed_steps": 0,
+    "ok": true,
+    "skipped_steps": 0,
+    "total_steps": 56
+  },
+  "lark_version": "1.3.1",
+  "runtime_version": "1.0.11rc1",
+  "software_pass": true
+}

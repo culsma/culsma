@@ -36,7 +36,7 @@ def main():
                 local = runtime / Path(member.name).relative_to("src")
                 assert local.read_bytes() == bundle.extractfile(member).read(), local
 
-    frozen = json.loads((BENCHMARKS / "manifest.json").read_text())["input_sha256"]
+    frozen = json.loads((BENCHMARKS / "evaluations/1.0.7/manifest.json").read_text())["input_sha256"]
     report = {"runtime_commit": RUNTIME, "culsma": culsma.__version__, "lark": lark.__version__,
               "driver": "StubDriver", "cases": {}}
     for name, folder, supported in [("submitted", HERE / "submitted", set()), ("revised", HERE, {"dropwise"}),

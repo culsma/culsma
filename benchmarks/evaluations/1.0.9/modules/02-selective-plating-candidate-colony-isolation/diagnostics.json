@@ -1,0 +1,103 @@
+{
+  "plan": [],
+  "runtime": [],
+  "semantic": [
+    {
+      "code": "SEM_RETURNS_HEADER_DEPRECATED",
+      "message": "Protocol 'Module02_PickAndExpandCandidateColony' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)",
+      "node_id": "p0",
+      "severity": "warning",
+      "span": {
+        "col": 1,
+        "end": 541,
+        "line": 1,
+        "start": 0
+      }
+    },
+    {
+      "code": "SEM_RETURNS_HEADER_DEPRECATED",
+      "message": "Protocol 'Module02_SelectivePlatingAndCandidateColonyIsolation' uses deprecated header returns(...); remove it and declare named outputs with a tail 'return name = value' (or use 'return value' for an unnamed output)",
+      "node_id": "p1",
+      "severity": "warning",
+      "span": {
+        "col": 1,
+        "end": 8947,
+        "line": 12,
+        "start": 543
+      }
+    },
+    {
+      "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+      "message": "Content taxonomy value 'biosample/microbial_cells' is deprecated; compatibility mode normalizes it to content(kind=\"bio_molecule_or_virus\", type=\"other_biomolecule_or_virus\", attrs={original_type: \"microbial_cells\"}). Use that canonical content form to avoid this warning.",
+      "node_id": "entry.s0",
+      "severity": "warning",
+      "span": {
+        "col": 33,
+        "end": 1034,
+        "line": 15,
+        "start": 1010
+      }
+    },
+    {
+      "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+      "message": "Content taxonomy value 'biosample/microbial_cells' is deprecated; compatibility mode normalizes it to content(kind=\"bio_molecule_or_virus\", type=\"other_biomolecule_or_virus\", attrs={original_type: \"microbial_cells\"}). Use that canonical content form to avoid this warning.",
+      "node_id": "entry.s1",
+      "severity": "warning",
+      "span": {
+        "col": 33,
+        "end": 1288,
+        "line": 18,
+        "start": 1264
+      }
+    },
+    {
+      "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+      "message": "Content taxonomy value 'biosample/microbial_cells' is deprecated; compatibility mode normalizes it to content(kind=\"bio_molecule_or_virus\", type=\"other_biomolecule_or_virus\", attrs={original_type: \"microbial_cells\"}). Use that canonical content form to avoid this warning.",
+      "node_id": "entry.s2",
+      "severity": "warning",
+      "span": {
+        "col": 33,
+        "end": 1544,
+        "line": 21,
+        "start": 1520
+      }
+    },
+    {
+      "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+      "message": "Content taxonomy value 'biosample/microbial_cells' is deprecated; compatibility mode normalizes it to content(kind=\"bio_molecule_or_virus\", type=\"other_biomolecule_or_virus\", attrs={original_type: \"microbial_cells\"}). Use that canonical content form to avoid this warning.",
+      "node_id": "entry.s3",
+      "severity": "warning",
+      "span": {
+        "col": 33,
+        "end": 1807,
+        "line": 24,
+        "start": 1783
+      }
+    },
+    {
+      "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+      "message": "Content taxonomy value 'biosample/microbial_cells' is deprecated; compatibility mode normalizes it to content(kind=\"bio_molecule_or_virus\", type=\"other_biomolecule_or_virus\", attrs={original_type: \"microbial_cells\"}). Use that canonical content form to avoid this warning.",
+      "node_id": "entry.s4",
+      "severity": "warning",
+      "span": {
+        "col": 33,
+        "end": 2051,
+        "line": 27,
+        "start": 2027
+      }
+    },
+    {
+      "code": "SEM_CONTENT_TAXONOMY_COMPAT_NORMALIZED",
+      "message": "Content taxonomy value 'chemical/culture_medium' is deprecated; compatibility mode normalizes it to content(kind=\"chemical\", type=\"other_chemical\", attrs={original_type: \"culture_medium\"}). Use that canonical content form to avoid this warning.",
+      "node_id": "entry.s30",
+      "severity": "warning",
+      "span": {
+        "col": 32,
+        "end": 313,
+        "line": 4,
+        "start": 290
+      }
+    }
+  ],
+  "typecheck": []
+}

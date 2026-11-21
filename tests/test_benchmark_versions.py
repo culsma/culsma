@@ -1,143 +1,69 @@
-"""Version selection preserves pinned inputs and separates paper/development runs."""
-
+"""Versioned results use one program tree and retain verifiable provenance."""
 import hashlib
 import json
 from pathlib import Path
 import runpy
-import shutil
-import subprocess
+import sys
 
 import pytest
 
-
 ROOT = Path(__file__).resolve().parents[1]
-BENCHMARK = runpy.run_path(str(ROOT / 'benchmarks/reproduce.py'))
+sys.path.insert(0, str(ROOT / "benchmarks"))
+RUNNER = runpy.run_path(str(ROOT / "benchmarks/evaluate.py"))
 
 
-@pytest.fixture
-def runtime_checkout(tmp_path):
-    """Pin the actual source under test without depending on the user's git status."""
-    runtime = tmp_path / 'runtime'
-    shutil.copytree(ROOT / 'src', runtime / 'src', ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
-    shutil.copy2(ROOT / 'pyproject.toml', runtime / 'pyproject.toml')
-    commands = [
-        ['init', '-q'],
-        ['add', 'src', 'pyproject.toml'],
-        ['-c', 'user.name=Culsma Tests', '-c', 'user.email=tests@example.invalid',
-         '-c', 'commit.gpgsign=false', '-c', 'core.hooksPath=/dev/null',
-         'commit', '-qm', 'Test runtime snapshot'],
-    ]
-    for args in commands:
-        subprocess.run(['git', '-C', str(runtime), *args], check=True, capture_output=True, text=True)
-    return runtime
+def test_changed_input_rejected(tmp_path):
+    case = tmp_path / "modules/example"
+    case.mkdir(parents=True)
+    program = case / "protocol.culs"
+    program.write_text("return tube();")
+    manifest = {"artifacts": [{"path": "modules/example"}],
+                "input_sha256": {"modules/example/protocol.culs": "0" * 64}}
+    with pytest.raises(ValueError, match="Input changed"):
+        RUNNER["verify_inputs"](tmp_path, manifest)
 
 
-class BenchmarkVersionFixture:
-    def create(self, directory, role, runtime):
-        import culsma
-        import lark
-
-        artifact = directory / 'modules/example'
-        artifact.mkdir(parents=True)
-        (artifact / 'source.md').write_text('## Steps\n\n1. Prepare a sample tube.\n')
-        (artifact / 'protocol.culs').write_text(
-            '// Source step S1: Prepare a sample tube.\nlet sample=tube();\nreturn sample;\n')
-        commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=runtime, text=True).strip()
-        manifest = {
-            'source_commit': commit, 'runtime_commit': commit,
-            'runtime_package_version': culsma.__version__, 'lark_version': lark.__version__,
-            'table_version': 'test-development' if role else 'test-paper',
-            'artifacts': [{'path': 'modules/example', 'name': 'Example',
-                           'matched_steps': 1, 'total_steps': 1, 'issues': [], 'completed_steps': 1}],
-            'input_sha256': {str(p.relative_to(directory)): hashlib.sha256(p.read_bytes()).hexdigest()
-                             for p in artifact.iterdir()},
-        }
-        if role:
-            manifest['evaluation_role'] = role
-        marker = 'benchmark-table' if role else 'paper-table'
-        (directory / 'README.md').write_text(
-            f'Before\n<!-- {marker}:start -->\nold table\n<!-- {marker}:end -->\nAfter\n')
-        path = directory / 'manifest.json'
-        path.write_text(json.dumps(manifest))
-        return path
+def test_unrecorded_program_rejected(tmp_path):
+    case = tmp_path / "modules/example"
+    case.mkdir(parents=True)
+    (case / "protocol.culs").write_text("return tube();")
+    manifest = {"artifacts": [{"path": "modules/example"}], "input_sha256": {}}
+    with pytest.raises(ValueError, match="inventory changed"):
+        RUNNER["verify_inputs"](tmp_path, manifest)
 
 
-@pytest.mark.parametrize('role', [None, 'development'])
-def test_versioned_run_checks_selected_inputs_and_updates_only_selected_table(tmp_path, role, runtime_checkout):
-    manifest = BenchmarkVersionFixture().create(tmp_path / 'version', role, runtime_checkout)
-    published = (ROOT / 'benchmarks/README.md').read_bytes()
-    output = tmp_path / 'results'
-    assert BENCHMARK['reproduce'](runtime_checkout, output, True, manifest) == 0
-    summary = json.loads((output / 'summary.json').read_text())
-    key = 'matches_manifest' if role else 'matches_paper'
-    assert summary[key] is True
-    assert ('matches_paper' in summary) is (role is None)
-    assert summary['manifest_sha256'] == hashlib.sha256(manifest.read_bytes()).hexdigest()
-    assert summary['artifacts'][0]['execution']['completed_steps'] == 1
-    text = manifest.with_name('README.md').read_text()
-    assert text.startswith('Before\n') and text.endswith('After\n')
-    assert '| Example | 1/1 | 100% |' in text
-    assert (ROOT / 'benchmarks/README.md').read_bytes() == published
-    with pytest.raises(FileExistsError):
-        BENCHMARK['reproduce'](runtime_checkout, output, manifest_path=manifest)
+@pytest.mark.parametrize("version,matched", [("1.0.7", 172), ("1.0.9", 173), ("1.0.11", 173)])
+def test_evaluation_records_are_reproducible_without_program_copies(version, matched):
+    folder = ROOT / "benchmarks/evaluations" / version
+    manifest = json.loads((folder / "manifest.json").read_text())
+    summary = json.loads((folder / "summary.json").read_text())
+    assert not list(folder.rglob("*.culs"))
+    assert not list(folder.rglob("source.md"))
+    assert summary["all_software_pass"]
+    assert summary["rules"] == "modular-source-step-correspondence-v2"
+    assert summary["groups"]["original"] == {"matched_steps": matched, "total_steps": 173}
+    assert summary["groups"]["external"] == {"matched_steps": 21, "total_steps": 21}
+    assert summary["manifest_sha256"] == RUNNER["digest"](folder / "manifest.json")
+    assert summary["runtime_commit"] == manifest["runtime_commit"]
+    assert summary["input_sha256"] == manifest["input_sha256"]
+    for name, expected in summary["output_sha256"].items():
+        assert RUNNER["digest"](folder / name) == expected
+    for name, expected in summary["runner_sha256"].items():
+        assert RUNNER["digest"](ROOT / "benchmarks" / name) == expected
+    if manifest["benchmark_commit"]:
+        paths = ["benchmarks/" + name for name in manifest["input_sha256"]]
+        files = RUNNER["git_files"](manifest["benchmark_commit"], paths)
+        for name, expected in manifest["input_sha256"].items():
+            assert hashlib.sha256(files["benchmarks/" + name]).hexdigest() == expected
+    else:
+        RUNNER["verify_inputs"](ROOT / "benchmarks", manifest)
+    for row in summary["artifacts"]:
+        assert row["coverage"]["rules"] == summary["rules"]
+        assert row["event_replay_equal"]
+        assert row["execution"]["completed_steps"] == row["execution"]["total_steps"]
 
 
-def test_changed_version_input_rejects_before_writing_results(tmp_path, runtime_checkout):
-    manifest = BenchmarkVersionFixture().create(tmp_path / 'version', 'development', runtime_checkout)
-    program = manifest.parent / 'modules/example/protocol.culs'
-    program.write_text(program.read_text() + '// changed input\n')
-    output = tmp_path / 'results'
-    with pytest.raises(ValueError, match='input differs'):
-        BENCHMARK['reproduce'](runtime_checkout, output, manifest_path=manifest)
-    assert not output.exists()
-
-
-@pytest.mark.parametrize('changed_file', ['src/culsma/__init__.py', 'pyproject.toml'])
-def test_changed_runtime_rejects_before_writing_results(tmp_path, runtime_checkout, changed_file):
-    manifest = BenchmarkVersionFixture().create(tmp_path / 'version', 'development', runtime_checkout)
-    path = runtime_checkout / changed_file
-    path.write_text(path.read_text() + '\n# Local change\n')
-    output = tmp_path / 'results'
-    with pytest.raises(ValueError, match='Runtime source or package metadata has local changes'):
-        BENCHMARK['reproduce'](runtime_checkout, output, manifest_path=manifest)
-    assert not output.exists()
-
-
-def test_development_snapshot_changes_only_elisa_program_and_preserves_source_inventory():
-    benchmark = ROOT / 'benchmarks'
-    old = json.loads(subprocess.check_output(
-        ['git', 'show', '687364f:benchmarks/manifest.json'], cwd=ROOT, text=True))
-    folder = benchmark / 'versions/1.0.9-dev-ca7a098'
-    new = json.loads((folder / 'manifest.json').read_text())
-    assert new['input_sha256'].keys() == old['input_sha256'].keys()
-    changed = {name for name, digest in old['input_sha256'].items()
-               if new['input_sha256'][name] != digest}
-    assert changed == {'modules/07-sandwich-elisa/protocol.culs'}
-    for name, digest in new['input_sha256'].items():
-        assert hashlib.sha256((folder / name).read_bytes()).hexdigest() == digest
-    coverage = BENCHMARK['assess'](folder / 'modules/07-sandwich-elisa',
-                                  new['runtime_commit'], new['table_version'])
-    assert (coverage['matched_steps'], coverage['total_steps'], coverage['issues']) == (42, 42, [])
-
-
-def test_recorded_development_results_match_frozen_manifest_and_output_hashes():
-    folder = ROOT / 'benchmarks/versions/1.0.9-dev-ca7a098'
-    manifest_path = folder / 'manifest.json'
-    manifest = json.loads(manifest_path.read_text())
-    summary = json.loads((folder / 'summary.json').read_text())
-    assert summary['matches_manifest'] is True and 'matches_paper' not in summary
-    assert summary['manifest_sha256'] == hashlib.sha256(manifest_path.read_bytes()).hexdigest()
-    assert summary['runtime_commit'] == manifest['runtime_commit']
-    assert summary['input_sha256'] == manifest['input_sha256']
-    expected = {entry['path']: entry for entry in manifest['artifacts']}
-    assert {row['artifact'] for row in summary['artifacts']} == expected.keys()
-    assert summary['matched_steps'] == summary['total_steps'] == 173
-    assert sum(row['execution']['completed_steps'] for row in summary['artifacts']) == 2700
-    for row in summary['artifacts']:
-        entry = expected[row['artifact']]
-        assert row['matches_manifest'] is True
-        assert row['coverage']['matched_steps'] == row['coverage']['total_steps'] == entry['total_steps']
-        assert row['execution']['completed_steps'] == row['execution']['total_steps'] == entry['completed_steps']
-        assert all(row['execution'][key] == 0 for key in ('failed_steps', 'skipped_steps', 'diagnostic_count'))
-        for name, digest in row['output_sha256'].items():
-            assert hashlib.sha256((folder / row['artifact'] / 'results' / name).read_bytes()).hexdigest() == digest
+def test_later_versions_evaluate_identical_program_inputs():
+    manifests = [json.loads((ROOT / "benchmarks/evaluations" / v / "manifest.json").read_text())
+                 for v in ("1.0.9", "1.0.11")]
+    assert manifests[0]["input_sha256"] == manifests[1]["input_sha256"]
