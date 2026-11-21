@@ -152,11 +152,11 @@ with env(thermal = 20C) {
   }
 }
 
-// Source step S13: Centrifuge at 500 x g for 5 min at 4 C.
+// Source step S13: Centrifuge at 300 x g for 5 min at 4 C.
 with env(thermal = 4C, duration = 5min) {
   sep(
     sample = processing_well,
-    program = centrifuge_program(drive = 500g),
+    program = centrifuge_program(drive = 300g),
     component_fates = {
       LEUKOCYTES: { supernatant: 0%, pellet: 100% },
       FACS_BUFFER: { supernatant: 100%, pellet: 0% }

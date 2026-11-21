@@ -5,18 +5,18 @@
     "commit": "1b0dd6d8ed1f588f1c7891f7525f5b30304bcebe",
     "path": "benchmark_cases/new_experiment_2026-11-14_nondepleted_lps_rbc"
   },
-  "revision": "Current benchmark procedure: centrifugation steps S5, S10 and S13 specify 4 C, as agreed on 2026-11-17.",
+  "revision": "Current benchmark procedure: S5, S10 and S13 specify 4 C as agreed on 2026-11-17; S13 wash centrifugation changed from 500 x g to 300 x g for 5 min at 4 C at the author's request on 2026-11-21.",
   "files": {
     "source.md": {
-      "sha256": "16d324fb93e2fa6e31a533e8ccff17accbc8d7aec88cf46bd1cc8c9b7e73f08a"
+      "sha256": "9cd33203818a53103b2db0f8268ec5b66fcd969a23db0c7456ef46ad413427e8"
     },
     "whole_blood_lps_stimulation_rbc_lysis_sequential.culs": {
-      "sha256": "bdb2d865b805f5d77fee1873fcedb652328e131328466527c339427a1828e496"
+      "sha256": "8b763057cc5e077121d61e9f17164fd44606b69252155b0338e6d2f8d11d89f7"
     }
   },
   "simulation": {
     "file": "automation.culs",
-    "sha256": "bdb2d865b805f5d77fee1873fcedb652328e131328466527c339427a1828e496",
+    "sha256": "8b763057cc5e077121d61e9f17164fd44606b69252155b0338e6d2f8d11d89f7",
     "same_as": "whole_blood_lps_stimulation_rbc_lysis_sequential.culs"
   }
 }

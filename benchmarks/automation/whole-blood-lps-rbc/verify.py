@@ -32,7 +32,7 @@ def verify(artifacts: Path) -> dict:
     if strokes != 22:
         raise ValueError('Expected 22 fresh-tip strokes, including split 1044 uL transfer')
     cycles = [r for r in receipts if r['operation_kind'] == 'centrifuge']
-    for r, drive, seconds in zip(cycles, [2000, 500, 500], [600, 300, 300]):
+    for r, drive, seconds in zip(cycles, [2000, 500, 300], [600, 300, 300]):
         if (r['request']['drive_value'], r['request']['drive_unit'], r['request']['temperature_celsius'], r['request']['duration_seconds']) != (drive, 'g', 4, seconds):
             raise ValueError('Centrifuge conditions differ from the program')
         if r['cycle_settings']['temperature_celsius'] != 4 or r['modeled_temperature_celsius'] != 4:

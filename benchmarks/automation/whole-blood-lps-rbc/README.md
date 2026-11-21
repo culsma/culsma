@@ -8,17 +8,21 @@ upstream provenance and current file checksums.
 This is the selected continuous automation example.
 
 The verified implementation uses Culsma 1.0.11rc1 at source commit
-`2d1fe05e4306947ac6b61ca961bf1bbb3190a5aa` and the Opentrons driver package
+`610710284457cf4210f56ef44512e3d0be0e8786` and the Opentrons driver package
 0.1.0 at commit `90ad174576eeb5798f9b80602bfefb14a0fe12b1`.
 Use these source revisions; the package version labels alone do not identify
 these changes. `reproduction-manifest.json` records the tested environment
 and checksums of the runnable inputs and validation scripts.
-No culsmaOS package, desktop application, database, service or special offline
-bundle is needed. In a Python 3.11/3.12 virtual environment install these two
-repositories (`pip install -e /path/to/Culsma -e /path/to/opentrons-simulator`).
-From the Culsma repository:
+The [software directory](software/) contains the two tested wheels and an installable
+source archive for the simulator driver. The driver archive includes its Python
+implementation, license and standalone executor tests. The core source is available
+at the Culsma revision above. In a fresh Python 3.11 environment, run from the
+root of this benchmark checkout. The first command verifies the packaged files.
+The installation also installs the driver dependencies, including Opentrons 8.8.2.
 
 ```sh
+(cd benchmarks/automation/whole-blood-lps-rbc && shasum -a 256 -c software/SHA256SUMS)
+python -m pip install 'lark==1.3.1' benchmarks/automation/whole-blood-lps-rbc/software/*.whl
 culsma run benchmarks/automation/whole-blood-lps-rbc/automation.culs \
   --driver opentrons-simulator \
   --driver-config benchmarks/automation/whole-blood-lps-rbc/deck.json \
@@ -39,7 +43,7 @@ After execution begins, the same directory cannot be replayed automatically.
 | Five self-transfers per mixing phase | Official SDK aspirate/dispense into the same well, without net material movement | Five 160 µL strokes and ten 800 µL strokes |
 | 37°C, 5% CO₂, 6 h | Configured reference incubator at C1; virtual time | Environment request and model receipt; no measured CO₂ or temperature |
 | Add/mix at 20°C; wait 15 min at 20°C | Configured reference working enclosure covering D1/D2 | Both transfer and mixing receipts retain the 20°C condition |
-| 2000 × g for 10 min; twice 500 × g for 5 min, all at 4°C | Existing reference centrifuge model, 10 cm rotor; RCF converted to rpm | Requested values, rotor geometry and dispatched cycle settings |
+| 2000 × g for 10 min; 500 × g for 5 min after lysis; 300 × g for 5 min after washing, all at 4°C | Existing reference centrifuge model, 10 cm rotor; RCF converted to rpm | Requested values, rotor geometry and dispatched cycle settings |
 | Move processing plate between deck, incubation and centrifuge | Seven official Flex gripper moves | Source/destination, returned move phase, associated source step |
 
 `run.json` contains the normal runtime events and final material state.
@@ -65,7 +69,8 @@ by centrifugation. It does not request a clarity observation or conditional lysi
 extension, and its culture step does not request plate-cover handling. Those are
 not outstanding requirements of this revision. No observation or cover action is
 claimed by the simulation. The update from `69e82bb` changes source wording and
-code comments; the executable CULS statements are unchanged.
+code comments. The 2026-11-21 revision changes the final wash centrifugation
+(S13) to 300 × g for 5 min at 4°C, as requested for the interface example.
 
 ## Temperature requirement rejection (R2-13)
 

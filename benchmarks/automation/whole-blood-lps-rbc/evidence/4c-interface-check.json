@@ -2,7 +2,7 @@
   "description": "Extracted from standalone CLI simulation and preflight rejection; no physical temperature measurement.",
   "program": {
     "file": "automation.culs",
-    "sha256": "bdb2d865b805f5d77fee1873fcedb652328e131328466527c339427a1828e496"
+    "sha256": "8b763057cc5e077121d61e9f17164fd44606b69252155b0338e6d2f8d11d89f7"
   },
   "configurations": {
     "deck.json": "7035f548c182c8c11ab8720240ecf7ef504ce7e564916b641ef9cc70db690183",
@@ -91,14 +91,14 @@
               "container_id": "container/entry/entry.s0%3A%3Aalloc/processing_well"
             }
           ],
-          "drive_value": 500.0,
+          "drive_value": 300.0,
           "drive_unit": "g",
           "duration_seconds": 300.0,
           "temperature_celsius": 4.0
         },
         "cycle_settings": {
           "labware": "sample_plate",
-          "drive_value": 2114.54397803583,
+          "drive_value": 1637.9187223511906,
           "drive_unit": "rpm",
           "duration_seconds": 300.0,
           "temperature_celsius": 4.0
@@ -117,7 +117,7 @@
       "sample": "processing_well",
       "source_line": 100,
       "code": "DRV_OT_CENTRIFUGE_TEMPERATURE_RANGE",
-      "message": "Requested 4 \u00b0C is outside 20\u201340 \u00b0C",
+      "message": "Requested 4 °C is outside 20–40 °C",
       "device_execution_started": false
     },
     "failed_event": {
@@ -125,7 +125,7 @@
       "payload": {
         "driver_code": "DRV_OT_CENTRIFUGE_TEMPERATURE_RANGE",
         "driver_payload": {
-          "message": "Requested 4 \u00b0C is outside 20\u201340 \u00b0C",
+          "message": "Requested 4 °C is outside 20–40 °C",
           "phase": "preflight",
           "retry_safe": true,
           "step_id": "entry.s15.b.s0"

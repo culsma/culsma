@@ -14,6 +14,6 @@
 10. Centrifuge at 500 x g for 5 min at 4 C.
 11. Remove and discard the supernatant, retaining the cell pellet in the original well.
 12. Add 1 mL FACS buffer and pipette 5 times with the pipette set to 800 uL at 20 C.
-13. Centrifuge at 500 x g for 5 min at 4 C.
+13. Centrifuge at 300 x g for 5 min at 4 C.
 14. Remove and discard the supernatant, retaining the cell pellet in the original well.
 15. Retain the stimulation supernatant and the washed cell pellet separately for downstream assays.

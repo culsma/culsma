@@ -1,0 +1,107 @@
+{
+  "implementation_commit": "5364676bc2437b4981a00ce0133c730af243e469",
+  "python": "3.12.8",
+  "lark": "1.3.1",
+  "execution_mode": "software reference execution with StubDriver; no hardware",
+  "runtime_archive_sha256": "01736ba0a38c61ae0e75c78e24794028d7bb4ac98eed247fab9bd020b8c49107",
+  "runner_sha256": "3f4d26d21744d5b0c74f9cbee032e61f7d5f9b89c77ad0ba332a11138678f166",
+  "expected_sha256": "0c2757f7be067fb57de4535f1c8ac79cf8b8f2f4eab93b810a89a646c1614471",
+  "cases": {
+    "original": {
+      "input_sha256": "2a706514b79b1aac94de98f3752fc2b6c1733fb4c1e73656864511f007795344",
+      "validation_passed": true,
+      "typecheck_passed": true,
+      "plan_diagnostics": [],
+      "runtime_ok": true,
+      "step_status_counts": {
+        "completed": 109
+      },
+      "reaction_volume_uL": 50.0,
+      "components_uL": {
+        "TEMPLATE": 1.0,
+        "FORWARD": 2.5,
+        "REVERSE": 2.5,
+        "MASTER_MIX": 25.0,
+        "WATER": 19.0
+      },
+      "template_remaining_uL": 0.0,
+      "completed_thermal_steps": 92,
+      "diagnostics": []
+    },
+    "normal": {
+      "input_sha256": "bbd09d483f6f608382cb812c2585b6ab3f80d207251f453002bf9307086e40a1",
+      "validation_passed": true,
+      "typecheck_passed": true,
+      "plan_diagnostics": [],
+      "runtime_ok": true,
+      "step_status_counts": {
+        "completed": 109
+      },
+      "reaction_volume_uL": 50.0,
+      "components_uL": {
+        "TEMPLATE": 1.0,
+        "FORWARD": 2.5,
+        "REVERSE": 2.5,
+        "MASTER_MIX": 25.0,
+        "WATER": 19.0
+      },
+      "template_remaining_uL": 0.0,
+      "completed_thermal_steps": 92,
+      "diagnostics": []
+    },
+    "overdraw": {
+      "input_sha256": "22df0bb4881a02f9469f9fc9d04747cfb78203e5a2cddc912e8dfe350844924f",
+      "validation_passed": true,
+      "typecheck_passed": true,
+      "plan_diagnostics": [],
+      "runtime_ok": false,
+      "step_status_counts": {
+        "completed": 16,
+        "failed": 1,
+        "skipped": 92
+      },
+      "reaction_volume_uL": 0.0,
+      "components_uL": {},
+      "template_remaining_uL": 1.0,
+      "completed_thermal_steps": 0,
+      "diagnostics": [
+        {
+          "code": "MAT_INSUFFICIENT_VOLUME",
+          "message": "Insufficient source volume in 'container/entry/entry.s0%3A%3Aalloc/__cmp_entry_s0_template'",
+          "severity": "error",
+          "node_id": "entry.s6.b.s0",
+          "span": {
+            "line": 14,
+            "col": 3,
+            "start": 961,
+            "end": 1045
+          }
+        },
+        {
+          "code": "RT_MATERIAL_ERROR",
+          "message": "Material compute failed for step 'entry.s6.b.s0'",
+          "severity": "error",
+          "node_id": "entry.s6.b.s0",
+          "span": {
+            "line": 14,
+            "col": 3,
+            "start": 961,
+            "end": 1045
+          }
+        },
+        {
+          "code": "RT_ABORTED_AFTER_FAILURE",
+          "message": "Runtime aborted after first failed step (fail-fast mode)",
+          "severity": "error",
+          "node_id": null,
+          "span": {
+            "line": 1,
+            "col": 1,
+            "start": 0,
+            "end": 1589
+          }
+        }
+      ]
+    }
+  }
+}

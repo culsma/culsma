@@ -1,0 +1,389 @@
+{
+  "normal": {
+    "reaction_volume_uL": 50,
+    "components_uL": {
+      "TEMPLATE": 1,
+      "FORWARD": 2.5,
+      "REVERSE": 2.5,
+      "MASTER_MIX": 25,
+      "WATER": 19
+    },
+    "thermal_sequence": [
+      {
+        "temperature_C": 98,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 98,
+        "duration_s": 10
+      },
+      {
+        "temperature_C": 60,
+        "duration_s": 20
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 30
+      },
+      {
+        "temperature_C": 72,
+        "duration_s": 300
+      }
+    ]
+  },
+  "overdraw": {
+    "runtime_ok": false,
+    "required_diagnostic": "MAT_INSUFFICIENT_VOLUME",
+    "completed_thermal_steps": 0,
+    "template_remaining_uL": 1,
+    "reaction_volume_uL": 0
+  }
+}
