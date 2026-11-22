@@ -47,16 +47,16 @@
             "duration_seconds": 600.0,
             "temperature_celsius": 4.0
           },
+          "outcome": "completed",
+          "sample_temperature_measured": false,
+          "modeled_temperature_celsius": 4.0,
           "cycle_settings": {
             "labware": "sample_plate",
             "drive_value": 4229.08795607166,
             "drive_unit": "rpm",
             "duration_seconds": 600.0,
             "temperature_celsius": 4.0
-          },
-          "modeled_temperature_celsius": 4.0,
-          "sample_temperature_measured": false,
-          "outcome": "completed"
+          }
         },
         {
           "step_id": "entry.s19.b.s0",
@@ -72,16 +72,16 @@
             "duration_seconds": 300.0,
             "temperature_celsius": 4.0
           },
+          "outcome": "completed",
+          "sample_temperature_measured": false,
+          "modeled_temperature_celsius": 4.0,
           "cycle_settings": {
             "labware": "sample_plate",
             "drive_value": 2114.54397803583,
             "drive_unit": "rpm",
             "duration_seconds": 300.0,
             "temperature_celsius": 4.0
-          },
-          "modeled_temperature_celsius": 4.0,
-          "sample_temperature_measured": false,
-          "outcome": "completed"
+          }
         },
         {
           "step_id": "entry.s22.b.s0",
@@ -97,16 +97,16 @@
             "duration_seconds": 300.0,
             "temperature_celsius": 4.0
           },
+          "outcome": "completed",
+          "sample_temperature_measured": false,
+          "modeled_temperature_celsius": 4.0,
           "cycle_settings": {
             "labware": "sample_plate",
             "drive_value": 1637.9187223511906,
             "drive_unit": "rpm",
             "duration_seconds": 300.0,
             "temperature_celsius": 4.0
-          },
-          "modeled_temperature_celsius": 4.0,
-          "sample_temperature_measured": false,
-          "outcome": "completed"
+          }
         }
       ]
     },

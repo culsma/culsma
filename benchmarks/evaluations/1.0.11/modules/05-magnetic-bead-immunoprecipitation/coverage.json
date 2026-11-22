@@ -1,9 +1,9 @@
 {
   "artifact": "05-magnetic-bead-immunoprecipitation",
   "coverage_percent": 100.0,
-  "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+  "implementation": "dbe8e12f949abfba1391ab0864889e051235039e",
   "issues": [],
-  "language_version": "1.0.11rc1",
+  "language_version": "1.0.11",
   "matched_steps": 23,
   "metric": "source_step_correspondence",
   "program_sha256": {

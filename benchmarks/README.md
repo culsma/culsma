@@ -23,10 +23,10 @@ the final message gives the location of `summary.json`. Published records and
 the user's existing Python installations are preserved. An optional `--only`
 argument selects `benchmark`, `automation`, or `comparison` for a partial replay.
 The detailed commands below are for individual checks and maintaining records.
-Runtime commits come from the evaluation manifests; publication preparation must
-refresh the 1.0.11 manifests and results against the final release.
+Runtime commits come from the evaluation manifests; the 1.0.11 records use
+the stable release implementation.
 
-After the submission package is published, the same entry point can also download
+The same entry point can also download
 the package and run it from an empty working directory (Python and curl required):
 
 ```sh

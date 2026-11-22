@@ -26,27 +26,19 @@ manifest; users do not need to locate or install them manually.
 Use Python 3.11. Install Culsma and the public
 [Opentrons driver](https://github.com/culsma/culsma-driver-opentrons);
 installation packages are not duplicated in this benchmark.
-The submission release target is **Culsma 1.0.11**. After that release is published:
+The automation evaluation uses **Culsma 1.0.11** and the public Opentrons driver
+**0.1.0**. Install the published versions:
 
 ```sh
 python3.11 -m venv .venv
 . .venv/bin/activate
 python -m pip install 'culsma==1.0.11' 'lark==1.3.1' \
-  'culsma-opentrons-simulator @ git+https://github.com/culsma/culsma-driver-opentrons.git@3deedcbc353642aa36293c73900a5a1e8993f48e'
+  'culsma-opentrons-simulator @ git+https://github.com/culsma/culsma-driver-opentrons.git@v0.1.0'
 ```
 
-The retained results currently identify the evaluated core commit in
-`whole-blood-lps-rbc/manifest.json`. To reproduce that runtime before the final
-release, substitute the following core requirement for `culsma==1.0.11` above:
-`culsma @ git+https://github.com/culsma/culsma.git@610710284457cf4210f56ef44512e3d0be0e8786`.
-The manifest preserves the recorded runtime metadata; refresh the results and
-manifest together when evaluating the final release.
-The driver used for the retained results is recorded as `90ad174` in the
-manifest. Its `src/` tree is identical to the public installation commit
-[`3deedcb`](https://github.com/culsma/culsma-driver-opentrons/commit/3deedcbc353642aa36293c73900a5a1e8993f48e).
-The manifest records the shared source-tree hash under
-`driver_install.source_equivalence`, linking the historical run to the
-publicly available implementation.
+The manifest records the exact public implementation commits and dependency
+versions used to regenerate the retained results. The unified entry point
+selects them automatically.
 
 The driver's distribution and CLI registration remain
 `culsma-opentrons-simulator` and `opentrons-simulator`, respectively.

@@ -7,9 +7,9 @@
       "coverage": {
         "artifact": "01-cell-transfection",
         "coverage_percent": 100.0,
-        "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+        "implementation": "dbe8e12f949abfba1391ab0864889e051235039e",
         "issues": [],
-        "language_version": "1.0.11rc1",
+        "language_version": "1.0.11",
         "matched_steps": 13,
         "metric": "source_step_correspondence",
         "program_sha256": {
@@ -52,7 +52,7 @@
       "group": "original",
       "lark_version": "1.3.1",
       "name": "Module 01: Cell transfection",
-      "runtime_version": "1.0.11rc1",
+      "runtime_version": "1.0.11",
       "software_pass": true
     },
     {
@@ -61,9 +61,9 @@
       "coverage": {
         "artifact": "02-selective-plating-candidate-colony-isolation",
         "coverage_percent": 100.0,
-        "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+        "implementation": "dbe8e12f949abfba1391ab0864889e051235039e",
         "issues": [],
-        "language_version": "1.0.11rc1",
+        "language_version": "1.0.11",
         "matched_steps": 12,
         "metric": "source_step_correspondence",
         "program_sha256": {
@@ -190,7 +190,7 @@
       "group": "original",
       "lark_version": "1.3.1",
       "name": "Module 02: Selective plating and colony isolation",
-      "runtime_version": "1.0.11rc1",
+      "runtime_version": "1.0.11",
       "software_pass": true
     },
     {
@@ -199,9 +199,9 @@
       "coverage": {
         "artifact": "03-cell-lysate-preparation",
         "coverage_percent": 100.0,
-        "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+        "implementation": "dbe8e12f949abfba1391ab0864889e051235039e",
         "issues": [],
-        "language_version": "1.0.11rc1",
+        "language_version": "1.0.11",
         "matched_steps": 10,
         "metric": "source_step_correspondence",
         "program_sha256": {
@@ -304,7 +304,7 @@
       "group": "original",
       "lark_version": "1.3.1",
       "name": "Module 03: Cell lysate preparation",
-      "runtime_version": "1.0.11rc1",
+      "runtime_version": "1.0.11",
       "software_pass": true
     },
     {
@@ -313,9 +313,9 @@
       "coverage": {
         "artifact": "04-suspension-cell-staining",
         "coverage_percent": 100.0,
-        "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+        "implementation": "dbe8e12f949abfba1391ab0864889e051235039e",
         "issues": [],
-        "language_version": "1.0.11rc1",
+        "language_version": "1.0.11",
         "matched_steps": 29,
         "metric": "source_step_correspondence",
         "program_sha256": {
@@ -443,7 +443,7 @@
       "group": "original",
       "lark_version": "1.3.1",
       "name": "Module 04: Suspension-cell staining",
-      "runtime_version": "1.0.11rc1",
+      "runtime_version": "1.0.11",
       "software_pass": true
     },
     {
@@ -452,9 +452,9 @@
       "coverage": {
         "artifact": "05-magnetic-bead-immunoprecipitation",
         "coverage_percent": 100.0,
-        "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+        "implementation": "dbe8e12f949abfba1391ab0864889e051235039e",
         "issues": [],
-        "language_version": "1.0.11rc1",
+        "language_version": "1.0.11",
         "matched_steps": 23,
         "metric": "source_step_correspondence",
         "program_sha256": {
@@ -522,7 +522,7 @@
       "group": "original",
       "lark_version": "1.3.1",
       "name": "Module 05: Magnetic-bead immunoprecipitation",
-      "runtime_version": "1.0.11rc1",
+      "runtime_version": "1.0.11",
       "software_pass": true
     },
     {
@@ -531,9 +531,9 @@
       "coverage": {
         "artifact": "06-western-blot",
         "coverage_percent": 100.0,
-        "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+        "implementation": "dbe8e12f949abfba1391ab0864889e051235039e",
         "issues": [],
-        "language_version": "1.0.11rc1",
+        "language_version": "1.0.11",
         "matched_steps": 32,
         "metric": "source_step_correspondence",
         "program_sha256": {
@@ -578,7 +578,7 @@
       "group": "original",
       "lark_version": "1.3.1",
       "name": "Module 06: Western blot",
-      "runtime_version": "1.0.11rc1",
+      "runtime_version": "1.0.11",
       "software_pass": true
     },
     {
@@ -587,9 +587,9 @@
       "coverage": {
         "artifact": "07-sandwich-elisa",
         "coverage_percent": 100.0,
-        "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+        "implementation": "dbe8e12f949abfba1391ab0864889e051235039e",
         "issues": [],
-        "language_version": "1.0.11rc1",
+        "language_version": "1.0.11",
         "matched_steps": 42,
         "metric": "source_step_correspondence",
         "program_sha256": {
@@ -632,7 +632,7 @@
       "group": "original",
       "lark_version": "1.3.1",
       "name": "Module 07: Sandwich ELISA",
-      "runtime_version": "1.0.11rc1",
+      "runtime_version": "1.0.11",
       "software_pass": true
     },
     {
@@ -641,9 +641,9 @@
       "coverage": {
         "artifact": "01-flow-cytometry-immunophenotyping",
         "coverage_percent": 100.0,
-        "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+        "implementation": "dbe8e12f949abfba1391ab0864889e051235039e",
         "issues": [],
-        "language_version": "1.0.11rc1",
+        "language_version": "1.0.11",
         "matched_steps": 5,
         "metric": "source_step_correspondence",
         "program_sha256": {
@@ -794,7 +794,7 @@
       "group": "original",
       "lark_version": "1.3.1",
       "name": "Composite 01: Flow-cytometry immunophenotyping",
-      "runtime_version": "1.0.11rc1",
+      "runtime_version": "1.0.11",
       "software_pass": true
     },
     {
@@ -803,9 +803,9 @@
       "coverage": {
         "artifact": "02-magnetic-bead-ip-western-blot",
         "coverage_percent": 100.0,
-        "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+        "implementation": "dbe8e12f949abfba1391ab0864889e051235039e",
         "issues": [],
-        "language_version": "1.0.11rc1",
+        "language_version": "1.0.11",
         "matched_steps": 7,
         "metric": "source_step_correspondence",
         "program_sha256": {
@@ -908,7 +908,7 @@
       "group": "original",
       "lark_version": "1.3.1",
       "name": "Composite 02: Magnetic-bead IP with Western blot",
-      "runtime_version": "1.0.11rc1",
+      "runtime_version": "1.0.11",
       "software_pass": true
     },
     {
@@ -917,9 +917,9 @@
       "coverage": {
         "artifact": "08-qubit-dsdna-hs",
         "coverage_percent": 100.0,
-        "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+        "implementation": "dbe8e12f949abfba1391ab0864889e051235039e",
         "issues": [],
-        "language_version": "1.0.11rc1",
+        "language_version": "1.0.11",
         "matched_steps": 13,
         "metric": "source_step_correspondence",
         "program_sha256": {
@@ -999,7 +999,7 @@
       "group": "added",
       "lark_version": "1.3.1",
       "name": "Module 08: Qubit 1X dsDNA HS quantification",
-      "runtime_version": "1.0.11rc1",
+      "runtime_version": "1.0.11",
       "software_pass": true
     },
     {
@@ -1008,9 +1008,9 @@
       "coverage": {
         "artifact": "09-double-sided-spri",
         "coverage_percent": 100.0,
-        "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+        "implementation": "dbe8e12f949abfba1391ab0864889e051235039e",
         "issues": [],
-        "language_version": "1.0.11rc1",
+        "language_version": "1.0.11",
         "matched_steps": 21,
         "metric": "source_step_correspondence",
         "program_sha256": {
@@ -1054,7 +1054,7 @@
       "group": "added",
       "lark_version": "1.3.1",
       "name": "Module 09: Double-sided SPRI selection",
-      "runtime_version": "1.0.11rc1",
+      "runtime_version": "1.0.11",
       "software_pass": true
     },
     {
@@ -1063,9 +1063,9 @@
       "coverage": {
         "artifact": "03-qubit-double-sided-spri",
         "coverage_percent": 100.0,
-        "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+        "implementation": "dbe8e12f949abfba1391ab0864889e051235039e",
         "issues": [],
-        "language_version": "1.0.11rc1",
+        "language_version": "1.0.11",
         "matched_steps": 3,
         "metric": "source_step_correspondence",
         "program_sha256": {
@@ -1168,7 +1168,7 @@
       "group": "added",
       "lark_version": "1.3.1",
       "name": "Composite 03: Qubit quantification and double-sided SPRI selection",
-      "runtime_version": "1.0.11rc1",
+      "runtime_version": "1.0.11",
       "software_pass": true
     },
     {
@@ -1177,9 +1177,9 @@
       "coverage": {
         "artifact": "11-pbmc-hia-staining-flow",
         "coverage_percent": 100.0,
-        "implementation": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
+        "implementation": "dbe8e12f949abfba1391ab0864889e051235039e",
         "issues": [],
-        "language_version": "1.0.11rc1",
+        "language_version": "1.0.11",
         "matched_steps": 21,
         "metric": "source_step_correspondence",
         "program_sha256": {
@@ -1234,7 +1234,7 @@
       "group": "external",
       "lark_version": "1.3.1",
       "name": "Module 11: PBMC stimulation, staining and flow acquisition",
-      "runtime_version": "1.0.11rc1",
+      "runtime_version": "1.0.11",
       "software_pass": true
     }
   ],
@@ -1288,71 +1288,71 @@
     "modules/11-pbmc-hia-staining-flow/source.md": "85c84de1fcb5a097a4a3ba66ba97dc80b1662e74dba3ca384e7e2a98f8c7c660"
   },
   "lark_version": "1.3.1",
-  "manifest_sha256": "466abedc5c5d6f932cc2488ca5ef41b4706bed5c5c3e03150243c3c7e0b9f8d6",
+  "manifest_sha256": "81e232988ada50b18f06a381af49cb64e1df141c231fe6a1688ba6e57d81f8f7",
   "output_sha256": {
-    "composites/01-flow-cytometry-immunophenotyping/coverage.json": "79db813225f2f6ab9d68847a17970002148b7a38053f2a4f16c910ff3d9c7f1b",
+    "composites/01-flow-cytometry-immunophenotyping/coverage.json": "062d217566b5056da7587ccd8b62f1882facf2a0ddd8337172f004d1809f1e56",
     "composites/01-flow-cytometry-immunophenotyping/diagnostics.json": "ac1396f3d2e7b5ddbffa6d9fd08fae312b318ade6e63bde493ea0b0d844586f9",
-    "composites/01-flow-cytometry-immunophenotyping/execution.json": "42095a9a7f9e7c626bd026c50c075cbfb54526ef4e594a5faaf4c7abcd021740",
+    "composites/01-flow-cytometry-immunophenotyping/execution.json": "97add9be3eb176ee799b88a63debdd4445354ec76951ceecc5f4e6c47a0dd17b",
     "composites/01-flow-cytometry-immunophenotyping/results.json": "9967f5ce4b7d40fa12433869f19c43ddfd7518007b653fdcf53bbd894a32a08c",
     "composites/01-flow-cytometry-immunophenotyping/run.json": "b09023c0f5e1694d76173c216f93bf7395d6d94a41d904cf9e879b19f4590fb4",
-    "composites/02-magnetic-bead-ip-western-blot/coverage.json": "8707d5f567a9f56e7092f26e9102d9216346afe39bb356c3d7852f68c2417dfc",
+    "composites/02-magnetic-bead-ip-western-blot/coverage.json": "a24d9952a8109d61ba72ddae29c2d0a9d9c676f7bd2f6a2976d2c6822f04058a",
     "composites/02-magnetic-bead-ip-western-blot/diagnostics.json": "0b50ef9ab16822b7e7637969369d1e59a1bef620bc6e29877f092d663aaf4334",
-    "composites/02-magnetic-bead-ip-western-blot/execution.json": "ab9a2181ab2b213c34d2c4f89d6c9ddbc99748c9947139c4905d62456863e386",
+    "composites/02-magnetic-bead-ip-western-blot/execution.json": "960dfc5d5d62d3f070f47bccffd76f8b9ff3f5520c66af05064a66e6979e953b",
     "composites/02-magnetic-bead-ip-western-blot/results.json": "5601839f16a8cb08f402d386e9b07233fbf8bf82134115f0aeac41fb0ab702a5",
     "composites/02-magnetic-bead-ip-western-blot/run.json": "54b49559577b28551255f652ddc50feeead1c2fcf3ae95cf6f18dc854404d63e",
-    "composites/03-qubit-double-sided-spri/coverage.json": "7818add0ff7b9b64fb55fe4216d64d221fbe32d0c7dd92aecddbd42b6fe9fbdd",
+    "composites/03-qubit-double-sided-spri/coverage.json": "c793878b7e02b3cbe06385eff7486594c9c220b4998ece2fb4075035118bce4c",
     "composites/03-qubit-double-sided-spri/diagnostics.json": "144cb991949aa7d7c2fbbd7dd6e63dba1cfc7eab8bcc91daa424f5bdc2e5bcde",
-    "composites/03-qubit-double-sided-spri/execution.json": "a380740cf0b20130fcaa35b776efac12097f415ad90e72b65121c1d71afcb91f",
+    "composites/03-qubit-double-sided-spri/execution.json": "a35fba7b8315367cb3cc49445867f35eb4632fa82b3502d51d037c152690cec5",
     "composites/03-qubit-double-sided-spri/results.json": "3997050a682d6d04a3fe4c0739f3263396095e2e738bd1952a2ce757425b0664",
     "composites/03-qubit-double-sided-spri/run.json": "cbb93b822320146c37a71f54b8b5b96b7da9522398193f9cd4351ad7c5d962dc",
-    "modules/01-cell-transfection/coverage.json": "672ab41b0b3ed62fca6b5e04c90ee2c4a574180399e53ef906cb30c13fc6eec7",
+    "modules/01-cell-transfection/coverage.json": "fc787723013616b8caeec204628f17a6433f8927ca95d3fcc01867d10d6c7fcd",
     "modules/01-cell-transfection/diagnostics.json": "9111259bb3d488b47d3107a195c644c0833ffa9fc024da39f2e23e1f3e5346e4",
-    "modules/01-cell-transfection/execution.json": "9ed6ec799ae908e6b5a9d2c760ce97baa96e24cd1467d6a28f839092b6201bd0",
+    "modules/01-cell-transfection/execution.json": "987141be040b11750ce0f4ea9caebe16c204e6f41200026096ec5aa50f722b21",
     "modules/01-cell-transfection/results.json": "358ffb24dad611e7e3f0af82e167adf24c2fe0db567ec9b98d4ed0fbe4899cfb",
     "modules/01-cell-transfection/run.json": "5f7e9b2480ffc63cfb79d5f98f9d20389d06a251a25616f25f5e64cac255b341",
-    "modules/02-selective-plating-candidate-colony-isolation/coverage.json": "1b0e916d50c027f34d7818764c5e5d3454fc8a1989c2b3db78f35b7049de572c",
+    "modules/02-selective-plating-candidate-colony-isolation/coverage.json": "0902a7683d29a4af3a0529934ce547127f8966e59ef738a7ad6f704ac21b5f45",
     "modules/02-selective-plating-candidate-colony-isolation/diagnostics.json": "614090b4e4ec25e0db29418d28f71addc37512d724689f3d90733e32e7e1037f",
-    "modules/02-selective-plating-candidate-colony-isolation/execution.json": "fdf073d3fd11051f77f95850b8777059e41f6a66c7a4fbf73fb8f5c0e62774e0",
+    "modules/02-selective-plating-candidate-colony-isolation/execution.json": "cc097125d15c3b3a87892b70936f9e00ffa2f5137e7aab8172c2ac97e5ccce47",
     "modules/02-selective-plating-candidate-colony-isolation/results.json": "2f8c431dbaa5ba8eeea0d7e275c58f41c3184b1d92e2ff3a9b8ef20911353555",
     "modules/02-selective-plating-candidate-colony-isolation/run.json": "9ec0ba111fcc580def53d0cc644f2f96fe10b482b59a5970e8ef27a938c1879b",
-    "modules/03-cell-lysate-preparation/coverage.json": "bc094aac8ea68aad6b6f743f805443edc9b2d6426fee1112408955647bb8b490",
+    "modules/03-cell-lysate-preparation/coverage.json": "1a4dd71425c06c522e36626de99942a7268778d07b71b5a45c1223822a59702c",
     "modules/03-cell-lysate-preparation/diagnostics.json": "2935253fdd145e710a0a8c7c419b28e6a98b9d301896daff222df2357e909a6b",
-    "modules/03-cell-lysate-preparation/execution.json": "20dc4c9338010cf9f6e2feb196ef1069f19f744c8d814faf258d18fd83b1949f",
+    "modules/03-cell-lysate-preparation/execution.json": "72b38cf39eb6a26b59c265983b82122521e10f10aceb4aff3983e8b66ad814e0",
     "modules/03-cell-lysate-preparation/results.json": "175800a772ac30c1f7e2a48ed599f598dc41ed985267075701bbf6172d9cee26",
     "modules/03-cell-lysate-preparation/run.json": "03a1ca3e3a1b8ba301104fd28d41097cc18ec6875f8167470265acbfe268bd80",
-    "modules/04-suspension-cell-staining/coverage.json": "545695fce2b09061977b6ef0b4c67f829b037599538f0fc01f36245a97d268ec",
+    "modules/04-suspension-cell-staining/coverage.json": "bdd45c525e5de7ed24670ae145309d9a8624318bedc3eb927b50b038b808ad06",
     "modules/04-suspension-cell-staining/diagnostics.json": "3fffb15f8bdbd77615bc798d351ac5f06ab62dba96f62328af31175db80e6568",
-    "modules/04-suspension-cell-staining/execution.json": "956bc544de33c28c3e765edb344647c0029c448e9f37faeb4fece1d1e7fb792e",
+    "modules/04-suspension-cell-staining/execution.json": "4fc460ae6350bc105176f7732bfe7173eea581041c0fdc9219ebbd42782e6716",
     "modules/04-suspension-cell-staining/results.json": "5079fd65cb0328153628526ef22f5894e94bce4aac1d80f39ee39cff9fa15abe",
     "modules/04-suspension-cell-staining/run.json": "d2fa19dacad231fbf37c83576e02cab6a0f84b02ee95e1562a73e82570de11ff",
-    "modules/05-magnetic-bead-immunoprecipitation/coverage.json": "a4960dc32ac748fa607043b2579a9f3f099a46909d62823cbe0e0b4aa69fd5a9",
+    "modules/05-magnetic-bead-immunoprecipitation/coverage.json": "0c6d7677efddfd54e36f856f8c769e8abb9be2b5fe75c3bc9e2e63a4023c64e5",
     "modules/05-magnetic-bead-immunoprecipitation/diagnostics.json": "a5e2c8c207acf9d4a5d4f75dd2b3da55cd18333daf676ee8df623d072b5be74f",
-    "modules/05-magnetic-bead-immunoprecipitation/execution.json": "6ab20fbade4f2ebfcaea36fbe11c2f8d8395d3ffaaa958e96b05d2a9db344f1d",
+    "modules/05-magnetic-bead-immunoprecipitation/execution.json": "34b1e73f6327a3f122afd442d3937cd6477756a1086d2bc4b0bc4627c40b6eb1",
     "modules/05-magnetic-bead-immunoprecipitation/results.json": "bd4bbff6932d0e4fc3068d9ee686bde2bbe6f4072176800f522561a0e186956f",
     "modules/05-magnetic-bead-immunoprecipitation/run.json": "b565a9f900a55ac9a89111d32d4f1272f8794f4c13cdc7d0176e774ca73688e1",
-    "modules/06-western-blot/coverage.json": "6c0b3c5a0ff67daabcf8d0915050deca225c4c0f212c42279f7ba8a2d048a993",
+    "modules/06-western-blot/coverage.json": "da63a54d28572bc74d0e6ca67498adf7e32cb0dd095d4c6885e25f2f5bf4544a",
     "modules/06-western-blot/diagnostics.json": "08ebec11d8a7f420702dfde2cfa4368a3cb449ed2aa9a4e9f95424e444111ed0",
-    "modules/06-western-blot/execution.json": "75b0782a3d2720c9154f169ff80386285dc7de6082b4745847a995e420283dc8",
+    "modules/06-western-blot/execution.json": "8f8945df4e222d5b0881c865f22de4ce1d1c98ab9167807810126b67b4db2cc5",
     "modules/06-western-blot/results.json": "6f10615bc9fd147b5f6cd8566a01622bdd300e918f16dfaf4efef7845e4931e8",
     "modules/06-western-blot/run.json": "94a10e76b6211e796e1693031257d3ab363084bb79953b01333663bc0c90d006",
-    "modules/07-sandwich-elisa/coverage.json": "aeb9eb0892c6949d450f0eb25646110e519c07d73fd5692def3b450c202521b5",
+    "modules/07-sandwich-elisa/coverage.json": "f4a93d4ad654848fca4eaaaa1a8a96dc21e68322ce620ef2479d0cf954b7e812",
     "modules/07-sandwich-elisa/diagnostics.json": "30f341e868fc01baa1eafc851ac167c614b0883758a00d5a1782f96de4bcec42",
-    "modules/07-sandwich-elisa/execution.json": "f2fa259eeb51de7e85a8080a96409424a2cf95f49eb66cf61604c40aa707fe90",
+    "modules/07-sandwich-elisa/execution.json": "e39aafb96a0f301ebcc5e1b1422aa69deec67649e29f9f2f6a0300a48a250954",
     "modules/07-sandwich-elisa/results.json": "2075a3d27ad8aec9a3c0fe632bb72e0eafcdd6498e9d27e270cebd6922c50a4c",
     "modules/07-sandwich-elisa/run.json": "19655287ff7cba693feb1ea31f82aeae49af8223966e70d80e6ee75305086a0e",
-    "modules/08-qubit-dsdna-hs/coverage.json": "640ffa47d0ef9a9a70831bace45044d5cd946ad66f128aa3c29987fa39b758bd",
+    "modules/08-qubit-dsdna-hs/coverage.json": "c389698e07ff2370bf9ddda59cc4688038288518337ac5961c7943d2b6ddd59a",
     "modules/08-qubit-dsdna-hs/diagnostics.json": "ef6b630703feb17332e3db960deee1abb933a7e79720068363f800334b602255",
-    "modules/08-qubit-dsdna-hs/execution.json": "59785911ca3f8c197b0ea1f45330a3c20035ea92fd38187d0caa035d613751aa",
+    "modules/08-qubit-dsdna-hs/execution.json": "2c69c3ba7e9716e5222983ab113f320ed6b53da24748896227b499174f503a5b",
     "modules/08-qubit-dsdna-hs/results.json": "1837102554abc797cec335740e00c29d1e84902652e81bb8d4edf893cdf9cc16",
     "modules/08-qubit-dsdna-hs/run.json": "3f8d65dbb9beedbf82450b440403be5a99737d1c8c0c3f3c3adb784ba7a975ab",
-    "modules/09-double-sided-spri/coverage.json": "88c642ef0eefaa3f55cf0ee6b6e27f984d889f037a006e3b471e28ddb514e22e",
+    "modules/09-double-sided-spri/coverage.json": "9da74f795ef89b644ef653e930e36f6aaf6a3bff764325fec8896647fa90d07f",
     "modules/09-double-sided-spri/diagnostics.json": "2e41c44dcd3a7399d80e8914498e26c70f6dd90a3b86ce5ff24faf5006dc3fa8",
-    "modules/09-double-sided-spri/execution.json": "1b66245e18f7d85dcfa51bba8b7b350736da4bb01db291523edf2bb31040eab7",
+    "modules/09-double-sided-spri/execution.json": "f175d1b8be89bafe285164209f8fad12042690d2b9f12928c3c28a01f40082fb",
     "modules/09-double-sided-spri/results.json": "f5af5c3cf46608d9053d39a37afbd2ebc76df408254bc7be28c7493448ff59f1",
     "modules/09-double-sided-spri/run.json": "ee562bf30e5e267a3749d76c15adb9ecd5a10690b13993811985118a04686fb3",
-    "modules/11-pbmc-hia-staining-flow/coverage.json": "3e2eb82092733f564fbb32cc519ffa1dec3d09b4c5aff5f032dcdab94f2ac3dd",
+    "modules/11-pbmc-hia-staining-flow/coverage.json": "5a3ad2e86010b47f887c44384b60300bbb8270e4a50e914c0b063ccbefdeece6",
     "modules/11-pbmc-hia-staining-flow/diagnostics.json": "ca6ba93037173a5ddd17e78e8b0372321c0040a2636ed2559f00891c44c087c8",
-    "modules/11-pbmc-hia-staining-flow/execution.json": "5552ce3ede181f170f9cfabf63f7bc44224b3719423876b5b663e8bed245f7c4",
+    "modules/11-pbmc-hia-staining-flow/execution.json": "fee984300b99ec610a75640b7228c2fbae3c8fe97abb21e89243ca3586cf1b42",
     "modules/11-pbmc-hia-staining-flow/results.json": "0cb63adefa49f329f16102c90e60c86d95aa23c6f140463719d6663d2a3ad0c7",
     "modules/11-pbmc-hia-staining-flow/run.json": "4f87bff9a0ef4b4ec94384b21740ef81f518b7cf81390e3490f800824f990bf5"
   },
@@ -1363,8 +1363,8 @@
     "evaluate_case.py": "0f22a7d72baafcc9c89f2f95aa64c3187ec3f4f0af725cc87b195a8662c8aa52",
     "reproduce.py": "3192b2cbd7e7d9a6a6ebfc8264c1afd53291a4ef9c47395bf362d6cd67c6e993"
   },
-  "runtime_commit": "b27f9f8d2460d65379ece299245a2d399cf7aeec",
-  "runtime_version": "1.0.11rc1",
+  "runtime_commit": "dbe8e12f949abfba1391ab0864889e051235039e",
+  "runtime_version": "1.0.11",
   "schema": "benchmark-evaluation-v1",
   "version": "1.0.11"
 }
