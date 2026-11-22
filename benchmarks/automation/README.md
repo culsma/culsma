@@ -24,6 +24,13 @@ release, substitute the following core requirement for `culsma==1.0.11` above:
 `culsma @ git+https://github.com/culsma/culsma.git@610710284457cf4210f56ef44512e3d0be0e8786`.
 The manifest preserves the recorded runtime metadata; refresh the results and
 manifest together when evaluating the final release.
+The driver used for the retained results is recorded as `90ad174` in the
+manifest. Its `src/` tree is identical to the public installation commit
+[`3deedcb`](https://github.com/culsma/culsma-driver-opentrons/commit/3deedcbc353642aa36293c73900a5a1e8993f48e).
+The manifest records the shared source-tree hash under
+`driver_install.source_equivalence`, linking the historical run to the
+publicly available implementation.
+
 The driver's distribution and CLI registration remain
 `culsma-opentrons-simulator` and `opentrons-simulator`, respectively.
 

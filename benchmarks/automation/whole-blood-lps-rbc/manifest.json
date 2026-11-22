@@ -40,7 +40,13 @@
   },
   "driver_install": {
     "repository": "https://github.com/culsma/culsma-driver-opentrons",
-    "commit": "3deedcbc353642aa36293c73900a5a1e8993f48e"
+    "commit": "3deedcbc353642aa36293c73900a5a1e8993f48e",
+    "source_equivalence": {
+      "evaluated_commit": "90ad174576eeb5798f9b80602bfefb14a0fe12b1",
+      "path": "src/",
+      "git_tree": "af74d754534f5ed639204d549b9bef00cd020efa",
+      "verification": "The src/ Git tree is identical in the evaluated driver commit and this public installation commit."
+    }
   },
   "retained_result_names": {
     "automation.culs": "protocol.culs",
