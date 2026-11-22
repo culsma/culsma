@@ -2,7 +2,7 @@
 
 Synthetic executable acceptance case for optional mass/volume concentration.
 It checks declared starting quantities, not physical compatibility or experimental
-success. Requires the local concentration implementation (not released).
+success. The commands below use Culsma 1.0.11.
 
 `protocol.culs` initializes protein, RNA and small-molecule stocks, mixes aliquots,
 splits the mixture and dilutes both portions. Each content code identifies a

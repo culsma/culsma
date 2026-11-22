@@ -24,7 +24,7 @@ The executable core is organized in:
 - `src/culsma/stdlib/`
 - `tests/`
 
-The repository also maintains the Patterns benchmark cases and reproduction tools under
+The repository also maintains the workflow benchmark cases and reproduction tools under
 [`benchmarks/`](benchmarks/README.md), separate from the language
 implementation and its PyPI package. This is the canonical maintenance location
 for the paper's cases. The Culsma 1.0.9 evaluation covers 173/173 source steps;

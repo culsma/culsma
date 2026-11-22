@@ -1,4 +1,4 @@
-# Reproduce the Patterns benchmark
+# Reproduce the archived Culsma benchmark
 
 This directory contains the 14 workflows evaluated in the paper and the
 separate worked example (00), with their source files and expected results.

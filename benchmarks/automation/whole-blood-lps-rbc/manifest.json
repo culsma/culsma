@@ -31,12 +31,9 @@
   "reproduction": "python3 benchmarks/replay.py --only automation",
   "release_target": "1.0.11",
   "source_provenance": {
-    "upstream": {
-      "repository": "culsma/paper-patterns",
-      "commit": "1b0dd6d8ed1f588f1c7891f7525f5b30304bcebe",
-      "path": "benchmark_cases/new_experiment_2026-11-14_nondepleted_lps_rbc"
-    },
-    "revision": "Current benchmark procedure: S5, S10 and S13 specify 4 C as agreed on 2026-11-17; S13 wash centrifugation changed from 500 x g to 300 x g for 5 min at 4 C at the author's request on 2026-11-21."
+    "source_file": "source.md",
+    "public_url": "https://github.com/culsma/culsma/blob/refs/tags/v1.0.11/benchmarks/automation/whole-blood-lps-rbc/source.md",
+    "description": "Numbered source procedure used for the whole-blood LPS stimulation and processing benchmark."
   },
   "driver_install": {
     "repository": "https://github.com/culsma/culsma-driver-opentrons",

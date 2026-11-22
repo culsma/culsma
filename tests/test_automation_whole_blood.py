@@ -13,7 +13,9 @@ CASE = ROOT / 'benchmarks/automation/whole-blood-lps-rbc'
 
 def test_current_source_and_protocol_match_manifest():
     manifest = json.loads((CASE / 'manifest.json').read_text())
-    assert manifest['source_provenance']['upstream']['commit'] == '1b0dd6d8ed1f588f1c7891f7525f5b30304bcebe'
+    source_file = manifest['source_provenance']['source_file']
+    assert (CASE / source_file).is_file()
+    assert source_file in manifest['files_sha256']
     assert load_verifier().check_retained(CASE)['ok']
     for name, expected in manifest['files_sha256'].items():
         assert sha256((CASE / name).read_bytes()).hexdigest() == expected

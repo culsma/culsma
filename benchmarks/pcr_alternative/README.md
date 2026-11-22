@@ -1,8 +1,9 @@
 # Controlled PCR variants
 
-This supplement supports the Results subsection “Controlled Protocol Variants”
-and reviewer comments R2-06–07. It is a software execution benchmark, with no
-hardware connection or claim about physical PCR performance.
+This case accompanies the PCR worked example and the subsection “Detecting an
+Inconsistent Request”. It checks the software execution of the original program,
+an explicit-quantity baseline, and a variant that requests more template than
+is available.
 
 ## Cases and expected outcomes
 
@@ -38,9 +39,8 @@ python benchmarks/pcr_alternative/reproduce.py --culsma-repo /absolute/path/to/C
 Run from the Culsma repository. The script reads the pinned source through
 `git archive`, without changing the Culsma checkout. The extracted runtime,
 complete execution plans and raw run records are placed under
-`output/pcr-alternative/` in this repository. No temporary clone or
-development workspace is created. The script uses the deterministic reference
-driver and performs no instrument operations.
+`output/pcr-alternative/` in this repository. Execution uses the deterministic
+reference driver.
 
 `results/summary.json` records versions, source hashes, checks, material results,
 step status counts and complete runtime diagnostics. The three thermal trace

@@ -1,6 +1,6 @@
 # Module 01 transfer requirements
 
-The parent directory contains the corrected benchmark program. The submitted program is retained in `submitted/`. The revised protocol adds `with constraint(dropwise)` at S10 and S11 and is identical to the parent program. Both programs use the same numbered source. The corrected counting rule excludes every instruction explicitly marked `COVERAGE GAP`. The revised Module 01 scores 13/13 with Culsma 1.0.7.
+The parent directory contains the corrected benchmark program. The submitted program is retained in `submitted/`. The revised protocol adds `with constraint(dropwise)` at S10 and S11 and is identical to the parent program. Both programs use the same numbered source. The corrected counting rule does not count instructions marked `COVERAGE GAP` as matched. The revised Module 01 scores 13/13 with Culsma 1.0.7.
 
 The checker runs both programs with Culsma 1.0.7. It verifies the volume moved, destination, driver requirement, remaining source volumes and structural correspondence. A third run configures the software driver without dropwise support and checks that it rejects S10 before either transfer. The observed results are in [results.json](results.json).
 

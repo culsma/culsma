@@ -104,7 +104,7 @@ def prepare_package():
     if destination.exists():
         raise FileExistsError('Run the existing package with: python3 ' +
                               str(destination / 'benchmarks/replay.py'))
-    url = 'https://codeload.github.com/culsma/culsma/tar.gz/' + RELEASE
+    url = 'https://codeload.github.com/culsma/culsma/tar.gz/refs/tags/' + RELEASE
     print('Downloading ' + RELEASE + ' reproduction package', flush=True)
     with urllib.request.urlopen(url, timeout=120) as response:
         files = archive_files(response.read(), ['benchmarks'])

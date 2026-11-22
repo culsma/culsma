@@ -141,7 +141,7 @@ def test_standalone_download_uses_release_and_preserves_existing_directory(monke
     download = Mock(return_value=response)
     monkeypatch.setattr(replay.urllib.request, 'urlopen', download)
     replay.prepare_package()
-    assert download.call_args.args[0].endswith('/v1.0.11')
+    assert download.call_args.args[0].endswith('/refs/tags/v1.0.11')
     assert (replay.ROOT / 'replay.py').read_bytes() == b'# entry'
     assert not (replay.ROOT.parent / 'unrelated').exists()
     replay.prepare_package()

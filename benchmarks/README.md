@@ -111,11 +111,9 @@ stay in ignored `local-results/`; they are not maintained program variants.
 For 1.0.7 it also recovers the recorded benchmark input revision from Git.
 The 1.0.9 and 1.0.11 evaluations use the current shared modules and composites,
 including the corrected dropwise transfers and the explicit plate-tapping step.
-The 1.0.11 evaluation is prepared for the 1.0.11 release. Its manifest records
-the exact runtime commit used for the retained run. Before publication, update
-the 1.0.11 manifest to the final release implementation and verified input hashes,
-then rerun the evaluation. The `--version` option selects an evaluation manifest;
-it does not automatically select a newer runtime.
+The 1.0.11 evaluation uses the released implementation. Each manifest records
+the runtime and input hashes used for its retained results. The `--version`
+option selects that recorded evaluation environment.
 
 Each evaluation records input hashes, runtime commit, actual package version,
 counting rule, diagnostics, material results, and execution-event replay checks.

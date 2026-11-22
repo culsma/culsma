@@ -275,7 +275,7 @@ Published as GitHub prerelease `internal-1.0.7rc1` with wheel and source archive
 
 ### Added
 
-- A reproducible Patterns evaluation snapshot in the source repository, with
+- A reproducible workflow evaluation snapshot in the source repository, with
   source records, expected results, and a pinned 1.0.6 evaluation environment.
 - README links to the official VS Code extension.
 - A content reference conformance pilot extracts the owning Markdown sections
