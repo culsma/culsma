@@ -4,6 +4,23 @@ Each case keeps its source procedure, Culsma program, workstation configuration,
 retained results and manifest together. `reproduce.py` runs the software scenarios
 and checks their program results and device records. Culsma OS is not required.
 
+## One-command reproduction
+
+Use the [paper reproduction entry point](../README.md#reproduce-the-paper):
+
+```sh
+python3 benchmarks/replay.py --only automation
+```
+
+It installs the recorded core and public driver automatically in an isolated
+environment and runs all five software scenarios into a fresh results directory.
+Without `--only automation`, the same entry point also reproduces the workflow
+benchmark versions and the language comparison. Versions are selected from the
+manifest; users do not need to locate or install them manually.
+
+<details>
+<summary>Manual environment setup and individual checks</summary>
+
 ## Install
 
 Use Python 3.11. Install Culsma and the public
@@ -62,6 +79,8 @@ Each scenario saves the plan, runtime results and available driver evidence;
 `results.json` in the output directory collects the verification reports.
 `--check-only` checks retained file hashes and the five saved verification outcomes
 without importing the driver or rerunning the simulation.
+
+</details>
 
 ## Whole-blood workflow
 

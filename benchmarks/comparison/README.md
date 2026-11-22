@@ -2,6 +2,22 @@
 
 Each of `M1`–`M4` and `L1`–`L4` contains `case.json` and three directories: `culsma`, `labop`, and `bpl`. Programs, their required helpers, execution records and evaluation results are kept together in each language directory. Criterion definitions and interpretation are in the manuscript supplement.
 
+## One-command reproduction
+
+Use the [paper reproduction entry point](../README.md#reproduce-the-paper):
+
+```sh
+python3 benchmarks/replay.py --only comparison
+```
+
+It obtains the recorded Python versions and dependencies, prepares all three
+systems, and runs all eight criteria. New results are written to a separate copy
+of this evidence package under `benchmarks/local-results/paper-replay-.../`.
+Without `--only comparison`, it also runs the workflow benchmark and automation.
+
+<details>
+<summary>Manual environment setup and individual checks</summary>
+
 ## Prepare the environment
 
 Use the pinned interpreters to install each system once:
@@ -35,3 +51,5 @@ python3 benchmarks/comparison/evaluate.py --check-only
 ```
 
 A reproduced negative capability witness is reported as `No`. Missing or changed evidence, failed commands or mismatched inputs are reported as `NE` and cause a nonzero exit status. `L4/culsma` and `L4/bpl` reproduce source-interface inspections; `L4/labop` runs the existing extension witness. Their evaluation method is recorded explicitly. No new Culsma-provider or BPL-callback execution is implied by a source inspection.
+
+</details>

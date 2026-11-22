@@ -42,18 +42,15 @@ For the current public release, install from PyPI:
 python -m pip install culsma
 ```
 
-You can also install directly from the `v1.0.10` tag:
+You can also install directly from the `v1.0.11` tag:
 
 ```bash
-python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@v1.0.10"
+python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@v1.0.11"
 ```
 
-The 1.0.11 release candidate adds environment media and per-component fraction
-allocation. Install the pre-release from its GitHub tag:
-
-```bash
-python -m pip install "culsma @ git+https://github.com/culsma/culsma.git@internal-1.0.11rc1"
-```
+Version 1.0.11 adds environment media, component-aware fractionation,
+shared magnetic separation, external driver lifecycle support, and a unified
+[benchmark reproduction command](benchmarks/README.md#reproduce-the-paper).
 
 Release notes are in [CHANGELOG.md](CHANGELOG.md).
 

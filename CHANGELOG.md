@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.11 — 2026-11-22
 
 ### Added
 
@@ -8,10 +8,6 @@
   or `rpm`, preserved alongside ENV temperature and duration through execution.
   Centrifugal programs share finite positive setting validation, including
   bound values. Omitted drive retains existing fractionation behavior.
-
-## 1.0.11rc1 — 2026-11-14
-
-### Added
 
 - Environment scopes support typed gas and liquid media. Liquid media accept
   contents maps keyed by declared content references, with explicit component
@@ -24,8 +20,20 @@
   retains equal allocation; no automatic fractionation prediction or absolute
   allocation quantities are introduced.
 
+- External drivers support whole-program execution lifecycle hooks, preserving
+  structured failure diagnostics through the CLI.
+- The public benchmark package includes PBMC stimulation and staining, a complete
+  Opentrons Flex software automation workflow, and eight reproducible comparison
+  cases for Culsma, LabOP and BPL. One command prepares isolated environments and
+  reproduces workflow evaluations across versions, automation, and comparisons.
+
 ### Fixed
 
+- Grouped magnetic separation applies shared exposure as one atomic material
+  step, preserving group identity and component accounting.
+- Source-step coverage counting honors explicit gap annotations. Module 01
+  explicitly declares dropwise delivery supported by Culsma 1.0.7; historical
+  evaluations use the corrected counting rule.
 - Input-lot accounting follows the actual components transferred from separated
   fractions, including partial collection, instead of applying the original
   container's bulk mixture proportions to the collected volume.

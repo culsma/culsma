@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "culsma"
-version = "1.0.11rc1"
+version = "1.0.11"
 description = "Public execution-kernel release boundary for the current Culsma reference implementation"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -55,3 +55,6 @@ fail_under = 87
 precision = 2
 show_missing = true
 skip_covered = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "archive"]

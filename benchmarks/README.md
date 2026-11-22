@@ -2,6 +2,43 @@
 
 Source procedures, Culsma programs and recorded source-step coverage across versions.
 
+## Reproduce the paper
+
+With Python 3.10 or later available, run this single command from the downloaded
+Culsma repository (a source ZIP or a Git checkout both work):
+
+```sh
+python3 benchmarks/replay.py
+```
+
+The entry point automatically prepares isolated Python environments, downloads
+the recorded Culsma versions and public Opentrons driver, and runs the workflow
+benchmarks for 1.0.7, 1.0.9 and 1.0.11, the automation scenarios, and all eight
+cross-system comparison criteria. No manual version selection, environment
+activation, or separate driver installation is required. First-time setup needs
+network access and Python's `venv` support.
+
+New results go to a fresh `benchmarks/local-results/paper-replay-.../` directory;
+the final message gives the location of `summary.json`. Published records and
+the user's existing Python installations are preserved. An optional `--only`
+argument selects `benchmark`, `automation`, or `comparison` for a partial replay.
+The detailed commands below are for individual checks and maintaining records.
+Runtime commits come from the evaluation manifests; publication preparation must
+refresh the 1.0.11 manifests and results against the final release.
+
+After the submission package is published, the same entry point can also download
+the package and run it from an empty working directory (Python and curl required):
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/culsma/culsma/v1.0.11/benchmarks/replay.py | python3 -
+```
+
+This creates `culsma-reproduction/` in the current directory. It does not replace
+an existing directory. The entry point uses uv internally to obtain missing
+Python versions; uv itself is installed in a private bootstrap environment.
+
+## Recorded coverage
+
 | Workflow | 1.0.7 | 1.0.9 | 1.0.11 |
 | --- | ---: | ---: | ---: |
 | [Module 01: Cell transfection](modules/01-cell-transfection/source.md) | 13/13 | 13/13 | 13/13 |
@@ -51,8 +88,7 @@ and [evaluated program](modules/11-pbmc-hia-staining-flow/protocol.culs) are ret
 
 The [Culsma, LabOP and BPL comparison](comparison/README.md) contains the
 input programs and results organized by M1–M4 and L1–L4, with one folder per
-language inside each case. Follow that README to prepare the pinned environments,
-then run `python3 benchmarks/comparison/evaluate.py` to reproduce the comparison. Criterion explanations are in the manuscript supplement;
+language inside each case. The single entry point above prepares its pinned environments and reproduces all criteria automatically. Criterion explanations are in the manuscript supplement;
 these results do not contribute to workflow source-step coverage totals.
 
 ## Evaluate
