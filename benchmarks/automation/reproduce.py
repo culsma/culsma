@@ -1,9 +1,24 @@
-"""Verify saved CLI evidence for the whole-blood automation simulation."""
+"""Run and verify the automation benchmark's five software scenarios."""
 import argparse
 from collections import Counter
+import hashlib
 import json
 from math import isclose
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+SCENARIOS = ('normal', 'constraints', 'missing-method', 'no-cooling', 'failure')
+FAULT_STEP = 'entry.s16'
+FAULT_MESSAGE = 'Injected loss of transfer completion confirmation'
+
+class CompletionFailure:
+    def __init__(self, original):
+        self.original = original
+
+    def run_prepared(self, operation):
+        if operation.step_id == FAULT_STEP:
+            raise RuntimeError(FAULT_MESSAGE)
+        return self.original(operation)
 
 
 def verify(artifacts: Path) -> dict:
@@ -150,14 +165,101 @@ def verify_interfaces(artifacts: Path, scenario: str) -> dict:
             'device_execution_started': summary['device_execution_started']}
 
 
+
+def prepare_inputs(case: Path, directory: Path, scenario: str):
+    """Generate only the inputs that differ from the maintained workflow."""
+    if scenario not in SCENARIOS:
+        raise ValueError('Unknown scenario')
+    source, deck = case / 'protocol.culs', case / 'deck.json'
+    if scenario in {'normal', 'failure'}:
+        return source, deck
+    directory.mkdir(parents=True, exist_ok=False)
+    config = json.loads(deck.read_text())
+    if scenario == 'no-cooling':
+        config['reference_devices']['rotor']['profile']['temperature_range_celsius']['minimum'] = 20
+    else:
+        program = source.read_text()
+        statement = 'processing_well << [lps_medium_input:100uL];'
+        if program.count(statement) != 1:
+            raise ValueError('Expected exactly one stimulation-medium transfer')
+        program = program.replace(statement, statement[:-1] +
+            ' with constraint(ConstraintRequirement.LOW_CARRYOVER, ConstraintRequirement.HIGH_PRECISION);')
+        source = directory / 'protocol.culs'
+        source.write_text(program)
+        if scenario == 'constraints':
+            config.setdefault('transfer_policy', {})['precision_method'] = {
+                'method_id': 'configured-flex-method', 'revision': '1', 'pipette': config['pipette'],
+                'minimum_volume_uL': 20, 'maximum_volume_uL': 1000,
+                'aspirate_flow_rate_uL_s': 25, 'dispense_flow_rate_uL_s': 40}
+    deck = directory / 'deck.json'
+    deck.write_text(json.dumps(config, indent=2) + '\n')
+    return source, deck
+
+
+def check_retained(case: Path) -> dict:
+    """Validate retained inputs, results and the reproduction script against the manifest."""
+    manifest = json.loads((case / 'manifest.json').read_text())
+    for name, expected in manifest['files_sha256'].items():
+        if hashlib.sha256((case / name).read_bytes()).hexdigest() != expected:
+            raise ValueError(f'Checksum mismatch: {name}')
+    results = json.loads((case / 'results.json').read_text())
+    checks = results['method_and_failure_checks']['checks']
+    if set(checks) != {'constraints', 'missing-method', 'failure'}:
+        raise ValueError('Missing interface scenarios')
+    if not all(v['ok'] for v in checks.values()):
+        raise ValueError('An interface check did not pass')
+    if not all(results['temperature_checks'][key]['verification']['ok'] for key in ('supported', 'unsupported')):
+        raise ValueError('A temperature check did not pass')
+    return {'ok': True, 'scenarios': list(SCENARIOS), 'files_checked': len(manifest['files_sha256'])}
+
+
+def run_scenario(case: Path, scenario: str, artifacts: Path) -> dict:
+    """Execute in a fresh directory, then check the expected success or failure."""
+    from culsma.cli import write_run_artifacts
+    from culsma.driver.models import ProgramExecutionRequest
+    from culsma_opentrons.plugin import SimulatorSessionFactory
+    from culsma_opentrons.standalone import StandaloneProgramExecutor
+
+    class FailureSessions(SimulatorSessionFactory):
+        def create(self, config, artifacts_dir, **kwargs):
+            session = super().create(config, artifacts_dir, **kwargs)
+            session.backend.run_prepared = CompletionFailure(session.backend.run_prepared).run_prepared
+            return session
+
+    if artifacts.exists():
+        raise ValueError(f'Use a fresh artifact directory: {artifacts}')
+    source, deck = prepare_inputs(case, artifacts / 'inputs', scenario)
+    sessions = FailureSessions() if scenario == 'failure' else SimulatorSessionFactory()
+    result = StandaloneProgramExecutor(sessions).execute(
+        ProgramExecutionRequest((source,), 'opentrons-simulator', deck, artifacts))
+    write_run_artifacts(result, artifacts)
+    if scenario == 'normal':
+        return verify(artifacts)
+    if scenario == 'no-cooling':
+        return verify_rejection(artifacts)
+    return verify_interfaces(artifacts, scenario)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('artifacts', type=Path)
-    parser.add_argument('--expect-rejection', action='store_true')
-    parser.add_argument('--interface', choices=['constraints', 'missing-method', 'failure'])
+    parser.add_argument('--case', choices=['whole-blood-lps-rbc'], default='whole-blood-lps-rbc')
+    parser.add_argument('--scenario', choices=['all', *SCENARIOS], default='all')
+    parser.add_argument('--output', type=Path)
+    parser.add_argument('--check-only', action='store_true', help='Check retained files without running the driver')
     args = parser.parse_args()
-    result = verify_interfaces(args.artifacts, args.interface) if args.interface else (verify_rejection(args.artifacts) if args.expect_rejection else verify(args.artifacts))
-    print(json.dumps(result, indent=2))
+    case = ROOT / args.case
+    retained = check_retained(case)
+    if args.check_only:
+        print(json.dumps(retained, indent=2))
+        return
+    if args.output is None:
+        parser.error('--output is required for simulation')
+    if args.output.exists():
+        parser.error('Use a fresh output directory')
+    selected = SCENARIOS if args.scenario == 'all' else (args.scenario,)
+    reports = {name: run_scenario(case, name, args.output.resolve() / name) for name in selected}
+    (args.output / 'results.json').write_text(json.dumps(reports, indent=2) + '\n')
+    print(json.dumps(reports, indent=2))
 
 
 if __name__ == '__main__':

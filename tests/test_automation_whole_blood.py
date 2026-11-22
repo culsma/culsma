@@ -12,31 +12,25 @@ CASE = ROOT / 'benchmarks/automation/whole-blood-lps-rbc'
 
 
 def test_current_source_and_protocol_match_manifest():
-    manifest = json.loads((CASE / 'source-manifest.json').read_text())
-    assert manifest['upstream']['commit'] == '1b0dd6d8ed1f588f1c7891f7525f5b30304bcebe'
-    assert set(manifest['files']) == {
-        'source.md', 'whole_blood_lps_stimulation_rbc_lysis_sequential.culs',
-    }
-    for name, expected in manifest['files'].items():
-        assert sha256((CASE / name).read_bytes()).hexdigest() == expected['sha256']
+    manifest = json.loads((CASE / 'manifest.json').read_text())
+    assert manifest['source_provenance']['upstream']['commit'] == '1b0dd6d8ed1f588f1c7891f7525f5b30304bcebe'
+    assert load_verifier().check_retained(CASE)['ok']
+    for name, expected in manifest['files_sha256'].items():
+        assert sha256((CASE / name).read_bytes()).hexdigest() == expected
 
 
 def load_verifier():
-    spec = importlib.util.spec_from_file_location('whole_blood_verifier', CASE / 'verify.py')
+    spec = importlib.util.spec_from_file_location('whole_blood_verifier', CASE.parent / 'reproduce.py')
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
 
 
 def test_source_and_executable_program_agree_on_three_centrifugations():
-    protocol = (CASE / 'whole_blood_lps_stimulation_rbc_lysis_sequential.culs').read_text()
-    executable = (CASE / 'automation.culs').read_text()
-    assert protocol == executable
+    executable = (CASE / 'protocol.culs').read_text()
     assert executable.count('with env(thermal = 4C, duration = ') == 3
     steps = [line for line in (CASE / 'source.md').read_text().splitlines() if '. Centrifuge ' in line]
     assert len(steps) == 3 and all(line.endswith('at 4 C.') for line in steps)
-    manifest = json.loads((CASE / 'source-manifest.json').read_text())
-    assert sha256((CASE / manifest['simulation']['file']).read_bytes()).hexdigest() == manifest['simulation']['sha256']
 
 
 def test_verifier_rejects_unexecuted_program(tmp_path):
@@ -46,7 +40,7 @@ def test_verifier_rejects_unexecuted_program(tmp_path):
 
 
 def test_original_program_material_accounting():
-    result = execute_pipeline([CASE / 'whole_blood_lps_stimulation_rbc_lysis_sequential.culs'])
+    result = execute_pipeline([CASE / 'protocol.culs'])
     assert result['summary']['runtime_ok']
     containers = result['run']['state']['artifacts']['material_state']['containers']
     volumes = {c['metadata']['allocation_name']: c['volume_uL'] for c in containers.values()}
@@ -56,7 +50,7 @@ def test_original_program_material_accounting():
 
 def test_full_driver_evidence_and_checker_detects_missing_mixing(tmp_path):
     standalone = pytest.importorskip('culsma_opentrons.standalone')
-    request = ProgramExecutionRequest((CASE / 'automation.culs',),
+    request = ProgramExecutionRequest((CASE / 'protocol.culs',),
         'opentrons-simulator', CASE / 'deck.json', tmp_path)
     result = standalone.StandaloneProgramExecutor().execute(request)
     assert result['summary']['runtime_ok'], result['run']['diagnostics']
@@ -74,11 +68,12 @@ def test_full_driver_evidence_and_checker_detects_missing_mixing(tmp_path):
 def test_no_cooling_rejection_preserves_sample_context(tmp_path):
     standalone = pytest.importorskip('culsma_opentrons.standalone')
     config = json.loads((CASE / 'deck.json').read_text())
-    rejected_config = json.loads((CASE / 'deck-no-cooling.json').read_text())
+    source, deck = load_verifier().prepare_inputs(CASE, tmp_path / 'inputs', 'no-cooling')
+    rejected_config = json.loads(deck.read_text())
     config['reference_devices']['rotor']['profile']['temperature_range_celsius']['minimum'] = 20
     assert config == rejected_config
-    request = ProgramExecutionRequest((CASE / 'automation.culs',),
-        'opentrons-simulator', CASE / 'deck-no-cooling.json', tmp_path)
+    request = ProgramExecutionRequest((CASE / 'protocol.culs',),
+        'opentrons-simulator', deck, tmp_path)
     result = standalone.StandaloneProgramExecutor().execute(request)
     write_run_artifacts(result, tmp_path)
     verifier = load_verifier()
@@ -93,20 +88,16 @@ def test_no_cooling_rejection_preserves_sample_context(tmp_path):
 
 
 def load_interface_checks():
-    pytest.importorskip('culsma_opentrons.standalone')
-    spec = importlib.util.spec_from_file_location('whole_blood_checks', CASE / 'check_interfaces.py')
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return load_verifier()
 
 
 def test_constraint_inputs_keep_workflow_and_select_method(tmp_path):
     checks = load_interface_checks()
-    source, deck = checks.prepare_constraint_inputs(tmp_path)
+    source, deck = checks.prepare_inputs(CASE, tmp_path / "constraints", "constraints")
     clause = ' with constraint(ConstraintRequirement.LOW_CARRYOVER, ConstraintRequirement.HIGH_PRECISION)'
-    assert source.read_text().replace(clause, '') == (CASE / 'automation.culs').read_text()
+    assert source.read_text().replace(clause, '') == (CASE / 'protocol.culs').read_text()
     assert json.loads(deck.read_text())['transfer_policy']['precision_method']['pipette'] == 'flex_1channel_1000'
-    _, deck = checks.prepare_constraint_inputs(tmp_path, missing_method=True)
+    _, deck = checks.prepare_inputs(CASE, tmp_path / "missing", "missing-method")
     assert 'precision_method' not in json.loads(deck.read_text())['transfer_policy']
 
 
@@ -126,10 +117,12 @@ def test_completion_failure_delegates_other_operations():
 @pytest.mark.parametrize('scenario', ['constraints', 'missing-method', 'failure'])
 def test_continuous_interface_evidence_and_tamper_detection(tmp_path, scenario):
     checks = load_interface_checks()
-    checks.run_scenario(scenario, tmp_path)
+    pytest.importorskip("culsma_opentrons.standalone")
+    artifacts = tmp_path / "run"
+    checks.run_scenario(CASE, scenario, artifacts)
     verifier = load_verifier()
-    assert verifier.verify_interfaces(tmp_path, scenario)['ok']
-    path = tmp_path / 'run.json'
+    assert verifier.verify_interfaces(artifacts, scenario)['ok']
+    path = artifacts / 'run.json'
     run = json.loads(path.read_text())
     if scenario == 'constraints':
         receipt = next(r for r in run['state']['artifacts']['device_execution']['receipts'] if r.get('constraint_resolution'))
@@ -140,4 +133,22 @@ def test_continuous_interface_evidence_and_tamper_detection(tmp_path, scenario):
         next(e for e in run['events'] if e['kind'] == 'STEP_FAILED')['payload']['driver_code'] = 'UNRELATED'
     path.write_text(json.dumps(run))
     with pytest.raises(ValueError):
-        verifier.verify_interfaces(tmp_path, scenario)
+        verifier.verify_interfaces(artifacts, scenario)
+
+
+def test_retained_check_detects_changed_inputs(tmp_path):
+    import shutil
+    case = tmp_path / 'case'
+    shutil.copytree(CASE, case)
+    shutil.copyfile(CASE.parent / 'reproduce.py', tmp_path / 'reproduce.py')
+    (case / 'protocol.culs').write_text('changed')
+    with pytest.raises(ValueError, match='Checksum mismatch: protocol.culs'):
+        load_verifier().check_retained(case)
+
+
+def test_normal_and_failure_reuse_maintained_inputs(tmp_path):
+    verifier = load_verifier()
+    for scenario in ('normal', 'failure'):
+        assert verifier.prepare_inputs(CASE, tmp_path / scenario, scenario) == (CASE / 'protocol.culs', CASE / 'deck.json')
+    with pytest.raises(ValueError, match='Unknown scenario'):
+        verifier.prepare_inputs(CASE, tmp_path / 'unknown', 'unknown')

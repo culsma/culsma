@@ -1,0 +1,385 @@
+{
+  "temperature_checks": {
+    "description": "Extracted from standalone CLI simulation and preflight rejection; no physical temperature measurement.",
+    "program": {
+      "file": "automation.culs",
+      "sha256": "8b763057cc5e077121d61e9f17164fd44606b69252155b0338e6d2f8d11d89f7"
+    },
+    "configurations": {
+      "deck.json": "7035f548c182c8c11ab8720240ecf7ef504ce7e564916b641ef9cc70db690183",
+      "deck-no-cooling.json": "01c107c3940aa07562f7f2bca59492f62a074ed4da0201f9c0bb3d87c5648f06"
+    },
+    "supported": {
+      "verification": {
+        "ok": true,
+        "mode": "simulation",
+        "operations": {
+          "setup": 15,
+          "transfer": 6,
+          "pipette_mix": 15,
+          "labware_move": 7,
+          "hold": 2,
+          "centrifuge": 3
+        },
+        "pipette_strokes": 22,
+        "final_volumes_uL": {
+          "processing_well": 1.0,
+          "lps_medium_input": 0.0,
+          "lysis_buffer_input": 0.0,
+          "wash_buffer_input": 0.0,
+          "collected_supernatant": 155.0,
+          "lysis_waste": 1044.0,
+          "wash_waste": 1000.0
+        }
+      },
+      "centrifugations": [
+        {
+          "step_id": "entry.s15.b.s0",
+          "request": {
+            "step_id": "entry.s15.b.s0",
+            "targets": [
+              {
+                "container_id": "container/entry/entry.s0%3A%3Aalloc/processing_well"
+              }
+            ],
+            "drive_value": 2000.0,
+            "drive_unit": "g",
+            "duration_seconds": 600.0,
+            "temperature_celsius": 4.0
+          },
+          "cycle_settings": {
+            "labware": "sample_plate",
+            "drive_value": 4229.08795607166,
+            "drive_unit": "rpm",
+            "duration_seconds": 600.0,
+            "temperature_celsius": 4.0
+          },
+          "modeled_temperature_celsius": 4.0,
+          "sample_temperature_measured": false,
+          "outcome": "completed"
+        },
+        {
+          "step_id": "entry.s19.b.s0",
+          "request": {
+            "step_id": "entry.s19.b.s0",
+            "targets": [
+              {
+                "container_id": "container/entry/entry.s0%3A%3Aalloc/processing_well"
+              }
+            ],
+            "drive_value": 500.0,
+            "drive_unit": "g",
+            "duration_seconds": 300.0,
+            "temperature_celsius": 4.0
+          },
+          "cycle_settings": {
+            "labware": "sample_plate",
+            "drive_value": 2114.54397803583,
+            "drive_unit": "rpm",
+            "duration_seconds": 300.0,
+            "temperature_celsius": 4.0
+          },
+          "modeled_temperature_celsius": 4.0,
+          "sample_temperature_measured": false,
+          "outcome": "completed"
+        },
+        {
+          "step_id": "entry.s22.b.s0",
+          "request": {
+            "step_id": "entry.s22.b.s0",
+            "targets": [
+              {
+                "container_id": "container/entry/entry.s0%3A%3Aalloc/processing_well"
+              }
+            ],
+            "drive_value": 300.0,
+            "drive_unit": "g",
+            "duration_seconds": 300.0,
+            "temperature_celsius": 4.0
+          },
+          "cycle_settings": {
+            "labware": "sample_plate",
+            "drive_value": 1637.9187223511906,
+            "drive_unit": "rpm",
+            "duration_seconds": 300.0,
+            "temperature_celsius": 4.0
+          },
+          "modeled_temperature_celsius": 4.0,
+          "sample_temperature_measured": false,
+          "outcome": "completed"
+        }
+      ]
+    },
+    "unsupported": {
+      "verification": {
+        "ok": true,
+        "mode": "preflight_rejection",
+        "step_id": "entry.s15.b.s0",
+        "sample": "processing_well",
+        "source_line": 100,
+        "code": "DRV_OT_CENTRIFUGE_TEMPERATURE_RANGE",
+        "message": "Requested 4 \u00b0C is outside 20\u201340 \u00b0C",
+        "device_execution_started": false
+      },
+      "failed_event": {
+        "kind": "STEP_FAILED",
+        "payload": {
+          "driver_code": "DRV_OT_CENTRIFUGE_TEMPERATURE_RANGE",
+          "driver_payload": {
+            "message": "Requested 4 \u00b0C is outside 20\u201340 \u00b0C",
+            "phase": "preflight",
+            "retry_safe": true,
+            "step_id": "entry.s15.b.s0"
+          },
+          "gate": {
+            "entry_kind": "script",
+            "entry_name": "entry",
+            "env": {
+              "duration": {
+                "kind": "IRQuantity",
+                "span": {
+                  "col": 35,
+                  "end": 2613,
+                  "line": 99,
+                  "start": 2608
+                },
+                "unit": "min",
+                "value": 10.0
+              },
+              "thermal": {
+                "kind": "IRQuantity",
+                "span": {
+                  "col": 20,
+                  "end": 2595,
+                  "line": 99,
+                  "start": 2593
+                },
+                "unit": "C",
+                "value": 4.0
+              }
+            },
+            "env_layers": [
+              {
+                "env": {
+                  "duration": {
+                    "kind": "IRQuantity",
+                    "span": {
+                      "col": 35,
+                      "end": 2613,
+                      "line": 99,
+                      "start": 2608
+                    },
+                    "unit": "min",
+                    "value": 10.0
+                  },
+                  "thermal": {
+                    "kind": "IRQuantity",
+                    "span": {
+                      "col": 20,
+                      "end": 2595,
+                      "line": 99,
+                      "start": 2593
+                    },
+                    "unit": "C",
+                    "value": 4.0
+                  }
+                },
+                "env_targets": [
+                  {
+                    "kind": "IRIdentifier",
+                    "name": "processing_well",
+                    "span": {
+                      "col": 14,
+                      "end": 2652,
+                      "line": 101,
+                      "start": 2637
+                    }
+                  }
+                ]
+              }
+            ],
+            "env_targets": [
+              {
+                "kind": "IRIdentifier",
+                "name": "processing_well",
+                "span": {
+                  "col": 14,
+                  "end": 2652,
+                  "line": 101,
+                  "start": 2637
+                }
+              }
+            ]
+          },
+          "reason": "driver_requirement_unsupported",
+          "unsupported_constraint_options": [],
+          "unsupported_requirements": []
+        },
+        "seq": 48,
+        "span": {
+          "col": 3,
+          "end": 3011,
+          "line": 100,
+          "start": 2619
+        },
+        "step_id": "entry.s15.b.s0"
+      },
+      "diagnostics": [
+        {
+          "code": "RT_DRIVER_REQUIREMENT_UNSUPPORTED",
+          "message": "Driver cannot satisfy requirements for step 'entry.s15.b.s0': DRV_OT_CENTRIFUGE_TEMPERATURE_RANGE",
+          "node_id": "entry.s15.b.s0",
+          "severity": "error",
+          "span": {
+            "col": 3,
+            "end": 3011,
+            "line": 100,
+            "start": 2619
+          }
+        },
+        {
+          "code": "RT_ABORTED_AFTER_FAILURE",
+          "message": "Runtime aborted after first failed step (fail-fast mode)",
+          "node_id": null,
+          "severity": "error",
+          "span": null
+        }
+      ]
+    }
+  },
+  "method_and_failure_checks": {
+    "scope": "Software simulation; failure injected by validation harness",
+    "checks": {
+      "constraints": {
+        "ok": true,
+        "scenario": "constraints",
+        "step_id": "entry.s8.b.s0",
+        "methods": [
+          {
+            "evidence_scope": "configured_method_execution",
+            "method_id": "fresh-tip-per-stroke",
+            "parameters": {
+              "tip_policy": "fresh_per_stroke"
+            },
+            "requirement": "low_carryover",
+            "revision": "1"
+          },
+          {
+            "evidence_scope": "configured_method_execution",
+            "method_id": "configured-flex-method",
+            "parameters": {
+              "aspirate_flow_rate_uL_s": 25,
+              "dispense_flow_rate_uL_s": 40,
+              "maximum_volume_uL": 1000,
+              "minimum_volume_uL": 20,
+              "pipette": "flex_1channel_1000"
+            },
+            "requirement": "high_precision",
+            "revision": "1"
+          }
+        ],
+        "commands": [
+          "Picking up tip from A1 of Opentrons Flex 96 Tip Rack 1000 \u00b5L on slot D3",
+          "Aspirating 100.0 uL from A1 of NEST 96 Deep Well Plate 2mL on slot D2 at 25.0 uL/sec",
+          "Dispensing 100.0 uL into A1 of NEST 96 Deep Well Plate 2mL on slot D1 at 40.0 uL/sec",
+          "Dropping tip into Trash Bin on slot A3"
+        ]
+      },
+      "missing-method": {
+        "ok": true,
+        "scenario": "missing-method",
+        "failure": {
+          "kind": "STEP_FAILED",
+          "payload": {
+            "driver_code": "DRV_OT_CONSTRAINT_METHOD",
+            "driver_payload": {
+              "message": "No configured method for requested transfer constraint",
+              "phase": "preflight",
+              "retry_safe": true,
+              "step_id": "entry.s8.b.s0"
+            },
+            "gate": {
+              "constraint": {
+                "options": {},
+                "requirements": [
+                  "low_carryover",
+                  "high_precision"
+                ]
+              },
+              "entry_kind": "script",
+              "entry_name": "entry"
+            },
+            "reason": "driver_requirement_unsupported",
+            "unsupported_constraint_options": [],
+            "unsupported_requirements": []
+          },
+          "seq": 34,
+          "span": {
+            "col": 1,
+            "end": 2173,
+            "line": 87,
+            "start": 2130
+          },
+          "step_id": "entry.s8.b.s0"
+        },
+        "device_execution_started": false
+      },
+      "failure": {
+        "ok": true,
+        "scenario": "failure",
+        "failure": {
+          "kind": "STEP_FAILED",
+          "payload": {
+            "driver_code": "DRV_OT_EXECUTION_UNKNOWN",
+            "driver_error_severity": "fatal",
+            "driver_payload": {
+              "error_severity": "fatal",
+              "exception_type": "RuntimeError",
+              "faults": [
+                {
+                  "basis": "model_state",
+                  "code": "DEVICE_ERROR",
+                  "context": {},
+                  "execution_state": "unknown",
+                  "location": null,
+                  "native_details": {
+                    "code": "DRV_OT_COMPLETION_UNCONFIRMED",
+                    "exception_code": "RuntimeError",
+                    "exception_type": "RuntimeError",
+                    "message": "Injected loss of transfer completion confirmation",
+                    "operation_kind": "transfer"
+                  },
+                  "operation_id": "entry.s16",
+                  "reason": "culsma.operation.completion_unconfirmed",
+                  "schema": "culsma_device_fault_v2",
+                  "source": "simulation",
+                  "stop_observation": {
+                    "state": "unknown"
+                  }
+                }
+              ],
+              "message": "Injected loss of transfer completion confirmation",
+              "operation_kind": "transfer",
+              "retry_safe": false,
+              "step_id": "entry.s16"
+            },
+            "gate": {
+              "entry_kind": "script",
+              "entry_name": "entry"
+            },
+            "reason": "driver_error"
+          },
+          "seq": 50,
+          "span": {
+            "col": 1,
+            "end": 3145,
+            "line": 114,
+            "start": 3091
+          },
+          "step_id": "entry.s16"
+        },
+        "device_execution_started": true
+      }
+    }
+  }
+}

@@ -34,7 +34,7 @@ optional concentration initialization, mixing, splitting, dilution and exact
 per-solute accounting in the local implementation. It is not included in these
 historical workflow coverage totals.
 
-The [whole-blood LPS stimulation and RBC lysis example](automation/whole-blood-lps-rbc/README.md)
+The [whole-blood LPS stimulation and RBC lysis example](automation/README.md)
 demonstrates continuous execution with the Opentrons simulator driver and checks
 how the driver handles unmet device requirements.
 
@@ -44,15 +44,15 @@ are recorded separately.
 
 Module 11 reports the procedure supplied by a neighboring laboratory.
 Its [1.0.7 coverage](evaluations/1.0.7/modules/11-pbmc-hia-staining-flow/coverage.json)
-is reported separately from the original 172/173. The [original submission](https://github.com/culsma/paper-patterns/tree/16a1a2aafbdd5bc521725919b4445a2bf39544e2/benchmark_cases/PBMC_HIA_stimulation_staining)
-and the [evaluated program](modules/11-pbmc-hia-staining-flow/protocol.culs) are available for comparison.
+is reported separately from the original 172/173. The [numbered source procedure](modules/11-pbmc-hia-staining-flow/source.md)
+and [evaluated program](modules/11-pbmc-hia-staining-flow/protocol.culs) are retained together.
 
 ## Cross-system comparison
 
 The [Culsma, LabOP and BPL comparison](comparison/README.md) contains the
 input programs and results organized by M1–M4 and L1–L4, with one folder per
-language inside each case. Run `python3 benchmarks/comparison/evaluate.py` to
-reproduce the comparison. Criterion explanations are in the manuscript supplement;
+language inside each case. Follow that README to prepare the pinned environments,
+then run `python3 benchmarks/comparison/evaluate.py` to reproduce the comparison. Criterion explanations are in the manuscript supplement;
 these results do not contribute to workflow source-step coverage totals.
 
 ## Evaluate
@@ -75,8 +75,11 @@ stay in ignored `local-results/`; they are not maintained program variants.
 For 1.0.7 it also recovers the recorded benchmark input revision from Git.
 The 1.0.9 and 1.0.11 evaluations use the current shared modules and composites,
 including the corrected dropwise transfers and the explicit plate-tapping step.
-The 1.0.11 directory currently records runtime 1.0.11rc1, commit `b27f9f8`;
-it does not imply that the final 1.0.11 release has been published.
+The 1.0.11 evaluation is prepared for the 1.0.11 release. Its manifest records
+the exact runtime commit used for the retained run. Before publication, update
+the 1.0.11 manifest to the final release implementation and verified input hashes,
+then rerun the evaluation. The `--version` option selects an evaluation manifest;
+it does not automatically select a newer runtime.
 
 Each evaluation records input hashes, runtime commit, actual package version,
 counting rule, diagnostics, material results, and execution-event replay checks.
